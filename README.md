@@ -1,2 +1,1 @@
-# darkrift
-Dark Rift Decomp Project
+# Dark Rift Decomp Project
