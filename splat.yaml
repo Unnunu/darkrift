@@ -1,0 +1,193 @@
+name: Dark Rift (North America)
+sha1: 3254442626ca2f2ac74400dc1c6a306f5d1b6ceb
+options:
+  basename: darkrift
+  target_path: darkrift.z64
+  elf_path: build/darkrift.elf
+  base_path: .
+  platform: n64
+  compiler: IDO
+
+  # asm_path: asm
+  # src_path: src
+  # build_path: build
+  # create_asm_dependencies: True
+
+  ld_script_path: darkrift.ld
+  ld_dependencies: True
+
+  find_file_boundaries: True
+  header_encoding: ASCII
+
+  o_as_suffix: True
+  use_legacy_include_asm: False
+  mips_abi_float_regs: o32
+
+  asm_function_macro: glabel
+  asm_jtbl_label_macro: jlabel
+  asm_data_macro: dlabel
+
+  # section_order: [".text", ".data", ".rodata", ".bss"]
+  # auto_link_sections: [".data", ".rodata", ".bss"]
+
+  symbol_addrs_path:
+    - symbol_addrs.txt
+  reloc_addrs_path:
+    - reloc_addrs.txt
+
+  # undefined_funcs_auto_path: undefined_funcs_auto.txt
+  # undefined_syms_auto_path: undefined_syms_auto.txt
+
+  extensions_path: tools/splat_ext
+
+  # string_encoding: ASCII
+  # data_string_encoding: ASCII
+  rodata_string_guesser_level: 2
+  data_string_guesser_level: 2
+  # libultra_symbols: True
+  # hardware_regs: True
+  # gfx_ucode: # one of [f3d, f3db, f3dex, f3dexb, f3dex2]
+segments:
+  - [0x000000, header, header]
+  - [0x000040, bin, boot]
+
+  - name: entry
+    type: code
+    start: 0x1000
+    vram: 0x80000400
+    subsegments:
+      - [0x1000, hasm]
+
+  - name: main
+    type: code
+    start: 0x1050
+    vram: 0x80000450
+    follows_vram: entry
+    bss_size: 0xE81D0
+    subsegments:
+      - [0x1050, c]
+      - [0x1310, c]
+      - [0x1D20, c]
+      - [0x34B0, c]
+      - [0x41D0, c]
+      - [0x76E0, c]
+      - [0xC8F0, c]
+      - [0xF530, c]
+      - [0x13050, c]
+      - [0x15760, c]
+      - [0x167C0, c]
+      - [0x18A10, c]
+      - [0x1A0E0, c]
+      - [0x1B6E0, c]
+      - [0x1EA10, c]
+      - [0x212B0, c]
+      - [0x22940, c]
+      - [0x23D00, c]
+      - [0x24930, c]
+      - [0x255B0, c]
+      - [0x25980, c]
+      - [0x25B50, c]
+      - [0x26740, c]
+      - [0x2B490, c]
+      - [0x2B4C0, c]
+      - [0x2CF10, c]
+      - [0x305A0, c]
+      - [0x34C90, c]
+      - [0x396C0, c]
+      - [0x39A00, c]
+      - [0x3A7F0, c]
+      - [0x3ACE0, c]
+      - [0x3AD50, c]
+      - [0x3AF10, c]
+      - [0x3B100, c]
+      - [0x3B210, c]
+      - [0x3B280, c]
+      - [0x3B2F0, c]
+      - [0x3B390, c]
+      - [0x3B3C0, c]
+      - [0x3B500, c]
+      - [0x3B610, c]
+      - [0x3B6C0, c]
+      - [0x3B740, c]
+      - [0x3B7D0, c]
+      - [0x3C1A0, c]
+      - [0x3C460, c]
+      - [0x3C490, c]
+      - [0x3C510, c]
+      - [0x3C520, c]
+      - [0x3C790, c]
+      - [0x3C810, c]
+      - [0x3C850, c]
+      - [0x3E190, c]
+      - [0x3E8A0, c]
+      - [0x3E9C0, c]
+      - [0x3E9E0, c]
+      - [0x3EC40, c]
+      - [0x3EC50, c]
+      - [0x3F390, c]
+      - [0x3F400, c]
+      - [0x3F460, c]
+      - [0x3F4C0, c]
+      - [0x3F500, c]
+      - [0x3F750, c]
+      - [0x3F7F0, c]
+      - [0x3FE10, c]
+      - [0x3FE50, c]
+      - [0x3FE90, c]
+      - [0x3FED0, c]
+      - [0x40490, c]
+      - [0x404B0, c]
+      - [0x40560, c]
+      - [0x40E50, c]
+      - [0x40EB0, c]
+      - [0x40F10, c]
+      - [0x41270, c]
+      - [0x412B0, c]
+      - [0x41710, c]
+      - [0x41840, c]
+      - [0x41850, c]
+      - [0x41BB0, c]
+      - [0x41BC0, c]
+      - [0x41EE0, c]
+      - [0x42060, c]
+      - [0x42120, c]
+      - [0x42770, c]
+      - [0x42780, c]
+      - [0x427C0, c]
+      - [0x42850, c]
+      - [0x42880, c]
+      - [0x42950, c]
+      - [0x42AA0, c]
+      - [0x42B30, c]
+      - [0x42D60, c]
+      - [0x42EA0, c]
+      - [0x42F30, c]
+      - [0x42FD0, c]
+      - [0x43070, c]
+      - [0x430E0, c]
+      - [0x43890, c]
+      - [0x43930, c]
+      - [0x445D0, c]
+      - [0x448D0, c]
+      - [0x45530, c]
+      - [0x45640, c]
+      - [0x457E0, c]
+      - [0x45890, c]
+      - [0x45AC0, c]
+      - [0x45CB0, c]
+      - [0x46130, c]
+      - [0x46260, c]
+      - [0x46360, c]
+      - [0x46370, c]
+      - [0x463F0, c]
+      - [0x46410, c]
+      - [0x47020, c]
+      - [0x47030, c]
+      - [0x47090, c]
+      - [0x472C0, data]
+      - { start: 0x57AE0, type: bss, vram: 0x80056EE0 }
+
+  - type: bin
+    start: 0x57AE0
+    follows_vram: main
+  - [0x800000]
