@@ -1,5 +1,7 @@
 #include "common.h"
 
+const char D_80055010[] = "opencamX.oc";
+
 #pragma GLOBAL_ASM("asm/nonmatchings/2CF10/func_8002C310.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/2CF10/func_8002C328.s")

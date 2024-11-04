@@ -1,5 +1,7 @@
 #include "common.h"
 
+const char D_unref_string_10[] = "xxxxxxxxx";
+
 #pragma GLOBAL_ASM("asm/nonmatchings/34C90/func_80034090.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/34C90/func_800340E8.s")

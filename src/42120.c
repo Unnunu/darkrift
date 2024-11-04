@@ -10,4 +10,4 @@
 
 #pragma GLOBAL_ASM("asm/nonmatchings/42120/func_800417EC.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/42120/func_80041860.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/42120/bcopy.s")
