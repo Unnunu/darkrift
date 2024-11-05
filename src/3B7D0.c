@@ -33,4 +33,4 @@ void func_8003AC40(void) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/3B7D0/func_8003B250.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/3B7D0/func_8003B450.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/3B7D0/osSendMesg.s")

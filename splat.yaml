@@ -88,17 +88,17 @@ segments:
       - [0x32D30, c]
       - [0x34C90, c]
       - [0x396C0, c]
-      - [0x39A00, c]
-      - [0x3A7F0, c]
-      - [0x3ACE0, c]
-      - [0x3AD50, c]
-      - [0x3AF10, c]
-      - [0x3B100, c]
-      - [0x3B210, c]
-      - [0x3B280, c]
-      - [0x3B2F0, c]
-      - [0x3B390, c]
-      - [0x3B3C0, c]
+      - [0x39A00, c] # osInitialize and user code
+      - [0x3A7F0, c] # osCreateViManager
+      - [0x3ACE0, c] # osViSetMode
+      - [0x3AD50, c] # osViSetSpecialFeatures
+      - [0x3AF10, c] # osViBlack, osCreatePiManager
+      - [0x3B100, c] # osCreateMesgQueue
+      - [0x3B210, c] # osSetEventMesg
+      - [0x3B280, c] # osViSetEvent
+      - [0x3B2F0, c] # string.c ??
+      - [0x3B390, c] # osWritebackDCacheAll
+      - [0x3B3C0, c] # osRecvMesg
       - [0x3B500, c]
       - [0x3B610, c]
       - [0x3B6C0, c, ../ultralib/src/os/virtualtophysical]

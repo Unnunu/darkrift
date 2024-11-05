@@ -12,6 +12,6 @@
 
 #pragma GLOBAL_ASM("asm/nonmatchings/39A00/func_800395D4.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/39A00/func_80039870.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/39A00/osInitialize.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/39A00/func_80039AA0.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/39A00/osCreateThread.s")
