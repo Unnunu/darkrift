@@ -1,7 +1,7 @@
 __osExceptionPreamble = 0x8003f960;
 osVirtualToPhysical = 0x8003AAC0;
-osSpTaskLoad2 = 0x8003B6BC;
-osSpTaskStartGo2 = 0x8003B81C;
+osSpTaskLoad = 0x8003B6BC;
+osSpTaskStartGo = 0x8003B81C;
 bcopy = 0x80041860;
 osWritebackDCache = 0x8003BB90;
 osGetCount = 0x80040FB0;
@@ -11,3 +11,4 @@ __osSpRawStartDma = 0x80041BC0;
 __osSpDeviceBusy = 0x80041C50;
 __osSpSetStatus = 0x80041B70;
 D_80053FA8 = 0x80053FA8; // rom:0x54BA8 type:asciz size:10
+__osCleanupThread = 0x800401C8;

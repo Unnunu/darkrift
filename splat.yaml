@@ -104,7 +104,7 @@ segments:
       - [0x3B6C0, c, ../ultralib/src/os/virtualtophysical]
       - [0x3B740, c]
       - [0x3B7D0, c]
-      - [0x3C1A0, c] #, ../ultralib/src/io/sptask]
+      - [0x3C1A0, c, ../ultralib/src/io/sptask]
       - [0x3C460, c]
       - [0x3C490, c]
       - [0x3C510, c]
@@ -131,8 +131,8 @@ segments:
       - [0x3FED0, c]
       - [0x40490, c]
       - [0x404B0, c]
-      - [0x40560, c]
-      #- [0x40560, hasm, ../ultralib/src/os/exceptasm]
+      #- [0x40560, c]
+      - [0x40560, hasm, ../ultralib/src/os/exceptasm]
       - [0x40DD0, hasm, ../ultralib/src/os/invalicache]
       - [0x40E50, c]
       - [0x40EB0, c]
@@ -180,7 +180,9 @@ segments:
       - [0x47020, c]
       - [0x47030, c]
       - [0x47090, c]
-      - [0x472C0, bin] #data]
+      - [0x472C0, bin]
+      - [0x54590, .data, ../ultralib/src/os/exceptasm]
+      - [0x545B0, bin]
       #- [0x53E10, data]
       #- [0x54550, data]
       #- [0x54560, data]
@@ -225,8 +227,7 @@ segments:
       - [0x56170, .rodata, 3E190]
       - [0x561B0, .rodata, 3EC50]
       - [0x561C0, .rodata, 3FED0]
-      - [0x561D0, rodata] #.rodata, 40560]
-      - [0x561F0, .rodata, 40560]
+      - [0x561D0, .rodata, ../ultralib/src/os/exceptasm]
       - [0x56220, .rodata, 42D60]
       - [0x56230, rodata]
       - [0x562B0, .rodata, 430E0]
@@ -242,6 +243,8 @@ segments:
       - { start: 0x56C60, type: data, name: 56C60, linker_section_order: .rodata}
       - { start: 0x57820, type: data, name: 57820, linker_section_order: .rodata}
       - { start: 0x57AE0, type: bss, vram: 0x80056EE0 }
+      - { start: auto, name: ../ultralib/src/io/sptask, type: .bss, vram: 0x8013ECB0 }
+      - { start: auto, type: bss, name: bss2, vram: 0x8013ECF0 }
 
   - type: bin
     start: 0x57AE0
