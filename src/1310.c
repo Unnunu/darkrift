@@ -30,7 +30,7 @@
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1310/func_80000F70.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1310/func_80000FB0.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/1310/dmaRead.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1310/func_80001068.s")
 

@@ -2,6 +2,12 @@
     "files.associations": {
         "common.h": "c",
         "os_internal.h": "c",
-        "viint.h": "c"
+        "viint.h": "c",
+        "osint.h": "c",
+        "ultra64.h": "c",
+        "os.h": "c",
+        "os_thread.h": "c",
+        "ultratypes.h": "c",
+        "os_exception.h": "c"
     }
 }

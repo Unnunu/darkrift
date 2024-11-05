@@ -1,6 +1,6 @@
 #include "common.h"
 
-#pragma GLOBAL_ASM("asm/nonmatchings/412B0/func_800406B0.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/412B0/__osDequeueThread.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/412B0/__osTimerServicesInit.s")
 

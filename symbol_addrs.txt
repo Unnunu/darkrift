@@ -1,3 +1,6 @@
+osTvType = 0x80000300;
+osRomBase = 0x80000308;
+
 __osExceptionPreamble = 0x8003f960;
 osVirtualToPhysical = 0x8003AAC0;
 osSpTaskLoad = 0x8003B6BC;
@@ -61,3 +64,15 @@ __osPiCreateAccessQueue = 0x80040FC0;
 __osDevMgrMain = 0x80041160;
 osViSetEvent = 0x8003A680;
 osWritebackDCacheAll = 0x8003A790;
+osPiStartDma = 0x8003A900;
+osJamMesg = 0x800412E0;
+osPiGetCmdQueue = 0x80041430;
+osInvalDCache = 0x8003AA10;
+osGetTime = 0x8003AB40;
+dmaRead = 0x80000FB0;
+__osSiDeviceBusy = 0x80045080;
+__osSiRawStartDma = 0x80044BE0;
+alHeapInit = 0x8003BC10;
+__osPiAccessQueueEnabled = 0x80053A50;
+__osDequeueThread = 0x800406B0;
+__osActiveQueue = 0x800539BC;
