@@ -4,7 +4,7 @@
 #define THREAD_3_STACK_SIZE 0x2000
 #define THREAD_4_STACK_SIZE 0x400
 
-extern s32 D_80049270;
+s32 D_80049270 = 0;
 
 u8 sThread1Stack[THREAD_1_STACK_SIZE];
 OSThread sThread1;

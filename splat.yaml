@@ -15,6 +15,7 @@ options:
 
   ld_script_path: darkrift.ld
   ld_dependencies: True
+  ld_symbol_header_path: build/include/ld_addrs.h
 
   find_file_boundaries: True
   header_encoding: ASCII
@@ -79,7 +80,7 @@ segments:
       - [0x255B0, c]
       - [0x25980, c]
       - [0x25B50, c]
-      - [0x26740, c]
+      - [0x26740, c, wad]
       - [0x2B490, c]
       - [0x2B4C0, c, item]
       - [0x2CF10, c]
@@ -197,6 +198,8 @@ segments:
       - [0x47030, c]
       - [0x47090, c]
       - [0x472C0, bin]
+      - [0x49E70, .data, main]
+      - [0x49E80, bin] # data
       - [0x53C40, .data, ../ultralib/src/os/initialize]
       - [0x53C50, .data, ../ultralib/src/io/vimgr]
       - [0x53C70, .data, ../ultralib/src/io/vitbl]
@@ -211,7 +214,6 @@ segments:
       - [0x54960, bin]
       - [0x54A10, .rodata, 41D0]
       - [0x54AC0, .rodata, 76E0]
-      #- [0x552B4, .rodata, 76E0]
       - [0x55330, .rodata, kmd]
       - [0x553B0, .rodata, 13050]
       - [0x553D0, .rodata, scroll]
@@ -222,7 +224,7 @@ segments:
       - [0x555C0, rodata] #.rodata, 1EA10]
       - [0x55670, .rodata, 1EA10]
       - [0x55830, .rodata, 212B0]
-      - [0x55A30, .rodata, 26740]
+      - [0x55A30, .rodata, wad]
       - [0x55B70, rodata]
       - [0x55BD0, .rodata, item]
       - [0x55C10, .rodata, 2CF10]
@@ -264,4 +266,5 @@ segments:
   - type: bin
     start: 0x57AE0
     follows_vram: main
+    name: resources
   - [0x800000]
