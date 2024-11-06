@@ -39,4 +39,4 @@ void func_8003BDD8(void) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/3C850/func_8003D394.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/3C850/func_8003D404.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/3C850/alSeqpNew.s")

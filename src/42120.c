@@ -1,11 +1,11 @@
 #include "common.h"
 
-#pragma GLOBAL_ASM("asm/nonmatchings/42120/func_80041520.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/42120/alEvtqFlushType.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/42120/func_800415CC.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/42120/alEvtqPostEvent.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/42120/func_80041760.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/42120/alEvtqNextEvent.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/42120/func_800417EC.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/42120/alEvtqNew.s")

@@ -1,28 +1,41 @@
 #include "common.h"
 
-#pragma GLOBAL_ASM("asm/nonmatchings/3B800/func_8003AC00.s")
+void alSeqGetLoc(ALSeq *seq, ALSeqMarker *m)
+{
+    m->curPtr = seq->curPtr;
+    m->lastStatus = seq->lastStatus;
+    m->lastTicks = seq->lastTicks;
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/3B800/alSeqSetLoc.s")
+void alSeqSetLoc(ALSeq *seq, ALSeqMarker *m)
+{
+    seq->curPtr     = m->curPtr;
+    seq->lastStatus = m->lastStatus;
+    seq->lastTicks  = m->lastTicks;
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/3B800/alSeqGetTicks.s")
+s32 alSeqGetTicks(ALSeq *seq)
+{
+    return seq->lastTicks;
+}
 
 void func_8003AC40(void) {
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/3B800/func_8003AC48.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/3B800/readVarLen.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/3B800/alSeqNextEvent.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/3B800/alSeqNewMarker.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/3B800/func_8003AF38.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/3B800/alSeqSecToTicks.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/3B800/func_8003B01C.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/3B800/alSeqTicksToSec.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/3B800/__alSeqNextDelta.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/3B800/func_8003B0C8.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/3B800/read32.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/3B800/func_8003B118.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/3B800/read16.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/3B800/alSeqNew.s")
