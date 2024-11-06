@@ -27,9 +27,11 @@ OSPiHandle __Dom1SpeedParam ALIGNED(0x8);
 OSPiHandle __Dom2SpeedParam ALIGNED(0x8);
 OSPiHandle* __osCurrentHandle[2] ALIGNED(0x8) = { &__Dom1SpeedParam, &__Dom2SpeedParam };
 #else
+#ifndef LIBULTRA_DARK_RIFT
 extern OSPiHandle CartRomHandle;
 extern OSPiHandle LeoDiskHandle;
 OSPiHandle* __osCurrentHandle[2] ALIGNED(0x8) = { &CartRomHandle, &LeoDiskHandle };
+#endif
 #endif
 
 void osCreatePiManager(OSPri pri, OSMesgQueue* cmdQ, OSMesg* cmdBuf, s32 cmdMsgCnt) {
@@ -70,7 +72,9 @@ void osCreatePiManager(OSPri pri, OSMesgQueue* cmdQ, OSMesg* cmdBuf, s32 cmdMsgC
     __osPiDevMgr.evtQueue = &piEventQueue;
     __osPiDevMgr.acsQueue = &__osPiAccessQueue;
     __osPiDevMgr.dma = __osPiRawStartDma;
+#ifndef LIBULTRA_DARK_RIFT
     __osPiDevMgr.edma = __osEPiRawStartDma;
+#endif
     osCreateThread(&piThread, 0, __osDevMgrMain, &__osPiDevMgr, STACK_START(piThreadStack), pri);
     osStartThread(&piThread);
 

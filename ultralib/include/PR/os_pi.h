@@ -111,7 +111,9 @@ typedef struct {
     void        *dramAddr;  /* RDRAM buffer address (DMA) */
     u32          devAddr;   /* Device buffer address (DMA) */
     u32          size;      /* DMA transfer size in bytes */
+#ifndef LIBULTRA_DARK_RIFT
     OSPiHandle  *piHandle;  /* PI device handle */
+#endif
 } OSIoMesg;
 
 /*

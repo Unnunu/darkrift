@@ -8,6 +8,8 @@
         "os.h": "c",
         "os_thread.h": "c",
         "ultratypes.h": "c",
-        "os_exception.h": "c"
+        "os_exception.h": "c",
+        "ultraerror.h": "c",
+        "gtint.h": "c"
     }
 }

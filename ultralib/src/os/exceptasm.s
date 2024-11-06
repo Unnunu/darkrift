@@ -1395,13 +1395,12 @@ __osDispatchThreadSave:
      */
 .set noreorder
     lw      k1, THREAD_RCP(k0)
-    /* DARK RIFT ONLY */
-    /* la      k0, __OSGlobalIntMask
+#ifndef LIBULTRA_DARK_RIFT
+     la      k0, __OSGlobalIntMask
     lw      k0, 0(k0)
     srl     k0, k0, 0x10
     and     k1, k1, k0
-    */
-    /* END OF DARK RIFT ONLY */
+#endif
     sll     k1, k1, 0x1
     la      k0, __osRcpImTable
     addu    k1, k1, k0

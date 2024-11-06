@@ -54,7 +54,9 @@ s32 osPiStartDma(OSIoMesg* mb, s32 priority, s32 direction, u32 devAddr, void* d
     mb->dramAddr = dramAddr;
     mb->devAddr = devAddr;
     mb->size = size;
+#ifndef LIBULTRA_DARK_RIFT
     mb->piHandle = NULL;
+#endif
 
     if (priority == OS_MESG_PRI_HIGH) {
         ret = osJamMesg(osPiGetCmdQueue(), (OSMesg)mb, OS_MESG_NOBLOCK);

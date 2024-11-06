@@ -15,9 +15,13 @@ extern OSPiHandle __Dom1SpeedParam;
 extern OSPiHandle __Dom2SpeedParam;
 
 OSTime osClockRate = OS_CLOCK_RATE;
+#ifndef LIBULTRA_DARK_RIFT
 s32 osViClock = VI_NTSC_CLOCK;
+#endif
 u32 __osShutdown = 0;
+#ifndef LIBULTRA_DARK_RIFT
 u32 __OSGlobalIntMask = OS_IM_ALL;
+#endif
 #ifdef _FINALROM
 u32 __osFinalrom;
 #else
@@ -105,7 +109,7 @@ void INITIALIZE_FUNC() {
     if (osResetType == 0) { // cold reset
         bzero(osAppNMIBuffer, OS_APP_NMI_BUFSIZE);
     }
-
+#ifndef LIBULTRA_DARK_RIFT
     if (osTvType == OS_TV_PAL) {
         osViClock = VI_PAL_CLOCK;
     } else if (osTvType == OS_TV_MPAL) {
@@ -113,7 +117,7 @@ void INITIALIZE_FUNC() {
     } else {
         osViClock = VI_NTSC_CLOCK;
     }
-
+#endif
 #if BUILD_VERSION >= VERSION_J
     // Wait until there are no RCP interrupts
     if (__osGetCause() & CAUSE_IP5) {
