@@ -168,3 +168,7 @@ alClose = 0x8003DCF4;
 alSynNew = 0x8003E420;
 alSynDelete = 0x800424D0;
 alSndpSetSound = 0x8003DDC0;
+alFilterNew = 0x800457F0;
+alCopy = 0x80045770;
+__osSetCompare = 0x80045760;
+__sinf = 0x80044EC0;

@@ -5,19 +5,6 @@ typedef struct UnkDelta {
     /* 0x04 */ char unk_04[0x1C];
 } UnkDelta; // size = 0x20
 
-typedef struct DisplayData {
-    /* 0x0000 */ char unk_00[0x80];
-    /* 0x0080 */ Gfx unk_80[0x1000];
-    /* 0x8080 */ char unk_8080[0xA008];
-} DisplayData; // size = 0x12088
-
-typedef struct UnkDispStruct {
-    /* 0x00 */ u32 unk_00;
-    /* 0x04 */ u32 unk_04;
-    /* 0x08 */ u32 unk_08;
-    /* 0x0C */ u32 unk_0C;
-} UnkDispStruct; // size = 0x10
-
 #define	PUSH_UNK_DISP(pkt, a, b, c, d) \
     pkt->unk_00 = a; \
     pkt->unk_04 = b; \
@@ -26,6 +13,51 @@ typedef struct UnkDispStruct {
     pkt++;
 
 extern UnkDelta D_8004BB48[];
+
+/*
+OSTask D_8004CBC8 = {
+    {
+        M_GFXTASK,
+        OS_TASK_DP_WAIT,
+        NULL,
+        0,
+        NULL,
+        0x1000,
+        NULL,
+        0x800,
+        0x800B85B0,
+        0x400,
+        0x800B89B0,
+        0x801389B0,
+        NULL,
+        0,
+        NULL,
+        0
+    }
+};
+
+OSTask D_8004CC88 = {
+    {
+        M_GFXTASK,
+        OS_TASK_DP_WAIT,
+        NULL,
+        0,
+        NULL,
+        0x1000,
+        NULL,
+        0x800,
+        NULL,
+        0x400,
+        NULL,
+        NULL,
+        NULL,
+        0,
+        NULL,
+        0
+    }
+};
+*/
+
 extern s32 D_8004CC20[]; // TODO struct maybe?
 extern s32 D_8004CCC8;
 extern s32 D_8004CD30;
