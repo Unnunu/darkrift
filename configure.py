@@ -25,7 +25,7 @@ Z64_PATH = f"build/{BASENAME}.z64"
 OK_PATH = f"build/{BASENAME}.ok"
 
 COMMON_INCLUDES = "-I include -I ultralib/include -I ultralib/include/ido -I ultralib/include/PR -I ultralib/src"
-IDO_DEFS = "-DF3DEX_GBI_2 -D_LANGUAGE_C -DNDEBUG -D_FINALROM -DBUILD_VERSION=VERSION_I -DLIBULTRA_DARK_RIFT"
+IDO_DEFS = "-DF3DEX_GBI -D_LANGUAGE_C -DNDEBUG -D_FINALROM -DBUILD_VERSION=VERSION_I -DLIBULTRA_DARK_RIFT"
 
 CROSS = "mips-linux-gnu-"
 CROSS_AS = f"{CROSS}as"

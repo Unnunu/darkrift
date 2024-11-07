@@ -30,12 +30,14 @@ ChunkHeader* sFreeChunksList = NULL;
 ChunkHeader* sAllocatedChunksList = NULL;
 u8 D_80049288 = FALSE;
 
-extern OSIoMesg D_8005AE90;
-extern s32 sAllocatedSize;
-extern s32 sFreeSize;
-extern UnkGamma D_8005AEB8[];
-extern s32 D_8005BEB8;
-extern void* gHeapBase;
+OSIoMesg D_8005AE90;
+char heap_padding[0x8];
+s32 sAllocatedSize;
+s32 sFreeSize;
+UnkGamma D_8005AEB8[0x100];
+s32 D_8005BEB8;
+char heap_padding2[0x4];
+void* gHeapBase;
 
 void func_80000710(s32 arg0, s32 arg1) {
     s32 i, j;

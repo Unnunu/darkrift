@@ -10,6 +10,7 @@
         "ultratypes.h": "c",
         "os_exception.h": "c",
         "ultraerror.h": "c",
-        "gtint.h": "c"
+        "gtint.h": "c",
+        "macros.h": "c"
     }
 }
