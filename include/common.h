@@ -5,4 +5,6 @@
 #include "macros.h"
 #include "functions.h"
 
+typedef u8 Addr[];
+
 #endif

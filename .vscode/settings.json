@@ -11,6 +11,7 @@
         "os_exception.h": "c",
         "ultraerror.h": "c",
         "gtint.h": "c",
-        "macros.h": "c"
+        "macros.h": "c",
+        "ld_addrs.h": "c"
     }
 }
