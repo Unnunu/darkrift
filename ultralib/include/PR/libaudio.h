@@ -903,6 +903,9 @@ typedef struct {
     ALEventQueue        evtq;
     ALEvent             nextEvent;
     ALSynth             *drvr;          /* reference to the client driver   */
+#ifdef LIBULTRA_DARK_RIFT
+    s32                 unk_3C;
+#endif
     s32                 target;
     void                *sndState;
     s32                 maxSounds;

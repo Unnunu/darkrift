@@ -18,7 +18,7 @@ void func_8003E190(void) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/3EC50/func_8003E198.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/3EC50/func_8003E420.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/3EC50/alSynNew.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/3EC50/func_8003E720.s")
 

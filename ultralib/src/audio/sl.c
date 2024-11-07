@@ -25,20 +25,14 @@
 
 ALGlobals *alGlobals=0;
 
-void alInit(ALGlobals *g, ALSynConfig *c)
-{
-    if (!alGlobals) { /* already initialized? */
-        alGlobals = g;
-        alSynNew(&alGlobals->drvr, c);
-    }
-}
+// LIBULTRA_DARK_RIFT: functions in reversed order
 
-void alClose(ALGlobals *glob)
-{
-    if (alGlobals) {
-        alSynDelete(&glob->drvr);
-        alGlobals = 0;
-    }
+void alUnlink(ALLink *ln)			
+{					
+    if (ln->next)                   
+        ln->next->prev = ln->prev;  
+    if (ln->prev)                   
+        ln->prev->next = ln->next;  
 }
 
 /* might want to make these macros */
@@ -51,15 +45,18 @@ void alLink(ALLink *ln, ALLink *to)
     to->next = ln;           
 }
 
-void alUnlink(ALLink *ln)			
-{					
-    if (ln->next)                   
-        ln->next->prev = ln->prev;  
-    if (ln->prev)                   
-        ln->prev->next = ln->next;  
+void alClose(ALGlobals *glob)
+{
+    if (alGlobals) {
+        alSynDelete(&glob->drvr);
+        alGlobals = 0;
+    }
 }
 
-
-
-
-
+void alInit(ALGlobals *g, ALSynConfig *c)
+{
+    if (!alGlobals) { /* already initialized? */
+        alGlobals = g;
+        alSynNew(&alGlobals->drvr, c);
+    }
+}
