@@ -8,7 +8,9 @@ void __osDevMgrMain(void* args) {
     OSMesg dummy;
     s32 ret;
     OSDevMgr* dm;
+#ifndef LIBULTRA_DARK_RIFT
     s32 messageSend = 0;
+#endif
 
     dm = (OSDevMgr*)args;
     mb = NULL;
@@ -16,7 +18,7 @@ void __osDevMgrMain(void* args) {
 
     while (TRUE) {
         osRecvMesg(dm->cmdQueue, (OSMesg)&mb, OS_MESG_BLOCK);
-
+#ifndef LIBULTRA_DARK_RIFT
         if (mb->piHandle != NULL && mb->piHandle->type == DEVICE_TYPE_64DD &&
             (mb->piHandle->transferInfo.cmdType == LEO_CMD_TYPE_0 ||
              mb->piHandle->transferInfo.cmdType == LEO_CMD_TYPE_1)) {
@@ -72,6 +74,7 @@ void __osDevMgrMain(void* args) {
                 osYieldThread();
             }
         } else {
+#endif
             switch (mb->hdr.type) {
                 case OS_MESG_TYPE_DMAREAD:
                     osRecvMesg(dm->acsQueue, &dummy, OS_MESG_BLOCK);
@@ -81,6 +84,7 @@ void __osDevMgrMain(void* args) {
                     osRecvMesg(dm->acsQueue, &dummy, OS_MESG_BLOCK);
                     ret = dm->dma(OS_WRITE, mb->devAddr, mb->dramAddr, mb->size);
                     break;
+#ifndef LIBULTRA_DARK_RIFT
                 case OS_MESG_TYPE_EDMAREAD:
                     osRecvMesg(dm->acsQueue, &dummy, OS_MESG_BLOCK);
                     ret = dm->edma(mb->piHandle, OS_READ, mb->devAddr, mb->dramAddr, mb->size);
@@ -89,6 +93,7 @@ void __osDevMgrMain(void* args) {
                     osRecvMesg(dm->acsQueue, &dummy, OS_MESG_BLOCK);
                     ret = dm->edma(mb->piHandle, OS_WRITE, mb->devAddr, mb->dramAddr, mb->size);
                     break;
+#endif
                 case OS_MESG_TYPE_LOOPBACK:
                     osSendMesg(mb->hdr.retQueue, mb, OS_MESG_NOBLOCK);
                     ret = -1;
@@ -103,6 +108,8 @@ void __osDevMgrMain(void* args) {
                 osSendMesg(mb->hdr.retQueue, mb, OS_MESG_NOBLOCK);
                 osSendMesg(dm->acsQueue, NULL, OS_MESG_NOBLOCK);
             }
+#ifndef LIBULTRA_DARK_RIFT
         }
+#endif
     }
 }

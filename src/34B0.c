@@ -41,6 +41,7 @@ s32 func_80021338(void);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/34B0/func_800028E0.s")
 
+#ifdef NON_MATCHING
 void func_80002978(void) {
     gDPPipeSync(D_8005BFD8++);
     gDPSetCycleType(D_8005BFD8++, G_CYC_FILL);
@@ -70,6 +71,9 @@ void func_80002978(void) {
     gDPPipeSync(D_8005BFD8++);
     gDPSetCycleType(D_8005BFD8++, G_CYC_COPY);
 }
+#else
+#pragma GLOBAL_ASM("asm/nonmatchings/34B0/func_80002978.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/nonmatchings/34B0/func_80002C54.s")
 
