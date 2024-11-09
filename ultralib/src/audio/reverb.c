@@ -183,10 +183,18 @@ s32 alFxParamHdl(void *filter, s32 paramID, void *param)
     switch(p)
     {
         case INPUT_PARAM:
+#ifdef LIBULTRA_DARK_RIFT
+            f->delay[s].input = (u32)val;
+#else
             f->delay[s].input = (u32)val & 0xFFFFFFF8;
+#endif
             break;
         case OUTPUT_PARAM:
+#ifdef LIBULTRA_DARK_RIFT
+            f->delay[s].output = (u32)val;
+#else
             f->delay[s].output = (u32)val & 0xFFFFFFF8;
+#endif
             break;
         case FFCOEF_PARAM:
             f->delay[s].ffcoef = (s16)val;
@@ -198,8 +206,13 @@ s32 alFxParamHdl(void *filter, s32 paramID, void *param)
             f->delay[s].gain = (s16)val;
             break;
         case CHORUSRATE_PARAM:
+#ifdef LIBULTRA_DARK_RIFT
+            f->delay[s].rsinc = ((f32)val)/0xffffff; 
+            /* f->delay[s].rsinc = ((((f32)val)/1000) * RANGE)/alGlobals->drvr.outputRate; */
+#else
             /* f->delay[s].rsinc = ((f32)val)/0xffffff; */
             f->delay[s].rsinc = ((((f32)val)/1000) * RANGE)/alGlobals->drvr.outputRate; 
+#endif
             break;
 
 /*
@@ -225,7 +238,9 @@ s32 alFxParamHdl(void *filter, s32 paramID, void *param)
             if(f->delay[s].lp)
             {
                 f->delay[s].lp->fc = (s16)val;
+#ifndef LIBULTRA_DARK_RIFT
                 _init_lpfilter(f->delay[s].lp);
+#endif
             }
             break;
     }

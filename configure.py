@@ -240,17 +240,15 @@ def create_build_script(linker_entries: List[LinkerEntry]):
                 opt_level = "-O2"
                 mips = "-mips2"
 
-                if (
-                    c_path.stem
-                    in [
-                        "pigetcmdq",
-                        "controller",
-                    ]
-                    or "ultralib/src/os" in str(c_path)
+                if ("ultralib/src/os" in str(c_path)
                     or "ultralib/src/io" in str(c_path)
                 ):
                     opt_level = "-O1"
                 elif "ultralib/src/gu" in str(c_path):
+                    opt_level = "-O3"
+                
+                if ("ultralib/src/audio" in str(c_path) and
+                    c_path.stem != "sl"):
                     opt_level = "-O3"
 
                 if "ultralib/src/libc" in str(c_path):

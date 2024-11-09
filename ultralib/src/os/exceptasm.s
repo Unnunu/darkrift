@@ -573,7 +573,7 @@ endrcp:
     sw      zero, (t2)
 
     lw      a0, RDB_BASE_REG
-    jal     func_80045348
+    jal     kdebugserver
     b       __osDispatchThreadSave
 7:
     lw      t1, UNK_SYMBOL_EXCEPTASM_2

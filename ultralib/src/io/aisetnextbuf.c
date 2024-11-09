@@ -42,8 +42,11 @@ s32 osAiSetNextBuffer(void* bufPtr, u32 size) {
     if (hdwrBugFlag) {
         bptr = (u8*)bufPtr - 0x2000;
     }
-
+#ifdef LIBULTRA_DARK_RIFT
+    if ((((u32)bufPtr + size) & 0x3fff) == 0x2000) {
+#else
     if ((((u32)bufPtr + size) & 0x1fff) == 0) {
+#endif
         hdwrBugFlag = TRUE;
     } else {
         hdwrBugFlag = FALSE;

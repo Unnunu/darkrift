@@ -34,8 +34,11 @@ s32 osContInit(OSMesgQueue* mq, u8* bitpattern, OSContStatus* data) {
     }
 
     __osMaxControllers = 4;
-
+#ifdef LIBULTRA_DARK_RIFT
+    __osPackRequestData(CONT_CMD_RESET);
+#else
     __osPackRequestData(CONT_CMD_REQUEST_STATUS);
+#endif
 
     ret = __osSiRawStartDma(OS_WRITE, __osContPifRam.ramarray);
     osRecvMesg(mq, &dummy, OS_MESG_BLOCK);
@@ -44,7 +47,11 @@ s32 osContInit(OSMesgQueue* mq, u8* bitpattern, OSContStatus* data) {
     osRecvMesg(mq, &dummy, OS_MESG_BLOCK);
 
     __osContGetInitData(bitpattern, data);
+#ifdef LIBULTRA_DARK_RIFT
+    __osContLastCmd = CONT_CMD_RESET;
+#else
     __osContLastCmd = CONT_CMD_REQUEST_STATUS;
+#endif
     __osSiCreateAccessQueue();
     osCreateMesgQueue(&__osEepromTimerQ, &__osEepromTimerMsg, 1);
 
@@ -77,8 +84,11 @@ void __osPackRequestData(u8 cmd) {
     u8* ptr;
     __OSContRequesFormat requestHeader;
     s32 i;
-
+#ifdef LIBULTRA_DARK_RIFT
+    for (i = 0; i < ARRLEN(__osContPifRam.ramarray) + 1; i++) {
+#else
     for (i = 0; i < ARRLEN(__osContPifRam.ramarray); i++) {
+#endif
         __osContPifRam.ramarray[i] = 0;
     }
 

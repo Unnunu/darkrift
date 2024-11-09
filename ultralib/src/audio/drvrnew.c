@@ -156,9 +156,13 @@ void alFxNew(ALFx *r, ALSynConfig *c, ALHeap *hp)
 
 	if (param[j]) {
 #define RANGE 2.0
+#ifdef LIBULTRA_DARK_RIFT
+	    d->rsinc     = ((f32) param[j++])/0xffffff; 
+/*	    d->rsinc = ((((f32)param[j++])/1000) * RANGE)/c->outputRate; */
+#else
 /*	    d->rsinc     = ((f32) param[j++])/0xffffff; */
 	    d->rsinc = ((((f32)param[j++])/1000) * RANGE)/c->outputRate;
-
+#endif
 	    /*
 	     * the following constant is derived from:
 	     *

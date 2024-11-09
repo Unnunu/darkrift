@@ -194,7 +194,9 @@ Acmd *alAudioFrame(Acmd *cmdList, s32 *cmdLen, s16 *outBuf, s32 outLen)
      * routine (alSynAllocVoice) it will get timestamped with an aligned value and
      * will be processed immediately next audio frame.
      */
+#ifndef LIBULTRA_DARK_RIFT
     drvr->paramSamples &= ~0xf;
+#endif
 
 
 #ifdef AUD_PROFILE

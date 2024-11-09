@@ -36,12 +36,16 @@
  *      This does not cause issues in practice as __OSGlobalIntMask is almost always
  *       OS_IM_ALL, so the operation is usually simply (SR | 0).
  */
+#ifdef LIBULTRA_DARK_RIFT
+#define ta0 t1
+#endif
+
 LEAF(osSetIntMask)
     /* Extract interrupt enable bits from current SR */
     mfc0    ta0, C0_SR
 
     andi    v0, ta0, OS_IM_CPU
-
+#ifndef LIBULTRA_DARK_RIFT
     /* Get value of __OSGlobalIntMask */
     la      t0, __OSGlobalIntMask
     lw      t3, 0(t0)
@@ -50,9 +54,10 @@ LEAF(osSetIntMask)
     xor     t0, t3, ~0
     andi    t0, t0, SR_IMASK
     or      v0, v0, t0
-
+#endif
     /* Fetch MI_INTR_MASK_REG */
     lw      t2, PHYS_TO_K1(MI_INTR_MASK_REG)
+#ifndef LIBULTRA_DARK_RIFT
     /* If there are RCP interrupts masked */
     beqz    t2, 1f
      srl    t1, t3, 0x10
@@ -61,6 +66,7 @@ LEAF(osSetIntMask)
     xor     t1, t1, ~0
     andi    t1, t1, (RCP_IMASK >> RCP_IMASKSHIFT)
     or      t2, t2, t1
+#endif
 1:
     /* Shift the RCP bits to not conflict with the CPU bits */
     sll     t2, t2, RCP_IMASKSHIFT
@@ -69,7 +75,9 @@ LEAF(osSetIntMask)
 
     /* Extract RCP interrupt enable bits from requested mask and mask with __OSGlobalIntMask */
     and     t0, a0, RCP_IMASK
+#ifndef LIBULTRA_DARK_RIFT
     and     t0, t0, t3
+#endif
     /* Convert to a value for MI_INTR_MASK_REG and set it */
     srl     t0, t0, (RCP_IMASKSHIFT - 1)
     lhu     t2, __osRcpImTable(t0)
@@ -77,8 +85,10 @@ LEAF(osSetIntMask)
 
     /* Extract CPU interrupt enable bits from requested mask and mask with __OSGlobalIntMask */
     andi    t0, a0, OS_IM_CPU
+#ifndef LIBULTRA_DARK_RIFT
     andi    t1, t3, SR_IMASK
     and     t0, t0, t1
+#endif
 
     and     ta0, ta0, ~SR_IMASK
     /* Bitwise OR in the remaining bits of SR and set new SR */

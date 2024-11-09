@@ -12,4 +12,4 @@
 
 #pragma GLOBAL_ASM("asm/nonmatchings/45CB0/func_8004531C.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/45CB0/func_80045348.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/45CB0/kdebugserver.s")
