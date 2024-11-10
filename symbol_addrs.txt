@@ -245,3 +245,7 @@ alEnvmixerPull = 0x800443DC;
 alFxPull = 0x800460D8;
 alFxParamHdl = 0x80045EA8;
 kdebugserver = 0x80045348;
+
+rspbootTextStart = 0x80046490; // name_end:rspbootTextEnd
+aspMainTextStart = 0x80048450; // name_end:aspMainTextEnd
+aspMainDataStart = 0x80056C20; // name_end:aspMainDataEnd

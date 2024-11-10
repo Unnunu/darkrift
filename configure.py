@@ -266,9 +266,11 @@ def create_build_script(linker_entries: List[LinkerEntry]):
                     variables={"flags": f"{opt_level} {mips}"},
                 )
         elif isinstance(seg, splat.segtypes.common.textbin.CommonSegTextbin):
-            build(entry.object_path, entry.src_paths, "as")
-        elif isinstance(seg, splat.segtypes.common.databin.CommonSegDatabin):
-            build(entry.object_path, entry.src_paths, "as")
+            if seg.sibling is None:
+                build(entry.object_path, entry.src_paths, "as")
+            elif seg.get_linker_section() == ".text":
+                # Only build the .text section file for a textbin with siblings
+                build(entry.object_path, entry.src_paths, "as")
         elif isinstance(seg, splat.segtypes.common.bin.CommonSegBin):
             build(entry.object_path, entry.src_paths, "bin")
         else:
