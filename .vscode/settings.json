@@ -15,6 +15,7 @@
         "ld_addrs.h": "c",
         "r4300.h": "c",
         "libaudio.h": "c",
-        "controller.h": "c"
+        "controller.h": "c",
+        "common_structs.h": "c"
     }
 }

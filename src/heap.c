@@ -113,24 +113,24 @@ void reset_heap(ChunkHeader* arg0, s32 end) {
     heap_link(arg0, &sFreeChunksList);
 }
 
-#ifdef NON_MATCHING
 s32 func_80000A1C(void) {
     ChunkHeader* ptr;
     s32 ret = TRUE;
     
-    for (ptr = sAllocatedChunksList; ptr != NULL; ptr = ptr->next) {
-        if (ptr->guard != MEM_GUARD_MAGIC) {
+    ptr = sAllocatedChunksList;
+    while (ptr != NULL) {
+        if (ptr->guard == MEM_GUARD_MAGIC) {
+            ptr = ptr->next;;
+            continue;
+        } else {
             ret = FALSE;
             break;
         }
+        
     }
 
     return ret;
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/heap/func_80000A1C.s")
-s32 func_80000A1C(void);
-#endif
 
 s32 get_free_mem(ChunkHeader* chunk) {
     s32 totalSize = 0;

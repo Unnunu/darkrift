@@ -16,17 +16,28 @@ typedef struct UnkAudioGamma {
     /* 0x04 */ s32 unk_04;
 } UnkAudioGamma; // size >= 0x8
 
+typedef struct UnkDelta2 {
+    /* 0x00 */ char unk_00[0x80];
+    /* 0x80 */ s32 unk_80;
+    /* 0x84 */ char unk_84[0xC];
+    /* 0x90 */ s32 unk_90;
+    /* 0x94 */ char unk_94[0x1F4 - 0x94];
+    /* 0x1F4 */ s32* unk_1F4;
+} UnkDelta2;
+
 extern OSMesgQueue D_8005AE58;
 
 extern u8 D_8004A420;
 extern u8 D_8004A424;
+extern u8 D_8004A428;
 extern u8 D_8004A42C;
 extern UnkAudioGamma* D_8004A434;
 extern UnkAudioAlpha* D_8004A438;
 extern ALSeqPlayer* D_8004A43C;
 extern ALSndPlayer* D_8004A444;
 extern s32 D_8004A448;
-extern u16* D_8004A44C[];
+extern ALSndId* D_8004A44C[];
+extern u8 D_8004A470[];
 extern s8 D_8004A474[];
 extern s32 D_8004A478;
 extern OSTask D_8004A480;
@@ -246,13 +257,77 @@ s32 func_80021338(void) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/audio/func_800217A0.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/audio/func_80021918.s")
+void func_80021918(UnkDelta2* arg0, s32 arg1) {
+    s32 v1 = FALSE;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/audio/func_800219B8.s")
+    if (D_8004A420 != 0 && D_8004A420 != 0) {
+        alSeqpPlay(D_8004A43C);
+        v1 = TRUE;
+    }
 
+    arg0->unk_90++;
+    if (arg0->unk_90 >= 16 || (D_800A460C & 1)) {
+        v1 = TRUE;
+    }
+
+    if (v1) {
+        arg0->unk_80 |= 0x10;
+        *arg0->unk_1F4 |= 0x80;
+    }
+}
+
+void func_800219B8(s32 arg0, u8 arg1) {
+    s32 i;
+    ALSndId* tmp;
+
+    if (D_8004A428 != 0 || D_8004A42C != 0) {
+        return;
+    }
+
+    if (arg0 > 2) {
+        arg0 = 2;
+    }
+
+    if (D_8004A470[arg0] != 0) {
+        tmp = D_8004A44C[arg0];
+        D_8004A444 = &D_80081728[arg0];        
+
+        for (i = D_8004A474[arg0]; i > 0; i--) {
+            alSndpSetSound(D_8004A444, tmp[i - 1]);
+            alSndpSetPan(D_8004A444, arg1);
+        }
+    }
+}
+
+#ifdef NON_MATCHING
+void func_80021AA8(s32 arg0, s16 arg1) {
+    s32 i;
+
+    if (arg0 >= 2) {
+        arg0 = 2;
+    }
+
+    if (D_8004A470[arg0] != 0) {
+        D_8004A444 = &D_80081728[arg0];
+
+        for (i = D_8004A474[arg0]; i >= 0; i--) {
+            alSndpSetSound(D_8004A444, D_8004A44C[arg0][i]);
+            alSndpSetVol(D_8004A444, arg1);
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/nonmatchings/audio/func_80021AA8.s")
+#endif
 
+#ifdef NON_MATCHING
+void func_80021B8C(s16 arg0) {
+    alSeqpSetVol(D_8004A43C, arg0);
+}
+#else
+void func_80021B8C(s16 arg0);
 #pragma GLOBAL_ASM("asm/nonmatchings/audio/func_80021B8C.s")
+#endif
 
 void func_80021BC0(ALBankFile* arg0, u8* arg1, u32 arg2) {
     ALSndId* s6;

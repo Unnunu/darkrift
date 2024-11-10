@@ -247,5 +247,9 @@ alFxParamHdl = 0x80045EA8;
 kdebugserver = 0x80045348;
 
 rspbootTextStart = 0x80046490; // name_end:rspbootTextEnd
+gspFast3DTextStart = 0x80046560; // name_end:gspFast3DTextEnd
+gspUltraFast3DTextStart = 0x80047990; // name_end:gspUltraFast3DTextEnd
 aspMainTextStart = 0x80048450; // name_end:aspMainTextEnd
+gspFast3DDataStart = 0x80055860; // name_end:gspFast3DDataEnd
+gspUltraFast3DDataStart = 0x80056060; // name_end:gspUltraFast3DDataEnd
 aspMainDataStart = 0x80056C20; // name_end:aspMainDataEnd
