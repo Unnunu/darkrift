@@ -291,22 +291,22 @@ segments:
       - { start: 0x56C60, type: databin, name: rsp/gspUltraFast3D, linker_section_order: .rodata}
       - { start: 0x57460, type: databin, name: rsp/aspMain, linker_section_order: .rodata}
 
-      - { start: auto, name: main, type: .bss, vram: 0x80056EE0 }
-      - { start: auto, name: heap, type: .bss, vram: 0x8005AE90 }
-      - { start: auto, type: bss, vram: 0x8005BED0 }
-      - { start: auto, name: ../ultralib/src/os/initialize, type: .bss, vram: 0x8013C840 }
-      - { start: auto, name: ../ultralib/src/io/vimgr, type: .bss, vram: 0x8013C850 }
-      - { start: auto, name: ../ultralib/src/io/pimgr, type: .bss, vram: 0x8013DA60 }
-      - { start: auto, name: ../ultralib/src/os/seteventmesg, type: .bss, vram: 0x8013EC30 }
-      - { start: auto, name: ../ultralib/src/io/sptask, type: .bss, vram: 0x8013ECB0 }
-      - { start: auto, name: ../ultralib/src/io/controller, type: .bss, vram: 0x8013ECF0 }
-      - { start: auto, name: ../ultralib/src/os/timerintr, type: .bss, vram: 0x8013ED80 }
-      - { start: auto, name: ../ultralib/src/io/piacs, type: .bss, vram: 0x8013EDC0 }
-      - { start: auto, name: ../ultralib/src/io/siacs, type: .bss, vram: 0x8013EDE0 }
-      - { start: auto, type: bss, name: bss3, vram: 0x8013EE00 }
+      - { type: .bss, vram: 0x80056EE0, name: main }
+      - { type: .bss, vram: 0x8005AE90, name: heap }
+      - { type: bss, vram: 0x8005BED0 }
+      - { name: ../ultralib/src/os/initialize, type: .bss, vram: 0x8013C840 }
+      - { name: ../ultralib/src/io/vimgr, type: .bss, vram: 0x8013C850 }
+      - { name: ../ultralib/src/io/pimgr, type: .bss, vram: 0x8013DA60 }
+      - { name: ../ultralib/src/os/seteventmesg, type: .bss, vram: 0x8013EC30 }
+      - { name: ../ultralib/src/io/sptask, type: .bss, vram: 0x8013ECB0 }
+      - { name: ../ultralib/src/io/controller, type: .bss, vram: 0x8013ECF0 }
+      - { name: ../ultralib/src/os/timerintr, type: .bss, vram: 0x8013ED80 }
+      - { name: ../ultralib/src/io/piacs, type: .bss, vram: 0x8013EDC0 }
+      - { name: ../ultralib/src/io/siacs, type: .bss, vram: 0x8013EDE0 }
+      - { type: bss, name: bss3, vram: 0x8013EE00 }
 
   - type: bin
     start: 0x57AE0
-    follows_vram: main
     name: resources
+
   - [0x800000]

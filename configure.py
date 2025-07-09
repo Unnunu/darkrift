@@ -322,7 +322,7 @@ if __name__ == "__main__":
         setup()
         sys.exit(0)
 
-    split.main([YAML_FILE], modes="all", verbose=False)
+    split.main([Path(YAML_FILE)], modes="all", verbose=False)
 
     linker_entries = split.linker_writer.entries
 
