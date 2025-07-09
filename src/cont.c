@@ -48,7 +48,7 @@ s32 cont_init(s32 maxControllers) {
 
 void cont_read(void) {
     if (osRecvMesg(&gContMessageQueue, NULL, OS_MESG_NOBLOCK) != -1) {
-        osContGetReadData(&gContDataArray[0]);
+        osContGetReadData(gContDataArray);
         osContStartReadData(&gContMessageQueue);
     }
 }

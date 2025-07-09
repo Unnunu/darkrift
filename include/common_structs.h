@@ -49,10 +49,16 @@ typedef struct UnkDelta {
 } UnkDelta; // size = 0x20
 
 typedef struct UnkAlpha {
-    /* 0x00 */ char unk_00[11];
+    /* 0x00 */ u16 unk_00;
+    /* 0x02 */ u16 unk_02;
+    /* 0x04 */ u16 unk_04;
+    /* 0x06 */ u16 unk_06;
+    /* 0x08 */ u8 unk_08;
+    /* 0x09 */ u8 unk_09;
+    /* 0x0A */ char unk_0A;
     /* 0x0B */ u8 unk_0B;
-    /* 0x0C */ char unk_0C;
-    /* 0x0D */ char unk_0D;
+    /* 0x0C */ u8 unk_0C;
+    /* 0x0D */ u8 unk_0D;
 } UnkAlpha;
 
 #endif

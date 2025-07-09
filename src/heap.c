@@ -7,27 +7,27 @@
 typedef struct ChunkHeader {
     /* 0x00 */ s32 flags;
     /* 0x04 */ s32 end;
-    /* 0x08 */ struct ChunkHeader* next;
-    /* 0x0C */ struct ChunkHeader* previous;
+    /* 0x08 */ struct ChunkHeader *next;
+    /* 0x0C */ struct ChunkHeader *previous;
     /* 0x10 */ s32 guard;
     /* 0x14 */ char padding[0x4];
 } ChunkHeader; // size = 0x18
 
 typedef struct UnkGamma {
     /* 0x00 */ s32 unk_00;
-    /* 0x04 */ void* unk_04;
+    /* 0x04 */ void *unk_04;
     /* 0x08 */ s32 unk_08;
     /* 0x0C */ s32 unk_0C;
 } UnkGamma; // size = 0x10
 
-s32 get_free_mem(ChunkHeader* arg0);
-void heap_link(ChunkHeader* arg0, ChunkHeader** arg1);
-void mem_free(void*);
+s32 get_free_mem(ChunkHeader *arg0);
+void heap_link(ChunkHeader *arg0, ChunkHeader **arg1);
+void mem_free(void *);
 
 extern OSMesgQueue D_8005ADF8;
 
-ChunkHeader* sFreeChunksList = NULL;
-ChunkHeader* sAllocatedChunksList = NULL;
+ChunkHeader *sFreeChunksList = NULL;
+ChunkHeader *sAllocatedChunksList = NULL;
 u8 D_80049288 = FALSE;
 
 OSIoMesg D_8005AE90;
@@ -37,7 +37,7 @@ s32 sFreeSize;
 UnkGamma D_8005AEB8[0x100];
 s32 D_8005BEB8;
 char heap_padding2[0x4];
-void* gHeapBase;
+void *gHeapBase;
 
 void func_80000710(s32 arg0, s32 arg1) {
     s32 i, j;
@@ -50,9 +50,9 @@ void func_80000710(s32 arg0, s32 arg1) {
 }
 
 void init_heap(void) {
-    sFreeChunksList = (ChunkHeader*)gHeapBase;
-    
-    sFreeChunksList->end = ((u32)(gHeapBase) + HEAP_SIZE) & ~7;
+    sFreeChunksList = (ChunkHeader *) gHeapBase;
+
+    sFreeChunksList->end = ((u32) (gHeapBase) + HEAP_SIZE) & ~7;
     sFreeChunksList->flags = 1;
     sFreeChunksList->next = NULL;
     sFreeChunksList->previous = NULL;
@@ -104,7 +104,7 @@ void func_800007C8(void) {
 }
 #endif
 
-void reset_heap(ChunkHeader* arg0, s32 end) {
+void reset_heap(ChunkHeader *arg0, s32 end) {
     arg0->end = end;
     arg0->flags = 1;
     arg0->next = NULL;
@@ -114,29 +114,27 @@ void reset_heap(ChunkHeader* arg0, s32 end) {
 }
 
 s32 func_80000A1C(void) {
-    ChunkHeader* ptr;
+    ChunkHeader *ptr;
     s32 ret = TRUE;
-    
+
     ptr = sAllocatedChunksList;
     while (ptr != NULL) {
         if (ptr->guard == MEM_GUARD_MAGIC) {
-            ptr = ptr->next;;
-            continue;
+            ptr = ptr->next;
         } else {
             ret = FALSE;
             break;
         }
-        
     }
 
     return ret;
 }
 
-s32 get_free_mem(ChunkHeader* chunk) {
+s32 get_free_mem(ChunkHeader *chunk) {
     s32 totalSize = 0;
 
     while (chunk != NULL) {
-        totalSize += chunk->end - (u32)chunk;
+        totalSize += chunk->end - (u32) chunk;
         chunk = chunk->next;
         totalSize -= sizeof(ChunkHeader);
     }
@@ -144,7 +142,7 @@ s32 get_free_mem(ChunkHeader* chunk) {
     return totalSize;
 }
 
-void heap_link(ChunkHeader* chunk, ChunkHeader** listHead) {
+void heap_link(ChunkHeader *chunk, ChunkHeader **listHead) {
     chunk->next = *listHead;
     if (chunk->next != NULL) {
         chunk->next->previous = chunk;
@@ -153,7 +151,7 @@ void heap_link(ChunkHeader* chunk, ChunkHeader** listHead) {
     chunk->previous = NULL;
 }
 
-void heap_unlink(ChunkHeader* chunk) {
+void heap_unlink(ChunkHeader *chunk) {
     if (chunk == sFreeChunksList) {
         sFreeChunksList = chunk->next;
     }
@@ -175,8 +173,8 @@ void heap_unlink(ChunkHeader* chunk) {
 }
 
 void heap_merge_chunks(void) {
-    ChunkHeader* current;
-    ChunkHeader* ptr;
+    ChunkHeader *current;
+    ChunkHeader *ptr;
 
     sFreeSize = get_free_mem(sFreeChunksList);
     D_80049288 = FALSE;
@@ -185,7 +183,7 @@ void heap_merge_chunks(void) {
     while (current != NULL) {
         ptr = sFreeChunksList;
         while (ptr != NULL) {
-            if (current == (struct ChunkHeader*)ptr->end) {
+            if (current == (struct ChunkHeader *) ptr->end) {
                 // merge two chunks
                 ptr->end = current->end;
                 heap_unlink(current);
@@ -196,7 +194,7 @@ void heap_merge_chunks(void) {
         }
 
         if (current != NULL) {
-            current = current->next; 
+            current = current->next;
         } else {
             current = sFreeChunksList;
         }
@@ -204,12 +202,12 @@ void heap_merge_chunks(void) {
 }
 
 #ifdef NON_MATCHING
-void* do_mem_alloc(u32 size) {
-    ChunkHeader* current;
+void *do_mem_alloc(u32 size) {
+    ChunkHeader *current;
     s32 curSize;
     u32 bestSize;
-    ChunkHeader* bestChunk;
-    ChunkHeader* s1;
+    ChunkHeader *bestChunk;
+    ChunkHeader *s1;
 
     while (TRUE) {
         sAllocatedSize += size;
@@ -225,14 +223,14 @@ void* do_mem_alloc(u32 size) {
         bestSize = 0x7FFFFFFF;
         current = sFreeChunksList;
         while (current != NULL) {
-            curSize = current->end - ((u32)current) - sizeof(ChunkHeader);
+            curSize = current->end - ((u32) current) - sizeof(ChunkHeader);
 
             if (curSize == size) {
                 bestSize = curSize;
                 bestChunk = current;
                 break;
             }
-            
+
             if (curSize < bestSize && size + sizeof(ChunkHeader) < curSize) {
                 bestSize = curSize;
                 bestChunk = current;
@@ -244,7 +242,7 @@ void* do_mem_alloc(u32 size) {
         if (bestChunk != NULL) {
             s1 = bestChunk;
             if (size < bestSize) {
-                u32 end = (s64)bestChunk->end;
+                u32 end = (s64) bestChunk->end;
                 s1 = bestChunk->end - size - sizeof(ChunkHeader);
                 bestChunk->end = s1;
                 s1->flags = 0;
@@ -267,18 +265,18 @@ void* do_mem_alloc(u32 size) {
     }
 
     heap_link(s1, &sAllocatedChunksList);
-    return (u32)s1 + sizeof(ChunkHeader);
+    return (u32) s1 + sizeof(ChunkHeader);
 }
 #else
-void* do_mem_alloc(u32 arg0);
+void *do_mem_alloc(u32 arg0);
 #pragma GLOBAL_ASM("asm/nonmatchings/heap/do_mem_alloc.s")
 #endif
 
-void mem_free(void* ptr) {
-    ChunkHeader* chunk;
+void mem_free(void *ptr) {
+    ChunkHeader *chunk;
 
-    chunk = (ChunkHeader*)((u32)ptr - sizeof(ChunkHeader));
-    sAllocatedSize = sAllocatedSize - chunk->end + (u32)chunk + sizeof(ChunkHeader);
+    chunk = (ChunkHeader *) ((u32) ptr - sizeof(ChunkHeader));
+    sAllocatedSize = sAllocatedSize - chunk->end + (u32) chunk + sizeof(ChunkHeader);
     if (chunk->guard == MEM_GUARD_MAGIC) {
         chunk->guard = 0;
     }
@@ -289,22 +287,17 @@ void mem_free(void* ptr) {
     D_80049288 = TRUE;
 }
 
-#ifdef NON_MATCHING
-void func_80000E0C(u8* arg0, u8 arg1, u32 arg2) {
+void func_80000E0C(u8 *arg0, u8 arg1, u32 arg2) {
     s32 i;
 
     for (i = 0; i < arg2; i++) {
         arg0[i] = arg1;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/heap/func_80000E0C.s")
-void func_80000E0C(u8* arg0, u8 arg1, u32 arg2);
-#endif
 
-void func_80000E40(u32* dest, u32* src, u32 size) {
+void func_80000E40(u32 *dest, u32 *src, u32 size) {
     s32 i;
-    u32* temp = src;
+    u32 *temp = src;
 
     if (dest < src) {
         memcpy(dest, src, size);
@@ -343,15 +336,15 @@ void func_80000F70(s32 arg0) {
     D_8005AEB8[arg0].unk_0C = 0;
 }
 
-void dma_read(s32 romAddr, void* vramAddr, s32 size) {
+void dma_read(s32 romAddr, void *vramAddr, s32 size) {
     osWritebackDCacheAll();
-    while (osRecvMesg(&D_8005ADF8, 0, 0) != -1) { }
+    while (osRecvMesg(&D_8005ADF8, 0, 0) != -1) {}
     osPiStartDma(&D_8005AE90, 0, OS_READ, romAddr, vramAddr, size, &D_8005ADF8);
     osRecvMesg(&D_8005ADF8, NULL, OS_MESG_BLOCK);
     osInvalDCache(0, 0x3FFFFF);
 }
 
-void dma_read_noblock(s32 romAddr, void* vramAddr, s32 size) {
+void dma_read_noblock(s32 romAddr, void *vramAddr, s32 size) {
     osWritebackDCacheAll();
     osPiStartDma(&D_8005AE90, 0, OS_READ, romAddr, vramAddr, size, &D_8005ADF8);
     osInvalDCache(0, 0x3FFFFF);
@@ -362,6 +355,6 @@ void func_800010D4(s32 arg0, s32 arg1, s32 arg2) {
     D_8005AEB8[arg0].unk_08 = arg2;
 }
 
-void* mem_alloc(s32 size, const char* file, s32 line) {
+void *mem_alloc(s32 size, const char *file, s32 line) {
     return do_mem_alloc(size);
 }
