@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-import git
 import os
 import subprocess
 import sys

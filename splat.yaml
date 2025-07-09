@@ -80,7 +80,7 @@ segments:
       - [0x23D00, c]
       - [0x24930, c]
       - [0x255B0, c]
-      - [0x25980, c]
+      - [0x25980, c, cont]
       - [0x25B50, c]
       - [0x26740, c, wad]
       - [0x2B490, c]
@@ -227,9 +227,13 @@ segments:
       - [0x47160, textbin, rsp/gspFast3D]
       - [0x48590, textbin, rsp/gspUltraFast3D]
       - [0x49050, textbin, rsp/aspMain]
+
       - [0x49E70, .data, main]
       - [0x49E80, .data, heap]
       - [0x49E90, bin] # data
+      - [0x4D350, .data, cont]
+      - [0x4D360, data]
+
       - [0x53C40, .data, ../ultralib/src/os/initialize]
       - [0x53C50, .data, ../ultralib/src/io/vimgr]
       - [0x53C70, .data, ../ultralib/src/io/vitbl]
@@ -293,17 +297,19 @@ segments:
 
       - { type: .bss, vram: 0x80056EE0, name: main }
       - { type: .bss, vram: 0x8005AE90, name: heap }
-      - { type: bss, vram: 0x8005BED0 }
-      - { name: ../ultralib/src/os/initialize, type: .bss, vram: 0x8013C840 }
-      - { name: ../ultralib/src/io/vimgr, type: .bss, vram: 0x8013C850 }
-      - { name: ../ultralib/src/io/pimgr, type: .bss, vram: 0x8013DA60 }
-      - { name: ../ultralib/src/os/seteventmesg, type: .bss, vram: 0x8013EC30 }
-      - { name: ../ultralib/src/io/sptask, type: .bss, vram: 0x8013ECB0 }
-      - { name: ../ultralib/src/io/controller, type: .bss, vram: 0x8013ECF0 }
-      - { name: ../ultralib/src/os/timerintr, type: .bss, vram: 0x8013ED80 }
-      - { name: ../ultralib/src/io/piacs, type: .bss, vram: 0x8013EDC0 }
-      - { name: ../ultralib/src/io/siacs, type: .bss, vram: 0x8013EDE0 }
-      - { type: bss, name: bss3, vram: 0x8013EE00 }
+      - { type: bss, vram: 0x8005BED0, name: bss1 }
+      - { type: .bss, vram: 0x800B63A0, name: cont }
+      - { type: bss, vram: 0x800B6400, name: bss2 }
+      - { type: .bss, vram: 0x8013C840, name: ../ultralib/src/os/initialize }
+      - { type: .bss, vram: 0x8013C850, name: ../ultralib/src/io/vimgr,  }
+      - { type: .bss, vram: 0x8013DA60, name: ../ultralib/src/io/pimgr,  }
+      - { type: .bss, vram: 0x8013EC30, name: ../ultralib/src/os/seteventmesg,  }
+      - { type: .bss, vram: 0x8013ECB0, name: ../ultralib/src/io/sptask,  }
+      - { type: .bss, vram: 0x8013ECF0, name: ../ultralib/src/io/controller,  }
+      - { type: .bss, vram: 0x8013ED80, name: ../ultralib/src/os/timerintr,  }
+      - { type: .bss, vram: 0x8013EDC0, name: ../ultralib/src/io/piacs }
+      - { type: .bss, vram: 0x8013EDE0, name: ../ultralib/src/io/siacs }
+      - { type: bss, vram: 0x8013EE00, name: bss3 }
 
   - type: bin
     start: 0x57AE0

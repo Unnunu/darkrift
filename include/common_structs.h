@@ -15,9 +15,9 @@ typedef struct UnkDispStructPart2 {
 
 typedef struct UnkDispStruct {
     /* 0x00 */ u32 unk_00;
-    /* 0x04 */ UnkDispStructPart2* unk_04;
-    /* 0x08 */ Vtx* unk_08;
-    /* 0x0C */ u16* unk_0C;
+    /* 0x04 */ UnkDispStructPart2 *unk_04;
+    /* 0x08 */ Vtx *unk_08;
+    /* 0x0C */ u16 *unk_0C;
 } UnkDispStruct; // size = 0x10
 
 typedef struct DisplayData {
@@ -47,5 +47,12 @@ typedef struct UnkDelta {
     /* 0x16 */ u16 unk_16;
     /* 0x18 */ char unk_18[8];
 } UnkDelta; // size = 0x20
+
+typedef struct UnkAlpha {
+    /* 0x00 */ char unk_00[11];
+    /* 0x0B */ u8 unk_0B;
+    /* 0x0C */ char unk_0C;
+    /* 0x0D */ char unk_0D;
+} UnkAlpha;
 
 #endif

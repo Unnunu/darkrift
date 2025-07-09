@@ -3,6 +3,9 @@ osRomBase = 0x80000308;
 osResetType = 0x8000030C;
 osAppNMIBuffer = 0x8000031C;
 
+cont_read = 0x80024F00;
+gContData = 0x800B63E8;
+
 thread3_main = 0x80000600;
 heap_link = 0x80000A8C;
 heap_unlink = 0x80000AA8;

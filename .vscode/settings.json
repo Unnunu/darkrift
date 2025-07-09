@@ -16,6 +16,7 @@
         "r4300.h": "c",
         "libaudio.h": "c",
         "controller.h": "c",
-        "common_structs.h": "c"
+        "common_structs.h": "c",
+        "variables.h": "c"
     }
 }

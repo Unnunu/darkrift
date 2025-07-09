@@ -9,6 +9,7 @@ tools/ido7.1/
 *.bin
 *.ld
 *.d
+*.pyc
 
 .ninja_log
 .splache

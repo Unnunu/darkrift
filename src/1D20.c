@@ -1,20 +1,20 @@
 #include "common.h"
 
-#define	PUSH_UNK_DISP(pkt, a, b, c, d) \
-    pkt->unk_00 = a; \
-    pkt->unk_04 = b; \
-    pkt->unk_08 = c; \
-    pkt->unk_0C = d; \
+#define PUSH_UNK_DISP(pkt, a, b, c, d) \
+    pkt->unk_00 = a;                   \
+    pkt->unk_04 = b;                   \
+    pkt->unk_08 = c;                   \
+    pkt->unk_0C = d;                   \
     pkt++;
 
-#define	gUnkRdpHalfCommand(pkt, dl) \
-{									\
-	Gfx *_g = (Gfx *)(pkt);						\
-	_g->words.w0 = _SHIFTL(G_RDPHALF_1,24,8);			\
-	_g->words.w1 = (unsigned int)(dl & 0xFFFF); \
-}	
+#define gUnkRdpHalfCommand(pkt, dl)                  \
+    {                                                \
+        Gfx *_g = (Gfx *) (pkt);                     \
+        _g->words.w0 = _SHIFTL(G_RDPHALF_1, 24, 8);  \
+        _g->words.w1 = (unsigned int) (dl & 0xFFFF); \
+    }
 
-typedef s32(*DISPCB)(s32);
+typedef s32 (*DISPCB)(s32);
 
 extern s32 D_80049CF0;
 extern UnkDelta D_8004BB48[];
@@ -79,14 +79,14 @@ extern s32 D_8005BEF8;
 extern u16 D_8005BFC0;
 extern u16 D_8005BFC2;
 extern u16 D_8005BFCE;
-extern void* D_8005BFD0[];
-extern Gfx* D_8005BFD8;
-extern Gfx* D_8005BFDC;
-extern Gfx* D_8005BFE0;
-extern UnkDispStruct* D_8005BFE4;
-extern UnkDispStruct* D_8005BFE8;
+extern void *D_8005BFD0[];
+extern Gfx *D_8005BFD8;
+extern Gfx *D_8005BFDC;
+extern Gfx *D_8005BFE0;
+extern UnkDispStruct *D_8005BFE4;
+extern UnkDispStruct *D_8005BFE8;
 extern DisplayData D_8005BFF0[];
-extern DisplayData* D_80080100;
+extern DisplayData *D_80080100;
 extern s32 D_8008012C;
 extern s16 D_80080130;
 extern s16 D_80080132;
@@ -102,7 +102,7 @@ void func_80002F60(void);
 void func_800031FC(u16);
 void func_80006CEC(void);
 void func_80002448(void);
-void func_8002BB6C(void(*)(void), s32);
+void func_8002BB6C(void (*)(void), s32);
 void func_80003468(u16);
 void func_80024C98(void);
 void func_8002B0AC(void);
@@ -136,7 +136,7 @@ void func_80001120(void) {
 
 #ifdef NON_MATCHING
 void func_8000132C(void) {
-    UnkDispStruct* ptr;
+    UnkDispStruct *ptr;
     OSTime time1;
     s32 i;
 

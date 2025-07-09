@@ -30,9 +30,9 @@ OSMesg D_8005AE78[1];
 OSMesg D_8005AE7C[1];
 OSMesg D_8005AE80[4];
 
-void thread1_idle(void*);
-void thread3_main(void*);
-void func_80002D14(void*);
+void thread1_idle(void *);
+void thread3_main(void *);
+void func_80002D14(void *);
 
 void func_80000450(void) {
     osInitialize();
@@ -40,7 +40,7 @@ void func_80000450(void) {
     osStartThread(&sThread1);
 }
 
-void thread1_idle(void* arg0) {
+void thread1_idle(void *arg0) {
     osCreateViManager(OS_PRIORITY_VIMGR);
     if (osTvType == OS_TV_NTSC) {
         osViModeTable[OS_VI_NTSC_LAN1].comRegs.burst &= ~0xFF;
@@ -59,10 +59,10 @@ void thread1_idle(void* arg0) {
     }
     osSetThreadPri(NULL, 0);
 
-    while (1) { }
+    while (1) {}
 }
 
-void thread3_main(void* arg0) {
+void thread3_main(void *arg0) {
     osCreateMesgQueue(&D_8005ADF8, D_8005AE70, ARRAY_COUNT(D_8005AE70));
 
     osCreateMesgQueue(&D_8005AE10, D_8005AE74, ARRAY_COUNT(D_8005AE74));
@@ -74,7 +74,7 @@ void thread3_main(void* arg0) {
     osCreateMesgQueue(&D_8005ADD8, D_8005ADF0, ARRAY_COUNT(D_8005ADF0));
     osViSetEvent(&D_8005ADD8, 0, 1);
 
-    func_80024D80(4);
+    cont_init(4);
 
     osCreateMesgQueue(&D_8005AE40, D_8005AE7C, ARRAY_COUNT(D_8005AE7C));
     osCreateMesgQueue(&D_8005AE58, D_8005AE80, ARRAY_COUNT(D_8005AE80));

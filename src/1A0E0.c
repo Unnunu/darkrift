@@ -1,6 +1,17 @@
 #include "common.h"
 
+extern s16 D_80080230;
+extern s16 D_80080232;
+
+#ifdef NON_MATCHING
+void func_800194E0(u16 arg0) {
+    D_80080232 = D_80080230;
+    D_80080230 = arg0;
+}
+#else
 #pragma GLOBAL_ASM("asm/nonmatchings/1A0E0/func_800194E0.s")
+void func_800194E0(u16 arg0);
+#endif
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1A0E0/func_80019500.s")
 
