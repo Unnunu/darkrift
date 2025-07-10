@@ -4,23 +4,6 @@
 #define MEM_GUARD_MAGIC 0xABCD6789
 #define HEAP_SIZE 0x23E806
 
-typedef struct ChunkHeader {
-    /* 0x00 */ s32 flags;
-    /* 0x04 */ s32 end;
-    /* 0x08 */ struct ChunkHeader *next;
-    /* 0x0C */ struct ChunkHeader *previous;
-    /* 0x10 */ s32 guard;
-    /* 0x14 */ char padding[0x4];
-} ChunkHeader; // size = 0x18
-
-typedef struct UnkGamma {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ void *unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-} UnkGamma; // size = 0x10
-
-s32 get_free_mem(ChunkHeader *arg0);
 void heap_link(ChunkHeader *arg0, ChunkHeader **arg1);
 void mem_free(void *);
 
@@ -34,7 +17,7 @@ OSIoMesg D_8005AE90;
 char heap_padding[0x8];
 s32 sAllocatedSize;
 s32 sFreeSize;
-UnkGamma D_8005AEB8[0x100];
+UnkGamma D_8005AEB8[256];
 s32 D_8005BEB8;
 char heap_padding2[0x4];
 void *gHeapBase;

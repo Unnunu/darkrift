@@ -12,7 +12,9 @@ typedef struct WadStructAlpha {
 typedef struct WadStructBeta {
     /* 0x00 */ char unk_00[0x14];
     /* 0x14 */ s32 unk_14;
-    /* 0x18 */ char unk_18[0xC];
+    /* 0x18 */ s32 unk_18;
+    /* 0x1C */ s32 unk_1C;
+    /* 0x20 */ s32 unk_20;
 } WadStructBeta; // size = 0x24
 
 typedef struct WadFile {
@@ -22,16 +24,21 @@ typedef struct WadFile {
 } WadFile;
 
 typedef struct WadStructGamma {
-    /* 0x00 */ char unk_00[0x8];
+    /* 0x00 */ void *unk_00;
+    /* 0x04 */ void *unk_04;
     /* 0x08 */ s32 unk_08;
     /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ char unk_10[0x1E];
+    /* 0x10 */ char unk_10[20];
+    /* 0x24 */ s32 unk_24;
+    /* 0x28 */ s32 unk_28;
+    /* 0x2C */ u16 unk_2C;
     /* 0x2E */ u16 unk_2E;
     /* 0x30 */ u16 unk_30;
-    /* 0x32 */ char unk_32[6];
+    /* 0x32 */ char unk_32[2];
+    /* 0x34 */ u8 *unk_34;
 } WadStructGamma; // size = 0x38
 
-extern u32 D_80051F40;
+extern s32 D_80051F40;
 
 extern WadStructGamma D_80138A00[256];
 extern s32 D_8013C200;
@@ -44,10 +51,29 @@ extern s32 D_8013C218;
 extern u32 D_8013C21C;
 extern u32 D_8013C220;
 
+void func_800264B4(s32);
+void func_80026C38(void);
 void dma_read(s32 romAddr, void *vramAddr, s32 size);
+void func_80000E0C(u8 *arg0, u8 arg1, u32 arg2);
+
+void func_80026B74(WadStructGamma *);
+void func_80027680(WadStructGamma *);
+
+void func_800276F0(WadStructGamma *);
+void func_80027918(WadStructGamma *);
+void func_80026EEC(WadStructGamma *);
+void func_800279E4(WadStructGamma *);
+void func_80027A14(WadStructGamma *);
+void func_80027C0C(WadStructGamma *);
+void func_80027DA4(WadStructGamma *);
+void func_80027EFC(WadStructGamma *);
+void func_80027780(WadStructGamma *);
+void func_80027804(WadStructGamma *);
+void func_80027888(WadStructGamma *);
+void func_80026DF0(WadStructGamma *);
 
 void func_80025B40(void) {
-    s32 i;
+    u32 i;
 
     for (i = 0; i < D_80051F40; i++) {}
 }
@@ -95,19 +121,19 @@ s32 func_80025C40(char *arg0, char *arg1) {
     return 0;
 }
 
-void func_80025D54(char *arg0) {
-    u32 size = strlen(arg0);
+void toupper(char *str) {
+    u32 size = strlen(str);
     u32 i;
 
     for (i = 0; i < size; i++) {
-        arg0[i] = (arg0[i] >= 'a') ? arg0[i] -= 'a' - 'A' : arg0[i];
+        str[i] = (str[i] >= 'a') ? str[i] -= 'a' - 'A' : str[i];
     }
 }
 
 u32 func_80025DB4(char *arg0, s32 arg1) {
     u32 i;
 
-    func_80025D54(arg0);
+    toupper(arg0);
     for (i = 0; i < D_80051F40; i++) {
         if (func_80025C40(arg0, D_80138A00[i].unk_10) == 0 && arg1 == D_80138A00[i].unk_30) {
             return i;
@@ -199,7 +225,7 @@ void func_80026198(char *name) {
 
     len = strlen(name);
     j = 0;
-    func_80025D54(name);
+    toupper(name);
     sp44[0] = '\0';
 
     for (i = 0; i < len; i++) {
@@ -216,17 +242,200 @@ void func_80026198(char *name) {
     func_800260AC(sp44);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80026250.s")
+void func_80026250(void) {
+    u32 i;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_800262B8.s")
+    for (i = 0; i < D_80051F40; i++) {
+        if (D_80138A00[i].unk_08 >= 0) {
+            D_80138A00[i].unk_00 = D_8005AEB8[D_80138A00[i].unk_08].unk_04;
+        }
+        if (D_80138A00[i].unk_0C >= 0) {
+            D_80138A00[i].unk_04 = D_8005AEB8[D_80138A00[i].unk_0C].unk_04;
+        }
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_8002630C.s")
+void func_800262B8(char *path, s32 arg1) {
+    func_80026C38();
+    func_80026198(path);
+    func_800264B4(arg1);
+    func_80000E0C(D_8013C204, 0, D_8013C214);
+    func_80026C38();
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_800263A8.s")
+void func_8002630C(s32 arg0) {
+    u32 i;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80026418.s")
+    for (i = 0; i < D_80051F40; i++) {
+        if (arg0 == D_80138A00[i].unk_30) {
+            func_80026B74(D_80138A00 + i);
+        }
+    }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_800264B4.s")
+    func_80026C38();
+}
+
+void func_800263A8(void) {
+    u32 i;
+
+    for (i = 0; i < D_80051F40; i++) {
+        func_80026B74(D_80138A00 + i);
+    }
+
+    func_80026C38();
+}
+
+void func_80026418(s32 arg0) {
+    u32 i;
+
+    for (i = 0; i < D_80051F40; i++) {
+        if (arg0 == D_80138A00[i].unk_2C) {
+            func_80026B74(D_80138A00 + i);
+        }
+    }
+
+    func_80026C38();
+}
+
+void func_800264B4(s32 arg0) {
+    s32 pad[2];
+    u32 i;
+    u32 sp30;
+    WadStructBeta *s3;
+    s32 v0;
+
+    sp30 = get_free_mem(sFreeChunksList);
+    s3 = (WadStructBeta *) ((u8 *) D_8013C204 + D_8013C210->unk_14);
+
+    for (i = 0; i < D_8013C21C; i++) {
+        v0 = func_80025DB4(s3[i].unk_00, arg0);
+
+        if (v0 >= 0) {
+            switch (s3[i].unk_18) {
+                case 3:
+                    func_80027680(D_80138A00 + v0);
+                    break;
+                case 8:
+                    func_800276F0(D_80138A00 + v0);
+                    break;
+                case 7:
+                    func_80027918(D_80138A00 + v0);
+                    break;
+                case 2:
+                    func_80026EEC(D_80138A00 + v0);
+                    break;
+                case 11:
+                    func_800279E4(D_80138A00 + v0);
+                    break;
+                case 9:
+                    func_80027A14(D_80138A00 + v0);
+                    break;
+                case 14:
+                    func_80027C0C(D_80138A00 + v0);
+                    break;
+                case 12:
+                    func_80027DA4(D_80138A00 + v0);
+                    break;
+                case 15:
+                    func_80027EFC(D_80138A00 + v0);
+                    break;
+                case 20:
+                    func_80027780(D_80138A00 + v0);
+                    break;
+                case 21:
+                    func_80027804(D_80138A00 + v0);
+                    break;
+                case 22:
+                    func_80027888(D_80138A00 + v0);
+                    break;
+            }
+        } else if (s3[i].unk_20 <= sp30) {
+            func_80025BE0(D_80138A00[D_80051F40].unk_10, s3[i].unk_00);
+            D_80138A00[D_80051F40].unk_24 = s3[i].unk_1C;
+            D_80138A00[D_80051F40].unk_30 = arg0;
+            D_80138A00[D_80051F40].unk_2C = s3[i].unk_18;
+            D_80138A00[D_80051F40].unk_34 = D_8013C20C + s3[i].unk_14;
+            D_80138A00[D_80051F40].unk_28 = s3[i].unk_20;
+
+            if (s3[i].unk_1C != s3[i].unk_20) {
+                D_80138A00[D_80051F40].unk_2E = 2;
+                D_80051F40++;
+            } else {
+                D_80138A00[D_80051F40].unk_2E = 0;
+                D_80051F40++;
+            }
+
+            switch (s3[i].unk_18) {
+                case 0:
+                    func_80026DF0(D_80138A00 + D_80051F40 - 1);
+                    break;
+                case 1:
+                    func_80026ECC(D_80138A00 + D_80051F40 - 1);
+                    break;
+                case 2:
+                    func_80027054(D_80138A00 + D_80051F40 - 1);
+                    break;
+                case 3:
+                    func_800271C0(D_80138A00 + D_80051F40 - 1);
+                    break;
+                case 7:
+                    func_80027270(D_80138A00 + D_80051F40 - 1);
+                    break;
+                case 8:
+                    func_800275A4(D_80138A00 + D_80051F40 - 1);
+                    break;
+                case 10:
+                    func_80027988(D_80138A00 + D_80051F40 - 1);
+                    break;
+                case 9:
+                    func_80026BE0(D_80138A00 + D_80051F40 - 1);
+                    func_80027A14(D_80138A00 + D_80051F40 - 1);
+                    break;
+                case 11:
+                    func_80026BE0(D_80138A00 + D_80051F40 - 1);
+                    func_800279E4(D_80138A00 + D_80051F40 - 1);
+                    break;
+                case 12:
+                    func_80027CAC(D_80138A00 + D_80051F40 - 1);
+                    break;
+                case 13:
+                    func_80027B7C(D_80138A00 + D_80051F40 - 1);
+                    break;
+                case 14:
+                    func_80026BE0(D_80138A00 + D_80051F40 - 1);
+                    func_80027C0C(D_80138A00 + D_80051F40 - 1);
+                    break;
+                case 15:
+                    func_80027E20(D_80138A00 + D_80051F40 - 1);
+                    break;
+                case 16:
+                    func_80027F8C(D_80138A00 + D_80051F40 - 1);
+                    break;
+                case 17:
+                    func_80027D84(D_80138A00 + D_80051F40 - 1);
+                    break;
+                case 18:
+                    func_80027FCC(D_80138A00 + D_80051F40 - 1);
+                    break;
+                case 19:
+                    func_80027B10(D_80138A00 + D_80051F40 - 1);
+                    break;
+                case 20:
+                    func_80027320(D_80138A00 + D_80051F40 - 1);
+                    break;
+                case 21:
+                    func_800273F4(D_80138A00 + D_80051F40 - 1);
+                    break;
+                case 22:
+                    func_800274C8(D_80138A00 + D_80051F40 - 1);
+                    break;
+                default:
+                    func_80026BE0(D_80138A00 + D_80051F40 - 1);
+                    break;
+            }
+        }
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80026A94.s")
 
