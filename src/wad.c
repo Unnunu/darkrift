@@ -1,48 +1,58 @@
 #include "common.h"
-#include "string.h"
 #include "ld_addrs.h"
+#include "string.h"
 
-typedef struct UnkEpsilon {
+typedef struct WadStructAlpha {
     /* 0x00 */ char unk_00[0x14];
     /* 0x14 */ s32 unk_14;
     /* 0x18 */ s32 unk_18;
-} UnkEpsilon; // size >= 0x1C
+    /* 0x1C */ s32 unk_1C;
+} WadStructAlpha; // size >= 0x20
 
-typedef struct UnkZeta {
+typedef struct WadStructBeta {
     /* 0x00 */ char unk_00[0x14];
     /* 0x14 */ s32 unk_14;
     /* 0x18 */ char unk_18[0xC];
-} UnkZeta; // size = 0x24
+} WadStructBeta; // size = 0x24
 
 typedef struct WadFile {
     /* 0x00 */ u32 unk_00;
     /* 0x04 */ char pad1[4];
-    /* 0x08 */ UnkEpsilon data[1];
+    /* 0x08 */ WadStructAlpha data[1];
 } WadFile;
+
+typedef struct WadStructGamma {
+    /* 0x00 */ char unk_00[0x8];
+    /* 0x08 */ s32 unk_08;
+    /* 0x0C */ s32 unk_0C;
+    /* 0x10 */ char unk_10[0x1E];
+    /* 0x2E */ u16 unk_2E;
+    /* 0x30 */ u16 unk_30;
+    /* 0x32 */ char unk_32[6];
+} WadStructGamma; // size = 0x38
 
 extern u32 D_80051F40;
 
+extern WadStructGamma D_80138A00[256];
 extern s32 D_8013C200;
-extern WadFile* D_8013C204;
+extern WadFile *D_8013C204;
 extern s32 D_8013C208;
-extern u8* D_8013C20C;
-extern UnkEpsilon* D_8013C210;
+extern u8 *D_8013C20C;
+extern WadStructAlpha *D_8013C210;
 extern s32 D_8013C214;
 extern s32 D_8013C218;
 extern u32 D_8013C21C;
 extern u32 D_8013C220;
 
-void dma_read(s32 romAddr, void* vramAddr, s32 size);
+void dma_read(s32 romAddr, void *vramAddr, s32 size);
 
 void func_80025B40(void) {
     s32 i;
 
-    for (i = 0; i < D_80051F40; i++) {
-
-    }
+    for (i = 0; i < D_80051F40; i++) {}
 }
 
-void func_80025B68(char* arg0, char* arg1) {
+void func_80025B68(char *arg0, char *arg1) {
     u32 size1 = strlen(arg0);
     u32 size2 = strlen(arg1);
     s32 i;
@@ -54,7 +64,7 @@ void func_80025B68(char* arg0, char* arg1) {
     arg0[size1 + size2] = 0;
 }
 
-void func_80025BE0(char* arg0, char* arg1) {
+void func_80025BE0(char *arg0, char *arg1) {
     u32 size = strlen(arg1);
     s32 i;
 
@@ -65,14 +75,58 @@ void func_80025BE0(char* arg0, char* arg1) {
     *arg0 = 0;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80025C40.s")
-s32 func_80025C40(UnkZeta*, char*);
+s32 func_80025C40(char *arg0, char *arg1) {
+    u32 sp1C;
+    u32 len2;
+    u32 i;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80025D54.s")
+    sp1C = strlen(arg0);
+    len2 = strlen(arg1);
+    if (sp1C != len2) {
+        return 1;
+    }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80025DB4.s")
+    for (i = 0; i < sp1C; i++) {
+        if (*arg0++ != *arg1++) {
+            return 1;
+        }
+    }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80025E6C.s")
+    return 0;
+}
+
+void func_80025D54(char *arg0) {
+    u32 size = strlen(arg0);
+    u32 i;
+
+    for (i = 0; i < size; i++) {
+        arg0[i] = (arg0[i] >= 'a') ? arg0[i] -= 'a' - 'A' : arg0[i];
+    }
+}
+
+u32 func_80025DB4(char *arg0, s32 arg1) {
+    u32 i;
+
+    func_80025D54(arg0);
+    for (i = 0; i < D_80051F40; i++) {
+        if (func_80025C40(arg0, D_80138A00[i].unk_10) == 0 && arg1 == D_80138A00[i].unk_30) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+void func_80025E6C(void) {
+    u32 i;
+
+    D_80051F40 = 0;
+    for (i = 0; i < 256; i++) {
+        D_80138A00[i].unk_08 = D_80138A00[i].unk_0C = -1;
+        D_80138A00[i].unk_2E = 1;
+        D_80138A00[i].unk_10[0] = '\0';
+    }
+}
 
 void func_80025EDC(s32 arg0, s32 arg1) {
     D_8013C200 = arg0;
@@ -82,18 +136,18 @@ void func_80025EDC(s32 arg0, s32 arg1) {
     D_8013C218 = arg1 - D_8013C214;
 }
 
-void func_80025F20(char* name) {
+void func_80025F20(char *name) {
     s32 i;
     char fullname[20];
-    UnkZeta* sp2C;
-    UnkZeta* ptr;
-    
-    sp2C = D_8013C210->unk_14 + (u8*)D_8013C204;
+    WadStructBeta *sp2C;
+    WadStructBeta *ptr;
+
+    sp2C = D_8013C210->unk_14 + (u8 *) D_8013C204;
     func_80025BE0(fullname, name);
     func_80025B68(fullname, ".WAD");
-    
+
     for (i = 0, ptr = sp2C; i < D_8013C21C; i++, ptr++) {
-        if (func_80025C40(ptr, fullname) == 0) {
+        if (func_80025C40(ptr->unk_00, fullname) == 0) {
             D_8013C20C += ptr->unk_14;
             return;
         }
@@ -103,20 +157,32 @@ void func_80025F20(char* name) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80025FEC.s")
+s32 func_80025FEC(char *arg0) {
+    s32 pad;
+    u32 i;
+    WadStructAlpha *entries;
 
-s32 func_80025FEC(void);
+    entries = D_8013C204->data;
+    for (i = 0; i < D_8013C220; i++) {
+        if (func_80025C40(arg0, entries[i].unk_00) == 0) {
+            D_8013C210 = &entries[i];
+            D_8013C220 = 1;
+            D_8013C21C = entries[i].unk_18;
+            return 1;
+        }
+    }
 
-void func_800260AC(char* name) {
+    return 0;
+}
+
+void func_800260AC(char *name) {
     if (name[0] == 0) {
         D_8013C20C = resources_ROM_START;
         dma_read(D_8013C20C, D_8013C204, D_8013C214);
         D_8013C210 = D_8013C204->data;
         D_8013C220 = D_8013C204->unk_00;
         D_8013C21C = D_8013C210->unk_18;
-        return;
-    }
-    if (func_80025FEC() == 0) {
+    } else if (!func_80025FEC(name)) {
         func_80025F20(name);
         dma_read(D_8013C20C, D_8013C204, D_8013C214);
         D_8013C210 = D_8013C204->data;
@@ -125,7 +191,30 @@ void func_800260AC(char* name) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80026198.s")
+void func_80026198(char *name) {
+    s32 len;
+    char sp44[24];
+    u32 i;
+    u32 j;
+
+    len = strlen(name);
+    j = 0;
+    func_80025D54(name);
+    sp44[0] = '\0';
+
+    for (i = 0; i < len; i++) {
+        if (name[i] != '/') {
+            sp44[j++] = name[i];
+        } else {
+            sp44[j] = '\0';
+            j = 0;
+            func_800260AC(sp44);
+        }
+    }
+
+    sp44[j] = '\0';
+    func_800260AC(sp44);
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80026250.s")
 
