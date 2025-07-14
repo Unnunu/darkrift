@@ -1,14 +1,14 @@
 #include "common.h"
 
-const char D_UNREF_STRING_1[] = "practice.sp2";
-const char D_UNREF_STRING_2[] = "practice.sp2";
-const char D_UNREF_STRING_3[] = "practice.sp2";
-const char D_UNREF_STRING_4[] = "practice.sp2";
-const char D_UNREF_STRING_5[] = "practice.sp2";
-const char D_UNREF_STRING_6[] = "practice.sp2";
-const char D_UNREF_STRING_7[] = "practice.sp2";
-const char D_UNREF_STRING_8[] = "practice.sp2";
-const char D_UNREF_STRING_9[] = "practice.sp2";
+const char D_80055120[] = "practice.sp2";
+const char D_80055130[] = "practice.sp2";
+const char D_80055140[] = "practice.sp2";
+const char D_80055150[] = "practice.sp2";
+const char D_80055160[] = "practice.sp2";
+const char D_80055170[] = "practice.sp2";
+const char D_80055180[] = "practice.sp2";
+const char D_80055190[] = "practice.sp2";
+const char D_800551A0[] = "practice.sp2";
 
 #pragma GLOBAL_ASM("asm/nonmatchings/32D30/func_80032130.s")
 

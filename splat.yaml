@@ -230,7 +230,7 @@ segments:
 
       - [0x49E70, .data, main]
       - [0x49E80, .data, heap]
-      - [0x49E90, bin] # data
+      - [0x49E90, data] #bin] # data
       - [0x4D350, .data, cont]
       - [0x4D360, data]
 
@@ -262,9 +262,9 @@ segments:
       - [0x554B0, .rodata, 18A10]
       - [0x554E0, .rodata, 1A0E0]
       - [0x55530, .rodata, 1B6E0]
-      - [0x555C0, rodata] #.rodata, 1EA10]
-      - [0x55670, .rodata, 1EA10]
+      - [0x555C0, .rodata, 1EA10]
       - [0x55830, .rodata, audio]
+      - [0x55870, .rodata, 22940]
       - [0x55A30, .rodata, wad]
       - [0x55B70, rodata]
       - [0x55BD0, .rodata, item]

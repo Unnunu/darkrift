@@ -18,6 +18,8 @@
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_800071F0.s")
 
+const char D_80053F14[] = "tc";
+
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007248.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007374.s")
@@ -90,11 +92,17 @@
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000A298.s")
 
+const char D_80054418[] = "options2.sp2";
+
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000A354.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000A514.s")
 
+const char D_80054448[] = "options2.sp2";
+
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000A578.s")
+
+const char D_80054464[] = "options2.sp2";
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000A6B8.s")
 
@@ -102,14 +110,42 @@
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000A888.s")
 
+const char D_800544D0[] = "options2.sp2";
+const char D_800544E0[] = "options2.sp2";
+const char D_800544F0[] = "options2.sp2";
+const char D_80054500[] = "options2.sp2";
+const char D_80054510[] = "options2.sp2";
+const char D_80054520[] = "options2.sp2";
+const char D_80054530[] = "options2.sp2";
+const char D_80054540[] = "options2.sp2";
+const char D_80054550[] = "options2.sp2";
+const char D_80054560[] = "options2.sp2";
+const char D_80054570[] = "options2.sp2";
+
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000A98C.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000AFA4.s")
 
+const char D_80054598[] = "options2.sp2";
+const char D_800545A8[] = "options2.sp2";
+const char D_800545B8[] = "options2.sp2";
+const char D_800545C8[] = "options2.sp2";
+const char D_800545D8[] = "options2.sp2";
+const char D_800545E8[] = "options2.sp2";
+const char D_800545F8[] = "options2.sp2";
+const char D_80054608[] = "options2.sp2";
+const char D_80054618[] = "options2.sp2";
+const char D_80054628[] = "options2.sp2";
+
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000B088.s")
+
+const char D_80054650[] = "options2.sp2";
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000B934.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000BA4C.s")
+
+const char D_8005468C[] = "gore";
+const char D_80054694[] = "arena";
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000BB1C.s")

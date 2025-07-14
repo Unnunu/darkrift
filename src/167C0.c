@@ -12,6 +12,8 @@
 
 #pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80015E74.s")
 
+const char D_800547F4[] = "bars.sp2";
+
 #pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80015F60.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80015FB4.s")

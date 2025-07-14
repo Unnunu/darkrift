@@ -1,5 +1,19 @@
 #include "common.h"
 
+const char D_800549C0[] = "bars.sp2";
+const char D_800549CC[] = "bars.sp2";
+const char D_800549D8[] = "bars.sp2";
+const char D_800549E4[] = "grpp1.sp2";
+const char D_800549F0[] = "grpp2.sp2";
+const char D_800549FC[] = "options2.sp2";
+const char D_80054A0C[] = "options2.sp2";
+const char D_80054A1C[] = "bars.sp2";
+const char D_80054A28[] = "bars.sp2";
+const char D_80054A34[] = "bars.sp2";
+const char D_80054A40[] = "options2.sp2";
+const char D_80054A50[] = "practice.sp2";
+const char D_80054A60[] = "practice.sp2";
+
 #pragma GLOBAL_ASM("asm/nonmatchings/1EA10/func_8001DE10.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1EA10/func_8001DFE4.s")

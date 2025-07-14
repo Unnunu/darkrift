@@ -1,6 +1,6 @@
 #include "common.h"
 
-const char D_ROM_55C50[] = "dusthit.sp3";
+const char D_80055050[] = "dusthit.sp3";
 
 #pragma GLOBAL_ASM("asm/nonmatchings/305A0/func_8002F9A0.s")
 

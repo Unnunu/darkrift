@@ -41,3 +41,6 @@
 #pragma GLOBAL_ASM("asm/nonmatchings/18A10/func_8001905C.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/18A10/func_80019278.s")
+
+const char D_800548B8[] = "options2.sp2";
+const char D_800548C8[] = "options2.sp2";
