@@ -7,7 +7,7 @@ extern s16 D_8004C98C[];
 extern OSMesgQueue D_8005ADF8;
 
 extern u8 *D_800B6410[2];
-extern u8* D_800B6418;
+extern u8 *D_800B6418;
 extern s32 D_800B6420;
 extern s32 D_800B6424;
 extern s32 D_800B6428;
@@ -24,11 +24,9 @@ void func_80024F50(void) {
         D_800B6428 = 1 - D_800B6428;
         D_800B6418 = D_800B6410[D_800B6428];
 
-        while (osRecvMesg(&D_8005ADF8, NULL, OS_MESG_NOBLOCK)) {
+        while (osRecvMesg(&D_8005ADF8, NULL, OS_MESG_NOBLOCK)) {}
 
-        }
-
-        if ((u32)D_800B6430 < (u32)D_800B6420) {
+        if ((u32) D_800B6430 < (u32) D_800B6420) {
             dma_read_noblock(D_800B6438->unk_34 + D_800B6424 * D_800B6430, D_800B6410[1 - D_800B6428], D_800B6430);
         } else {
             dma_read_noblock(D_800B6438->unk_34 + D_800B6424 * D_800B6430, D_800B6410[1 - D_800B6428], D_800B6420);
@@ -38,7 +36,7 @@ void func_80024F50(void) {
 }
 
 u8 func_800250A8(void) {
-    if ((u32)D_800B6430 <= (u32)D_800B642C) {
+    if ((u32) D_800B6430 <= (u32) D_800B642C) {
         func_80024F50();
         D_800B642C = 0;
         D_800B6424++;
@@ -51,11 +49,11 @@ s16 func_80025120(void) {
     u16 bits;
     u16 a0;
     s32 ret;
-    
+
     bits = D_8004C960;
     if (D_8004C964 < 9) {
         a0 = func_800250A8();
-        if ((s16)a0 < 0) {
+        if ((s16) a0 < 0) {
             a0 = 0;
         }
 
@@ -63,7 +61,6 @@ s16 func_80025120(void) {
         D_8004C964 += 8;
     }
 
-    
     D_8004C960 = bits << 1;
     D_8004C964--;
 
@@ -79,11 +76,11 @@ s16 func_800251D4(void) {
     u16 bits;
     u16 a0;
     s32 ret;
-    
+
     bits = D_8004C960;
     if (D_8004C964 < 9) {
         a0 = func_800250A8();
-        if ((s16)a0 < 0) {
+        if ((s16) a0 < 0) {
             a0 = 0;
         }
 
@@ -91,7 +88,6 @@ s16 func_800251D4(void) {
         D_8004C964 += 8;
     }
 
-    
     D_8004C960 = bits << 8;
     D_8004C964 -= 8;
     return (bits >> 8) & 0xFF;
@@ -101,11 +97,11 @@ s16 func_80025278(u16 arg0) {
     u16 bits;
     u16 a0;
     s32 ret;
-    
+
     bits = D_8004C960;
     if (D_8004C964 < 9) {
         a0 = func_800250A8();
-        if ((s16)a0 < 0) {
+        if ((s16) a0 < 0) {
             a0 = 0;
         }
 
@@ -113,7 +109,6 @@ s16 func_80025278(u16 arg0) {
         D_8004C964 += 8;
     }
 
-    
     D_8004C960 = bits << arg0;
     D_8004C964 -= arg0;
     return (bits >> D_8004C98C[arg0]) & D_8004C968[arg0];
@@ -128,7 +123,7 @@ void func_80025344(void) {
         D_800B7968[627 + i] = i;
     }
 
-    for (i = 0, j = 314; j < 627; i+=2, j++) {
+    for (i = 0, j = 314; j < 627; i += 2, j++) {
         D_800B7480[j] = D_800B7480[i] + D_800B7480[i + 1];
         D_800B80C8[j] = i;
         D_800B7968[i] = D_800B7968[i + 1] = j;
@@ -140,6 +135,7 @@ void func_80025344(void) {
     D_8004C960 = 0;
 }
 
+#ifdef NON_EQUIVALENT
 void func_8002541C(void) {
     s16 i;
     s16 j;
@@ -157,11 +153,10 @@ void func_8002541C(void) {
     }
 
     for (i = 0, j = 314; j < 627; j++, i += 2) {
-        q = D_800B7480[i] + D_800B7480[(s16)(i + 1)];
+        q = D_800B7480[i] + D_800B7480[(s16) (i + 1)];
         D_800B7480[j] = q;
 
-        for (k = j - 1; D_800B7480[k] > q; k--) {
-        }
+        for (k = j - 1; D_800B7480[k] > q; k--) {}
 
         for (l = j; l > k + 1; l--) {
             D_800B7480[l] = D_800B7480[l - 1];
@@ -182,6 +177,10 @@ void func_8002541C(void) {
         }
     }
 }
+#else
+#pragma GLOBAL_ASM("asm/nonmatchings/25B50/func_8002541C.s")
+void func_8002541C(void);
+#endif
 
 #pragma GLOBAL_ASM("asm/nonmatchings/25B50/func_80025624.s")
 
