@@ -78,18 +78,18 @@ typedef struct ChunkHeader {
 } ChunkHeader; // size = 0x18
 
 typedef struct WadStructGamma {
-    /* 0x00 */ void *unk_00;
+    /* 0x00 */ void *data;
     /* 0x04 */ void *unk_04;
     /* 0x08 */ s32 unk_08;
     /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ char unk_10[20];
-    /* 0x24 */ s32 unk_24;
-    /* 0x28 */ s32 unk_28;
-    /* 0x2C */ u16 unk_2C;
-    /* 0x2E */ u16 unk_2E;
+    /* 0x10 */ char name[20];
+    /* 0x24 */ s32 size;
+    /* 0x28 */ s32 unpacked_size;
+    /* 0x2C */ u16 type;
+    /* 0x2E */ s16 flags;
     /* 0x30 */ u16 unk_30;
-    /* 0x32 */ char unk_32[2];
-    /* 0x34 */ u8 *unk_34;
+    /* 0x32 */ char pad_32[2];
+    /* 0x34 */ u8 *romAddr;
 } WadStructGamma; // size = 0x38
 
 #endif

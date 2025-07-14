@@ -27,9 +27,9 @@ void func_80024F50(void) {
         while (osRecvMesg(&D_8005ADF8, NULL, OS_MESG_NOBLOCK)) {}
 
         if ((u32) D_800B6430 < (u32) D_800B6420) {
-            dma_read_noblock(D_800B6438->unk_34 + D_800B6424 * D_800B6430, D_800B6410[1 - D_800B6428], D_800B6430);
+            dma_read_noblock(D_800B6438->romAddr + D_800B6424 * D_800B6430, D_800B6410[1 - D_800B6428], D_800B6430);
         } else {
-            dma_read_noblock(D_800B6438->unk_34 + D_800B6424 * D_800B6430, D_800B6410[1 - D_800B6428], D_800B6420);
+            dma_read_noblock(D_800B6438->romAddr + D_800B6424 * D_800B6430, D_800B6410[1 - D_800B6428], D_800B6420);
         }
         D_800B6420 -= D_800B6430;
     }
