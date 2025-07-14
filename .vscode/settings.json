@@ -18,6 +18,7 @@
         "controller.h": "c",
         "common_structs.h": "c",
         "variables.h": "c",
-        "charconv": "c"
+        "charconv": "c",
+        "string.h": "c"
     }
 }

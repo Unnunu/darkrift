@@ -24,6 +24,10 @@ mem_free = 0x80000D88;
 mem_alloc = 0x800010F0;
 D_8005AEB8 = 0x8005AEB8; // size:0x1000
 
+str_concat = 0x80025B68;
+str_copy = 0x80025BE0;
+str_compare = 0x80025C40;
+
 __osExceptionPreamble = 0x8003f960;
 osVirtualToPhysical = 0x8003AAC0;
 osSpTaskLoad = 0x8003B6BC;
