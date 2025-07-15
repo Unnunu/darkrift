@@ -131,9 +131,13 @@ typedef struct GlobalObjA {
     /* 0x080 */ s32 unk_080;
     /* 0x084 */ s16 unk_084;
     /* 0x086 */ s16 unk_086;
-    /* 0x088 */ char unk_088[64];
+    /* 0x088 */ char unk_088[16];
+    /* 0x098 */ s32 unk_098;
+    /* 0x09C */ char unk_09C[0xC8-0x9C];
     /* 0x0C8 */ struct GlobalObjC *camera;
-    /* 0x0CC */ char unk_0CC[324];
+    /* 0x0CC */ char unk_0CC[0x1EC-0xCC];
+    /* 0x1EC */ void (*unk_1EC)(struct GlobalObjA*);
+    /* 0x1F0 */ char unk_1F0[0x210-0x1F0];
     /* 0x210 */ struct GlobalObjA *nextObject;
     /* 0x214 */ struct GlobalObjA *prevObject;
 } GlobalObjA; // size = 0x218

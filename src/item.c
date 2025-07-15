@@ -8,6 +8,8 @@ extern UnkItemAlpha D_8013C2B0;
 extern UnkItemAlpha D_8013C2C0;
 extern UnkItemAlpha D_8013C550;
 
+extern s32 D_80049344;
+extern s32 D_8004934C;
 extern GlobalObjA *D_80052C50;
 extern s32 D_80052C54;
 
@@ -159,12 +161,21 @@ void func_8002ADFC(GlobalObjA *obj) {
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002B0AC.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002B658.s")
+void func_8002B658(GlobalObjA*, s32*, s32*, s32, s32);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002B850.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002B9AC.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002BB6C.s")
+GlobalObjA *func_8002BB6C(void (*arg0)(GlobalObjA*), s16 arg1) {
+    GlobalObjA *obj;
+    
+    obj = func_8002AC5C(arg1);
+    func_8002B658(obj, &D_8004934C, &D_80049344, 0, 0);
+    obj->unk_1EC = arg0;
+    obj->unk_080 = 8;
+    return obj;
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002BBD4.s")
 

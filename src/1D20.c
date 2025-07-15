@@ -70,12 +70,15 @@ OSTask D_8004CC88 = {
 extern UnkDispStructPart2 D_8004CCC8;
 extern UnkDispStructPart2 D_8004CD30;
 
+extern s8 D_80053020;
+
 extern s16 D_8005BED0;
 extern u16 D_8005BED2;
 extern OSTime D_8005BEE0;
 extern OSTime D_8005BEE8;
 extern OSTime D_8005BEF0;
 extern s32 D_8005BEF8;
+extern s32 D_8005BEFC;
 extern u16 D_8005BFC0;
 extern u16 D_8005BFC2;
 extern u16 D_8005BFCE;
@@ -101,8 +104,7 @@ void func_80003150(s32);
 void func_80002F60(void);
 void func_800031FC(u16);
 void func_80006CEC(void);
-void func_80002448(void);
-void func_8002BB6C(void (*)(void), s32);
+GlobalObjA *func_8002BB6C(void (*)(void), s32);
 void func_80003468(u16);
 void func_80024C98(void);
 void func_8002B0AC(void);
@@ -214,7 +216,20 @@ void func_8000132C(void) {
 #pragma GLOBAL_ASM("asm/nonmatchings/1D20/func_8000132C.s")
 #endif
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1D20/func_8000194C.s")
+GlobalObjA *func_8000194C(void) {
+    GlobalObjA *obj;
+
+    obj = func_80015FB4(1);
+    if (obj == NULL) {
+        return NULL;
+    }
+
+    obj->unk_1EC = func_80015C58;
+    func_800213E0(2, obj->unk_098);
+    D_80053020 = 1;
+    D_8005BEFC = 0;
+    return obj;
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1D20/func_800019B0.s")
 
@@ -231,6 +246,7 @@ void func_8000132C(void) {
 #pragma GLOBAL_ASM("asm/nonmatchings/1D20/func_800023E4.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1D20/func_80002448.s")
+void func_80002448(GlobalObjA*);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1D20/func_80002528.s")
 
