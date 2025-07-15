@@ -32,9 +32,14 @@ typedef struct DisplayData {
     /* 0x12082 */ char unk_12082[6];
 } DisplayData; // size = 0x12088
 
+typedef struct UnkKappa {
+    /* 0x00 */ char unk_00[16];
+} UnkKappa; // size = 0x10
+
 typedef struct UnkDelta {
     /* 0x00 */ void (*unk_00)(void);
-    /* 0x04 */ char unk_04[8];
+    /* 0x04 */ s32 unk_04;
+    /* 0x04 */ s32 unk_08;
     /* 0x0C */ u8 unk_0C;
     /* 0x0D */ u8 unk_0D;
     /* 0x0E */ u8 unk_0E;
@@ -45,7 +50,11 @@ typedef struct UnkDelta {
     /* 0x13 */ u8 unk_13;
     /* 0x14 */ u16 unk_14;
     /* 0x16 */ u16 unk_16;
-    /* 0x18 */ char unk_18[8];
+    /* 0x18 */ UnkKappa *unk_18;
+    /* 0x1C */ u8 unk_1C;
+    /* 0x1D */ u8 unk_1D;
+    /* 0x1E */ u8 unk_1E;
+    /* 0x1F */ u8 unk_1F;
 } UnkDelta; // size = 0x20
 
 typedef struct UnkAlpha {

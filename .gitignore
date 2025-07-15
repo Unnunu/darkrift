@@ -3,6 +3,8 @@ assets/
 build/
 tools/ido5.3/
 tools/ido7.1/
+__pycache__/
+.vscode/
 
 *.z64
 *.o

@@ -2,10 +2,10 @@
 #include "string.h"
 
 void init_heap(void);
-extern void* gHeapBase;
+extern void *gHeapBase;
 
-extern long long int	gspUltraFast3DTextStart[], gspUltraFast3DTextEnd[];
-extern long long int	gspUltraFast3DDataStart[], gspUltraFast3DDataEnd[];
+extern long long int gspUltraFast3DTextStart[], gspUltraFast3DTextEnd[];
+extern long long int gspUltraFast3DDataStart[], gspUltraFast3DDataEnd[];
 
 extern OSMesgQueue D_8005AE40;
 extern OSMesgQueue D_8005AE58;
@@ -23,17 +23,17 @@ extern s8 D_800801E4;
 extern s8 D_800801E5;
 extern s32 D_800801E8;
 extern s32 D_8008012C;
-extern u16* D_80080120;
-extern u16* D_80080124;
+extern u16 *D_80080120;
+extern u16 *D_80080124;
 
 extern OSTask D_8004CBC8;
 extern OSTask D_8004CC88;
 extern OSTask D_801389B8;
-extern DisplayData* D_80080100;
-extern Gfx* D_8005BFD8;
-extern Gfx* D_8005BFE0;
-extern UnkDispStruct* D_8005BFE4;
-extern u8* D_8005BFD0[];
+extern DisplayData *D_80080100;
+extern Gfx *D_8005BFD8;
+extern Gfx *D_8005BFE0;
+extern UnkDispStruct *D_8005BFE4;
+extern u8 *D_8005BFD0[];
 extern u16 D_8005BFCE;
 extern u16 D_8005BFC8;
 extern u16 D_8005BFCA;
@@ -58,7 +58,7 @@ void func_80025EDC(s32 arg0, s32 arg1);
 void func_80012490(void);
 void func_80024D2C(void);
 void func_800207E4(void);
-void func_8002A8C0(s32*, s32, s32);
+void func_8002A8C0(s32 *, s32, s32);
 s32 func_800395D4(void);
 void func_80034508(void);
 void func_80024A38(s32);
@@ -131,11 +131,13 @@ void func_80002978(void) {
 
     if (D_80080129 != 0) {
         if (D_80049AE8 > 0) {
-            gDPSetFillColor(D_8005BFD8++, ((u16)GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1) << 16) | GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1));
+            gDPSetFillColor(D_8005BFD8++, ((u16) GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1) << 16) |
+                                              GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1));
             gDPFillRectangle(D_8005BFD8++, 0, 0, D_8005BFC8 - 1, D_80049AE8 + 20);
         }
     } else {
-        gDPSetFillColor(D_8005BFD8++, ((u16)GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1) << 16) | GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1));
+        gDPSetFillColor(D_8005BFD8++, ((u16) GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1) << 16) |
+                                          GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1));
         gDPFillRectangle(D_8005BFD8++, 0, 0, D_8005BFC8 - 1, D_8005BFCA - 1);
     }
 
@@ -148,7 +150,7 @@ void func_80002978(void) {
 
 void func_80002C54(void) {
     D_8004CBC8.t.ucode_boot = rspbootTextStart;
-    D_8004CBC8.t.ucode_boot_size = (u32)rspbootTextEnd - (u32)rspbootTextStart;
+    D_8004CBC8.t.ucode_boot_size = (u32) rspbootTextEnd - (u32) rspbootTextStart;
     D_8004CBC8.t.ucode = gspFast3DTextStart;
     D_8004CBC8.t.ucode_data = gspFast3DDataStart;
     memcpy(&D_801389B8, &D_8004CBC8, sizeof(OSTask));
@@ -157,28 +159,28 @@ void func_80002C54(void) {
     D_801389B8.t.ucode_data = gspFast3DDataStart;
 
     D_8004CC88.t.ucode_boot = rspbootTextStart;
-    D_8004CC88.t.ucode_boot_size = (u32)rspbootTextEnd - (u32)rspbootTextStart;
+    D_8004CC88.t.ucode_boot_size = (u32) rspbootTextEnd - (u32) rspbootTextStart;
     D_8004CC88.t.ucode = gspUltraFast3DTextStart;
     D_8004CC88.t.ucode_data = gspUltraFast3DDataStart;
 
     D_8008011C = 0;
 }
 
-void func_80002D14(void* arg0) {
+void func_80002D14(void *arg0) {
     OSMesg sp54;
     OSTime sp4C;
-    
+
     while (TRUE) {
         if (osRecvMesg(&D_8005AE58, &sp54, OS_MESG_NOBLOCK) == -1) {
             D_800801E4 = 0;
-            osSendMesg(&D_8005AE40, (OSMesg)0x7777, OS_MESG_NOBLOCK);
+            osSendMesg(&D_8005AE40, (OSMesg) 0x7777, OS_MESG_NOBLOCK);
             osRecvMesg(&D_8005AE58, &sp54, OS_MESG_BLOCK);
         }
 
         while (osRecvMesg(&D_8005AE10, NULL, OS_MESG_NOBLOCK) != -1) {}
         while (osRecvMesg(&D_8005AE28, NULL, OS_MESG_NOBLOCK) != -1) {}
 
-        D_800801E8 = ((OSTask*)sp54)->t.type; // wut?
+        D_800801E8 = ((OSTask *) sp54)->t.type; // wut?
 
         osSpTaskStart(sp54);
         sp4C = osGetTime();
@@ -208,15 +210,15 @@ void func_80002F60(void) {
         D_8004CC88.t.data_ptr = D_80080100->unk_8080;
         D_8004CC88.t.data_size = (D_8005BFE4 - D_80080100->unk_8080) * sizeof(UnkDispStruct);
 
-        osSendMesg(&D_8005AE58, (OSMesg)&D_8004CBC8, OS_MESG_BLOCK);
-        osSendMesg(&D_8005AE58, (OSMesg)&D_8004CC88, OS_MESG_BLOCK);
+        osSendMesg(&D_8005AE58, (OSMesg) &D_8004CBC8, OS_MESG_BLOCK);
+        osSendMesg(&D_8005AE58, (OSMesg) &D_8004CC88, OS_MESG_BLOCK);
 
         D_8008011C += 2;
 
         if (D_8008012C & 2) {
             D_801389B8.t.data_ptr = D_80080100->unk_6080;
             D_801389B8.t.data_size = (D_8005BFE0 - D_80080100->unk_6080) * sizeof(Gfx);
-            osSendMesg(&D_8005AE58, (OSMesg)&D_801389B8, OS_MESG_BLOCK);
+            osSendMesg(&D_8005AE58, (OSMesg) &D_801389B8, OS_MESG_BLOCK);
             D_8008011C++;
         }
     }
@@ -260,12 +262,13 @@ void func_800031FC(u16 arg0) {
     D_8005BFCA = 240;
 
     D_8005BFD0[0] = 0x803B4FC0;
-    tmp = D_8005BFC8 * D_8005BFCA;
-    D_8005BFD0[1] = 0x803B4FC0 + tmp * 2;
+    tmp = D_8005BFC8 * D_8005BFCA * 2;
+    D_8005BFD0[1] = 0x803B4FC0 + tmp;
 
-    D_80080120 = 
-    D_80080124 = ((u32)&D_8013F0B0 + 0x40) & ~0x3F;
-    gHeapBase = ((u32)D_80080124 + 0x25800 + 0x40) & ~0x3F;
+    D_80080124 = D_80080120 = ((u32) &D_8013F0B0 + 0x40) & ~0x3F;
+    // gHeapBase = ((u32) D_80080124 + 0x25800 + 0x40) & ~0x3F;
+    gHeapBase = (u32) D_80080124 + 0x25840;
+    gHeapBase = (void *) (((u32) gHeapBase) & ~0x3F);
     init_heap();
     func_80025E6C();
     func_80025EDC(D_80080124, 0x25800);
