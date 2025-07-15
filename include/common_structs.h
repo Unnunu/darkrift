@@ -1,6 +1,16 @@
 #ifndef _COMMON_STRUCTS_H
 #define _COMMON_STRUCTS_H
 
+typedef f32 MtxF[4][4];
+
+typedef struct Vec3f {
+    f32 x, y, z;
+} Vec3f;
+
+typedef struct Vec3s {
+    s32 x, y, z;
+} Vec3s;
+
 typedef struct UnkDispStructPart1 {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ char unk_02[0xE];
@@ -109,12 +119,20 @@ typedef struct UnkItemAlpha {
 } UnkItemAlpha; // size >= 0xE
 
 typedef struct GlobalObjA {
-    /* 0x000 */ char unk_000[0x74];
+    /* 0x000 */ char unk_000[0x20];
+    /* 0x020 */ s32 unk_020;
+    /* 0x024 */ s32 unk_024;
+    /* 0x028 */ s32 unk_028;
+    /* 0x02C */ char unk_02C[0x52 - 0x2C];
+    /* 0x052 */ s16 unk_052;
+    /* 0x054 */ char unk_054[0x74 - 0x54];
     /* 0x074 */ s16 unk_074;
     /* 0x076 */ char unk_076[10];
     /* 0x080 */ s32 unk_080;
-    /* 0x084 */ char unk_084[68];
-    /* 0x0C8 */ struct GlobalObjC *unk_0C8;
+    /* 0x084 */ s16 unk_084;
+    /* 0x086 */ s16 unk_086;
+    /* 0x088 */ char unk_088[64];
+    /* 0x0C8 */ struct GlobalObjC *camera;
     /* 0x0CC */ char unk_0CC[324];
     /* 0x210 */ struct GlobalObjA *nextObject;
     /* 0x214 */ struct GlobalObjA *prevObject;
@@ -125,9 +143,18 @@ typedef struct GlobalObjB {
 } GlobalObjB; // size = 0xA0
 
 typedef struct GlobalObjC {
-    /* 0x000 */ char unk_000[0x128];
-    /* 0x128 */ void *unk_128;
-    /* 0x12C */ char unk_12C[7780];
+    /* 0x0000 */ char unk_000[0x128];
+    /* 0x0128 */ void *unk_128;
+    /* 0x012C */ s32 *unk_12C;
+    /* 0x0130 */ char unk_130[0x414 - 0x130];
+    /* 0x0414 */ s32 unk_414;
+    /* 0x0418 */ s32 unk_418;
+    /* 0x041C */ s32 unk_41C;
+    /* 0x0420 */ char unk_420[0xA08 - 0x420];
+    /* 0x0A08 */ s32 unk_A08;
+    /* 0x0A0C */ s16 unk_A0C;
+    /* 0x0A0E */ s16 unk_A0E;
+    /* 0x0A10 */ char unk_A10[0x1F90 - 0xA10];
 } GlobalObjC; // size = 0x1F90
 
 #endif
