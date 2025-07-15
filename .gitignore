@@ -13,8 +13,6 @@ __pycache__/
 *.d
 *.pyc
 
-*_auto.txt
-
 .ninja_log
 .splache
 build.ninja

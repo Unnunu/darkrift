@@ -66,7 +66,6 @@ void func_80025A0C(WadStructGamma *);
 void func_800264B4(s32);
 void func_80026C38(void);
 void dma_read(s32 romAddr, void *vramAddr, s32 size);
-void func_80000E0C(u8 *arg0, u8 arg1, u32 arg2);
 
 void func_80026B74(WadStructGamma *);
 void func_80026BE0(WadStructGamma *arg0);

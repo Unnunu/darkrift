@@ -101,4 +101,33 @@ typedef struct WadStructGamma {
     /* 0x34 */ u8 *romAddr;
 } WadStructGamma; // size = 0x38
 
+typedef struct UnkItemAlpha {
+    /* 0x00 */ u8 *buffer;
+    /* 0x04 */ s32 count;
+    /* 0x08 */ u8 **elements;
+    /* 0x0C */ s16 unk_0C;
+} UnkItemAlpha; // size >= 0xE
+
+typedef struct GlobalObjA {
+    /* 0x000 */ char unk_000[0x74];
+    /* 0x074 */ s16 unk_074;
+    /* 0x076 */ char unk_076[10];
+    /* 0x080 */ s32 unk_080;
+    /* 0x084 */ char unk_084[68];
+    /* 0x0C8 */ struct GlobalObjC *unk_0C8;
+    /* 0x0CC */ char unk_0CC[324];
+    /* 0x210 */ struct GlobalObjA *nextObject;
+    /* 0x214 */ struct GlobalObjA *prevObject;
+} GlobalObjA; // size = 0x218
+
+typedef struct GlobalObjB {
+    /* 0x000 */ char unk_000[0xA0];
+} GlobalObjB; // size = 0xA0
+
+typedef struct GlobalObjC {
+    /* 0x000 */ char unk_000[0x128];
+    /* 0x128 */ void *unk_128;
+    /* 0x12C */ char unk_12C[7780];
+} GlobalObjC; // size = 0x1F90
+
 #endif

@@ -5,7 +5,6 @@
 #define HEAP_SIZE 0x23E806
 
 void heap_link(ChunkHeader *arg0, ChunkHeader **arg1);
-void mem_free(void *);
 
 extern OSMesgQueue D_8005ADF8;
 

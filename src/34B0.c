@@ -45,7 +45,7 @@ extern s16 D_80080114;
 extern s32 D_80080140[20];
 extern s32 D_80080190[20];
 extern s32 D_8013F0B0;
-extern s32 D_8013C550;
+extern UnkItemAlpha D_8013C550;
 
 typedef struct UnkStruct800031FC {
     /* 0x00 */ char unk_00[8];
@@ -58,7 +58,6 @@ void func_80025EDC(s32 arg0, s32 arg1);
 void func_80012490(void);
 void func_80024D2C(void);
 void func_800207E4(void);
-void func_8002A8C0(s32 *, s32, s32);
 s32 func_800395D4(void);
 void func_80034508(void);
 void func_80024A38(s32);
@@ -279,7 +278,7 @@ void func_800031FC(u16 arg0) {
     D_80080110 = D_8004BB48[arg0].unk_0C;
     D_80080112 = D_8004BB48[arg0].unk_0D;
     D_80080114 = D_8004BB48[arg0].unk_0E;
-    func_8002A8C0(&D_8013C550, 0x32, 0xA0);
+    func_8002A8C0(&D_8013C550, 50, sizeof(GlobalObjB));
     func_8002AC10();
     D_8013C560 = func_800395D4();
     D_80080136 = D_8004BB48[arg0].unk_14;
@@ -319,7 +318,7 @@ void func_80003468(u16 arg0) {
     D_80080110 = D_8004BB48[arg0].unk_0C;
     D_80080112 = D_8004BB48[arg0].unk_0D;
     D_80080114 = D_8004BB48[arg0].unk_0E;
-    func_8002A8C0(&D_8013C550, 50, 160);
+    func_8002A8C0(&D_8013C550, 50, sizeof(GlobalObjB));
     func_8002AC10();
     D_8013C560 = func_800395D4();
     func_80024D2C();
