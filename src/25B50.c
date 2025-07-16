@@ -4,7 +4,7 @@ extern u16 D_8004C960;
 extern u8 D_8004C964;
 extern s16 D_8004C968[];
 extern s16 D_8004C98C[];
-extern OSMesgQueue D_8005ADF8;
+extern OSMesgQueue gSchedDMAQueue;
 
 extern u8 *D_800B6410[2];
 extern u8 *D_800B6418;
@@ -24,7 +24,7 @@ void func_80024F50(void) {
         D_800B6428 = 1 - D_800B6428;
         D_800B6418 = D_800B6410[D_800B6428];
 
-        while (osRecvMesg(&D_8005ADF8, NULL, OS_MESG_NOBLOCK)) {}
+        while (osRecvMesg(&gSchedDMAQueue, NULL, OS_MESG_NOBLOCK)) {}
 
         if ((u32) D_800B6430 < (u32) D_800B6420) {
             dma_read_noblock(D_800B6438->romAddr + D_800B6424 * D_800B6430, D_800B6410[1 - D_800B6428], D_800B6430);

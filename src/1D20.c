@@ -80,9 +80,9 @@ extern OSTime D_8005BEF0;
 extern s32 D_8005BEF8;
 extern s32 D_8005BEFC;
 extern u16 D_8005BFC0;
-extern u16 D_8005BFC2;
+extern u16 gGameMode;
 extern u16 D_8005BFCE;
-extern void *D_8005BFD0[];
+extern void *gGfxBuffers[];
 extern Gfx *D_8005BFD8;
 extern Gfx *D_8005BFDC;
 extern Gfx *D_8005BFE0;
@@ -90,6 +90,7 @@ extern UnkDispStruct *D_8005BFE4;
 extern UnkDispStruct *D_8005BFE8;
 extern DisplayData D_8005BFF0[];
 extern DisplayData *D_80080100;
+extern s16 D_80080118;
 extern s32 D_8008012C;
 extern s16 D_80080130;
 extern s16 D_80080132;
@@ -100,11 +101,11 @@ extern DISPCB D_80080140[20];
 extern s32 D_80080190[20];
 
 void func_800030E4(void);
-void func_80003150(s32);
-void func_80002F60(void);
+void sched_wait_vretrace(s32);
+void sched_execute_tasks(void);
 void func_800031FC(u16);
 void func_80006CEC(void);
-GlobalObjA *func_8002BB6C(void (*)(void), s32);
+Object *func_8002BB6C(void (*)(Object *), s32);
 void func_80003468(u16);
 void func_80024C98(void);
 void func_8002B0AC(void);
@@ -118,11 +119,11 @@ void func_80001120(void) {
     D_8005BFD8 = D_80080100->unk_80;
     D_8005BFE4 = D_80080100->unk_8080;
 
-    gSPSegment(D_8005BFD8++, 0x01, D_8005BFD0[D_8005BFCE]);
+    gSPSegment(D_8005BFD8++, 0x01, gGfxBuffers[D_8005BFCE]);
     gSPSegment(D_8005BFD8++, 0x00, 0x00000000);
 
     D_8004CC20.unk_10 = 0;
-    D_8004CC20.unk_14 = PHYSICAL_TO_VIRTUAL(D_8005BFD0[D_8005BFCE]);
+    D_8004CC20.unk_14 = PHYSICAL_TO_VIRTUAL(gGfxBuffers[D_8005BFCE]);
 
     PUSH_UNK_DISP(D_8005BFE4, osVirtualToPhysical(&D_8004CC20), &D_8004CCC8, NULL, NULL);
     gDPFullSync(D_8005BFD8++);
@@ -130,8 +131,8 @@ void func_80001120(void) {
     PUSH_UNK_DISP(D_8005BFE4, NULL, &D_8004CD30, NULL, NULL);
     PUSH_UNK_DISP(D_8005BFE4, NULL, NULL, NULL, NULL);
     func_800030E4();
-    func_80003150(1);
-    func_80002F60();
+    sched_wait_vretrace(1);
+    sched_execute_tasks();
 
     D_80080100 = &D_8005BFF0[D_8005BFCE];
 }
@@ -152,11 +153,11 @@ void func_8000132C(void) {
     D_8005BFE4 = D_80080100->unk_8080;
     D_8005BFE8 = &D_80080100->unk_8080[0x800];
 
-    gSPSegment(D_8005BFD8++, 0x01, D_8005BFD0[D_8005BFCE]);
+    gSPSegment(D_8005BFD8++, 0x01, gGfxBuffers[D_8005BFCE]);
     gSPSegment(D_8005BFD8++, 0x00, 0x00000000);
 
     D_8004CC20.unk_10 = 0;
-    D_8004CC20.unk_14 = VIRTUAL_TO_PHYSICAL(D_8005BFD0[D_8005BFCE]);
+    D_8004CC20.unk_14 = VIRTUAL_TO_PHYSICAL(gGfxBuffers[D_8005BFCE]);
 
     if (D_8008012C & 2) {
         gSPDisplayList(D_8005BFE0++, D_8004CA68);
@@ -204,8 +205,8 @@ void func_8000132C(void) {
         }
     }
 
-    func_80003150(1);
-    func_80002F60();
+    sched_wait_vretrace(1);
+    sched_execute_tasks();
     D_8005BEF8++;
     if (D_8005BEF8 >= 0x100) {
         D_8005BEF8 = 0;
@@ -216,8 +217,8 @@ void func_8000132C(void) {
 #pragma GLOBAL_ASM("asm/nonmatchings/1D20/func_8000132C.s")
 #endif
 
-GlobalObjA *func_8000194C(void) {
-    GlobalObjA *obj;
+Object *func_8000194C(void) {
+    Object *obj;
 
     obj = func_80015FB4(1);
     if (obj == NULL) {
@@ -240,13 +241,55 @@ GlobalObjA *func_8000194C(void) {
 #pragma GLOBAL_ASM("asm/nonmatchings/1D20/func_80001FB0.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1D20/func_80002178.s")
+void func_80002178(s32, s32);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1D20/func_80002340.s")
+void func_80002340(Object *obj) {
+    if (D_8005BEFC - 8 < D_80080118) {
+        D_8008012C &= ~0x10;
+        obj->unk_080 |= 0x10;
+        D_8005BFC0 |= 0x100;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1D20/func_800023E4.s")
+        if (obj->unk_0A0 == 0) {
+            D_8005BFC0 &= ~0x4;
+        }
+        D_8005BFC0 |= 0x1000;
+    } else {
+        D_8005BEFC -= 8;
+        func_80002178(D_8005BEFC, 0);
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1D20/func_80002448.s")
-void func_80002448(GlobalObjA*);
+void func_800023E4(Object *obj) {
+    obj->unk_090++;
+    if (obj->unk_090 >= 7) {
+        osViBlack(0);
+        D_8005BEFC = 255;
+        obj->unk_1EC = func_80002340;
+    }
+
+    func_80002178(255, 0);
+}
+
+void func_80002448(Object *obj) {
+    func_80021918(obj, 0);
+    if (D_8005BFC0 & 0x400) {
+        D_8005BFC0 |= 0x1000;
+        return;
+    }
+    D_8008012C |= 0x10;
+    osViBlack(1);
+    D_8005BFC0 &= ~0x1000;
+    func_80021918(obj, 0);
+    if (D_8005BFC0 & 4) {
+        obj->unk_0A0 = 1;
+    }
+    D_8005BFC0 |= 4;
+    if (obj->unk_080 & 0x10) {
+        obj->unk_080 &= ~0x10;
+        obj->unk_1EC = func_800023E4;
+    }
+    func_80002178(255, 0);
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1D20/func_80002528.s")
 
@@ -257,20 +300,20 @@ void func_80002448(GlobalObjA*);
 #pragma GLOBAL_ASM("asm/nonmatchings/1D20/func_80002744.s")
 
 void func_800027A0(void) {
-    D_8005BFC2 = 0x21;
-    func_800031FC(D_8005BFC2);
+    gGameMode = 0x21;
+    func_800031FC(gGameMode);
     func_80006CEC();
 
     while (TRUE) {
-        D_8005BED0 = D_8005BFC2;
+        D_8005BED0 = gGameMode;
         func_8002BB6C(func_80002448, 0x1100);
-        D_8004BB48[D_8005BFC2].unk_00();
+        D_8004BB48[gGameMode].fn_run();
         if (!(D_8005BFC0 & 0x800)) {
             osViBlack(1);
         }
         func_800030E4();
-        func_80003150(0);
+        sched_wait_vretrace(0);
         D_8005BED2 = D_8005BED0;
-        func_80003468(D_8005BFC2);
+        func_80003468(gGameMode);
     }
 }

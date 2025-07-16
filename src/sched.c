@@ -4,14 +4,14 @@
 void init_heap(void);
 extern void *gHeapBase;
 
-extern long long int gspUltraFast3DTextStart[], gspUltraFast3DTextEnd[];
-extern long long int gspUltraFast3DDataStart[], gspUltraFast3DDataEnd[];
+extern long long int gspDarkRift3DTextStart[], gspDarkRift3DTextEnd[];
+extern long long int gspDarkRift3DDataStart[], gspDarkRift3DDataEnd[];
 
-extern OSMesgQueue D_8005AE40;
-extern OSMesgQueue D_8005AE58;
-extern OSMesgQueue D_8005AE10;
-extern OSMesgQueue D_8005AE28;
-extern OSMesgQueue D_8005ADD8;
+extern OSMesgQueue gSchedTaskRequestQueue;
+extern OSMesgQueue gSchedSPTaskQueue;
+extern OSMesgQueue gSchedSPQueue;
+extern OSMesgQueue gSchedDPQueue;
+extern OSMesgQueue gSchedVRetraceQueue;
 
 extern OSTime D_8005BEE8;
 extern OSTime D_8005BEF0;
@@ -33,7 +33,7 @@ extern DisplayData *D_80080100;
 extern Gfx *D_8005BFD8;
 extern Gfx *D_8005BFE0;
 extern UnkDispStruct *D_8005BFE4;
-extern u8 *D_8005BFD0[];
+extern u8 *gGfxBuffers[];
 extern u16 D_8005BFCE;
 extern u16 D_8005BFC8;
 extern u16 D_8005BFCA;
@@ -144,7 +144,7 @@ void func_80002978(void) {
     gDPSetCycleType(D_8005BFD8++, G_CYC_COPY);
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/34B0/func_80002978.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/sched/func_80002978.s")
 #endif
 
 void func_80002C54(void) {
@@ -159,65 +159,73 @@ void func_80002C54(void) {
 
     D_8004CC88.t.ucode_boot = rspbootTextStart;
     D_8004CC88.t.ucode_boot_size = (u32) rspbootTextEnd - (u32) rspbootTextStart;
-    D_8004CC88.t.ucode = gspUltraFast3DTextStart;
-    D_8004CC88.t.ucode_data = gspUltraFast3DDataStart;
+    D_8004CC88.t.ucode = gspDarkRift3DTextStart;
+    D_8004CC88.t.ucode_data = gspDarkRift3DDataStart;
 
     D_8008011C = 0;
 }
 
-void func_80002D14(void *arg0) {
-    OSMesg sp54;
-    OSTime sp4C;
+void sched_run(void *arg0) {
+    OSMesg task;
+    OSTime task_start;
 
     while (TRUE) {
-        if (osRecvMesg(&D_8005AE58, &sp54, OS_MESG_NOBLOCK) == -1) {
+        // receive task from task queue
+        if (osRecvMesg(&gSchedSPTaskQueue, &task, OS_MESG_NOBLOCK) == -1) {
+            // no pending tasks
             D_800801E4 = 0;
-            osSendMesg(&D_8005AE40, (OSMesg) 0x7777, OS_MESG_NOBLOCK);
-            osRecvMesg(&D_8005AE58, &sp54, OS_MESG_BLOCK);
+            // notify the other threads that RCP is idle
+            osSendMesg(&gSchedTaskRequestQueue, (OSMesg) 0x7777, OS_MESG_NOBLOCK);
+            // wait until at least one task appears
+            osRecvMesg(&gSchedSPTaskQueue, &task, OS_MESG_BLOCK);
         }
 
-        while (osRecvMesg(&D_8005AE10, NULL, OS_MESG_NOBLOCK) != -1) {}
-        while (osRecvMesg(&D_8005AE28, NULL, OS_MESG_NOBLOCK) != -1) {}
+        // clear sp and dp queues
+        while (osRecvMesg(&gSchedSPQueue, NULL, OS_MESG_NOBLOCK) != -1) {}
+        while (osRecvMesg(&gSchedDPQueue, NULL, OS_MESG_NOBLOCK) != -1) {}
 
-        D_800801E8 = ((OSTask *) sp54)->t.type; // wut?
+        D_800801E8 = ((OSTask *) task)->t.type;
 
-        osSpTaskStart(sp54);
-        sp4C = osGetTime();
+        // start task and wait for its completion
+        osSpTaskStart(task);
+        task_start = osGetTime();
         D_800801E4 = 1;
-        osRecvMesg(&D_8005AE10, NULL, OS_MESG_BLOCK);
+        osRecvMesg(&gSchedSPQueue, NULL, OS_MESG_BLOCK);
 
-        D_8005BEE8 += osGetTime() - sp4C;
+        D_8005BEE8 += osGetTime() - task_start;
 
+        // wait for RDP sync
         if (D_800801E8 != M_AUDTASK) {
             D_800801E4 = 2;
-            osRecvMesg(&D_8005AE28, NULL, OS_MESG_BLOCK);
+            osRecvMesg(&gSchedDPQueue, NULL, OS_MESG_BLOCK);
         }
 
-        D_8005BEF0 += osGetTime() - sp4C;
+        D_8005BEF0 += osGetTime() - task_start;
     }
 }
 
-void func_80002F60(void) {
-    while (osRecvMesg(&D_8005AE40, NULL, OS_MESG_NOBLOCK) != -1) {}
+void sched_execute_tasks(void) {
+    while (osRecvMesg(&gSchedTaskRequestQueue, NULL, OS_MESG_NOBLOCK) != -1) {}
 
     osWritebackDCacheAll();
     D_8008011C = func_80021338();
     if (D_80080128 == 0) {
+        // prepare two graphics task, one for f3d ucode, and the other for dr ucode
         D_8004CBC8.t.data_ptr = D_80080100->unk_80;
         D_8004CBC8.t.data_size = (D_8005BFD8 - D_80080100->unk_80) * sizeof(Gfx);
 
         D_8004CC88.t.data_ptr = D_80080100->unk_8080;
         D_8004CC88.t.data_size = (D_8005BFE4 - D_80080100->unk_8080) * sizeof(UnkDispStruct);
 
-        osSendMesg(&D_8005AE58, (OSMesg) &D_8004CBC8, OS_MESG_BLOCK);
-        osSendMesg(&D_8005AE58, (OSMesg) &D_8004CC88, OS_MESG_BLOCK);
+        osSendMesg(&gSchedSPTaskQueue, (OSMesg) &D_8004CBC8, OS_MESG_BLOCK);
+        osSendMesg(&gSchedSPTaskQueue, (OSMesg) &D_8004CC88, OS_MESG_BLOCK);
 
         D_8008011C += 2;
 
         if (D_8008012C & 2) {
             D_801389B8.t.data_ptr = D_80080100->unk_6080;
             D_801389B8.t.data_size = (D_8005BFE0 - D_80080100->unk_6080) * sizeof(Gfx);
-            osSendMesg(&D_8005AE58, (OSMesg) &D_801389B8, OS_MESG_BLOCK);
+            osSendMesg(&gSchedSPTaskQueue, (OSMesg) &D_801389B8, OS_MESG_BLOCK);
             D_8008011C++;
         }
     }
@@ -227,22 +235,22 @@ void func_800030E4(void) {
     D_800801E5 = 0;
     if (D_8008011C != 0) {
         D_800801E5 = 7;
-        osRecvMesg(&D_8005AE40, NULL, OS_MESG_BLOCK);
+        osRecvMesg(&gSchedTaskRequestQueue, NULL, OS_MESG_BLOCK);
         D_8008011C = 0;
         D_800801E5 = 1;
         osSetTime(0);
     }
 }
 
-void func_80003150(u8 arg0) {
-    if (MQ_IS_FULL(&D_8005ADD8)) {
-        osRecvMesg(&D_8005ADD8, NULL, OS_MESG_BLOCK);
+void sched_wait_vretrace(u8 arg0) {
+    if (MQ_IS_FULL(&gSchedVRetraceQueue)) {
+        osRecvMesg(&gSchedVRetraceQueue, NULL, OS_MESG_BLOCK);
         D_80080128 = 1;
     } else {
         D_80080128 = 0;
-        osRecvMesg(&D_8005ADD8, NULL, OS_MESG_BLOCK);
+        osRecvMesg(&gSchedVRetraceQueue, NULL, OS_MESG_BLOCK);
         if (arg0) {
-            osViSwapBuffer(D_8005BFD0[D_8005BFCE]);
+            osViSwapBuffer(gGfxBuffers[D_8005BFCE]);
             D_8005BFCE = 1 - D_8005BFCE;
         }
     }
@@ -260,9 +268,9 @@ void func_800031FC(u16 arg0) {
     D_8005BFC8 = 320;
     D_8005BFCA = 240;
 
-    D_8005BFD0[0] = 0x803B4FC0;
+    gGfxBuffers[0] = 0x803B4FC0;
     tmp = D_8005BFC8 * D_8005BFCA * 2;
-    D_8005BFD0[1] = 0x803B4FC0 + tmp;
+    gGfxBuffers[1] = 0x803B4FC0 + tmp;
 
     D_80080124 = D_80080120 = ((u32) &D_8013F0B0 + 0x40) & ~0x3F;
     // gHeapBase = ((u32) D_80080124 + 0x25800 + 0x40) & ~0x3F;
@@ -303,7 +311,7 @@ void func_800031FC(u16 arg0) {
     func_80023200();
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/34B0/func_800031FC.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/sched/func_800031FC.s")
 void func_800031FC(u16 arg0);
 #endif
 

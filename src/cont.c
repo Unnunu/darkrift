@@ -30,12 +30,12 @@ s32 cont_init(s32 maxControllers) {
         gContData[i] = &gDefaultContData;
     }
 
-    D_800AA430[0].unk_0B = D_800AA430[1].unk_0B = 0;
+    gPlayerInput[0].unk_0B = gPlayerInput[1].unk_0B = 0;
 
     for (i = 0; i < 2; i++, gNumControllers++) {
         if ((bitpattern & (1 << i)) && !(gContStatus[i].errno & CONT_NO_RESPONSE_ERROR)) {
             gContData[i] = &gContDataArray[i];
-            D_800AA430[i].unk_0B = 1;
+            gPlayerInput[i].unk_0B = 1;
             if (gNumControllers == maxControllers) {
                 return gNumControllers;
             }

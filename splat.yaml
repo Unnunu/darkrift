@@ -63,7 +63,7 @@ segments:
       - [0x1050, c, main]
       - [0x1310, c, heap]
       - [0x1D20, c]
-      - [0x34B0, c]
+      - [0x34B0, c, sched]
       - [0x41D0, c]
       - [0x76E0, c]
       - [0xC8F0, c, kmd]
@@ -79,8 +79,8 @@ segments:
       - [0x22940, c]
       - [0x23D00, c]
       - [0x24930, c]
-      - [0x255B0, c] # input
-      - [0x25980, c, some_data]
+      - [0x255B0, c, input]
+      - [0x25980, c, some_data] # find proper place for this
       - [0x25980, c, cont]
       - [0x25B50, c]
       - [0x26740, c, wad]
@@ -226,12 +226,14 @@ segments:
       - [0x47090, hasm, ../ultralib/src/gu/libm_vals]
       - [0x47090, textbin, rsp/rspboot]
       - [0x47160, textbin, rsp/gspFast3D]
-      - [0x48590, textbin, rsp/gspUltraFast3D]
+      - [0x48590, textbin, rsp/gspDarkRift3D]
       - [0x49050, textbin, rsp/aspMain]
 
       - [0x49E70, .data, main]
       - [0x49E80, .data, heap]
       - [0x49E90, data]
+      - [0x4B0F0, .data, input]
+      - [0x4B1C0, data]
       - [0x4C740, .data, some_data]
       - [0x4CC10, data]
       - [0x4D350, .data, cont]
@@ -295,7 +297,7 @@ segments:
       - [0x56450, .rodata, ../ultralib/src/gu/libm_vals]
 
       - { start: 0x56460, type: databin, name: rsp/gspFast3D, linker_section_order: .rodata}
-      - { start: 0x56C60, type: databin, name: rsp/gspUltraFast3D, linker_section_order: .rodata}
+      - { start: 0x56C60, type: databin, name: rsp/gspDarkRift3D, linker_section_order: .rodata}
       - { start: 0x57460, type: databin, name: rsp/aspMain, linker_section_order: .rodata}
 
       - { type: .bss, vram: 0x80056EE0, name: main }

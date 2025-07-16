@@ -6,7 +6,7 @@
 
 void heap_link(ChunkHeader *arg0, ChunkHeader **arg1);
 
-extern OSMesgQueue D_8005ADF8;
+extern OSMesgQueue gSchedDMAQueue;
 
 ChunkHeader *sFreeChunksList = NULL;
 ChunkHeader *sAllocatedChunksList = NULL;
@@ -320,15 +320,15 @@ void func_80000F70(s32 arg0) {
 
 void dma_read(s32 romAddr, void *vramAddr, s32 size) {
     osWritebackDCacheAll();
-    while (osRecvMesg(&D_8005ADF8, 0, 0) != -1) {}
-    osPiStartDma(&D_8005AE90, 0, OS_READ, romAddr, vramAddr, size, &D_8005ADF8);
-    osRecvMesg(&D_8005ADF8, NULL, OS_MESG_BLOCK);
+    while (osRecvMesg(&gSchedDMAQueue, 0, 0) != -1) {}
+    osPiStartDma(&D_8005AE90, 0, OS_READ, romAddr, vramAddr, size, &gSchedDMAQueue);
+    osRecvMesg(&gSchedDMAQueue, NULL, OS_MESG_BLOCK);
     osInvalDCache(0, 0x3FFFFF);
 }
 
 void dma_read_noblock(s32 romAddr, void *vramAddr, s32 size) {
     osWritebackDCacheAll();
-    osPiStartDma(&D_8005AE90, 0, OS_READ, romAddr, vramAddr, size, &D_8005ADF8);
+    osPiStartDma(&D_8005AE90, 0, OS_READ, romAddr, vramAddr, size, &gSchedDMAQueue);
     osInvalDCache(0, 0x3FFFFF);
 }
 

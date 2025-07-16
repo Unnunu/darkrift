@@ -255,8 +255,16 @@ kdebugserver = 0x80045348;
 
 rspbootTextStart = 0x80046490; // name_end:rspbootTextEnd
 gspFast3DTextStart = 0x80046560; // name_end:gspFast3DTextEnd
-gspUltraFast3DTextStart = 0x80047990; // name_end:gspUltraFast3DTextEnd
+gspDarkRift3DTextStart = 0x80047990; // name_end:gspDarkRift3DTextEnd
 aspMainTextStart = 0x80048450; // name_end:aspMainTextEnd
 gspFast3DDataStart = 0x80055860; // name_end:gspFast3DDataEnd
-gspUltraFast3DDataStart = 0x80056060; // name_end:gspUltraFast3DDataEnd
+gspDarkRift3DDataStart = 0x80056060; // name_end:gspDarkRift3DDataEnd
 aspMainDataStart = 0x80056C20; // name_end:aspMainDataEnd
+
+obj_allocate = 0x8002AC5C;
+gGameMode = 0x8005BFC2;
+gPlayerInput = 0x800AA430; // size:0x1C
+D_800AA450 = 0x800AA450; // size:0x20
+sched_wait_vretrace = 0x80003150;
+gGfxBuffers = 0x8005BFD0;
+sched_execute_tasks = 0x80002F60;

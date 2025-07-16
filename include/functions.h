@@ -11,8 +11,9 @@ s32 func_80000EA8(s32 size);
 void func_80000F70(s32 arg0);
 void func_8002A8C0(UnkItemAlpha *arg0, u32 arg1, u32 arg2);
 void func_80000E0C(u8 *arg0, u8 arg1, u32 arg2);
-GlobalObjA *func_80015FB4(s32);
-void func_80015C58(GlobalObjA*);
-void func_800213E0(s32, s32);
+Object *func_80015FB4(s32);
+void func_80015C58(Object *);
+void func_800213E0(s32, u32);
+void func_80021918(Object *arg0, s32 arg1);
 
 #endif

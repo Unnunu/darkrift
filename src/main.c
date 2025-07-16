@@ -17,22 +17,22 @@ u8 unknown_buffer[0x15b0 - 0x400];
 
 OSMesg sPIcmdBuf[8];
 OSMesgQueue sPIcmdQ;
-OSMesgQueue D_8005ADD8;
-OSMesg D_8005ADF0[1];
-OSMesgQueue D_8005ADF8;
-OSMesgQueue D_8005AE10;
-OSMesgQueue D_8005AE28;
-OSMesgQueue D_8005AE40;
-OSMesgQueue D_8005AE58;
-OSMesg D_8005AE70[1];
+OSMesgQueue gSchedVRetraceQueue;
+OSMesg gSchedVRetraceMessages[1];
+OSMesgQueue gSchedDMAQueue;
+OSMesgQueue gSchedSPQueue;
+OSMesgQueue gSchedDPQueue;
+OSMesgQueue gSchedTaskRequestQueue;
+OSMesgQueue gSchedSPTaskQueue;
+OSMesg gSchedDMAMessages[1];
 OSMesg D_8005AE74[1];
-OSMesg D_8005AE78[1];
+OSMesg gSchedDPMessages[1];
 OSMesg D_8005AE7C[1];
-OSMesg D_8005AE80[4];
+OSMesg gSchedSPTaskMessages[4];
 
 void thread1_idle(void *);
 void thread3_main(void *);
-void func_80002D14(void *);
+void sched_run(void *);
 
 void func_80000450(void) {
     osInitialize();
@@ -53,7 +53,7 @@ void thread1_idle(void *arg0) {
     osViBlack(1);
     osCreatePiManager(OS_PRIORITY_PIMGR, &sPIcmdQ, sPIcmdBuf, ARRAY_COUNT(sPIcmdBuf));
     osCreateThread(&sThread3, 3, &thread3_main, arg0, sThread3Stack + THREAD_3_STACK_SIZE, 10);
-    osCreateThread(&sThread4, 4, &func_80002D14, arg0, sThread4Stack + THREAD_4_STACK_SIZE, 11);
+    osCreateThread(&sThread4, 4, &sched_run, arg0, sThread4Stack + THREAD_4_STACK_SIZE, 11);
     if (D_80049270 == 0) {
         osStartThread(&sThread3);
     }
@@ -63,21 +63,21 @@ void thread1_idle(void *arg0) {
 }
 
 void thread3_main(void *arg0) {
-    osCreateMesgQueue(&D_8005ADF8, D_8005AE70, ARRAY_COUNT(D_8005AE70));
+    osCreateMesgQueue(&gSchedDMAQueue, gSchedDMAMessages, ARRAY_COUNT(gSchedDMAMessages));
 
-    osCreateMesgQueue(&D_8005AE10, D_8005AE74, ARRAY_COUNT(D_8005AE74));
-    osSetEventMesg(OS_EVENT_SP, &D_8005AE10, 0);
+    osCreateMesgQueue(&gSchedSPQueue, D_8005AE74, ARRAY_COUNT(D_8005AE74));
+    osSetEventMesg(OS_EVENT_SP, &gSchedSPQueue, 0);
 
-    osCreateMesgQueue(&D_8005AE28, D_8005AE78, ARRAY_COUNT(D_8005AE78));
-    osSetEventMesg(OS_EVENT_DP, &D_8005AE28, 0);
+    osCreateMesgQueue(&gSchedDPQueue, gSchedDPMessages, ARRAY_COUNT(gSchedDPMessages));
+    osSetEventMesg(OS_EVENT_DP, &gSchedDPQueue, 0);
 
-    osCreateMesgQueue(&D_8005ADD8, D_8005ADF0, ARRAY_COUNT(D_8005ADF0));
-    osViSetEvent(&D_8005ADD8, 0, 1);
+    osCreateMesgQueue(&gSchedVRetraceQueue, gSchedVRetraceMessages, ARRAY_COUNT(gSchedVRetraceMessages));
+    osViSetEvent(&gSchedVRetraceQueue, 0, 1);
 
     cont_init(4);
 
-    osCreateMesgQueue(&D_8005AE40, D_8005AE7C, ARRAY_COUNT(D_8005AE7C));
-    osCreateMesgQueue(&D_8005AE58, D_8005AE80, ARRAY_COUNT(D_8005AE80));
+    osCreateMesgQueue(&gSchedTaskRequestQueue, D_8005AE7C, ARRAY_COUNT(D_8005AE7C));
+    osCreateMesgQueue(&gSchedSPTaskQueue, gSchedSPTaskMessages, ARRAY_COUNT(gSchedSPTaskMessages));
     osStartThread(&sThread4);
     func_800027A0();
 }

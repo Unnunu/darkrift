@@ -10,7 +10,7 @@ extern UnkItemAlpha D_8013C550;
 
 extern s32 D_80049344;
 extern s32 D_8004934C;
-extern GlobalObjA *D_80052C50;
+extern Object *D_80052C50;
 extern s32 D_80052C54;
 
 void func_8002A8C0(UnkItemAlpha *arg0, u32 count, u32 element_size) {
@@ -59,21 +59,21 @@ void func_8002A994(UnkItemAlpha *arg0, u32 count, u32 element_size) {
 }
 
 void func_8002ABCC(s32 count) {
-    func_8002A994(&D_8013C2B0, count, sizeof(GlobalObjA));
+    func_8002A994(&D_8013C2B0, count, sizeof(Object));
     func_8002A994(&D_8013C550, count, sizeof(GlobalObjB));
 }
 
 void func_8002AC10(void) {
-    func_8002A8C0(&D_8013C2B0, 50, sizeof(GlobalObjA));
+    func_8002A8C0(&D_8013C2B0, 50, sizeof(Object));
     func_8002A8C0(&D_8013C2C0, 16, sizeof(GlobalObjC));
     D_80052C50 = NULL;
     D_80052C54 = 0;
 }
 
 #ifdef NON_MATCHING
-GlobalObjA *func_8002AC5C(s16 arg0) {
-    GlobalObjA *obj;
-    GlobalObjA *prev_obj;
+Object *obj_allocate(s16 arg0) {
+    Object *obj;
+    Object *prev_obj;
 
     D_80052C54++;
     if (D_8013C2B0.unk_0C <= 0) {
@@ -81,7 +81,7 @@ GlobalObjA *func_8002AC5C(s16 arg0) {
     }
 
     if (D_80052C50 == NULL) {
-        obj = D_80052C50 = (GlobalObjA *) GET_ITEM(D_8013C2B0);
+        obj = D_80052C50 = (Object *) GET_ITEM(D_8013C2B0);
 
         obj->prevObject = NULL;
         obj->nextObject = NULL;
@@ -94,20 +94,20 @@ GlobalObjA *func_8002AC5C(s16 arg0) {
         }
 
         if (obj == NULL) {
-            prev_obj->nextObject = (GlobalObjA *) GET_ITEM(D_8013C2B0);
+            prev_obj->nextObject = (Object *) GET_ITEM(D_8013C2B0);
 
             obj = prev_obj->nextObject;
             obj->prevObject = prev_obj;
             obj->nextObject = NULL;
         } else if (obj->prevObject == NULL) {
-            obj = (GlobalObjA *) GET_ITEM(D_8013C2B0);
+            obj = (Object *) GET_ITEM(D_8013C2B0);
 
             obj->nextObject = D_80052C50;
             D_80052C50->prevObject = obj;
             D_80052C50 = obj;
             obj->prevObject = NULL;
         } else {
-            prev_obj = (GlobalObjA *) GET_ITEM(D_8013C2B0);
+            prev_obj = (Object *) GET_ITEM(D_8013C2B0);
 
             obj->prevObject->nextObject = prev_obj;
             prev_obj->nextObject = obj;
@@ -121,11 +121,11 @@ GlobalObjA *func_8002AC5C(s16 arg0) {
     return obj;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002AC5C.s")
-GlobalObjA *func_8002AC5C(s16 arg0);
+#pragma GLOBAL_ASM("asm/nonmatchings/item/obj_allocate.s")
+Object *obj_allocate(s16 arg0);
 #endif
 
-void func_8002ADFC(GlobalObjA *obj) {
+void func_8002ADFC(Object *obj) {
     D_80052C54--;
     if (obj->prevObject == NULL) {
         obj->nextObject->prevObject = NULL;
@@ -161,16 +161,16 @@ void func_8002ADFC(GlobalObjA *obj) {
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002B0AC.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002B658.s")
-void func_8002B658(GlobalObjA*, s32*, s32*, s32, s32);
+void func_8002B658(Object *, s32 *, s32 *, s32, s32);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002B850.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002B9AC.s")
 
-GlobalObjA *func_8002BB6C(void (*arg0)(GlobalObjA*), s16 arg1) {
-    GlobalObjA *obj;
-    
-    obj = func_8002AC5C(arg1);
+Object *func_8002BB6C(void (*arg0)(Object *), s16 arg1) {
+    Object *obj;
+
+    obj = obj_allocate(arg1);
     func_8002B658(obj, &D_8004934C, &D_80049344, 0, 0);
     obj->unk_1EC = arg0;
     obj->unk_080 = 8;

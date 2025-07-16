@@ -47,7 +47,7 @@ typedef struct UnkKappa {
 } UnkKappa; // size = 0x10
 
 typedef struct UnkDelta {
-    /* 0x00 */ void (*unk_00)(void);
+    /* 0x00 */ void (*fn_run)(void);
     /* 0x04 */ s32 unk_04;
     /* 0x04 */ s32 unk_08;
     /* 0x0C */ u8 unk_0C;
@@ -118,7 +118,7 @@ typedef struct UnkItemAlpha {
     /* 0x0C */ s16 unk_0C;
 } UnkItemAlpha; // size >= 0xE
 
-typedef struct GlobalObjA {
+typedef struct Object {
     /* 0x000 */ char unk_000[0x20];
     /* 0x020 */ s32 unk_020;
     /* 0x024 */ s32 unk_024;
@@ -131,16 +131,22 @@ typedef struct GlobalObjA {
     /* 0x080 */ s32 unk_080;
     /* 0x084 */ s16 unk_084;
     /* 0x086 */ s16 unk_086;
-    /* 0x088 */ char unk_088[16];
+    /* 0x088 */ char unk_088[8];
+    /* 0x090 */ s32 unk_090;
+    /* 0x094 */ s32 unk_094;
     /* 0x098 */ s32 unk_098;
-    /* 0x09C */ char unk_09C[0xC8-0x9C];
+    /* 0x09C */ char unk_09C[4];
+    /* 0x0A0 */ s32 unk_0A0;
+    /* 0x0A4 */ char unk_0A4[0xC8 - 0xA4];
     /* 0x0C8 */ struct GlobalObjC *camera;
-    /* 0x0CC */ char unk_0CC[0x1EC-0xCC];
-    /* 0x1EC */ void (*unk_1EC)(struct GlobalObjA*);
-    /* 0x1F0 */ char unk_1F0[0x210-0x1F0];
-    /* 0x210 */ struct GlobalObjA *nextObject;
-    /* 0x214 */ struct GlobalObjA *prevObject;
-} GlobalObjA; // size = 0x218
+    /* 0x0CC */ char unk_0CC[0x1EC - 0xCC];
+    /* 0x1EC */ void (*unk_1EC)(struct Object *);
+    /* 0x1F0 */ char unk_1F0[4];
+    /* 0x1F4 */ s32 *unk_1F4;
+    /* 0x1F8 */ char unk_1F8[0x210 - 0x1F8];
+    /* 0x210 */ struct Object *nextObject;
+    /* 0x214 */ struct Object *prevObject;
+} Object; // size = 0x218
 
 typedef struct GlobalObjB {
     /* 0x000 */ char unk_000[0xA0];

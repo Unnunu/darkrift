@@ -7,36 +7,27 @@ typedef struct UnkAudioAlpha {
 } UnkAudioAlpha; // size >= 0xC
 
 typedef struct UnkAudioBeta {
-    /* 0x00 */ u8* unk_00;
+    /* 0x00 */ u8 *unk_00;
     /* 0x04 */ s16 unk_04;
 } UnkAudioBeta; // size >= 0x8
 
 typedef struct UnkAudioGamma {
-    /* 0x00 */ u8* unk_00;
+    /* 0x00 */ u8 *unk_00;
     /* 0x04 */ s32 unk_04;
 } UnkAudioGamma; // size >= 0x8
 
-typedef struct UnkDelta2 {
-    /* 0x00 */ char unk_00[0x80];
-    /* 0x80 */ s32 unk_80;
-    /* 0x84 */ char unk_84[0xC];
-    /* 0x90 */ s32 unk_90;
-    /* 0x94 */ char unk_94[0x1F4 - 0x94];
-    /* 0x1F4 */ s32* unk_1F4;
-} UnkDelta2;
-
-extern OSMesgQueue D_8005AE58;
+extern OSMesgQueue gSchedSPTaskQueue;
 
 extern u8 D_8004A420;
 extern u8 D_8004A424;
 extern u8 D_8004A428;
 extern u8 D_8004A42C;
-extern UnkAudioGamma* D_8004A434;
-extern UnkAudioAlpha* D_8004A438;
-extern ALSeqPlayer* D_8004A43C;
-extern ALSndPlayer* D_8004A444;
+extern UnkAudioGamma *D_8004A434;
+extern UnkAudioAlpha *D_8004A438;
+extern ALSeqPlayer *D_8004A43C;
+extern ALSndPlayer *D_8004A444;
 extern s32 D_8004A448;
-extern ALSndId* D_8004A44C[];
+extern ALSndId *D_8004A44C[];
 extern u8 D_8004A470[];
 extern s8 D_8004A474[];
 extern s32 D_8004A478;
@@ -44,7 +35,7 @@ extern OSTask D_8004A480;
 
 extern ALSndPlayer D_80081728[3];
 extern ALHeap D_80081830;
-extern Acmd* D_80081840[];
+extern Acmd *D_80081840[];
 extern ALGlobals D_80081A78;
 extern u8 D_80081AC8[0x22A00];
 extern s32 D_800A44CC;
@@ -68,14 +59,13 @@ extern u8 D_800A460C;
 extern OSMesgQueue D_800A4890;
 extern OSMesg D_800A48A8[32];
 
-void func_80020D20(ALSynConfig*);
-ALDMAproc func_80021178(void* state);
-void func_800213E0(s32, u32);
+void func_80020D20(ALSynConfig *);
+ALDMAproc func_80021178(void *state);
 
 void func_800206B0(void) {
     D_8004A480.t.type = M_AUDTASK;
     D_8004A480.t.ucode_boot = rspbootTextStart;
-    D_8004A480.t.ucode_boot_size = (u32)rspbootTextEnd - (u32)rspbootTextStart;
+    D_8004A480.t.ucode_boot_size = (u32) rspbootTextEnd - (u32) rspbootTextStart;
     D_8004A480.t.flags = 0;
     D_8004A480.t.ucode = aspMainTextStart;
     D_8004A480.t.ucode_data = aspMainDataStart;
@@ -98,9 +88,7 @@ void func_8002071C(void) {
     D_800A45DC = 0;
     D_800A45E0 = 0;
     D_800A460C = 0;
-    D_800A4600[0] =
-    D_800A4600[1] =
-    D_800A4600[2] = -1;
+    D_800A4600[0] = D_800A4600[1] = D_800A4600[2] = -1;
     D_8004A420 = 0;
     D_8004A424 = 0;
     D_8004A42C = 0;
@@ -162,16 +150,16 @@ void func_80020934(void);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/audio/func_80020BB4.s")
 
-void func_80020D20(ALSynConfig* config) {
+void func_80020D20(ALSynConfig *config) {
     f32 tmp;
 
     D_800A4528 = 0;
     config->dmaproc = func_80021178;
     config->outputRate = osAiSetFrequency(D_8004A438->unk_00);
 
-    tmp = (f32)D_8004A438->unk_04 * (f32)config->outputRate / 60.0f;
-    D_800A45E8 = (s32)tmp;
-    if ((f32)D_800A45E8 < (f32)tmp) {
+    tmp = (f32) D_8004A438->unk_04 * (f32) config->outputRate / 60.0f;
+    D_800A45E8 = (s32) tmp;
+    if ((f32) D_800A45E8 < (f32) tmp) {
         D_800A45E8++;
     }
     if (D_800A45E8 & 0xF) {
@@ -187,9 +175,9 @@ void func_80020D20(ALSynConfig* config) {
 }
 
 #ifdef NON_MATCHING
-s32 func_80020E54(UnkAudioBeta* arg0) {
+s32 func_80020E54(UnkAudioBeta *arg0) {
     s32 sp1C;
-    Acmd* a1;
+    Acmd *a1;
 
     if (D_800A45F8 != 0) {
         D_800A45F8 = 0;
@@ -212,7 +200,7 @@ s32 func_80020E54(UnkAudioBeta* arg0) {
 }
 #else
 #pragma GLOBAL_ASM("asm/nonmatchings/audio/func_80020E54.s")
-s32 func_80020E54(UnkAudioBeta* arg0);
+s32 func_80020E54(UnkAudioBeta *arg0);
 #endif
 
 #pragma GLOBAL_ASM("asm/nonmatchings/audio/func_80020FBC.s")
@@ -231,7 +219,7 @@ s32 func_80021338(void) {
     }
 
     if (D_800A45F4 != 0) {
-        osSendMesg(&D_8005AE58, (OSMesg*)&D_8004A480, OS_MESG_BLOCK);
+        osSendMesg(&gSchedSPTaskQueue, (OSMesg *) &D_8004A480, OS_MESG_BLOCK);
     }
 
     for (i = 0; i < ARRAY_COUNT(D_800A4600); i++) {
@@ -257,7 +245,7 @@ s32 func_80021338(void) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/audio/func_800217A0.s")
 
-void func_80021918(UnkDelta2* arg0, s32 arg1) {
+void func_80021918(Object *arg0, s32 arg1) {
     s32 v1 = FALSE;
 
     if (D_8004A420 != 0 && D_8004A420 != 0) {
@@ -265,20 +253,20 @@ void func_80021918(UnkDelta2* arg0, s32 arg1) {
         v1 = TRUE;
     }
 
-    arg0->unk_90++;
-    if (arg0->unk_90 >= 16 || (D_800A460C & 1)) {
+    arg0->unk_090++;
+    if (arg0->unk_090 >= 16 || (D_800A460C & 1)) {
         v1 = TRUE;
     }
 
     if (v1) {
-        arg0->unk_80 |= 0x10;
+        arg0->unk_080 |= 0x10;
         *arg0->unk_1F4 |= 0x80;
     }
 }
 
 void func_800219B8(s32 arg0, u8 arg1) {
     s32 i;
-    ALSndId* tmp;
+    ALSndId *tmp;
 
     if (D_8004A428 != 0 || D_8004A42C != 0) {
         return;
@@ -290,7 +278,7 @@ void func_800219B8(s32 arg0, u8 arg1) {
 
     if (D_8004A470[arg0] != 0) {
         tmp = D_8004A44C[arg0];
-        D_8004A444 = &D_80081728[arg0];        
+        D_8004A444 = &D_80081728[arg0];
 
         for (i = D_8004A474[arg0]; i > 0; i--) {
             alSndpSetSound(D_8004A444, tmp[i - 1]);
@@ -329,12 +317,12 @@ void func_80021B8C(s16 arg0);
 #pragma GLOBAL_ASM("asm/nonmatchings/audio/func_80021B8C.s")
 #endif
 
-void func_80021BC0(ALBankFile* arg0, u8* arg1, u32 arg2) {
-    ALSndId* s6;
-    ALInstrument* s5;
+void func_80021BC0(ALBankFile *arg0, u8 *arg1, u32 arg2) {
+    ALSndId *s6;
+    ALInstrument *s5;
     u32 i;
     s32 s4 = 0;
-    ALBank* bank;
+    ALBank *bank;
 
     if (arg1 == NULL) {
         return;
@@ -351,7 +339,7 @@ void func_80021BC0(ALBankFile* arg0, u8* arg1, u32 arg2) {
 
     for (i = 0, s4 = 0; i < s5->soundCount; i++) {
         ALSndId soundId;
-        ALSound* sound = s5->soundArray[i];
+        ALSound *sound = s5->soundArray[i];
 
         s6[i] = soundId = alSndpAllocate(D_8004A444, sound);
         if (soundId != -1) {
