@@ -17,7 +17,7 @@ extern s32 D_800B6428;
 extern s32 D_800B642C;
 extern s32 D_800B6430;
 extern u8 D_800B6434;
-extern WadStructGamma *D_800B6438;
+extern Asset *D_800B6438;
 extern u8 D_800B6440[];
 extern u16 D_800B7480[];
 extern s16 D_800B7968[];
@@ -264,7 +264,7 @@ void func_80025878(void) {
 void func_80025878(void);
 #endif
 
-void func_80025A0C(WadStructGamma *arg0) {
+void func_80025A0C(Asset *arg0) {
     D_800B641C = arg0->data;
     D_800B6438 = arg0;
     D_800B6420 = arg0->size;

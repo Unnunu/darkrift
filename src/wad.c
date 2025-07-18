@@ -49,45 +49,45 @@ typedef struct WadFile {
     /* 0x08 */ WadFolder folders[1];
 } WadFile;
 
-extern s32 D_80051F40;
+extern s32 gNumAssets;
 
-extern WadStructGamma D_80138A00[256];
+extern Asset gAssets[256];
 extern s32 D_8013C200;
-extern WadFile *D_8013C204;
+extern WadFile *gWadFile;
 extern s32 D_8013C208;
-extern u8 *D_8013C20C;
-extern WadFolder *D_8013C210;
+extern u8 *gWadRomAddress;
+extern WadFolder *gWadCurrentFolder;
 extern s32 D_8013C214;
 extern s32 D_8013C218;
-extern u32 D_8013C21C;
-extern u32 D_8013C220;
+extern u32 gWadNumFiles;
+extern u32 gWadNumFolders;
 
-void func_80025A0C(WadStructGamma *);
-void func_800264B4(s32);
-void func_80026C38(void);
+void func_80025A0C(Asset *);
+void asset_read(s32);
+void assets_clear_unused(void);
 void dma_read(s32 romAddr, void *vramAddr, s32 size);
 
-void func_80026B74(WadStructGamma *);
-void func_80026BE0(WadStructGamma *arg0);
-void func_80027680(WadStructGamma *);
+void func_80026B74(Asset *);
+void func_80026BE0(Asset *arg0);
+void func_80027680(Asset *);
 
-void func_800276F0(WadStructGamma *);
-void func_80027918(WadStructGamma *);
-void func_80026EEC(WadStructGamma *);
-void func_800279E4(WadStructGamma *);
-void func_80027A14(WadStructGamma *);
-void func_80027C0C(WadStructGamma *);
-void func_80027DA4(WadStructGamma *);
-void func_80027EFC(WadStructGamma *);
-void func_80027780(WadStructGamma *);
-void func_80027804(WadStructGamma *);
-void func_80027888(WadStructGamma *);
-void func_80026DF0(WadStructGamma *);
+void func_800276F0(Asset *);
+void func_80027918(Asset *);
+void func_80026EEC(Asset *);
+void func_800279E4(Asset *);
+void func_80027A14(Asset *);
+void func_80027C0C(Asset *);
+void func_80027DA4(Asset *);
+void func_80027EFC(Asset *);
+void func_80027780(Asset *);
+void func_80027804(Asset *);
+void func_80027888(Asset *);
+void func_80026DF0(Asset *);
 
 void func_80025B40(void) {
     u32 i;
 
-    for (i = 0; i < D_80051F40; i++) {}
+    for (i = 0; i < gNumAssets; i++) {}
 }
 
 void str_concat(char *dst, char *src) {
@@ -142,12 +142,12 @@ void str_toupper(char *str) {
     }
 }
 
-u32 func_80025DB4(char *name, s32 arg1) {
+u32 asset_find(char *name, s32 owner) {
     u32 i;
 
     str_toupper(name);
-    for (i = 0; i < D_80051F40; i++) {
-        if (str_compare(name, D_80138A00[i].name) == 0 && arg1 == D_80138A00[i].unk_30) {
+    for (i = 0; i < gNumAssets; i++) {
+        if (str_compare(name, gAssets[i].name) == 0 && owner == gAssets[i].owner) {
             return i;
         }
     }
@@ -158,35 +158,35 @@ u32 func_80025DB4(char *name, s32 arg1) {
 void func_80025E6C(void) {
     u32 i;
 
-    D_80051F40 = 0;
+    gNumAssets = 0;
     for (i = 0; i < 256; i++) {
-        D_80138A00[i].unk_08 = D_80138A00[i].unk_0C = -1;
-        D_80138A00[i].flags = 1;
-        D_80138A00[i].name[0] = '\0';
+        gAssets[i].memory_slot = gAssets[i].aux_memory_slot = -1;
+        gAssets[i].flags = 1;
+        gAssets[i].name[0] = '\0';
     }
 }
 
 void func_80025EDC(s32 arg0, s32 size) {
     D_8013C200 = arg0;
-    D_8013C204 = D_8013C200;
+    gWadFile = D_8013C200;
     D_8013C208 = D_8013C200 + 0x2800;
     D_8013C214 = D_8013C208 - arg0;
     D_8013C218 = size - D_8013C214;
 }
 
-void wad_open_wad(char *name) {
+void wad_find_wad(char *name) {
     s32 i;
     char fullname[20];
     WadFileEntry *firstFile;
     WadFileEntry *file;
 
-    firstFile = D_8013C210->offset + (u8 *) D_8013C204;
+    firstFile = gWadCurrentFolder->offset + (u8 *) gWadFile;
     str_copy(fullname, name);
     str_concat(fullname, ".WAD");
 
-    for (i = 0, file = firstFile; i < D_8013C21C; i++, file++) {
+    for (i = 0, file = firstFile; i < gWadNumFiles; i++, file++) {
         if (str_compare(file->name, fullname) == 0) {
-            D_8013C20C += file->offset;
+            gWadRomAddress += file->offset;
             return;
         }
         if (file && file) {
@@ -200,12 +200,12 @@ s32 wad_select_folder(char *folderName) {
     u32 i;
     WadFolder *folders;
 
-    folders = D_8013C204->folders;
-    for (i = 0; i < D_8013C220; i++) {
+    folders = gWadFile->folders;
+    for (i = 0; i < gWadNumFolders; i++) {
         if (str_compare(folderName, folders[i].name) == 0) {
-            D_8013C210 = &folders[i];
-            D_8013C220 = 1;
-            D_8013C21C = folders[i].numFiles;
+            gWadCurrentFolder = &folders[i];
+            gWadNumFolders = 1;
+            gWadNumFiles = folders[i].numFiles;
             return TRUE;
         }
     }
@@ -213,104 +213,106 @@ s32 wad_select_folder(char *folderName) {
     return FALSE;
 }
 
-void func_800260AC(char *name) {
+void wad_open_one(char *name) {
     if (name[0] == '\0') {
         // load root wad
-        D_8013C20C = resources_ROM_START;
-        dma_read(D_8013C20C, D_8013C204, D_8013C214);
-        D_8013C210 = D_8013C204->folders;
-        D_8013C220 = D_8013C204->numFolders;
-        D_8013C21C = D_8013C210->numFiles;
-    } else if (!wad_select_folder(name)) {
-        wad_open_wad(name);
-        dma_read(D_8013C20C, D_8013C204, D_8013C214);
-        D_8013C210 = D_8013C204->folders;
-        D_8013C220 = D_8013C204->numFolders;
-        D_8013C21C = D_8013C210[0].numFiles;
+        gWadRomAddress = resources_ROM_START;
+        dma_read(gWadRomAddress, gWadFile, D_8013C214);
+        gWadCurrentFolder = gWadFile->folders;
+        gWadNumFolders = gWadFile->numFolders;
+        gWadNumFiles = gWadCurrentFolder->numFiles;
+    } else if (wad_select_folder(name)) {
+        // select folder in current wad file
+    } else {
+        wad_find_wad(name);
+        dma_read(gWadRomAddress, gWadFile, D_8013C214);
+        gWadCurrentFolder = gWadFile->folders;
+        gWadNumFolders = gWadFile->numFolders;
+        gWadNumFiles = gWadCurrentFolder[0].numFiles;
     }
 }
 
-void func_80026198(char *path) {
+void wad_open_path(char *path) {
     s32 len;
-    char folder[24];
+    char path_item[24];
     u32 i;
     u32 j;
 
     len = strlen(path);
     j = 0;
     str_toupper(path);
-    folder[0] = '\0';
+    path_item[0] = '\0';
 
     for (i = 0; i < len; i++) {
         if (path[i] != '/') {
-            folder[j++] = path[i];
+            path_item[j++] = path[i];
         } else {
-            folder[j] = '\0';
+            path_item[j] = '\0';
             j = 0;
-            func_800260AC(folder);
+            wad_open_one(path_item);
         }
     }
 
-    folder[j] = '\0';
-    func_800260AC(folder);
+    path_item[j] = '\0';
+    wad_open_one(path_item);
 }
 
 void func_80026250(void) {
     u32 i;
 
-    for (i = 0; i < D_80051F40; i++) {
-        if (D_80138A00[i].unk_08 >= 0) {
-            D_80138A00[i].data = D_8005AEB8[D_80138A00[i].unk_08].unk_04;
+    for (i = 0; i < gNumAssets; i++) {
+        if (gAssets[i].memory_slot >= 0) {
+            gAssets[i].data = D_8005AEB8[gAssets[i].memory_slot].unk_04;
         }
-        if (D_80138A00[i].unk_0C >= 0) {
-            D_80138A00[i].unk_04 = D_8005AEB8[D_80138A00[i].unk_0C].unk_04;
+        if (gAssets[i].aux_memory_slot >= 0) {
+            gAssets[i].aux_data = D_8005AEB8[gAssets[i].aux_memory_slot].unk_04;
         }
     }
 }
 
-void func_800262B8(char *path, s32 arg1) {
-    func_80026C38();
-    func_80026198(path);
-    func_800264B4(arg1);
-    func_80000E0C(D_8013C204, 0, D_8013C214);
-    func_80026C38();
+void func_800262B8(char *path, s32 owner) {
+    assets_clear_unused();
+    wad_open_path(path);
+    asset_read(owner);
+    func_80000E0C(gWadFile, 0, D_8013C214);
+    assets_clear_unused();
 }
 
 void func_8002630C(s32 arg0) {
     u32 i;
 
-    for (i = 0; i < D_80051F40; i++) {
-        if (arg0 == D_80138A00[i].unk_30) {
-            func_80026B74(D_80138A00 + i);
+    for (i = 0; i < gNumAssets; i++) {
+        if (arg0 == gAssets[i].owner) {
+            func_80026B74(gAssets + i);
         }
     }
 
-    func_80026C38();
+    assets_clear_unused();
 }
 
 void func_800263A8(void) {
     u32 i;
 
-    for (i = 0; i < D_80051F40; i++) {
-        func_80026B74(D_80138A00 + i);
+    for (i = 0; i < gNumAssets; i++) {
+        func_80026B74(gAssets + i);
     }
 
-    func_80026C38();
+    assets_clear_unused();
 }
 
 void func_80026418(s32 arg0) {
     u32 i;
 
-    for (i = 0; i < D_80051F40; i++) {
-        if (arg0 == D_80138A00[i].type) {
-            func_80026B74(D_80138A00 + i);
+    for (i = 0; i < gNumAssets; i++) {
+        if (arg0 == gAssets[i].type) {
+            func_80026B74(gAssets + i);
         }
     }
 
-    func_80026C38();
+    assets_clear_unused();
 }
 
-void func_800264B4(s32 arg0) {
+void asset_read(s32 owner) {
     s32 pad[2];
     u32 i;
     u32 free_memory;
@@ -318,223 +320,223 @@ void func_800264B4(s32 arg0) {
     s32 v0;
 
     free_memory = get_free_mem(sFreeChunksList);
-    file = (WadFileEntry *) ((u8 *) D_8013C204 + D_8013C210->offset);
+    file = (WadFileEntry *) ((u8 *) gWadFile + gWadCurrentFolder->offset);
 
-    for (i = 0; i < D_8013C21C; i++) {
-        v0 = func_80025DB4(file[i].name, arg0);
+    for (i = 0; i < gWadNumFiles; i++) {
+        v0 = asset_find(file[i].name, owner);
 
         if (v0 >= 0) {
             switch (file[i].type) {
                 case WAD_FILE_3:
-                    func_80027680(D_80138A00 + v0);
+                    func_80027680(gAssets + v0);
                     break;
                 case WAD_FILE_TMD:
-                    func_800276F0(D_80138A00 + v0);
+                    func_800276F0(gAssets + v0);
                     break;
                 case WAD_FILE_GMD:
-                    func_80027918(D_80138A00 + v0);
+                    func_80027918(gAssets + v0);
                     break;
                 case WAD_FILE_SP2:
-                    func_80026EEC(D_80138A00 + v0);
+                    func_80026EEC(gAssets + v0);
                     break;
                 case WAD_FILE_TBL:
-                    func_800279E4(D_80138A00 + v0);
+                    func_800279E4(gAssets + v0);
                     break;
                 case WAD_FILE_SEQ:
-                    func_80027A14(D_80138A00 + v0);
+                    func_80027A14(gAssets + v0);
                     break;
                 case WAD_FILE_SFXBL:
-                    func_80027C0C(D_80138A00 + v0);
+                    func_80027C0C(gAssets + v0);
                     break;
                 case WAD_FILE_SP3:
-                    func_80027DA4(D_80138A00 + v0);
+                    func_80027DA4(gAssets + v0);
                     break;
                 case WAD_FILE_K2:
-                    func_80027EFC(D_80138A00 + v0);
+                    func_80027EFC(gAssets + v0);
                     break;
                 case WAD_FILE_K3:
-                    func_80027780(D_80138A00 + v0);
+                    func_80027780(gAssets + v0);
                     break;
                 case WAD_FILE_K4:
-                    func_80027804(D_80138A00 + v0);
+                    func_80027804(gAssets + v0);
                     break;
                 case WAD_FILE_K5:
-                    func_80027888(D_80138A00 + v0);
+                    func_80027888(gAssets + v0);
                     break;
             }
         } else if (file[i].unpackedSize <= free_memory) {
-            str_copy(D_80138A00[D_80051F40].name, file[i].name);
-            D_80138A00[D_80051F40].size = file[i].size;
-            D_80138A00[D_80051F40].unk_30 = arg0;
-            D_80138A00[D_80051F40].type = file[i].type;
-            D_80138A00[D_80051F40].romAddr = D_8013C20C + file[i].offset;
-            D_80138A00[D_80051F40].unpacked_size = file[i].unpackedSize;
+            str_copy(gAssets[gNumAssets].name, file[i].name);
+            gAssets[gNumAssets].size = file[i].size;
+            gAssets[gNumAssets].owner = owner;
+            gAssets[gNumAssets].type = file[i].type;
+            gAssets[gNumAssets].romAddr = gWadRomAddress + file[i].offset;
+            gAssets[gNumAssets].unpacked_size = file[i].unpackedSize;
 
             if (file[i].size != file[i].unpackedSize) {
-                D_80138A00[D_80051F40].flags = 2;
-                D_80051F40++;
+                gAssets[gNumAssets].flags = 2;
+                gNumAssets++;
             } else {
-                D_80138A00[D_80051F40].flags = 0;
-                D_80051F40++;
+                gAssets[gNumAssets].flags = 0;
+                gNumAssets++;
             }
 
             switch (file[i].type) {
                 case WAD_FILE_ANM:
-                    func_80026DF0(D_80138A00 + D_80051F40 - 1);
+                    func_80026DF0(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_TEX:
-                    func_80026ECC(D_80138A00 + D_80051F40 - 1);
+                    func_80026ECC(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_SP2:
-                    func_80027054(D_80138A00 + D_80051F40 - 1);
+                    func_80027054(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_3:
-                    func_800271C0(D_80138A00 + D_80051F40 - 1);
+                    func_800271C0(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_GMD:
-                    func_80027270(D_80138A00 + D_80051F40 - 1);
+                    func_80027270(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_TMD:
-                    func_800275A4(D_80138A00 + D_80051F40 - 1);
+                    func_800275A4(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_CTL:
-                    func_80027988(D_80138A00 + D_80051F40 - 1);
+                    func_80027988(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_SEQ:
-                    func_80026BE0(D_80138A00 + D_80051F40 - 1);
-                    func_80027A14(D_80138A00 + D_80051F40 - 1);
+                    func_80026BE0(gAssets + gNumAssets - 1);
+                    func_80027A14(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_TBL:
-                    func_80026BE0(D_80138A00 + D_80051F40 - 1);
-                    func_800279E4(D_80138A00 + D_80051F40 - 1);
+                    func_80026BE0(gAssets + gNumAssets - 1);
+                    func_800279E4(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_SP3:
-                    func_80027CAC(D_80138A00 + D_80051F40 - 1);
+                    func_80027CAC(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_SFTBL:
-                    func_80027B7C(D_80138A00 + D_80051F40 - 1);
+                    func_80027B7C(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_SFXBL:
-                    func_80026BE0(D_80138A00 + D_80051F40 - 1);
-                    func_80027C0C(D_80138A00 + D_80051F40 - 1);
+                    func_80026BE0(gAssets + gNumAssets - 1);
+                    func_80027C0C(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_K2:
-                    func_80027E20(D_80138A00 + D_80051F40 - 1);
+                    func_80027E20(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_MOV:
-                    func_80027F8C(D_80138A00 + D_80051F40 - 1);
+                    func_80027F8C(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_OC:
-                    func_80027D84(D_80138A00 + D_80051F40 - 1);
+                    func_80027D84(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_SYM:
-                    func_80027FCC(D_80138A00 + D_80051F40 - 1);
+                    func_80027FCC(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_VOX:
-                    func_80027B10(D_80138A00 + D_80051F40 - 1);
+                    func_80027B10(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_K3:
-                    func_80027320(D_80138A00 + D_80051F40 - 1);
+                    func_80027320(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_K4:
-                    func_800273F4(D_80138A00 + D_80051F40 - 1);
+                    func_800273F4(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_K5:
-                    func_800274C8(D_80138A00 + D_80051F40 - 1);
+                    func_800274C8(gAssets + gNumAssets - 1);
                     break;
                 default:
-                    func_80026BE0(D_80138A00 + D_80051F40 - 1);
+                    func_80026BE0(gAssets + gNumAssets - 1);
                     break;
             }
         }
     }
 }
 
-void func_80026A94(WadStructGamma *arg0, s32 arg1) {
+void func_80026A94(Asset *asset, s32 size) {
+    s32 index;
+    index = func_80000EA8(size);
+    asset->memory_slot = index;
+    asset->data = D_8005AEB8[index].unk_04;
+}
+
+void func_80026AD4(Asset *arg0) {
+    func_80000F70(arg0->memory_slot);
+    arg0->memory_slot = -1;
+}
+
+void func_80026B04(Asset *arg0) {
+    func_80000F70(arg0->aux_memory_slot);
+    arg0->aux_memory_slot = -1;
+}
+
+void func_80026B34(Asset *arg0, s32 arg1) {
     s32 index;
     index = func_80000EA8(arg1);
-    arg0->unk_08 = index;
-    arg0->data = D_8005AEB8[index].unk_04;
+    arg0->aux_memory_slot = index;
+    arg0->aux_data = D_8005AEB8[index].unk_04;
 }
 
-void func_80026AD4(WadStructGamma *arg0) {
-    func_80000F70(arg0->unk_08);
-    arg0->unk_08 = -1;
-}
-
-void func_80026B04(WadStructGamma *arg0) {
-    func_80000F70(arg0->unk_0C);
-    arg0->unk_0C = -1;
-}
-
-void func_80026B34(WadStructGamma *arg0, s32 arg1) {
-    s32 index;
-    index = func_80000EA8(arg1);
-    arg0->unk_0C = index;
-    arg0->unk_04 = D_8005AEB8[index].unk_04;
-}
-
-void func_80026B74(WadStructGamma *arg0) {
+void func_80026B74(Asset *arg0) {
     arg0->flags = 1;
 
-    if (arg0->unk_08 >= 0) {
-        func_80000F70(arg0->unk_08);
+    if (arg0->memory_slot >= 0) {
+        func_80000F70(arg0->memory_slot);
     }
 
-    if (arg0->unk_0C >= 0) {
-        func_80000F70(arg0->unk_0C);
+    if (arg0->aux_memory_slot >= 0) {
+        func_80000F70(arg0->aux_memory_slot);
     }
 
-    arg0->unk_08 = -1;
-    arg0->unk_0C = -1;
+    arg0->memory_slot = -1;
+    arg0->aux_memory_slot = -1;
     arg0->name[0] = '\0';
-    arg0->data = arg0->unk_04 = NULL;
+    arg0->data = arg0->aux_data = NULL;
 }
 
-void func_80026BE0(WadStructGamma *arg0) {
-    func_80026A94(arg0, arg0->unpacked_size);
-    if (arg0->flags & 2) {
-        func_80025A0C(arg0);
+void func_80026BE0(Asset *asset) {
+    func_80026A94(asset, asset->unpacked_size);
+    if (asset->flags & 2) {
+        func_80025A0C(asset);
     } else {
-        dma_read(arg0->romAddr, arg0->data, arg0->unpacked_size);
+        dma_read(asset->romAddr, asset->data, asset->unpacked_size);
     }
 }
 
-void func_80026C38(void) {
+void assets_clear_unused(void) {
     u32 i, j;
     u32 s3;
 
     s3 = 0;
-    for (i = 0; i < D_80051F40; i++) {
-        if (D_80138A00[i].flags & 1) {
-            for (j = i + 1; j < D_80051F40; j++) {
-                if (!(D_80138A00[j].flags & 1)) {
+    for (i = 0; i < gNumAssets; i++) {
+        if (gAssets[i].flags & 1) {
+            for (j = i + 1; j < gNumAssets; j++) {
+                if (!(gAssets[j].flags & 1)) {
                     break;
                 }
             }
 
-            if (j != D_80051F40) {
-                D_80138A00[i].data = D_80138A00[j].data;
-                D_80138A00[i].unk_04 = D_80138A00[j].unk_04;
-                D_80138A00[i].size = D_80138A00[j].size;
-                D_80138A00[i].unpacked_size = D_80138A00[j].unpacked_size;
-                D_80138A00[i].type = D_80138A00[j].type;
-                D_80138A00[i].flags = D_80138A00[j].flags;
-                D_80138A00[i].unk_08 = D_80138A00[j].unk_08;
-                D_80138A00[i].unk_0C = D_80138A00[j].unk_0C;
-                D_80138A00[i].unk_30 = D_80138A00[j].unk_30;
-                str_copy(D_80138A00[i].name, D_80138A00[j].name);
-                D_80138A00[j].name[0] = '\0';
-                D_80138A00[j].unk_0C = -1;
-                D_80138A00[j].unk_08 = -1;
-                D_80138A00[j].flags = 1;
+            if (j != gNumAssets) {
+                gAssets[i].data = gAssets[j].data;
+                gAssets[i].aux_data = gAssets[j].aux_data;
+                gAssets[i].size = gAssets[j].size;
+                gAssets[i].unpacked_size = gAssets[j].unpacked_size;
+                gAssets[i].type = gAssets[j].type;
+                gAssets[i].flags = gAssets[j].flags;
+                gAssets[i].memory_slot = gAssets[j].memory_slot;
+                gAssets[i].aux_memory_slot = gAssets[j].aux_memory_slot;
+                gAssets[i].owner = gAssets[j].owner;
+                str_copy(gAssets[i].name, gAssets[j].name);
+                gAssets[j].name[0] = '\0';
+                gAssets[j].aux_memory_slot = -1;
+                gAssets[j].memory_slot = -1;
+                gAssets[j].flags = 1;
                 s3++;
             } else {
-                D_80138A00[i].name[0] = '\0';
-                D_80138A00[i].unk_0C = -1;
-                D_80138A00[i].unk_08 = -1;
-                D_80138A00[i].flags = 1;
-                D_80051F40 = s3;
+                gAssets[i].name[0] = '\0';
+                gAssets[i].aux_memory_slot = -1;
+                gAssets[i].memory_slot = -1;
+                gAssets[i].flags = 1;
+                gNumAssets = s3;
                 return;
             }
         } else {
@@ -542,8 +544,8 @@ void func_80026C38(void) {
         }
     }
 
-    D_80051F40 = s3;
-    for (i = 0; i < D_80051F40; i++) {}
+    gNumAssets = s3;
+    for (i = 0; i < gNumAssets; i++) {}
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80026DF0.s")

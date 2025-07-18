@@ -139,11 +139,11 @@ void func_8002ADFC(Object *obj) {
 
     if (obj->unk_080 & 1) {
         D_8013C2C0.unk_0C++;
-        D_8013C2C0.elements[D_8013C2C0.unk_0C] = obj->camera;
+        D_8013C2C0.elements[D_8013C2C0.unk_0C] = obj->unk_0C8;
         D_8013C2C0.count++;
 
-        if (obj->camera->unk_128 != NULL) {
-            mem_free(obj->camera->unk_128);
+        if (obj->unk_0C8->unk_128 != NULL) {
+            mem_free(obj->unk_0C8->unk_128);
         }
     }
 

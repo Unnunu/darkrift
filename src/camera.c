@@ -5,7 +5,7 @@ extern Vec3s D_8013C818;
 extern s32 D_8013C584;
 
 void func_80038E00(Object *arg0, s32 arg1) {
-    GlobalObjC *camera = arg0->camera;
+    GlobalObjC *camera = arg0->unk_0C8;
 
     camera->unk_A0C = 0;
     arg0->unk_086 = camera->unk_A0E = -1;
@@ -28,7 +28,7 @@ void func_80038E00(Object *arg0, s32 arg1) {
 
     D_8013C818.x = D_8013C818.y = D_8013C818.z = 0;
 
-    arg0->camera->unk_A08 = 0x7FFF;
+    arg0->unk_0C8->unk_A08 = 0x7FFF;
     D_8013C584 = 11000;
 }
 

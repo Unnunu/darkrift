@@ -96,20 +96,20 @@ typedef struct ChunkHeader {
     /* 0x14 */ char padding[0x4];
 } ChunkHeader; // size = 0x18
 
-typedef struct WadStructGamma {
+typedef struct Asset {
     /* 0x00 */ void *data;
-    /* 0x04 */ void *unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
+    /* 0x04 */ void *aux_data;
+    /* 0x08 */ s32 memory_slot;
+    /* 0x0C */ s32 aux_memory_slot;
     /* 0x10 */ char name[20];
     /* 0x24 */ s32 size;
     /* 0x28 */ u32 unpacked_size;
     /* 0x2C */ u16 type;
     /* 0x2E */ s16 flags;
-    /* 0x30 */ u16 unk_30;
+    /* 0x30 */ u16 owner;
     /* 0x32 */ char pad_32[2];
     /* 0x34 */ u8 *romAddr;
-} WadStructGamma; // size = 0x38
+} Asset; // size = 0x38
 
 typedef struct UnkItemAlpha {
     /* 0x00 */ u8 *buffer;
@@ -138,7 +138,7 @@ typedef struct Object {
     /* 0x09C */ char unk_09C[4];
     /* 0x0A0 */ s32 unk_0A0;
     /* 0x0A4 */ char unk_0A4[0xC8 - 0xA4];
-    /* 0x0C8 */ struct GlobalObjC *camera;
+    /* 0x0C8 */ struct GlobalObjC *unk_0C8;
     /* 0x0CC */ char unk_0CC[0x1EC - 0xCC];
     /* 0x1EC */ void (*unk_1EC)(struct Object *);
     /* 0x1F0 */ char unk_1F0[4];
