@@ -266,5 +266,5 @@ gGameMode = 0x8005BFC2;
 gPlayerInput = 0x800AA430; // size:0x1C
 D_800AA450 = 0x800AA450; // size:0x20
 sched_wait_vretrace = 0x80003150;
-gGfxBuffers = 0x8005BFD0;
+gFramebuffers = 0x8005BFD0;
 sched_execute_tasks = 0x80002F60;

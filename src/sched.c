@@ -33,7 +33,7 @@ extern DisplayData *D_80080100;
 extern Gfx *D_8005BFD8;
 extern Gfx *D_8005BFE0;
 extern UnkDispStruct *D_8005BFE4;
-extern u8 *gGfxBuffers[];
+extern u8 *gFramebuffers[];
 extern u16 D_8005BFCE;
 extern u16 D_8005BFC8;
 extern u16 D_8005BFCA;
@@ -250,7 +250,7 @@ void sched_wait_vretrace(u8 arg0) {
         D_80080128 = 0;
         osRecvMesg(&gSchedVRetraceQueue, NULL, OS_MESG_BLOCK);
         if (arg0) {
-            osViSwapBuffer(gGfxBuffers[D_8005BFCE]);
+            osViSwapBuffer(gFramebuffers[D_8005BFCE]);
             D_8005BFCE = 1 - D_8005BFCE;
         }
     }
@@ -268,9 +268,9 @@ void func_800031FC(u16 arg0) {
     D_8005BFC8 = 320;
     D_8005BFCA = 240;
 
-    gGfxBuffers[0] = 0x803B4FC0;
+    gFramebuffers[0] = 0x803B4FC0;
     tmp = D_8005BFC8 * D_8005BFCA * 2;
-    gGfxBuffers[1] = 0x803B4FC0 + tmp;
+    gFramebuffers[1] = 0x803B4FC0 + tmp;
 
     D_80080124 = D_80080120 = ((u32) &D_8013F0B0 + 0x40) & ~0x3F;
     // gHeapBase = ((u32) D_80080124 + 0x25800 + 0x40) & ~0x3F;

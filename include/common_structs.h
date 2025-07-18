@@ -103,7 +103,7 @@ typedef struct WadStructGamma {
     /* 0x0C */ s32 unk_0C;
     /* 0x10 */ char name[20];
     /* 0x24 */ s32 size;
-    /* 0x28 */ s32 unpacked_size;
+    /* 0x28 */ u32 unpacked_size;
     /* 0x2C */ u16 type;
     /* 0x2E */ s16 flags;
     /* 0x30 */ u16 unk_30;

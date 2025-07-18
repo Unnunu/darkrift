@@ -82,7 +82,7 @@ extern s32 D_8005BEFC;
 extern u16 D_8005BFC0;
 extern u16 gGameMode;
 extern u16 D_8005BFCE;
-extern void *gGfxBuffers[];
+extern void *gFramebuffers[];
 extern Gfx *D_8005BFD8;
 extern Gfx *D_8005BFDC;
 extern Gfx *D_8005BFE0;
@@ -119,11 +119,11 @@ void func_80001120(void) {
     D_8005BFD8 = D_80080100->unk_80;
     D_8005BFE4 = D_80080100->unk_8080;
 
-    gSPSegment(D_8005BFD8++, 0x01, gGfxBuffers[D_8005BFCE]);
+    gSPSegment(D_8005BFD8++, 0x01, gFramebuffers[D_8005BFCE]);
     gSPSegment(D_8005BFD8++, 0x00, 0x00000000);
 
     D_8004CC20.unk_10 = 0;
-    D_8004CC20.unk_14 = PHYSICAL_TO_VIRTUAL(gGfxBuffers[D_8005BFCE]);
+    D_8004CC20.unk_14 = PHYSICAL_TO_VIRTUAL(gFramebuffers[D_8005BFCE]);
 
     PUSH_UNK_DISP(D_8005BFE4, osVirtualToPhysical(&D_8004CC20), &D_8004CCC8, NULL, NULL);
     gDPFullSync(D_8005BFD8++);
@@ -151,13 +151,13 @@ void func_8000132C(void) {
     D_8005BFDC = D_80080100->unk_4080;
     D_8005BFE0 = D_80080100->unk_6080;
     D_8005BFE4 = D_80080100->unk_8080;
-    D_8005BFE8 = &D_80080100->unk_8080[0x800];
+    D_8005BFE8 = D_80080100->unk_10080;
 
-    gSPSegment(D_8005BFD8++, 0x01, gGfxBuffers[D_8005BFCE]);
+    gSPSegment(D_8005BFD8++, 0x01, gFramebuffers[D_8005BFCE]);
     gSPSegment(D_8005BFD8++, 0x00, 0x00000000);
 
     D_8004CC20.unk_10 = 0;
-    D_8004CC20.unk_14 = VIRTUAL_TO_PHYSICAL(gGfxBuffers[D_8005BFCE]);
+    D_8004CC20.unk_14 = VIRTUAL_TO_PHYSICAL(gFramebuffers[D_8005BFCE]);
 
     if (D_8008012C & 2) {
         gSPDisplayList(D_8005BFE0++, D_8004CA68);
