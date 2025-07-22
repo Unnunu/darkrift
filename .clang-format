@@ -20,3 +20,4 @@ AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: None
 AlignEscapedNewlines: Left
 AlignTrailingComments: true
+SortIncludes: false

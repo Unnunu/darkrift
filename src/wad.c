@@ -63,7 +63,7 @@ extern u32 gWadNumFiles;
 extern u32 gWadNumFolders;
 
 void func_80025A0C(Asset *);
-void asset_read(s32);
+void asset_read_all_files_in_folder(s32);
 void assets_clear_unused(void);
 void dma_read(s32 romAddr, void *vramAddr, s32 size);
 
@@ -270,10 +270,10 @@ void func_80026250(void) {
     }
 }
 
-void func_800262B8(char *path, s32 owner) {
+void asset_open_folder(char *path, s32 owner) {
     assets_clear_unused();
     wad_open_path(path);
-    asset_read(owner);
+    asset_read_all_files_in_folder(owner);
     func_80000E0C(gWadFile, 0, D_8013C214);
     assets_clear_unused();
 }
@@ -312,7 +312,7 @@ void func_80026418(s32 arg0) {
     assets_clear_unused();
 }
 
-void asset_read(s32 owner) {
+void asset_read_all_files_in_folder(s32 owner) {
     s32 pad[2];
     u32 i;
     u32 free_memory;

@@ -16,5 +16,6 @@ Object *func_80015FB4(s32);
 void func_80015C58(Object *);
 void func_800213E0(s32, u32);
 void func_80021918(Object *arg0, s32 arg1);
+void func_800217A0(Object *, s32);
 
 #endif

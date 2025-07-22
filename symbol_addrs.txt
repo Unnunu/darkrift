@@ -277,3 +277,4 @@ gWadRomAddress = 0x8013C20C;
 gWadNumFolders = 0x8013C220;
 asset_find = 0x80025DB4;
 gNumAssets = 0x80051F40;
+asset_open_folder = 0x800262B8;

@@ -20,7 +20,14 @@ typedef struct UnkDispStructPart1 {
 } UnkDispStructPart1; // size = 0x64
 
 typedef struct UnkDispStructPart2 {
-    /* 0x00 */ char unk_00[0x18];
+    /* 0x00 */ s32 unk_00;
+    /* 0x04 */ s32 unk_04;
+    /* 0x08 */ u8 unk_08;
+    /* 0x09 */ u8 unk_09;
+    /* 0x0A */ u8 unk_0A;
+    /* 0x0B */ u8 unk_0B;
+    /* 0x0C */ Gfx *unk_0C;
+    /* 0x10 */ char unk_10[8];
 } UnkDispStructPart2; // size = 0x18
 
 typedef struct UnkDispStruct {
