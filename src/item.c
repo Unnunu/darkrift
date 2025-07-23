@@ -1,13 +1,5 @@
 #include "common.h"
 
-typedef struct UnkObjectDef {
-    /* 0x00 */ s16 unk_00;
-    /* 0x04 */ void (*unk_04)(Object *);
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s16 unk_0C;
-    /* 0x10 */ s32 unk_10;
-} UnkObjectDef;
-
 #define GET_ITEM(array)             \
     array.elements[array.unk_0C--]; \
     array.count--;
@@ -259,7 +251,7 @@ Object *func_8002BB6C(void (*arg0)(Object *), s16 arg1) {
     return obj;
 }
 
-Object *func_8002BBD4(s32 arg0, UnkObjectDef *arg1, s32 arg2) {
+Object *func_8002BBD4(Vec3i *arg0, UnkObjectDef *arg1, s32 arg2) {
     Object *obj;
 
     obj = obj_allocate(arg1->unk_0C);

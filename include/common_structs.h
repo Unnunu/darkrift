@@ -9,6 +9,10 @@ typedef struct Vec3i {
     s32 x, y, z;
 } Vec3i;
 
+typedef struct Vec4i {
+    s32 x, y, z, w;
+} Vec4i;
+
 typedef struct Vec3s {
     s16 x, y, z;
 } Vec3s;
@@ -230,5 +234,20 @@ typedef struct GlobalObjB {
     /* 0x86 */ char unk_86[0x16];
     /* 0x9C */ s32 unk_9C;
 } GlobalObjB; // size = 0xA0
+
+typedef struct UnkObjectDef {
+    /* 0x00 */ s16 unk_00;
+    /* 0x04 */ void (*unk_04)(Object *);
+    /* 0x08 */ s32 unk_08;
+    /* 0x0C */ s16 unk_0C;
+    /* 0x10 */ char *unk_10;
+} UnkObjectDef;
+
+typedef struct UnkObjDef3 {
+    /* 0x00 */ s32 unk_00;
+    /* 0x04 */ s32 unk_04;
+    /* 0x08 */ s32 unk_08;
+    /* 0x0C */ s32 unk_0C;
+} UnkObjDef3; // size = 0x10
 
 #endif
