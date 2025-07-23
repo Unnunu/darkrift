@@ -78,7 +78,6 @@ void func_800206B0(void) {
     D_8004A480.t.yield_data_size = 0;
 }
 
-#ifdef NON_MATCHING
 void func_8002071C(void) {
     D_800A44CC = 0;
     D_800A44D4 = 0;
@@ -92,17 +91,12 @@ void func_8002071C(void) {
     D_8004A420 = 0;
     D_8004A424 = 0;
     D_8004A42C = 0;
-    D_800A45F8 = 0;
-    D_800A45F4 = 0;
+    D_800A45F4 = D_800A45F8 = 0;
     D_800A4520 = D_8004A478;
     D_800A4500 = D_8004A448;
     D_8004A434 = NULL;
     func_800206B0();
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/audio/func_8002071C.s")
-void func_8002071C(void);
-#endif
 
 void func_800207E4(void) {
     ALSynConfig synConfig;
@@ -253,14 +247,14 @@ void func_80021918(Object *arg0, s32 arg1) {
         v1 = TRUE;
     }
 
-    arg0->unk_090++;
-    if (arg0->unk_090 >= 16 || (D_800A460C & 1)) {
+    arg0->unk_090[0]++;
+    if (arg0->unk_090[0] >= 16 || (D_800A460C & 1)) {
         v1 = TRUE;
     }
 
     if (v1) {
         arg0->unk_080 |= 0x10;
-        *arg0->unk_1F4 |= 0x80;
+        arg0->unk_1F4->unk_00 |= 0x80;
     }
 }
 

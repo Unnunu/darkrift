@@ -27,6 +27,8 @@ extern Gfx D_8005BF10;
 extern Gfx D_8005BF58;
 extern Gfx D_8005BF60;
 extern Vtx D_800492B0[];
+extern s32 D_800A4500;
+extern s32 D_800A4520;
 
 /*
 OSTask D_8004CBC8 = {
@@ -114,7 +116,6 @@ void sched_wait_vretrace(s32);
 void sched_execute_tasks(void);
 void func_800031FC(u16);
 void func_80006CEC(void);
-Object *func_8002BB6C(void (*)(Object *), s32);
 void func_80003468(u16);
 void func_80024C98(void);
 void func_8002B0AC(void);
@@ -237,7 +238,7 @@ Object *func_8000194C(void) {
     }
 
     obj->unk_1EC = func_80015C58;
-    func_800213E0(2, obj->unk_098);
+    func_800213E0(2, obj->unk_090[2]);
     D_80053020 = 1;
     D_8005BEFC = 0;
     return obj;
@@ -246,7 +247,30 @@ Object *func_8000194C(void) {
 #pragma GLOBAL_ASM("asm/nonmatchings/1D20/func_800019B0.s")
 void func_800019B0(s32);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1D20/func_80001C6C.s")
+void func_80001C6C(void) {
+    D_8005BFC0 = 0;
+    D_80053020 = 1;
+    D_800A4520 = D_800A4500 = 1800;
+
+    func_8002BB6C(func_80002744, 0x1000);
+    while (!(D_8005BFC0 & 0x1)) {
+        func_8000132C();
+    }
+    D_80053020 = 0;
+
+    while (gPlayerInput[0].unk_00 == (INP_START | INP_ZTRIG) || gPlayerInput[1].unk_00 == (INP_START | INP_ZTRIG)) {
+        func_8000132C();
+    }
+
+    gGameMode = 0;
+
+    while (gPlayerInput[0].unk_00 == (INP_START | INP_ZTRIG) || gPlayerInput[1].unk_00 == (INP_START | INP_ZTRIG)) {
+        func_8000132C();
+    }
+
+    func_800030E4();
+    sched_wait_vretrace(FALSE);
+}
 
 void func_80001D88(void) {
     D_8005BFCE = D_8005BEF8 = D_8005BEF0 = D_8005BEE8 = D_8005BEE0 = 0;
@@ -286,6 +310,7 @@ void func_80001D88(void) {
     func_80001120();
     func_800030E4();
     sched_wait_vretrace(FALSE);
+
     func_800030E4();
     sched_wait_vretrace(FALSE);
 }
@@ -331,9 +356,9 @@ void func_80001FB0(s32 arg0, Vtx *arg1);
 #endif
 
 #ifdef NON_MATCHING
-void func_80002178(s32 arg0, Vtx *arg1) {
+void func_80002178(s32 arg0, Quad *arg1) {
     if (arg1 == NULL) {
-        arg1 = &D_800492B0[D_8005BFCE * 4];
+        arg1 = &D_800492B0[D_8005BFCE];
     }
 
     D_8005BF00.unk_00 = 0;
@@ -354,20 +379,20 @@ void func_80002178(s32 arg0, Vtx *arg1) {
     gtStateSetOthermode(&D_8005BF10, GT_TEXTLUT, G_TT_RGBA16);
     gtStateSetOthermode(&D_8005BF10, GT_PIPELINE, G_PM_NPRIMITIVE);
 
-    arg1[0].v.cn[3] = arg0;
-    arg1[0].v.cn[0] = arg1[0].v.cn[1] = arg1[0].v.cn[2] = D_80080116;
-    arg1[1].v.cn[3] = arg0;
-    arg1[1].v.cn[0] = arg1[1].v.cn[1] = arg1[1].v.cn[2] = D_80080116;
-    arg1[2].v.cn[3] = arg0;
-    arg1[2].v.cn[0] = arg1[2].v.cn[1] = arg1[2].v.cn[2] = D_80080116;
-    arg1[3].v.cn[3] = arg0;
-    arg1[3].v.cn[0] = arg1[3].v.cn[1] = arg1[3].v.cn[2] = D_80080116;
+    arg1->v[0].v.cn[3] = arg0;
+    arg1->v[0].v.cn[0] = arg1->v[0].v.cn[1] = arg1->v[0].v.cn[2] = D_80080116;
+    arg1->v[1].v.cn[3] = arg0;
+    arg1->v[1].v.cn[0] = arg1->v[1].v.cn[1] = arg1->v[1].v.cn[2] = D_80080116;
+    arg1->v[2].v.cn[3] = arg0;
+    arg1->v[2].v.cn[0] = arg1->v[2].v.cn[1] = arg1->v[2].v.cn[2] = D_80080116;
+    arg1->v[3].v.cn[3] = arg0;
+    arg1->v[3].v.cn[0] = arg1->v[3].v.cn[1] = arg1->v[3].v.cn[2] = D_80080116;
 
     PUSH_UNK_DISP(D_8005BFE8, NULL, &D_8005BF00, arg1, D_80049330);
 }
 #else
 #pragma GLOBAL_ASM("asm/nonmatchings/1D20/func_80002178.s")
-void func_80002178(s32 arg0, Vtx *arg1);
+void func_80002178(s32 arg0, Quad *arg1);
 #endif
 
 void func_80002340(Object *obj) {
@@ -376,7 +401,7 @@ void func_80002340(Object *obj) {
         obj->unk_080 |= 0x10;
         D_8005BFC0 |= 0x100;
 
-        if (obj->unk_0A0 == 0) {
+        if (obj->unk_090[4] == 0) {
             D_8005BFC0 &= ~0x4;
         }
         D_8005BFC0 |= 0x1000;
@@ -387,8 +412,8 @@ void func_80002340(Object *obj) {
 }
 
 void func_800023E4(Object *obj) {
-    obj->unk_090++;
-    if (obj->unk_090 >= 7) {
+    obj->unk_090[0]++;
+    if (obj->unk_090[0] >= 7) {
         osViBlack(0);
         D_8005BEFC = 255;
         obj->unk_1EC = func_80002340;
@@ -408,7 +433,7 @@ void func_80002448(Object *obj) {
     D_8005BFC0 &= ~0x1000;
     func_80021918(obj, 0);
     if (D_8005BFC0 & 4) {
-        obj->unk_0A0 = 1;
+        obj->unk_090[4] = 1;
     }
     D_8005BFC0 |= 4;
     if (obj->unk_080 & 0x10) {
@@ -420,9 +445,9 @@ void func_80002448(Object *obj) {
 
 void func_80002528(Object *obj) {
     func_80001FB0(D_8005BEFC, NULL);
-    obj->unk_090++;
+    obj->unk_090[0]++;
 
-    if (obj->unk_090 >= 5) {
+    if (obj->unk_090[0] >= 5) {
         D_8005BFC0 |= 1;
         obj->unk_080 |= 0x10;
     }
@@ -447,7 +472,7 @@ void func_80002590(Object *obj) {
     }
 
     func_80001FB0(D_8005BEFC, NULL);
-    obj->unk_090 = 0;
+    obj->unk_090[0] = 0;
 }
 
 void func_80002648(Object *obj) {
@@ -476,7 +501,7 @@ void func_80002648(Object *obj) {
     }
 
     func_80001FB0(D_8005BEFC, NULL);
-    obj->unk_090 = 0;
+    obj->unk_090[0] = 0;
 }
 
 void func_80002744(Object *obj) {

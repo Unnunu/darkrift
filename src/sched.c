@@ -22,7 +22,6 @@ extern s8 D_800801E2;
 extern s8 D_800801E4;
 extern s8 D_800801E5;
 extern s32 D_800801E8;
-extern s32 D_8008012C;
 extern u16 *D_80080120;
 extern u16 *D_80080124;
 
@@ -58,12 +57,12 @@ void func_80025EDC(s32 arg0, s32 arg1);
 void func_80012490(void);
 void func_80024D2C(void);
 void func_800207E4(void);
-s32 func_800395D4(void);
+Object *func_800395D4(void);
 void func_80034508(void);
 void func_80024A38(s32);
 void func_800343EC(void);
 void func_80023200(void);
-extern s32 D_8013C560;
+extern Object *D_8013C560;
 extern UnkDelta D_8004BB48[];
 extern s32 D_8008012C;
 extern s16 D_80080130;
@@ -74,11 +73,10 @@ extern u16 D_80080138;
 extern s32 D_8013C228;
 extern s16 D_80080116;
 extern s16 D_80080118;
-extern s16 D_8005BFC0;
 extern s16 D_8006E072;
 extern s16 D_800800FA;
 
-extern s32 D_80049AE0;
+extern void *D_80049AE0;
 extern s32 D_80049AE4;
 extern s32 D_80049AE8;
 extern s32 D_80081428;
@@ -316,7 +314,7 @@ void func_800031FC(u16 arg0);
 #endif
 
 void func_80003468(u16 arg0) {
-    D_80049AE0 = 0;
+    D_80049AE0 = NULL;
     D_80049AE4 = 0;
     D_80049AE8 = 0;
     D_80081428 = 0;

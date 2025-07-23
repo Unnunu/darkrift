@@ -1,5 +1,13 @@
 #include "common.h"
 
+typedef struct UnkObjectDef {
+    /* 0x00 */ s16 unk_00;
+    /* 0x04 */ void (*unk_04)(Object *);
+    /* 0x08 */ s32 unk_08;
+    /* 0x0C */ s16 unk_0C;
+    /* 0x10 */ s32 unk_10;
+} UnkObjectDef;
+
 #define GET_ITEM(array)             \
     array.elements[array.unk_0C--]; \
     array.count--;
@@ -8,10 +16,12 @@ extern UnkItemAlpha D_8013C2B0;
 extern UnkItemAlpha D_8013C2C0;
 extern UnkItemAlpha D_8013C550;
 
-extern s32 D_80049344;
-extern s32 D_8004934C;
+extern Vec3s D_80049344;
+extern Vec3i D_8004934C;
 extern Object *D_80052C50;
 extern s32 D_80052C54;
+
+void func_80038DE0(Object *arg0);
 
 void func_8002A8C0(UnkItemAlpha *arg0, u32 count, u32 element_size) {
     s16 i;
@@ -160,8 +170,80 @@ void func_8002ADFC(Object *obj) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002B0AC.s")
 
+#ifdef NON_EQUIVALENT
+void func_8002B658(Object *arg0, Vec3i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(Object *)) {
+    s16 i;
+
+    func_80012A20(arg3, &arg0->unk_0D0, -2, -3);
+
+    arg0->unk_076 = 0;
+    arg0->unk_088.r = arg0->unk_088.g = arg0->unk_088.b = 160;
+
+    arg0->unk_000 = 0;
+    arg0->unk_004 = 0;
+    arg0->unk_008 = 0;
+
+    arg0->unk_010 = 0;
+    arg0->unk_014 = 0;
+    arg0->unk_018 = 0;
+
+    arg0->unk_08C = arg0->unk_076;
+
+    arg0->unk_020.x = arg1->x;
+    arg0->unk_020.y = arg1->y;
+    arg0->unk_020.z = arg1->z;
+
+    arg0->unk_050.x = arg2->x;
+    arg0->unk_050.y = arg2->y;
+    arg0->unk_050.z = arg2->z;
+
+    arg0->unk_07A = 0;
+    arg0->unk_07C = 0;
+    arg0->unk_1FC = 0;
+
+    arg0->unk_058 = 0x100;
+    arg0->unk_05C = 0x100;
+    arg0->unk_060 = 0x100;
+
+    arg0->unk_078 = 0;
+    arg0->unk_084 = 0;
+    arg0->unk_086 = -1;
+    arg0->unk_088.a = 128;
+    arg0->unk_1F8 = 0;
+    arg0->unk_1FA = 0;
+
+    arg0->unk_1F0 = (GlobalObjB *) GET_ITEM(D_8013C550);
+    arg0->unk_1F4 = arg0->unk_1F0;
+    if (arg4 != NULL) {
+        arg0->unk_1F4->unk_84 = 0;
+        arg0->unk_1F4->unk_00 = 1;
+        arg0->unk_1F4->unk_04 = arg4;
+        arg0->unk_1F4->unk_20 = 0;
+    } else {
+        arg0->unk_1F4->unk_84 = 0;
+        arg0->unk_1F4->unk_00 = 1;
+        arg0->unk_1F4->unk_04 = func_80038DE0;
+        arg0->unk_1F4->unk_20 = 0;
+    }
+
+    arg0->unk_1F4->unk_9C = 0;
+    arg0->unk_1F4->unk_20 = 0;
+
+    func_8001305C(&arg0->unk_0D0.unk_98, arg2);
+    func_800136CC(&arg0->unk_0D0.unk_98, arg1);
+
+    for (i = 0; i < 13; i++) {
+        arg0->unk_090[i] = 0;
+    }
+
+    arg0->unk_200.r = arg0->unk_200.g = arg0->unk_200.b = 255;
+    arg0->unk_204.r = arg0->unk_204.g = arg0->unk_204.b = arg0->unk_204.a = 0;
+    arg0->unk_208 = 0;
+}
+#else
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002B658.s")
-void func_8002B658(Object *, s32 *, s32 *, s32, s32);
+void func_8002B658(Object *arg0, Vec3i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(Object *));
+#endif
 
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002B850.s")
 
@@ -171,13 +253,25 @@ Object *func_8002BB6C(void (*arg0)(Object *), s16 arg1) {
     Object *obj;
 
     obj = obj_allocate(arg1);
-    func_8002B658(obj, &D_8004934C, &D_80049344, 0, 0);
+    func_8002B658(obj, &D_8004934C, &D_80049344, NULL, NULL);
     obj->unk_1EC = arg0;
     obj->unk_080 = 8;
     return obj;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002BBD4.s")
+Object *func_8002BBD4(s32 arg0, UnkObjectDef *arg1, s32 arg2) {
+    Object *obj;
+
+    obj = obj_allocate(arg1->unk_0C);
+    func_8002B658(obj, arg0, &D_80049344, NULL, arg1->unk_04);
+    obj->unk_1EC = func_80015724;
+    obj->unk_080 = arg1->unk_08;
+    obj->unk_080 |= 0x10000;
+    obj->unk_084 = arg1->unk_00;
+    obj->unk_0C4 = gAssets[asset_find(arg1->unk_10, arg2)].data;
+
+    return obj;
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002BC84.s")
 

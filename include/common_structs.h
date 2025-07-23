@@ -1,15 +1,33 @@
 #ifndef _COMMON_STRUCTS_H
 #define _COMMON_STRUCTS_H
 
-typedef f32 MtxF[4][4];
-
 typedef struct Vec3f {
     f32 x, y, z;
 } Vec3f;
 
-typedef struct Vec3s {
+typedef struct Vec3i {
     s32 x, y, z;
+} Vec3i;
+
+typedef struct Vec3s {
+    s16 x, y, z;
 } Vec3s;
+
+typedef struct Vec4f {
+    f32 x, y, z, w;
+} Vec4f;
+
+typedef struct Matrix4f {
+    Vec4f x, y, z, w;
+} Matrix4f;
+
+typedef struct ColorRGBA {
+    u8 r, g, b, a;
+} ColorRGBA;
+
+typedef struct Quad {
+    Vtx v[4];
+} Quad;
 
 typedef struct UnkDispStructPart1 {
     /* 0x00 */ s16 unk_00;
@@ -125,39 +143,18 @@ typedef struct UnkItemAlpha {
     /* 0x0C */ s16 unk_0C;
 } UnkItemAlpha; // size >= 0xE
 
-typedef struct Object {
-    /* 0x000 */ char unk_000[0x20];
-    /* 0x020 */ s32 unk_020;
-    /* 0x024 */ s32 unk_024;
-    /* 0x028 */ s32 unk_028;
-    /* 0x02C */ char unk_02C[0x52 - 0x2C];
-    /* 0x052 */ s16 unk_052;
-    /* 0x054 */ char unk_054[0x74 - 0x54];
-    /* 0x074 */ s16 unk_074;
-    /* 0x076 */ char unk_076[10];
-    /* 0x080 */ s32 unk_080;
-    /* 0x084 */ s16 unk_084;
-    /* 0x086 */ s16 unk_086;
-    /* 0x088 */ char unk_088[8];
-    /* 0x090 */ s32 unk_090;
-    /* 0x094 */ s32 unk_094;
-    /* 0x098 */ s32 unk_098;
-    /* 0x09C */ char unk_09C[4];
-    /* 0x0A0 */ s32 unk_0A0;
-    /* 0x0A4 */ char unk_0A4[0xC8 - 0xA4];
-    /* 0x0C8 */ struct GlobalObjC *unk_0C8;
-    /* 0x0CC */ char unk_0CC[0x1EC - 0xCC];
-    /* 0x1EC */ void (*unk_1EC)(struct Object *);
-    /* 0x1F0 */ char unk_1F0[4];
-    /* 0x1F4 */ s32 *unk_1F4;
-    /* 0x1F8 */ char unk_1F8[0x210 - 0x1F8];
-    /* 0x210 */ struct Object *nextObject;
-    /* 0x214 */ struct Object *prevObject;
-} Object; // size = 0x218
-
-typedef struct GlobalObjB {
-    /* 0x000 */ char unk_000[0xA0];
-} GlobalObjB; // size = 0xA0
+typedef struct UnkMu {
+    /* 0x00 */ Mtx unk_00;
+    /* 0x40 */ Mtx unk_40;
+    /* 0x80 */ struct UnkMu *unk_80;
+    /* 0x84 */ struct UnkMu *unk_84;
+    /* 0x88 */ struct UnkMu *unk_88;
+    /* 0x8C */ s32 unk_8C;
+    /* 0x90 */ s32 unk_90;
+    /* 0x94 */ s32 unk_94;
+    /* 0x98 */ Matrix4f unk_98;
+    /* 0xD8 */ Matrix4f unk_D8;
+} UnkMu; // size >= 0x118
 
 typedef struct GlobalObjC {
     /* 0x0000 */ char unk_000[0x128];
@@ -173,5 +170,65 @@ typedef struct GlobalObjC {
     /* 0x0A0E */ s16 unk_A0E;
     /* 0x0A10 */ char unk_A10[0x1F90 - 0xA10];
 } GlobalObjC; // size = 0x1F90
+
+typedef struct Object {
+    /* 0x000 */ s32 unk_000;
+    /* 0x004 */ s32 unk_004;
+    /* 0x008 */ s32 unk_008;
+    /* 0x00C */ char unk_00C[0x4];
+    /* 0x010 */ s32 unk_010;
+    /* 0x014 */ s32 unk_014;
+    /* 0x018 */ s32 unk_018;
+    /* 0x01C */ char unk_01C[0x4];
+    /* 0x020 */ Vec3i unk_020;
+    /* 0x02C */ char unk_02C[0x50 - 0x2C];
+    /* 0x050 */ Vec3s unk_050;
+    /* 0x056 */ char unk_056[2];
+    /* 0x058 */ s32 unk_058;
+    /* 0x05C */ s32 unk_05C;
+    /* 0x060 */ s32 unk_060;
+    /* 0x064 */ char unk_064[0x74 - 0x64];
+    /* 0x074 */ s16 unk_074;
+    /* 0x076 */ s16 unk_076;
+    /* 0x078 */ s16 unk_078;
+    /* 0x07A */ s16 unk_07A;
+    /* 0x07C */ s16 unk_07C;
+    /* 0x07E */ s16 unk_07E;
+    /* 0x080 */ s32 unk_080;
+    /* 0x084 */ s16 unk_084;
+    /* 0x086 */ s16 unk_086;
+    /* 0x088 */ ColorRGBA unk_088;
+    /* 0x08C */ s16 unk_08C;
+    /* 0x08E */ char unk_08E[2];
+    /* 0x090 */ s32 unk_090[13];
+    /* 0x0C4 */ s32 unk_0C4;
+    /* 0x0C8 */ struct GlobalObjC *unk_0C8;
+    /* 0x0CC */ char unk_0CC[4];
+    /* 0x0D0 */ UnkMu unk_0D0;
+    /* 0x1E8 */ char unk_1E8[4];
+    /* 0x1EC */ void (*unk_1EC)(struct Object *);
+    /* 0x1F0 */ struct GlobalObjB *unk_1F0;
+    /* 0x1F4 */ struct GlobalObjB *unk_1F4;
+    /* 0x1F8 */ s16 unk_1F8;
+    /* 0x1FA */ s16 unk_1FA;
+    /* 0x1FC */ s32 unk_1FC;
+    /* 0x200 */ ColorRGBA unk_200;
+    /* 0x204 */ ColorRGBA unk_204;
+    /* 0x208 */ s32 unk_208;
+    /* 0x20C */ char unk_20C[4];
+    /* 0x210 */ struct Object *nextObject;
+    /* 0x214 */ struct Object *prevObject;
+} Object; // size = 0x218
+
+typedef struct GlobalObjB {
+    /* 0x00 */ s32 unk_00;
+    /* 0x04 */ void (*unk_04)(Object *);
+    /* 0x08 */ char unk_08[0x18];
+    /* 0x20 */ s16 unk_20;
+    /* 0x22 */ char unk_22[0x84 - 0x22];
+    /* 0x84 */ s16 unk_84;
+    /* 0x86 */ char unk_86[0x16];
+    /* 0x9C */ s32 unk_9C;
+} GlobalObjB; // size = 0xA0
 
 #endif

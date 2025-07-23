@@ -1,7 +1,7 @@
 #include "common.h"
 
-extern Vec3s D_8013C568;
-extern Vec3s D_8013C818;
+extern Vec3i D_8013C568;
+extern Vec3i D_8013C818;
 extern s32 D_8013C584;
 
 void func_80038E00(Object *arg0, s32 arg1) {
@@ -16,11 +16,11 @@ void func_80038E00(Object *arg0, s32 arg1) {
     D_8013C568.x = D_8013C568.z = 0;
     D_8013C568.y = -480;
 
-    arg0->unk_024 = 0;
-    arg0->unk_028 = 0;
-    arg0->unk_020 = 0;
+    arg0->unk_020.y = 0;
+    arg0->unk_020.z = 0;
+    arg0->unk_020.x = 0;
 
-    arg0->unk_052 = 0x400;
+    arg0->unk_050.y = 0x400;
 
     camera->unk_414 = 0;
     camera->unk_418 = 0;
