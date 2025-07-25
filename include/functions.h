@@ -23,7 +23,7 @@ void func_800136CC(Matrix4f *, Vec3i *);
 void func_80015724(Object *);
 void func_800263A8(void);
 void asset_open_folder(char *path, s32 owner);
-Object *func_80014B60(char *, s32, s32, s32, s32, s32, s32);
+Texture *func_80014B60(char *, s32, s32, s32, s32, s32, s32);
 Object *func_8002BB6C(void (*)(Object *), s16);
 void func_80019DE4(Object *);
 void func_80001D88(void);
@@ -32,5 +32,7 @@ void func_80002178(s32 arg0, Quad *arg1);
 void func_80018AD0(Object *);
 Object *func_8002BBD4(Vec3i *arg0, UnkObjectDef *arg1, s32 arg2);
 u32 asset_find(char *name, s32 owner);
+void str_concat(char *dst, char *src);
+void str_copy(char *arg0, char *arg1);
 
 #endif

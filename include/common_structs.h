@@ -250,4 +250,18 @@ typedef struct UnkObjDef3 {
     /* 0x0C */ s32 unk_0C;
 } UnkObjDef3; // size = 0x10
 
+typedef struct Texture {
+    /* 0x00 */ u32 unk_00;
+    /* 0x04 */ u32 unk_04;
+    /* 0x08 */ s32 unk_08;
+    /* 0x0C */ s32 unk_0C;
+    /* 0x10 */ u8 *unk_10;
+    /* 0x14 */ u8 *unk_14;
+    /* 0x18 */ s32 unk_18;
+    /* 0x1C */ s32 unk_1C;
+    /* 0x20 */ s32 unk_20;
+    /* 0x24 */ s32 unk_24;
+    /* 0x28 */ struct Texture *next;
+} Texture; // size = 0x2C
+
 #endif

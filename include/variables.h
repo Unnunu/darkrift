@@ -7,7 +7,7 @@ extern ChunkHeader *sFreeChunksList;
 extern Asset gAssets[256];
 extern u16 D_8005BFC0;
 extern s32 D_8005BEFC;
-extern void *D_80049AE0;
+extern Texture *D_80049AE0;
 extern u16 D_8005BFCE;
 extern s16 D_80080118;
 extern u16 gGameMode;

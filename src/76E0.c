@@ -23,7 +23,19 @@ extern s16 D_8004C1E4;
 extern u8 D_8004A428;
 extern s32 D_8004A448;
 extern s32 D_8004A478;
+extern s8 D_80080129;
+extern s16 D_80081250;
+extern Texture *D_80081254;
+extern s16 D_80080116;
+extern s16 D_8005BED2;
+extern Vec3i D_8004934C;
 
+Object *func_8002BFF0(Vec3i *, s16, void (*)(Object *), void *);
+void func_800199E0(Object *);
+void func_80021550(s32, s32);
+void func_80020670(Object *);
+void func_80019F40(Object *);
+void func_8001A158(Object *, s16);
 s32 func_80019278(void); // TODO try to match if it returns void
 void func_800052EC(s16 arg0);
 void func_8001B5B0(char *, s32);
@@ -34,6 +46,18 @@ void func_8001905C(Object *);
 void func_80018974(Object *);
 void func_80018820(Object *);
 void func_800189CC(Object *);
+void func_80017F00(Object *);
+void func_80017F60(Object *);
+void func_80017FF4(Object *);
+void func_80018088(Object *);
+void func_80018120(Object *);
+void func_800181C8(Object *);
+void func_800182E0(Object *);
+void func_800183FC(Object *);
+void func_800184A8(Object *);
+void func_80018554(Object *);
+void func_80018600(Object *);
+void func_80019A9C(Object *);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80006AE0.s")
 
@@ -126,20 +150,100 @@ const char D_80053F14[] = "tc";
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80009E8C.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000A298.s")
+void func_8000A298(void);
 
-const char D_80054418[] = "options2.sp2";
+s32 D_800494C0[] = { 0, 0 };
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000A354.s")
+void func_8000A354(void) {
+    Object *v1;
+    UnkObjectDef sp40 = { 83, func_80019A9C, 0, 0x1000, "options2.sp2" };
+    Vec4i sp30 = { 164, 155, 0, 0 };
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000A514.s")
+    func_800263A8();
+    gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
+    asset_open_folder("/title", 0x2000);
+    func_80014B60("dr_title", 0, 0, 0, 0, 1, 0x2000);
+    D_8008012C |= 0x20;
+    D_8005BFC0 |= 4;
 
-const char D_80054448[] = "options2.sp2";
+    if (D_8005BED2 == 1) {
+        void *assetData = gAssets[asset_find("title.k2", 0x2000)].aux_data;
+        v1 = func_8002BFF0(&D_8004934C, 0x1000, func_800199E0, assetData);
+        v1->unk_080 |= 0x01000000;
+    } else {
+        v1 = func_8002BBD4(&sp30, &sp40, 0x2000);
+    }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000A578.s")
+    v1->unk_1F4->unk_84 = 30;
 
-const char D_80054464[] = "options2.sp2";
+    func_8002BB6C(func_80020670, 0x1000);
+    func_8000A298();
+    func_80001D88();
+    func_8002630C(0x2000);
+    if (gGameMode != 5) {
+        func_8002630C(0xEEFF);
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000A6B8.s")
+void func_8000A514(Object *obj) {
+    func_80002178(D_8005BEFC, 0);
+
+    if (D_8005BEFC - 2 > 0) {
+        D_8005BEFC -= 2;
+        return;
+    }
+
+    obj->unk_080 |= 0x10;
+    D_80080116 = 0;
+}
+
+void func_8000A578(Object *obj) {
+    UnkObjectDef sp44 = { 83, func_80019A9C, 0, 0x1000, "options2.sp2" };
+    Vec4i sp34 = { 160, 155, 0, 0 };
+    Object *v0;
+
+    D_80080116 = 200;
+    func_80002178(D_8005BEFC, NULL);
+
+    if (D_8005BEFC + 32 < 255) {
+        D_8005BEFC += 32;
+        return;
+    }
+
+    func_80021550(0x2000, 8);
+    obj->unk_1EC = func_8000A514;
+    func_80014B60("dr_title", 0, 0, 0, 0, 1, 0x2000);
+    v0 = func_8002BBD4(&sp34, &sp44, 0x2000);
+    v0->unk_1F4->unk_84 = 60;
+    D_8013C560->unk_020.z = -2200;
+    func_8002BB6C(func_80020670, 0x1000);
+}
+
+void func_8000A6B8(void) {
+    s32 unused;
+    Object *v0;
+    UnkObjectDef sp3C = { 83, func_80019A9C, 0, 0x1000, "options2.sp2" };
+    Vec4i sp2C = { 160, 155, 0, 0 };
+
+    D_80080129 = FALSE;
+    D_8008012C |= 0x20;
+    D_8005BFC0 |= 4;
+    asset_open_folder("/title/tit_int", 0x2000);
+    asset_open_folder("/plyrsel/plyrsel", 0xEEFF);
+    v0 = func_8002BB6C(func_80019F40, 0x1000);
+    gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
+    func_8001A158(v0, 0x2000);
+
+    D_80081254 = func_80014B60("oplog", 0, 250, 0, 0x10000, 2, 0x2000);
+    D_80081250 = D_80081254->unk_04;
+
+    func_8000A298();
+    func_80001D88();
+    func_8002630C(0x2000);
+    if (gGameMode != 5) {
+        func_8002630C(0xEEFF);
+    }
+}
 
 void func_8000A828(void) {
     asset_open_folder("/title/error", 0x2000);
@@ -163,20 +267,6 @@ void gamemode_33_run(void) {
     func_80001D88();
     func_8002630C(0x2000);
 }
-
-s32 D_80049530 = 0;
-
-void func_80017F00(Object *);
-void func_80017F60(Object *);
-void func_80017FF4(Object *);
-void func_80018088(Object *);
-void func_80018120(Object *);
-void func_800181C8(Object *);
-void func_800182E0(Object *);
-void func_800183FC(Object *);
-void func_800184A8(Object *);
-void func_80018554(Object *);
-void func_80018600(Object *);
 
 void func_8000A98C(void) {
     Object *s0;
@@ -229,11 +319,11 @@ void func_8000A98C(void) {
     v0->unk_090[3] = s0;
 
     v0 = func_8002BBD4(&sp84, &sp148, 0x2000);
-    v0->unk_084 = D_8004A448 / 3640 + 11;
+    v0->unk_084 = D_8004A448 / (0x8000 / 9) + 11;
     v0->unk_090[3] = s0;
 
     v0 = func_8002BBD4(&sp74, &sp134, 0x2000);
-    v0->unk_084 = D_8004A478 / 3640 + 11;
+    v0->unk_084 = D_8004A478 / (0x8000 / 9) + 11;
     v0->unk_090[3] = s0;
 
     v0 = func_8002BBD4(&sp64, &sp120, 0x2000);

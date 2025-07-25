@@ -76,7 +76,6 @@ extern s16 D_80080118;
 extern s16 D_8006E072;
 extern s16 D_800800FA;
 
-extern void *D_80049AE0;
 extern s32 D_80049AE4;
 extern s32 D_80049AE8;
 extern s32 D_80081428;
@@ -126,7 +125,7 @@ void func_80002978(void) {
 
     gDPSetColorImage(D_8005BFD8++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, 0x01000000);
 
-    if (D_80080129 != 0) {
+    if (D_80080129) {
         if (D_80049AE8 > 0) {
             gDPSetFillColor(D_8005BFD8++, ((u16) GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1) << 16) |
                                               GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1));
@@ -296,7 +295,7 @@ void func_800031FC(u16 arg0) {
     memcpy(&D_801389B8, &D_8004CBC8, sizeof(OSTask));
     D_8013C228 = 0;
     D_80080116 = D_80080118 = 0;
-    D_80080129 = 1;
+    D_80080129 = TRUE;
     func_800028B0();
     func_80034508();
     D_8005BFC0 = 4;
@@ -338,7 +337,7 @@ void func_80003468(u16 arg0) {
     D_8008012C = 0;
     D_8013C228 = 0;
     D_80080118 = 0;
-    D_80080129 = 1;
+    D_80080129 = TRUE;
     func_800028B0();
     func_80034508();
     D_8005BFC0 = 4;
