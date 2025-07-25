@@ -68,23 +68,8 @@ Texture *func_80014B60(char *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
 
 #pragma GLOBAL_ASM("asm/nonmatchings/scroll/func_80014CB4.s")
 
-IMPORTANT NOTE !
-
-    You have successfully installed IDA on your computer.This installation
-    requires a
-license file
-    .
-
-    Please copy your ida{ family }
-    .hexlic file to IDA installation directory or
-    to "%APPDATA%\Hex-Rays\Ida Pro" directory before launching IDA
-    .
-
-    IDA will not work without a license file.
-
-    // #pragma GLOBAL_ASM("asm/nonmatchings/scroll/func_80014D2C.s")
-    void
-    func_80014D2C(Texture * tex, s32 arg1, s32 arg2, u32 arg3, s32 arg4, s32 arg5) {
+// #pragma GLOBAL_ASM("asm/nonmatchings/scroll/func_80014D2C.s")
+void func_80014D2C(Texture *tex, s32 arg1, s32 arg2, u32 arg3, s32 arg4, s32 arg5) {
     Gfx *dlist;
     u32 t2;
     u8 *t0;
