@@ -68,7 +68,6 @@ Texture *func_80014B60(char *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
 
 #pragma GLOBAL_ASM("asm/nonmatchings/scroll/func_80014CB4.s")
 
-// #pragma GLOBAL_ASM("asm/nonmatchings/scroll/func_80014D2C.s")
 void func_80014D2C(Texture *tex, s32 arg1, s32 arg2, u32 arg3, s32 arg4, s32 arg5) {
     Gfx *dlist;
     u32 t2;
@@ -92,11 +91,23 @@ void func_80014D2C(Texture *tex, s32 arg1, s32 arg2, u32 arg3, s32 arg4, s32 arg
             gDPLoadTextureTile(dlist++, VIRTUAL_TO_PHYSICAL(t0 - t2), G_IM_FMT_CI, G_IM_SIZ_8b, t2, 0, arg4, arg5,
                                D_8005BFC8 + arg4, arg5 + vart0, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                                G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-            gSPTextureRectangle(dlist++, (t2 - arg4) * 4, (arg2 + t0 - 1) * 4, );
+            gSPTextureRectangle(dlist++, (t2 - arg4) * 4, (arg2 + vart0 - 1) * 4, t2 * 4, arg2 * 4, 0, 0, 0, 0x1000, 0x400);
+            gSPTextureRectangle(dlist++, (t2 - arg4) * 4, (arg2 + vart0 - 1) * 4, t2 * 4, arg2 * 4, 0, 0, 0, 0x1000, 0x400);
             arg5 += vart0;
+            arg2 += vart0;
             arg3 -= vart0;
         } while (arg3 != 0);
     } else {
+        do {
+            vart0 = MIN(arg3, 5);
+            gDPLoadTextureTile(dlist++, VIRTUAL_TO_PHYSICAL(t0), G_IM_FMT_CI, G_IM_SIZ_8b, t2, 0, arg4, arg5,
+                               D_8005BFC8 + arg4, arg5 + vart0, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+                               G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+            gSPTextureRectangle(dlist++, 0, arg2 * 4, 319 * 4, (arg2 + vart0) * 4, 0, arg4 << 5, arg5 << 5, 0x1000, 0x400);
+            arg5 += vart0;
+            arg2 += vart0;
+            arg3 -= vart0;
+        } while (arg3 != 0);
     }
 }
 
