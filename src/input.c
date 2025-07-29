@@ -171,13 +171,13 @@ void func_80024C98(void) {
     D_800492AC++;
     cont_read();
 
-    if (gPlayerInput[0].unk_0A && gPlayerInput[0].unk_0B) {
+    if (gPlayerInput[0].unk_0A && gPlayerInput[0].enabled) {
         func_80024A90(0);
     } else {
         gPlayerInput[0].unk_00 = 0;
     }
 
-    if (gPlayerInput[1].unk_0A && gPlayerInput[1].unk_0B) {
+    if (gPlayerInput[1].unk_0A && gPlayerInput[1].enabled) {
         func_80024A90(1);
     } else {
         gPlayerInput[1].unk_00 = 0;

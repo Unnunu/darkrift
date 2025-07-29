@@ -104,7 +104,7 @@ typedef struct UnkAlpha {
     /* 0x08 */ u8 unk_08;
     /* 0x09 */ u8 unk_09;
     /* 0x0A */ char unk_0A;
-    /* 0x0B */ u8 unk_0B;
+    /* 0x0B */ u8 enabled;
     /* 0x0C */ u8 unk_0C;
     /* 0x0D */ u8 unk_0D;
 } UnkAlpha;
@@ -125,8 +125,16 @@ typedef struct ChunkHeader {
     /* 0x14 */ char padding[0x4];
 } ChunkHeader; // size = 0x18
 
+typedef struct AssetK2 {
+    /* 0x00 */ s32 unk_00;
+    /* 0x04 */ s32 unk_04;
+} AssetK2;
+
 typedef struct Asset {
-    /* 0x00 */ void *data;
+    /* 0x00 */ union {
+        void *data;
+        AssetK2 *data_k2;
+    };
     /* 0x04 */ void *aux_data;
     /* 0x08 */ s32 memory_slot;
     /* 0x0C */ s32 aux_memory_slot;
@@ -135,7 +143,7 @@ typedef struct Asset {
     /* 0x28 */ u32 unpacked_size;
     /* 0x2C */ u16 type;
     /* 0x2E */ s16 flags;
-    /* 0x30 */ u16 owner;
+    /* 0x30 */ u16 context;
     /* 0x32 */ char pad_32[2];
     /* 0x34 */ u8 *romAddr;
 } Asset; // size = 0x38
@@ -175,6 +183,18 @@ typedef struct GlobalObjC {
     /* 0x0A10 */ char unk_A10[0x1F90 - 0xA10];
 } GlobalObjC; // size = 0x1F90
 
+typedef struct UnkObjectSub2 {
+    /* 0x00 */ s32 unk_00;
+    /* 0x00 */ s32 unk_04;
+    /* 0x00 */ s32 unk_08;
+    /* 0x00 */ s32 unk_0C;
+} UnkObjectSub2; // size = 0x10
+
+typedef struct UnkObjectSub {
+    /* 0x00 */ char unk_00[0x48];
+    /* 0x48 */ UnkObjectSub2 *unk_48;
+} UnkObjectSub;
+
 typedef struct Object {
     /* 0x000 */ s32 unk_000;
     /* 0x004 */ s32 unk_004;
@@ -205,7 +225,7 @@ typedef struct Object {
     /* 0x08C */ s16 unk_08C;
     /* 0x08E */ char unk_08E[2];
     /* 0x090 */ s32 unk_090[13];
-    /* 0x0C4 */ s32 unk_0C4;
+    /* 0x0C4 */ UnkObjectSub *unk_0C4;
     /* 0x0C8 */ struct GlobalObjC *unk_0C8;
     /* 0x0CC */ char unk_0CC[4];
     /* 0x0D0 */ UnkMu unk_0D0;
@@ -251,12 +271,12 @@ typedef struct UnkObjDef3 {
 } UnkObjDef3; // size = 0x10
 
 typedef struct Texture {
-    /* 0x00 */ u32 unk_00;
-    /* 0x04 */ u32 unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ u8 *unk_10;
-    /* 0x14 */ u8 *unk_14;
+    /* 0x00 */ u32 width;
+    /* 0x04 */ u32 height;
+    /* 0x08 */ s32 colorIndexed;
+    /* 0x0C */ s32 flags;
+    /* 0x10 */ u8 *raster;
+    /* 0x14 */ u8 *palette;
     /* 0x18 */ s32 unk_18;
     /* 0x1C */ s32 unk_1C;
     /* 0x20 */ s32 unk_20;

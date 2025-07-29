@@ -278,3 +278,9 @@ gWadNumFolders = 0x8013C220;
 asset_find = 0x80025DB4;
 gNumAssets = 0x80051F40;
 asset_open_folder = 0x800262B8;
+
+gHuffmanFreq = 0x800B7480;
+gHuffmanSon = 0x800B80C8;
+gHuffmanParent = 0x800B7968;
+lzhuf_decode_position = 0x80025800;
+lzhuf_update = 0x80025624;

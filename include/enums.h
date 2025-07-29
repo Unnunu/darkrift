@@ -1,0 +1,65 @@
+#ifndef ENUMS_H
+#define ENUMS_H
+
+enum GameModes {
+    GAME_MODE_0,
+    GAME_MODE_1,
+    GAME_MODE_2,
+    GAME_MODE_3,
+    GAME_MODE_4,
+    GAME_MODE_5,
+    GAME_MODE_6,
+    GAME_MODE_7,
+    GAME_MODE_8,
+    GAME_MODE_9,
+    GAME_MODE_10,
+    GAME_MODE_11,
+    GAME_MODE_12,
+    GAME_MODE_13,
+    GAME_MODE_14,
+    GAME_MODE_15,
+    GAME_MODE_16,
+    GAME_MODE_17,
+    GAME_MODE_18,
+    GAME_MODE_19,
+    GAME_MODE_20,
+    GAME_MODE_21,
+    GAME_MODE_22,
+    GAME_MODE_23,
+    GAME_MODE_24,
+    GAME_MODE_25,
+    GAME_MODE_26,
+    GAME_MODE_27,
+    GAME_MODE_28,
+    GAME_MODE_29,
+    GAME_MODE_30,
+    GAME_MODE_31,
+    GAME_MODE_32,
+    GAME_MODE_LOGO,
+    GAME_MODE_34,
+    GAME_MODE_35
+};
+
+// TODO: make enum
+
+#define INP_LTRIG 0x0001
+#define INP_A 0x0002
+#define INP_RTRIG 0x0004
+#define INP_B 0x0008
+
+#define INP_CUP 0x0010
+#define INP_CRIGHT 0x0020
+#define INP_CDOWN 0x0040
+#define INP_CLEFT 0x0080
+
+#define INP_ZTRIG 0x0100
+#define INP_START 0x0800
+
+#define INP_UP 0x1000
+#define INP_RIGHT 0x2000
+#define INP_DOWN 0x4000
+#define INP_LEFT 0x8000
+
+enum AssetContext { CONTEXT_2000 = 0x2000 };
+
+#endif

@@ -19,12 +19,22 @@ extern s32 D_800B6430;
 extern u8 D_800B6434;
 extern Asset *D_800B6438;
 extern u8 D_800B6440[];
-extern u16 D_800B7480[];
-extern s16 D_800B7968[];
-extern s16 D_800B80C8[];
+extern u16 gHuffmanFreq[];
+extern s16 gHuffmanParent[];
+extern s16 gHuffmanSon[];
 
 extern s32 D_8013C208;
 extern s32 D_8013C218;
+
+#define N 4096 /* buffer size */
+#define F 60   /* lookahead buffer size */
+#define THRESHOLD 2
+
+#define N_CHAR (256 - THRESHOLD + F)
+/* kinds of characters (character code = 0..N_CHAR-1) */
+#define T (N_CHAR * 2 - 1) /* size of table */
+#define R (T - 1)          /* position of root */
+#define MAX_FREQ 0x8000    /* updates tree when the */
 
 void func_80024F50(void) {
     if (D_800B6434 == 0) {
@@ -124,63 +134,68 @@ s16 func_80025278(u16 arg0) {
 void func_80025344(void) {
     s16 i, j;
 
-    for (i = 0; i < 314; i++) {
-        D_800B7480[i] = 1;
-        D_800B80C8[i] = 627 + i;
-        D_800B7968[627 + i] = i;
+    for (i = 0; i < N_CHAR; i++) {
+        gHuffmanFreq[i] = 1;
+        gHuffmanSon[i] = i + T;
+        gHuffmanParent[i + T] = i;
     }
 
-    for (i = 0, j = 314; j < 627; i += 2, j++) {
-        D_800B7480[j] = D_800B7480[i] + D_800B7480[i + 1];
-        D_800B80C8[j] = i;
-        D_800B7968[i] = D_800B7968[i + 1] = j;
+    for (i = 0, j = N_CHAR; j <= R; i += 2, j++) { // why <= ??
+        gHuffmanFreq[j] = gHuffmanFreq[i] + gHuffmanFreq[i + 1];
+        gHuffmanSon[j] = i;
+        gHuffmanParent[i] = gHuffmanParent[i + 1] = j;
     }
 
-    D_800B7480[627] = -1;
-    D_800B7968[626] = 0;
+    gHuffmanFreq[T] = 0xFFFF;
+    gHuffmanParent[R] = 0;
+
     D_8004C964 = 0;
     D_8004C960 = 0;
 }
 
 #ifdef NON_EQUIVALENT
 void func_8002541C(void) {
-    s16 i;
-    s16 j;
-    s16 k;
-    u32 l;
-    u16 q;
+    s16 i, j, k;
+    u16 f;
+    u16 l;
+    u16 m;
 
     j = 0;
-    for (i = 0; i < 627; i++) {
-        if (D_800B80C8[i] >= 627) {
-            D_800B7480[j] = (D_800B7480[i] + 1) / 2;
-            D_800B80C8[j] = D_800B80C8[i];
+    for (i = 0; i < T; i++) {
+        if (gHuffmanSon[i] >= T) {
+            gHuffmanFreq[j] = (gHuffmanFreq[i] + 1) / 2;
+            gHuffmanSon[j] = gHuffmanSon[i];
             j++;
         }
     }
 
-    for (i = 0, j = 314; j < 627; j++, i += 2) {
-        q = D_800B7480[i] + D_800B7480[(s16) (i + 1)];
-        D_800B7480[j] = q;
+    for (i = 0, j = N_CHAR; j < T; i += 2, j++) {
+        k = i + 1;
+        f = gHuffmanFreq[j] = gHuffmanFreq[i] + gHuffmanFreq[k];
 
-        for (k = j - 1; D_800B7480[k] > q; k--) {}
+        for (k = j - 1; f < gHuffmanFreq[k]; k--)
+            ;
 
-        for (l = j; l > k + 1; l--) {
-            D_800B7480[l] = D_800B7480[l - 1];
+        k++;
+        l = (j - k) * 2;
+
+        for (m = l; m > 0; m--) {
+            gHuffmanFreq[k + m] = gHuffmanFreq[k + m - 1];
         }
-        D_800B7480[k + 1] = q;
+        gHuffmanFreq[k] = f;
 
-        for (l = j; l > k + 1; l--) {
-            D_800B80C8[l] = D_800B80C8[l - 1];
+        for (m = l; m > 0; m--) {
+            gHuffmanSon[k + m] = gHuffmanSon[k + m - 1];
         }
-        D_800B80C8[k + 1] = i;
+
+        gHuffmanSon[k] = i;
     }
 
-    for (i = 0; i < 627; i++) {
-        if (D_800B80C8[i] >= 627) {
-            D_800B7968[D_800B80C8[i]] = i;
+    for (i = 0; i < T; i++) {
+        if ((k = gHuffmanSon[i]) >= T) {
+            gHuffmanParent[k] = i;
         } else {
-            D_800B7968[D_800B80C8[i]] = D_800B7968[D_800B80C8[i] + 1] = i;
+            gHuffmanParent[k] = gHuffmanParent[k + 1] = i;
         }
     }
 }
@@ -189,80 +204,115 @@ void func_8002541C(void) {
 void func_8002541C(void);
 #endif
 
-#pragma GLOBAL_ASM("asm/nonmatchings/25B50/func_80025624.s")
-void func_80025624(s32);
+#ifdef NON_EQUIVALENT
+void lzhuf_update(u16 c) {
+    s16 i, j, k, l;
 
-s16 func_80025780(void) {
-    u16 s0;
-
-    s0 = D_800B80C8[626];
-    while (s0 < 0x273) {
-        s0 += func_80025120();
-        s0 = D_800B80C8[s0];
+    if (gHuffmanFreq[R] == MAX_FREQ) {
+        func_8002541C();
     }
+    c = gHuffmanParent[c + T];
+    do {
+        k = ++gHuffmanFreq[c];
 
-    s0 -= 0x273;
-    func_80025624(s0);
-    return s0;
-}
+        /* if the order is disturbed, exchange nodes */
+        if (k > gHuffmanFreq[l = c + 1]) {
+            while (k > gHuffmanFreq[++l])
+                ;
+            l--;
+            gHuffmanFreq[c] = gHuffmanFreq[l];
+            gHuffmanFreq[l] = k;
 
-#ifdef NON_MATCHING
-s16 func_80025800(void) {
-    u16 a;
-    u16 b;
-    u16 c;
+            i = gHuffmanSon[c];
+            gHuffmanParent[i] = l;
+            if (i < T)
+                gHuffmanParent[i + 1] = l;
 
-    a = func_800251D4();
-    b = D_8004C860[a];
-    c = D_8004C760[a] << 6;
+            j = gHuffmanSon[l];
+            gHuffmanSon[l] = i;
 
-    return ((func_80025278(b - 2) | (a << (u16) (b - 2))) & 0x3F) | c;
+            gHuffmanParent[j] = c;
+            if (j < T)
+                gHuffmanParent[j + 1] = c;
+            gHuffmanSon[c] = j;
+
+            c = l;
+        }
+    } while ((c = gHuffmanParent[c]) != 0); /* repeat up to root */
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/25B50/func_80025800.s")
-s16 func_80025800(void);
+#pragma GLOBAL_ASM("asm/nonmatchings/25B50/lzhuf_update.s")
+void lzhuf_update(s32 c);
 #endif
 
+s16 lzhuf_decode_char(void) {
+    u16 c;
+
+    c = gHuffmanSon[R];
+    while (c < T) {
+        c += func_80025120();
+        c = gHuffmanSon[c];
+    }
+
+    c -= T;
+    lzhuf_update(c);
+    return c;
+}
+
 #ifdef NON_MATCHING
-void func_80025878(void) {
+s16 lzhuf_decode_position(void) {
+    u16 i, j, c;
+
+    i = func_800251D4();
+    c = D_8004C760[i] << 6;
+    j = D_8004C860[i];
+
+    j -= 2;
+
+    i = (i << j) + func_80025278(j);
+
+    return c | (i & 0x3f);
+}
+#else
+#pragma GLOBAL_ASM("asm/nonmatchings/25B50/lzhuf_decode_position.s")
+s16 lzhuf_decode_position(void);
+#endif
+
+void lzhuf_decode(void) {
     s16 i;
-    s16 s1;
-    s32 s4;
-    s16 v0;
-    s16 s0;
+    s16 r;
+    s32 count;
+    s16 c;
+    s16 k;
     s16 v1;
     s16 j;
 
     func_80025344();
-    for (i = 0; i < 4036; i++) {
+    for (i = 0; i < N - F; i++) {
         D_800B6440[i] = ' ';
     }
 
-    s1 = 4036;
-    for (s4 = 0; s4 < D_800B6438->unpacked_size;) {
-        v0 = func_80025780();
-        if (v0 <= 0xFF) {
-            *D_800B641C++ = v0;
-            D_800B6440[s1++] = v0;
-            s1 &= 0xFFF;
-            s4++;
+    r = N - F;
+    for (count = 0; count < D_800B6438->unpacked_size;) {
+        c = lzhuf_decode_char();
+        if (c < 256) {
+            *D_800B641C++ = c;
+            D_800B6440[r++] = c;
+            r &= (N - 1);
+            count++;
         } else {
-            v1 = (s1 - func_80025800() - 1) & 0xFFF;
-            i = v0 - 0xFD;
-            for (s0 = 0; s0 < i; s0++) {
-                v0 = D_800B6440[(v1 + s0) & 0xFFF];
-                *D_800B641C++ = v0;
-                D_800B6440[s1++] = v0;
-                s1 &= 0xFFF;
-                s4++;
+            i = (r - lzhuf_decode_position() - 1) & (N - 1);
+            j = c - 255 + THRESHOLD;
+            for (k = 0; k < j; k++) {
+                c = D_800B6440[(i + k) & (N - 1)];
+                *D_800B641C++ = c;
+                D_800B6440[r++] = c;
+                r &= (N - 1);
+                count++;
             }
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/25B50/func_80025878.s")
-void func_80025878(void);
-#endif
 
 void func_80025A0C(Asset *arg0) {
     D_800B641C = arg0->data;
@@ -288,5 +338,5 @@ void func_80025A0C(Asset *arg0) {
         D_800B6434 = 1;
     }
 
-    func_80025878();
+    lzhuf_decode();
 }

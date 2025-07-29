@@ -262,7 +262,7 @@ void func_80001C6C(void) {
         func_8000132C();
     }
 
-    gGameMode = 0;
+    gGameMode = GAME_MODE_0;
 
     while (gPlayerInput[0].unk_00 == (INP_START | INP_ZTRIG) || gPlayerInput[1].unk_00 == (INP_START | INP_ZTRIG)) {
         func_8000132C();
@@ -515,7 +515,7 @@ void func_80002744(Object *obj) {
 }
 
 void func_800027A0(void) {
-    gGameMode = 0x21;
+    gGameMode = GAME_MODE_LOGO;
     func_800031FC(gGameMode);
     func_80006CEC();
 

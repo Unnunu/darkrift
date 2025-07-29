@@ -142,12 +142,12 @@ void str_toupper(char *str) {
     }
 }
 
-u32 asset_find(char *name, s32 owner) {
+u32 asset_find(char *name, s32 context) {
     u32 i;
 
     str_toupper(name);
     for (i = 0; i < gNumAssets; i++) {
-        if (str_compare(name, gAssets[i].name) == 0 && owner == gAssets[i].owner) {
+        if (str_compare(name, gAssets[i].name) == 0 && context == gAssets[i].context) {
             return i;
         }
     }
@@ -270,10 +270,10 @@ void func_80026250(void) {
     }
 }
 
-void asset_open_folder(char *path, s32 owner) {
+void asset_open_folder(char *path, s32 context) {
     assets_clear_unused();
     wad_open_path(path);
-    asset_read_all_files_in_folder(owner);
+    asset_read_all_files_in_folder(context);
     func_80000E0C(gWadFile, 0, D_8013C214);
     assets_clear_unused();
 }
@@ -282,7 +282,7 @@ void func_8002630C(s32 arg0) {
     u32 i;
 
     for (i = 0; i < gNumAssets; i++) {
-        if (arg0 == gAssets[i].owner) {
+        if (arg0 == gAssets[i].context) {
             func_80026B74(gAssets + i);
         }
     }
@@ -312,7 +312,7 @@ void func_80026418(s32 arg0) {
     assets_clear_unused();
 }
 
-void asset_read_all_files_in_folder(s32 owner) {
+void asset_read_all_files_in_folder(s32 context) {
     s32 pad[2];
     u32 i;
     u32 free_memory;
@@ -323,7 +323,7 @@ void asset_read_all_files_in_folder(s32 owner) {
     file = (WadFileEntry *) ((u8 *) gWadFile + gWadCurrentFolder->offset);
 
     for (i = 0; i < gWadNumFiles; i++) {
-        v0 = asset_find(file[i].name, owner);
+        v0 = asset_find(file[i].name, context);
 
         if (v0 >= 0) {
             switch (file[i].type) {
@@ -367,7 +367,7 @@ void asset_read_all_files_in_folder(s32 owner) {
         } else if (file[i].unpackedSize <= free_memory) {
             str_copy(gAssets[gNumAssets].name, file[i].name);
             gAssets[gNumAssets].size = file[i].size;
-            gAssets[gNumAssets].owner = owner;
+            gAssets[gNumAssets].context = context;
             gAssets[gNumAssets].type = file[i].type;
             gAssets[gNumAssets].romAddr = gWadRomAddress + file[i].offset;
             gAssets[gNumAssets].unpacked_size = file[i].unpackedSize;
@@ -524,7 +524,7 @@ void assets_clear_unused(void) {
                 gAssets[i].flags = gAssets[j].flags;
                 gAssets[i].memory_slot = gAssets[j].memory_slot;
                 gAssets[i].aux_memory_slot = gAssets[j].aux_memory_slot;
-                gAssets[i].owner = gAssets[j].owner;
+                gAssets[i].context = gAssets[j].context;
                 str_copy(gAssets[i].name, gAssets[j].name);
                 gAssets[j].name[0] = '\0';
                 gAssets[j].aux_memory_slot = -1;
@@ -603,6 +603,21 @@ void assets_clear_unused(void) {
 #pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80027DA4.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80027E20.s")
+/*
+void func_80027E20(Asset *asset) {
+    s32 sp2C;
+    s32 sp28;
+    AssetK2 *s0;
+
+    func_80026BE0(asset);
+    asset->aux_memory_slot = sp2C = asset->memory_slot;
+
+    asset->size = 0xCC + asset->data_k2->unk_04 * 0x30;
+    sp28 = asset->data_k2->unk_04;
+
+    func_80026A94(asset, asset->size);
+    s0 = asset->data_k2
+}*/
 
 #pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80027EFC.s")
 

@@ -162,7 +162,7 @@ void func_8000A354(void) {
     func_800263A8();
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
     asset_open_folder("/title", 0x2000);
-    func_80014B60("dr_title", 0, 0, 0, 0, 1, 0x2000);
+    func_80014B60("dr_title", 0, 0, 0, 0, 1, CONTEXT_2000);
     D_8008012C |= 0x20;
     D_8005BFC0 |= 4;
 
@@ -180,7 +180,7 @@ void func_8000A354(void) {
     func_8000A298();
     func_80001D88();
     func_8002630C(0x2000);
-    if (gGameMode != 5) {
+    if (gGameMode != GAME_MODE_5) {
         func_8002630C(0xEEFF);
     }
 }
@@ -212,7 +212,7 @@ void func_8000A578(Object *obj) {
 
     func_80021550(0x2000, 8);
     obj->unk_1EC = func_8000A514;
-    func_80014B60("dr_title", 0, 0, 0, 0, 1, 0x2000);
+    func_80014B60("dr_title", 0, 0, 0, 0, 1, CONTEXT_2000);
     v0 = func_8002BBD4(&sp34, &sp44, 0x2000);
     v0->unk_1F4->unk_84 = 60;
     D_8013C560->unk_020.z = -2200;
@@ -228,41 +228,41 @@ void func_8000A6B8(void) {
     D_80080129 = FALSE;
     D_8008012C |= 0x20;
     D_8005BFC0 |= 4;
-    asset_open_folder("/title/tit_int", 0x2000);
+    asset_open_folder("/title/tit_int", CONTEXT_2000);
     asset_open_folder("/plyrsel/plyrsel", 0xEEFF);
     v0 = func_8002BB6C(func_80019F40, 0x1000);
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
     func_8001A158(v0, 0x2000);
 
-    D_80081254 = func_80014B60("oplog", 0, 250, 0, 0x10000, 2, 0x2000);
-    D_80081250 = D_80081254->unk_04;
+    D_80081254 = func_80014B60("oplog", 0, 250, 0, 0x10000, 2, CONTEXT_2000);
+    D_80081250 = D_80081254->height;
 
     func_8000A298();
     func_80001D88();
     func_8002630C(0x2000);
-    if (gGameMode != 5) {
+    if (gGameMode != GAME_MODE_5) {
         func_8002630C(0xEEFF);
     }
 }
 
 void func_8000A828(void) {
     asset_open_folder("/title/error", 0x2000);
-    func_80014B60("messpg", 0, 90, 0, 180, 1, 0x2000);
+    func_80014B60("messpg", 0, 90, 0, 180, 1, CONTEXT_2000);
     func_80001D88();
 }
 
-void gamemode_33_run(void) {
+void run_logo_mode(void) {
     func_800263A8();
     D_8005BFC0 |= 4;
     D_8008012C |= 0x20;
     D_8008012C |= 0x40;
-    if (!gPlayerInput[0].unk_0B && !gPlayerInput[1].unk_0B) {
+    if (!gPlayerInput[0].enabled && !gPlayerInput[1].enabled) {
         func_8000A828();
     }
 
     asset_open_folder("/title/logo", 0x2000);
-    func_80014B60("vic", 0, 30, 0, 180, 1, 0x2000);
-    func_80014B60("n64lic", 0, 190, 0, 240, 1, 0x2000);
+    func_80014B60("vic", 0, 30, 0, 180, 1, CONTEXT_2000);
+    func_80014B60("n64lic", 0, 190, 0, 240, 1, CONTEXT_2000);
     func_8002BB6C(func_80019DE4, 0x1000);
     func_80001D88();
     func_8002630C(0x2000);
@@ -296,7 +296,7 @@ void func_8000A98C(void) {
 
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
     asset_open_folder("/title/option", 0x2000);
-    func_80014B60("bgopt", 0, 0, 0, 0, 1, 0x2000);
+    func_80014B60("bgopt", 0, 0, 0, 0, 1, CONTEXT_2000);
     D_8008012C |= 0x20;
     D_8005BFC0 |= 4;
 
@@ -416,7 +416,7 @@ void func_8000B088(void) {
 
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
     asset_open_folder("/title/control", 0x2000);
-    func_80014B60("bgcont", 0, 0, 0, 0, 1, 0x2000);
+    func_80014B60("bgcont", 0, 0, 0, 0, 1, CONTEXT_2000);
     D_8008012C |= 0x20;
     D_8005BFC0 |= 4;
 
@@ -517,7 +517,7 @@ void func_8000B934(void) {
 
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
     asset_open_folder("/title/rank", 0x2000);
-    func_80014B60("bgrank", 0, 4, 0, 0, 1, 0x2000);
+    func_80014B60("bgrank", 0, 4, 0, 0, 1, CONTEXT_2000);
     D_80081460 = func_8002BBD4(&sp2C, &sp3C, 0x2000);
     func_80019278();
     D_8008012C |= 0x20;
@@ -533,7 +533,7 @@ void func_8000BA4C(void) {
 
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
     asset_open_folder("/title/stats", 0x2000);
-    func_80014B60("aarost", 0, 13, 0, 0, 1, 0x2000);
+    func_80014B60("aarost", 0, 13, 0, 0, 1, CONTEXT_2000);
     D_8008012C |= 0x20;
     D_8005BFC0 |= 4;
     func_8002BB6C(func_80018AD0, 0x1000);

@@ -1,11 +1,11 @@
 #include "common.h"
 
 typedef struct TextureAsset {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
+    /* 0x00 */ s32 width;
+    /* 0x04 */ s32 height;
     /* 0x08 */ s32 unk_08;
     /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ u8 unk_10[1];
+    /* 0x10 */ u8 data[1];
 } TextureAsset;
 
 extern s32 D_8008012C;
@@ -20,7 +20,7 @@ extern s16 D_80080132;
 extern s16 D_80080134;
 extern u16 D_8005BFC8;
 
-Texture *func_80014B60(char *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+Texture *func_80014B60(char *name, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 flags, s32 context) {
     Texture *head;
     s32 pad;
     TextureAsset *asset;
@@ -29,104 +29,133 @@ Texture *func_80014B60(char *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
 
     tex = mem_alloc(sizeof(Texture), "scroll.c", 21);
 
-    str_copy(fullname, arg0);
+    str_copy(fullname, name);
     str_concat(fullname, ".tex");
 
-    asset = (TextureAsset *) gAssets[asset_find(fullname, arg6)].data;
+    asset = (TextureAsset *) gAssets[asset_find(fullname, context)].data;
 
-    tex->unk_00 = asset->unk_00;
-    tex->unk_04 = asset->unk_04;
-    tex->unk_08 = asset->unk_08;
-    tex->unk_0C = arg5;
+    tex->width = asset->width;
+    tex->height = asset->height;
+    tex->colorIndexed = asset->unk_08;
+    tex->flags = flags;
     tex->unk_20 = arg3;
     tex->unk_24 = arg4;
     tex->unk_18 = arg1;
     tex->unk_1C = arg2;
-    tex->unk_10 = asset->unk_10;
+    tex->raster = asset->data;
 
-    if (tex->unk_08 == 1) {
-        tex->unk_14 = asset->unk_10 + tex->unk_00 * tex->unk_04;
+    if (tex->colorIndexed == TRUE) {
+        tex->palette = asset->data + tex->width * tex->height;
     } else {
-        tex->unk_14 = NULL;
+        tex->palette = NULL;
     }
 
     head = D_80049AE0;
     D_80049AE0 = tex;
     tex->next = head;
 
-    if (!(arg5 & 1)) {
-        s16 temp = tex->unk_10[0] * 2;
-        tex->unk_14[temp] = 0;
-        tex->unk_14[temp + 1] = 0;
+    if (!(flags & 1)) {
+        s16 temp = tex->raster[0] * 2;
+        tex->palette[temp] = 0;
+        tex->palette[temp + 1] = 0;
     }
-    if (arg5 & 2) {
+    if (flags & 2) {
         D_8008012C |= 2;
     }
 
     return tex;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/scroll/func_80014CB4.s")
+void func_80014CB4(Texture *tex) {
+    Texture *it;
+    Texture *prev;
 
-void func_80014D2C(Texture *tex, s32 arg1, s32 arg2, u32 arg3, s32 arg4, s32 arg5) {
+    it = D_80049AE0;
+
+    if (tex == it) {
+        D_80049AE0 = D_80049AE0->next;
+        mem_free(tex);
+        return;
+    }
+
+    while (it != NULL) {
+        if (it == tex) {
+            prev->next = it->next;
+            mem_free(tex);
+            return;
+        }
+        prev = it;
+        it = it->next;
+    }
+}
+
+#ifdef NON_EQUIVALENT
+void func_80014D2C(Texture *tex, s32 texYOffset, s32 screenY, u32 height, s32 scrollS, s32 scrollT) {
     Gfx *dlist;
-    u32 t2;
-    u8 *t0;
+    u32 texWidth;
+    u8 *image;
     u32 vart0;
 
-    t2 = tex->unk_00;
-    t0 = tex->unk_10 + arg1 * t2;
+    texWidth = tex->width;
+    image = tex->raster + texYOffset * texWidth;
 
-    if (tex->unk_0C & 2) {
+    if (tex->flags & 2) {
         dlist = D_8005BFE0;
     } else {
         dlist = D_8005BFD8;
     }
 
-    gDPLoadTLUT_pal256(dlist++, VIRTUAL_TO_PHYSICAL(tex->unk_14));
+    gDPLoadTLUT_pal256(dlist++, VIRTUAL_TO_PHYSICAL(tex->palette));
 
-    if (t2 < D_8005BFC8 + arg4) {
+    if (texWidth < D_8005BFC8 + scrollS) {
+        s32 a1 = texWidth - scrollS;
         do {
-            vart0 = MIN(arg3, 5);
-            gDPLoadTextureTile(dlist++, VIRTUAL_TO_PHYSICAL(t0 - t2), G_IM_FMT_CI, G_IM_SIZ_8b, t2, 0, arg4, arg5,
-                               D_8005BFC8 + arg4, arg5 + vart0, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+            vart0 = MIN(height, 5);
+            gDPLoadTextureTile(dlist++, VIRTUAL_TO_PHYSICAL(image - texWidth), G_IM_FMT_CI, G_IM_SIZ_8b, texWidth, 0,
+                               scrollS, scrollT, scrollS + D_8005BFC8, scrollT + vart0, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                                G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-            gSPTextureRectangle(dlist++, (t2 - arg4) * 4, (arg2 + vart0 - 1) * 4, t2 * 4, arg2 * 4, 0, 0, 0, 0x1000, 0x400);
-            gSPTextureRectangle(dlist++, (t2 - arg4) * 4, (arg2 + vart0 - 1) * 4, t2 * 4, arg2 * 4, 0, 0, 0, 0x1000, 0x400);
-            arg5 += vart0;
-            arg2 += vart0;
-            arg3 -= vart0;
-        } while (arg3 != 0);
+            gSPTextureRectangle(dlist++, 0, screenY * 4, a1 * 4, (screenY + vart0 - 1) * 4, 0, scrollS << 5,
+                                (scrollT + 1) << 5, 0x1000, 0x400);
+            gSPTextureRectangle(dlist++, a1 * 4, screenY * 4, (D_8005BFC8 - 1) * 4, (screenY + vart0 - 1) * 4, 0,
+                                (scrollS + a1) << 5, scrollT << 5, 0x1000, 0x400);
+            scrollT += vart0;
+            screenY += vart0;
+            height -= vart0;
+        } while (height != 0);
     } else {
         do {
-            vart0 = MIN(arg3, 5);
-            gDPLoadTextureTile(dlist++, VIRTUAL_TO_PHYSICAL(t0), G_IM_FMT_CI, G_IM_SIZ_8b, t2, 0, arg4, arg5,
-                               D_8005BFC8 + arg4, arg5 + vart0, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+            vart0 = MIN(height, 5);
+            gDPLoadTextureTile(dlist++, VIRTUAL_TO_PHYSICAL(image), G_IM_FMT_CI, G_IM_SIZ_8b, texWidth, 0, scrollS,
+                               scrollT, scrollS + D_8005BFC8, scrollT + vart0, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                                G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-            gSPTextureRectangle(dlist++, 0, arg2 * 4, 319 * 4, (arg2 + vart0) * 4, 0, arg4 << 5, arg5 << 5, 0x1000, 0x400);
-            arg5 += vart0;
-            arg2 += vart0;
-            arg3 -= vart0;
-        } while (arg3 != 0);
+            gSPTextureRectangle(dlist++, 0, screenY * 4, (SCREEN_WIDTH - 1) * 4, (screenY + vart0 - 1) * 4, 0,
+                                scrollS << 5, scrollT << 5, 0x1000, 0x400);
+            scrollT += vart0;
+            screenY += vart0;
+            height -= vart0;
+        } while (height != 0);
     }
 }
+#else
+#pragma GLOBAL_ASM("asm/nonmatchings/scroll/func_80014D2C.s")
+void func_80014D2C(Texture *tex, s32 arg1, s32 arg2, u32 arg3, s32 arg4, s32 arg5);
+#endif
 
 void func_800153C4(void) {
     Texture *tex;
     s32 t0;
     s32 s3;
-    s32 s2;
-    s32 a1;
-    s32 s1;
+    s32 screenY;
+    s32 texYBase;
+    s32 height;
     s32 v0;
-    s32 q;
+    s32 scrollS;
 
     s3 = 0;
 
     for (tex = D_80049AE0; tex != NULL;) {
-        if (!(tex->unk_0C & 4)) {
-
-            if (!(tex->unk_0C & 2)) {
+        if (!(tex->flags & 4)) {
+            if (!(tex->flags & 2)) {
                 t0 = ((tex->unk_20 * D_80049AE4) >> 16) + D_80081428;
             } else {
                 t0 = 0;
@@ -139,25 +168,25 @@ void func_800153C4(void) {
                 tex = tex->next;
                 continue;
             }
-            s2 = v0;
+            screenY = v0;
 
-            if (s2 < 0) {
-                a1 = -v0;
-                s2 = 0;
-                if (a1 >= tex->unk_04) {
+            if (screenY < 0) {
+                texYBase = -v0;
+                screenY = 0;
+                if (texYBase >= tex->height) {
                     tex = tex->next;
                     continue;
                 }
             } else {
-                a1 = 0;
+                texYBase = 0;
             }
 
-            s1 = MIN(SCREEN_HEIGHT - s2, tex->unk_04 - a1);
-            q = (tex->unk_18 + t0) % tex->unk_00;
-            func_80014D2C(tex, a1, s2, s1, q, 0);
+            height = MIN(SCREEN_HEIGHT - screenY, tex->height - texYBase);
+            scrollS = (tex->unk_18 + t0) % tex->width;
+            func_80014D2C(tex, texYBase, screenY, height, scrollS, 0);
 
-            if (!(tex->unk_0C & 2) && s3 < s2 + s1 && s2 + s1 < SCREEN_HEIGHT) {
-                s3 = s2 + s1;
+            if (!(tex->flags & 2) && s3 < screenY + height && screenY + height < SCREEN_HEIGHT) {
+                s3 = screenY + height;
             }
         }
         tex = tex->next;
@@ -179,3 +208,10 @@ void func_800153C4(void) {
 #pragma GLOBAL_ASM("asm/nonmatchings/scroll/func_800156B0.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/scroll/func_80015724.s")
+/*
+void func_80015724(Object *obj) {
+    UnkObjectSub2 *v1;
+
+    v1 = obj->unk_0C4->unk_48[obj->unk_084];
+}
+    */

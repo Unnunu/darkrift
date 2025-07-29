@@ -74,7 +74,7 @@ class BinaryReader:
         else:
             # parse inner wad file
             print("opening wad", file_path)
-            reader = BinaryReader(file_content, file_path)
+            reader = BinaryReader(file_content, file_path.with_suffix(''))
             reader.read_wad()
         
 def main():
