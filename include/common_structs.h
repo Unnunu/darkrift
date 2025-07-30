@@ -169,18 +169,33 @@ typedef struct UnkMu {
 } UnkMu; // size >= 0x118
 
 typedef struct GlobalObjC {
-    /* 0x0000 */ char unk_000[0x128];
-    /* 0x0128 */ void *unk_128;
+    /* 0x0000 */ s16 unk_000;
+    /* 0x0002 */ char unk_002[10];
+    /* 0x000C */ s16 unk_00C;
+    /* 0x000E */ char unk_00E[2];
+    /* 0x0010 */ UnkMu unk_010;
+    /* 0x0128 */ UnkMu *unk_128;
     /* 0x012C */ s32 *unk_12C;
-    /* 0x0130 */ char unk_130[0x414 - 0x130];
+    /* 0x0130 */ char unk_130[0x404 - 0x130];
+    /* 0x0404 */ Vec4i unk_404;
     /* 0x0414 */ s32 unk_414;
     /* 0x0418 */ s32 unk_418;
     /* 0x041C */ s32 unk_41C;
-    /* 0x0420 */ char unk_420[0xA08 - 0x420];
+    /* 0x0420 */ char unk_420[0x9D8 - 0x420];
+    /* 0x09D8 */ s32 unk_9D8;
+    /* 0x09DC */ char unk_9DC[0x9E4 - 0x9DC];
+    /* 0x09E4 */ Vec3i unk_9E4;
+    /* 0x09F0 */ char unk_9F0[0xA08 - 0x9F0];
     /* 0x0A08 */ s32 unk_A08;
     /* 0x0A0C */ s16 unk_A0C;
     /* 0x0A0E */ s16 unk_A0E;
-    /* 0x0A10 */ char unk_A10[0x1F90 - 0xA10];
+    /* 0x0A10 */ char unk_A10[0xA1C - 0xA10];
+    /* 0x0A1C */ s16 unk_A1C;
+    /* 0x0A1E */ s16 unk_A1E;
+    /* 0x0A20 */ s16 unk_A20;
+    /* 0x0A22 */ char unk_A24[0xAA8 - 0xA22];
+    /* 0x0AA8 */ s32 *unk_AA8;
+    /* 0x0AAC */ char unk_AAC[0x1F90 - 0xAAC];
 } GlobalObjC; // size = 0x1F90
 
 typedef struct UnkObjectSub2 {
@@ -196,13 +211,9 @@ typedef struct UnkObjectSub {
 } UnkObjectSub;
 
 typedef struct Object {
-    /* 0x000 */ s32 unk_000;
-    /* 0x004 */ s32 unk_004;
-    /* 0x008 */ s32 unk_008;
+    /* 0x000 */ Vec3i unk_000;
     /* 0x00C */ char unk_00C[0x4];
-    /* 0x010 */ s32 unk_010;
-    /* 0x014 */ s32 unk_014;
-    /* 0x018 */ s32 unk_018;
+    /* 0x010 */ Vec3i unk_010;
     /* 0x01C */ char unk_01C[0x4];
     /* 0x020 */ Vec3i unk_020;
     /* 0x02C */ char unk_02C[0x50 - 0x2C];

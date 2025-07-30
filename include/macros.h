@@ -9,4 +9,10 @@
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
 
+#define ROUND(x) (s32)((x) >= 0.0 ? (x) + 0.5 : (x) - 0.5)
+
+#define GET_ITEM(array)             \
+    array.elements[array.unk_0C--]; \
+    array.count--;
+
 #endif

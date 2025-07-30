@@ -12,5 +12,6 @@ extern u16 D_8005BFCE;
 extern s16 D_80080118;
 extern u16 gGameMode;
 extern u16 D_800AA450[2][8];
+extern DisplayData *D_80080100;
 
 #endif

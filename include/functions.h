@@ -34,5 +34,9 @@ Object *func_8002BBD4(Vec3i *arg0, SpriteDef *arg1, s32 arg2);
 u32 asset_find(char *name, s32 context);
 void str_concat(char *dst, char *src);
 void str_copy(char *arg0, char *arg1);
+void func_800149F0(Matrix4f *, Matrix4f *, Matrix4f *);
+Object *obj_allocate(s16 arg0);
+void func_80012AA8(Matrix4f *mf);
+void func_8001370C(Vec4i *arg0, Vec3s *arg1);
 
 #endif

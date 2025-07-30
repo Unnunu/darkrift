@@ -1,9 +1,5 @@
 #include "common.h"
 
-#define GET_ITEM(array)             \
-    array.elements[array.unk_0C--]; \
-    array.count--;
-
 extern UnkItemAlpha D_8013C2B0;
 extern UnkItemAlpha D_8013C2C0;
 extern UnkItemAlpha D_8013C550;

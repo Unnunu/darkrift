@@ -4,7 +4,6 @@ extern f32 D_80050F14[]; // sin table
 
 extern Matrix4f D_800813E0;
 
-void func_80012AA8(Matrix4f *mf);
 void func_80012B34(Mtx *m);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80012450.s")
@@ -169,7 +168,7 @@ void func_800136CC(Matrix4f *arg0, Vec3i *arg1) {
     arg0->w.z = arg1->z;
 }
 
-void func_8001370C(Vec3i *arg0, Vec3s *arg1) {
+void func_8001370C(Vec4i *arg0, Vec3s *arg1) {
     f32 x, y, z;
     f64 temp;
     func_8001305C(&D_800813E0, arg1);
