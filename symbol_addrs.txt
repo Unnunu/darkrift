@@ -288,3 +288,6 @@ lzhuf_update = 0x80025624;
 load_background = 0x80014B60;
 obj_init = 0x8002B658;
 create_worker = 0x8002BB6C;
+
+D_8013C550 = 0x8013C550; // size:0x10
+D_8013C568 = 0x8013C568; // size:0x10

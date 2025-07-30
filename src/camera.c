@@ -1,46 +1,36 @@
 #include "common.h"
 
-extern s32 D_80053030;
+s32 D_80053030 = 0;
 
-extern Object *D_8013C560;
-extern Vec4i D_8013C568;
-extern f32 D_8013C578;
-extern s32 D_8013C580;
-extern s32 D_8013C584;
-extern s32 D_8013C588;
-extern s32 D_8013C58C;
-extern s32 D_8013C590;
-extern f32 D_8013C594;
-extern f32 D_8013C598;
-extern f32 D_8013C59C;
-extern f32 D_8013C5A0;
-extern Matrix4f D_8013C5A8;
-extern Matrix4f D_8013C5E8;
-extern Matrix4f D_8013C628;
-extern Vec3s D_8013C668;
-extern Matrix4f D_8013C670;
-extern Matrix4f D_8013C6B0;
-extern UnkMu D_8013C6F0;
-extern s32 D_8013C808[4]; // type?
-extern Vec4i D_8013C818;
-extern s32 D_8013C828;
-extern s32 D_8013C82C;
-extern s32 D_8013C830;
-extern s8 D_8013C834;
-extern s32 D_8013C838;
-extern s32 D_8008012C;
-extern s32 D_80081428;
-extern s32 D_80049AE8;
-
-extern UnkItemAlpha D_8013C550;
-
-void func_80038DE0(Object *);
-void func_80038B10(Object *);
-void func_800371C0(Object *);
-void func_80037500(Object *);
-void func_8003635C(Object *);
-void func_80013A54(Mtx *, Matrix4f *);
-s16 func_80012518(s32 arg0, s32 arg1);
+UnkItemAlpha D_8013C550;
+Object *D_8013C560;
+s32 D_8013C564; // unused
+Vec4i D_8013C568;
+f32 D_8013C578;
+s32 D_8013C57C; // unused
+s32 D_8013C580;
+s32 D_8013C584;
+s32 D_8013C588;
+s32 D_8013C58C;
+s32 D_8013C590;
+f32 D_8013C594;
+f32 D_8013C598;
+f32 D_8013C59C;
+f32 D_8013C5A0;
+Matrix4f D_8013C5A8;
+Matrix4f D_8013C5E8;
+Matrix4f D_8013C628;
+Vec3s D_8013C668;
+Matrix4f D_8013C670;
+Matrix4f D_8013C6B0;
+UnkMu D_8013C6F0;
+s32 D_8013C808[4];
+Vec4i D_8013C818;
+s32 D_8013C828;
+s32 D_8013C82C;
+s32 D_8013C830;
+s8 D_8013C834;
+s32 D_8013C838;
 
 void func_80038E00(Object *obj, s32 arg1) {
     GlobalObjC *camera = obj->unk_0C8;

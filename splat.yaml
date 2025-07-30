@@ -240,6 +240,7 @@ segments:
       - [0x4CC10, data]
       - [0x4D350, .data, cont]
       - [0x4D360, data]
+      - [0x53C30, .data, camera]
 
       - [0x53C40, .data, ../ultralib/src/os/initialize]
       - [0x53C50, .data, ../ultralib/src/io/vimgr]
@@ -307,6 +308,7 @@ segments:
       - { type: bss, vram: 0x8005BED0, name: bss1 }
       - { type: .bss, vram: 0x800B63A0, name: cont }
       - { type: bss, vram: 0x800B6400, name: bss2 }
+      - { type: .bss, vram: 0x8013C550, name: camera }
       - { type: .bss, vram: 0x8013C840, name: ../ultralib/src/os/initialize }
       - { type: .bss, vram: 0x8013C850, name: ../ultralib/src/io/vimgr,  }
       - { type: .bss, vram: 0x8013DA60, name: ../ultralib/src/io/pimgr,  }
@@ -317,6 +319,7 @@ segments:
       - { type: .bss, vram: 0x8013EDC0, name: ../ultralib/src/io/piacs }
       - { type: .bss, vram: 0x8013EDE0, name: ../ultralib/src/io/siacs }
       - { type: bss, vram: 0x8013EE00, name: bss3 }
+      
 
   - type: bin
     start: 0x57AE0
