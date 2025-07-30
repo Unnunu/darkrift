@@ -125,16 +125,21 @@ typedef struct ChunkHeader {
     /* 0x14 */ char padding[0x4];
 } ChunkHeader; // size = 0x18
 
-typedef struct AssetK2 {
+typedef struct K2Asset {
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ s32 unk_04;
-} AssetK2;
+} K2Asset;
+
+typedef struct TextureAsset {
+    /* 0x00 */ s32 width;
+    /* 0x04 */ s32 height;
+    /* 0x08 */ s32 unk_08;
+    /* 0x0C */ s32 unk_0C;
+    /* 0x10 */ u8 data[1];
+} TextureAsset;
 
 typedef struct Asset {
-    /* 0x00 */ union {
-        void *data;
-        AssetK2 *data_k2;
-    };
+    /* 0x00 */ void *data;
     /* 0x04 */ void *aux_data;
     /* 0x08 */ s32 memory_slot;
     /* 0x0C */ s32 aux_memory_slot;
@@ -218,19 +223,19 @@ typedef struct Object {
     /* 0x07A */ s16 unk_07A;
     /* 0x07C */ s16 unk_07C;
     /* 0x07E */ s16 unk_07E;
-    /* 0x080 */ s32 unk_080;
-    /* 0x084 */ s16 unk_084;
+    /* 0x080 */ s32 flags;
+    /* 0x084 */ s16 spriteID;
     /* 0x086 */ s16 unk_086;
     /* 0x088 */ ColorRGBA unk_088;
     /* 0x08C */ s16 unk_08C;
     /* 0x08E */ char unk_08E[2];
     /* 0x090 */ s32 unk_090[13];
-    /* 0x0C4 */ UnkObjectSub *unk_0C4;
+    /* 0x0C4 */ UnkObjectSub *sprite_map;
     /* 0x0C8 */ struct GlobalObjC *unk_0C8;
     /* 0x0CC */ char unk_0CC[4];
     /* 0x0D0 */ UnkMu unk_0D0;
     /* 0x1E8 */ char unk_1E8[4];
-    /* 0x1EC */ void (*unk_1EC)(struct Object *);
+    /* 0x1EC */ void (*fn_update)(struct Object *);
     /* 0x1F0 */ struct GlobalObjB *unk_1F0;
     /* 0x1F4 */ struct GlobalObjB *unk_1F4;
     /* 0x1F8 */ s16 unk_1F8;
@@ -255,13 +260,13 @@ typedef struct GlobalObjB {
     /* 0x9C */ s32 unk_9C;
 } GlobalObjB; // size = 0xA0
 
-typedef struct UnkObjectDef {
-    /* 0x00 */ s16 unk_00;
+typedef struct SpriteDef {
+    /* 0x00 */ s16 spriteID;
     /* 0x04 */ void (*unk_04)(Object *);
-    /* 0x08 */ s32 unk_08;
+    /* 0x08 */ s32 flags;
     /* 0x0C */ s16 unk_0C;
-    /* 0x10 */ char *unk_10;
-} UnkObjectDef;
+    /* 0x10 */ char *map_name;
+} SpriteDef;
 
 typedef struct UnkObjDef3 {
     /* 0x00 */ s32 unk_00;

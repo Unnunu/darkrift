@@ -9,7 +9,7 @@ void func_80038E00(Object *arg0, s32 arg1) {
 
     camera->unk_A0C = 0;
     arg0->unk_086 = camera->unk_A0E = -1;
-    arg0->unk_084 = 0;
+    arg0->spriteID = 0;
 
     *camera->unk_12C = arg1;
 

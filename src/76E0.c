@@ -156,27 +156,27 @@ s32 D_800494C0[] = { 0, 0 };
 
 void func_8000A354(void) {
     Object *v1;
-    UnkObjectDef sp40 = { 83, func_80019A9C, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp40 = { 83, func_80019A9C, 0, 0x1000, "options2.sp2" };
     Vec4i sp30 = { 164, 155, 0, 0 };
 
     func_800263A8();
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
     asset_open_folder("/title", 0x2000);
-    func_80014B60("dr_title", 0, 0, 0, 0, 1, CONTEXT_2000);
+    load_background("dr_title", 0, 0, 0, 0, 1, CONTEXT_2000);
     D_8008012C |= 0x20;
     D_8005BFC0 |= 4;
 
     if (D_8005BED2 == 1) {
         void *assetData = gAssets[asset_find("title.k2", 0x2000)].aux_data;
         v1 = func_8002BFF0(&D_8004934C, 0x1000, func_800199E0, assetData);
-        v1->unk_080 |= 0x01000000;
+        v1->flags |= 0x01000000;
     } else {
         v1 = func_8002BBD4(&sp30, &sp40, 0x2000);
     }
 
     v1->unk_1F4->unk_84 = 30;
 
-    func_8002BB6C(func_80020670, 0x1000);
+    create_worker(func_80020670, 0x1000);
     func_8000A298();
     func_80001D88();
     func_8002630C(0x2000);
@@ -193,12 +193,12 @@ void func_8000A514(Object *obj) {
         return;
     }
 
-    obj->unk_080 |= 0x10;
+    obj->flags |= 0x10;
     D_80080116 = 0;
 }
 
 void func_8000A578(Object *obj) {
-    UnkObjectDef sp44 = { 83, func_80019A9C, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp44 = { 83, func_80019A9C, 0, 0x1000, "options2.sp2" };
     Vec4i sp34 = { 160, 155, 0, 0 };
     Object *v0;
 
@@ -211,18 +211,18 @@ void func_8000A578(Object *obj) {
     }
 
     func_80021550(0x2000, 8);
-    obj->unk_1EC = func_8000A514;
-    func_80014B60("dr_title", 0, 0, 0, 0, 1, CONTEXT_2000);
+    obj->fn_update = func_8000A514;
+    load_background("dr_title", 0, 0, 0, 0, 1, CONTEXT_2000);
     v0 = func_8002BBD4(&sp34, &sp44, 0x2000);
     v0->unk_1F4->unk_84 = 60;
     D_8013C560->unk_020.z = -2200;
-    func_8002BB6C(func_80020670, 0x1000);
+    create_worker(func_80020670, 0x1000);
 }
 
-void func_8000A6B8(void) {
+void run_intro_mode(void) {
     s32 unused;
     Object *v0;
-    UnkObjectDef sp3C = { 83, func_80019A9C, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp3C = { 83, func_80019A9C, 0, 0x1000, "options2.sp2" };
     Vec4i sp2C = { 160, 155, 0, 0 };
 
     D_80080129 = FALSE;
@@ -230,11 +230,11 @@ void func_8000A6B8(void) {
     D_8005BFC0 |= 4;
     asset_open_folder("/title/tit_int", CONTEXT_2000);
     asset_open_folder("/plyrsel/plyrsel", 0xEEFF);
-    v0 = func_8002BB6C(func_80019F40, 0x1000);
+    v0 = create_worker(func_80019F40, 0x1000);
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
     func_8001A158(v0, 0x2000);
 
-    D_80081254 = func_80014B60("oplog", 0, 250, 0, 0x10000, 2, CONTEXT_2000);
+    D_80081254 = load_background("oplog", 0, 250, 0, 0x10000, 2, CONTEXT_2000);
     D_80081250 = D_80081254->height;
 
     func_8000A298();
@@ -247,7 +247,7 @@ void func_8000A6B8(void) {
 
 void func_8000A828(void) {
     asset_open_folder("/title/error", 0x2000);
-    func_80014B60("messpg", 0, 90, 0, 180, 1, CONTEXT_2000);
+    load_background("messpg", 0, 90, 0, 180, 1, CONTEXT_2000);
     func_80001D88();
 }
 
@@ -261,9 +261,9 @@ void run_logo_mode(void) {
     }
 
     asset_open_folder("/title/logo", 0x2000);
-    func_80014B60("vic", 0, 30, 0, 180, 1, CONTEXT_2000);
-    func_80014B60("n64lic", 0, 190, 0, 240, 1, CONTEXT_2000);
-    func_8002BB6C(func_80019DE4, 0x1000);
+    load_background("vic", 0, 30, 0, 180, 1, CONTEXT_2000);
+    load_background("n64lic", 0, 190, 0, 240, 1, CONTEXT_2000);
+    create_worker(func_80019DE4, 0x1000);
     func_80001D88();
     func_8002630C(0x2000);
 }
@@ -271,17 +271,17 @@ void run_logo_mode(void) {
 void func_8000A98C(void) {
     Object *s0;
     Object *v0;
-    UnkObjectDef sp1AC = { 89, func_80017F00, 0, 0x1000, "options2.sp2" };
-    UnkObjectDef sp198 = { 203, func_80017F60, 0, 0x1000, "options2.sp2" };
-    UnkObjectDef sp184 = { 53, func_80017FF4, 0, 0x1000, "options2.sp2" };
-    UnkObjectDef sp170 = { 14, func_80018088, 0, 0x1000, "options2.sp2" };
-    UnkObjectDef sp15C = { 7, func_80018120, 0, 0x1000, "options2.sp2" };
-    UnkObjectDef sp148 = { 20, func_800181C8, 0, 0x1000, "options2.sp2" };
-    UnkObjectDef sp134 = { 20, func_800182E0, 0, 0x1000, "options2.sp2" };
-    UnkObjectDef sp120 = { 57, func_800183FC, 0, 0x1000, "options2.sp2" };
-    UnkObjectDef sp10C = { 58, func_800184A8, 0, 0x1000, "options2.sp2" };
-    UnkObjectDef spF8 = { 59, func_80018554, 0, 0x1000, "options2.sp2" };
-    UnkObjectDef spE4 = { 60, func_80018600, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp1AC = { 89, func_80017F00, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp198 = { 203, func_80017F60, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp184 = { 53, func_80017FF4, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp170 = { 14, func_80018088, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp15C = { 7, func_80018120, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp148 = { 20, func_800181C8, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp134 = { 20, func_800182E0, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp120 = { 57, func_800183FC, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp10C = { 58, func_800184A8, 0, 0x1000, "options2.sp2" };
+    SpriteDef spF8 = { 59, func_80018554, 0, 0x1000, "options2.sp2" };
+    SpriteDef spE4 = { 60, func_80018600, 0, 0x1000, "options2.sp2" };
     Vec4i spD4 = { 130, 130, 0, 0 };
     Vec4i spC4 = { 181, 74, 0, 0 };
     Vec4i spB4 = { 181, 91, 0, 0 };
@@ -296,34 +296,34 @@ void func_8000A98C(void) {
 
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
     asset_open_folder("/title/option", 0x2000);
-    func_80014B60("bgopt", 0, 0, 0, 0, 1, CONTEXT_2000);
+    load_background("bgopt", 0, 0, 0, 0, 1, CONTEXT_2000);
     D_8008012C |= 0x20;
     D_8005BFC0 |= 4;
 
     s0 = func_8002BBD4(&spD4, &sp1AC, 0x2000);
 
     v0 = func_8002BBD4(&spC4, &sp198, 0x2000);
-    v0->unk_084 = D_8004C1E4 + 202;
+    v0->spriteID = D_8004C1E4 + 202;
     v0->unk_090[3] = s0;
 
     v0 = func_8002BBD4(&spB4, &sp184, 0x2000);
-    v0->unk_084 = D_8004C1D4 + 51;
+    v0->spriteID = D_8004C1D4 + 51;
     v0->unk_090[3] = s0;
 
     v0 = func_8002BBD4(&spA4, &sp170, 0x2000);
-    v0->unk_084 = D_8004C1D0 + 11;
+    v0->spriteID = D_8004C1D0 + 11;
     v0->unk_090[3] = s0;
 
     v0 = func_8002BBD4(&sp94, &sp15C, 0x2000);
-    v0->unk_084 = D_8004A428 + 7;
+    v0->spriteID = D_8004A428 + 7;
     v0->unk_090[3] = s0;
 
     v0 = func_8002BBD4(&sp84, &sp148, 0x2000);
-    v0->unk_084 = D_8004A448 / (0x8000 / 9) + 11;
+    v0->spriteID = D_8004A448 / (0x8000 / 9) + 11;
     v0->unk_090[3] = s0;
 
     v0 = func_8002BBD4(&sp74, &sp134, 0x2000);
-    v0->unk_084 = D_8004A478 / (0x8000 / 9) + 11;
+    v0->spriteID = D_8004A478 / (0x8000 / 9) + 11;
     v0->unk_090[3] = s0;
 
     v0 = func_8002BBD4(&sp64, &sp120, 0x2000);
@@ -355,28 +355,28 @@ void func_8000AFA4(Object *obj, s16 arg1) {
 
     switch (i) {
         case 0:
-            obj->unk_084 = 67;
+            obj->spriteID = 67;
             break;
         case 1:
-            obj->unk_084 = 65;
+            obj->spriteID = 65;
             break;
         case 2:
-            obj->unk_084 = 68;
+            obj->spriteID = 68;
             break;
         case 3:
-            obj->unk_084 = 66;
+            obj->spriteID = 66;
             break;
         case 4:
-            obj->unk_084 = 61;
+            obj->spriteID = 61;
             break;
         case 5:
-            obj->unk_084 = 64;
+            obj->spriteID = 64;
             break;
         case 6:
-            obj->unk_084 = 63;
+            obj->spriteID = 63;
             break;
         case 7:
-            obj->unk_084 = 62;
+            obj->spriteID = 62;
             break;
     }
 }
@@ -385,16 +385,16 @@ void func_8000B088(void) {
     Object *sp21C;
     Object *sp218;
     Object *v0;
-    UnkObjectDef sp200 = { 90, NULL, 0, 0x1000, "options2.sp2" };
-    UnkObjectDef sp1EC = { 70, func_80018974, 0, 0x1000, "options2.sp2" };
-    UnkObjectDef sp1D8 = { 62, func_80018820, 0, 0x1000, "options2.sp2" };
-    UnkObjectDef sp1C4 = { 63, func_80018820, 0, 0x1000, "options2.sp2" };
-    UnkObjectDef sp1B0 = { 64, func_80018820, 0, 0x1000, "options2.sp2" };
-    UnkObjectDef sp19C = { 66, func_80018820, 0, 0x1000, "options2.sp2" };
-    UnkObjectDef sp188 = { 67, func_80018820, 0, 0x1000, "options2.sp2" };
-    UnkObjectDef sp174 = { 68, func_80018820, 0, 0x1000, "options2.sp2" };
-    UnkObjectDef sp160 = { 65, func_80018820, 0, 0x1000, "options2.sp2" };
-    UnkObjectDef sp14C = { 60, func_800189CC, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp200 = { 90, NULL, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp1EC = { 70, func_80018974, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp1D8 = { 62, func_80018820, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp1C4 = { 63, func_80018820, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp1B0 = { 64, func_80018820, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp19C = { 66, func_80018820, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp188 = { 67, func_80018820, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp174 = { 68, func_80018820, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp160 = { 65, func_80018820, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp14C = { 60, func_800189CC, 0, 0x1000, "options2.sp2" };
     Vec4i sp13C = { 133, 126, 0, 0 };
     Vec4i sp12C = { 40, 82, 0, 0 };
     Vec4i sp11C = { 179, 82, 0, 0 };
@@ -416,7 +416,7 @@ void func_8000B088(void) {
 
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
     asset_open_folder("/title/control", 0x2000);
-    func_80014B60("bgcont", 0, 0, 0, 0, 1, CONTEXT_2000);
+    load_background("bgcont", 0, 0, 0, 0, 1, CONTEXT_2000);
     D_8008012C |= 0x20;
     D_8005BFC0 |= 4;
 
@@ -512,12 +512,12 @@ void func_8000B088(void) {
 }
 
 void func_8000B934(void) {
-    UnkObjectDef sp3C = { 198, func_8001905C, 0, 0x1000, "options2.sp2" };
+    SpriteDef sp3C = { 198, func_8001905C, 0, 0x1000, "options2.sp2" };
     Vec4i sp2C = { 133, 126, 0, 0 };
 
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
     asset_open_folder("/title/rank", 0x2000);
-    func_80014B60("bgrank", 0, 4, 0, 0, 1, CONTEXT_2000);
+    load_background("bgrank", 0, 4, 0, 0, 1, CONTEXT_2000);
     D_80081460 = func_8002BBD4(&sp2C, &sp3C, 0x2000);
     func_80019278();
     D_8008012C |= 0x20;
@@ -533,10 +533,10 @@ void func_8000BA4C(void) {
 
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
     asset_open_folder("/title/stats", 0x2000);
-    func_80014B60("aarost", 0, 13, 0, 0, 1, CONTEXT_2000);
+    load_background("aarost", 0, 13, 0, 0, 1, CONTEXT_2000);
     D_8008012C |= 0x20;
     D_8005BFC0 |= 4;
-    func_8002BB6C(func_80018AD0, 0x1000);
+    create_worker(func_80018AD0, 0x1000);
     func_80001D88();
     func_8002630C(0x2000);
 }
@@ -544,7 +544,7 @@ void func_8000BA4C(void) {
 static void nullsub(void) {
 }
 
-void func_8000BB1C(void) {
+void run_17_mode(void) {
     s32 unused;
     UnkObjDef2 sp74 = { 0x0000FE70, 0 };
     UnkObjDef3 sp64 = { 0xFFFFFE70, 0, 0, 0 };
@@ -557,8 +557,8 @@ void func_8000BB1C(void) {
     asset_open_folder("/bars", 0xABAB);
     func_800052EC(0);
     func_800052EC(1);
-    func_80014B60("bg2", 0, 74, 0x2000, 0x10000, 0, sp4C);
-    func_80014B60("bg0", 0, 15, 0x1000, 0x10000, 1, sp4C);
+    load_background("bg2", 0, 74, 0x2000, 0x10000, 0, sp4C);
+    load_background("bg0", 0, 15, 0x1000, 0x10000, 1, sp4C);
     func_8001B5B0("arena", sp4C);
     func_80029630();
 

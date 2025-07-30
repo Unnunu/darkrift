@@ -237,7 +237,7 @@ Object *func_8000194C(void) {
         return NULL;
     }
 
-    obj->unk_1EC = func_80015C58;
+    obj->fn_update = func_80015C58;
     func_800213E0(2, obj->unk_090[2]);
     D_80053020 = 1;
     D_8005BEFC = 0;
@@ -252,7 +252,7 @@ void func_80001C6C(void) {
     D_80053020 = 1;
     D_800A4520 = D_800A4500 = 1800;
 
-    func_8002BB6C(func_80002744, 0x1000);
+    create_worker(func_80002744, 0x1000);
     while (!(D_8005BFC0 & 0x1)) {
         func_8000132C();
     }
@@ -297,7 +297,7 @@ void func_80001D88(void) {
         if (!(D_8005BFC0 & 0x20)) {
             D_80053020 = 1;
         }
-        func_8002BB6C(func_80002744, 0x1000);
+        create_worker(func_80002744, 0x1000);
         while (!(D_8005BFC0 & 0x1)) {
             func_8000132C();
         }
@@ -398,7 +398,7 @@ void func_80002178(s32 arg0, Quad *arg1);
 void func_80002340(Object *obj) {
     if (D_8005BEFC - 8 < D_80080118) {
         D_8008012C &= ~0x10;
-        obj->unk_080 |= 0x10;
+        obj->flags |= 0x10;
         D_8005BFC0 |= 0x100;
 
         if (obj->unk_090[4] == 0) {
@@ -416,7 +416,7 @@ void func_800023E4(Object *obj) {
     if (obj->unk_090[0] >= 7) {
         osViBlack(0);
         D_8005BEFC = 255;
-        obj->unk_1EC = func_80002340;
+        obj->fn_update = func_80002340;
     }
 
     func_80002178(255, NULL);
@@ -436,9 +436,9 @@ void func_80002448(Object *obj) {
         obj->unk_090[4] = 1;
     }
     D_8005BFC0 |= 4;
-    if (obj->unk_080 & 0x10) {
-        obj->unk_080 &= ~0x10;
-        obj->unk_1EC = func_800023E4;
+    if (obj->flags & 0x10) {
+        obj->flags &= ~0x10;
+        obj->fn_update = func_800023E4;
     }
     func_80002178(255, NULL);
 }
@@ -449,7 +449,7 @@ void func_80002528(Object *obj) {
 
     if (obj->unk_090[0] >= 5) {
         D_8005BFC0 |= 1;
-        obj->unk_080 |= 0x10;
+        obj->flags |= 0x10;
     }
 }
 
@@ -466,7 +466,7 @@ void func_80002590(Object *obj) {
         return;
     }
 
-    obj->unk_1EC = func_80002528;
+    obj->fn_update = func_80002528;
     if (!(D_8005BFC0 & 0x800)) {
         osViBlack(1);
     }
@@ -479,8 +479,8 @@ void func_80002648(Object *obj) {
     D_8008012C |= 0x10;
     func_800217A0(obj, 0);
 
-    if (obj->unk_1EC != func_80002648) {
-        obj->unk_1EC = func_80002590;
+    if (obj->fn_update != func_80002648) {
+        obj->fn_update = func_80002590;
     }
 
     if (D_8005BEFC + 8 < 255) {
@@ -495,7 +495,7 @@ void func_80002648(Object *obj) {
         return;
     }
 
-    obj->unk_1EC = func_80002528;
+    obj->fn_update = func_80002528;
     if (!(D_8005BFC0 & 0x800)) {
         osViBlack(1);
     }
@@ -510,7 +510,7 @@ void func_80002744(Object *obj) {
     }
 
     D_8005BFC0 &= ~0x80;
-    obj->unk_1EC = func_80002648;
+    obj->fn_update = func_80002648;
     func_80002178(D_8005BEFC, NULL);
 }
 
@@ -521,7 +521,7 @@ void func_800027A0(void) {
 
     while (TRUE) {
         D_8005BED0 = gGameMode;
-        func_8002BB6C(func_80002448, 0x1100);
+        create_worker(func_80002448, 0x1100);
         D_8004BB48[gGameMode].fn_run();
         if (!(D_8005BFC0 & 0x800)) {
             osViBlack(1);

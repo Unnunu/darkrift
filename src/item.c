@@ -139,7 +139,7 @@ void func_8002ADFC(Object *obj) {
         obj->nextObject->prevObject = obj->prevObject;
     }
 
-    if (obj->unk_080 & 1) {
+    if (obj->flags & 1) {
         D_8013C2C0.unk_0C++;
         D_8013C2C0.elements[D_8013C2C0.unk_0C] = obj->unk_0C8;
         D_8013C2C0.count++;
@@ -163,7 +163,7 @@ void func_8002ADFC(Object *obj) {
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002B0AC.s")
 
 #ifdef NON_EQUIVALENT
-void func_8002B658(Object *arg0, Vec3i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(Object *)) {
+void obj_init(Object *arg0, Vec3i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(Object *)) {
     s16 i;
 
     func_80012A20(arg3, &arg0->unk_0D0, -2, -3);
@@ -198,7 +198,7 @@ void func_8002B658(Object *arg0, Vec3i *arg1, Vec3s *arg2, UnkMu *arg3, void (*a
     arg0->unk_060 = 0x100;
 
     arg0->unk_078 = 0;
-    arg0->unk_084 = 0;
+    arg0->spriteID = 0;
     arg0->unk_086 = -1;
     arg0->unk_088.a = 128;
     arg0->unk_1F8 = 0;
@@ -233,34 +233,34 @@ void func_8002B658(Object *arg0, Vec3i *arg1, Vec3s *arg2, UnkMu *arg3, void (*a
     arg0->unk_208 = 0;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002B658.s")
-void func_8002B658(Object *arg0, Vec3i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(Object *));
+#pragma GLOBAL_ASM("asm/nonmatchings/item/obj_init.s")
+void obj_init(Object *arg0, Vec3i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(Object *));
 #endif
 
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002B850.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002B9AC.s")
 
-Object *func_8002BB6C(void (*arg0)(Object *), s16 arg1) {
+Object *create_worker(void (*fn_update)(Object *), s16 arg1) {
     Object *obj;
 
     obj = obj_allocate(arg1);
-    func_8002B658(obj, &D_8004934C, &D_80049344, NULL, NULL);
-    obj->unk_1EC = arg0;
-    obj->unk_080 = 8;
+    obj_init(obj, &D_8004934C, &D_80049344, NULL, NULL);
+    obj->fn_update = fn_update;
+    obj->flags = 8;
     return obj;
 }
 
-Object *func_8002BBD4(Vec3i *arg0, UnkObjectDef *arg1, s32 arg2) {
+Object *func_8002BBD4(Vec3i *pos, SpriteDef *def, s32 context) {
     Object *obj;
 
-    obj = obj_allocate(arg1->unk_0C);
-    func_8002B658(obj, arg0, &D_80049344, NULL, arg1->unk_04);
-    obj->unk_1EC = func_80015724;
-    obj->unk_080 = arg1->unk_08;
-    obj->unk_080 |= 0x10000;
-    obj->unk_084 = arg1->unk_00;
-    obj->unk_0C4 = gAssets[asset_find(arg1->unk_10, arg2)].data;
+    obj = obj_allocate(def->unk_0C);
+    obj_init(obj, pos, &D_80049344, NULL, def->unk_04);
+    obj->fn_update = func_80015724;
+    obj->flags = def->flags;
+    obj->flags |= 0x10000;
+    obj->spriteID = def->spriteID;
+    obj->sprite_map = gAssets[asset_find(def->map_name, context)].data;
 
     return obj;
 }

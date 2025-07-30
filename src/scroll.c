@@ -1,13 +1,5 @@
 #include "common.h"
 
-typedef struct TextureAsset {
-    /* 0x00 */ s32 width;
-    /* 0x04 */ s32 height;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ u8 data[1];
-} TextureAsset;
-
 extern s32 D_8008012C;
 extern s32 D_80049AE4;
 extern s32 D_80049AE8;
@@ -20,7 +12,7 @@ extern s16 D_80080132;
 extern s16 D_80080134;
 extern u16 D_8005BFC8;
 
-Texture *func_80014B60(char *name, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 flags, s32 context) {
+Texture *load_background(char *name, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 flags, s32 context) {
     Texture *head;
     s32 pad;
     TextureAsset *asset;
@@ -212,6 +204,6 @@ void func_800153C4(void) {
 void func_80015724(Object *obj) {
     UnkObjectSub2 *v1;
 
-    v1 = obj->unk_0C4->unk_48[obj->unk_084];
+    v1 = obj->sprite_map->unk_48[obj->unk_084];
 }
     */
