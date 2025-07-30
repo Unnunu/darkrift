@@ -58,7 +58,7 @@ void func_8002A994(ItemPool *arg0, u32 count, u32 element_size) {
 
 void func_8002ABCC(s32 count) {
     func_8002A994(&D_8013C2B0, count, sizeof(Object));
-    func_8002A994(&gCameraPool, count, sizeof(GlobalObjB));
+    func_8002A994(&gGlobalObjBPool, count, sizeof(GlobalObjB));
 }
 
 void func_8002AC10(void) {
@@ -200,7 +200,7 @@ void obj_init(Object *arg0, Vec3i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(
     arg0->unk_1F8 = 0;
     arg0->unk_1FA = 0;
 
-    arg0->unk_1F0 = (GlobalObjB *) GET_ITEM(gCameraPool);
+    arg0->unk_1F0 = (GlobalObjB *) GET_ITEM(gGlobalObjBPool);
     arg0->unk_1F4 = arg0->unk_1F0;
     if (arg4 != NULL) {
         arg0->unk_1F4->unk_84 = 0;
@@ -214,7 +214,7 @@ void obj_init(Object *arg0, Vec3i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(
         arg0->unk_1F4->unk_20 = 0;
     }
 
-    arg0->unk_1F4->unk_9C = 0;
+    arg0->unk_1F4->next = 0;
     arg0->unk_1F4->unk_20 = 0;
 
     func_8001305C(&arg0->unk_0D0.unk_98, arg2);

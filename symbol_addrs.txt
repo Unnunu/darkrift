@@ -289,7 +289,7 @@ load_background = 0x80014B60;
 obj_init = 0x8002B658;
 create_worker = 0x8002BB6C;
 
-gCameraPool = 0x8013C550; // size:0x10
+gGlobalObjBPool = 0x8013C550; // size:0x10
 gCameraTarget = 0x8013C568; // size:0x10
 gCamera = 0x8013C560;
 gCameraPerspMatrix = 0x8013C5E8;

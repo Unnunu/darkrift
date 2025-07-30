@@ -260,8 +260,10 @@ typedef struct GlobalObjB {
     /* 0x20 */ s16 unk_20;
     /* 0x22 */ char unk_22[0x84 - 0x22];
     /* 0x84 */ s16 unk_84;
-    /* 0x86 */ char unk_86[0x16];
-    /* 0x9C */ s32 unk_9C;
+    /* 0x86 */ char unk_86[2];
+    /* 0x88 */ s16 unk_88;
+    /* 0x8A */ char unk_8A[0x12];
+    /* 0x9C */ struct GlobalObjB *next;
 } GlobalObjB; // size = 0xA0
 
 typedef struct SpriteDef {

@@ -2,7 +2,7 @@
 
 s32 D_80053030 = 0;
 
-ItemPool gCameraPool;
+ItemPool gGlobalObjBPool;
 Object *gCamera;
 s32 D_8013C564; // unused
 Vec4i gCameraTarget;
@@ -234,14 +234,14 @@ Object *camera_create(void) {
     obj->flags = 0x20;
     obj->unk_086 = -1;
 
-    obj->unk_1F0 = (GlobalObjB *) GET_ITEM(gCameraPool);
+    obj->unk_1F0 = (GlobalObjB *) GET_ITEM(gGlobalObjBPool);
     obj->unk_1F4 = obj->unk_1F0;
 
     obj->unk_1F4->unk_84 = 0;
     obj->unk_1F4->unk_00 = 1;
     obj->unk_1F4->unk_04 = func_80038DE0;
     obj->unk_1F4->unk_20 = 0;
-    obj->unk_1F4->unk_9C = 0;
+    obj->unk_1F4->next = 0;
 
     gCameraTarget.x = gCameraTarget.z = 0;
     gCameraTarget.y = -563;

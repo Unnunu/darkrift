@@ -2,7 +2,7 @@
 #define _CAMERA_H
 #include "common.h"
 
-extern ItemPool gCameraPool;
+extern ItemPool gGlobalObjBPool;
 extern Object* gCamera;
 
 #endif
