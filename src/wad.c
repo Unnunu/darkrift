@@ -91,6 +91,11 @@ typedef struct UnkSam {
     /* 0x3CC */ s32 unk_3CC;
 } UnkSam; // szie = 0x3D0
 
+typedef struct UnkFish {
+    u8 unk_00;
+    char unk_01[17];
+} UnkFish;
+
 extern s32 gNumAssets;
 
 extern Asset gAssets[256];
@@ -119,9 +124,19 @@ extern u8 *D_800A44D4;
 extern s32 D_800A44D8;
 extern ALSeqMarker D_800A44E0;
 extern ALSeqMarker D_800A44F0;
+extern char *D_8004A458[3];
+extern s8 D_8004A470[];
+extern void (*D_8013C228)(Asset *);
 
 extern s32 D_800A4500;
 
+extern char *D_8004A460;
+extern s8 D_8004A472;
+extern UnkFish D_800B6336[];
+
+extern Addr D_7DE880;
+
+void func_80021BC0(ALBankFile *arg0, u8 *arg1, u32 arg2);
 void func_80000E40(u32 *dest, u32 *src, u32 size);
 void func_8000C0E4(AssetGmd *, s32);
 void func_8000DAB0(UnkFrodo *, AssetGmd *, char *, s32, u16);
@@ -137,15 +152,16 @@ void func_8000E0D8(UnkSam *);
 void func_80026B74(Asset *);
 void func_80026BE0(Asset *arg0);
 void func_80027680(Asset *);
+void func_8000BE18(AssetGmd *);
 
 void asset_reload_tmd(Asset *);
 void asset_reload_gmd(Asset *);
 void func_80026EEC(Asset *);
 void asset_load_tbl(Asset *);
 void asset_load_seq(Asset *);
-void func_80027C0C(Asset *);
-void func_80027DA4(Asset *);
-void func_80027EFC(Asset *);
+void asset_load_sfxbl(Asset *);
+void asset_reload_sp3(Asset *);
+void asset_reload_k2(Asset *);
 void asset_reload_k3(Asset *);
 void asset_reload_k4(Asset *);
 void asset_reload_k5(Asset *);
@@ -158,7 +174,13 @@ void asset_load_k4(Asset *);
 void asset_load_k5(Asset *);
 void asset_load_tmd(Asset *);
 void asset_load_ctl(Asset *);
-void func_80027B10(Asset *);
+void asset_load_vox(Asset *);
+void asset_load_sftbl(Asset *);
+void asset_load_sp3(Asset *);
+void asset_load_oc(Asset *);
+void asset_load_k2(Asset *);
+void asset_load_mov(Asset *);
+void asset_load_sym(Asset *);
 
 void func_80025B40(void) {
     u32 i;
@@ -422,13 +444,13 @@ void asset_read_all_files_in_folder(s32 context) {
                     asset_load_seq(gAssets + v0);
                     break;
                 case WAD_FILE_SFXBL:
-                    func_80027C0C(gAssets + v0);
+                    asset_load_sfxbl(gAssets + v0);
                     break;
                 case WAD_FILE_SP3:
-                    func_80027DA4(gAssets + v0);
+                    asset_reload_sp3(gAssets + v0);
                     break;
                 case WAD_FILE_K2:
-                    func_80027EFC(gAssets + v0);
+                    asset_reload_k2(gAssets + v0);
                     break;
                 case WAD_FILE_K3:
                     asset_reload_k3(gAssets + v0);
@@ -487,29 +509,29 @@ void asset_read_all_files_in_folder(s32 context) {
                     asset_load_tbl(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_SP3:
-                    func_80027CAC(gAssets + gNumAssets - 1);
+                    asset_load_sp3(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_SFTBL:
-                    func_80027B7C(gAssets + gNumAssets - 1);
+                    asset_load_sftbl(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_SFXBL:
                     func_80026BE0(gAssets + gNumAssets - 1);
-                    func_80027C0C(gAssets + gNumAssets - 1);
+                    asset_load_sfxbl(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_K2:
-                    func_80027E20(gAssets + gNumAssets - 1);
+                    asset_load_k2(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_MOV:
-                    func_80027F8C(gAssets + gNumAssets - 1);
+                    asset_load_mov(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_OC:
-                    func_80027D84(gAssets + gNumAssets - 1);
+                    asset_load_oc(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_SYM:
-                    func_80027FCC(gAssets + gNumAssets - 1);
+                    asset_load_sym(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_VOX:
-                    func_80027B10(gAssets + gNumAssets - 1);
+                    asset_load_vox(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_K3:
                     asset_load_k3(gAssets + gNumAssets - 1);
@@ -810,8 +832,6 @@ void asset_load_tmd(Asset *asset) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80027680.s")
 
-void func_8000BE18(AssetGmd *);
-
 void asset_reload_tmd(Asset *asset) {
     UnkSam *s0;
     AssetGmd *sp28;
@@ -909,42 +929,149 @@ void asset_load_seq(Asset *asset) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80027B10.s")
+void asset_load_vox(Asset *asset) {
+    func_80026BE0(asset);
+    if (asset->data != NULL) {
+        func_80000E40(D_8004A460, asset->data, asset->unpacked_size);
+        D_8004A472 = 1;
+        func_80026B74(asset);
+        func_80021BC0(D_8004A460, D_7DE880, 2);
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80027B7C.s")
+void asset_load_sftbl(Asset *asset) {
+    s32 sp1C;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80027C0C.s")
+    sp1C = asset->context;
+    if (sp1C >= 2U) {
+        sp1C = 2;
+    }
+
+    func_80026BE0(asset);
+    if (asset->data != NULL) {
+        func_80000E40(D_8004A458[sp1C], asset->data, asset->unpacked_size);
+        D_8004A470[sp1C] = 1;
+        func_80026B74(asset);
+    }
+}
+
+void asset_load_sfxbl(Asset *asset) {
+    s32 sp1C;
+
+    sp1C = asset->context;
+
+    if (asset->data != NULL) {
+        if (sp1C >= 2U) {
+            sp1C = 2;
+        }
+        func_80021BC0(D_8004A458[sp1C], asset->data, sp1C);
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80027C54.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80027CAC.s")
-
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80027D84.s")
-
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80027DA4.s")
-
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80027E20.s")
-/*
-void func_80027E20(Asset *asset) {
+void asset_load_sp3(Asset *asset) {
+    AssetUnkHeader *unkHeader;
+    UnkSam *sp30;
     s32 sp2C;
     s32 sp28;
-    K2Asset *s0;
+    AssetGmd *s1;
+    char *name;
 
     func_80026BE0(asset);
-    asset->aux_memory_slot = sp2C = asset->memory_slot;
-
-    asset->size = 0xCC + asset->data_k2->unk_04 * 0x30;
-    sp28 = asset->data_k2->unk_04;
+    unkHeader = asset->data;
+    sp2C = asset->memory_slot;
+    sp28 = unkHeader->unk_04;
+    asset->aux_memory_slot = asset->memory_slot;
+    asset->size = sp28 * sizeof(AssetGmdSub2) + sp28 * sizeof(AssetGmdSub1) + sizeof(AssetGmd);
 
     func_80026A94(asset, asset->size);
-    s0 = asset->data_k2
-}*/
+    s1 = (AssetGmd *) (asset->data);
+    s1->unk_00 = sp28;
+    func_8000C0E4(s1, sp2C);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80027EFC.s")
+    sp30 = mem_alloc(sizeof(UnkSam), "wad.c", 1226);
+    s1->unk_C8 = 1;
+    name = asset->name;
+    func_8000E73C(sp30, s1, asset->name, 0, D_80049950, asset->context);
+    s1->unk_C8 = 0;
+    asset->aux_data = sp30;
+    strlen(name);
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80027F8C.s")
+void asset_load_oc(Asset *asset) {
+    func_80026BE0(asset);
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80027FCC.s")
+void asset_reload_sp3(Asset *asset) {
+    UnkSam *s0;
+    AssetGmd *sp28;
+
+    s0 = mem_alloc(sizeof(UnkSam), "wad.c", 1257);
+    sp28 = asset->data;
+
+    func_8000BE18(sp28);
+    func_8000E73C(s0, sp28, asset->name, 0, D_80049950, asset->context);
+    asset->aux_data = s0;
+}
+
+void asset_load_k2(Asset *asset) {
+    AssetUnkHeader *unkHeader;
+    UnkSam *sp30;
+    s32 sp2C;
+    s32 sp28;
+    AssetGmd *s1;
+
+    func_80026BE0(asset);
+    unkHeader = asset->data;
+    sp2C = asset->memory_slot;
+    sp28 = unkHeader->unk_04;
+    asset->aux_memory_slot = asset->memory_slot;
+    asset->size = sp28 * sizeof(AssetGmdSub2) + sp28 * sizeof(AssetGmdSub1) + sizeof(AssetGmd);
+
+    func_80026A94(asset, asset->size);
+    s1 = (AssetGmd *) (asset->data);
+    s1->unk_00 = sp28;
+    func_8000C0E4(s1, sp2C);
+
+    sp30 = mem_alloc(sizeof(UnkSam), "wad.c", 1297);
+    s1->unk_C8 = 1;
+    func_8000E73C(sp30, s1, asset->name, 0, D_80049950, asset->context);
+    sp30->unk_3CC = 4;
+    func_80035CCC(sp30);
+    asset->aux_data = sp30;
+    s1->unk_C8 = 0;
+}
+
+void asset_reload_k2(Asset *asset) {
+    UnkSam *s0;
+    AssetGmd *sp28;
+
+    s0 = mem_alloc(sizeof(UnkSam), "wad.c", 1314);
+    sp28 = asset->data;
+
+    func_8000BE18(sp28);
+    func_8000E73C(s0, sp28, asset->name, 0, D_80049950, asset->context);
+    s0->unk_3CC = 4;
+    func_80035CCC(s0);
+    asset->aux_data = s0;
+}
+
+void asset_load_mov(Asset *asset) {
+    if (D_8013C228 != NULL) {
+        D_8013C228(asset);
+    } else {
+        func_80026BE0(asset);
+    }
+}
+
+void asset_load_sym(Asset *asset) {
+    if (D_800B6336[asset->context].unk_00 != 0) {
+        func_80026BE0(asset);
+    }
+}
+
+// file split ?
 
 #pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80028010.s")
 

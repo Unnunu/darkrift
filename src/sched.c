@@ -70,7 +70,7 @@ extern s16 D_80080132;
 extern s16 D_80080134;
 extern u16 D_80080136;
 extern u16 D_80080138;
-extern s32 D_8013C228;
+extern void (*D_8013C228)(Asset *);
 extern s16 D_80080116;
 extern s16 D_80080118;
 extern s16 D_8006E072;
@@ -293,7 +293,7 @@ void func_800031FC(u16 arg0) {
     D_80080134 = D_8004BB48[arg0].unk_12;
     D_8008012C = 0;
     memcpy(&D_801389B8, &D_8004CBC8, sizeof(OSTask));
-    D_8013C228 = 0;
+    D_8013C228 = NULL;
     D_80080116 = D_80080118 = 0;
     D_80080129 = TRUE;
     func_800028B0();
@@ -335,7 +335,7 @@ void func_80003468(u16 arg0) {
     D_80080132 = D_8004BB48[arg0].unk_11;
     D_80080134 = D_8004BB48[arg0].unk_12;
     D_8008012C = 0;
-    D_8013C228 = 0;
+    D_8013C228 = NULL;
     D_80080118 = 0;
     D_80080129 = TRUE;
     func_800028B0();

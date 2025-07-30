@@ -125,11 +125,6 @@ typedef struct ChunkHeader {
     /* 0x14 */ char padding[0x4];
 } ChunkHeader; // size = 0x18
 
-typedef struct K2Asset {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-} K2Asset;
-
 typedef struct TextureAsset {
     /* 0x00 */ s32 width;
     /* 0x04 */ s32 height;
