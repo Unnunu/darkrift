@@ -67,7 +67,7 @@ typedef struct DisplayData {
     /* 0x6080 */ Gfx unk_6080[0x400];
     /* 0x8080 */ UnkDispStruct unk_8080[0x800];
     /* 0x10080 */ UnkDispStruct unk_10080[0x200];
-    /* 0x12080 */ u16 unk_12080;
+    /* 0x12080 */ u16 perspNorm;
     /* 0x12082 */ char unk_12082[6];
 } DisplayData; // size = 0x12088
 
@@ -148,12 +148,12 @@ typedef struct Asset {
     /* 0x34 */ u8 *romAddr;
 } Asset; // size = 0x38
 
-typedef struct UnkItemAlpha {
+typedef struct ItemPool {
     /* 0x00 */ u8 *buffer;
     /* 0x04 */ s32 count;
     /* 0x08 */ u8 **elements;
     /* 0x0C */ s16 unk_0C;
-} UnkItemAlpha; // size >= 0xE
+} ItemPool; // size >= 0xE
 
 typedef struct UnkMu {
     /* 0x00 */ Mtx unk_00;
@@ -211,12 +211,10 @@ typedef struct UnkObjectSub {
 } UnkObjectSub;
 
 typedef struct Object {
-    /* 0x000 */ Vec3i unk_000;
-    /* 0x00C */ char unk_00C[0x4];
-    /* 0x010 */ Vec3i unk_010;
-    /* 0x01C */ char unk_01C[0x4];
-    /* 0x020 */ Vec3i unk_020;
-    /* 0x02C */ char unk_02C[0x50 - 0x2C];
+    /* 0x000 */ Vec4i unk_000;
+    /* 0x010 */ Vec4i unk_010;
+    /* 0x020 */ Vec4i pos;
+    /* 0x030 */ char unk_030[0x50 - 0x30];
     /* 0x050 */ Vec3s unk_050;
     /* 0x056 */ char unk_056[2];
     /* 0x058 */ s32 unk_058;

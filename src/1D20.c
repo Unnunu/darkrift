@@ -184,8 +184,8 @@ void func_8000132C(void) {
     }
     gSPDisplayList(D_8005BFD8++, D_8004CB00);
     gSPMatrix(D_8005BFD8++, &D_80080100->unk_00, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gUnkRdpHalfCommand(D_8005BFD8++, D_80080100->unk_12080);
-    D_8004CC20.unk_00 = D_80080100->unk_12080;
+    gUnkRdpHalfCommand(D_8005BFD8++, D_80080100->perspNorm);
+    D_8004CC20.unk_00 = D_80080100->perspNorm;
     gDPSetFogColor(D_8005BFD8++, D_80080130, D_80080132, D_80080134, 255);
     gSPFogPosition(D_8005BFD8++, D_80080136, D_80080138);
     if (D_80049CF0 != 0) {

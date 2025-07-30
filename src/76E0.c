@@ -1,4 +1,5 @@
 #include "common.h"
+#include "camera.h"
 
 typedef struct UnkObjDef2 {
     /* 0x00 */ s32 unk_00;
@@ -13,7 +14,6 @@ typedef struct UnkObjDef4 {
 } UnkObjDef4; // size = 0x10
 
 extern u8 D_800B6340;
-extern Object *D_8013C560;
 extern s32 D_8008012C;
 extern Object *D_80081460;
 extern s16 D_80049B30[];
@@ -215,7 +215,7 @@ void func_8000A578(Object *obj) {
     load_background("dr_title", 0, 0, 0, 0, 1, CONTEXT_2000);
     v0 = func_8002BBD4(&sp34, &sp44, 0x2000);
     v0->unk_1F4->unk_84 = 60;
-    D_8013C560->unk_020.z = -2200;
+    gCamera->pos.z = -2200;
     create_worker(func_80020670, 0x1000);
 }
 
@@ -562,10 +562,10 @@ void run_17_mode(void) {
     func_8001B5B0("arena", sp4C);
     func_80029630();
 
-    D_8013C560->unk_1F4->unk_84 = 0;
-    D_8013C560->unk_1F4->unk_00 = 1;
-    D_8013C560->unk_1F4->unk_04 = func_8002DE20;
-    D_8013C560->unk_1F4->unk_20 = 0;
+    gCamera->unk_1F4->unk_84 = 0;
+    gCamera->unk_1F4->unk_00 = 1;
+    gCamera->unk_1F4->unk_04 = func_8002DE20;
+    gCamera->unk_1F4->unk_20 = 0;
 
     func_80001D88();
 }

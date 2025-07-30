@@ -1,8 +1,8 @@
 #include "common.h"
+#include "camera.h"
 
-extern UnkItemAlpha D_8013C2B0;
-extern UnkItemAlpha D_8013C2C0;
-extern UnkItemAlpha D_8013C550;
+extern ItemPool D_8013C2B0;
+extern ItemPool D_8013C2C0;
 
 extern Vec3s D_80049344;
 extern Vec3i D_8004934C;
@@ -11,7 +11,7 @@ extern s32 D_80052C54;
 
 void func_80038DE0(Object *arg0);
 
-void func_8002A8C0(UnkItemAlpha *arg0, u32 count, u32 element_size) {
+void func_8002A8C0(ItemPool *arg0, u32 count, u32 element_size) {
     s16 i;
     u8 *buffer;
 
@@ -27,7 +27,7 @@ void func_8002A8C0(UnkItemAlpha *arg0, u32 count, u32 element_size) {
     }
 }
 
-void func_8002A994(UnkItemAlpha *arg0, u32 count, u32 element_size) {
+void func_8002A994(ItemPool *arg0, u32 count, u32 element_size) {
     u32 i;
     u32 j;
     u32 old_count;
@@ -58,7 +58,7 @@ void func_8002A994(UnkItemAlpha *arg0, u32 count, u32 element_size) {
 
 void func_8002ABCC(s32 count) {
     func_8002A994(&D_8013C2B0, count, sizeof(Object));
-    func_8002A994(&D_8013C550, count, sizeof(GlobalObjB));
+    func_8002A994(&gCameraPool, count, sizeof(GlobalObjB));
 }
 
 void func_8002AC10(void) {
@@ -167,19 +167,19 @@ void obj_init(Object *arg0, Vec3i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(
     arg0->unk_076 = 0;
     arg0->unk_088.r = arg0->unk_088.g = arg0->unk_088.b = 160;
 
-    arg0->unk_000 = 0;
-    arg0->unk_004 = 0;
-    arg0->unk_008 = 0;
+    arg0->unk_000.x = 0;
+    arg0->unk_000.y = 0;
+    arg0->unk_000.z = 0;
 
-    arg0->unk_010 = 0;
-    arg0->unk_014 = 0;
-    arg0->unk_018 = 0;
+    arg0->unk_010.x = 0;
+    arg0->unk_010.y = 0;
+    arg0->unk_010.z = 0;
 
     arg0->unk_08C = arg0->unk_076;
 
-    arg0->unk_020.x = arg1->x;
-    arg0->unk_020.y = arg1->y;
-    arg0->unk_020.z = arg1->z;
+    arg0->pos.x = arg1->x;
+    arg0->pos.y = arg1->y;
+    arg0->pos.z = arg1->z;
 
     arg0->unk_050.x = arg2->x;
     arg0->unk_050.y = arg2->y;
@@ -200,7 +200,7 @@ void obj_init(Object *arg0, Vec3i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(
     arg0->unk_1F8 = 0;
     arg0->unk_1FA = 0;
 
-    arg0->unk_1F0 = (GlobalObjB *) GET_ITEM(D_8013C550);
+    arg0->unk_1F0 = (GlobalObjB *) GET_ITEM(gCameraPool);
     arg0->unk_1F4 = arg0->unk_1F0;
     if (arg4 != NULL) {
         arg0->unk_1F4->unk_84 = 0;

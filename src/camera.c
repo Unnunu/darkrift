@@ -1,25 +1,25 @@
-#include "common.h"
+#include "camera.h"
 
 s32 D_80053030 = 0;
 
-UnkItemAlpha D_8013C550;
-Object *D_8013C560;
+ItemPool gCameraPool;
+Object *gCamera;
 s32 D_8013C564; // unused
-Vec4i D_8013C568;
-f32 D_8013C578;
+Vec4i gCameraTarget;
+f32 gCameraFieldOfView;
 s32 D_8013C57C; // unused
-s32 D_8013C580;
-s32 D_8013C584;
+s32 gCameraNearClip;
+s32 gCameraFarClip;
 s32 D_8013C588;
-s32 D_8013C58C;
-s32 D_8013C590;
+s32 gCameraHeading;
+s32 gCameraPreviousHeading;
 f32 D_8013C594;
-f32 D_8013C598;
+f32 gCameraScale;
 f32 D_8013C59C;
 f32 D_8013C5A0;
-Matrix4f D_8013C5A8;
-Matrix4f D_8013C5E8;
-Matrix4f D_8013C628;
+Matrix4f gCameraViewMatrix;
+Matrix4f gCameraPerspMatrix;
+Matrix4f gCameraProjectionMatrix;
 Vec3s D_8013C668;
 Matrix4f D_8013C670;
 Matrix4f D_8013C6B0;
@@ -41,12 +41,12 @@ void func_80038E00(Object *obj, s32 arg1) {
 
     *camera->unk_12C = arg1;
 
-    D_8013C568.x = D_8013C568.z = 0;
-    D_8013C568.y = -480;
+    gCameraTarget.x = gCameraTarget.z = 0;
+    gCameraTarget.y = -480;
 
-    obj->unk_020.y = 0;
-    obj->unk_020.z = 0;
-    obj->unk_020.x = 0;
+    obj->pos.y = 0;
+    obj->pos.z = 0;
+    obj->pos.x = 0;
 
     obj->unk_050.y = 0x400;
 
@@ -57,7 +57,7 @@ void func_80038E00(Object *obj, s32 arg1) {
     D_8013C818.x = D_8013C818.y = D_8013C818.z = 0;
 
     obj->unk_0C8->unk_A08 = 0x7FFF;
-    D_8013C584 = 11000;
+    gCameraFarClip = 11000;
 }
 
 void func_80038E8C(Object *obj, Vec3i *arg1, s32 arg2, s32 arg3) {
@@ -76,19 +76,19 @@ void func_80038E8C(Object *obj, Vec3i *arg1, s32 arg2, s32 arg3) {
     obj->unk_050.x = obj->unk_050.z = 0;
     obj->unk_050.y = arg2;
 
-    obj->unk_020.x = arg1->x;
-    obj->unk_020.y = arg1->y;
-    obj->unk_020.z = arg1->z;
+    obj->pos.x = arg1->x;
+    obj->pos.y = arg1->y;
+    obj->pos.z = arg1->z;
 
-    D_8013C568.x = arg1->x;
-    D_8013C568.z = arg1->z;
-    D_8013C568.y = -480;
+    gCameraTarget.x = arg1->x;
+    gCameraTarget.z = arg1->z;
+    gCameraTarget.y = -480;
 
     D_8013C818.x = arg1->x;
     D_8013C818.y = arg1->y;
     D_8013C818.z = arg1->z;
 
-    D_8013C584 = 11000;
+    gCameraFarClip = 11000;
 }
 
 void func_80038F34(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -129,10 +129,10 @@ void func_80038F34(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     }
 }
 
-void func_80039118(Object *obj) {
-    s32 dx, dy, dz;
+void camera_update(Object *obj) {
+    s32 deltaX, deltaY, deltaZ;
     GlobalObjC *s1 = obj->unk_0C8;
-    u32 a2, a3, v0;
+    u32 absDeltaX, absDeltaZ, minDelta;
     s32 unused;
     Vec4i sp48;
     u32 sp3C;
@@ -157,54 +157,55 @@ void func_80039118(Object *obj) {
                 sp48.y = s1->unk_404.y;
                 sp48.z = s1->unk_404.z;
                 func_8001370C(&sp48, &obj->unk_050);
-                D_8013C568.x = D_8013C818.x + sp48.x;
-                D_8013C568.y = D_8013C818.y + sp48.y;
-                D_8013C568.z = D_8013C818.z + sp48.z;
+                gCameraTarget.x = D_8013C818.x + sp48.x;
+                gCameraTarget.y = D_8013C818.y + sp48.y;
+                gCameraTarget.z = D_8013C818.z + sp48.z;
             }
         }
 
-        obj->unk_020.y = s1->unk_9D8;
+        obj->pos.y = s1->unk_9D8;
     }
 
-    guPerspectiveF(&D_8013C5E8, &D_80080100->unk_12080, D_8013C578, 4.0f / 3.0f, D_8013C580, D_8013C584, D_8013C598);
+    guPerspectiveF(&gCameraPerspMatrix, &D_80080100->perspNorm, gCameraFieldOfView, 4.0f / 3.0f, gCameraNearClip,
+                   gCameraFarClip, gCameraScale);
 
-    if (obj->unk_020.x != 0 || obj->unk_020.z != 0 || D_8013C568.x != 0 || D_8013C568.z != 0) {
-        guLookAtF(&D_8013C5A8, obj->unk_020.x, obj->unk_020.y + (f32) D_8013C830, obj->unk_020.z, D_8013C568.x,
-                  D_8013C568.y + (f32) D_8013C830, D_8013C568.z, 0.0f, -1.0f, 0.0f);
-        func_800149F0(&D_8013C5A8, &D_8013C5E8, &D_8013C628);
+    if (obj->pos.x != 0 || obj->pos.z != 0 || gCameraTarget.x != 0 || gCameraTarget.z != 0) {
+        guLookAtF(&gCameraViewMatrix, obj->pos.x, obj->pos.y + (f32) D_8013C830, obj->pos.z, gCameraTarget.x,
+                  gCameraTarget.y + (f32) D_8013C830, gCameraTarget.z, 0.0f, -1.0f, 0.0f);
+        func_800149F0(&gCameraViewMatrix, &gCameraPerspMatrix, &gCameraProjectionMatrix);
     }
 
-    func_80013A54(&D_80080100->unk_00, &D_8013C628);
+    func_80013A54(&D_80080100->unk_00, &gCameraProjectionMatrix);
 
-    dx = D_8013C568.x - D_8013C560->unk_020.x;
-    dy = D_8013C568.y - D_8013C560->unk_020.y;
-    dz = D_8013C568.z - D_8013C560->unk_020.z;
+    deltaX = gCameraTarget.x - gCamera->pos.x;
+    deltaY = gCameraTarget.y - gCamera->pos.y;
+    deltaZ = gCameraTarget.z - gCamera->pos.z;
 
-    D_8013C590 = D_8013C58C;
-    D_8013C58C = func_80012518(dz, dx);
+    gCameraPreviousHeading = gCameraHeading;
+    gCameraHeading = func_80012518(deltaZ, deltaX);
 
-    if (dx > 0) {
-        a2 = dx;
+    if (deltaX > 0) {
+        absDeltaX = deltaX;
     } else {
-        a2 = -dx;
+        absDeltaX = -deltaX;
     }
-    if (dz > 0) {
-        a3 = dz;
+    if (deltaZ > 0) {
+        absDeltaZ = deltaZ;
     } else {
-        a3 = -dz;
+        absDeltaZ = -deltaZ;
     }
-    if (a2 < a3) {
-        v0 = a2;
+    if (absDeltaX < absDeltaZ) {
+        minDelta = absDeltaX;
     } else {
-        v0 = a3;
+        minDelta = absDeltaZ;
     }
 
-    sp3C = (a2 + a3) - (v0 >> 1);
-    D_8013C594 = (f32) dy / (f32) sp3C;
-    func_80038F34(dx, dz, a2, a3);
+    sp3C = (absDeltaX + absDeltaZ) - (minDelta >> 1);
+    D_8013C594 = (f32) deltaY / (f32) sp3C;
+    func_80038F34(deltaX, deltaZ, absDeltaX, absDeltaZ);
 
-    D_8013C668.y = -0xC00 - D_8013C58C;
-    D_8013C668.x = -func_80012518(dy, sp3C);
+    D_8013C668.y = -0xC00 - gCameraHeading;
+    D_8013C668.x = -func_80012518(deltaY, sp3C);
 
     if (!(D_8008012C & 0x20) || *s1->unk_12C) {
         D_80081428 = D_8013C828;
@@ -212,15 +213,16 @@ void func_80039118(Object *obj) {
     }
 }
 
-void func_8003950C(void) {
+void camera_default_view(void) {
     s32 perspNorm;
 
-    guPerspectiveF(&D_8013C5E8, &perspNorm, D_8013C578, 4.0f / 3.0f, D_8013C580, D_8013C584, D_8013C598);
+    guPerspectiveF(&gCameraPerspMatrix, &perspNorm, gCameraFieldOfView, 4.0f / 3.0f, gCameraNearClip, gCameraFarClip,
+                   gCameraScale);
     guLookAtF(&D_8013C670, 0.0f, 0.0f, -2300.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f);
-    func_800149F0(&D_8013C670, &D_8013C5E8, &D_8013C6B0);
+    func_800149F0(&D_8013C670, &gCameraPerspMatrix, &D_8013C6B0);
 }
 
-Object *func_800395D4(void) {
+Object *camera_create(void) {
     Object *obj;
 
     obj = obj_allocate(0x1200);
@@ -232,7 +234,7 @@ Object *func_800395D4(void) {
     obj->flags = 0x20;
     obj->unk_086 = -1;
 
-    obj->unk_1F0 = (GlobalObjB *) GET_ITEM(D_8013C550);
+    obj->unk_1F0 = (GlobalObjB *) GET_ITEM(gCameraPool);
     obj->unk_1F4 = obj->unk_1F0;
 
     obj->unk_1F4->unk_84 = 0;
@@ -241,23 +243,23 @@ Object *func_800395D4(void) {
     obj->unk_1F4->unk_20 = 0;
     obj->unk_1F4->unk_9C = 0;
 
-    D_8013C568.x = D_8013C568.z = 0;
-    D_8013C568.y = -563;
+    gCameraTarget.x = gCameraTarget.z = 0;
+    gCameraTarget.y = -563;
 
-    obj->unk_020.x = 0;
-    obj->unk_020.y = -583;
-    obj->unk_020.z = -2200;
+    obj->pos.x = 0;
+    obj->pos.y = -583;
+    obj->pos.z = -2200;
 
     D_8013C588 = 180;
-    D_8013C580 = 600;
-    D_8013C584 = 11000;
-    D_8013C598 = 1.0f;
-    D_8013C578 = 30.0f;
+    gCameraNearClip = 600;
+    gCameraFarClip = 11000;
+    gCameraScale = 1.0f;
+    gCameraFieldOfView = 30.0f;
 
-    func_80012AA8(&D_8013C5A8);
-    func_80012AA8(&D_8013C5E8);
+    func_80012AA8(&gCameraViewMatrix);
+    func_80012AA8(&gCameraPerspMatrix);
 
-    obj->fn_update = func_80039118;
+    obj->fn_update = camera_update;
     D_8013C668.z = 0;
 
     obj->unk_0C8 = mem_alloc(sizeof(GlobalObjC), "camera.c", 247);
@@ -278,7 +280,7 @@ Object *func_800395D4(void) {
 
     obj->unk_0C8->unk_A0C = obj->unk_0C8->unk_A0E = -3;
 
-    func_8003950C();
+    camera_default_view();
 
     obj->flags |= 0x20;
     D_8013C59C = D_8013C5A0 = 0.0f;
