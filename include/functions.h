@@ -19,7 +19,7 @@ void func_80021918(Object *arg0, s32 arg1);
 void func_800217A0(Object *, s32);
 void func_80012A20(UnkMu *arg0, UnkMu *arg1, s32 arg2, s32 arg3);
 void func_8001305C(Matrix4f *, Vec3s *);
-void func_800136CC(Matrix4f *, Vec3i *);
+void func_800136CC(Matrix4f *, Vec4i *);
 void func_80015724(Object *);
 void func_800263A8(void);
 void asset_open_folder(char *path, s32 context);
@@ -43,5 +43,6 @@ void func_80037500(Object *);
 void func_8003635C(Object *);
 void func_80013A54(Mtx *, Matrix4f *);
 s16 func_80012518(s32 arg0, s32 arg1);
+void func_80014974(UnkMu *);
 
 #endif

@@ -33,7 +33,7 @@ s8 D_8013C834;
 s32 D_8013C838;
 
 void func_80038E00(Object *obj, s32 arg1) {
-    GlobalObjC *camera = obj->unk_0C8;
+    Camera *camera = obj->camera;
 
     camera->unk_A0C = 0;
     obj->unk_086 = camera->unk_A0E = -1;
@@ -56,12 +56,12 @@ void func_80038E00(Object *obj, s32 arg1) {
 
     D_8013C818.x = D_8013C818.y = D_8013C818.z = 0;
 
-    obj->unk_0C8->unk_A08 = 0x7FFF;
+    obj->camera->unk_A08 = 0x7FFF;
     gCameraFarClip = 11000;
 }
 
 void func_80038E8C(Object *obj, Vec3i *arg1, s32 arg2, s32 arg3) {
-    GlobalObjC *camera = obj->unk_0C8;
+    Camera *camera = obj->camera;
 
     camera->unk_A0E = -1;
     camera->unk_A0C = 0;
@@ -69,7 +69,7 @@ void func_80038E8C(Object *obj, Vec3i *arg1, s32 arg2, s32 arg3) {
 
     obj->unk_084 = 0;
 
-    obj->unk_0C8->unk_A08 = 0x7FFF;
+    obj->camera->unk_A08 = 0x7FFF;
 
     *camera->unk_12C = arg3;
 
@@ -131,7 +131,7 @@ void func_80038F34(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 void camera_update(Object *obj) {
     s32 deltaX, deltaY, deltaZ;
-    GlobalObjC *s1 = obj->unk_0C8;
+    Camera *s1 = obj->camera;
     u32 absDeltaX, absDeltaZ, minDelta;
     s32 unused;
     Vec4i sp48;
@@ -175,7 +175,7 @@ void camera_update(Object *obj) {
         func_800149F0(&gCameraViewMatrix, &gCameraPerspMatrix, &gCameraProjectionMatrix);
     }
 
-    func_80013A54(&D_80080100->unk_00, &gCameraProjectionMatrix);
+    func_80013A54(&D_80080100->mtxViewProj, &gCameraProjectionMatrix);
 
     deltaX = gCameraTarget.x - gCamera->pos.x;
     deltaY = gCameraTarget.y - gCamera->pos.y;
@@ -262,23 +262,23 @@ Object *camera_create(void) {
     obj->fn_update = camera_update;
     D_8013C668.z = 0;
 
-    obj->unk_0C8 = mem_alloc(sizeof(GlobalObjC), "camera.c", 247);
-    obj->unk_0C8->unk_000 = 1;
-    obj->unk_0C8->unk_128 = &D_8013C6F0;
-    obj->unk_0C8->unk_AA8 = D_8013C808;
+    obj->camera = mem_alloc(sizeof(Camera), "camera.c", 247);
+    obj->camera->unk_000 = 1;
+    obj->camera->unk_128 = &D_8013C6F0;
+    obj->camera->unk_AA8 = D_8013C808;
 
-    func_80012A20(NULL, &obj->unk_0C8->unk_010, -1, -2);
-    func_80012A20(&obj->unk_0C8->unk_010, obj->unk_0C8->unk_128, 0, -1);
+    func_80012A20(NULL, &obj->camera->unk_010, -1, -2);
+    func_80012A20(&obj->camera->unk_010, obj->camera->unk_128, 0, -1);
 
-    obj->unk_0C8->unk_9E4.x = obj->unk_0C8->unk_9E4.y = obj->unk_0C8->unk_9E4.z = 0;
-    obj->unk_0C8->unk_12C = &D_80053030;
+    obj->camera->unk_9E4.x = obj->camera->unk_9E4.y = obj->camera->unk_9E4.z = 0;
+    obj->camera->unk_12C = &D_80053030;
     D_80053030 = FALSE;
-    obj->unk_0C8->unk_A20 = obj->unk_0C8->unk_A1C = obj->unk_0C8->unk_00C = 0;
+    obj->camera->unk_A20 = obj->camera->unk_A1C = obj->camera->unk_00C = 0;
 
     obj->flags |= 0x20400;
     obj->flags &= ~0x8000;
 
-    obj->unk_0C8->unk_A0C = obj->unk_0C8->unk_A0E = -3;
+    obj->camera->unk_A0C = obj->camera->unk_A0E = -3;
 
     camera_default_view();
 

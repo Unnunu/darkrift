@@ -1,4 +1,6 @@
 #include "common.h"
+#include "task.h"
+#include "camera.h"
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034090.s")
 
@@ -23,16 +25,19 @@
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034860.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_800349F0.s")
+void func_800349F0(Object *);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034A58.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034AB8.s")
+void func_80034AB8(Object *);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034C18.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034D54.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034F34.s")
+void func_80034F34(Object *);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034FC8.s")
 
@@ -43,12 +48,14 @@
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_800352FC.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_8003561C.s")
+void func_8003561C(Object *, s32);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_800359E4.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80035CCC.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80035DF8.s")
+void func_80035DF8(UnkCameraSub2 *, s32);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80035F5C.s")
 
@@ -73,6 +80,7 @@
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80037500.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80037788.s")
+void func_80037788(UnkCameraSub4 *, s32);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_8003795C.s")
 
@@ -80,4 +88,114 @@
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80037E28.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_800386E8.s")
+void func_800386E8(Object *obj) {
+    UnkCameraSub3 **s2;
+    Camera *camera;
+    UnkMu *spAC;
+    s32 j;
+    u32 i;
+    UnkCameraSub5 *new_var;
+    Matrix4f *a1;
+    UnkCameraSub *s0;
+    s32 sp94;
+    UnkCameraSub4 *q;
+    s32 s6;
+    UnkMu *mu;
+    Matrix4f *nu;
+    UnkCameraSub *s7;
+    s32 unused[8];
+
+    camera = obj->camera;
+    spAC = camera->unk_128;
+    s2 = &camera->unk_A28->unk_154;
+    sp94 = 30 * D_8005BFCE;
+
+    task_execute(obj);
+    if (obj->flags & 4) {
+        return;
+    }
+
+    mu = &obj->unk_0D0;
+
+    if (obj->flags & 0x10000000) {
+        func_800349F0(obj);
+    }
+
+    if ((!(obj->flags & 0x4000)) || (obj->flags & 0x10000000)) {
+        func_80034AB8(obj);
+    }
+
+    func_80034F34(obj);
+
+    if (obj->flags & 0x80000000) {
+        obj->unk_050.y = D_8013C668.y;
+        obj->unk_050.x = D_8013C668.x;
+    }
+
+    if (camera->unk_12C != NULL) {
+        if (camera->unk_A0C != camera->unk_A0E) {
+            func_80037500(obj);
+            camera->unk_A0E = camera->unk_A0C;
+        }
+
+        if (obj->unk_084 != obj->unk_086) {
+            func_800371C0(obj);
+            func_8003635C(obj);
+            obj->unk_086 = obj->unk_084;
+        }
+
+        func_8001305C(&mu->unk_98, &obj->unk_050);
+        func_800136CC(&mu->unk_98, &obj->pos);
+        func_80014974(mu);
+
+        if (camera->unk_604 != 0) {
+            if (obj->flags & 0x800) {
+                func_8003561C(obj, -10000);
+            } else {
+                func_8003561C(obj, 0);
+            }
+
+            q = camera->unk_608;
+            for (i = 0; i < camera->unk_9C8; i++) {
+                new_var = q[i].unk_04;
+                if (obj->flags & 0x02000000) {
+                    q[i].unk_1C |= 2;
+                }
+
+                s6 = new_var->unk_24;
+                s7 = camera->unk_AB0;
+
+                for (j = 0; j < s6; j++) {
+                    s32 s1 = new_var->unk_04[j];
+
+                    if (obj->flags & 0x01000000) {
+                        a1 = &D_8013C6B0;
+                    } else {
+                        a1 = &gCameraProjectionMatrix;
+                    }
+
+                    if (spAC != NULL) {
+                        func_800149F0(&spAC[s1].unk_D8, a1, &D_800813E0);
+                    } else {
+                        func_800149F0(&camera->unk_010.unk_D8, a1, &D_800813E0);
+                    }
+
+                    s0 = &s7[s1 + sp94];
+                    func_80013A54(&s0->unk_18, &D_800813E0);
+                    q[i].unk_08[j] = s0;
+                }
+            }
+
+            func_80037788(q, camera->unk_9C8);
+        }
+    } else {
+        s0 = camera->unk_AB0;
+        func_8001305C(&mu->unk_98, &obj->unk_050);
+        func_800136CC(&mu->unk_98, &obj->pos);
+        func_80014974(mu);
+        func_800149F0(&mu->unk_98, &gCameraProjectionMatrix, &D_800813E0);
+        func_80013A54(&(s0 + sp94)->unk_18, &D_800813E0);
+        func_80035DF8(camera->unk_A28, 0);
+        (*s2)->unk_04 = s0 + sp94;
+    }
+}

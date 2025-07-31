@@ -63,7 +63,7 @@ void func_8002ABCC(s32 count) {
 
 void func_8002AC10(void) {
     func_8002A8C0(&D_8013C2B0, 50, sizeof(Object));
-    func_8002A8C0(&D_8013C2C0, 16, sizeof(GlobalObjC));
+    func_8002A8C0(&D_8013C2C0, 16, sizeof(Camera));
     D_80052C50 = NULL;
     D_80052C54 = 0;
 }
@@ -137,11 +137,11 @@ void func_8002ADFC(Object *obj) {
 
     if (obj->flags & 1) {
         D_8013C2C0.unk_0C++;
-        D_8013C2C0.elements[D_8013C2C0.unk_0C] = obj->unk_0C8;
+        D_8013C2C0.elements[D_8013C2C0.unk_0C] = obj->camera;
         D_8013C2C0.count++;
 
-        if (obj->unk_0C8->unk_128 != NULL) {
-            mem_free(obj->unk_0C8->unk_128);
+        if (obj->camera->unk_128 != NULL) {
+            mem_free(obj->camera->unk_128);
         }
     }
 
@@ -159,7 +159,7 @@ void func_8002ADFC(Object *obj) {
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002B0AC.s")
 
 #ifdef NON_EQUIVALENT
-void obj_init(Object *arg0, Vec3i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(Object *)) {
+void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(Object *)) {
     s16 i;
 
     func_80012A20(arg3, &arg0->unk_0D0, -2, -3);
@@ -230,7 +230,7 @@ void obj_init(Object *arg0, Vec3i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(
 }
 #else
 #pragma GLOBAL_ASM("asm/nonmatchings/item/obj_init.s")
-void obj_init(Object *arg0, Vec3i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(Object *));
+void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(Object *));
 #endif
 
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002B850.s")
