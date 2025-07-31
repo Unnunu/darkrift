@@ -303,27 +303,27 @@ void func_8000A98C(void) {
     s0 = func_8002BBD4(&spD4, &sp1AC, 0x2000);
 
     v0 = func_8002BBD4(&spC4, &sp198, 0x2000);
-    v0->spriteID = D_8004C1E4 + 202;
+    v0->unk_084 = D_8004C1E4 + 202;
     v0->unk_090[3] = s0;
 
     v0 = func_8002BBD4(&spB4, &sp184, 0x2000);
-    v0->spriteID = D_8004C1D4 + 51;
+    v0->unk_084 = D_8004C1D4 + 51;
     v0->unk_090[3] = s0;
 
     v0 = func_8002BBD4(&spA4, &sp170, 0x2000);
-    v0->spriteID = D_8004C1D0 + 11;
+    v0->unk_084 = D_8004C1D0 + 11;
     v0->unk_090[3] = s0;
 
     v0 = func_8002BBD4(&sp94, &sp15C, 0x2000);
-    v0->spriteID = D_8004A428 + 7;
+    v0->unk_084 = D_8004A428 + 7;
     v0->unk_090[3] = s0;
 
     v0 = func_8002BBD4(&sp84, &sp148, 0x2000);
-    v0->spriteID = D_8004A448 / (0x8000 / 9) + 11;
+    v0->unk_084 = D_8004A448 / (0x8000 / 9) + 11;
     v0->unk_090[3] = s0;
 
     v0 = func_8002BBD4(&sp74, &sp134, 0x2000);
-    v0->spriteID = D_8004A478 / (0x8000 / 9) + 11;
+    v0->unk_084 = D_8004A478 / (0x8000 / 9) + 11;
     v0->unk_090[3] = s0;
 
     v0 = func_8002BBD4(&sp64, &sp120, 0x2000);
@@ -355,28 +355,28 @@ void func_8000AFA4(Object *obj, s16 arg1) {
 
     switch (i) {
         case 0:
-            obj->spriteID = 67;
+            obj->unk_084 = 67;
             break;
         case 1:
-            obj->spriteID = 65;
+            obj->unk_084 = 65;
             break;
         case 2:
-            obj->spriteID = 68;
+            obj->unk_084 = 68;
             break;
         case 3:
-            obj->spriteID = 66;
+            obj->unk_084 = 66;
             break;
         case 4:
-            obj->spriteID = 61;
+            obj->unk_084 = 61;
             break;
         case 5:
-            obj->spriteID = 64;
+            obj->unk_084 = 64;
             break;
         case 6:
-            obj->spriteID = 63;
+            obj->unk_084 = 63;
             break;
         case 7:
-            obj->spriteID = 62;
+            obj->unk_084 = 62;
             break;
     }
 }

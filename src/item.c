@@ -194,7 +194,7 @@ void obj_init(Object *arg0, Vec3i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(
     arg0->unk_060 = 0x100;
 
     arg0->unk_078 = 0;
-    arg0->spriteID = 0;
+    arg0->unk_084 = 0;
     arg0->unk_086 = -1;
     arg0->unk_088.a = 128;
     arg0->unk_1F8 = 0;
@@ -255,7 +255,7 @@ Object *func_8002BBD4(Vec3i *pos, SpriteDef *def, s32 context) {
     obj->fn_update = func_80015724;
     obj->flags = def->flags;
     obj->flags |= 0x10000;
-    obj->spriteID = def->spriteID;
+    obj->unk_084 = def->spriteID;
     obj->sprite_map = gAssets[asset_find(def->map_name, context)].data;
 
     return obj;

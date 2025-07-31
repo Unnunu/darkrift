@@ -228,7 +228,7 @@ typedef struct Object {
     /* 0x07C */ s16 unk_07C;
     /* 0x07E */ s16 unk_07E;
     /* 0x080 */ s32 flags;
-    /* 0x084 */ s16 spriteID;
+    /* 0x084 */ s16 unk_084;
     /* 0x086 */ s16 unk_086;
     /* 0x088 */ ColorRGBA unk_088;
     /* 0x08C */ s16 unk_08C;
@@ -253,16 +253,24 @@ typedef struct Object {
     /* 0x214 */ struct Object *prevObject;
 } Object; // size = 0x218
 
+typedef struct GlobalObjBSub {
+    /* 0x00 */ s32 unk_00;
+    /* 0x04 */ void (*unk_04)(Object *);
+    /* 0x08 */ s16 unk_08;
+} GlobalObjBSub; // size = 0xC
+
 typedef struct GlobalObjB {
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ void (*unk_04)(Object *);
     /* 0x08 */ char unk_08[0x18];
-    /* 0x20 */ s16 unk_20;
-    /* 0x22 */ char unk_22[0x84 - 0x22];
+    /* 0x20 */ u16 unk_20;
+    /* 0x22 */ char unk_22[2];
+    /* 0x24 */ GlobalObjBSub unk_24[8];
     /* 0x84 */ s16 unk_84;
-    /* 0x86 */ char unk_86[2];
+    /* 0x86 */ s16 unk_86;
     /* 0x88 */ s16 unk_88;
-    /* 0x8A */ char unk_8A[0x12];
+    /* 0x8A */ char unk_8A[6];
+    /* 0x90 */ GlobalObjBSub unk_90;
     /* 0x9C */ struct GlobalObjB *next;
 } GlobalObjB; // size = 0xA0
 
