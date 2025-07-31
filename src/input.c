@@ -3,7 +3,7 @@
 extern u16 D_800AA450[2][8];
 extern OSContPad *gContData[MAXCONTROLLERS];
 
-extern s32 D_800492AC;
+extern s32 gFrameCounter;
 
 // R_CBUTTONS, L_CBUTTONS, D_CBUTTONS, U_CBUTTONS
 s32 D_8004A4F0[] = {
@@ -168,7 +168,7 @@ void func_80024A90(s16 arg0);
 #endif
 
 void func_80024C98(void) {
-    D_800492AC++;
+    gFrameCounter++;
     cont_read();
 
     if (gPlayerInput[0].unk_0A && gPlayerInput[0].enabled) {

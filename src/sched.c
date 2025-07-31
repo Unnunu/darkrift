@@ -1,6 +1,7 @@
 #include "common.h"
 #include "string.h"
 #include "camera.h"
+#include "task.h"
 
 void init_heap(void);
 extern void *gHeapBase;
@@ -282,7 +283,7 @@ void func_800031FC(u16 arg0) {
     D_80080110 = D_8004BB48[arg0].unk_0C;
     D_80080112 = D_8004BB48[arg0].unk_0D;
     D_80080114 = D_8004BB48[arg0].unk_0E;
-    func_8002A8C0(&gGlobalObjBPool, 50, sizeof(GlobalObjB));
+    func_8002A8C0(&gTaskPool, 50, sizeof(ObjectTask));
     func_8002AC10();
     gCamera = camera_create();
     D_80080136 = D_8004BB48[arg0].unk_14;
@@ -322,7 +323,7 @@ void func_80003468(u16 arg0) {
     D_80080110 = D_8004BB48[arg0].unk_0C;
     D_80080112 = D_8004BB48[arg0].unk_0D;
     D_80080114 = D_8004BB48[arg0].unk_0E;
-    func_8002A8C0(&gGlobalObjBPool, 50, sizeof(GlobalObjB));
+    func_8002A8C0(&gTaskPool, 50, sizeof(ObjectTask));
     func_8002AC10();
     gCamera = camera_create();
     func_80024D2C();

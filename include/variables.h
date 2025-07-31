@@ -16,5 +16,6 @@ extern DisplayData *D_80080100;
 extern s32 D_80049AE8;
 extern s32 D_8008012C;
 extern s32 D_80081428;
+extern s32 gFrameCounter;
 
 #endif

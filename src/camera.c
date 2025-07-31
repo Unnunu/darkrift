@@ -1,8 +1,8 @@
 #include "camera.h"
+#include "task.h"
 
 s32 D_80053030 = 0;
 
-ItemPool gGlobalObjBPool;
 Object *gCamera;
 s32 D_8013C564; // unused
 Vec4i gCameraTarget;
@@ -138,7 +138,7 @@ void camera_update(Object *obj) {
     u32 sp3C;
     s32 unused2;
 
-    func_80038B10(obj);
+    task_execute(obj);
 
     if (*s1->unk_12C) {
         if (s1->unk_A0C != s1->unk_A0E) {
@@ -234,14 +234,14 @@ Object *camera_create(void) {
     obj->flags = 0x20;
     obj->unk_086 = -1;
 
-    obj->unk_1F0 = (GlobalObjB *) GET_ITEM(gGlobalObjBPool);
-    obj->unk_1F4 = obj->unk_1F0;
+    obj->taskList = (ObjectTask *) GET_ITEM(gTaskPool);
+    obj->currentTask = obj->taskList;
 
-    obj->unk_1F4->unk_84 = 0;
-    obj->unk_1F4->unk_00 = 1;
-    obj->unk_1F4->unk_04 = func_80038DE0;
-    obj->unk_1F4->unk_20 = 0;
-    obj->unk_1F4->next = 0;
+    obj->currentTask->counter = 0;
+    obj->currentTask->flags = 1;
+    obj->currentTask->func = task_default_func;
+    obj->currentTask->stackPos = 0;
+    obj->currentTask->next = NULL;
 
     gCameraTarget.x = gCameraTarget.z = 0;
     gCameraTarget.y = -563;

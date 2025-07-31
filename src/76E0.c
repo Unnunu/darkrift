@@ -41,7 +41,7 @@ void func_800052EC(s16 arg0);
 void func_8001B5B0(char *, s32);
 void func_80029630(void);
 void func_8002DE20(Object *);
-void func_80038DE0(Object *);
+void task_default_func(Object *);
 void func_8001905C(Object *);
 void func_80018974(Object *);
 void func_80018820(Object *);
@@ -174,7 +174,7 @@ void func_8000A354(void) {
         v1 = func_8002BBD4(&sp30, &sp40, 0x2000);
     }
 
-    v1->unk_1F4->unk_84 = 30;
+    v1->currentTask->counter = 30;
 
     create_worker(func_80020670, 0x1000);
     func_8000A298();
@@ -214,7 +214,7 @@ void func_8000A578(Object *obj) {
     obj->fn_update = func_8000A514;
     load_background("dr_title", 0, 0, 0, 0, 1, CONTEXT_2000);
     v0 = func_8002BBD4(&sp34, &sp44, 0x2000);
-    v0->unk_1F4->unk_84 = 60;
+    v0->currentTask->counter = 60;
     gCamera->pos.z = -2200;
     create_worker(func_80020670, 0x1000);
 }
@@ -551,8 +551,8 @@ void run_17_mode(void) {
     UnkObjDef3 sp54 = { 400, 0, 0, 0 };
     s32 unused2;
     s32 sp4C = D_800B6340;
-    UnkObjDef4 sp3C = { "gore", func_80038DE0, 0x1000, 0 };
-    UnkObjDef4 sp2C = { "arena", func_80038DE0, 0x1000, 0 };
+    UnkObjDef4 sp3C = { "gore", task_default_func, 0x1000, 0 };
+    UnkObjDef4 sp2C = { "arena", task_default_func, 0x1000, 0 };
 
     asset_open_folder("/bars", 0xABAB);
     func_800052EC(0);
@@ -562,10 +562,10 @@ void run_17_mode(void) {
     func_8001B5B0("arena", sp4C);
     func_80029630();
 
-    gCamera->unk_1F4->unk_84 = 0;
-    gCamera->unk_1F4->unk_00 = 1;
-    gCamera->unk_1F4->unk_04 = func_8002DE20;
-    gCamera->unk_1F4->unk_20 = 0;
+    gCamera->currentTask->counter = 0;
+    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->stackPos = 0;
 
     func_80001D88();
 }

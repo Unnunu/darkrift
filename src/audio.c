@@ -254,7 +254,7 @@ void func_80021918(Object *arg0, s32 arg1) {
 
     if (v1) {
         arg0->flags |= 0x10;
-        arg0->unk_1F4->unk_00 |= 0x80;
+        arg0->currentTask->flags |= 0x80;
     }
 }
 

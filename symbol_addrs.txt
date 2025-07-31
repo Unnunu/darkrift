@@ -289,7 +289,7 @@ load_background = 0x80014B60;
 obj_init = 0x8002B658;
 create_worker = 0x8002BB6C;
 
-gGlobalObjBPool = 0x8013C550; // size:0x10
+gTaskPool = 0x8013C550; // size:0x10
 gCameraTarget = 0x8013C568; // size:0x10
 gCamera = 0x8013C560;
 gCameraPerspMatrix = 0x8013C5E8;
@@ -297,3 +297,10 @@ gCameraViewMatrix = 0x8013C5A8;
 gCameraProjectionMatrix = 0x8013C628;
 camera_create = 0x800395D4;
 gCameraHeading = 0x8013C58C;
+
+gFrameCounter = 0x800492AC;
+task_execute = 0x80038B10;
+task_clear = 0x80038AC0;
+task_add = 0x80038D50;
+task_default_func = 0x80038DE0;
+gTasksDisabled = 0x80053020;

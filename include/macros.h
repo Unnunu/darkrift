@@ -15,8 +15,8 @@
     array.elements[array.unk_0C--]; \
     array.count--;
 
-#define RELEASE_ITEM(array, item)          \
-    array.elements[++array.unk_0C] = item; \
+#define RELEASE_ITEM(array, item)                 \
+    array.elements[++array.unk_0C] = (u8 *) item; \
     array.count++;
 
 #endif

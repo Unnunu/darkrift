@@ -79,7 +79,7 @@ OSTask D_8004CC88 = {
 extern UnkDispStructPart2 D_8004CCC8;
 extern UnkDispStructPart2 D_8004CD30;
 
-extern u8 D_80053020;
+extern u8 gTasksDisabled;
 
 extern s16 D_8005BED0;
 extern u16 D_8005BED2;
@@ -239,7 +239,7 @@ Object *func_8000194C(void) {
 
     obj->fn_update = func_80015C58;
     func_800213E0(2, obj->unk_090[2]);
-    D_80053020 = 1;
+    gTasksDisabled = TRUE;
     D_8005BEFC = 0;
     return obj;
 }
@@ -249,14 +249,14 @@ void func_800019B0(s32);
 
 void func_80001C6C(void) {
     D_8005BFC0 = 0;
-    D_80053020 = 1;
+    gTasksDisabled = TRUE;
     D_800A4520 = D_800A4500 = 1800;
 
     create_worker(func_80002744, 0x1000);
     while (!(D_8005BFC0 & 0x1)) {
         func_8000132C();
     }
-    D_80053020 = 0;
+    gTasksDisabled = FALSE;
 
     while (gPlayerInput[0].unk_00 == (INP_START | INP_ZTRIG) || gPlayerInput[1].unk_00 == (INP_START | INP_ZTRIG)) {
         func_8000132C();
@@ -285,7 +285,7 @@ void func_80001D88(void) {
         }
 
         if (D_8005BFC0 & 0x200) {
-            D_80053020 = 1 - D_80053020;
+            gTasksDisabled = 1 - gTasksDisabled;
         }
         func_8000132C();
     }
@@ -295,13 +295,13 @@ void func_80001D88(void) {
 
     if (!(D_8005BFC0 & 0x10)) {
         if (!(D_8005BFC0 & 0x20)) {
-            D_80053020 = 1;
+            gTasksDisabled = TRUE;
         }
         create_worker(func_80002744, 0x1000);
         while (!(D_8005BFC0 & 0x1)) {
             func_8000132C();
         }
-        D_80053020 = 0;
+        gTasksDisabled = FALSE;
     }
 
     D_8005BFC0 &= ~0x2000;

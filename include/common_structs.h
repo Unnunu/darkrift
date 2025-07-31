@@ -240,8 +240,8 @@ typedef struct Object {
     /* 0x0D0 */ UnkMu unk_0D0;
     /* 0x1E8 */ char unk_1E8[4];
     /* 0x1EC */ void (*fn_update)(struct Object *);
-    /* 0x1F0 */ struct GlobalObjB *unk_1F0;
-    /* 0x1F4 */ struct GlobalObjB *unk_1F4;
+    /* 0x1F0 */ struct ObjectTask *taskList;
+    /* 0x1F4 */ struct ObjectTask *currentTask;
     /* 0x1F8 */ s16 unk_1F8;
     /* 0x1FA */ s16 unk_1FA;
     /* 0x1FC */ s32 unk_1FC;
@@ -254,25 +254,25 @@ typedef struct Object {
 } Object; // size = 0x218
 
 typedef struct GlobalObjBSub {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ void (*unk_04)(Object *);
-    /* 0x08 */ s16 unk_08;
+    /* 0x00 */ s32 flags;
+    /* 0x04 */ void (*func)(Object *);
+    /* 0x08 */ s16 counter;
 } GlobalObjBSub; // size = 0xC
 
-typedef struct GlobalObjB {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ void (*unk_04)(Object *);
+typedef struct ObjectTask {
+    /* 0x00 */ s32 flags;
+    /* 0x04 */ void (*func)(Object *);
     /* 0x08 */ char unk_08[0x18];
-    /* 0x20 */ u16 unk_20;
+    /* 0x20 */ u16 stackPos;
     /* 0x22 */ char unk_22[2];
-    /* 0x24 */ GlobalObjBSub unk_24[8];
-    /* 0x84 */ s16 unk_84;
+    /* 0x24 */ GlobalObjBSub stack[8];
+    /* 0x84 */ s16 counter;
     /* 0x86 */ s16 unk_86;
-    /* 0x88 */ s16 unk_88;
+    /* 0x88 */ s16 id;
     /* 0x8A */ char unk_8A[6];
     /* 0x90 */ GlobalObjBSub unk_90;
-    /* 0x9C */ struct GlobalObjB *next;
-} GlobalObjB; // size = 0xA0
+    /* 0x9C */ struct ObjectTask *next;
+} ObjectTask; // size = 0xA0
 
 typedef struct SpriteDef {
     /* 0x00 */ s16 spriteID;

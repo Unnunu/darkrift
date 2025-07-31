@@ -27,7 +27,7 @@ void func_80019BD0(Object *obj) {
         D_8005BFC0 |= 1;
         gGameMode = GAME_MODE_0;
         obj->flags |= 0x10;
-        obj->unk_1F4->unk_00 |= 0x80;
+        obj->currentTask->flags |= 0x80;
     }
 }
 
@@ -38,7 +38,7 @@ void func_80019C48(Object *obj) {
         D_8005BFC0 |= 1;
         gGameMode = GAME_MODE_32;
         obj->flags |= 0x10;
-        obj->unk_1F4->unk_00 |= 0x80;
+        obj->currentTask->flags |= 0x80;
     }
     func_80019BD0(obj);
 }

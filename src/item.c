@@ -1,5 +1,5 @@
 #include "common.h"
-#include "camera.h"
+#include "task.h"
 
 extern ItemPool D_8013C2B0;
 extern ItemPool D_8013C2C0;
@@ -9,7 +9,7 @@ extern Vec3i D_8004934C;
 extern Object *D_80052C50;
 extern s32 D_80052C54;
 
-void func_80038DE0(Object *arg0);
+void task_default_func(Object *arg0);
 
 void func_8002A8C0(ItemPool *arg0, u32 count, u32 element_size) {
     s16 i;
@@ -58,7 +58,7 @@ void func_8002A994(ItemPool *arg0, u32 count, u32 element_size) {
 
 void func_8002ABCC(s32 count) {
     func_8002A994(&D_8013C2B0, count, sizeof(Object));
-    func_8002A994(&gGlobalObjBPool, count, sizeof(GlobalObjB));
+    func_8002A994(&gTaskPool, count, sizeof(ObjectTask));
 }
 
 void func_8002AC10(void) {
@@ -200,22 +200,22 @@ void obj_init(Object *arg0, Vec3i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(
     arg0->unk_1F8 = 0;
     arg0->unk_1FA = 0;
 
-    arg0->unk_1F0 = (GlobalObjB *) GET_ITEM(gGlobalObjBPool);
-    arg0->unk_1F4 = arg0->unk_1F0;
+    arg0->taskList = (ObjectTask *) GET_ITEM(gTaskPool);
+    arg0->currentTask = arg0->taskList;
     if (arg4 != NULL) {
-        arg0->unk_1F4->unk_84 = 0;
-        arg0->unk_1F4->unk_00 = 1;
-        arg0->unk_1F4->unk_04 = arg4;
-        arg0->unk_1F4->unk_20 = 0;
+        arg0->currentTask->counter = 0;
+        arg0->currentTask->flags = 1;
+        arg0->currentTask->func = arg4;
+        arg0->currentTask->stackPos = 0;
     } else {
-        arg0->unk_1F4->unk_84 = 0;
-        arg0->unk_1F4->unk_00 = 1;
-        arg0->unk_1F4->unk_04 = func_80038DE0;
-        arg0->unk_1F4->unk_20 = 0;
+        arg0->currentTask->counter = 0;
+        arg0->currentTask->flags = 1;
+        arg0->currentTask->func = task_default_func;
+        arg0->currentTask->stackPos = 0;
     }
 
-    arg0->unk_1F4->next = 0;
-    arg0->unk_1F4->unk_20 = 0;
+    arg0->currentTask->next = 0;
+    arg0->currentTask->stackPos = 0;
 
     func_8001305C(&arg0->unk_0D0.unk_98, arg2);
     func_800136CC(&arg0->unk_0D0.unk_98, arg1);

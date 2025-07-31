@@ -38,8 +38,6 @@ void func_800149F0(Matrix4f *, Matrix4f *, Matrix4f *);
 Object *obj_allocate(s16 arg0);
 void func_80012AA8(Matrix4f *mf);
 void func_8001370C(Vec4i *arg0, Vec3s *arg1);
-void func_80038DE0(Object *);
-void func_80038B10(Object *);
 void func_800371C0(Object *);
 void func_80037500(Object *);
 void func_8003635C(Object *);
