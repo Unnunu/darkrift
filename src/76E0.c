@@ -21,8 +21,8 @@ extern s16 D_8004C1D0;
 extern s16 D_8004C1D4;
 extern s16 D_8004C1E4;
 extern u8 D_8004A428;
-extern s32 D_8004A448;
-extern s32 D_8004A478;
+extern s32 gMusicVolume;
+extern s32 gSoundVolume;
 extern s8 D_80080129;
 extern s16 D_80081250;
 extern Texture *D_80081254;
@@ -32,7 +32,7 @@ extern Vec3i D_8004934C;
 
 Object *func_8002BFF0(Vec3i *, s16, void (*)(Object *), void *);
 void func_800199E0(Object *);
-void func_80021550(s32, s32);
+void sound_stop_one(s32, s32);
 void func_80020670(Object *);
 void func_80019F40(Object *);
 void func_8001A158(Object *, s16);
@@ -210,7 +210,7 @@ void func_8000A578(Object *obj) {
         return;
     }
 
-    func_80021550(0x2000, 8);
+    sound_stop_one(0x2000, 8); // @bug wrong player id
     obj->fn_update = func_8000A514;
     load_background("dr_title", 0, 0, 0, 0, 1, CONTEXT_2000);
     v0 = func_8002BBD4(&sp34, &sp44, 0x2000);
@@ -319,11 +319,11 @@ void func_8000A98C(void) {
     v0->unk_090[3] = s0;
 
     v0 = func_8002BBD4(&sp84, &sp148, 0x2000);
-    v0->unk_084 = D_8004A448 / (0x8000 / 9) + 11;
+    v0->unk_084 = gMusicVolume / (0x8000 / 9) + 11;
     v0->unk_090[3] = s0;
 
     v0 = func_8002BBD4(&sp74, &sp134, 0x2000);
-    v0->unk_084 = D_8004A478 / (0x8000 / 9) + 11;
+    v0->unk_084 = gSoundVolume / (0x8000 / 9) + 11;
     v0->unk_090[3] = s0;
 
     v0 = func_8002BBD4(&sp64, &sp120, 0x2000);

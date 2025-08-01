@@ -27,8 +27,8 @@ extern Gfx D_8005BF10;
 extern Gfx D_8005BF58;
 extern Gfx D_8005BF60;
 extern Vtx D_800492B0[];
-extern s32 D_800A4500;
-extern s32 D_800A4520;
+extern s32 gMusicVolumeFading;
+extern s32 gSoundVolumeFading;
 
 /*
 OSTask D_8004CBC8 = {
@@ -237,7 +237,7 @@ Object *func_8000194C(void) {
     }
 
     obj->fn_update = func_80015C58;
-    func_800213E0(2, obj->unk_090[2]);
+    sound_play(2, obj->unk_090[2]);
     gTasksDisabled = TRUE;
     D_8005BEFC = 0;
     return obj;
@@ -249,7 +249,7 @@ void func_800019B0(s32);
 void func_80001C6C(void) {
     D_8005BFC0 = 0;
     gTasksDisabled = TRUE;
-    D_800A4520 = D_800A4500 = 1800;
+    gSoundVolumeFading = gMusicVolumeFading = 1800;
 
     create_worker(func_80002744, 0x1000);
     while (!(D_8005BFC0 & 0x1)) {
@@ -428,7 +428,7 @@ void func_80002448(Object *obj) {
         return;
     }
     D_8008012C |= 0x10;
-    osViBlack(1);
+    osViBlack(TRUE);
     D_8005BFC0 &= ~0x1000;
     func_80021918(obj, 0);
     if (D_8005BFC0 & 4) {
@@ -476,7 +476,7 @@ void func_80002590(Object *obj) {
 
 void func_80002648(Object *obj) {
     D_8008012C |= 0x10;
-    func_800217A0(obj, 0);
+    audio_fade_out_all(obj, 0);
 
     if (obj->fn_update != func_80002648) {
         obj->fn_update = func_80002590;

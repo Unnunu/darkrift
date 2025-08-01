@@ -57,7 +57,7 @@ void func_80025E6C(void);
 void func_80025EDC(s32 arg0, s32 arg1);
 void func_80012490(void);
 void func_80024D2C(void);
-void func_800207E4(void);
+void audio_init(void);
 Object *camera_create(void);
 void func_80034508(void);
 void func_80024A38(s32);
@@ -83,7 +83,7 @@ extern s32 D_80049CF0;
 
 void func_800007C8(void);
 void func_80026250(void);
-void func_80020BB4(void);
+void audio_reset(void);
 void func_8002AC10(void);
 
 s32 func_80021338(void);
@@ -278,7 +278,7 @@ void func_800031FC(u16 arg0) {
     func_80025EDC(D_80080124, 0x25800);
     func_80012490();
     func_80024D2C();
-    func_800207E4();
+    audio_init();
     func_80002C54();
     D_80080110 = D_8004BB48[arg0].unk_0C;
     D_80080112 = D_8004BB48[arg0].unk_0D;
@@ -319,7 +319,7 @@ void func_80003468(u16 arg0) {
     D_80081428 = 0;
     func_800007C8();
     func_80026250();
-    func_80020BB4();
+    audio_reset();
     D_80080110 = D_8004BB48[arg0].unk_0C;
     D_80080112 = D_8004BB48[arg0].unk_0D;
     D_80080114 = D_8004BB48[arg0].unk_0E;

@@ -16,8 +16,8 @@ enum WadFileTypes {
     WAD_FILE_CTL = 10,
     WAD_FILE_TBL = 11,
     WAD_FILE_SP3 = 12,
-    WAD_FILE_SFTBL = 13,
-    WAD_FILE_SFXBL = 14,
+    WAD_FILE_SFB = 13,
+    WAD_FILE_SFX = 14,
     WAD_FILE_K2 = 15,
     WAD_FILE_MOV = 16,
     WAD_FILE_OC = 17,
@@ -113,29 +113,28 @@ extern u8 D_80049920[];
 extern u8 D_80049938[];
 extern u8 D_80049950[];
 extern u8 D_80049968[];
-extern ALBankFile *D_800A44C8;
-extern s32 D_800A44CC;
-extern u8 D_8004A420;
-extern ALSeqPlayer *D_8004A43C;
-extern ALSeq *D_8004A440;
-extern s32 D_8004A448;
-extern s16 D_8004A44A;
-extern u8 *D_800A44D4;
-extern s32 D_800A44D8;
-extern ALSeqMarker D_800A44E0;
-extern ALSeqMarker D_800A44F0;
-extern ALBankFile *D_8004A458[3];
-extern u8 D_8004A470[];
+extern ALBankFile *gMusicBankFile;
+extern s32 gMusicBankFileSize;
+extern u8 gMusicIsPlaying;
+extern ALSeqPlayer *gMusicPlayer;
+extern ALSeq *gMusicSequence;
+extern s32 gMusicVolume;
+extern u8 *gCurrentSongData;
+extern s32 gCurrentSongDataSize;
+extern ALSeqMarker gMusicMarkerStart;
+extern ALSeqMarker gMusicMarkerEnd;
+extern ALBankFile *gAudioBankFiles[3];
+extern u8 gSfxPlayerOn[];
 extern void (*D_8013C228)(Asset *);
 
-extern s32 D_800A4500;
+extern s32 gMusicVolumeFading;
 
 extern s8 D_8004A472;
 extern UnkFish D_800B6336[];
 
 extern Addr D_7DE880;
 
-void func_80021BC0(ALBankFile *arg0, u8 *arg1, u32 arg2);
+void sound_init_player(ALBankFile *arg0, u8 *arg1, u32 arg2);
 void func_80000E40(u32 *dest, u32 *src, u32 size);
 void func_8000C0E4(AssetGmd *, s32);
 void func_8000DAB0(UnkFrodo *, AssetGmd *, char *, s32, u16);
@@ -158,7 +157,7 @@ void asset_reload_gmd(Asset *);
 void func_80026EEC(Asset *);
 void asset_load_tbl(Asset *);
 void asset_load_seq(Asset *);
-void asset_load_sfxbl(Asset *);
+void asset_load_sfx(Asset *);
 void asset_reload_sp3(Asset *);
 void asset_reload_k2(Asset *);
 void asset_reload_k3(Asset *);
@@ -174,7 +173,7 @@ void asset_load_k5(Asset *);
 void asset_load_tmd(Asset *);
 void asset_load_ctl(Asset *);
 void asset_load_vox(Asset *);
-void asset_load_sftbl(Asset *);
+void asset_load_sfb(Asset *);
 void asset_load_sp3(Asset *);
 void asset_load_oc(Asset *);
 void asset_load_k2(Asset *);
@@ -442,8 +441,8 @@ void asset_read_all_files_in_folder(s32 context) {
                 case WAD_FILE_SEQ:
                     asset_load_seq(gAssets + v0);
                     break;
-                case WAD_FILE_SFXBL:
-                    asset_load_sfxbl(gAssets + v0);
+                case WAD_FILE_SFX:
+                    asset_load_sfx(gAssets + v0);
                     break;
                 case WAD_FILE_SP3:
                     asset_reload_sp3(gAssets + v0);
@@ -510,12 +509,12 @@ void asset_read_all_files_in_folder(s32 context) {
                 case WAD_FILE_SP3:
                     asset_load_sp3(gAssets + gNumAssets - 1);
                     break;
-                case WAD_FILE_SFTBL:
-                    asset_load_sftbl(gAssets + gNumAssets - 1);
+                case WAD_FILE_SFB:
+                    asset_load_sfb(gAssets + gNumAssets - 1);
                     break;
-                case WAD_FILE_SFXBL:
+                case WAD_FILE_SFX:
                     func_80026BE0(gAssets + gNumAssets - 1);
-                    asset_load_sfxbl(gAssets + gNumAssets - 1);
+                    asset_load_sfx(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_K2:
                     asset_load_k2(gAssets + gNumAssets - 1);
@@ -900,70 +899,71 @@ void asset_reload_gmd(Asset *asset) {
 void asset_load_ctl(Asset *asset) {
     func_80026BE0(asset);
     if (asset->data != NULL) {
-        D_800A44CC = asset->unpacked_size;
-        func_80000E40(D_800A44C8, asset->data, D_800A44CC);
+        gMusicBankFileSize = asset->unpacked_size;
+        func_80000E40(gMusicBankFile, asset->data, gMusicBankFileSize);
         func_80026B74(asset);
     }
 }
 
 void asset_load_tbl(Asset *asset) {
     if (asset->data != 0) {
-        alBnkfNew(D_800A44C8, asset->data);
+        alBnkfNew(gMusicBankFile, asset->data);
     }
 }
 
 void asset_load_seq(Asset *asset) {
     if (asset->data != NULL) {
-        D_800A44D8 = asset->unpacked_size;
-        D_800A44D4 = asset->data;
-        alSeqNew(D_8004A440, D_800A44D4, D_800A44D8);
-        alSeqNewMarker(D_8004A440, &D_800A44E0, 0);
-        alSeqNewMarker(D_8004A440, &D_800A44F0, -1);
-        alSeqpLoop(D_8004A43C, &D_800A44E0, &D_800A44F0, -1);
-        alSeqpSetBank(D_8004A43C, D_800A44C8->bankArray[0]);
-        alSeqpSetSeq(D_8004A43C, D_8004A440);
-        alSeqpSetVol(D_8004A43C, D_8004A44A);
-        D_8004A420 = TRUE;
-        D_800A4500 = D_8004A448;
+        gCurrentSongDataSize = asset->unpacked_size;
+        gCurrentSongData = asset->data;
+        alSeqNew(gMusicSequence, gCurrentSongData, gCurrentSongDataSize);
+        alSeqNewMarker(gMusicSequence, &gMusicMarkerStart, 0);
+        alSeqNewMarker(gMusicSequence, &gMusicMarkerEnd, 0xFFFFFFFF);
+        alSeqpLoop(gMusicPlayer, &gMusicMarkerStart, &gMusicMarkerEnd, -1);
+
+        alSeqpSetBank(gMusicPlayer, gMusicBankFile->bankArray[0]);
+        alSeqpSetSeq(gMusicPlayer, gMusicSequence);
+        alSeqpSetVol(gMusicPlayer, gMusicVolume);
+        gMusicIsPlaying = TRUE;
+        gMusicVolumeFading = gMusicVolume;
     }
 }
 
 void asset_load_vox(Asset *asset) {
     func_80026BE0(asset);
     if (asset->data != NULL) {
-        func_80000E40(D_8004A458[2], asset->data, asset->unpacked_size);
-        D_8004A472 = 1;
+        func_80000E40(gAudioBankFiles[2], asset->data, asset->unpacked_size);
+        gSfxPlayerOn[2] = 1;
         func_80026B74(asset);
-        func_80021BC0(D_8004A458[2], D_7DE880, 2);
+        sound_init_player(gAudioBankFiles[2], D_7DE880, 2);
     }
 }
 
-void asset_load_sftbl(Asset *asset) {
-    s32 sp1C;
+void asset_load_sfb(Asset *asset) {
+    s32 playerID;
 
-    sp1C = asset->context;
-    if (sp1C >= 2U) {
-        sp1C = 2;
+    playerID = asset->context;
+    if (playerID >= 2U) {
+        playerID = 2;
     }
 
     func_80026BE0(asset);
     if (asset->data != NULL) {
-        func_80000E40(D_8004A458[sp1C], asset->data, asset->unpacked_size);
-        D_8004A470[sp1C] = TRUE;
+        func_80000E40(gAudioBankFiles[playerID], asset->data, asset->unpacked_size);
+        gSfxPlayerOn[playerID] = TRUE;
         func_80026B74(asset);
     }
 }
 
-void asset_load_sfxbl(Asset *asset) {
-    s32 sp1C;
+void asset_load_sfx(Asset *asset) {
+    s32 playerID;
 
-    sp1C = asset->context;
+    playerID = asset->context;
 
     if (asset->data != NULL) {
-        if (sp1C >= 2U) {
-            sp1C = 2;
+        if (playerID >= 2U) {
+            playerID = 2;
         }
-        func_80021BC0(D_8004A458[sp1C], asset->data, sp1C);
+        sound_init_player(gAudioBankFiles[playerID], asset->data, playerID);
     }
 }
 

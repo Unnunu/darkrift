@@ -187,7 +187,7 @@ void func_80024C98(void) {
 void func_80024D2C(void) {
     gPlayerInput[0].unk_08 = gPlayerInput[1].unk_08 = 0;
     gPlayerInput[0].unk_00 = gPlayerInput[1].unk_00 = 0;
-    gPlayerInput[0].unk_09 = gPlayerInput[1].unk_09 = 0;
+    gPlayerInput[0].unk_09 = gPlayerInput[1].unk_09 = FALSE;
     gPlayerInput[1].unk_0A = gPlayerInput[0].unk_0A = TRUE;
     gPlayerInput[1].unk_02 = gPlayerInput[0].unk_02 = 0;
     gPlayerInput[1].unk_0C = gPlayerInput[0].unk_0C = TRUE;
