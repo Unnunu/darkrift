@@ -15,11 +15,6 @@ typedef struct UnkAudioBeta {
     /* 0x68 */ s32 unk_68[6];
 } UnkAudioBeta; // size = 0x80
 
-typedef struct UnkAudioGamma {
-    /* 0x00 */ u8 *unk_00;
-    /* 0x04 */ s16 unk_04;
-} UnkAudioGamma; // size >= 0x8
-
 typedef struct UnkAudioDelta {
     /* 0x00 */ struct UnkAudioDelta *next;
     /* 0x04 */ s32 unk_04;
@@ -39,56 +34,72 @@ typedef struct UnkAudioEpsilon {
     /* 0x08 */ UnkAudioBeta *unk_08[3];
 } UnkAudioEpsilon;
 
-extern OSMesgQueue gSchedSPTaskQueue;
+// .bss
 
-extern u8 D_8004A420;
-extern u8 D_8004A424;
-extern u8 D_8004A428;
-extern u8 D_8004A42C;
-extern UnkAudioGamma *D_8004A434;
-extern UnkAudioAlpha *D_8004A438;
-extern ALSeqPlayer *D_8004A43C;
-extern ALSndPlayer *D_8004A444;
-extern s32 D_8004A448;
-extern ALSndId *D_8004A44C[];
-extern char *D_8004A458[3];
-extern u8 D_8004A470[];
-extern s8 D_8004A474[];
-extern s32 D_8004A478;
-extern OSTask D_8004A480;
+UnkAudioAlpha D_80081670;
+ALSeqPlayer D_80081680;
+ALSeq D_80081708;
+ALSndPlayer D_80081728[3];
+ALHeap D_80081830;
+UnkAudioEpsilon D_80081840;
+char D_80081858[0x220]; // unused?
+ALGlobals D_80081A78;
+u8 D_80081AC8[0x22A00];
+ALBankFile *D_800A44C8;
+s32 D_800A44CC;
+s32 D_800A44D0; // unused
+s32 D_800A44D4;
+s32 D_800A44D8;
+s32 D_800A44DC; // unused, file split?
+ALSeqMarker D_800A44E0;
+ALSeqMarker D_800A44F0;
+s32 D_800A4500;
+ALSndpConfig D_800A4508;
+s32 D_800A4514;
+s32 D_800A4518;
+s32 D_800A451C; // unused, file split?
+s32 D_800A4520;
+u8 D_800A4524[2];
+AudioDMAState D_800A4528;
+UnkAudioDelta D_800A4538[8];
+u32 D_800A45D8;
+s32 D_800A45DC;
+s32 D_800A45E0;
+u32 D_800A45E4;
+u32 D_800A45E8;
+s32 D_800A45EC;
+s32 D_800A45F0;
+s32 D_800A45F4;
+s32 D_800A45F8;
+s32 D_800A4600[3];
+u8 D_800A460C;
+OSIoMesg D_800A4610[32];
+OSMesgQueue D_800A4890;
+OSMesg D_800A48A8[32];
 
-extern ALSndPlayer D_80081728[3];
-extern ALHeap D_80081830;
-// extern Acmd *D_80081840[];
-// extern UnkAudioBeta *D_80081848[];
-extern UnkAudioEpsilon D_80081840;
-extern ALGlobals D_80081A78;
-extern u8 D_80081AC8[0x22A00];
-extern ALBankFile *D_800A44C8;
-extern s32 D_800A44CC;
-extern s32 D_800A44D4;
-extern s32 D_800A4500;
-extern ALSndpConfig D_800A4508;
-extern s32 D_800A4514;
-extern s32 D_800A4518;
-extern s32 D_800A4520;
-extern u8 D_800A4524[];
-extern AudioDMAState D_800A4528;
-extern UnkAudioDelta D_800A4538[8];
-extern u32 D_800A45D8;
-extern s32 D_800A45DC;
-extern s32 D_800A45E0;
-extern u32 D_800A45E4;
-extern u32 D_800A45E8;
-extern s32 D_800A45EC;
-extern s32 D_800A45F0;
-extern s32 D_800A45F4;
-extern s32 D_800A45F8;
-extern s32 D_800A4600[3];
-extern u8 D_800A460C;
-extern OSIoMesg D_800A4610[];
-extern OSMesgQueue D_800A4890;
-extern OSMesg D_800A48A8[32];
+// .data
+
+u8 D_8004A420 = FALSE;
+u8 D_8004A424 = FALSE;
+u8 D_8004A428 = 0;
+u8 D_8004A42C = FALSE;
+s32 D_8004A430 = 0; // unused
+UnkAudioBeta *D_8004A434 = NULL;
+UnkAudioAlpha *D_8004A438 = &D_80081670;
+ALSeqPlayer *D_8004A43C = &D_80081680;
+ALSeq *D_8004A440 = &D_80081708;
+ALSndPlayer *D_8004A444 = &D_80081728[0];
+s32 D_8004A448 = 0x7FFF;
+ALSndId *D_8004A44C[3] = { NULL, NULL, NULL };
+ALBankFile *D_8004A458[3] = { NULL, NULL, NULL };
+s32 D_8004A464[3] = { 0, 0, 0 }; // unused, file split??
+
+u8 D_8004A470[3] = { FALSE, FALSE, FALSE };
+s8 D_8004A474[3] = { -1, -1, -1 };
+s32 D_8004A478 = 0x7FFF;
+s32 D_8004A47C = 0; // unused, file split?
+
+OSTask D_8004A480 = { { 2, 0, NULL, 0, NULL, 0x1000, NULL, 0x800, NULL, 0x400, NULL, 0, NULL, 0, NULL, 0 } };
 
 void func_80020D20(ALSynConfig *);
 ALDMAproc func_80021178(AudioDMAState **state);
@@ -100,12 +111,12 @@ void func_80021AA8(s32 arg0, s16 arg1);
 
 void func_800206B0(void) {
     D_8004A480.t.type = M_AUDTASK;
-    D_8004A480.t.ucode_boot = rspbootTextStart;
+    D_8004A480.t.ucode_boot = (u64 *) rspbootTextStart;
     D_8004A480.t.ucode_boot_size = (u32) rspbootTextEnd - (u32) rspbootTextStart;
     D_8004A480.t.flags = 0;
-    D_8004A480.t.ucode = aspMainTextStart;
-    D_8004A480.t.ucode_data = aspMainDataStart;
-    D_8004A480.t.ucode_data_size = 0x800;
+    D_8004A480.t.ucode = (u64 *) aspMainTextStart;
+    D_8004A480.t.ucode_data = (u64 *) aspMainDataStart;
+    D_8004A480.t.ucode_data_size = SP_UCODE_DATA_SIZE;
     D_8004A480.t.dram_stack = NULL;
     D_8004A480.t.dram_stack_size = 0;
     D_8004A480.t.output_buff = NULL;
@@ -124,9 +135,9 @@ void func_8002071C(void) {
     D_800A45E0 = 0;
     D_800A460C = 0;
     D_800A4600[0] = D_800A4600[1] = D_800A4600[2] = -1;
-    D_8004A420 = 0;
-    D_8004A424 = 0;
-    D_8004A42C = 0;
+    D_8004A420 = FALSE;
+    D_8004A424 = FALSE;
+    D_8004A42C = FALSE;
     D_800A45F4 = D_800A45F8 = 0;
     D_800A4520 = D_8004A478;
     D_800A4500 = D_8004A448;
@@ -392,7 +403,7 @@ void func_800211B0(void) {
 }
 
 void func_800212C8(void) {
-    if (D_8004A420 + D_8004A424 != 0) {
+    if (D_8004A420 + D_8004A424) {
         D_800A45F4 = 0;
         if (func_80020E54(D_80081840.unk_08[D_800A45D8 % 3])) {
             func_800211B0();
@@ -403,7 +414,7 @@ void func_800212C8(void) {
 s32 func_80021338(void) {
     s32 i;
 
-    if (D_8004A420 + D_8004A424 == 0) {
+    if (!(D_8004A420 + D_8004A424)) {
         return FALSE;
     }
 
@@ -557,7 +568,7 @@ void func_800217A0(Object *obj, s32 arg1) {
 void func_80021918(Object *arg0, s32 arg1) {
     s32 v1 = FALSE;
 
-    if (D_8004A420 != 0 && D_8004A420 != 0) {
+    if (D_8004A420 && D_8004A420) { // @bug
         alSeqpPlay(D_8004A43C);
         v1 = TRUE;
     }
@@ -577,7 +588,7 @@ void func_800219B8(s32 arg0, u8 arg1) {
     s32 i;
     ALSndId *tmp;
 
-    if (D_8004A428 != 0 || D_8004A42C != 0) {
+    if (D_8004A428 != 0 || D_8004A42C) {
         return;
     }
 
@@ -585,7 +596,7 @@ void func_800219B8(s32 arg0, u8 arg1) {
         arg0 = 2;
     }
 
-    if (D_8004A470[arg0] != 0) {
+    if (D_8004A470[arg0]) {
         tmp = D_8004A44C[arg0];
         D_8004A444 = &D_80081728[arg0];
 
@@ -604,7 +615,7 @@ void func_80021AA8(s32 arg0, s16 arg1) {
         arg0 = 2;
     }
 
-    if (D_8004A470[arg0] != 0) {
+    if (D_8004A470[arg0]) {
         temp = D_8004A44C[arg0];
         D_8004A444 = &D_80081728[arg0];
 
@@ -615,29 +626,29 @@ void func_80021AA8(s32 arg0, s16 arg1) {
     }
 }
 
-void func_80021B8C(s16 arg0) {
-    alSeqpSetVol(D_8004A43C, arg0);
+void func_80021B8C(s16 volume) {
+    alSeqpSetVol(D_8004A43C, volume);
 }
 
-void func_80021BC0(ALBankFile *arg0, u8 *arg1, u32 arg2) {
+void func_80021BC0(ALBankFile *f, u8 *table, u32 playerId) {
     ALSndId *s6;
     ALInstrument *s5;
     u32 i;
     s32 s4 = 0;
     ALBank *bank;
 
-    if (arg1 == NULL) {
+    if (table == NULL) {
         return;
     }
-    if (arg2 >= 2) {
-        arg2 = 2;
+    if (playerId >= 2) {
+        playerId = 2;
     }
 
-    s6 = D_8004A44C[arg2];
-    alBnkfNew(arg0, arg1);
-    bank = arg0->bankArray[0];
+    s6 = D_8004A44C[playerId];
+    alBnkfNew(f, table);
+    bank = f->bankArray[0];
     s5 = bank->instArray[0];
-    D_8004A444 = &D_80081728[arg2];
+    D_8004A444 = &D_80081728[playerId];
 
     for (i = 0, s4 = 0; i < s5->soundCount; i++) {
         ALSndId soundId;
@@ -652,14 +663,14 @@ void func_80021BC0(ALBankFile *arg0, u8 *arg1, u32 arg2) {
     }
 
     if (s4 == s5->soundCount) {
-        D_8004A474[arg2] = s4;
-        D_8004A424 = 1;
+        D_8004A474[playerId] = s4;
+        D_8004A424 = TRUE;
         D_800A4520 = D_8004A478;
     } else {
-        D_8004A474[arg2] = -1;
+        D_8004A474[playerId] = -1;
     }
 }
 
 void func_80021D30(void) {
-    D_8004A42C = 0;
+    D_8004A42C = FALSE;
 }

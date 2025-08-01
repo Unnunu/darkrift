@@ -124,13 +124,12 @@ extern u8 *D_800A44D4;
 extern s32 D_800A44D8;
 extern ALSeqMarker D_800A44E0;
 extern ALSeqMarker D_800A44F0;
-extern char *D_8004A458[3];
-extern s8 D_8004A470[];
+extern ALBankFile *D_8004A458[3];
+extern u8 D_8004A470[];
 extern void (*D_8013C228)(Asset *);
 
 extern s32 D_800A4500;
 
-extern char *D_8004A460;
 extern s8 D_8004A472;
 extern UnkFish D_800B6336[];
 
@@ -924,7 +923,7 @@ void asset_load_seq(Asset *asset) {
         alSeqpSetBank(D_8004A43C, D_800A44C8->bankArray[0]);
         alSeqpSetSeq(D_8004A43C, D_8004A440);
         alSeqpSetVol(D_8004A43C, D_8004A44A);
-        D_8004A420 = 1;
+        D_8004A420 = TRUE;
         D_800A4500 = D_8004A448;
     }
 }
@@ -932,10 +931,10 @@ void asset_load_seq(Asset *asset) {
 void asset_load_vox(Asset *asset) {
     func_80026BE0(asset);
     if (asset->data != NULL) {
-        func_80000E40(D_8004A460, asset->data, asset->unpacked_size);
+        func_80000E40(D_8004A458[2], asset->data, asset->unpacked_size);
         D_8004A472 = 1;
         func_80026B74(asset);
-        func_80021BC0(D_8004A460, D_7DE880, 2);
+        func_80021BC0(D_8004A458[2], D_7DE880, 2);
     }
 }
 
@@ -950,7 +949,7 @@ void asset_load_sftbl(Asset *asset) {
     func_80026BE0(asset);
     if (asset->data != NULL) {
         func_80000E40(D_8004A458[sp1C], asset->data, asset->unpacked_size);
-        D_8004A470[sp1C] = 1;
+        D_8004A470[sp1C] = TRUE;
         func_80026B74(asset);
     }
 }

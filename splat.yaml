@@ -234,6 +234,8 @@ segments:
       - [0x49E90, data]
       - [0x4A0C0, .data, 76E0]
       - [0x4A520, data]
+      - [0x4B020, .data, audio]
+      - [0x4B0C0, data]
       - [0x4B0F0, .data, input]
       - [0x4B1C0, data]
       - [0x4C740, .data, some_data]
@@ -307,8 +309,10 @@ segments:
       - { type: .bss, vram: 0x80056EE0, name: main }
       - { type: .bss, vram: 0x8005AE90, name: heap }
       - { type: bss, vram: 0x8005BED0, name: bss1 }
+      - { type: .bss, vram: 0x80081670, name: audio }
+      - { type: bss, vram: 0x800A4930, name: bss2 }
       - { type: .bss, vram: 0x800B63A0, name: cont }
-      - { type: bss, vram: 0x800B6400, name: bss2 }
+      - { type: bss, vram: 0x800B6400, name: bss3 }
       - { type: .bss, vram: 0x8013C550, name: task }
       - { type: .bss, vram: 0x8013C560, name: camera }
       - { type: .bss, vram: 0x8013C840, name: ../ultralib/src/os/initialize }
@@ -320,7 +324,7 @@ segments:
       - { type: .bss, vram: 0x8013ED80, name: ../ultralib/src/os/timerintr,  }
       - { type: .bss, vram: 0x8013EDC0, name: ../ultralib/src/io/piacs }
       - { type: .bss, vram: 0x8013EDE0, name: ../ultralib/src/io/siacs }
-      - { type: bss, vram: 0x8013EE00, name: bss3 }
+      - { type: bss, vram: 0x8013EE00, name: bss4 }
       
 
   - type: bin
