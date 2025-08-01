@@ -74,8 +74,11 @@ void func_80006AE0(void);
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80006FB4.s")
 void func_80006FB4(void);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_800070C0.s")
-void func_800070C0(void);
+void func_800070C0(void) {
+    func_8002630C(0xABAB);
+    func_8002630C(0x5000);
+    func_8002630C(0x5001);
+}
 
 void func_800070F0(void) {
     s32 sp2C = D_800B6340;
@@ -106,9 +109,51 @@ const char D_80053F14[] = "tc";
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007248.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007374.s")
+void func_80007374(void) {
+    s32 sp2C = D_800B6340;
+    Texture *bg;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007474.s")
+    func_80006FB4();
+    bg = load_background("bg2", 0, -20, 0x2000, 0x10000, 0, sp2C);
+    bg->height -= 16;
+
+    load_background("bg0", 0, 8, 0x1000, 0x10000, 1, sp2C);
+
+    func_8001B5B0("arena", sp2C);
+    func_80029630();
+
+    gCamera->currentTask->counter = 0;
+    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->stackPos = 0;
+
+    func_80006AE0();
+    func_80001D88();
+    func_800070C0();
+}
+
+void func_80007474(void) {
+    s32 sp2C = D_800B6340;
+    Texture *bg;
+
+    func_80006FB4();
+    bg = load_background("bg2", 0, 40, 0x2000, 0x10000, 0, sp2C);
+    bg->height -= 16;
+
+    load_background("bg0", 0, -24, 0x1000, 0x10000, 1, sp2C);
+
+    func_8001B5B0("arena", sp2C);
+    func_80029630();
+
+    gCamera->currentTask->counter = 0;
+    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->stackPos = 0;
+
+    func_80006AE0();
+    func_80001D88();
+    func_800070C0();
+}
 
 void run_battle_mode(void) {
     s32 sp2C = D_800B6340;
@@ -133,13 +178,93 @@ void run_battle_mode(void) {
     func_800070C0();
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007674.s")
+void func_80007674(void) {
+    s32 sp2C = D_800B6340;
+    Texture *bg;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007774.s")
+    func_80006FB4();
+    bg = load_background("bg2", 0, 96, 0x2000, 0x10000, 0, sp2C);
+    bg->height -= 16;
+    load_background("bg0", 0, 8, 0x1000, 0x10000, 1, sp2C);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007868.s")
+    func_8001B5B0("arena", sp2C);
+    func_80029630();
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007968.s")
+    gCamera->currentTask->counter = 0;
+    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->stackPos = 0;
+
+    func_80006AE0();
+    func_80001D88();
+    func_800070C0();
+}
+
+void func_80007774(void) {
+    s32 sp2C = D_800B6340;
+
+    func_80006FB4();
+    load_background("bg2", 0, 94, 0x2000, 0x10000, 0, sp2C);
+    load_background("bg0", 0, -8, 0x1000, 0x10000, 1, sp2C);
+
+    func_8001B5B0("arena", sp2C);
+    func_80029630();
+
+    gCamera->currentTask->counter = 0;
+    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->stackPos = 0;
+
+    func_80006AE0();
+    func_80001D88();
+    func_800070C0();
+}
+
+void func_80007868(void) {
+    s32 sp2C = D_800B6340;
+    Texture *bg;
+
+    func_80006FB4();
+    bg = load_background("bg2", 0, -7, 0x2000, 0x10000, 0, sp2C);
+    bg->height -= 16;
+
+    load_background("bg0", 0, -64, 0x1000, 0x10000, 1, sp2C);
+
+    func_8001B5B0("arena", sp2C);
+    func_80029630();
+
+    gCamera->currentTask->counter = 0;
+    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->stackPos = 0;
+
+    func_80006AE0();
+    func_80001D88();
+    func_800070C0();
+}
+
+void func_80007968(void) {
+    s32 sp2C = D_800B6340;
+    Texture *bg;
+
+    func_80006FB4();
+    bg = load_background("bg2", 0, 20, 0x2000, 0x10000, 0, sp2C);
+    bg->height -= 16;
+
+    load_background("bg0", 0, -24, 0x1000, 0x10000, 1, sp2C);
+
+    func_8001B5B0("arena", sp2C);
+    func_80029630();
+
+    gCamera->currentTask->counter = 0;
+    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->stackPos = 0;
+
+    func_80006AE0();
+    func_80001D88();
+    func_800070C0();
+}
 
 void func_80007A68(void) {
     s32 sp2C = D_800B6340;
