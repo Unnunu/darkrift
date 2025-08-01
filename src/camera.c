@@ -48,7 +48,7 @@ void func_80038E00(Object *obj, s32 arg1) {
     obj->pos.z = 0;
     obj->pos.x = 0;
 
-    obj->unk_050.y = 0x400;
+    obj->rotation.y = 0x400;
 
     camera->unk_414 = 0;
     camera->unk_418 = 0;
@@ -73,8 +73,8 @@ void func_80038E8C(Object *obj, Vec3i *arg1, s32 arg2, s32 arg3) {
 
     *camera->unk_12C = arg3;
 
-    obj->unk_050.x = obj->unk_050.z = 0;
-    obj->unk_050.y = arg2;
+    obj->rotation.x = obj->rotation.z = 0;
+    obj->rotation.y = arg2;
 
     obj->pos.x = arg1->x;
     obj->pos.y = arg1->y;
@@ -156,7 +156,7 @@ void camera_update(Object *obj) {
                 sp48.x = s1->unk_404.x;
                 sp48.y = s1->unk_404.y;
                 sp48.z = s1->unk_404.z;
-                func_8001370C(&sp48, &obj->unk_050);
+                func_8001370C(&sp48, &obj->rotation);
                 gCameraTarget.x = D_8013C818.x + sp48.x;
                 gCameraTarget.y = D_8013C818.y + sp48.y;
                 gCameraTarget.z = D_8013C818.z + sp48.z;
@@ -229,7 +229,7 @@ Object *camera_create(void) {
 
     obj->unk_000.x = obj->unk_000.y = obj->unk_000.z = 0;
     obj->unk_010.x = obj->unk_010.y = obj->unk_010.z = 0;
-    obj->unk_050.x = obj->unk_050.y = obj->unk_050.z = 0;
+    obj->rotation.x = obj->rotation.y = obj->rotation.z = 0;
 
     obj->flags = 0x20;
     obj->unk_086 = -1;

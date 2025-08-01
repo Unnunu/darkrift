@@ -180,7 +180,9 @@ typedef struct UnkCameraSub3 {
 
 typedef struct UnkCameraSub2 {
     /* 0x000 */ char unk_00[0x154];
-    /* 0x154 */ UnkCameraSub3 *unk_154;
+    /* 0x154 */ UnkCameraSub3 *unk_154[1];
+    /* 0x158 */ char unk_158[0x238 - 0x158];
+    /* 0x238 */ s32 unk_238[1];
 } UnkCameraSub2;
 
 typedef struct UnkCameraSub5 {
@@ -195,6 +197,14 @@ typedef struct UnkCameraSub4 {
     /* 0x08 */ UnkCameraSub *unk_08[5];
     /* 0x1C */ s32 unk_1C;
 } UnkCameraSub4; // size = 0x20
+
+typedef struct UnkCameraSub6 {
+    /* 0x00 */ char unk_00[0x28];
+    /* 0x28 */ UnkCameraSub3 *unk_28;
+    /* 0x2C */ char unk_2C[0xC];
+    /* 0x38 */ s32 unk_38;
+    /* 0x3C */ char unk_3C[0x58 - 0x3C];
+} UnkCameraSub6; // size = 0x58
 
 typedef struct Camera {
     /* 0x0000 */ s16 unk_000;
@@ -227,7 +237,14 @@ typedef struct Camera {
     /* 0x0A20 */ s16 unk_A20;
     /* 0x0A22 */ char unk_A22[6];
     /* 0x0A28 */ UnkCameraSub2 *unk_A28;
-    /* 0x0A2C */ char unk_A2C[0xAA8 - 0xA2C];
+    /* 0x0A2C */ s32 unk_A2C;
+    /* 0x0A30 */ s32 unk_A30;
+    /* 0x0A34 */ s32 unk_A34;
+    /* 0x0A38 */ UnkCameraSub *unk_A38;
+    /* 0x0A3C */ char unk_A3C[0xC];
+    /* 0x0A48 */ s32 *unk_A48;
+    /* 0x0A4C */ s32 unk_A4C;
+    /* 0x0A50 */ UnkCameraSub6 unk_A50;
     /* 0x0AA8 */ s32 *unk_AA8;
     /* 0x0AAC */ char unk_AAC[4];
     /* 0x0AB0 */ UnkCameraSub unk_AB0[60];
@@ -251,7 +268,7 @@ typedef struct Object {
     /* 0x010 */ Vec4i unk_010;
     /* 0x020 */ Vec4i pos;
     /* 0x030 */ char unk_030[0x50 - 0x30];
-    /* 0x050 */ Vec3s unk_050;
+    /* 0x050 */ Vec3s rotation;
     /* 0x056 */ char unk_056[2];
     /* 0x058 */ s32 unk_058;
     /* 0x05C */ s32 unk_05C;

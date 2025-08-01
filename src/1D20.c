@@ -112,7 +112,6 @@ extern DISPCB D_80080140[20];
 extern s32 D_80080190[20];
 
 void func_800030E4(void);
-void sched_wait_vretrace(s32);
 void sched_execute_tasks(void);
 void func_800031FC(u16);
 void func_80006CEC(void);

@@ -213,10 +213,48 @@ void func_8001386C(Vec3i *arg0, Vec3i *arg1, Matrix4f *arg2) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80014464.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_800146B4.s")
+void func_800146B4(Matrix4f *arg0, Matrix4f *arg1) {
+    arg0->x.x = arg1->x.x;
+    arg0->x.y = arg1->x.y;
+    arg0->x.z = arg1->x.z;
+    arg0->y.x = arg1->y.x;
+    arg0->y.y = arg1->y.y;
+    arg0->y.z = arg1->y.z;
+    arg0->z.x = arg1->z.x;
+    arg0->z.y = arg1->z.y;
+    arg0->z.z = arg1->z.z;
+    arg0->w.x = arg1->w.x;
+    arg0->w.y = arg1->w.y;
+    arg0->w.z = arg1->w.z;
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80014718.s")
+void func_80014718(Matrix4f *arg0, Matrix4f *arg1, Matrix4f *arg2) {
+    arg0->x.x = arg1->x.x * arg2->x.x + arg1->x.y * arg2->y.x + arg1->x.z * arg2->z.x;
+    arg0->x.y = arg1->x.x * arg2->x.y + arg1->x.y * arg2->y.y + arg1->x.z * arg2->z.y;
+    arg0->x.z = arg1->x.x * arg2->x.z + arg1->x.y * arg2->y.z + arg1->x.z * arg2->z.z;
+    arg0->y.x = arg1->y.x * arg2->x.x + arg1->y.y * arg2->y.x + arg1->y.z * arg2->z.x;
+    arg0->y.y = arg1->y.x * arg2->x.y + arg1->y.y * arg2->y.y + arg1->y.z * arg2->z.y;
+    arg0->y.z = arg1->y.x * arg2->x.z + arg1->y.y * arg2->y.z + arg1->y.z * arg2->z.z;
+    arg0->z.x = arg1->z.x * arg2->x.x + arg1->z.y * arg2->y.x + arg1->z.z * arg2->z.x;
+    arg0->z.y = arg1->z.x * arg2->x.y + arg1->z.y * arg2->y.y + arg1->z.z * arg2->z.y;
+    arg0->z.z = arg1->z.x * arg2->x.z + arg1->z.y * arg2->y.z + arg1->z.z * arg2->z.z;
+    arg0->w.x = arg1->w.x * arg2->x.x + arg1->w.y * arg2->y.x + arg1->w.z * arg2->z.x + arg2->w.x;
+    arg0->w.y = arg1->w.x * arg2->x.y + arg1->w.y * arg2->y.y + arg1->w.z * arg2->z.y + arg2->w.y;
+    arg0->w.z = arg1->w.x * arg2->x.z + arg1->w.y * arg2->y.z + arg1->w.z * arg2->z.z + arg2->w.z;
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80014974.s")
+void func_80014974(UnkMu *arg0) {
+    UnkMu *ptr;
+
+    if (arg0->unk_88 != NULL) {
+        func_80014718(&arg0->unk_D8, &arg0->unk_98, &arg0->unk_88->unk_D8);
+    } else {
+        func_800146B4(&arg0->unk_D8, &arg0->unk_98);
+    }
+
+    for (ptr = arg0->unk_80; ptr != NULL; ptr = ptr->unk_84) {
+        func_80014974(ptr);
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/13050/func_800149F0.s")

@@ -181,9 +181,9 @@ void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(
     arg0->pos.y = arg1->y;
     arg0->pos.z = arg1->z;
 
-    arg0->unk_050.x = arg2->x;
-    arg0->unk_050.y = arg2->y;
-    arg0->unk_050.z = arg2->z;
+    arg0->rotation.x = arg2->x;
+    arg0->rotation.y = arg2->y;
+    arg0->rotation.z = arg2->z;
 
     arg0->unk_07A = 0;
     arg0->unk_07C = 0;

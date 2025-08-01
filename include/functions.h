@@ -14,7 +14,7 @@ void func_8002A8C0(ItemPool *arg0, u32 arg1, u32 arg2);
 void func_80000E0C(u8 *arg0, u8 arg1, u32 arg2);
 Object *func_80015FB4(s32);
 void func_80015C58(Object *);
-void func_800213E0(s32, u32);
+void func_800213E0(u32, u32);
 void func_80021918(Object *arg0, s32 arg1);
 void func_800217A0(Object *, s32);
 void func_80012A20(UnkMu *arg0, UnkMu *arg1, s32 arg2, s32 arg3);
@@ -44,5 +44,6 @@ void func_8003635C(Object *);
 void func_80013A54(Mtx *, Matrix4f *);
 s16 func_80012518(s32 arg0, s32 arg1);
 void func_80014974(UnkMu *);
+void sched_wait_vretrace(u8);
 
 #endif

@@ -2,6 +2,8 @@
 #include "task.h"
 #include "camera.h"
 
+extern s32 *D_8013C4E8;
+
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034090.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_800340E8.s")
@@ -84,7 +86,61 @@ void func_80037788(UnkCameraSub4 *, s32);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_8003795C.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_80037CE4.s")
+void func_80037CE4(Object *obj) {
+    Camera *camera;
+    UnkMu *mu;
+    UnkCameraSub2 *sub2;
+    s32 index;
+    UnkCameraSub6 *sub6;
+    UnkCameraSub3 *newvar;
+    s32 sp4C;
+    s32 nv2;
+    UnkCameraSub *sub;
+    s32 unused[5];
+    UnkCameraSub *AB0;
+    int temp;
+
+    temp = obj->flags & 4; // required to match
+
+    index = obj->unk_084;
+    camera = obj->camera;
+    sub2 = camera->unk_A28;
+    newvar = sub2->unk_154[index];
+    sp4C = D_8005BFCE * 30 + index;
+
+    task_execute(obj);
+
+    if (obj->flags & 4) {
+        return;
+    }
+
+    mu = &obj->unk_0D0;
+    AB0 = camera->unk_AB0;
+
+    if (obj->flags & 0x2000) {
+        func_80034F34(obj);
+    }
+
+    if (!(obj->flags & 0x80000)) {
+        obj->rotation.x = D_8013C668.x;
+        obj->rotation.y = D_8013C668.y;
+    }
+
+    func_8001305C(&mu->unk_98, &obj->rotation);
+    func_800136CC(&mu->unk_98, &obj->pos);
+    func_800149F0(&mu->unk_98, &gCameraProjectionMatrix, &D_800813E0);
+
+    sub = AB0 + sp4C;
+    sub6 = &camera->unk_A50;
+    func_80013A54(&sub->unk_18, &D_800813E0);
+    nv2 = sub2->unk_238[index];
+    camera->unk_A38 = sub;
+
+    sub6->unk_28 = newvar;
+    sub6->unk_38 = nv2;
+    camera->unk_A48 = D_8013C4E8;
+    D_8013C4E8 = &camera->unk_A30;
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80037E28.s")
 
@@ -107,7 +163,7 @@ void func_800386E8(Object *obj) {
 
     camera = obj->camera;
     spAC = camera->unk_128;
-    s2 = &camera->unk_A28->unk_154;
+    s2 = camera->unk_A28->unk_154;
     sp94 = 30 * D_8005BFCE;
 
     task_execute(obj);
@@ -128,8 +184,8 @@ void func_800386E8(Object *obj) {
     func_80034F34(obj);
 
     if (obj->flags & 0x80000000) {
-        obj->unk_050.y = D_8013C668.y;
-        obj->unk_050.x = D_8013C668.x;
+        obj->rotation.y = D_8013C668.y;
+        obj->rotation.x = D_8013C668.x;
     }
 
     if (camera->unk_12C != NULL) {
@@ -144,7 +200,7 @@ void func_800386E8(Object *obj) {
             obj->unk_086 = obj->unk_084;
         }
 
-        func_8001305C(&mu->unk_98, &obj->unk_050);
+        func_8001305C(&mu->unk_98, &obj->rotation);
         func_800136CC(&mu->unk_98, &obj->pos);
         func_80014974(mu);
 
@@ -190,7 +246,7 @@ void func_800386E8(Object *obj) {
         }
     } else {
         s0 = camera->unk_AB0;
-        func_8001305C(&mu->unk_98, &obj->unk_050);
+        func_8001305C(&mu->unk_98, &obj->rotation);
         func_800136CC(&mu->unk_98, &obj->pos);
         func_80014974(mu);
         func_800149F0(&mu->unk_98, &gCameraProjectionMatrix, &D_800813E0);
