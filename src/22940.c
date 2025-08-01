@@ -62,7 +62,20 @@ const char D_80054E14[] = "scarwin";
 const char D_80054E1C[] = "sonowin";
 const char D_80054E24[] = "zenmwin";
 
-#pragma GLOBAL_ASM("asm/nonmatchings/22940/func_80021D40.s")
+void func_80021D40(Object *obj) {
+    if (++obj->unk_084 >= obj->camera->unk_A08) {
+        obj->currentTask->flags |= 0x80;
+        obj->flags |= 0x10;
+    }
+
+    if (obj->unk_088.a >= obj->unk_090[0]) {
+        obj->unk_088.a -= obj->unk_090[0];
+    } else {
+        obj->unk_088.a = 0;
+        obj->currentTask->flags |= 0x80;
+        obj->flags |= 0x10;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/22940/func_80021DC4.s")
 

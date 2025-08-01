@@ -3,6 +3,7 @@
 #include "camera.h"
 
 extern s32 *D_8013C4E8;
+extern s32 D_8013C540;
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034090.s")
 
@@ -10,7 +11,9 @@ extern s32 *D_8013C4E8;
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_8003424C.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_800343EC.s")
+void func_800343EC(void) {
+    D_8013C540 = 0;
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_800343F8.s")
 
@@ -26,8 +29,16 @@ extern s32 *D_8013C4E8;
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034860.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_800349F0.s")
-void func_800349F0(Object *);
+void func_800349F0(Object *obj) {
+    u32 i;
+    Camera *camera = obj->camera;
+    s32 count = camera->unk_000;
+    s8 *buffer = camera->unk_1F6E;
+
+    for (i = 0; i < count; i++) {
+        buffer[i] = 1;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034A58.s")
 

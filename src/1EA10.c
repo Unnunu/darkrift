@@ -46,7 +46,7 @@ const char D_80054A60[] = "practice.sp2";
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1EA10/func_8001F748.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1EA10/func_8001F7FC.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/1EA10/run_player_selection_mode.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1EA10/func_800201A4.s")
 

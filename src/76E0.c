@@ -29,6 +29,7 @@ extern Texture *D_80081254;
 extern s16 D_80080116;
 extern s16 D_8005BED2;
 extern Vec3i D_8004934C;
+extern s16 D_80080230;
 
 Object *func_8002BFF0(Vec3i *, s16, void (*)(Object *), void *);
 void func_800199E0(Object *);
@@ -60,6 +61,7 @@ void func_80018600(Object *);
 void func_80019A9C(Object *);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80006AE0.s")
+void func_80006AE0(void);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80006C14.s")
 
@@ -70,10 +72,33 @@ void func_80019A9C(Object *);
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80006E6C.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80006FB4.s")
+void func_80006FB4(void);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_800070C0.s")
+void func_800070C0(void);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_800070F0.s")
+void func_800070F0(void) {
+    s32 sp2C = D_800B6340;
+    Texture *bg;
+
+    func_80006FB4();
+    bg = load_background("bg3", 0, 74, 0x2000, 0x10000, 0, sp2C);
+    bg->height -= 16;
+
+    load_background("bg0", 0, 15, 0x1000, 0x10000, 1, sp2C);
+
+    func_8001B5B0("arena", sp2C);
+    func_80029630();
+
+    gCamera->currentTask->counter = 0;
+    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->stackPos = 0;
+
+    func_80006AE0();
+    func_80001D88();
+    func_800070C0();
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_800071F0.s")
 
@@ -85,7 +110,28 @@ const char D_80053F14[] = "tc";
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007474.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007574.s")
+void run_battle_mode(void) {
+    s32 sp2C = D_800B6340;
+    Texture *bg;
+
+    func_80006FB4();
+    bg = load_background("bg2", 0, 52, 0x2000, 0x10000, 0, sp2C);
+    bg->height -= 16;
+
+    load_background("bg0", 0, 0, 0x1000, 0x10000, 1, sp2C);
+
+    func_8001B5B0("arena", sp2C);
+    func_80029630();
+
+    gCamera->currentTask->counter = 0;
+    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->stackPos = 0;
+
+    func_80006AE0();
+    func_80001D88();
+    func_800070C0();
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007674.s")
 
@@ -95,33 +141,215 @@ const char D_80053F14[] = "tc";
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007968.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007A68.s")
+void func_80007A68(void) {
+    s32 sp2C = D_800B6340;
+    Texture *bg;
+
+    func_80006FB4();
+    bg = load_background("bg2", 0, -6, 0x2000, 0x10000, 0, sp2C);
+    bg->height -= 16;
+
+    load_background("bg0", 0, 4, 0x1000, 0x10000, 1, sp2C);
+
+    func_8001B5B0("arena", sp2C);
+    func_80029630();
+
+    gCamera->currentTask->counter = 0;
+    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->stackPos = 0;
+
+    func_80006AE0();
+    func_80001D88();
+    func_800070C0();
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007B68.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007DB0.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007F4C.s")
+void func_80007F4C(s32, s32, s32);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_800081A8.s")
+void func_800081A8(void) {
+    s32 temp_s0 = D_800B6340;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_800082CC.s")
+    asset_open_folder("/gore/goreint", 0x3000);
+    func_80007F4C(1, 0x70, 0x3000);
+    D_80081254 = load_background("goreint", 0, 250, 0, 0, 2, 0x3000);
+    D_80081250 = D_80081254->height;
+    load_background("bg3", 0, 74, 0x2000, 0x10000, 0, temp_s0);
+    load_background("bg0", 0, 15, 0x1000, 0x10000, 1, temp_s0);
+    func_8001B5B0("arena", temp_s0);
+    func_80001D88();
+    func_8002630C(0x3000);
+    func_800070C0();
+    if (D_80080230 != 30) {
+        func_8002630C(temp_s0);
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_800083EC.s")
+void func_800082CC(void) {
+    s32 temp_s0 = D_800B6340;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80008510.s")
+    asset_open_folder("/aaro/aaroint", 0x3000);
+    func_80007F4C(1, 0x70, 0x3000);
+    D_80081254 = load_background("aaroint", 0, 250, 0, 0, 2, 0x3000);
+    D_80081250 = D_80081254->height;
+    load_background("bg2", 0, 74, 0x10000, 0x10000, 0, temp_s0);
+    load_background("bg0", 0, 15, 0x8000, 0x10000, 1, temp_s0);
+    func_8001B5B0("arena", temp_s0);
+    func_80001D88();
+    func_8002630C(0x3000);
+    func_800070C0();
+    if (D_80080230 != 30) {
+        func_8002630C(temp_s0);
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80008634.s")
+void func_800083EC(void) {
+    s32 temp_s0 = D_800B6340;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80008758.s")
+    asset_open_folder("/demi/demiint", 0x3000);
+    func_80007F4C(1, 0x70, 0x3000);
+    D_80081254 = load_background("demiint", 0, 250, 0, 0, 2, 0x3000);
+    D_80081250 = D_80081254->height;
+    load_background("bg2", 0, -8, 0x2000, 0x10000, 0, temp_s0);
+    load_background("bg0", 0, 8, 0x1000, 0x10000, 1, temp_s0);
+    func_8001B5B0("arena", temp_s0);
+    func_80001D88();
+    func_8002630C(0x3000);
+    func_800070C0();
+    if (D_80080230 != 30) {
+        func_8002630C(temp_s0);
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000887C.s")
+void func_80008510(void) {
+    s32 temp_s0 = D_800B6340;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_800089A0.s")
+    asset_open_folder("/demo/demoint", 0x3000);
+    func_80007F4C(1, 0x70, 0x3000);
+    D_80081254 = load_background("demoint", 0, 250, 0, 0, 2, 0x3000);
+    D_80081250 = D_80081254->height;
+    load_background("bg2", 0, 32, 0x2000, 0x10000, 0, temp_s0);
+    load_background("bg0", 0, -24, 0x1000, 0x10000, 1, temp_s0);
+    func_8001B5B0("arena", temp_s0);
+    func_80001D88();
+    func_8002630C(0x3000);
+    func_800070C0();
+    if (D_80080230 != 30) {
+        func_8002630C(temp_s0);
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80008AC4.s")
+void func_80008634(void) {
+    s32 temp_s0 = D_800B6340;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80008BE8.s")
+    asset_open_folder("/eve/eveint", 0x3000);
+    func_80007F4C(1, 0x70, 0x3000);
+    D_80081254 = load_background("eveint", 0, 250, 0, 0, 2, 0x3000);
+    D_80081250 = D_80081254->height;
+    load_background("bg2", 0, 52, 0x2000, 0x10000, 0, temp_s0);
+    load_background("bg0", 0, 0, 0x1000, 0x10000, 1, temp_s0);
+    func_8001B5B0("arena", temp_s0);
+    func_80001D88();
+    func_8002630C(0x3000);
+    func_800070C0();
+    if (D_80080230 != 30) {
+        func_8002630C(temp_s0);
+    }
+}
+
+void func_80008758(void) {
+    s32 temp_s0 = D_800B6340;
+
+    asset_open_folder("/morp/morpint", 0x3000);
+    func_80007F4C(1, 0x70, 0x3000);
+    D_80081254 = load_background("morpint", 0, 250, 0, 0, 2, 0x3000);
+    D_80081250 = D_80081254->height;
+    load_background("bg2", 0, 96, 0x2000, 0x10000, 0, temp_s0);
+    load_background("bg0", 0, 8, 0x1000, 0x10000, 1, temp_s0);
+    func_8001B5B0("arena", temp_s0);
+    func_80001D88();
+    func_8002630C(0x3000);
+    func_800070C0();
+    if (D_80080230 != 30) {
+        func_8002630C(temp_s0);
+    }
+}
+
+void func_8000887C(void) {
+    s32 temp_s0 = D_800B6340;
+
+    asset_open_folder("/niik/niikint", 0x3000);
+    func_80007F4C(1, 0x70, 0x3000);
+    D_80081254 = load_background("niikint", 0, 250, 0, 0, 2, 0x3000);
+    D_80081250 = D_80081254->height;
+    load_background("bg2", 0, 94, 0x2000, 0x10000, 0, temp_s0);
+    load_background("bg0", 0, -8, 0x1000, 0x10000, 1, temp_s0);
+    func_8001B5B0("arena", temp_s0);
+    func_80001D88();
+    func_8002630C(0x3000);
+    func_800070C0();
+    if (D_80080230 != 30) {
+        func_8002630C(temp_s0);
+    }
+}
+
+void func_800089A0(void) {
+    s32 temp_s0 = D_800B6340;
+
+    asset_open_folder("/scar/scarint", 0x3000);
+    func_80007F4C(1, 0x70, 0x3000);
+    D_80081254 = load_background("scarint", 0, 250, 0, 0, 2, 0x3000);
+    D_80081250 = D_80081254->height;
+    load_background("bg2", 0, 0, 0x2000, 0x10000, 0, temp_s0);
+    load_background("bg0", 0, -64, 0x1000, 0x10000, 1, temp_s0);
+    func_8001B5B0("arena", temp_s0);
+    func_80001D88();
+    func_8002630C(0x3000);
+    func_800070C0();
+    if (D_80080230 != 30) {
+        func_8002630C(temp_s0);
+    }
+}
+
+void func_80008AC4(void) {
+    s32 temp_s0 = D_800B6340;
+
+    asset_open_folder("/sono/sonoint", 0x3000);
+    func_80007F4C(1, 0x70, 0x3000);
+    D_80081254 = load_background("sonoint", 0, 250, 0, 0, 2, 0x3000);
+    D_80081250 = D_80081254->height;
+    load_background("bg2", 0, 26, 0x2000, 0x10000, 0, temp_s0);
+    load_background("bg0", 0, -24, 0x1000, 0x10000, 1, temp_s0);
+    func_8001B5B0("arena", temp_s0);
+    func_80001D88();
+    func_8002630C(0x3000);
+    func_800070C0();
+    if (D_80080230 != 30) {
+        func_8002630C(temp_s0);
+    }
+}
+
+void func_80008BE8(void) {
+    s32 temp_s0 = D_800B6340;
+
+    asset_open_folder("/zenm/zenmint", 0x3000);
+    func_80007F4C(1, 0x70, 0x3000);
+    D_80081254 = load_background("zenmint", 0, 250, 0, 0, 2, 0x3000);
+    D_80081250 = D_80081254->height;
+    load_background("bg2", 0, -6, 0x2000, 0x10000, 0, temp_s0);
+    load_background("bg0", 0, 4, 0x1000, 0x10000, 1, temp_s0);
+    func_8001B5B0("arena", temp_s0);
+    func_80001D88();
+    func_8002630C(0x3000);
+    func_800070C0();
+    if (D_80080230 != 30) {
+        func_8002630C(temp_s0);
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80008D0C.s")
 
@@ -148,13 +376,19 @@ const char D_80053F14[] = "tc";
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80009CE0.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80009E8C.s")
+/*extern s32 D_800801F0;
+extern s32 D_80080234;
+void func_80009E8C(void) {
+    D_800801F0 = 1;
+    D_80080234 = 1;
+}*/
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000A298.s")
 void func_8000A298(void);
 
 s32 D_800494C0[] = { 0, 0 };
 
-void func_8000A354(void) {
+void run_0_mode(void) {
     Object *v1;
     SpriteDef sp40 = { 83, func_80019A9C, 0, 0x1000, "options2.sp2" };
     Vec4i sp30 = { 164, 155, 0, 0 };
@@ -180,7 +414,7 @@ void func_8000A354(void) {
     func_8000A298();
     func_80001D88();
     func_8002630C(0x2000);
-    if (gGameMode != GAME_MODE_5) {
+    if (gGameMode != GAME_MODE_PLAYER_SELECTION) {
         func_8002630C(0xEEFF);
     }
 }
@@ -240,7 +474,7 @@ void run_intro_mode(void) {
     func_8000A298();
     func_80001D88();
     func_8002630C(0x2000);
-    if (gGameMode != GAME_MODE_5) {
+    if (gGameMode != GAME_MODE_PLAYER_SELECTION) {
         func_8002630C(0xEEFF);
     }
 }
@@ -268,7 +502,7 @@ void run_logo_mode(void) {
     func_8002630C(0x2000);
 }
 
-void func_8000A98C(void) {
+void run_1_mode(void) {
     Object *s0;
     Object *v0;
     SpriteDef sp1AC = { 89, func_80017F00, 0, 0x1000, "options2.sp2" };
@@ -381,7 +615,7 @@ void func_8000AFA4(Object *obj, s16 arg1) {
     }
 }
 
-void func_8000B088(void) {
+void run_2_mode(void) {
     Object *sp21C;
     Object *sp218;
     Object *v0;
@@ -511,7 +745,7 @@ void func_8000B088(void) {
     func_8002630C(0x2000);
 }
 
-void func_8000B934(void) {
+void run_3_mode(void) {
     SpriteDef sp3C = { 198, func_8001905C, 0, 0x1000, "options2.sp2" };
     Vec4i sp2C = { 133, 126, 0, 0 };
 
@@ -526,7 +760,7 @@ void func_8000B934(void) {
     func_8002630C(0x2000);
 }
 
-void func_8000BA4C(void) {
+void run_4_mode(void) {
     func_8002630C(0);
     func_8002630C(1);
     func_8002630C(0xABAB);

@@ -7,7 +7,7 @@ enum GameModes {
     GAME_MODE_2,
     GAME_MODE_3,
     GAME_MODE_4,
-    GAME_MODE_5,
+    GAME_MODE_PLAYER_SELECTION,
     GAME_MODE_6,
     GAME_MODE_7,
     GAME_MODE_8,

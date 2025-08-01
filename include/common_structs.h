@@ -248,7 +248,8 @@ typedef struct Camera {
     /* 0x0AA8 */ s32 *unk_AA8;
     /* 0x0AAC */ char unk_AAC[4];
     /* 0x0AB0 */ UnkCameraSub unk_AB0[60];
-    /* 0x1F50 */ char unk_1F50[0x40];
+    /* 0x1F50 */ char unk_1F50[0x1E];
+    /* 0x1F6E */ s8 unk_1F6E[34];
 } Camera; // size = 0x1F90
 
 typedef struct UnkObjectSub2 {

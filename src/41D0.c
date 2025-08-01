@@ -27,7 +27,10 @@ extern UnkOmicron D_80080238;
 
 #pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_80003DA4.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_80004304.s")
+void func_80004304(char *arg0, char *arg1, char *arg2) {
+    str_copy(arg0, arg1);
+    str_concat(arg0, arg2);
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_80004334.s")
 
