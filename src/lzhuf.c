@@ -200,51 +200,63 @@ void func_8002541C(void) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/25B50/func_8002541C.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/lzhuf/func_8002541C.s")
 void func_8002541C(void);
 #endif
 
-#ifdef NON_EQUIVALENT
 void lzhuf_update(u16 c) {
-    s16 i, j, k, l;
+    s16 j, k, l;
+    s32 n;
+    s16 m;
+    s32 i;
+    u16* ptr;
 
+    // Check if frequency root reached max
     if (gHuffmanFreq[R] == MAX_FREQ) {
         func_8002541C();
     }
+
+    // Get parent of the current node
     c = gHuffmanParent[c + T];
+
     do {
+        // Increment frequency
         k = ++gHuffmanFreq[c];
+        m = c + 1;
+        // If frequency order is disturbed, reorder nodes
+        if (k > gHuffmanFreq[m & 0xFFFFFFFF]) {
+            ptr = &gHuffmanFreq[m + 2];
+            
+            while (n = k > ptr[-1]) { // i = (k > ptr[-1]);
+                ptr++;
+            }
+            l = ptr - gHuffmanFreq - 2;
 
-        /* if the order is disturbed, exchange nodes */
-        if (k > gHuffmanFreq[l = c + 1]) {
-            while (k > gHuffmanFreq[++l])
-                ;
-            l--;
-            gHuffmanFreq[c] = gHuffmanFreq[l];
-            gHuffmanFreq[l] = k;
+            // Swap frequencies
+            gHuffmanFreq[c] = ptr[-2];
+            ptr[-2] = k;
 
+            // Update parent and child relationships
             i = gHuffmanSon[c];
             gHuffmanParent[i] = l;
-            if (i < T)
-                gHuffmanParent[i + 1] = l;
+            if (i < T) gHuffmanParent[i + 1] = l;
 
             j = gHuffmanSon[l];
             gHuffmanSon[l] = i;
 
             gHuffmanParent[j] = c;
-            if (j < T)
-                gHuffmanParent[j + 1] = c;
+            if (j < T) gHuffmanParent[j + 1] = c;
+
             gHuffmanSon[c] = j;
 
             c = l;
         }
-    } while ((c = gHuffmanParent[c]) != 0); /* repeat up to root */
+    } while ((c = gHuffmanParent[c]) != 0); // Repeat until reaching the root
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/25B50/lzhuf_update.s")
-void lzhuf_update(s32 c);
-#endif
 
+#pragma GLOBAL_ASM("asm/nonmatchings/lzhuf/lzhuf_decode_char.s")
+s16 lzhuf_decode_char(void);
+/*
 s16 lzhuf_decode_char(void) {
     u16 c;
 
@@ -258,6 +270,7 @@ s16 lzhuf_decode_char(void) {
     lzhuf_update(c);
     return c;
 }
+*/
 
 #ifdef NON_MATCHING
 s16 lzhuf_decode_position(void) {
@@ -274,7 +287,7 @@ s16 lzhuf_decode_position(void) {
     return c | (i & 0x3f);
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/25B50/lzhuf_decode_position.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/lzhuf/lzhuf_decode_position.s")
 s16 lzhuf_decode_position(void);
 #endif
 

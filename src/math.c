@@ -4,15 +4,15 @@ extern f32 D_80050F14[]; // sin table
 
 void func_80012B34(Mtx *m);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80012450.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012450.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80012470.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012470.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80012490.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012490.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80012518.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012518.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80012854.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012854.s")
 
 #ifdef NON_MATCHING
 f32 func_80012978(s16 arg0) {
@@ -41,7 +41,7 @@ f32 func_80012978(s16 arg0) {
     return 0.0f;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80012978.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012978.s")
 f32 func_80012978(s16 arg0);
 #endif
 
@@ -89,11 +89,11 @@ void func_80012AA8(Matrix4f *mf) {
     mf->x.x = mf->y.y = mf->z.z = mf->w.w = 1.0f;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80012AA8.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012AA8.s")
 void func_80012AA8(Matrix4f *mf);
 #endif
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80012AF4.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012AF4.s")
 
 void func_80012B34(Mtx *m) {
     m->m[0][1] = 0;
@@ -115,14 +115,14 @@ void func_80012B34(Mtx *m) {
     m->m[1][3] = FTOFIX32(1) >> 16;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80012B80.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012B80.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80012BBC.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012BBC.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80012E58.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012E58.s")
 
 //!
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_8001305C.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_8001305C.s")
 
 void func_800134B4(Vec3s *arg0, Mtx *arg1) {
     s32 unused;
@@ -158,7 +158,7 @@ void func_800134B4(Vec3s *arg0, Mtx *arg1) {
     arg1->m[3][1] = ((zz & 0xFFFF) << 16) | (zw & 0xFFFF);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_800136B0.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_800136B0.s")
 
 void func_800136CC(Matrix4f *arg0, Vec4i *arg1) {
     arg0->w.x = arg1->x;
@@ -193,25 +193,25 @@ void func_8001386C(Vec3i *arg0, Vec3i *arg1, Matrix4f *arg2) {
     arg1->z = temp = z >= 0.0 ? z + 0.5 : z - 0.5;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_800139A0.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_800139A0.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80013A54.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80013A54.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80013D08.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80013D08.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80013D14.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80013D14.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80013E64.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80013E64.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_800140A4.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_800140A4.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80014110.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80014110.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_8001417C.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_8001417C.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80014204.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80014204.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_80014464.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80014464.s")
 
 void func_800146B4(Matrix4f *arg0, Matrix4f *arg1) {
     arg0->x.x = arg1->x.x;
@@ -257,4 +257,4 @@ void func_80014974(UnkMu *arg0) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/13050/func_800149F0.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/func_800149F0.s")

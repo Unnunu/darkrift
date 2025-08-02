@@ -284,6 +284,7 @@ gHuffmanSon = 0x800B80C8;
 gHuffmanParent = 0x800B7968;
 lzhuf_decode_position = 0x80025800;
 lzhuf_update = 0x80025624;
+lzhuf_decode_char = 0x80025780;
 
 load_background = 0x80014B60;
 obj_init = 0x8002B658;
