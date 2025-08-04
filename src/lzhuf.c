@@ -209,7 +209,7 @@ void lzhuf_update(u16 c) {
     s32 n;
     s16 m;
     s32 i;
-    u16* ptr;
+    u16 *ptr;
 
     // Check if frequency root reached max
     if (gHuffmanFreq[R] == MAX_FREQ) {
@@ -224,10 +224,10 @@ void lzhuf_update(u16 c) {
         k = ++gHuffmanFreq[c];
         m = c + 1;
         // If frequency order is disturbed, reorder nodes
-        if (k > gHuffmanFreq[m & 0xFFFFFFFF]) {
+        if (k > gHuffmanFreq[(u32) m]) {
             ptr = &gHuffmanFreq[m + 2];
-            
-            while (n = k > ptr[-1]) { // i = (k > ptr[-1]);
+
+            while (n = k > ptr[-1]) {
                 ptr++;
             }
             l = ptr - gHuffmanFreq - 2;
@@ -239,13 +239,15 @@ void lzhuf_update(u16 c) {
             // Update parent and child relationships
             i = gHuffmanSon[c];
             gHuffmanParent[i] = l;
-            if (i < T) gHuffmanParent[i + 1] = l;
+            if (i < T)
+                gHuffmanParent[i + 1] = l;
 
             j = gHuffmanSon[l];
             gHuffmanSon[l] = i;
 
             gHuffmanParent[j] = c;
-            if (j < T) gHuffmanParent[j + 1] = c;
+            if (j < T)
+                gHuffmanParent[j + 1] = c;
 
             gHuffmanSon[c] = j;
 

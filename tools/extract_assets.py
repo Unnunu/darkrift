@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from pathlib import Path
-from struct import unpack_from, calcsize
+from struct import unpack_from, calcsize, pack
+import subprocess
+from n64img.image import CI8
 
 ROMFILE = "darkrift.z64"
 ASSETS_PATH = "game_assets"
@@ -52,9 +54,7 @@ class BinaryReader:
                 self.save_file(file, f)
 
     def save_file(self, file, folder):
-        print(file["name"], file["offset"], self.offset)
-
-        if file['offset'] in self.cache:
+        if False:
             file_content = self.cache[file['offset']]
         else:
             self.offset = file["offset"]
@@ -63,25 +63,55 @@ class BinaryReader:
 
         file_name = file["name"]
         if file["size"] != file["unpacked_size"]:
+            is_packed = True
+            real_file_name = file_name
             file_name = "c_" + file_name
+            file_content = pack("<I", file["unpacked_size"]) + file_content
+            
+        else:
+            is_packed = False
 
         file_path = self.path / folder["name"] / file_name
+        if is_packed:
+            real_file_path = self.path / folder["name"] / real_file_name
 
         if file["type"] != 4:            
             file_path.parent.mkdir(parents=True, exist_ok=True)
             file_path.write_bytes(file_content)
             self.cache[file["offset"]] = file_content
+            #decode
+            if is_packed:
+                subprocess.run(["tools/lzhuf", "d", file_path, real_file_path])
+                file_path.unlink()
         else:
             # parse inner wad file
             print("opening wad", file_path)
             reader = BinaryReader(file_content, file_path.with_suffix(''))
             reader.read_wad()
+
+def process_tex():
+    for g in Path(ASSETS_PATH).glob('**/*.TEX'):
+        content = g.read_bytes()
+        width, height = unpack_from(">II", content)
+        #print(width, height)
+        img = CI8(content[0x10:0x10 + width * height], width, height)
+
+        palette = content[0x10 + width * height:]
+        if len(palette) != 512:
+            print(g)
+        img.set_palette(palette)
+
+        outpath = g.with_suffix(".png")
+        img.write(outpath)
+
+def analyze():
+    process_tex()    
         
 def main():
     assets = Path(ROMFILE).read_bytes()[ASSETS_OFFSET:]
     reader = BinaryReader(assets, ASSETS_PATH)
     reader.read_wad()
-    print(reader.offset)
+    analyze()
 
 if __name__ == "__main__":
     main()
