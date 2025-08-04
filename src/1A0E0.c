@@ -80,6 +80,19 @@ void func_80019DE4(Object *obj) {
 #pragma GLOBAL_ASM("asm/nonmatchings/1A0E0/func_80019F08.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1A0E0/func_80019F40.s")
+/*
+extern s16 D_80081250;
+extern s32 D_80049AE8;
+extern Texture *D_80081254;
+void func_8000A578(Object *obj);
+
+void func_80019F40(Object *obj) {
+    if (D_80081250 + D_80049AE8 + SCREEN_HEIGHT >= 0 &&
+        ((gPlayerInput[0].unk_00 & INP_START) || (gPlayerInput[1].unk_00 & INP_START))) {
+        D_80081254->flags |= 0x10;
+        obj->fn_update = func_8000A578;
+    }
+}*/
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1A0E0/func_8001A130.s")
 

@@ -266,5 +266,24 @@ Object *func_8002BBD4(Vec3i *pos, SpriteDef *def, s32 context) {
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002BF1C.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002BFF0.s")
+void func_800386E8(Object *);
+/*
+Object *func_8002BFF0(Vec4i *arg0, s16 arg1, void (*arg2)(Object *), UnkSam *arg3) {
+    Object *obj;
+
+    obj = obj_allocate(arg1);
+    obj_init(obj, arg0, &D_80049344, 0, arg2);
+    obj->fn_update = func_800386E8;
+    obj->flags = 1;
+
+    if (D_8013C2C0.count == 0) {
+        obj->fn_update = task_default_func;
+        obj->flags = 0x10;
+        obj->camera = NULL;
+        return NULL;
+    }
+
+    return obj;
+}*/
 
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002C27C.s")

@@ -58,38 +58,14 @@ typedef struct AssetSP2Sub2 {
 
 typedef struct AssetSP2 {
     /* 0x00 */ s32 unk_00;
-    /* 0x00 */ u32 unk_04;
-    /* 0x00 */ char unk_08[4][16];
+    /* 0x04 */ u32 unk_04;
+    /* 0x08 */ char unk_08[4][16];
     /* 0x48 */ AssetSP2Sub2 *unk_48;
 } AssetSP2;
-
-typedef struct AssetGmdSub1 {
-    /* 0x00 */ char unk_00[0x10];
-} AssetGmdSub1; // size = 0x10
-
-typedef struct AssetGmdSub2 {
-    /* 0x00 */ char unk_00[0x20];
-} AssetGmdSub2; // size = 0x20
-
-typedef struct AssetGmd {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ char unk_04[0xC4];
-    /* 0xC8 */ u8 unk_C8;
-} AssetGmd; // size = 0xCC
-
-typedef struct AssetUnkHeader {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-} AssetUnkHeader;
 
 typedef struct UnkFrodo {
     /* 0x00 */ char unk_00[0xA68];
 } UnkFrodo; // szie = 0xA68
-
-typedef struct UnkSam {
-    /* 0x000 */ char unk_00[0x3CC];
-    /* 0x3CC */ s32 unk_3CC;
-} UnkSam; // szie = 0x3D0
 
 typedef struct UnkFish {
     u8 unk_00;
@@ -704,13 +680,13 @@ void asset_load_gmd(Asset *asset) {
     func_80026BE0(asset);
     unkHeader = asset->data;
     sp34 = asset->memory_slot;
-    sp30 = unkHeader->unk_04;
+    sp30 = unkHeader->numEntries;
     asset->aux_memory_slot = asset->memory_slot;
     asset->size = sp30 * sizeof(AssetGmdSub2) + sp30 * sizeof(AssetGmdSub1) + sizeof(AssetGmd);
 
     func_80026A94(asset, asset->size);
     sp2C = (AssetGmd *) (asset->data);
-    sp2C->unk_00 = sp30;
+    sp2C->numEntries = sp30;
     func_8000C0E4(sp2C, sp34);
 
     sp38 = mem_alloc(sizeof(UnkFrodo), "wad.c", 777);
@@ -728,13 +704,13 @@ void asset_load_k3(Asset *asset) {
     func_80026BE0(asset);
     unkHeader = asset->data;
     sp2C = asset->memory_slot;
-    sp28 = unkHeader->unk_04;
+    sp28 = unkHeader->numEntries;
     asset->aux_memory_slot = asset->memory_slot;
     asset->size = sp28 * sizeof(AssetGmdSub2) + sp28 * sizeof(AssetGmdSub1) + sizeof(AssetGmd);
 
     func_80026A94(asset, asset->size);
     s1 = (AssetGmd *) (asset->data);
-    s1->unk_00 = sp28;
+    s1->numEntries = sp28;
     func_8000C0E4(s1, sp2C);
 
     sp30 = mem_alloc(sizeof(UnkSam), "wad.c", 813);
@@ -755,13 +731,13 @@ void asset_load_k4(Asset *asset) {
     func_80026BE0(asset);
     unkHeader = asset->data;
     sp2C = asset->memory_slot;
-    sp28 = unkHeader->unk_04;
+    sp28 = unkHeader->numEntries;
     asset->aux_memory_slot = asset->memory_slot;
     asset->size = sp28 * sizeof(AssetGmdSub2) + sp28 * sizeof(AssetGmdSub1) + sizeof(AssetGmd);
 
     func_80026A94(asset, asset->size);
     s1 = (AssetGmd *) (asset->data);
-    s1->unk_00 = sp28;
+    s1->numEntries = sp28;
     func_8000C0E4(s1, sp2C);
 
     sp30 = mem_alloc(sizeof(UnkSam), "wad.c", 854);
@@ -782,13 +758,13 @@ void asset_load_k5(Asset *asset) {
     func_80026BE0(asset);
     unkHeader = asset->data;
     sp2C = asset->memory_slot;
-    sp28 = unkHeader->unk_04;
+    sp28 = unkHeader->numEntries;
     asset->aux_memory_slot = asset->memory_slot;
     asset->size = sp28 * sizeof(AssetGmdSub2) + sp28 * sizeof(AssetGmdSub1) + sizeof(AssetGmd);
 
     func_80026A94(asset, asset->size);
     s1 = (AssetGmd *) (asset->data);
-    s1->unk_00 = sp28;
+    s1->numEntries = sp28;
     func_8000C0E4(s1, sp2C);
 
     sp30 = mem_alloc(sizeof(UnkSam), "wad.c", 893);
@@ -810,13 +786,13 @@ void asset_load_tmd(Asset *asset) {
     func_80026BE0(asset);
     unkHeader = asset->data;
     sp2C = asset->memory_slot;
-    sp28 = unkHeader->unk_04;
+    sp28 = unkHeader->numEntries;
     asset->aux_memory_slot = asset->memory_slot;
     asset->size = sp28 * sizeof(AssetGmdSub2) + sp28 * sizeof(AssetGmdSub1) + sizeof(AssetGmd);
 
     func_80026A94(asset, asset->size);
     s1 = (AssetGmd *) (asset->data);
-    s1->unk_00 = sp28;
+    s1->numEntries = sp28;
     func_8000C0E4(s1, sp2C);
 
     sp30 = mem_alloc(sizeof(UnkSam), "wad.c", 934);
@@ -980,13 +956,13 @@ void asset_load_sp3(Asset *asset) {
     func_80026BE0(asset);
     unkHeader = asset->data;
     sp2C = asset->memory_slot;
-    sp28 = unkHeader->unk_04;
+    sp28 = unkHeader->numEntries;
     asset->aux_memory_slot = asset->memory_slot;
     asset->size = sp28 * sizeof(AssetGmdSub2) + sp28 * sizeof(AssetGmdSub1) + sizeof(AssetGmd);
 
     func_80026A94(asset, asset->size);
     s1 = (AssetGmd *) (asset->data);
-    s1->unk_00 = sp28;
+    s1->numEntries = sp28;
     func_8000C0E4(s1, sp2C);
 
     sp30 = mem_alloc(sizeof(UnkSam), "wad.c", 1226);
@@ -1024,13 +1000,13 @@ void asset_load_k2(Asset *asset) {
     func_80026BE0(asset);
     unkHeader = asset->data;
     sp2C = asset->memory_slot;
-    sp28 = unkHeader->unk_04;
+    sp28 = unkHeader->numEntries;
     asset->aux_memory_slot = asset->memory_slot;
     asset->size = sp28 * sizeof(AssetGmdSub2) + sp28 * sizeof(AssetGmdSub1) + sizeof(AssetGmd);
 
     func_80026A94(asset, asset->size);
     s1 = (AssetGmd *) (asset->data);
-    s1->unk_00 = sp28;
+    s1->numEntries = sp28;
     func_8000C0E4(s1, sp2C);
 
     sp30 = mem_alloc(sizeof(UnkSam), "wad.c", 1297);

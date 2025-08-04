@@ -60,6 +60,6 @@ enum GameModes {
 #define INP_DOWN 0x4000
 #define INP_LEFT 0x8000
 
-enum AssetContext { CONTEXT_2000 = 0x2000 };
+enum AssetContext { CONTEXT_2000 = 0x2000, CONTEXT_EEFF = 0xEEFF };
 
 #endif

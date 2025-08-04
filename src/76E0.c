@@ -28,10 +28,10 @@ extern s16 D_80081250;
 extern Texture *D_80081254;
 extern s16 D_80080116;
 extern s16 D_8005BED2;
-extern Vec3i D_8004934C;
+extern Vec4i D_8004934C;
 extern s16 D_80080230;
 
-Object *func_8002BFF0(Vec3i *, s16, void (*)(Object *), void *);
+Object *func_8002BFF0(Vec4i *, s16, void (*)(Object *), UnkSam *);
 void func_800199E0(Object *);
 void sound_stop_one(s32, s32);
 void func_80020670(Object *);
@@ -526,7 +526,7 @@ void run_0_mode(void) {
     D_8005BFC0 |= 4;
 
     if (D_8005BED2 == 1) {
-        void *assetData = gAssets[asset_find("title.k2", 0x2000)].aux_data;
+        UnkSam *assetData = gAssets[asset_find("title.k2", 0x2000)].aux_data;
         v1 = func_8002BFF0(&D_8004934C, 0x1000, func_800199E0, assetData);
         v1->flags |= 0x01000000;
     } else {
@@ -588,7 +588,7 @@ void run_intro_mode(void) {
     D_8008012C |= 0x20;
     D_8005BFC0 |= 4;
     asset_open_folder("/title/tit_int", CONTEXT_2000);
-    asset_open_folder("/plyrsel/plyrsel", 0xEEFF);
+    asset_open_folder("/plyrsel/plyrsel", CONTEXT_EEFF);
     v0 = create_worker(func_80019F40, 0x1000);
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
     func_8001A158(v0, 0x2000);
