@@ -1,4 +1,5 @@
 #include "common.h"
+#include "string.h"
 
 void func_8000C158(AssetGmd *, u8);
 
@@ -130,6 +131,7 @@ void func_8000C158(AssetGmd *arg0, u8 arg1) {
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000C18C.s")
+void func_8000C18C(s32 *arg0, s32 arg1, u32 arg2);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000C1C4.s")
 
@@ -138,6 +140,7 @@ void func_8000C158(AssetGmd *arg0, u8 arg1) {
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000C328.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000C3CC.s")
+void func_8000C3CC(UnkSam *, s32, u8, u8 *);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000D11C.s")
 
@@ -151,4 +154,55 @@ void func_8000C158(AssetGmd *arg0, u8 arg1) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000E0D8.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000E73C.s")
+void func_8000E73C(UnkSam *arg0, AssetGmd *arg1, char *arg2, u8 arg3, u8 *arg4, s32 arg5) {
+    u32 i;
+    s32 v1;
+    s32 j;
+    s32 padding2;
+    char sp48[16];
+    char padding[16];
+
+    arg0->unk_04 = arg1;
+    arg0->unk_128 = arg1->numEntries;
+    arg0->unk_318 = arg1->unk_C8;
+    arg0->unk_320 = 0;
+    arg0->unk_321 = 0;
+    arg0->unk_322 = 0;
+
+    for (i = 0; i < arg0->unk_128; i++) {
+        func_8000C3CC(arg0, i, arg3, arg4);
+    }
+
+    if (arg0->unk_04->unk_08 != 0) {
+        arg0->unk_150 = mem_alloc(arg0->unk_128 * 0x10 + 0x10, "kmd.c", 983);
+        memcpy(arg0->unk_150, arg0->unk_04->unk_08, arg0->unk_128 * 0x10 + 0x10);
+    } else {
+        arg0->unk_150 = NULL;
+    }
+
+    str_copy(sp48, arg2);
+    for (j = 0; sp48[j] != '\0' && j < 16;) {
+        if (sp48[j++] == '.') {
+            sp48[j - 1] = '\0';
+            break;
+        }
+    }
+
+    str_concat(sp48, "_anm.anm");
+    v1 = asset_find(sp48, arg5);
+
+    if (v1 < 0) {
+        str_copy(sp48, arg2);
+        sp48[3] = '\0';
+        str_concat(sp48, "_anm.anm");
+        v1 = asset_find(sp48, arg5);
+    }
+
+    if (v1 >= 0) {
+        arg0->unk_148 = D_8005AEB8[gAssets[v1].memory_slot].unk_04;
+        arg0->unk_14C = gAssets[v1].aux_data;
+        func_800010D4(gAssets[v1].memory_slot, func_8000C18C, arg0->unk_14C);
+    } else {
+        arg0->unk_148 = NULL;
+    }
+}

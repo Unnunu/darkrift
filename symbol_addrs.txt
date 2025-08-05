@@ -322,3 +322,8 @@ gSoundVolumeFading = 0x800A4520;
 gMusicVolumeFading = 0x800A4500;
 
 run_player_selection_mode = 0x8001F7FC;
+
+math_rotate = 0x8001305C;
+math_translate = 0x800136CC;
+math_mtxf_mul = 0x800149F0;
+math_mtxf2mtx = 0x80013A54;

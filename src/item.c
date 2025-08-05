@@ -217,8 +217,8 @@ void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(
     arg0->currentTask->next = 0;
     arg0->currentTask->stackPos = 0;
 
-    func_8001305C(&arg0->unk_0D0.unk_98, arg2);
-    func_800136CC(&arg0->unk_0D0.unk_98, arg1);
+    math_rotate(&arg0->unk_0D0.unk_98, arg2);
+    math_translate(&arg0->unk_0D0.unk_98, arg1);
 
     for (i = 0; i < 13; i++) {
         arg0->unk_090[i] = 0;

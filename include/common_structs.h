@@ -160,7 +160,7 @@ typedef struct UnkMu {
     /* 0x40 */ Mtx unk_40;
     /* 0x80 */ struct UnkMu *unk_80;
     /* 0x84 */ struct UnkMu *unk_84;
-    /* 0x88 */ struct UnkMu *unk_88;
+    /* 0x88 */ struct UnkMu *parent;
     /* 0x8C */ s32 unk_8C;
     /* 0x90 */ s32 unk_90;
     /* 0x94 */ s32 unk_94;
@@ -357,11 +357,6 @@ typedef struct Texture {
     /* 0x28 */ struct Texture *next;
 } Texture; // size = 0x2C
 
-typedef struct UnkSam {
-    /* 0x000 */ char unk_00[0x3CC];
-    /* 0x3CC */ s32 unk_3CC;
-} UnkSam; // szie = 0x3D0
-
 typedef struct AssetGmdSub1 {
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ s16 unk_04;
@@ -384,7 +379,7 @@ typedef struct AssetGmdSub2 {
 typedef struct AssetUnkHeader {
     /* 0x00 */ u8 signature[4]; // '2KMD' or '@KMD' ??
     /* 0x04 */ s32 numEntries;
-    /* 0x08 */ s32 offsets[0];
+    /* 0x08 */ s32 offsets[1];
 } AssetUnkHeader;
 
 typedef struct AssetGmd {
@@ -410,5 +405,26 @@ typedef struct AssetUnkHeader2 {
     /* 0x0C */ s32 unk_0C;
     /* 0x10 */ s32 unk_10;
 } AssetUnkHeader2;
+
+typedef struct UnkSam {
+    /* 0x000 */ s32 unk_00;
+    /* 0x004 */ AssetGmd *unk_04;
+    /* 0x008 */ char unk_08[0x128 - 8];
+    /* 0x128 */ s32 unk_128;
+    /* 0x12C */ char unk_12C[0x148 - 0x12C];
+    /* 0x148 */ s32 unk_148;
+    /* 0x14C */ s32 unk_14C;
+    /* 0x150 */ s32 unk_150;
+    /* 0x154 */ char unk_154[0x318 - 0x154];
+    /* 0x318 */ s8 unk_318;
+    /* 0x319 */ char unk_319[3];
+    /* 0x31C */ s32 unk_31C;
+    /* 0x320 */ u8 unk_320;
+    /* 0x321 */ u8 unk_321;
+    /* 0x322 */ u8 unk_322;
+    /* 0x323 */ u8 unk_323;
+    /* 0x324 */ char unk_324[0x3CC - 0x324];
+    /* 0x3CC */ s32 unk_3CC;
+} UnkSam; // szie = 0x3D0
 
 #endif

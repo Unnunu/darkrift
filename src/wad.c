@@ -118,7 +118,6 @@ void func_80025A0C(Asset *);
 void asset_read_all_files_in_folder(s32);
 void assets_clear_unused(void);
 void dma_read(s32 romAddr, void *vramAddr, s32 size);
-void func_800010D4(s32 arg0, s32 arg1, s32 arg2);
 void func_8000E73C(UnkSam *, AssetGmd *, char *, s32, u8 *, u16);
 void func_80035CCC(UnkSam *);
 void func_8000E0D8(UnkSam *);

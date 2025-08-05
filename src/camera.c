@@ -172,10 +172,10 @@ void camera_update(Object *obj) {
     if (obj->pos.x != 0 || obj->pos.z != 0 || gCameraTarget.x != 0 || gCameraTarget.z != 0) {
         guLookAtF(&gCameraViewMatrix, obj->pos.x, obj->pos.y + (f32) D_8013C830, obj->pos.z, gCameraTarget.x,
                   gCameraTarget.y + (f32) D_8013C830, gCameraTarget.z, 0.0f, -1.0f, 0.0f);
-        func_800149F0(&gCameraViewMatrix, &gCameraPerspMatrix, &gCameraProjectionMatrix);
+        math_mtxf_mul(&gCameraViewMatrix, &gCameraPerspMatrix, &gCameraProjectionMatrix);
     }
 
-    func_80013A54(&D_80080100->mtxViewProj, &gCameraProjectionMatrix);
+    math_mtxf2mtx(&D_80080100->mtxViewProj, &gCameraProjectionMatrix);
 
     deltaX = gCameraTarget.x - gCamera->pos.x;
     deltaY = gCameraTarget.y - gCamera->pos.y;
@@ -219,7 +219,7 @@ void camera_default_view(void) {
     guPerspectiveF(&gCameraPerspMatrix, &perspNorm, gCameraFieldOfView, 4.0f / 3.0f, gCameraNearClip, gCameraFarClip,
                    gCameraScale);
     guLookAtF(&D_8013C670, 0.0f, 0.0f, -2300.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f);
-    func_800149F0(&D_8013C670, &gCameraPerspMatrix, &D_8013C6B0);
+    math_mtxf_mul(&D_8013C670, &gCameraPerspMatrix, &D_8013C6B0);
 }
 
 Object *camera_create(void) {

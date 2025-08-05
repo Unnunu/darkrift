@@ -81,34 +81,33 @@ void func_80014CB4(Texture *tex) {
     }
 }
 
-#ifdef NON_EQUIVALENT
-void func_80014D2C(Texture *tex, s32 texYOffset, s32 screenY, u32 height, s32 scrollS, s32 scrollT) {
-    Gfx *dlist;
-    u32 texWidth;
+void func_80014D2C(Texture *tex, s32 texYOffset, s32 screenY, u32 height, u32 scrollS, u32 scrollT) {
+    Gfx **dlist;
+    s32 texWidth;
     u8 *image;
-    u32 vart0;
+    u32 a1;
+    s32 vart0;
+    s32 var1;
+    s32 padding[5];
 
+    image = tex->raster;
+    image += texYOffset * tex->width;
     texWidth = tex->width;
-    image = tex->raster + texYOffset * texWidth;
+    dlist = (tex->flags & 2) ? &D_8005BFE0 : &D_8005BFD8;
 
-    if (tex->flags & 2) {
-        dlist = D_8005BFE0;
-    } else {
-        dlist = D_8005BFD8;
-    }
-
-    gDPLoadTLUT_pal256(dlist++, VIRTUAL_TO_PHYSICAL(tex->palette));
+    gDPLoadTLUT_pal256((*dlist)++, VIRTUAL_TO_PHYSICAL(tex->palette));
 
     if (texWidth < D_8005BFC8 + scrollS) {
-        s32 a1 = texWidth - scrollS;
+        image -= texWidth;
         do {
             vart0 = MIN(height, 5);
-            gDPLoadTextureTile(dlist++, VIRTUAL_TO_PHYSICAL(image - texWidth), G_IM_FMT_CI, G_IM_SIZ_8b, texWidth, 0,
-                               scrollS, scrollT, scrollS + D_8005BFC8, scrollT + vart0, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+            a1 = texWidth - scrollS;
+            gDPLoadTextureTile((*dlist)++, VIRTUAL_TO_PHYSICAL(image), G_IM_FMT_CI, G_IM_SIZ_8b, texWidth, 0, scrollS,
+                               scrollT, scrollS + D_8005BFC8, scrollT + vart0, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                                G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-            gSPTextureRectangle(dlist++, 0, screenY * 4, a1 * 4, (screenY + vart0 - 1) * 4, 0, scrollS << 5,
+            gSPTextureRectangle((*dlist)++, 0, screenY << 2, a1 << 2, (screenY + vart0 - 1) << 2, 0, scrollS << 5,
                                 (scrollT + 1) << 5, 0x1000, 0x400);
-            gSPTextureRectangle(dlist++, a1 * 4, screenY * 4, (D_8005BFC8 - 1) * 4, (screenY + vart0 - 1) * 4, 0,
+            gSPTextureRectangle((*dlist)++, a1 << 2, screenY << 2, (D_8005BFC8 - 1) << 2, (screenY + vart0 - 1) << 2, 0,
                                 (scrollS + a1) << 5, scrollT << 5, 0x1000, 0x400);
             scrollT += vart0;
             screenY += vart0;
@@ -116,22 +115,19 @@ void func_80014D2C(Texture *tex, s32 texYOffset, s32 screenY, u32 height, s32 sc
         } while (height != 0);
     } else {
         do {
-            vart0 = MIN(height, 5);
-            gDPLoadTextureTile(dlist++, VIRTUAL_TO_PHYSICAL(image), G_IM_FMT_CI, G_IM_SIZ_8b, texWidth, 0, scrollS,
-                               scrollT, scrollS + D_8005BFC8, scrollT + vart0, 0, G_TX_NOMIRROR | G_TX_CLAMP,
+            vart0 = MIN(height, 6);
+            gDPLoadTextureTile((*dlist)++, VIRTUAL_TO_PHYSICAL(image), G_IM_FMT_CI, G_IM_SIZ_8b, texWidth, 0, scrollS,
+                               scrollT, scrollS + D_8005BFC8, scrollT + vart0 - 1, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                                G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-            gSPTextureRectangle(dlist++, 0, screenY * 4, (SCREEN_WIDTH - 1) * 4, (screenY + vart0 - 1) * 4, 0,
+            gSPTextureRectangle((*dlist)++, 0, screenY << 2, (SCREEN_WIDTH - 1) << 2, (screenY + vart0 - 1) << 2, 0,
                                 scrollS << 5, scrollT << 5, 0x1000, 0x400);
+
             scrollT += vart0;
             screenY += vart0;
             height -= vart0;
         } while (height != 0);
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/scroll/func_80014D2C.s")
-void func_80014D2C(Texture *tex, s32 arg1, s32 arg2, u32 arg3, s32 arg4, s32 arg5);
-#endif
 
 void func_800153C4(void) {
     Texture *tex;

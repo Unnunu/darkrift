@@ -137,13 +137,13 @@ void func_80037CE4(Object *obj) {
         obj->rotation.y = D_8013C668.y;
     }
 
-    func_8001305C(&mu->unk_98, &obj->rotation);
-    func_800136CC(&mu->unk_98, &obj->pos);
-    func_800149F0(&mu->unk_98, &gCameraProjectionMatrix, &D_800813E0);
+    math_rotate(&mu->unk_98, &obj->rotation);
+    math_translate(&mu->unk_98, &obj->pos);
+    math_mtxf_mul(&mu->unk_98, &gCameraProjectionMatrix, &D_800813E0);
 
     sub = AB0 + sp4C;
     sub6 = &camera->unk_A50;
-    func_80013A54(&sub->unk_18, &D_800813E0);
+    math_mtxf2mtx(&sub->unk_18, &D_800813E0);
     nv2 = sub2->unk_238[index];
     camera->unk_A38 = sub;
 
@@ -211,8 +211,8 @@ void func_800386E8(Object *obj) {
             obj->unk_086 = obj->unk_084;
         }
 
-        func_8001305C(&mu->unk_98, &obj->rotation);
-        func_800136CC(&mu->unk_98, &obj->pos);
+        math_rotate(&mu->unk_98, &obj->rotation);
+        math_translate(&mu->unk_98, &obj->pos);
         func_80014974(mu);
 
         if (camera->unk_604 != 0) {
@@ -242,13 +242,13 @@ void func_800386E8(Object *obj) {
                     }
 
                     if (spAC != NULL) {
-                        func_800149F0(&spAC[s1].unk_D8, a1, &D_800813E0);
+                        math_mtxf_mul(&spAC[s1].unk_D8, a1, &D_800813E0);
                     } else {
-                        func_800149F0(&camera->unk_010.unk_D8, a1, &D_800813E0);
+                        math_mtxf_mul(&camera->unk_010.unk_D8, a1, &D_800813E0);
                     }
 
                     s0 = &s7[s1 + sp94];
-                    func_80013A54(&s0->unk_18, &D_800813E0);
+                    math_mtxf2mtx(&s0->unk_18, &D_800813E0);
                     q[i].unk_08[j] = s0;
                 }
             }
@@ -257,11 +257,11 @@ void func_800386E8(Object *obj) {
         }
     } else {
         s0 = camera->unk_AB0;
-        func_8001305C(&mu->unk_98, &obj->rotation);
-        func_800136CC(&mu->unk_98, &obj->pos);
+        math_rotate(&mu->unk_98, &obj->rotation);
+        math_translate(&mu->unk_98, &obj->pos);
         func_80014974(mu);
-        func_800149F0(&mu->unk_98, &gCameraProjectionMatrix, &D_800813E0);
-        func_80013A54(&(s0 + sp94)->unk_18, &D_800813E0);
+        math_mtxf_mul(&mu->unk_98, &gCameraProjectionMatrix, &D_800813E0);
+        math_mtxf2mtx(&(s0 + sp94)->unk_18, &D_800813E0);
         func_80035DF8(camera->unk_A28, 0);
         (*s2)->unk_04 = s0 + sp94;
     }
