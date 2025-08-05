@@ -10,7 +10,7 @@ extern Gfx *D_8005BFE0;
 extern s16 D_80080130;
 extern s16 D_80080132;
 extern s16 D_80080134;
-extern u16 D_8005BFC8;
+extern u16 gScreenWidth;
 
 Texture *load_background(char *name, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 flags, s32 context) {
     Texture *head;
@@ -81,12 +81,12 @@ void func_80014CB4(Texture *tex) {
     }
 }
 
-void func_80014D2C(Texture *tex, s32 texYOffset, s32 screenY, u32 height, u32 scrollS, u32 scrollT) {
+void texture_render(Texture *tex, s32 texYOffset, s32 posY, u32 height, u32 scrollS, u32 scrollT) {
     Gfx **dlist;
     s32 texWidth;
     u8 *image;
-    u32 a1;
-    s32 vart0;
+    u32 left_part_width;
+    s32 strip_height;
     s32 var1;
     s32 padding[5];
 
@@ -97,34 +97,91 @@ void func_80014D2C(Texture *tex, s32 texYOffset, s32 screenY, u32 height, u32 sc
 
     gDPLoadTLUT_pal256((*dlist)++, VIRTUAL_TO_PHYSICAL(tex->palette));
 
-    if (texWidth < D_8005BFC8 + scrollS) {
+    if (texWidth < gScreenWidth + scrollS) {
         image -= texWidth;
         do {
-            vart0 = MIN(height, 5);
-            a1 = texWidth - scrollS;
-            gDPLoadTextureTile((*dlist)++, VIRTUAL_TO_PHYSICAL(image), G_IM_FMT_CI, G_IM_SIZ_8b, texWidth, 0, scrollS,
-                               scrollT, scrollS + D_8005BFC8, scrollT + vart0, 0, G_TX_NOMIRROR | G_TX_CLAMP,
-                               G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-            gSPTextureRectangle((*dlist)++, 0, screenY << 2, a1 << 2, (screenY + vart0 - 1) << 2, 0, scrollS << 5,
-                                (scrollT + 1) << 5, 0x1000, 0x400);
-            gSPTextureRectangle((*dlist)++, a1 << 2, screenY << 2, (D_8005BFC8 - 1) << 2, (screenY + vart0 - 1) << 2, 0,
-                                (scrollS + a1) << 5, scrollT << 5, 0x1000, 0x400);
-            scrollT += vart0;
-            screenY += vart0;
-            height -= vart0;
+            strip_height = MIN(height, 5);
+            left_part_width = texWidth - scrollS;
+            gDPLoadTextureTile((*dlist)++,                 // pkt
+                               VIRTUAL_TO_PHYSICAL(image), // timg
+                               G_IM_FMT_CI,                // fmt
+                               G_IM_SIZ_8b,                // siz
+                               texWidth,                   // width
+                               0,                          // height
+                               scrollS,                    // uls
+                               scrollT,                    // ult
+                               scrollS + gScreenWidth,     // lrs
+                               scrollT + strip_height,     // lrt
+                               0,                          // pal
+                               G_TX_NOMIRROR | G_TX_CLAMP, // cms
+                               G_TX_NOMIRROR | G_TX_CLAMP, // cmt
+                               G_TX_NOMASK,                // masks
+                               G_TX_NOMASK,                // maskt
+                               G_TX_NOLOD,                 // shifts
+                               G_TX_NOLOD                  // shiftt
+            );
+            gSPTextureRectangle((*dlist)++,                     // pkt
+                                0 << 2,                         // xl
+                                posY << 2,                      // yl
+                                left_part_width << 2,           // xh
+                                (posY + strip_height - 1) << 2, // yh
+                                G_TX_RENDERTILE,                // tile
+                                scrollS << 5,                   // s
+                                (scrollT + 1) << 5,             // t
+                                4 << 10,                        // dsdx
+                                1 << 10                         // dtdy
+            );
+            gSPTextureRectangle((*dlist)++,                       // pkt
+                                left_part_width << 2,             // xl
+                                posY << 2,                        // yl
+                                (gScreenWidth - 1) << 2,          // xh
+                                (posY + strip_height - 1) << 2,   // yh
+                                G_TX_RENDERTILE,                  // tile
+                                (scrollS + left_part_width) << 5, // s
+                                scrollT << 5,                     // t
+                                4 << 10,                          // dsdx
+                                1 << 10                           // dtdy
+            );
+            scrollT += strip_height;
+            posY += strip_height;
+            height -= strip_height;
         } while (height != 0);
     } else {
         do {
-            vart0 = MIN(height, 6);
-            gDPLoadTextureTile((*dlist)++, VIRTUAL_TO_PHYSICAL(image), G_IM_FMT_CI, G_IM_SIZ_8b, texWidth, 0, scrollS,
-                               scrollT, scrollS + D_8005BFC8, scrollT + vart0 - 1, 0, G_TX_NOMIRROR | G_TX_CLAMP,
-                               G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-            gSPTextureRectangle((*dlist)++, 0, screenY << 2, (SCREEN_WIDTH - 1) << 2, (screenY + vart0 - 1) << 2, 0,
-                                scrollS << 5, scrollT << 5, 0x1000, 0x400);
+            strip_height = MIN(height, 6);
+            gDPLoadTextureTile((*dlist)++,                 // pkt
+                               VIRTUAL_TO_PHYSICAL(image), // timg
+                               G_IM_FMT_CI,                // fmt
+                               G_IM_SIZ_8b,                // siz
+                               texWidth,                   // width
+                               0,                          // height
+                               scrollS,                    // uls
+                               scrollT,                    // ult
+                               scrollS + gScreenWidth,     // lrs
+                               scrollT + strip_height - 1, // lrt
+                               0,                          // pal
+                               G_TX_NOMIRROR | G_TX_CLAMP, // cms
+                               G_TX_NOMIRROR | G_TX_CLAMP, // cmt
+                               G_TX_NOMASK,                // masks
+                               G_TX_NOMASK,                // maskt
+                               G_TX_NOLOD,                 // shifts
+                               G_TX_NOLOD                  // shiftt
+            );
+            gSPTextureRectangle((*dlist)++,                     // pkt
+                                0 << 2,                         // xl
+                                posY << 2,                      // yl
+                                (SCREEN_WIDTH - 1) << 2,        // xh
+                                (posY + strip_height - 1) << 2, // yh
+                                G_TX_RENDERTILE,                // tile
+                                scrollS << 5,                   // s
+                                scrollT << 5,                   // t
+                                4 << 10,                        // dsdx
+                                1 << 10                         // dtdy
+            );
 
-            scrollT += vart0;
-            screenY += vart0;
-            height -= vart0;
+            scrollT += strip_height;
+            posY += strip_height;
+            height -= strip_height;
         } while (height != 0);
     }
 }
@@ -132,14 +189,14 @@ void func_80014D2C(Texture *tex, s32 texYOffset, s32 screenY, u32 height, u32 sc
 void func_800153C4(void) {
     Texture *tex;
     s32 t0;
-    s32 s3;
-    s32 screenY;
+    s32 maxY;
+    s32 posY;
     s32 texYBase;
     s32 height;
     s32 v0;
-    s32 scrollS;
+    u32 scrollS;
 
-    s3 = 0;
+    maxY = 0;
 
     for (tex = D_80049AE0; tex != NULL;) {
         if (!(tex->flags & 4)) {
@@ -156,11 +213,11 @@ void func_800153C4(void) {
                 tex = tex->next;
                 continue;
             }
-            screenY = v0;
+            posY = v0;
 
-            if (screenY < 0) {
+            if (posY < 0) {
                 texYBase = -v0;
-                screenY = 0;
+                posY = 0;
                 if (texYBase >= tex->height) {
                     tex = tex->next;
                     continue;
@@ -169,25 +226,25 @@ void func_800153C4(void) {
                 texYBase = 0;
             }
 
-            height = MIN(SCREEN_HEIGHT - screenY, tex->height - texYBase);
+            height = MIN(SCREEN_HEIGHT - posY, tex->height - texYBase);
             scrollS = (tex->unk_18 + t0) % tex->width;
-            func_80014D2C(tex, texYBase, screenY, height, scrollS, 0);
+            texture_render(tex, texYBase, posY, height, scrollS, 0);
 
-            if (!(tex->flags & 2) && s3 < screenY + height && screenY + height < SCREEN_HEIGHT) {
-                s3 = screenY + height;
+            if (!(tex->flags & 2) && maxY < posY + height && posY + height < SCREEN_HEIGHT) {
+                maxY = posY + height;
             }
         }
         tex = tex->next;
     }
 
-    if (s3 > 0 && D_80080129 && !(D_8008012C & 0x40)) {
-        s32 t3 = MIN(64, SCREEN_HEIGHT - s3);
+    if (maxY > 0 && D_80080129 && !(D_8008012C & 0x40)) {
+        s32 t3 = MIN(64, SCREEN_HEIGHT - maxY);
 
         gDPPipeSync(D_8005BFD8++);
         gDPSetCycleType(D_8005BFD8++, G_CYC_FILL);
         gDPSetFillColor(D_8005BFD8++, (GPACK_RGBA5551(D_80080130, D_80080132, D_80080134, 1) << 16) |
                                           GPACK_RGBA5551(D_80080130, D_80080132, D_80080134, 1));
-        gDPFillRectangle(D_8005BFD8++, 0, s3, D_8005BFC8 - 1, s3 + t3 - 1);
+        gDPFillRectangle(D_8005BFD8++, 0, maxY, gScreenWidth - 1, maxY + t3 - 1);
         gDPPipeSync(D_8005BFD8++);
         gDPSetCycleType(D_8005BFD8++, G_CYC_COPY);
     }

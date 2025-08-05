@@ -327,3 +327,6 @@ math_rotate = 0x8001305C;
 math_translate = 0x800136CC;
 math_mtxf_mul = 0x800149F0;
 math_mtxf2mtx = 0x80013A54;
+
+gScreenWidth = 0x8005BFC8;
+gScreenHeight = 0x8005BFCA;

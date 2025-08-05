@@ -36,8 +36,8 @@ extern Gfx *D_8005BFE0;
 extern UnkDispStruct *D_8005BFE4;
 extern u8 *gFramebuffers[];
 extern u16 D_8005BFCE;
-extern u16 D_8005BFC8;
-extern u16 D_8005BFCA;
+extern u16 gScreenWidth;
+extern u16 gScreenHeight;
 extern u8 D_80080129;
 extern s32 D_80049AE8;
 extern s16 D_80080110;
@@ -117,7 +117,7 @@ void func_80002978(void) {
         gDPSetDepthImage(D_8005BFD8++, VIRTUAL_TO_PHYSICAL(D_80080120));
         gDPSetColorImage(D_8005BFD8++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, VIRTUAL_TO_PHYSICAL(D_80080120));
         gDPSetFillColor(D_8005BFD8++, GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0));
-        gDPFillRectangle(D_8005BFD8++, 0, 0, D_8005BFC8 - 1, D_8005BFCA - 1);
+        gDPFillRectangle(D_8005BFD8++, 0, 0, gScreenWidth - 1, gScreenHeight - 1);
         D_800801E2 = 0;
     } else {
         D_800801E2 = 1;
@@ -129,12 +129,12 @@ void func_80002978(void) {
         if (D_80049AE8 > 0) {
             gDPSetFillColor(D_8005BFD8++, ((u16) GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1) << 16) |
                                               GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1));
-            gDPFillRectangle(D_8005BFD8++, 0, 0, D_8005BFC8 - 1, D_80049AE8 + 20);
+            gDPFillRectangle(D_8005BFD8++, 0, 0, gScreenWidth - 1, D_80049AE8 + 20);
         }
     } else {
         gDPSetFillColor(D_8005BFD8++, ((u16) GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1) << 16) |
                                           GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1));
-        gDPFillRectangle(D_8005BFD8++, 0, 0, D_8005BFC8 - 1, D_8005BFCA - 1);
+        gDPFillRectangle(D_8005BFD8++, 0, 0, gScreenWidth - 1, gScreenHeight - 1);
     }
 
     gDPPipeSync(D_8005BFD8++);
@@ -262,11 +262,11 @@ void func_800031FC(u16 arg0) {
 
     sp28 = D_8004937C;
     sp20 = D_80049384;
-    D_8005BFC8 = 320;
-    D_8005BFCA = 240;
+    gScreenWidth = 320;
+    gScreenHeight = 240;
 
     gFramebuffers[0] = 0x803B4FC0;
-    tmp = D_8005BFC8 * D_8005BFCA * 2;
+    tmp = gScreenWidth * gScreenHeight * 2;
     gFramebuffers[1] = 0x803B4FC0 + tmp;
 
     D_80080124 = D_80080120 = ((u32) &D_8013F0B0 + 0x40) & ~0x3F;
