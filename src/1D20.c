@@ -1,13 +1,6 @@
 #include "common.h"
 #include "PR/gt.h"
 
-#define PUSH_UNK_DISP(pkt, a, b, c, d) \
-    pkt->unk_00 = a;                   \
-    pkt->unk_04 = b;                   \
-    pkt->unk_08 = c;                   \
-    pkt->unk_0C = d;                   \
-    pkt++;
-
 #define gSPPerspNorm(pkt, dl)                        \
     {                                                \
         Gfx *_g = (Gfx *) (pkt);                     \

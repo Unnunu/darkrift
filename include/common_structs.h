@@ -54,7 +54,8 @@ typedef struct UnkDispStructPart2 {
     /* 0x0B */ u8 unk_0B;
     /* 0x0C */ Gfx *unk_0C;
     /* 0x10 */ char unk_10[8];
-} UnkDispStructPart2; // size = 0x18
+    /* 0x18 */ Mtx unk_18;
+} UnkDispStructPart2; // size = 0x58
 
 typedef struct UnkDispStruct {
     /* 0x00 */ u32 unk_00;
@@ -172,22 +173,104 @@ typedef struct UnkMu {
     /* 0xD8 */ Matrix4f unk_D8;
 } UnkMu; // size >= 0x118
 
-typedef struct UnkCameraSub {
-    /* 0x00 */ char unk_00[0x18];
-    /* 0x18 */ Mtx unk_18;
-} UnkCameraSub; // size = 0x58
-
-typedef struct UnkCameraSub3 {
+typedef struct AssetGmdSub1 {
     /* 0x00 */ s32 unk_00;
-    /* 0x04 */ UnkCameraSub *unk_04;
-} UnkCameraSub3;
+    /* 0x04 */ s16 unk_04;
+    /* 0x06 */ s16 unk_06;
+    /* 0x08 */ s16 unk_08;
+    /* 0x0A */ s16 unk_0A;
+    /* 0x0C */ s32 unk_0C;
+} AssetGmdSub1; // size = 0x10
 
-typedef struct UnkCameraSub2 {
-    /* 0x000 */ char unk_00[0x154];
-    /* 0x154 */ UnkCameraSub3 *unk_154[1];
+typedef struct AssetGmdSub2 {
+    /* 0x00 */ s32 unk_00;
+    /* 0x04 */ s32 unk_04;
+    /* 0x08 */ s32 unk_08;
+    /* 0x0C */ s32 unk_0C;
+    /* 0x10 */ char unk_10[0x8];
+    /* 0x18 */ s32 unk_18;
+    /* 0x1C */ AssetGmdSub1 *unk_1C;
+} AssetGmdSub2; // size = 0x20
+
+typedef struct AssetUnkHeader {
+    /* 0x00 */ u8 signature[4]; // '2KMD' or '@KMD' ??
+    /* 0x04 */ s32 numEntries;
+    /* 0x08 */ s32 offsets[1];
+} AssetUnkHeader;
+
+typedef struct AssetGmd {
+    /* 0x00 */ u32 numEntries;
+    /* 0x04 */ AssetGmdSub2 *unk_04;
+    /* 0x08 */ s32 unk_08;
+    /* 0x0C */ char unk_0C[0xA0];
+    /* 0xAC */ s32 unk_AC;
+    /* 0xB0 */ s32 unk_B0;
+    /* 0xB4 */ s32 unk_B4;
+    /* 0xB8 */ AssetUnkHeader *unk_B8;
+    /* 0xBC */ char unk_BC[4];
+    /* 0xC0 */ s32 unk_C0;
+    /* 0xC4 */ s32 unk_C4;
+    /* 0xC8 */ u8 unk_C8;
+    /* 0xCC */ AssetGmdSub1 unk_CC[0];
+} AssetGmd; // size = 0xCC
+
+typedef struct AssetUnkHeader2 {
+    /* 0x00 */ s32 unk_00;
+    /* 0x04 */ s32 unk_04;
+    /* 0x08 */ s32 unk_08;
+    /* 0x0C */ s32 unk_0C;
+    /* 0x10 */ s32 unk_10;
+} AssetUnkHeader2;
+
+// probably same as UnkCameraSub6
+typedef struct UnkSamSub {
+    /* 0x00 */ s8 unk_00;
+    /* 0x04 */ s32 unk_04[1];
+    /* 0x08 */ s32 unk_08;
+    /* 0x0C */ s32 unk_0C;
+    /* 0x10 */ s32 unk_10;
+    /* 0x14 */ s32 unk_14;
+    /* 0x18 */ s32 unk_18;
+    /* 0x1C */ s32 unk_1C;
+    /* 0x20 */ s32 unk_20;
+    /* 0x24 */ u32 unk_24;
+    /* 0x28 */ UnkDispStruct *unk_28[1];
+    /* 0x2C */ s32 unk_2C;
+    /* 0x30 */ s32 unk_30;
+    /* 0x34 */ s32 unk_34;
+    /* 0x38 */ s32 unk_38[1];
+    /* 0x3C */ s32 unk_3C;
+    /* 0x40 */ s32 unk_40;
+    /* 0x44 */ s32 unk_44;
+    /* 0x48 */ s32 unk_48;
+    /* 0x4C */ s32 unk_4C;
+    /* 0x50 */ s32 unk_50;
+    /* 0x54 */ s32 unk_54;
+} UnkSamSub; // size = 0x58
+
+typedef struct UnkSam {
+    /* 0x000 */ s32 unk_00;
+    /* 0x004 */ AssetGmd *unk_04;
+    /* 0x008 */ char unk_08[0x128 - 8];
+    /* 0x128 */ s32 unk_128;
+    /* 0x12C */ char unk_12C[0x148 - 0x12C];
+    /* 0x148 */ s32 unk_148;
+    /* 0x14C */ s32 unk_14C;
+    /* 0x150 */ s32 unk_150;
+    /* 0x154 */ UnkDispStruct *unk_154[1]; // size unknown
     /* 0x158 */ char unk_158[0x238 - 0x158];
-    /* 0x238 */ s32 unk_238[1];
-} UnkCameraSub2;
+    /* 0x238 */ s32 unk_238[1]; // size unknown
+    /* 0x23C */ char unk_23C[0x318 - 0x23C];
+    /* 0x318 */ s8 unk_318;
+    /* 0x319 */ char unk_319[3];
+    /* 0x31C */ UnkSamSub *unk_31C;
+    /* 0x320 */ u8 unk_320;
+    /* 0x321 */ u8 unk_321;
+    /* 0x322 */ u8 unk_322;
+    /* 0x323 */ u8 unk_323;
+    /* 0x324 */ char unk_324[0x3CC - 0x324];
+    /* 0x3CC */ s32 unk_3CC;
+} UnkSam; // size = 0x3D0
 
 typedef struct UnkCameraSub5 {
     /* 0x00 */ s32 unk_00;
@@ -198,13 +281,13 @@ typedef struct UnkCameraSub5 {
 typedef struct UnkCameraSub4 {
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ UnkCameraSub5 *unk_04;
-    /* 0x08 */ UnkCameraSub *unk_08[5];
+    /* 0x08 */ UnkDispStructPart2 *unk_08[5];
     /* 0x1C */ s32 unk_1C;
 } UnkCameraSub4; // size = 0x20
 
 typedef struct UnkCameraSub6 {
     /* 0x00 */ char unk_00[0x28];
-    /* 0x28 */ UnkCameraSub3 *unk_28;
+    /* 0x28 */ UnkDispStruct *unk_28;
     /* 0x2C */ char unk_2C[0xC];
     /* 0x38 */ s32 unk_38;
     /* 0x3C */ char unk_3C[0x58 - 0x3C];
@@ -253,19 +336,19 @@ typedef struct Model {
     /* 0x0A1E */ s16 unk_A1E;
     /* 0x0A20 */ s16 unk_A20;
     /* 0x0A22 */ char unk_A22[2];
-    /* 0x0A24 */ UnkCameraSub2 *unk_A24; // not sure about type
-    /* 0x0A28 */ UnkCameraSub2 *unk_A28;
+    /* 0x0A24 */ UnkSam *unk_A24; // not sure about type
+    /* 0x0A28 */ UnkSam *unk_A28;
     /* 0x0A2C */ s32 unk_A2C;
     /* 0x0A30 */ s32 unk_A30;
     /* 0x0A34 */ s32 unk_A34;
-    /* 0x0A38 */ UnkCameraSub *unk_A38;
+    /* 0x0A38 */ UnkDispStructPart2 *unk_A38;
     /* 0x0A3C */ char unk_A3C[0xC];
     /* 0x0A48 */ s32 *unk_A48;
     /* 0x0A4C */ s32 unk_A4C;
     /* 0x0A50 */ UnkCameraSub6 unk_A50;
     /* 0x0AA8 */ StructAA8 *unk_AA8;
     /* 0x0AAC */ char unk_AAC[4];
-    /* 0x0AB0 */ UnkCameraSub unk_AB0[60];
+    /* 0x0AB0 */ UnkDispStructPart2 unk_AB0[60];
     /* 0x1F50 */ char unk_1F50[0x1E];
     /* 0x1F6E */ s8 unk_1F6E[34];
 } Model; // size = 0x1F90
@@ -373,75 +456,5 @@ typedef struct Texture {
     /* 0x24 */ s32 unk_24;
     /* 0x28 */ struct Texture *next;
 } Texture; // size = 0x2C
-
-typedef struct AssetGmdSub1 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s16 unk_04;
-    /* 0x06 */ s16 unk_06;
-    /* 0x08 */ s16 unk_08;
-    /* 0x0A */ s16 unk_0A;
-    /* 0x0C */ s32 unk_0C;
-} AssetGmdSub1; // size = 0x10
-
-typedef struct AssetGmdSub2 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ char unk_10[0x8];
-    /* 0x18 */ s32 unk_18;
-    /* 0x1C */ AssetGmdSub1 *unk_1C;
-} AssetGmdSub2; // size = 0x20
-
-typedef struct AssetUnkHeader {
-    /* 0x00 */ u8 signature[4]; // '2KMD' or '@KMD' ??
-    /* 0x04 */ s32 numEntries;
-    /* 0x08 */ s32 offsets[1];
-} AssetUnkHeader;
-
-typedef struct AssetGmd {
-    /* 0x00 */ u32 numEntries;
-    /* 0x04 */ AssetGmdSub2 *unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ char unk_0C[0xA0];
-    /* 0xAC */ s32 unk_AC;
-    /* 0xB0 */ s32 unk_B0;
-    /* 0xB4 */ s32 unk_B4;
-    /* 0xB8 */ AssetUnkHeader *unk_B8;
-    /* 0xBC */ char unk_BC[4];
-    /* 0xC0 */ s32 unk_C0;
-    /* 0xC4 */ s32 unk_C4;
-    /* 0xC8 */ u8 unk_C8;
-    /* 0xCC */ AssetGmdSub1 unk_CC[0];
-} AssetGmd; // size = 0xCC
-
-typedef struct AssetUnkHeader2 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ s32 unk_10;
-} AssetUnkHeader2;
-
-typedef struct UnkSam {
-    /* 0x000 */ s32 unk_00;
-    /* 0x004 */ AssetGmd *unk_04;
-    /* 0x008 */ char unk_08[0x128 - 8];
-    /* 0x128 */ s32 unk_128;
-    /* 0x12C */ char unk_12C[0x148 - 0x12C];
-    /* 0x148 */ s32 unk_148;
-    /* 0x14C */ s32 unk_14C;
-    /* 0x150 */ s32 unk_150;
-    /* 0x154 */ char unk_154[0x318 - 0x154];
-    /* 0x318 */ s8 unk_318;
-    /* 0x319 */ char unk_319[3];
-    /* 0x31C */ s32 unk_31C;
-    /* 0x320 */ u8 unk_320;
-    /* 0x321 */ u8 unk_321;
-    /* 0x322 */ u8 unk_322;
-    /* 0x323 */ u8 unk_323;
-    /* 0x324 */ char unk_324[0x3CC - 0x324];
-    /* 0x3CC */ s32 unk_3CC;
-} UnkSam; // szie = 0x3D0
 
 #endif

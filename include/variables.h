@@ -19,5 +19,6 @@ extern s32 D_80081428;
 extern s32 gFrameCounter;
 extern Matrix4f D_800813E0;
 extern OSMesgQueue gSchedSPTaskQueue;
+extern UnkDispStruct *D_8005BFE4;
 
 #endif
