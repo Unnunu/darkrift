@@ -8,7 +8,7 @@
     pkt->unk_0C = d;                   \
     pkt++;
 
-#define gUnkRdpHalfCommand(pkt, dl)                  \
+#define gSPPerspNorm(pkt, dl)                        \
     {                                                \
         Gfx *_g = (Gfx *) (pkt);                     \
         _g->words.w0 = _SHIFTL(G_RDPHALF_1, 24, 8);  \
@@ -117,9 +117,9 @@ void func_800031FC(u16);
 void func_80006CEC(void);
 void func_80003468(u16);
 void func_80024C98(void);
-void func_8002B0AC(void);
+void obj_update_all(void);
 void func_80002978(void);
-void func_800153C4(void);
+void bg_draw(void);
 void func_8001B26C(void);
 void func_800212C8(void);
 void func_80002744(Object *obj);
@@ -174,17 +174,17 @@ void func_8000132C(void) {
     }
 
     PUSH_UNK_DISP(D_8005BFE4, osVirtualToPhysical(&D_8004CC20), &D_8004CCC8, NULL, NULL);
-    func_8002B0AC();
+    obj_update_all();
     gSPDisplayList(D_8005BFD8++, D_8004CA68);
     func_80002978();
-    func_800153C4();
+    bg_draw();
     if (!(D_8008012C & 1)) {
         gSPDisplayList(D_8005BFD8++, D_80080100->unk_4080);
     }
     gSPDisplayList(D_8005BFD8++, D_8004CB00);
     gSPMatrix(D_8005BFD8++, &D_80080100->mtxViewProj, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gUnkRdpHalfCommand(D_8005BFD8++, D_80080100->perspNorm);
-    D_8004CC20.unk_00 = D_80080100->perspNorm;
+    gSPPerspNorm(D_8005BFD8++, D_80080100->perspNorm);
+    D_8004CC20.perspNorm = D_80080100->perspNorm;
     gDPSetFogColor(D_8005BFD8++, D_80080130, D_80080132, D_80080134, 255);
     gSPFogPosition(D_8005BFD8++, D_80080136, D_80080138);
     if (D_80049CF0 != 0) {

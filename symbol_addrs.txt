@@ -330,3 +330,6 @@ math_mtxf2mtx = 0x80013A54;
 
 gScreenWidth = 0x8005BFC8;
 gScreenHeight = 0x8005BFCA;
+
+obj_update_all = 0x8002B0AC;
+bg_draw = 0x800153C4;

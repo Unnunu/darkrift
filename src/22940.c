@@ -63,7 +63,7 @@ const char D_80054E1C[] = "sonowin";
 const char D_80054E24[] = "zenmwin";
 
 void func_80021D40(Object *obj) {
-    if (++obj->unk_084 >= obj->camera->unk_A08) {
+    if (++obj->unk_084 >= obj->model->unk_A08) {
         obj->currentTask->flags |= 0x80;
         obj->flags |= 0x10;
     }

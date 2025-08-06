@@ -186,7 +186,7 @@ void texture_render(Texture *tex, s32 texYOffset, s32 posY, u32 height, u32 scro
     }
 }
 
-void func_800153C4(void) {
+void bg_draw(void) {
     Texture *tex;
     s32 t0;
     s32 maxY;
