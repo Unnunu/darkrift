@@ -210,9 +210,19 @@ typedef struct UnkCameraSub6 {
     /* 0x3C */ char unk_3C[0x58 - 0x3C];
 } UnkCameraSub6; // size = 0x58
 
+typedef struct StructAA8 {
+    /* 0x00 */ s32 unk_00;
+    /* 0x04 */ s32 x;
+    /* 0x08 */ s32 y;
+    /* 0x0C */ s32 z;
+} StructAA8; // size = 0x10
+
 typedef struct Model {
     /* 0x0000 */ s16 unk_000;
-    /* 0x0002 */ char unk_002[10];
+    /* 0x0002 */ s16 unk_002;
+    /* 0x0004 */ s16 unk_004;
+    /* 0x0006 */ s16 unk_006;
+    /* 0x0008 */ char unk_008[4];
     /* 0x000C */ s16 unk_00C;
     /* 0x000E */ char unk_00E[2];
     /* 0x0010 */ UnkMu unk_010;
@@ -231,7 +241,7 @@ typedef struct Model {
     /* 0x09D2 */ char unk_9D2[2];
     /* 0x09D8 */ Vec4i unk_9D4;
     /* 0x09E4 */ Vec4i unk_9E4;
-    /* 0x09F4 */ s8 unk_9F4;
+    /* 0x09F4 */ u8 unk_9F4;
     /* 0x09F8 */ Vec4i unk_9F8;
     /* 0x0A08 */ s32 unk_A08;
     /* 0x0A0C */ s16 unk_A0C;
@@ -242,7 +252,8 @@ typedef struct Model {
     /* 0x0A1C */ s16 unk_A1C;
     /* 0x0A1E */ s16 unk_A1E;
     /* 0x0A20 */ s16 unk_A20;
-    /* 0x0A22 */ char unk_A22[6];
+    /* 0x0A22 */ char unk_A22[2];
+    /* 0x0A24 */ UnkCameraSub2 *unk_A24; // not sure about type
     /* 0x0A28 */ UnkCameraSub2 *unk_A28;
     /* 0x0A2C */ s32 unk_A2C;
     /* 0x0A30 */ s32 unk_A30;
@@ -252,7 +263,7 @@ typedef struct Model {
     /* 0x0A48 */ s32 *unk_A48;
     /* 0x0A4C */ s32 unk_A4C;
     /* 0x0A50 */ UnkCameraSub6 unk_A50;
-    /* 0x0AA8 */ s32 *unk_AA8;
+    /* 0x0AA8 */ StructAA8 *unk_AA8;
     /* 0x0AAC */ char unk_AAC[4];
     /* 0x0AB0 */ UnkCameraSub unk_AB0[60];
     /* 0x1F50 */ char unk_1F50[0x1E];
@@ -276,8 +287,7 @@ typedef struct Object {
     /* 0x010 */ Vec4i unk_010;
     /* 0x020 */ Vec4i pos;
     /* 0x030 */ char unk_030[0x50 - 0x30];
-    /* 0x050 */ Vec3s rotation;
-    /* 0x056 */ char unk_056[2];
+    /* 0x050 */ Vec4s rotation;
     /* 0x058 */ s32 unk_058;
     /* 0x05C */ s32 unk_05C;
     /* 0x060 */ s32 unk_060;

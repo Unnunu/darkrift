@@ -4,6 +4,10 @@
 
 extern s32 *D_8013C4E8;
 extern s32 D_8013C540;
+extern char *D_80053010;
+extern Vec4i D_8004934C;
+extern UnkCameraSub3 **D_8013C4E0;
+Object *func_8002BC84(Vec4i *, s32, char **, s32);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034090.s")
 
@@ -70,13 +74,182 @@ void func_8003561C(Object *, s32);
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80035DF8.s")
 void func_80035DF8(UnkCameraSub2 *, s32);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_80035F5C.s")
+void func_80035F5C(Object *obj) {
+    Model *model;
+    Object *parent;
+    s16 j;
+    s16 i;
+    s16 s6;
+    Matrix4f sp98;
+    f32 v1, a0;
+    UnkCameraSub *sub;
+    UnkMu *trans;
+    s32 unused[4];
+    UnkCameraSub3 **sub3;
+    Matrix4f *newvar;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_80036194.s")
+    model = obj->model;
+    trans = model->unk_128;
+    parent = (Object *) obj->unk_090[1];
+    newvar = &obj->unk_0D0.unk_98;
+    sub3 = model->unk_A28->unk_154;
 
+    if (parent->flags & 0x4) {
+        return;
+    }
+
+    D_8013C4E0 = model->unk_A24->unk_154;
+    func_80012AA8(&sp98);
+    s6 = D_8005BFCE * 30;
+
+    for (i = 0; i < model->unk_000; i++) {
+        func_80014718(&sp98, &trans[i].unk_D8, newvar);
+        math_mtxf_mul(&sp98, &gCameraProjectionMatrix, &D_800813E0);
+
+        if (D_800813E0.w.w != 0.0f) {
+            v1 = D_800813E0.w.x / D_800813E0.w.w;
+            a0 = D_800813E0.w.y / D_800813E0.w.w;
+        } else {
+            v1 = a0 = 2.0f;
+        }
+
+        if (v1 > 1.0 || v1 < -1.0 || a0 > 1.0 || a0 < -1.0) {
+            continue;
+        }
+
+        j = i + s6;
+
+        sub = j + model->unk_AB0;
+        if (&D_800813E0 && &D_800813E0) {} // required to match
+
+        math_mtxf2mtx(&sub->unk_18, &D_800813E0);
+        sub3[i]->unk_04 = sub;
+        func_80035DF8(model->unk_A28, i);
+    }
+}
+
+void func_80036194(Object *arg0, char *arg1, s32 arg2) {
+    Object *v0;
+
+    str_copy(D_80053010, arg1);
+    v0 = func_8002BC84(&D_8004934C, 0, &D_80053010, arg2);
+
+    v0->unk_090[0] = v0->model->unk_128;
+    v0->unk_090[1] = arg0;
+    v0->model->unk_128 = arg0->model->unk_128;
+    v0->fn_update = func_80035F5C;
+
+    v0->unk_0D0.unk_98.y.x = 0.0f;
+    v0->unk_0D0.unk_98.x.y = 0.0f;
+    v0->unk_0D0.unk_98.y.y = 0.0f;
+    v0->unk_0D0.unk_98.z.y = 0.0f;
+    v0->unk_0D0.unk_98.y.z = -1.5f;
+}
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80036228.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_8003635C.s")
+void func_8003635C(Object *obj) {
+    Model *model = obj->model;
+    s32 count;
+    s32 i;
+    s16 v1;
+    u8 *ptr;
+    UnkMu *trans;
+    Vec4i sp88;
+    s32 unused[5];
+    Vec4i *vec1;
+    Vec4s *vec3;
+    StructAA8 *vec2;
+    Vec4i *vec4;
+
+    vec4 = model->unk_224;
+    ptr = model->unk_5E4;
+    vec2 = model->unk_AA8;
+    vec1 = model->unk_404;
+    vec3 = model->unk_134;
+    count = model->unk_000;
+    trans = model->unk_128;
+
+    for (i = 0; i < count; i++) {
+        if (ptr[i]) {
+            math_rotate(&trans[i].unk_98, &vec3[i]);
+            func_800139A0(&trans[i].unk_98, &vec4[i]);
+
+            trans[i].unk_98.w.x = vec2[i].x + vec1[i].x;
+            trans[i].unk_98.w.y = vec2[i].y + vec1[i].y;
+            trans[i].unk_98.w.z = vec2[i].z + vec1[i].z;
+            ptr[i] = FALSE;
+        }
+    }
+
+    if (model->unk_9F4 || model->unk_132 != 0) {
+        math_rotate(&model->unk_010.unk_98, &model->unk_9CC);
+        func_800139A0(&model->unk_010.unk_98, &model->unk_9F8);
+        model->unk_9F4 = FALSE;
+    }
+
+    if (obj->flags & 0x400) {
+        model->unk_010.unk_98.w.y = model->unk_9D4.y;
+        sp88.y = 0;
+        if (obj->flags & 0x20000) {
+            sp88.x = model->unk_9D4.x - model->unk_9E4.x - model->unk_A1C;
+            v1 = sp88.x - model->unk_002;
+            model->unk_002 = sp88.x;
+            sp88.x = v1;
+            model->unk_010.unk_98.w.x = model->unk_9E4.x;
+        } else {
+            sp88.x = 0;
+        }
+        sp88.z = model->unk_9D4.z - model->unk_9E4.z;
+
+        if (sp88.z != 0 || sp88.x != 0) {
+            v1 = 0;
+            if (obj->flags & 0x100000) {
+                obj->flags &= ~0x100000;
+            } else {
+                v1 = sp88.z - model->unk_006;
+            }
+            model->unk_006 = sp88.z;
+            sp88.z = v1;
+
+            model->unk_010.unk_98.w.z = model->unk_9E4.z;
+            func_8001370C(&sp88, &obj->rotation);
+            if (!(obj->flags & 0x8000)) {
+                obj->pos.x += sp88.x;
+                obj->pos.z += sp88.z;
+            }
+        }
+    } else {
+        model->unk_010.unk_98.w.x = model->unk_9D4.x;
+        model->unk_010.unk_98.w.y = model->unk_9D4.y;
+        model->unk_010.unk_98.w.z = model->unk_9D4.z;
+
+        if (model->unk_00C != 0) {
+            sp88.x = 0;
+            sp88.z = model->unk_00C - model->unk_006;
+            model->unk_006 = model->unk_00C;
+            func_8001370C(&sp88, &obj->rotation); // @bug sp88.y undefined
+            obj->pos.x += sp88.x;
+            obj->pos.z += sp88.z;
+        }
+
+        if (obj->flags & 0x8000000) {
+            if (obj->flags & 0x800000) {
+                obj->rotation.y = 0x400 - ((0xC00 - obj->rotation.y) & 0xFFF);
+                obj->flags &= ~0x800000;
+            }
+
+            obj->flags &= ~0x8000000;
+
+            sp88.y = 0;
+            sp88.x = model->unk_9D4.x;
+            sp88.z = model->unk_9D4.z;
+
+            func_8001370C(&sp88, &obj->rotation);
+            obj->pos.x -= sp88.x;
+            obj->pos.z -= sp88.z;
+        }
+    }
+}
 
 void func_80036760(u8 *arg0, s16 *arg1, Object *obj) {
     s32 v0;
@@ -89,15 +262,15 @@ void func_80036760(u8 *arg0, s16 *arg1, Object *obj) {
         switch (arg0[3] & 0xF) {
             case 1:
                 model->unk_9CC.x = (*arg1 + model->unk_9CC.x) >> 1;
-                model->unk_9F4 = 1;
+                model->unk_9F4 = TRUE;
                 break;
             case 2:
                 model->unk_9CC.y = (*arg1 + model->unk_9CC.y) >> 1;
-                model->unk_9F4 = 1;
+                model->unk_9F4 = TRUE;
                 break;
             case 3:
                 model->unk_9CC.z = (*arg1 + model->unk_9CC.z) >> 1;
-                model->unk_9F4 = 1;
+                model->unk_9F4 = TRUE;
                 break;
             case 4:
                 model->unk_9D4.x = ((*arg1 + model->unk_9D4.x - model->unk_9E4.x) >> 1) + model->unk_9E4.x;
@@ -110,15 +283,15 @@ void func_80036760(u8 *arg0, s16 *arg1, Object *obj) {
                 break;
             case 7:
                 model->unk_9F8.x = (*arg1 + model->unk_9F8.x) >> 1;
-                model->unk_9F4 = 1;
+                model->unk_9F4 = TRUE;
                 break;
             case 8:
                 model->unk_9F8.y = (*arg1 + model->unk_9F8.y) >> 1;
-                model->unk_9F4 = 1;
+                model->unk_9F4 = TRUE;
                 break;
             case 9:
                 model->unk_9F8.z = (*arg1 + model->unk_9F8.z) >> 1;
-                model->unk_9F4 = 1;
+                model->unk_9F4 = TRUE;
                 break;
         }
     } else if (v0 == 0xFE) {
@@ -187,15 +360,15 @@ void func_80036B68(u8 *arg0, s16 *arg1, Object *obj) {
         switch (arg0[3] & 0xF) {
             case 1:
                 model->unk_9CC.x = *arg1;
-                model->unk_9F4 = 1;
+                model->unk_9F4 = TRUE;
                 break;
             case 2:
                 model->unk_9CC.y = *arg1;
-                model->unk_9F4 = 1;
+                model->unk_9F4 = TRUE;
                 break;
             case 3:
                 model->unk_9CC.z = *arg1;
-                model->unk_9F4 = 1;
+                model->unk_9F4 = TRUE;
                 break;
             case 4:
                 model->unk_9D4.x = *arg1 + model->unk_9E4.x;
@@ -208,15 +381,15 @@ void func_80036B68(u8 *arg0, s16 *arg1, Object *obj) {
                 break;
             case 7:
                 model->unk_9F8.x = *arg1;
-                model->unk_9F4 = 1;
+                model->unk_9F4 = TRUE;
                 break;
             case 8:
                 model->unk_9F8.y = *arg1;
-                model->unk_9F4 = 1;
+                model->unk_9F4 = TRUE;
                 break;
             case 9:
                 model->unk_9F8.z = *arg1;
-                model->unk_9F4 = 1;
+                model->unk_9F4 = TRUE;
                 break;
         }
     } else if (v0 == 0xFE) {
@@ -291,15 +464,15 @@ void func_80036E54(u8 *arg0, u8 *arg1, Object *obj) {
         switch ((arg0[3] & 0xF0) >> 4) {
             case 1:
                 model->unk_9CC.x += a3;
-                model->unk_9F4 = 1;
+                model->unk_9F4 = TRUE;
                 break;
             case 2:
                 model->unk_9CC.y += a3;
-                model->unk_9F4 = 1;
+                model->unk_9F4 = TRUE;
                 break;
             case 3:
                 model->unk_9CC.z += a3;
-                model->unk_9F4 = 1;
+                model->unk_9F4 = TRUE;
                 break;
             case 4:
                 model->unk_9D4.x += a3;
@@ -312,15 +485,15 @@ void func_80036E54(u8 *arg0, u8 *arg1, Object *obj) {
                 break;
             case 7:
                 model->unk_9F8.x += a3;
-                model->unk_9F4 = 1;
+                model->unk_9F4 = TRUE;
                 break;
             case 8:
                 model->unk_9F8.y += a3;
-                model->unk_9F4 = 1;
+                model->unk_9F4 = TRUE;
                 break;
             case 9:
                 model->unk_9F8.z += a3;
-                model->unk_9F4 = 1;
+                model->unk_9F4 = TRUE;
                 break;
         }
     } else if (v0 == 0xFE) {

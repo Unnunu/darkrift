@@ -46,5 +46,7 @@ s16 func_80012518(s32 arg0, s32 arg1);
 void func_80014974(UnkMu *);
 void sched_wait_vretrace(u8);
 void func_800010D4(s32 arg0, s32 arg1, s32 arg2);
+void func_800139A0(Matrix4f *, Vec4i *);
+void func_80014718(Matrix4f *arg0, Matrix4f *arg1, Matrix4f *arg2);
 
 #endif
