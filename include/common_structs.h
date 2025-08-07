@@ -101,7 +101,7 @@ typedef struct UnkDelta {
     /* 0x1F */ u8 unk_1F;
 } UnkDelta; // size = 0x20
 
-typedef struct UnkAlpha {
+typedef struct PlayerInput {
     /* 0x00 */ u16 unk_00;
     /* 0x02 */ u16 unk_02;
     /* 0x04 */ u16 unk_04;
@@ -112,7 +112,7 @@ typedef struct UnkAlpha {
     /* 0x0B */ u8 enabled;
     /* 0x0C */ u8 unk_0C;
     /* 0x0D */ u8 unk_0D;
-} UnkAlpha;
+} PlayerInput;
 
 typedef struct UnkGamma {
     /* 0x00 */ s32 unk_00;
@@ -456,5 +456,28 @@ typedef struct Texture {
     /* 0x24 */ s32 unk_24;
     /* 0x28 */ struct Texture *next;
 } Texture; // size = 0x2C
+
+typedef struct PlayerSub1 {
+    /* 0x00 */ char unk_00[2];
+    /* 0x02 */ s16 unk_02;
+} PlayerSub1;
+
+typedef struct Player {
+    /* 0x0000 */ Object *unk_00; // type?
+    /* 0x0004 */ char unk_04[0x90 - 4];
+    /* 0x0090 */ PlayerSub1 *unk_90;
+    /* 0x0094 */ char unk_94[0x5F50 - 0x94];
+} Player; // size = 0x5F50
+
+typedef struct Player12 {
+    /* 0x00 */ s16 unk_00;
+    /* 0x02 */ u8 unk_02;
+    /* 0x03 */ char unk_03;
+    /* 0x04 */ u16 unk_04;
+    /* 0x06 */ u8 unk_06;
+    /* 0x07 */ char unk_07[7];
+    /* 0x0E */ u8 unk_0E;
+    /* 0x0F */ char unk_0F[3];
+} Player12; // size = 0x12
 
 #endif

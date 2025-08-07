@@ -96,11 +96,6 @@ extern DisplayData *D_80080100;
 extern s16 D_80080116;
 extern s16 D_80080118;
 extern s32 D_8008012C;
-extern s16 D_80080130;
-extern s16 D_80080132;
-extern s16 D_80080134;
-extern s16 D_80080136;
-extern s16 D_80080138;
 extern DISPCB D_80080140[20];
 extern s32 D_80080190[20];
 

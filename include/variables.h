@@ -1,7 +1,7 @@
 #ifndef VARIABLES_H
 #define VARIABLES_H
 
-extern UnkAlpha gPlayerInput[2];
+extern PlayerInput gPlayerInput[2];
 extern UnkGamma D_8005AEB8[256];
 extern ChunkHeader *sFreeChunksList;
 extern Asset gAssets[256];
@@ -20,5 +20,20 @@ extern s32 gFrameCounter;
 extern Matrix4f D_800813E0;
 extern OSMesgQueue gSchedSPTaskQueue;
 extern UnkDispStruct *D_8005BFE4;
+extern Player D_800AA488[2];
+extern UnkDelta D_8004BB48[];
+extern s16 D_80080110;
+extern s16 D_80080112;
+extern s16 D_80080114;
+extern s16 D_80080130;
+extern s16 D_80080132;
+extern s16 D_80080134;
+extern s16 D_80080136;
+extern s16 D_80080138;
+extern Player12 D_800B6328[2];
+extern u8 D_800801F1;
+extern u8 D_800B6350[2][11];
+extern u8 D_80049DF0;
+extern u8 D_80049DF4;
 
 #endif

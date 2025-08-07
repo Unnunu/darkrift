@@ -40,9 +40,6 @@ extern u16 gScreenWidth;
 extern u16 gScreenHeight;
 extern u8 D_80080129;
 extern s32 D_80049AE8;
-extern s16 D_80080110;
-extern s16 D_80080112;
-extern s16 D_80080114;
 extern s32 D_80080140[20];
 extern s32 D_80080190[20];
 extern s32 D_8013F0B0;
@@ -63,13 +60,7 @@ void func_80034508(void);
 void func_80024A38(s32);
 void func_800343EC(void);
 void func_80023200(void);
-extern UnkDelta D_8004BB48[];
 extern s32 D_8008012C;
-extern s16 D_80080130;
-extern s16 D_80080132;
-extern s16 D_80080134;
-extern u16 D_80080136;
-extern u16 D_80080138;
 extern void (*D_8013C228)(Asset *);
 extern s16 D_80080116;
 extern s16 D_80080118;
@@ -108,7 +99,6 @@ void func_800028E0(s32 arg0, s32 arg1) {
     }
 }
 
-#ifdef NON_MATCHING
 void func_80002978(void) {
     gDPPipeSync(D_8005BFD8++);
     gDPSetCycleType(D_8005BFD8++, G_CYC_FILL);
@@ -127,12 +117,12 @@ void func_80002978(void) {
 
     if (D_80080129) {
         if (D_80049AE8 > 0) {
-            gDPSetFillColor(D_8005BFD8++, ((u16) GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1) << 16) |
+            gDPSetFillColor(D_8005BFD8++, (GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1) << 16) |
                                               GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1));
             gDPFillRectangle(D_8005BFD8++, 0, 0, gScreenWidth - 1, D_80049AE8 + 20);
         }
     } else {
-        gDPSetFillColor(D_8005BFD8++, ((u16) GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1) << 16) |
+        gDPSetFillColor(D_8005BFD8++, (GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1) << 16) |
                                           GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1));
         gDPFillRectangle(D_8005BFD8++, 0, 0, gScreenWidth - 1, gScreenHeight - 1);
     }
@@ -140,9 +130,6 @@ void func_80002978(void) {
     gDPPipeSync(D_8005BFD8++);
     gDPSetCycleType(D_8005BFD8++, G_CYC_COPY);
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/sched/func_80002978.s")
-#endif
 
 void func_80002C54(void) {
     D_8004CBC8.t.ucode_boot = rspbootTextStart;

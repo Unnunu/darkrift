@@ -13,7 +13,6 @@ typedef struct UnkObjDef4 {
     /* 0x0C */ s32 unk_0C;
 } UnkObjDef4; // size = 0x10
 
-extern u8 D_800B6340;
 extern s32 D_8008012C;
 extern Object *D_80081460;
 extern s16 D_80049B30[];
@@ -30,6 +29,7 @@ extern s16 D_80080116;
 extern s16 D_8005BED2;
 extern Vec4i D_8004934C;
 extern s16 D_80080230;
+extern u16 D_8013C24C;
 
 Object *func_8002BFF0(Vec4i *, s16, void (*)(Object *), UnkSam *);
 void func_800199E0(Object *);
@@ -59,6 +59,7 @@ void func_800184A8(Object *);
 void func_80018554(Object *);
 void func_80018600(Object *);
 void func_80019A9C(Object *);
+void func_8001A4FC(Object *);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80006AE0.s")
 void func_80006AE0(void);
@@ -67,7 +68,15 @@ void func_80006AE0(void);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80006CEC.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80006E0C.s")
+void func_80006E0C(Object *obj) {
+    obj->unk_090[0]--;
+    if (obj->unk_090[0] < 0) {
+        obj->flags |= 0x10;
+        D_8005BFC0 |= 1;
+        obj->currentTask->flags |= 0x80;
+        osViBlack(0);
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80006E6C.s")
 
@@ -81,7 +90,7 @@ void func_800070C0(void) {
 }
 
 void func_800070F0(void) {
-    s32 sp2C = D_800B6340;
+    s32 sp2C = D_800B6328[1].unk_06;
     Texture *bg;
 
     func_80006FB4();
@@ -103,14 +112,21 @@ void func_800070F0(void) {
     func_800070C0();
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_800071F0.s")
+void func_800071F0(Object *obj) {
+    if (gPlayerInput[1].unk_02 & INP_CLEFT) {
+        obj->rotation.y -= 10;
+    } else if (gPlayerInput[1].unk_02 & INP_CRIGHT) {
+        obj->rotation.y += 10;
+    }
+    func_80037E28(obj);
+}
 
 const char D_80053F14[] = "tc";
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007248.s")
 
 void func_80007374(void) {
-    s32 sp2C = D_800B6340;
+    s32 sp2C = D_800B6328[1].unk_06;
     Texture *bg;
 
     func_80006FB4();
@@ -133,7 +149,7 @@ void func_80007374(void) {
 }
 
 void func_80007474(void) {
-    s32 sp2C = D_800B6340;
+    s32 sp2C = D_800B6328[1].unk_06;
     Texture *bg;
 
     func_80006FB4();
@@ -156,7 +172,7 @@ void func_80007474(void) {
 }
 
 void run_battle_mode(void) {
-    s32 sp2C = D_800B6340;
+    s32 sp2C = D_800B6328[1].unk_06;
     Texture *bg;
 
     func_80006FB4();
@@ -179,7 +195,7 @@ void run_battle_mode(void) {
 }
 
 void func_80007674(void) {
-    s32 sp2C = D_800B6340;
+    s32 sp2C = D_800B6328[1].unk_06;
     Texture *bg;
 
     func_80006FB4();
@@ -201,7 +217,7 @@ void func_80007674(void) {
 }
 
 void func_80007774(void) {
-    s32 sp2C = D_800B6340;
+    s32 sp2C = D_800B6328[1].unk_06;
 
     func_80006FB4();
     load_background("bg2", 0, 94, 0x2000, 0x10000, 0, sp2C);
@@ -221,7 +237,7 @@ void func_80007774(void) {
 }
 
 void func_80007868(void) {
-    s32 sp2C = D_800B6340;
+    s32 sp2C = D_800B6328[1].unk_06;
     Texture *bg;
 
     func_80006FB4();
@@ -244,7 +260,7 @@ void func_80007868(void) {
 }
 
 void func_80007968(void) {
-    s32 sp2C = D_800B6340;
+    s32 sp2C = D_800B6328[1].unk_06;
     Texture *bg;
 
     func_80006FB4();
@@ -267,7 +283,7 @@ void func_80007968(void) {
 }
 
 void func_80007A68(void) {
-    s32 sp2C = D_800B6340;
+    s32 sp2C = D_800B6328[1].unk_06;
     Texture *bg;
 
     func_80006FB4();
@@ -297,7 +313,7 @@ void func_80007A68(void) {
 void func_80007F4C(s32, s32, s32);
 
 void func_800081A8(void) {
-    s32 temp_s0 = D_800B6340;
+    s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/gore/goreint", 0x3000);
     func_80007F4C(1, 0x70, 0x3000);
@@ -315,7 +331,7 @@ void func_800081A8(void) {
 }
 
 void func_800082CC(void) {
-    s32 temp_s0 = D_800B6340;
+    s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/aaro/aaroint", 0x3000);
     func_80007F4C(1, 0x70, 0x3000);
@@ -333,7 +349,7 @@ void func_800082CC(void) {
 }
 
 void func_800083EC(void) {
-    s32 temp_s0 = D_800B6340;
+    s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/demi/demiint", 0x3000);
     func_80007F4C(1, 0x70, 0x3000);
@@ -351,7 +367,7 @@ void func_800083EC(void) {
 }
 
 void func_80008510(void) {
-    s32 temp_s0 = D_800B6340;
+    s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/demo/demoint", 0x3000);
     func_80007F4C(1, 0x70, 0x3000);
@@ -369,7 +385,7 @@ void func_80008510(void) {
 }
 
 void func_80008634(void) {
-    s32 temp_s0 = D_800B6340;
+    s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/eve/eveint", 0x3000);
     func_80007F4C(1, 0x70, 0x3000);
@@ -387,7 +403,7 @@ void func_80008634(void) {
 }
 
 void func_80008758(void) {
-    s32 temp_s0 = D_800B6340;
+    s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/morp/morpint", 0x3000);
     func_80007F4C(1, 0x70, 0x3000);
@@ -405,7 +421,7 @@ void func_80008758(void) {
 }
 
 void func_8000887C(void) {
-    s32 temp_s0 = D_800B6340;
+    s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/niik/niikint", 0x3000);
     func_80007F4C(1, 0x70, 0x3000);
@@ -423,7 +439,7 @@ void func_8000887C(void) {
 }
 
 void func_800089A0(void) {
-    s32 temp_s0 = D_800B6340;
+    s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/scar/scarint", 0x3000);
     func_80007F4C(1, 0x70, 0x3000);
@@ -441,7 +457,7 @@ void func_800089A0(void) {
 }
 
 void func_80008AC4(void) {
-    s32 temp_s0 = D_800B6340;
+    s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/sono/sonoint", 0x3000);
     func_80007F4C(1, 0x70, 0x3000);
@@ -459,7 +475,7 @@ void func_80008AC4(void) {
 }
 
 void func_80008BE8(void) {
-    s32 temp_s0 = D_800B6340;
+    s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/zenm/zenmint", 0x3000);
     func_80007F4C(1, 0x70, 0x3000);
@@ -476,9 +492,20 @@ void func_80008BE8(void) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80008D0C.s")
+void func_80008D0C(Object *obj) {
+    if (D_800AA488->unk_00->unk_084 + 2 == D_800AA488->unk_90->unk_02) {
+        D_8005BFC0 |= 1;
+        obj->flags |= 0x10;
+        gGameMode = GAME_MODE_LOGO;
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80008D64.s")
+void func_80008D64(Object *obj) {
+    obj->unk_084++;
+    if (obj->unk_084 >= obj->model->unk_A08 - 1) {
+        obj->unk_084 = 0;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80008D98.s")
 
@@ -486,13 +513,53 @@ void func_80008BE8(void) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_800092B0.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80009480.s")
+void func_80009480(void) {
+    Object *worker;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80009554.s")
+    func_800263A8();
+    asset_open_folder("/title/credit", 0x4000);
+    D_80081254 = load_background("credit", 0, 250, 0, 0, 2, 0x4000);
+    D_80081250 = D_80081254->height;
+    worker = create_worker(func_8001A4FC, 0x1000);
+    worker->unk_090[2] = 4;
+    func_8001A158(worker, 0x4000);
+    D_80080129 = FALSE;
+    D_8005BFC0 |= 4;
+    D_8008012C |= 0x20;
+    func_80001D88();
+    func_8002630C(0x4000);
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_800095A8.s")
+void func_80009554(Object *obj) {
+    if (gPlayerInput[D_8013C24C].unk_00 & INP_START) {
+        D_8005BFC0 |= 1;
+        obj->flags |= 0x10;
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000965C.s")
+void func_800095A8(void) {
+    func_800263A8();
+    asset_open_folder("/title/easywin", 0x4000);
+    load_background("easyimg", 0, 0, 0, 0, 1, 0x4000);
+    create_worker(func_80009554, 0x1000);
+    D_80080129 = TRUE;
+    D_8005BFC0 |= 4;
+    D_8008012C |= 0x20;
+    func_80001D88();
+    func_8002630C(0x4000);
+    gGameMode = GAME_MODE_36;
+}
+
+void func_8000965C(s32 arg0) {
+    D_80080136 = D_8004BB48[arg0].unk_14;
+    D_80080138 = D_8004BB48[arg0].unk_16;
+    D_80080130 = D_8004BB48[arg0].unk_10;
+    D_80080132 = D_8004BB48[arg0].unk_11;
+    D_80080134 = D_8004BB48[arg0].unk_12;
+    D_80080110 = D_8004BB48[arg0].unk_0C;
+    D_80080112 = D_8004BB48[arg0].unk_0D;
+    D_80080114 = D_8004BB48[arg0].unk_0E;
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_800096D0.s")
 
@@ -909,7 +976,7 @@ void run_17_mode(void) {
     UnkObjDef3 sp64 = { 0xFFFFFE70, 0, 0, 0 };
     UnkObjDef3 sp54 = { 400, 0, 0, 0 };
     s32 unused2;
-    s32 sp4C = D_800B6340;
+    s32 sp4C = D_800B6328[1].unk_06;
     UnkObjDef4 sp3C = { "gore", task_default_func, 0x1000, 0 };
     UnkObjDef4 sp2C = { "arena", task_default_func, 0x1000, 0 };
 

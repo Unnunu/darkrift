@@ -27,9 +27,9 @@ s32 D_8004A4F0[] = {
 
 // R_TRIG, L_TRIG
 s32 D_8004A530[] = { 0,
-                     INP_RTRIG,             // R_TRIG
-                     INP_LTRIG,             // L_TRIG
-                     INP_LTRIG | INP_RTRIG, // R_TRIG + L_TRIG
+                     INP_R,         // R_TRIG
+                     INP_L,         // L_TRIG
+                     INP_L | INP_R, // R_TRIG + L_TRIG
                      0,
                      0,
                      0,
@@ -54,7 +54,7 @@ s32 D_8004A554[] = {
 s32 D_8004A580[] = {
     0,
     INP_START,             // START_BUTTON
-    INP_LTRIG,             // Z_TRIG
+    INP_L,                 // Z_TRIG
     INP_ZTRIG | INP_START, // START_BUTTON + Z_TRIG
     INP_B,                 // B_BUTTON
     0,                     // START_BUTTON + B_BUTTON
@@ -109,7 +109,7 @@ void func_80024A90(s16 contId) {
     u16 v1;
     u16 buttons;
     u16 v0;
-    UnkAlpha *ua;
+    PlayerInput *ua;
 
     contData = gContData[contId];
     v1 = contData->button;

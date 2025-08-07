@@ -235,6 +235,7 @@ segments:
       - [0x49E90, data]
       - [0x4A0C0, .data, 76E0]
       - [0x4A520, data]
+      - [0x4AC20, .data, 1EA10]
       - [0x4B020, .data, audio]
       - [0x4B0C0, data]
       - [0x4B0F0, .data, input]

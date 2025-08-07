@@ -37,14 +37,15 @@ enum GameModes {
     GAME_MODE_32,
     GAME_MODE_LOGO,
     GAME_MODE_34,
-    GAME_MODE_35
+    GAME_MODE_35,
+    GAME_MODE_36
 };
 
 // TODO: make enum
 
-#define INP_LTRIG 0x0001
+#define INP_L 0x0001
 #define INP_A 0x0002
-#define INP_RTRIG 0x0004
+#define INP_R 0x0004
 #define INP_B 0x0008
 
 #define INP_CUP 0x0010

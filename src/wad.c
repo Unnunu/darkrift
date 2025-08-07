@@ -67,11 +67,6 @@ typedef struct UnkFrodo {
     /* 0x00 */ char unk_00[0xA68];
 } UnkFrodo; // szie = 0xA68
 
-typedef struct UnkFish {
-    u8 unk_00;
-    char unk_01[17];
-} UnkFish;
-
 extern s32 gNumAssets;
 
 extern Asset gAssets[256];
@@ -106,7 +101,6 @@ extern void (*D_8013C228)(Asset *);
 extern s32 gMusicVolumeFading;
 
 extern s8 D_8004A472;
-extern UnkFish D_800B6336[];
 
 extern Addr D_7DE880;
 
@@ -1040,7 +1034,7 @@ void asset_load_mov(Asset *asset) {
 }
 
 void asset_load_sym(Asset *asset) {
-    if (D_800B6336[asset->context].unk_00 != 0) {
+    if (D_800B6328[asset->context].unk_0E != 0) {
         func_80026BE0(asset);
     }
 }

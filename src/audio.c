@@ -417,7 +417,7 @@ s32 func_80021338(void) {
     s32 i;
 
     if (!(gMusicIsPlaying + gSoundIsPlaying)) {
-        return FALSE;
+        return 0;
     }
 
     if (D_800A45F4 != 0) {
@@ -430,7 +430,7 @@ s32 func_80021338(void) {
         }
     }
 
-    return TRUE;
+    return 1;
 }
 
 void sound_play(u32 playerID, u32 soundId) {

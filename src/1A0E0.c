@@ -5,10 +5,11 @@ extern Quad D_80049BA8[];
 extern s16 D_80080230;
 extern s16 D_80080232;
 
-void func_800194E0(u16 arg0) {
+#pragma GLOBAL_ASM("asm/nonmatchings/1A0E0/func_800194E0.s")
+/*void func_800194E0(s32 arg0) {
     D_80080232 = D_80080230;
     D_80080230 = arg0;
-}
+}*/
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1A0E0/func_80019500.s")
 

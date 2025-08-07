@@ -1,6 +1,7 @@
 #include "common.h"
 #include "task.h"
 #include "camera.h"
+#include "string.h"
 
 extern s32 *D_8013C4E8;
 extern s32 D_8013C540;
@@ -8,6 +9,7 @@ extern char *D_80053010;
 extern Vec4i D_8004934C;
 extern UnkDispStruct **D_8013C4E0;
 Object *func_8002BC84(Vec4i *, s32, char **, s32);
+void func_800028E0(s32 arg0, s32 arg1);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034090.s")
 
@@ -52,9 +54,19 @@ void func_80034AB8(Object *);
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034C18.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034D54.s")
+void func_80034D54(void);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034F34.s")
-void func_80034F34(Object *);
+void func_80034F34(Object *obj) {
+    ColorRGBA *color1 = &obj->unk_200;
+    ColorRGBA *color2 = &obj->unk_204;
+
+    color1->a = obj->unk_088.a;
+
+    if (color2->r != color1->r || color2->g != color1->g || color2->b != color1->b || color2->a != color1->a) {
+        func_800028E0(func_80034D54, obj);
+        memcpy(&obj->unk_204, &obj->unk_200, sizeof(ColorRGBA));
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034FC8.s")
 
@@ -83,7 +95,7 @@ void func_80035CCC(UnkSam *arg0) {
 
     count = arg0->unk_128;
     s1 = arg0->unk_31C = (UnkSamSub *) mem_alloc(count * sizeof(UnkSamSub), "model.c", 766);
-    temp = 1;
+    temp = 1; // required to match
     var1 = arg0->unk_154;
     for (i = 0; i < count; i++, s1++) {
         s1->unk_00 = temp;
@@ -98,7 +110,7 @@ void func_80035CCC(UnkSam *arg0) {
         s1->unk_20 = i;
         s1->unk_24 = temp;
 
-        temp2 = 1;
+        temp2 = 1; // required to match
         for (j = 0; j < temp2; j++) {
             s32 v0 = s1->unk_04[j];
             s1->unk_28[j] = var1[v0];
@@ -192,6 +204,7 @@ void func_80036194(Object *arg0, char *arg1, s32 arg2) {
     v0->unk_0D0.unk_98.z.y = 0.0f;
     v0->unk_0D0.unk_98.y.z = -1.5f;
 }
+
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80036228.s")
 
 void func_8003635C(Object *obj) {

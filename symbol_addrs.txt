@@ -333,3 +333,6 @@ gScreenHeight = 0x8005BFCA;
 
 obj_update_all = 0x8002B0AC;
 bg_draw = 0x800153C4;
+
+D_800AA488 = 0x800AA488; //size:0xBEA0
+D_800B6328 = 0x800B6328; //size:0x24
