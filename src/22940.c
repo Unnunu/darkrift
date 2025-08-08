@@ -68,8 +68,8 @@ void func_80021D40(Object *obj) {
         obj->flags |= 0x10;
     }
 
-    if (obj->unk_088.a >= obj->unk_090[0]) {
-        obj->unk_088.a -= obj->unk_090[0];
+    if (obj->unk_088.a >= obj->vars[0]) {
+        obj->unk_088.a -= obj->vars[0];
     } else {
         obj->unk_088.a = 0;
         obj->currentTask->flags |= 0x80;

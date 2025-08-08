@@ -63,4 +63,18 @@ enum GameModes {
 
 enum AssetContext { CONTEXT_2000 = 0x2000, CONTEXT_EEFF = 0xEEFF };
 
+enum CharacterIds {
+    AARON = 0,
+    DEMITRON = 1,
+    DEMONICA = 2,
+    EVE = 3,
+    GORE = 4,
+    CHARACTER_5 = 5,
+    MORPHIX = 6,
+    NIIKI = 7,
+    SCARLET = 8,
+    SONORK = 9,
+    ZENMURON = 10
+};
+
 #endif

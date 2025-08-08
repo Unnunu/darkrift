@@ -49,20 +49,6 @@ typedef struct WadFile {
     /* 0x08 */ WadFolder folders[1];
 } WadFile;
 
-typedef struct AssetSP2Sub2 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ TextureAsset *unk_0C;
-} AssetSP2Sub2; // size = 0x10
-
-typedef struct AssetSP2 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ u32 unk_04;
-    /* 0x08 */ char unk_08[4][16];
-    /* 0x48 */ AssetSP2Sub2 *unk_48;
-} AssetSP2;
-
 typedef struct UnkFrodo {
     /* 0x00 */ char unk_00[0xA68];
 } UnkFrodo; // szie = 0xA68
@@ -133,8 +119,8 @@ void asset_reload_k3(Asset *);
 void asset_reload_k4(Asset *);
 void asset_reload_k5(Asset *);
 void func_80026DF0(Asset *);
-void func_80026ECC(Asset *);
-void func_80027054(Asset *);
+void asset_load_tex(Asset *);
+void asset_load_sp2(Asset *);
 void asset_load_gmd(Asset *);
 void asset_load_k3(Asset *);
 void asset_load_k4(Asset *);
@@ -450,10 +436,10 @@ void asset_read_all_files_in_folder(s32 context) {
                     func_80026DF0(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_TEX:
-                    func_80026ECC(gAssets + gNumAssets - 1);
+                    asset_load_tex(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_SP2:
-                    func_80027054(gAssets + gNumAssets - 1);
+                    asset_load_sp2(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_3:
                     func_800271C0(gAssets + gNumAssets - 1);
@@ -615,7 +601,7 @@ void assets_clear_unused(void) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80026DF0.s")
 
-void func_80026ECC(Asset *asset) {
+void asset_load_tex(Asset *asset) {
     func_80026BE0(asset);
 }
 
@@ -625,40 +611,38 @@ void func_80026ECC(Asset *asset) {
 void func_80027004(void *arg0, s32 arg1, s32 arg2);
 
 #ifdef NON_MATCHING
-void func_80027054(Asset *asset) {
-    AssetSP2 *s4;
+void asset_load_sp2(Asset *asset) {
+    AssetSP2 *header;
     s32 i;
-    TextureAsset *v1;
-    AssetSP2Sub2 *s3;
+    AssetSP2Sub2 *entry;
+    u8 *raster;
+    u16 *palette;
+    TextureAsset *textures[4];
     AssetSP2Sub2 *tmp;
-    TextureAsset *sp64[4];
-    u8 *ptr2;
-    u16 *ptr3;
-    s32 nv;
-    u32 qwe;
+    s32 unused[2];
 
     func_80026BE0(asset);
+    entry = tmp = (AssetSP2Sub2 *) ((s32) header->sprites + (u8 *) header);
+    header = asset->data;
+    entry = tmp = (AssetSP2Sub2 *) ((s32) header->sprites + (u8 *) header);
+    header->sprites = tmp;
+    for (i = 0; i < 4 && (header->texture_name[i][0]) != '\0'; i++) {
+        textures[i] = gAssets[asset_find(header->texture_name[i], asset->context)].data;
 
-    s4 = asset->data;
-    tmp = (AssetSP2Sub2 *) ((s32) s4->unk_48 + (u8 *) s4);
-    s4->unk_48 = s3 = tmp;
-    for (i = 0; i < 4 && (s4->unk_08[i][0] & 0xFF) != '\0'; i++) {
-        v1 = sp64[i] = gAssets[asset_find(s4->unk_08[i], asset->context)].data;
-
-        ptr2 = v1->data;
-        ptr3 = v1->data + v1->width * v1->height;
-        ptr3[ptr2[nv = 0]] = 0;
+        raster = textures[i]->data;
+        palette = (u16 *) &textures[i]->data[textures[i]->height * textures[i]->width];
+        palette[raster[0]] = 0;
     }
-    if (s4->unk_04) {}
-    for (i = 0; i < (s4->unk_04); i++, s3++) {
-        s3->unk_04 = s3->unk_04 + (s32) s4;
-        s3->unk_0C = sp64[s3->unk_08];
+
+    for (i = 0; i < header->numSprites; i++, entry++) {
+        entry->unk_04 = entry->unk_04 + (s32) header;
+        entry->unk_0C = textures[entry->tex_index];
     }
 
     func_800010D4(asset->memory_slot, func_80027004, 0);
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80027054.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/wad/asset_load_sp2.s")
 #endif
 
 #pragma GLOBAL_ASM("asm/nonmatchings/wad/func_800271C0.s")

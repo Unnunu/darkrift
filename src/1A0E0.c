@@ -2,7 +2,6 @@
 
 extern Quad D_80049BA8[];
 
-extern s16 D_80080230;
 extern s16 D_80080232;
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1A0E0/func_800194E0.s")
@@ -33,8 +32,8 @@ void func_80019BD0(Object *obj) {
 }
 
 void func_80019C48(Object *obj) {
-    obj->unk_090[0]++;
-    if (obj->unk_090[0] > 180) {
+    obj->vars[0]++;
+    if (obj->vars[0] > 180) {
         D_8005BEFC = 0;
         D_8005BFC0 |= 1;
         gGameMode = GAME_MODE_32;
@@ -68,9 +67,9 @@ void func_80019D2C(Object *obj) {
 }
 
 void func_80019DE4(Object *obj) {
-    obj->unk_090[0]++;
-    if (obj->unk_090[0] > 180) {
-        obj->unk_090[0] = 0;
+    obj->vars[0]++;
+    if (obj->vars[0] > 180) {
+        obj->vars[0] = 0;
         obj->fn_update = func_80019D2C;
     }
     func_80019BD0(obj);

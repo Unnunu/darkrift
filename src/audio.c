@@ -522,7 +522,7 @@ void music_stop(void) {
 }
 
 void func_80021778(Object *obj) {
-    if (obj->unk_090[0]-- < 0) {
+    if (obj->vars[0]-- < 0) {
         obj->currentTask->flags |= 0x80;
     }
 }
@@ -575,8 +575,8 @@ void func_80021918(Object *obj, s32 arg1) {
         v1 = TRUE;
     }
 
-    obj->unk_090[0]++;
-    if (obj->unk_090[0] >= 16 || (D_800A460C & 1)) {
+    obj->vars[0]++;
+    if (obj->vars[0] >= 16 || (D_800A460C & 1)) {
         v1 = TRUE;
     }
 

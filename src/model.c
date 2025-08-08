@@ -149,7 +149,7 @@ void func_80035F5C(Object *obj) {
 
     model = obj->model;
     trans = model->unk_128;
-    parent = (Object *) obj->unk_090[1];
+    parent = (Object *) obj->vars[1];
     newvar = &obj->unk_0D0.unk_98;
     sub3 = model->unk_A28->unk_154;
 
@@ -193,8 +193,8 @@ void func_80036194(Object *arg0, char *arg1, s32 arg2) {
     str_copy(D_80053010, arg1);
     v0 = func_8002BC84(&D_8004934C, 0, &D_80053010, arg2);
 
-    v0->unk_090[0] = v0->model->unk_128;
-    v0->unk_090[1] = arg0;
+    v0->vars[0] = v0->model->unk_128;
+    v0->vars[1] = arg0;
     v0->model->unk_128 = arg0->model->unk_128;
     v0->fn_update = func_80035F5C;
 

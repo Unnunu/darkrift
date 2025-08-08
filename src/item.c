@@ -221,7 +221,7 @@ void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(
     math_translate(&arg0->unk_0D0.unk_98, arg1);
 
     for (i = 0; i < 13; i++) {
-        arg0->unk_090[i] = 0;
+        arg0->vars[i] = 0;
     }
 
     arg0->unk_200.r = arg0->unk_200.g = arg0->unk_200.b = 255;
@@ -247,11 +247,11 @@ Object *create_worker(void (*fn_update)(Object *), s16 arg1) {
     return obj;
 }
 
-Object *func_8002BBD4(Vec3i *pos, SpriteDef *def, s32 context) {
+Object *create_ui_element(Vec3i *pos, UIElement *def, s32 context) {
     Object *obj;
 
     obj = obj_allocate(def->unk_0C);
-    obj_init(obj, pos, &D_80049344, NULL, def->unk_04);
+    obj_init(obj, pos, &D_80049344, NULL, def->func);
     obj->fn_update = func_80015724;
     obj->flags = def->flags;
     obj->flags |= 0x10000;

@@ -30,7 +30,7 @@ void func_80001D88(void);
 void func_8002630C(s32 arg0);
 void func_80002178(s32 arg0, Quad *arg1);
 void func_80018AD0(Object *);
-Object *func_8002BBD4(Vec3i *arg0, SpriteDef *arg1, s32 arg2);
+Object *create_ui_element(Vec3i *arg0, UIElement *arg1, s32 arg2);
 u32 asset_find(char *name, s32 context);
 void str_concat(char *dst, char *src);
 void str_copy(char *arg0, char *arg1);
@@ -45,10 +45,11 @@ void math_mtxf2mtx(Mtx *, Matrix4f *);
 s16 func_80012518(s32 arg0, s32 arg1);
 void func_80014974(UnkMu *);
 void sched_wait_vretrace(u8);
-void func_800010D4(s32 arg0, s32 arg1, s32 arg2);
+void func_800010D4(s32 arg0, void (*arg1)(void *arg0, s32 arg1, s32 arg2), s32 arg2);
 void func_800139A0(Matrix4f *, Vec4i *);
 void func_80014718(Matrix4f *arg0, Matrix4f *arg1, Matrix4f *arg2);
 void func_80037E28(Object *);
 void func_800194E0(s32 arg0);
+s32 func_8002C310(s32);
 
 #endif

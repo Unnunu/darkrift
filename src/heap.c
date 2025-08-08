@@ -315,7 +315,7 @@ s32 func_80000EA8(s32 size) {
 void func_80000F70(s32 arg0) {
     mem_free(D_8005AEB8[arg0].unk_04);
     D_8005AEB8[arg0].unk_00 = 1;
-    D_8005AEB8[arg0].unk_0C = 0;
+    D_8005AEB8[arg0].unk_0C = NULL;
 }
 
 void dma_read(s32 romAddr, void *vramAddr, s32 size) {
@@ -332,7 +332,7 @@ void dma_read_noblock(s32 romAddr, void *vramAddr, s32 size) {
     osInvalDCache(0, 0x3FFFFF);
 }
 
-void func_800010D4(s32 arg0, s32 arg1, s32 arg2) {
+void func_800010D4(s32 arg0, void (*arg1)(void *arg0, s32 arg1, s32 arg2), s32 arg2) {
     D_8005AEB8[arg0].unk_0C = arg1;
     D_8005AEB8[arg0].unk_08 = arg2;
 }

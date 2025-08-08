@@ -225,7 +225,7 @@ Object *func_8000194C(void) {
     }
 
     obj->fn_update = func_80015C58;
-    sound_play(2, obj->unk_090[2]);
+    sound_play(2, obj->vars[2]);
     gTasksDisabled = TRUE;
     D_8005BEFC = 0;
     return obj;
@@ -388,7 +388,7 @@ void func_80002340(Object *obj) {
         obj->flags |= 0x10;
         D_8005BFC0 |= 0x100;
 
-        if (obj->unk_090[4] == 0) {
+        if (obj->vars[4] == 0) {
             D_8005BFC0 &= ~0x4;
         }
         D_8005BFC0 |= 0x1000;
@@ -399,8 +399,8 @@ void func_80002340(Object *obj) {
 }
 
 void func_800023E4(Object *obj) {
-    obj->unk_090[0]++;
-    if (obj->unk_090[0] >= 7) {
+    obj->vars[0]++;
+    if (obj->vars[0] >= 7) {
         osViBlack(0);
         D_8005BEFC = 255;
         obj->fn_update = func_80002340;
@@ -420,7 +420,7 @@ void func_80002448(Object *obj) {
     D_8005BFC0 &= ~0x1000;
     func_80021918(obj, 0);
     if (D_8005BFC0 & 4) {
-        obj->unk_090[4] = 1;
+        obj->vars[4] = 1;
     }
     D_8005BFC0 |= 4;
     if (obj->flags & 0x10) {
@@ -432,9 +432,9 @@ void func_80002448(Object *obj) {
 
 void func_80002528(Object *obj) {
     func_80001FB0(D_8005BEFC, NULL);
-    obj->unk_090[0]++;
+    obj->vars[0]++;
 
-    if (obj->unk_090[0] >= 5) {
+    if (obj->vars[0] >= 5) {
         D_8005BFC0 |= 1;
         obj->flags |= 0x10;
     }
@@ -459,7 +459,7 @@ void func_80002590(Object *obj) {
     }
 
     func_80001FB0(D_8005BEFC, NULL);
-    obj->unk_090[0] = 0;
+    obj->vars[0] = 0;
 }
 
 void func_80002648(Object *obj) {
@@ -488,7 +488,7 @@ void func_80002648(Object *obj) {
     }
 
     func_80001FB0(D_8005BEFC, NULL);
-    obj->unk_090[0] = 0;
+    obj->vars[0] = 0;
 }
 
 void func_80002744(Object *obj) {

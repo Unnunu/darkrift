@@ -28,7 +28,6 @@ extern Texture *D_80081254;
 extern s16 D_80080116;
 extern s16 D_8005BED2;
 extern Vec4i D_8004934C;
-extern s16 D_80080230;
 extern u16 D_8013C24C;
 
 Object *func_8002BFF0(Vec4i *, s16, void (*)(Object *), UnkSam *);
@@ -69,8 +68,8 @@ void func_80006AE0(void);
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80006CEC.s")
 
 void func_80006E0C(Object *obj) {
-    obj->unk_090[0]--;
-    if (obj->unk_090[0] < 0) {
+    obj->vars[0]--;
+    if (obj->vars[0] < 0) {
         obj->flags |= 0x10;
         D_8005BFC0 |= 1;
         obj->currentTask->flags |= 0x80;
@@ -521,7 +520,7 @@ void func_80009480(void) {
     D_80081254 = load_background("credit", 0, 250, 0, 0, 2, 0x4000);
     D_80081250 = D_80081254->height;
     worker = create_worker(func_8001A4FC, 0x1000);
-    worker->unk_090[2] = 4;
+    worker->vars[2] = 4;
     func_8001A158(worker, 0x4000);
     D_80080129 = FALSE;
     D_8005BFC0 |= 4;
@@ -582,7 +581,7 @@ s32 D_800494C0[] = { 0, 0 };
 
 void run_0_mode(void) {
     Object *v1;
-    SpriteDef sp40 = { 83, func_80019A9C, 0, 0x1000, "options2.sp2" };
+    UIElement sp40 = { 83, func_80019A9C, 0, 0x1000, "options2.sp2" };
     Vec4i sp30 = { 164, 155, 0, 0 };
 
     func_800263A8();
@@ -597,7 +596,7 @@ void run_0_mode(void) {
         v1 = func_8002BFF0(&D_8004934C, 0x1000, func_800199E0, assetData);
         v1->flags |= 0x01000000;
     } else {
-        v1 = func_8002BBD4(&sp30, &sp40, 0x2000);
+        v1 = create_ui_element(&sp30, &sp40, 0x2000);
     }
 
     v1->currentTask->counter = 30;
@@ -624,7 +623,7 @@ void func_8000A514(Object *obj) {
 }
 
 void func_8000A578(Object *obj) {
-    SpriteDef sp44 = { 83, func_80019A9C, 0, 0x1000, "options2.sp2" };
+    UIElement sp44 = { 83, func_80019A9C, 0, 0x1000, "options2.sp2" };
     Vec4i sp34 = { 160, 155, 0, 0 };
     Object *v0;
 
@@ -639,7 +638,7 @@ void func_8000A578(Object *obj) {
     sound_stop_one(0x2000, 8); // @bug wrong player id
     obj->fn_update = func_8000A514;
     load_background("dr_title", 0, 0, 0, 0, 1, CONTEXT_2000);
-    v0 = func_8002BBD4(&sp34, &sp44, 0x2000);
+    v0 = create_ui_element(&sp34, &sp44, 0x2000);
     v0->currentTask->counter = 60;
     gCamera->pos.z = -2200;
     create_worker(func_80020670, 0x1000);
@@ -648,7 +647,7 @@ void func_8000A578(Object *obj) {
 void run_intro_mode(void) {
     s32 unused;
     Object *v0;
-    SpriteDef sp3C = { 83, func_80019A9C, 0, 0x1000, "options2.sp2" };
+    UIElement sp3C = { 83, func_80019A9C, 0, 0x1000, "options2.sp2" };
     Vec4i sp2C = { 160, 155, 0, 0 };
 
     D_80080129 = FALSE;
@@ -697,17 +696,17 @@ void run_logo_mode(void) {
 void run_1_mode(void) {
     Object *s0;
     Object *v0;
-    SpriteDef sp1AC = { 89, func_80017F00, 0, 0x1000, "options2.sp2" };
-    SpriteDef sp198 = { 203, func_80017F60, 0, 0x1000, "options2.sp2" };
-    SpriteDef sp184 = { 53, func_80017FF4, 0, 0x1000, "options2.sp2" };
-    SpriteDef sp170 = { 14, func_80018088, 0, 0x1000, "options2.sp2" };
-    SpriteDef sp15C = { 7, func_80018120, 0, 0x1000, "options2.sp2" };
-    SpriteDef sp148 = { 20, func_800181C8, 0, 0x1000, "options2.sp2" };
-    SpriteDef sp134 = { 20, func_800182E0, 0, 0x1000, "options2.sp2" };
-    SpriteDef sp120 = { 57, func_800183FC, 0, 0x1000, "options2.sp2" };
-    SpriteDef sp10C = { 58, func_800184A8, 0, 0x1000, "options2.sp2" };
-    SpriteDef spF8 = { 59, func_80018554, 0, 0x1000, "options2.sp2" };
-    SpriteDef spE4 = { 60, func_80018600, 0, 0x1000, "options2.sp2" };
+    UIElement sp1AC = { 89, func_80017F00, 0, 0x1000, "options2.sp2" };
+    UIElement sp198 = { 203, func_80017F60, 0, 0x1000, "options2.sp2" };
+    UIElement sp184 = { 53, func_80017FF4, 0, 0x1000, "options2.sp2" };
+    UIElement sp170 = { 14, func_80018088, 0, 0x1000, "options2.sp2" };
+    UIElement sp15C = { 7, func_80018120, 0, 0x1000, "options2.sp2" };
+    UIElement sp148 = { 20, func_800181C8, 0, 0x1000, "options2.sp2" };
+    UIElement sp134 = { 20, func_800182E0, 0, 0x1000, "options2.sp2" };
+    UIElement sp120 = { 57, func_800183FC, 0, 0x1000, "options2.sp2" };
+    UIElement sp10C = { 58, func_800184A8, 0, 0x1000, "options2.sp2" };
+    UIElement spF8 = { 59, func_80018554, 0, 0x1000, "options2.sp2" };
+    UIElement spE4 = { 60, func_80018600, 0, 0x1000, "options2.sp2" };
     Vec4i spD4 = { 130, 130, 0, 0 };
     Vec4i spC4 = { 181, 74, 0, 0 };
     Vec4i spB4 = { 181, 91, 0, 0 };
@@ -726,43 +725,43 @@ void run_1_mode(void) {
     D_8008012C |= 0x20;
     D_8005BFC0 |= 4;
 
-    s0 = func_8002BBD4(&spD4, &sp1AC, 0x2000);
+    s0 = create_ui_element(&spD4, &sp1AC, 0x2000);
 
-    v0 = func_8002BBD4(&spC4, &sp198, 0x2000);
+    v0 = create_ui_element(&spC4, &sp198, 0x2000);
     v0->unk_084 = D_8004C1E4 + 202;
-    v0->unk_090[3] = s0;
+    v0->vars[3] = s0;
 
-    v0 = func_8002BBD4(&spB4, &sp184, 0x2000);
+    v0 = create_ui_element(&spB4, &sp184, 0x2000);
     v0->unk_084 = D_8004C1D4 + 51;
-    v0->unk_090[3] = s0;
+    v0->vars[3] = s0;
 
-    v0 = func_8002BBD4(&spA4, &sp170, 0x2000);
+    v0 = create_ui_element(&spA4, &sp170, 0x2000);
     v0->unk_084 = D_8004C1D0 + 11;
-    v0->unk_090[3] = s0;
+    v0->vars[3] = s0;
 
-    v0 = func_8002BBD4(&sp94, &sp15C, 0x2000);
+    v0 = create_ui_element(&sp94, &sp15C, 0x2000);
     v0->unk_084 = D_8004A428 + 7;
-    v0->unk_090[3] = s0;
+    v0->vars[3] = s0;
 
-    v0 = func_8002BBD4(&sp84, &sp148, 0x2000);
+    v0 = create_ui_element(&sp84, &sp148, 0x2000);
     v0->unk_084 = gMusicVolume / (0x8000 / 9) + 11;
-    v0->unk_090[3] = s0;
+    v0->vars[3] = s0;
 
-    v0 = func_8002BBD4(&sp74, &sp134, 0x2000);
+    v0 = create_ui_element(&sp74, &sp134, 0x2000);
     v0->unk_084 = gSoundVolume / (0x8000 / 9) + 11;
-    v0->unk_090[3] = s0;
+    v0->vars[3] = s0;
 
-    v0 = func_8002BBD4(&sp64, &sp120, 0x2000);
-    v0->unk_090[3] = s0;
+    v0 = create_ui_element(&sp64, &sp120, 0x2000);
+    v0->vars[3] = s0;
 
-    v0 = func_8002BBD4(&sp54, &sp10C, 0x2000);
-    v0->unk_090[3] = s0;
+    v0 = create_ui_element(&sp54, &sp10C, 0x2000);
+    v0->vars[3] = s0;
 
-    v0 = func_8002BBD4(&sp44, &spF8, 0x2000);
-    v0->unk_090[3] = s0;
+    v0 = create_ui_element(&sp44, &spF8, 0x2000);
+    v0->vars[3] = s0;
 
-    v0 = func_8002BBD4(&sp34, &spE4, 0x2000);
-    v0->unk_090[3] = s0;
+    v0 = create_ui_element(&sp34, &spE4, 0x2000);
+    v0->vars[3] = s0;
 
     func_80001D88();
     func_8002630C(0x2000);
@@ -772,7 +771,7 @@ void func_8000AFA4(Object *obj, s16 arg1) {
     s16 i;
     s16 q;
 
-    q = D_80049B30[obj->unk_090[6]];
+    q = D_80049B30[obj->vars[6]];
     for (i = 0; i < 8; i++) {
         if (D_800AA450[arg1][i] == q) {
             break;
@@ -811,16 +810,16 @@ void run_2_mode(void) {
     Object *sp21C;
     Object *sp218;
     Object *v0;
-    SpriteDef sp200 = { 90, NULL, 0, 0x1000, "options2.sp2" };
-    SpriteDef sp1EC = { 70, func_80018974, 0, 0x1000, "options2.sp2" };
-    SpriteDef sp1D8 = { 62, func_80018820, 0, 0x1000, "options2.sp2" };
-    SpriteDef sp1C4 = { 63, func_80018820, 0, 0x1000, "options2.sp2" };
-    SpriteDef sp1B0 = { 64, func_80018820, 0, 0x1000, "options2.sp2" };
-    SpriteDef sp19C = { 66, func_80018820, 0, 0x1000, "options2.sp2" };
-    SpriteDef sp188 = { 67, func_80018820, 0, 0x1000, "options2.sp2" };
-    SpriteDef sp174 = { 68, func_80018820, 0, 0x1000, "options2.sp2" };
-    SpriteDef sp160 = { 65, func_80018820, 0, 0x1000, "options2.sp2" };
-    SpriteDef sp14C = { 60, func_800189CC, 0, 0x1000, "options2.sp2" };
+    UIElement sp200 = { 90, NULL, 0, 0x1000, "options2.sp2" };
+    UIElement sp1EC = { 70, func_80018974, 0, 0x1000, "options2.sp2" };
+    UIElement sp1D8 = { 62, func_80018820, 0, 0x1000, "options2.sp2" };
+    UIElement sp1C4 = { 63, func_80018820, 0, 0x1000, "options2.sp2" };
+    UIElement sp1B0 = { 64, func_80018820, 0, 0x1000, "options2.sp2" };
+    UIElement sp19C = { 66, func_80018820, 0, 0x1000, "options2.sp2" };
+    UIElement sp188 = { 67, func_80018820, 0, 0x1000, "options2.sp2" };
+    UIElement sp174 = { 68, func_80018820, 0, 0x1000, "options2.sp2" };
+    UIElement sp160 = { 65, func_80018820, 0, 0x1000, "options2.sp2" };
+    UIElement sp14C = { 60, func_800189CC, 0, 0x1000, "options2.sp2" };
     Vec4i sp13C = { 133, 126, 0, 0 };
     Vec4i sp12C = { 40, 82, 0, 0 };
     Vec4i sp11C = { 179, 82, 0, 0 };
@@ -846,105 +845,105 @@ void run_2_mode(void) {
     D_8008012C |= 0x20;
     D_8005BFC0 |= 4;
 
-    func_8002BBD4(&sp13C, &sp200, 0x2000);
+    create_ui_element(&sp13C, &sp200, 0x2000);
 
-    sp21C = func_8002BBD4(&sp12C, &sp1EC, 0x2000);
-    sp21C->unk_090[3] = sp21C;
-    sp21C->unk_090[6] = 0;
+    sp21C = create_ui_element(&sp12C, &sp1EC, 0x2000);
+    sp21C->vars[3] = sp21C;
+    sp21C->vars[6] = 0;
     func_8000AFA4(sp21C, 0);
 
-    v0 = func_8002BBD4(&sp10C, &sp1D8, 0x2000);
-    v0->unk_090[3] = sp21C;
-    v0->unk_090[6] = 1;
+    v0 = create_ui_element(&sp10C, &sp1D8, 0x2000);
+    v0->vars[3] = sp21C;
+    v0->vars[6] = 1;
     func_8000AFA4(v0, 0);
 
-    v0 = func_8002BBD4(&spEC, &sp1C4, 0x2000);
-    v0->unk_090[3] = sp21C;
-    v0->unk_090[6] = 2;
+    v0 = create_ui_element(&spEC, &sp1C4, 0x2000);
+    v0->vars[3] = sp21C;
+    v0->vars[6] = 2;
     func_8000AFA4(v0, 0);
 
-    v0 = func_8002BBD4(&spCC, &sp1B0, 0x2000);
-    v0->unk_090[3] = sp21C;
-    v0->unk_090[6] = 3;
+    v0 = create_ui_element(&spCC, &sp1B0, 0x2000);
+    v0->vars[3] = sp21C;
+    v0->vars[6] = 3;
     func_8000AFA4(v0, 0);
 
-    v0 = func_8002BBD4(&spAC, &sp19C, 0x2000);
-    v0->unk_090[3] = sp21C;
-    v0->unk_090[6] = 4;
+    v0 = create_ui_element(&spAC, &sp19C, 0x2000);
+    v0->vars[3] = sp21C;
+    v0->vars[6] = 4;
     func_8000AFA4(v0, 0);
 
-    v0 = func_8002BBD4(&sp8C, &sp188, 0x2000);
-    v0->unk_090[3] = sp21C;
-    v0->unk_090[6] = 5;
+    v0 = create_ui_element(&sp8C, &sp188, 0x2000);
+    v0->vars[3] = sp21C;
+    v0->vars[6] = 5;
     func_8000AFA4(v0, 0);
 
-    v0 = func_8002BBD4(&sp6C, &sp174, 0x2000);
-    v0->unk_090[3] = sp21C;
-    v0->unk_090[6] = 6;
+    v0 = create_ui_element(&sp6C, &sp174, 0x2000);
+    v0->vars[3] = sp21C;
+    v0->vars[6] = 6;
     func_8000AFA4(v0, 0);
 
-    v0 = func_8002BBD4(&sp4C, &sp160, 0x2000);
-    v0->unk_090[3] = sp21C;
-    v0->unk_090[6] = 7;
+    v0 = create_ui_element(&sp4C, &sp160, 0x2000);
+    v0->vars[3] = sp21C;
+    v0->vars[6] = 7;
     func_8000AFA4(v0, 0);
 
-    sp218 = func_8002BBD4(&sp11C, &sp1EC, 0x2000);
-    sp218->unk_090[3] = sp218;
-    sp218->unk_090[6] = 0;
-    sp218->unk_090[0] = 1;
+    sp218 = create_ui_element(&sp11C, &sp1EC, 0x2000);
+    sp218->vars[3] = sp218;
+    sp218->vars[6] = 0;
+    sp218->vars[0] = 1;
     func_8000AFA4(sp218, 1);
 
-    v0 = func_8002BBD4(&spFC, &sp1D8, 0x2000);
-    v0->unk_090[3] = sp218;
-    v0->unk_090[6] = 1;
+    v0 = create_ui_element(&spFC, &sp1D8, 0x2000);
+    v0->vars[3] = sp218;
+    v0->vars[6] = 1;
     func_8000AFA4(v0, 1);
 
-    v0 = func_8002BBD4(&spDC, &sp1C4, 0x2000);
-    v0->unk_090[3] = sp218;
-    v0->unk_090[6] = 2;
+    v0 = create_ui_element(&spDC, &sp1C4, 0x2000);
+    v0->vars[3] = sp218;
+    v0->vars[6] = 2;
     func_8000AFA4(v0, 1);
 
-    v0 = func_8002BBD4(&spBC, &sp1B0, 0x2000);
-    v0->unk_090[3] = sp218;
-    v0->unk_090[6] = 3;
+    v0 = create_ui_element(&spBC, &sp1B0, 0x2000);
+    v0->vars[3] = sp218;
+    v0->vars[6] = 3;
     func_8000AFA4(v0, 1);
 
-    v0 = func_8002BBD4(&sp9C, &sp19C, 0x2000);
-    v0->unk_090[3] = sp218;
-    v0->unk_090[6] = 4;
+    v0 = create_ui_element(&sp9C, &sp19C, 0x2000);
+    v0->vars[3] = sp218;
+    v0->vars[6] = 4;
     func_8000AFA4(v0, 1);
 
-    v0 = func_8002BBD4(&sp7C, &sp188, 0x2000);
-    v0->unk_090[3] = sp218;
-    v0->unk_090[6] = 5;
+    v0 = create_ui_element(&sp7C, &sp188, 0x2000);
+    v0->vars[3] = sp218;
+    v0->vars[6] = 5;
     func_8000AFA4(v0, 1);
 
-    v0 = func_8002BBD4(&sp5C, &sp174, 0x2000);
-    v0->unk_090[3] = sp218;
-    v0->unk_090[6] = 6;
+    v0 = create_ui_element(&sp5C, &sp174, 0x2000);
+    v0->vars[3] = sp218;
+    v0->vars[6] = 6;
     func_8000AFA4(v0, 1);
 
-    v0 = func_8002BBD4(&sp3C, &sp160, 0x2000);
-    v0->unk_090[3] = sp218;
-    v0->unk_090[6] = 7;
+    v0 = create_ui_element(&sp3C, &sp160, 0x2000);
+    v0->vars[3] = sp218;
+    v0->vars[6] = 7;
     func_8000AFA4(v0, 1);
 
-    v0 = func_8002BBD4(&sp2C, &sp14C, 0x2000);
-    v0->unk_090[0] = sp21C;
-    v0->unk_090[1] = sp218;
+    v0 = create_ui_element(&sp2C, &sp14C, 0x2000);
+    v0->vars[0] = sp21C;
+    v0->vars[1] = sp218;
 
     func_80001D88();
     func_8002630C(0x2000);
 }
 
 void run_3_mode(void) {
-    SpriteDef sp3C = { 198, func_8001905C, 0, 0x1000, "options2.sp2" };
+    UIElement sp3C = { 198, func_8001905C, 0, 0x1000, "options2.sp2" };
     Vec4i sp2C = { 133, 126, 0, 0 };
 
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
     asset_open_folder("/title/rank", 0x2000);
     load_background("bgrank", 0, 4, 0, 0, 1, CONTEXT_2000);
-    D_80081460 = func_8002BBD4(&sp2C, &sp3C, 0x2000);
+    D_80081460 = create_ui_element(&sp2C, &sp3C, 0x2000);
     func_80019278();
     D_8008012C |= 0x20;
     D_8005BFC0 |= 4;
