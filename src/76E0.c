@@ -13,6 +13,19 @@ typedef struct UnkObjDef4 {
     /* 0x0C */ s32 unk_0C;
 } UnkObjDef4; // size = 0x10
 
+typedef struct UnkTauSub {
+    /* 0x00 */ char *unk_00;
+} UnkTauSub;
+
+typedef struct UnkTau {
+    /* 0x00 */ s32 unk_00;
+    /* 0x04 */ UnkTauSub *unk_04;
+    /* 0x08 */ s32 unk_08;
+    /* 0x0C */ s32 unk_0C;
+} UnkTau; // size = 0x10
+
+extern s16 D_80051F68;
+extern UnkTau D_8004B844[];
 extern s32 D_8008012C;
 extern Object *D_80081460;
 extern s16 D_80049B30[];
@@ -29,7 +42,27 @@ extern s16 D_80080116;
 extern s16 D_8005BED2;
 extern Vec4i D_8004934C;
 extern u16 D_8013C24C;
+extern s16 D_8013C224;
+extern s16 D_8013C226;
+extern s8 D_80081430;
+extern s32 D_800AA480;
+extern s16 D_80080232;
+extern s16 D_800B6368[11][2];
+extern u8 D_800801F0;
+extern s16 D_8013C2A8;
+extern s16 D_8013C2AA;
+extern s16 D_80051F6C;
+extern s16 D_80051F70;
+extern void *D_80081274;
+extern void *D_80081278;
+extern u16 D_8013C250;
+extern u16 D_80080234;
+extern Object *D_80080228[];
 
+void func_8001A674(Object *);
+void func_8001A334(Object *);
+void func_8002EA50(Object *, s32);
+s32 func_8000636C(Player *arg0, s32 arg1, s32 arg2);
 Object *func_8002BFF0(Vec4i *, s16, void (*)(Object *), UnkSam *);
 void func_800199E0(Object *);
 void sound_stop_one(s32, s32);
@@ -59,13 +92,83 @@ void func_80018554(Object *);
 void func_80018600(Object *);
 void func_80019A9C(Object *);
 void func_8001A4FC(Object *);
+void func_8001A98C(Object *);
+void func_8001A7DC(Object *);
+void func_8002DA08(Object *arg0);
+void func_80007DB0(Player *arg0, Object *arg1, s32 arg2);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80006AE0.s")
-void func_80006AE0(void);
+void func_80006AE0(void) {
+    D_80081274 = gAssets[asset_find("comhit.k5", 0xABAB)].aux_data;
+    D_80081278 = gAssets[asset_find("comblock.k5", 0xABAB)].aux_data;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80006C14.s")
+    gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
+    if (D_80080230 == 40) {
+        gPlayerInput[1 - gPracticingPlayer].unk_0A = 0;
+    } else {
+        gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = TRUE;
+    }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80006CEC.s")
+    D_800801F0 = 0;
+    D_800AA488[PLAYER_1].unk_80 |= 0x100000;
+    D_800AA488[PLAYER_2].unk_80 |= 0x100000;
+    D_80051F6C = D_80051F70 = D_8013C2A8 = D_8013C2AA = 0;
+    D_8013C250 = 0;
+}
+
+void func_80006C14(void) {
+    D_800B6328[PLAYER_1].unk_08 = D_800B6328[PLAYER_2].unk_08 = 0;
+    gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
+
+    if (D_80080230 == 40) {
+        gPlayerInput[1 - gPracticingPlayer].unk_0A = 0;
+    } else {
+        gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = TRUE;
+    }
+
+    D_800801F0 = 0;
+    D_800AA488[PLAYER_1].unk_80 |= 0x100000;
+    D_800AA488[PLAYER_2].unk_80 |= 0x100000;
+    D_800801F1 = 0;
+    D_80051F6C = D_80051F70 = D_8013C2A8 = D_8013C2AA = 0;
+}
+
+void func_80006CEC(void) {
+    u8 i, j;
+
+    D_800AA480 = 0;
+
+    D_800B6328[PLAYER_1].characterId = GORE;
+    D_800B6328[PLAYER_1].unk_06 = 1;
+    D_800B6328[PLAYER_1].unk_02 = 0;
+    D_800B6328[PLAYER_1].unk_08 = 0;
+    D_800B6328[PLAYER_2].characterId = AARON;
+    D_800B6328[PLAYER_2].unk_06 = 0;
+    D_800B6328[PLAYER_2].unk_02 = 0;
+    D_800B6328[PLAYER_2].unk_08 = 0;
+    D_800B6328[PLAYER_1].unk_0E = 0;
+    D_800B6328[PLAYER_2].unk_0E = 0;
+    D_800B6328[PLAYER_1].unk_0C = 400;
+    D_800B6328[PLAYER_2].unk_0C = 400;
+    D_800B6328[PLAYER_1].unk_0F = D_800B6328[PLAYER_2].unk_0F = 1;
+    D_800B6328[PLAYER_1].unk_10 = D_800B6328[PLAYER_2].unk_10 = 0;
+
+    D_80080232 = D_80080230 = 20;
+    D_800801F1 = 1;
+
+    for (i = 0; i < 2; i++) {
+        for (j = 0; j < 11; j++) {
+            D_800B6350[i][j] = 0;
+        }
+    }
+
+    for (j = 0; j < 11; j++) {
+        D_800B6368[j][0] = D_800B6368[j][1] = 0;
+    }
+
+    D_800B6328[PLAYER_1].unk_04 = 7;
+    D_800B6328[PLAYER_2].unk_04 = 7;
+    gPracticingPlayer = 0;
+}
 
 void func_80006E0C(Object *obj) {
     obj->vars[0]--;
@@ -77,10 +180,64 @@ void func_80006E0C(Object *obj) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80006E6C.s")
+void func_80006E6C(void) {
+    Object *obj;
+    Texture *sp30;
+    u16 sp2E;
+    u16 sp2C;
+    u16 sp2A;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80006FB4.s")
-void func_80006FB4(void);
+    sp2E = D_80080110;
+    sp2A = D_80080114;
+    sp2C = D_80080112;
+
+    D_80080110 = D_80080112 = D_80080114 = 0;
+    D_80049AE8 = 0;
+
+    asset_open_folder("/title/wait", 0x6000);
+    sp30 = load_background("wait", 0, 0, 0, 0, 1, 0x6000);
+    D_8005BFC0 |= 0x410;
+    D_8008012C |= 0x20;
+
+    obj = create_worker(&func_80006E0C, 0x1000);
+    obj->vars[0] = 6;
+    func_80001D88();
+
+    D_80080110 = sp2E;
+    D_80080112 = sp2C;
+    D_80080114 = sp2A;
+    D_8005BFC0 &= ~0x411;
+    D_8008012C &= ~0x20;
+    func_8002630C(0x6000);
+    func_80014CB4(sp30);
+}
+
+void func_80006FB4(void) {
+    D_8013C224 = gFrameCounter % 5;
+    D_8013C226 = 0;
+    D_80081430 = 0;
+    D_800B6328[PLAYER_1].unk_10 = D_800B6328[PLAYER_2].unk_10 = 0;
+
+    if (D_8005BED2 != 5) {
+        func_80006E6C();
+    }
+
+    if (D_80080230 != 40) {
+        asset_open_folder("/bars/bars", 0xABAB);
+    } else {
+        asset_open_folder("/bars/bars2", 0xABAB);
+    }
+
+    func_800052EC(0);
+    func_800052EC(1);
+
+    if (D_800801F1 != 0) {
+        func_80006C14();
+    } else {
+        func_80006AE0();
+    }
+    osViBlack(1);
+}
 
 void func_800070C0(void) {
     func_8002630C(0xABAB);
@@ -112,9 +269,9 @@ void func_800070F0(void) {
 }
 
 void func_800071F0(Object *obj) {
-    if (gPlayerInput[1].unk_02 & INP_CLEFT) {
+    if (gPlayerInput[1].prev_buttons & INP_CLEFT) {
         obj->rotation.y -= 10;
-    } else if (gPlayerInput[1].unk_02 & INP_CRIGHT) {
+    } else if (gPlayerInput[1].prev_buttons & INP_CRIGHT) {
         obj->rotation.y += 10;
     }
     func_80037E28(obj);
@@ -311,6 +468,8 @@ void func_80007A68(void) {
 #pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007F4C.s")
 void func_80007F4C(s32, s32, s32);
 
+s32 D_80049450[] = { 0x013C012A, 0x014B0000 };
+
 void func_800081A8(void) {
     s32 temp_s0 = D_800B6328[1].unk_06;
 
@@ -492,7 +651,7 @@ void func_80008BE8(void) {
 }
 
 void func_80008D0C(Object *obj) {
-    if (D_800AA488->unk_00->unk_084 + 2 == D_800AA488->unk_90->unk_02) {
+    if (D_800AA488->unk_00->spriteId + 2 == D_800AA488->unk_90->unk_02) {
         D_8005BFC0 |= 1;
         obj->flags |= 0x10;
         gGameMode = GAME_MODE_LOGO;
@@ -500,17 +659,152 @@ void func_80008D0C(Object *obj) {
 }
 
 void func_80008D64(Object *obj) {
-    obj->unk_084++;
-    if (obj->unk_084 >= obj->model->unk_A08 - 1) {
-        obj->unk_084 = 0;
+    obj->spriteId++;
+    if (obj->spriteId >= obj->model->unk_A08 - 1) {
+        obj->spriteId = 0;
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80008D98.s")
+void func_80008D98(void) {
+    Object *obj;
+    Object *obj2;
+    void *a3;
+    Vec4i sp34 = { -200, 0, 0, 0 };
+    Texture *sp30;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80008FDC.s")
+    D_800B6328[PLAYER_1].characterId = SONORK;
+    D_800B6328[PLAYER_1].unk_06 = 1;
+    D_800B6328[PLAYER_2].unk_06 = 0;
+    D_800B6328[PLAYER_1].unk_02 = 0;
+    D_800B6328[PLAYER_2].unk_02 = 1;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_800092B0.s")
+    func_8002630C(0);
+    D_8005BFC0 |= 0x410;
+    D_8008012C |= 0x20;
+
+    asset_open_folder("/sono/prize", 0x3000);
+    sp30 = load_background("prize", 0, 0x64, 0, 0, 2, 0x3000);
+    obj = create_worker(func_80006E0C, 0x1000);
+    obj->vars[0] = 6;
+    func_80001D88();
+
+    D_8005BFC0 &= 0xFFEE;
+    D_8008012C &= ~0x20;
+    asset_open_folder("/sono/sonoboss", 0x3000);
+    func_80007F4C(0, 346, 0x3000);
+    load_background("bg2", 0, 26, 0x2000, 0x10000, 0, 0);
+    load_background("bg0", 0, -24, 0x1000, 0x10000, 1, 0);
+    func_8001B5B0("arena", 0);
+    a3 = gAssets[asset_find("relic.k2", 0x3000)].aux_data;
+    obj2 = func_8002BFF0(&sp34, 0x1000, func_80008D64, a3);
+    obj2->rotation.y = 0x400;
+    obj2->unk_088.a = 80;
+    create_worker(func_80008D0C, 0x1000);
+    func_80014CB4(sp30);
+    func_80001D88();
+
+    func_8002630C(0x3000);
+    func_8002630C(0);
+    func_8002630C(1);
+    if (D_80051F68 == 0) {
+        gGameMode = GAME_MODE_32;
+    }
+}
+
+void func_80008FDC(void) {
+    Object *obj;
+    Vec4i sp4C = { -800, -100, 0, 0 };
+    Object *a1;
+    s32 sp44;
+    s16 sp42;
+    void *a3;
+    s32 padding;
+
+    sp44 = D_800B6328[PLAYER_2].unk_06;
+    sp42 = D_800B6328[PLAYER_2].unk_02;
+
+    func_8002630C(0xABAB);
+    asset_open_folder("/demi/demiboss", 0x3000);
+    func_800052EC(0);
+    func_800052EC(1);
+
+    a1 = D_800AA488[sp42].unk_00;
+    a1->pos.x = a1->pos.z = 0;
+    a1->rotation.y = 0x400;
+
+    D_80080228[1 - sp42]->pos.x = -5000;
+    D_80080228[1 - sp42]->pos.z = -5000;
+    D_80080228[1 - sp42]->flags |= 4;
+
+    D_800AA488[PLAYER_1].unk_80 |= 0x400000;
+    D_800AA488[PLAYER_2].unk_80 |= 0x400000;
+
+    a1->flags |= 0x10000000;
+    D_8005BFC0 |= 4;
+
+    gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
+    gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = TRUE;
+
+    D_800801F0 = 0;
+
+    D_800AA488[PLAYER_1].unk_80 |= 0x100000;
+    D_800AA488[PLAYER_2].unk_80 |= 0x100000;
+    D_800AA488[PLAYER_1].unk_18->unk_00 |= 0x80;
+    D_800AA488[PLAYER_2].unk_18->unk_00 |= 0x80;
+
+    func_80007DB0(&D_800AA488[sp42], a1, 0x3000);
+    func_8002DA08(gCamera);
+    func_8000636C(&D_800AA488[sp42], 346, 1);
+    D_8008012C |= 4;
+    create_worker(func_8001A674, 0x1000);
+    func_80006AE0();
+
+    a3 = gAssets[asset_find("relic.k5", 0x3000)].aux_data;
+    obj = func_8002BFF0(&sp4C, 0x1000, func_80008D64, a3);
+    obj->rotation.y = 0x400;
+    obj->unk_088.a = 80;
+
+    load_background("bg2", 0, -32, 0x2000, 0x10000, 0, sp44);
+    load_background("bg0", 0, 8, 0x1000, 0x10000, 1, sp44);
+    func_8001B5B0("arena", sp44);
+    D_800801F0 = 1;
+    func_80001D88();
+    func_8002630C(0x3000);
+    gGameMode = GAME_MODE_BATTLE_DEMITRON;
+}
+
+void func_800092B0(void) {
+    u16 var1;
+    u16 sp54;
+    Object *obj;
+    char sp44[12];
+    char sp38[12];
+
+    var1 = 1 - D_800B6328[PLAYER_2].unk_02;
+    sp54 = D_800AA488[var1].unk_06;
+    func_800263A8();
+    asset_open_folder("/title/ending", 0x4000);
+
+    str_copy(sp44, "/");
+    str_concat(sp44, D_8004B844[sp54].unk_04->unk_00);
+    str_concat(sp44, "/");
+    str_concat(sp44, D_8004B844[sp54].unk_04->unk_00);
+    str_concat(sp44, "end");
+    asset_open_folder(sp44, 0x4000);
+
+    obj = create_worker(func_8001A334, 0x1000);
+    obj->vars[0] = 60;
+
+    str_copy(sp38, D_8004B844[sp54].unk_04->unk_00);
+    str_concat(sp38, "end1");
+
+    D_80081254 = load_background(sp38, 0, 40, 0, 0, 1, 0x4000);
+    D_80081254 = load_background("passwd", 0, 205, 0, 0, 1, 0x4000);
+    D_8005BFC0 |= 4;
+    D_8008012C |= 0x20;
+    func_80001D88();
+    func_8002630C(0x4000);
+}
 
 void func_80009480(void) {
     Object *worker;
@@ -530,7 +824,7 @@ void func_80009480(void) {
 }
 
 void func_80009554(Object *obj) {
-    if (gPlayerInput[D_8013C24C].unk_00 & INP_START) {
+    if (gPlayerInput[D_8013C24C].buttons & INP_START) {
         D_8005BFC0 |= 1;
         obj->flags |= 0x10;
     }
@@ -560,28 +854,296 @@ void func_8000965C(s32 arg0) {
     D_80080114 = D_8004BB48[arg0].unk_0E;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_800096D0.s")
+void func_800096D0(u8 arg0) {
+    Vec4i sp58[] = { { -1152, 0, 0, 0 }, { 0, 0, 0, 0 } };
+    u32 nv;
+    s32 s1;
+    s16 charId;
+    u16 t9;
+    Object *s0;
+    Object *a3;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_800099F0.s")
+    s1 = D_800B6328[PLAYER_2].unk_06;
+    t9 = 1 - s1;
+    nv = s1;
+    func_800052EC(0);
+    func_800052EC(1);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80009CE0.s")
+    s0 = D_800AA488[t9].unk_00;
+    a3 = D_800AA488[nv].unk_00;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80009E8C.s")
-/*extern s32 D_800801F0;
-extern s32 D_80080234;
-void func_80009E8C(void) {
+    D_800AA488[PLAYER_1].unk_80 |= 0x400000;
+    D_800AA488[PLAYER_2].unk_80 |= 0x400000;
+
+    s0->pos.x = sp58[1].x;
+    s0->pos.y = sp58[1].y;
+    s0->pos.z = sp58[1].z;
+    a3->pos.x = sp58[0].x;
+    a3->pos.y = sp58[0].y;
+    a3->pos.z = sp58[0].z;
+
+    if (!arg0) {
+        if (D_800B6328[t9].characterId == SONORK) {
+            D_800AA488[t9].unk_00->pos.x -= 400;
+        } else if (D_800B6328[t9].characterId == DEMONICA) {
+            D_800AA488[t9].unk_00->pos.x += 1200;
+            if (D_800AA488[nv].unk_00) {} // required to match
+        }
+    }
+
+    s0->rotation.y = 0x400;
+
+    charId = D_800B6328[t9].characterId; // required to match
+    if ((charId == SONORK || charId == DEMONICA) && !arg0) {
+        a3->rotation.y = 0x400;
+    } else {
+        a3->rotation.y = 0xC00;
+    }
+
+    if (D_800B6328[t9].characterId != MORPHIX) {
+        s0->flags |= 0x10000000;
+    }
+    a3->flags |= 0x10000000;
+
+    D_8005BFC0 |= 4;
+    gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
+    gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = TRUE;
+    D_800801F0 = 0;
+
+    D_800AA488[PLAYER_1].unk_80 |= 0x100000;
+    D_800AA488[PLAYER_2].unk_80 |= 0x100000;
+    D_800AA488[PLAYER_1].unk_18->unk_00 |= 0x80;
+    D_800AA488[PLAYER_2].unk_18->unk_00 |= 0x80;
+
+    func_8002DA08(gCamera);
+    func_80007DB0(&D_800AA488[nv], a3, 0x4000);
+    func_80007DB0(&D_800AA488[t9], s0, 0x4000);
+    D_8008012C |= 4;
+    load_background("bg2", 0, -27, 0x2000, 0x10000, 0, nv);
+    load_background("bg0", nv * 0, 8, 0x1000, 0x10000, 1, nv);
+    func_8000965C(7);
+    func_8001B5B0("arena", nv);
+    D_800801F0 = 1;
+}
+
+void func_800099F0(void) {
+    u16 sp7E;
+    u16 sp24;
+    char sp2C[80];
+
+    sp7E = D_800B6328[PLAYER_2].unk_06;
+    sp24 = 1 - sp7E;
+    D_800B6328[PLAYER_1].unk_10 = D_800B6328[PLAYER_2].unk_10 = 0;
     D_800801F0 = 1;
     D_80080234 = 1;
-}*/
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_8000A298.s")
-void func_8000A298(void);
+    switch (D_800B6328[sp24].characterId) {
 
-s32 D_800494C0[] = { 0, 0 };
+        case AARON:
+            str_copy(sp2C, "/aaro/aarogend");
+            break;
+        case DEMITRON:
+            str_copy(sp2C, "/demi/demigend");
+            break;
+        case DEMONICA:
+            str_copy(sp2C, "/demo/demogend");
+            break;
+        case EVE:
+            str_copy(sp2C, "/eve/evegend");
+            break;
+        case GORE:
+            str_copy(sp2C, "/gore/goregend");
+            break;
+        case MORPHIX:
+            str_copy(sp2C, "/morp/morpgend");
+            break;
+        case NIIKI:
+            str_copy(sp2C, "/niik/niikgend");
+            break;
+        case SCARLET:
+            str_copy(sp2C, "/scar/scargend");
+            break;
+        case SONORK:
+            str_copy(sp2C, "/sono/sonogend");
+            break;
+        case ZENMURON:
+            str_copy(sp2C, "/zenm/zenmgend");
+            break;
+    }
+
+    asset_open_folder(sp2C, 0x4000);
+    if (str_compare(sp2C, "/demi/demigend") != 0) {
+        if (D_800B6328[sp24].characterId != SONORK && D_800B6328[sp24].characterId != DEMONICA) {
+            asset_open_folder("/demi/demigend", 0x4000);
+        }
+    }
+
+    switch (D_800B6328[sp24].characterId) {
+        case DEMONICA:
+            asset_open_folder("/demi/demigen3", 0x4000);
+            create_worker(func_8001A98C, 0x1000);
+            break;
+        case SONORK:
+            asset_open_folder("/demi/demigen2", 0x4000);
+            create_worker(func_8001A98C, 0x1000);
+            break;
+    }
+
+    func_800096D0(FALSE);
+    asset_open_folder("/demi/demidust", 0xABAB);
+    func_8000636C(&D_800AA488[sp7E], 365, 1);
+    func_8000636C(&D_800AA488[sp24], 366, 1);
+    create_worker(func_8001A7DC, 0x1000);
+    func_80001D88();
+    func_8002630C(0x4000);
+    func_8002630C(0xABAB);
+    gGameMode = GAME_MODE_35;
+}
+
+void func_80009CE0(void) {
+    u16 sp56;
+    u16 sp54;
+    char sp48[12];
+    char sp3C[12];
+    Object *obj;
+
+    sp56 = 1 - D_800B6328[PLAYER_2].unk_02;
+    sp54 = D_800AA488[sp56].unk_06;
+
+    asset_open_folder("/title/ending", 0x4000);
+
+    str_copy(sp48, "/");
+    str_concat(sp48, D_8004B844[sp54].unk_04->unk_00);
+    str_concat(sp48, "/");
+    str_concat(sp48, D_8004B844[sp54].unk_04->unk_00);
+    str_concat(sp48, "end");
+    asset_open_folder(sp48, 0x4000);
+
+    str_copy(sp3C, D_8004B844[sp54].unk_04->unk_00);
+    str_concat(sp3C, "end");
+    D_80081254 = load_background(sp3C, 0, 250, 0, 0, 2, 0x4000);
+    D_80081250 = D_80081254->height;
+
+    obj = create_worker(func_8001A4FC, 0x1000);
+    obj->vars[2] = 5;
+    obj->vars[1] = 0;
+    obj->vars[0] = 0;
+
+    D_80080129 = FALSE;
+    D_8005BFC0 |= 4;
+    func_8002EA50(gCamera, sp56);
+}
+
+void func_80009E8C(void) {
+    Object *obj;
+    UnkSam *a3;
+    Vec4i spA0 = { -600, 0, -30, 0 };
+    Vec4i sp90 = { -400, 0, 200, 0 };
+    Vec4i sp80 = { -400, 0, 0, 0 };
+    u16 sp7E;
+    u16 sp24;
+    Player *player1;
+    Player *player2;
+    char sp2C[72];
+
+    sp7E = D_800B6328[PLAYER_2].unk_06;
+    sp24 = 1 - sp7E;
+
+    player2 = &D_800AA488[sp24];
+    player1 = &D_800AA488[sp7E];
+
+    D_800801F0 = 1;
+    D_80080234 = 1;
+    D_800B6328[sp7E].unk_10 = D_800B6328[sp24].unk_10 = 0;
+
+    switch (D_800B6328[sp24].characterId) {
+        case AARON:
+            str_copy(sp2C, "/aaro/aaroclos");
+            break;
+        case DEMITRON:
+            str_copy(sp2C, "/demi/demiclos");
+            break;
+        case DEMONICA:
+            str_copy(sp2C, "/demo/democlos");
+            break;
+        case EVE:
+            str_copy(sp2C, "/eve/eveclos");
+            break;
+        case GORE:
+            str_copy(sp2C, "/gore/goreclos");
+            break;
+        case MORPHIX:
+            str_copy(sp2C, "/morp/morpclos");
+            break;
+        case NIIKI:
+            str_copy(sp2C, "/niik/niikclos");
+            break;
+        case SCARLET:
+            str_copy(sp2C, "/scar/scarclos");
+            break;
+        case SONORK:
+            str_copy(sp2C, "/sono/sonoclos");
+            break;
+        case ZENMURON:
+            str_copy(sp2C, "/zenm/zenmclos");
+            break;
+    }
+    asset_open_folder(sp2C, 0x4000);
+
+    if (D_800B6328[sp24].characterId == DEMONICA) {
+        str_copy(sp2C, "/demi/demigen3");
+    } else {
+        str_copy(sp2C, "/demi/demigen2");
+    }
+    asset_open_folder(sp2C, 0x4000);
+
+    func_800096D0(TRUE);
+    func_8000636C(player1, 252, 1);
+    func_8000636C(player2, 367, 1);
+    player1->unk_00->flags |= 4;
+    func_80009CE0();
+
+    asset_open_folder("/demi/relic", 0x4000);
+    a3 = gAssets[asset_find("relic.k5", 0x4000)].aux_data;
+    obj = func_8002BFF0(&sp80, 0x1000, func_80008D64, a3);
+    obj->unk_088.a = 80;
+
+    if (D_800B6328[sp24].characterId == SONORK || D_800B6328[sp24].characterId == DEMONICA) {
+        if (sp24 != 0) {
+            a3 = gAssets[asset_find("dheadp2.k2", 0x4000)].aux_data;
+        } else {
+            a3 = gAssets[asset_find("dheadp1.k2", 0x4000)].aux_data;
+        }
+        obj = func_8002BFF0(&sp80, 0x1000, NULL, a3);
+        obj->rotation.y = -1179;
+        obj->unk_088.a = 255;
+        obj->flags |= 0x10000000;
+    }
+
+    func_80001D88();
+    func_800263A8();
+}
+
+void func_8000A298(void) {
+    s32 i;
+
+    D_800801F1 = 1;
+    D_800B6328[PLAYER_1].unk_0A = D_800B6328[PLAYER_2].unk_0A = 0;
+
+    for (i = 0; i < 11; i++) {
+        D_800B6350[PLAYER_2][i] = 0;
+        D_800B6350[PLAYER_1][i] = 0;
+    }
+
+    D_800B6328[PLAYER_1].unk_0F = D_800B6328[PLAYER_2].unk_0F = 1;
+    gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = TRUE;
+    D_800B6328[PLAYER_1].unk_0C = D_800B6328[PLAYER_2].unk_0C = 400;
+    D_800B6328[PLAYER_1].unk_04 = D_800B6328[PLAYER_2].unk_04 = 0;
+}
 
 void run_0_mode(void) {
     Object *v1;
-    UIElement sp40 = { 83, func_80019A9C, 0, 0x1000, "options2.sp2" };
+    UIElement sp40 = { OPTIONS_PRESS_START, func_80019A9C, 0, 0x1000, "options2.sp2" };
     Vec4i sp30 = { 164, 155, 0, 0 };
 
     func_800263A8();
@@ -728,27 +1290,27 @@ void run_1_mode(void) {
     s0 = create_ui_element(&spD4, &sp1AC, 0x2000);
 
     v0 = create_ui_element(&spC4, &sp198, 0x2000);
-    v0->unk_084 = D_8004C1E4 + 202;
+    v0->spriteId = D_8004C1E4 + 202;
     v0->vars[3] = s0;
 
     v0 = create_ui_element(&spB4, &sp184, 0x2000);
-    v0->unk_084 = D_8004C1D4 + 51;
+    v0->spriteId = D_8004C1D4 + 51;
     v0->vars[3] = s0;
 
     v0 = create_ui_element(&spA4, &sp170, 0x2000);
-    v0->unk_084 = D_8004C1D0 + 11;
+    v0->spriteId = D_8004C1D0 + 11;
     v0->vars[3] = s0;
 
     v0 = create_ui_element(&sp94, &sp15C, 0x2000);
-    v0->unk_084 = D_8004A428 + 7;
+    v0->spriteId = D_8004A428 + 7;
     v0->vars[3] = s0;
 
     v0 = create_ui_element(&sp84, &sp148, 0x2000);
-    v0->unk_084 = gMusicVolume / (0x8000 / 9) + 11;
+    v0->spriteId = gMusicVolume / (0x8000 / 9) + 11;
     v0->vars[3] = s0;
 
     v0 = create_ui_element(&sp74, &sp134, 0x2000);
-    v0->unk_084 = gSoundVolume / (0x8000 / 9) + 11;
+    v0->spriteId = gSoundVolume / (0x8000 / 9) + 11;
     v0->vars[3] = s0;
 
     v0 = create_ui_element(&sp64, &sp120, 0x2000);
@@ -780,28 +1342,28 @@ void func_8000AFA4(Object *obj, s16 arg1) {
 
     switch (i) {
         case 0:
-            obj->unk_084 = 67;
+            obj->spriteId = 67;
             break;
         case 1:
-            obj->unk_084 = 65;
+            obj->spriteId = 65;
             break;
         case 2:
-            obj->unk_084 = 68;
+            obj->spriteId = 68;
             break;
         case 3:
-            obj->unk_084 = 66;
+            obj->spriteId = 66;
             break;
         case 4:
-            obj->unk_084 = 61;
+            obj->spriteId = 61;
             break;
         case 5:
-            obj->unk_084 = 64;
+            obj->spriteId = 64;
             break;
         case 6:
-            obj->unk_084 = 63;
+            obj->spriteId = 63;
             break;
         case 7:
-            obj->unk_084 = 62;
+            obj->spriteId = 62;
             break;
     }
 }

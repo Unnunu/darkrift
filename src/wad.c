@@ -635,8 +635,8 @@ void asset_load_sp2(Asset *asset) {
     }
 
     for (i = 0; i < header->numSprites; i++, entry++) {
-        entry->unk_04 = entry->unk_04 + (s32) header;
-        entry->unk_0C = textures[entry->tex_index];
+        entry->parts = entry->parts + (s32) header;
+        entry->texture = textures[entry->tex_index];
     }
 
     func_800010D4(asset->memory_slot, func_80027004, 0);

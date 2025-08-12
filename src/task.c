@@ -29,8 +29,8 @@ void task_execute(Object *obj) {
         obj->currentTask = task;
         flags = task->flags;
 
-        if (((flags & 4) && obj->unk_084 >= task->unk_86) || ((flags & 8) && task->unk_86 < (gFrameCounter & 0xFFFF)) ||
-            ((flags & 0x10) && (flags & 0x20))) {
+        if (((flags & 4) && obj->spriteId >= task->unk_86) ||
+            ((flags & 8) && task->unk_86 < (gFrameCounter & 0xFFFF)) || ((flags & 0x10) && (flags & 0x20))) {
             GlobalObjBSub *unk_90 = &task->unk_90;
 
             if (unk_90->flags & 0x40) {

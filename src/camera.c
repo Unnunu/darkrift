@@ -37,7 +37,7 @@ void func_80038E00(Object *obj, s32 arg1) {
 
     model->unk_A0C = 0;
     obj->unk_086 = model->unk_A0E = -1;
-    obj->unk_084 = 0;
+    obj->spriteId = 0;
 
     *model->unk_12C = arg1;
 
@@ -67,7 +67,7 @@ void func_80038E8C(Object *obj, Vec3i *arg1, s32 arg2, s32 arg3) {
     model->unk_A0C = 0;
     obj->unk_086 = model->unk_A0E;
 
-    obj->unk_084 = 0;
+    obj->spriteId = 0;
 
     obj->model->unk_A08 = 0x7FFF;
 
@@ -146,10 +146,10 @@ void camera_update(Object *obj) {
             model->unk_A0E = model->unk_A0C;
         }
 
-        if (obj->unk_084 != obj->unk_086) {
+        if (obj->spriteId != obj->unk_086) {
             func_800371C0(obj);
             func_8003635C(obj);
-            obj->unk_086 = obj->unk_084;
+            obj->unk_086 = obj->spriteId;
 
             unused = model->unk_404[0].x; // required to match
             if (unused != 0 || model->unk_404[0].y != 0 || model->unk_404[0].z != 0) {

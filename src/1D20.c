@@ -245,13 +245,13 @@ void func_80001C6C(void) {
     }
     gTasksDisabled = FALSE;
 
-    while (gPlayerInput[0].unk_00 == (INP_START | INP_ZTRIG) || gPlayerInput[1].unk_00 == (INP_START | INP_ZTRIG)) {
+    while (gPlayerInput[0].buttons == (INP_START | INP_ZTRIG) || gPlayerInput[1].buttons == (INP_START | INP_ZTRIG)) {
         func_8000132C();
     }
 
     gGameMode = GAME_MODE_0;
 
-    while (gPlayerInput[0].unk_00 == (INP_START | INP_ZTRIG) || gPlayerInput[1].unk_00 == (INP_START | INP_ZTRIG)) {
+    while (gPlayerInput[0].buttons == (INP_START | INP_ZTRIG) || gPlayerInput[1].buttons == (INP_START | INP_ZTRIG)) {
         func_8000132C();
     }
 
@@ -263,10 +263,10 @@ void func_80001D88(void) {
     D_8005BFCE = D_8005BEF8 = D_8005BEF0 = D_8005BEE8 = D_8005BEE0 = 0;
 
     while (!(D_8005BFC0 & 1) || !(D_8005BFC0 & 0x1000)) {
-        if (!(D_8005BFC0 & 0x200) && !(D_8005BFC0 & 0x4) && gPlayerInput[0].unk_00 == INP_START &&
+        if (!(D_8005BFC0 & 0x200) && !(D_8005BFC0 & 0x4) && gPlayerInput[0].buttons == INP_START &&
             gPlayerInput[0].unk_0A && gPlayerInput[0].unk_08) {
             func_800019B0(0);
-        } else if (!(D_8005BFC0 & 0x200) && !(D_8005BFC0 & 0x4) && gPlayerInput[1].unk_00 == INP_START &&
+        } else if (!(D_8005BFC0 & 0x200) && !(D_8005BFC0 & 0x4) && gPlayerInput[1].buttons == INP_START &&
                    gPlayerInput[1].unk_0A && gPlayerInput[1].unk_08) {
             func_800019B0(1);
         }

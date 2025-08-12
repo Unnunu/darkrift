@@ -1,20 +1,25 @@
 #include "common.h"
 
-typedef struct UnkSigma {
-    /* 0x00 */ u16 *unk_00;
-    /* 0x04 */ void (*unk_04)(s16, u16, u16);
-    /* 0x08 */ s16 unk_08;
-    /* 0x0A */ s16 unk_0A;
-} UnkSigma; // size = 0xC
+#define VAR_PLAYER_ID 0
+#define VAR_SPRITE_ID_SUM 1
+#define VAR_COUNTER 2
 
-typedef struct UnkRho {
-    /* 0x00 */ UnkSigma *unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 buttons;
-} UnkRho;
+#define CHEAT_END 0xFFFF
 
-extern u16 D_8013C494;
-extern Object *D_80081660[2];
+typedef struct CheatCode {
+    /* 0x00 */ u16 *sequence;
+    /* 0x04 */ void (*handler)(s16, u16, u16);
+    /* 0x08 */ s16 param1;
+    /* 0x0A */ s16 param2;
+} CheatCode; // size = 0xC
+
+typedef struct CheatCodeState {
+    /* 0x00 */ CheatCode *cheat;
+    /* 0x04 */ s32 numValid;
+    /* 0x08 */ s32 current_buttons;
+} CheatCodeState;
+
+extern Object *gCharacterPortrait[2];
 extern s16 D_80080230;
 extern u32 D_80081668;
 extern u8 D_8004A428;
@@ -29,7 +34,7 @@ u8 D_80049DF4 = 0;
 #pragma GLOBAL_ASM("asm/nonmatchings/1EA10/func_8001DFE4.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1EA10/func_8001E188.s")
-u8 func_8001E188(s32 arg0);
+u8 func_8001E188(u8 arg0);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1EA10/func_8001E378.s")
 void func_8001E378(Object *);
@@ -52,9 +57,9 @@ void func_8001EA24(Object *);
 #ifdef NON_MATCHING
 void func_8001EB58(Object *obj) {
     s16 s1;
-    UIElement sp100 = { 11, NULL, 0, 0x1000, "bars.sp2" };
-    UIElement spEC = { 39, func_8001EA24, 0, 0x1000, "bars.sp2" };
-    UIElement spD8 = { 28, NULL, 0, 0x1000, "bars.sp2" };
+    UIElement empty_bar = { 11, NULL, 0, 0x1000, "bars.sp2" };
+    UIElement two_triangles = { 39, func_8001EA24, 0, 0x1000, "bars.sp2" };
+    UIElement digit_zero = { 28, NULL, 0, 0x1000, "bars.sp2" };
     Vec4i spB8[] = { { 78, 220, 0, 0 }, { 248, 220, 0, 0 } };
     Vec4i sp98[] = { { 77, 220, 0, 0 }, { 248, 220, 0, 0 } };
     Vec4i sp78[] = { { 39, 216, 0, 0 }, { 289, 216, 0, 0 } };
@@ -68,33 +73,33 @@ void func_8001EB58(Object *obj) {
 
     s1 = obj->vars[0];
 
-    s3 = create_ui_element(&spB8[s1], &sp100, CONTEXT_EEFF);
-    v0 = create_ui_element(&sp78[s1], &spEC, CONTEXT_EEFF);
+    s3 = create_ui_element(&spB8[s1], &empty_bar, CONTEXT_EEFF);
+    v0 = create_ui_element(&sp78[s1], &two_triangles, CONTEXT_EEFF);
     v0->vars[0] = s1;
     v0->vars[3] = s3;
-    s3 = create_ui_element(&sp98[s1], &sp100, CONTEXT_EEFF);
-    s3->unk_084 = 15 - s1;
+    s3 = create_ui_element(&sp98[s1], &empty_bar, CONTEXT_EEFF);
+    s3->spriteId = 15 - s1;
     v0->vars[4] = s3;
 
     v03 = func_8001E5D8(s1);
     if (s1 == 0) {
-        D_8013C234 = s3->sprite_map->sprites[15].unk_04;
+        D_8013C234 = s3->sprite_map->sprites[15].parts;
         D_8013C234->unk_10 = D_8013C234->unk_10 - D_8013C234->unk_04 + D_8013C234->unk_08 - v03 - 8;
         D_8013C234->unk_04 = D_8013C234->unk_08 - v03 - 8;
         v0->vars[1] = 119;
         v0->pos.x = 119 - v03;
     } else {
-        D_8013C238 = s3->sprite_map->sprites[14].unk_04;
+        D_8013C238 = s3->sprite_map->sprites[14].parts;
         D_8013C238->unk_08 = D_8013C238->unk_04 + v03;
         v0->vars[1] = 0xD1;
         v0->pos.x = 0xD1 + v03;
     }
 
-    s2 = create_ui_element(&sp58[s1], &spD8, CONTEXT_EEFF);
+    s2 = create_ui_element(&sp58[s1], &digit_zero, CONTEXT_EEFF);
     sp58[s1].x += 10;
-    s2a = create_ui_element(&sp58[s1], &spD8, CONTEXT_EEFF);
+    s2a = create_ui_element(&sp58[s1], &digit_zero, CONTEXT_EEFF);
     sp58[s1].x += 10;
-    s2b = create_ui_element(&sp58[s1], &spD8, CONTEXT_EEFF);
+    s2b = create_ui_element(&sp58[s1], &digit_zero, CONTEXT_EEFF);
     s2b->vars[0] = s1;
 
     func_8001E834(s2b, s2a, s2);
@@ -120,19 +125,19 @@ Vec4i D_80049E74[] = { { 0x27, 0xD8, 0, 0 }, { 0x121, 0xD8, 0, 0 } };
 Vec4i D_80049E94[] = { { 0x3C, 0xCB, 0, 0 }, { 0xE5, 0xCB, 0, 0 } };
 #endif
 
-void func_8001EF28(Object *obj) {
+void plyrsel_portrait_update_2(Object *obj) {
     Object *unkObj;
     s16 v1;
-    s16 charId;
+    s16 playerId;
 
     if (!(D_8005BFC0 & 0x1000)) {
         return;
     }
 
-    charId = obj->vars[0];
-    unkObj = obj->vars[5];
+    playerId = obj->vars[0];
+    unkObj = obj->varObj[5];
 
-    if (D_800B6328[1 - charId].unk_02 == 0 && unkObj->vars[8] == 0) {
+    if (D_800B6328[1 - playerId].unk_02 == 0 && unkObj->vars[8] == 0) {
         return;
     }
 
@@ -141,29 +146,29 @@ void func_8001EF28(Object *obj) {
     }
 
     obj->vars[2] = 15;
-    if (obj->unk_084 >= 5) {
-        v1 = obj->unk_084 + 1;
+    if (obj->spriteId >= 5) {
+        v1 = obj->spriteId + 1;
     } else {
-        v1 = obj->unk_084;
+        v1 = obj->spriteId;
     }
 
     if (obj->vars[6] == 9 || obj->vars[6] == 1) {
         v1 = obj->vars[6];
-        obj->unk_084 = v1 - (v1 == SONORK);
+        obj->spriteId = v1 - (v1 == SONORK);
     }
 
     if (v1 == obj->vars[6]) {
-        sound_play(2, D_8004A428 != 0 ? 0 : charId + 4);
+        sound_play(2, D_8004A428 != 0 ? 0 : playerId + 4);
         func_8001E540(obj, unkObj);
-        unkObj = obj->vars[4];
+        unkObj = obj->varObj[4];
         unkObj->vars[7] = 20;
         obj->currentTask->flags |= 0x80;
         return;
     }
 
-    sound_play(2, 6 + charId);
+    sound_play(2, 6 + playerId);
 
-    if (func_8002C310(v1 - obj->vars[6]) <= 5) {
+    if (abs(v1 - obj->vars[6]) <= 5) {
         if (v1 < obj->vars[6]) {
             v1++;
             if (v1 == CHARACTER_5 || v1 == SONORK || v1 == DEMITRON) {
@@ -196,13 +201,13 @@ void func_8001EF28(Object *obj) {
     }
 
     if (v1 >= CHARACTER_5) {
-        obj->unk_084 = v1 - 1;
+        obj->spriteId = v1 - 1;
     } else {
-        obj->unk_084 = v1;
+        obj->spriteId = v1;
     }
 }
 
-void func_8001F1D4(Object *obj) {
+void plyrsel_portrait_update(Object *obj) {
     s16 a1;
     s16 v0;
     s16 v1;
@@ -214,18 +219,18 @@ void func_8001F1D4(Object *obj) {
     a1 = obj->vars[1];
 
     if (D_80080230 == 40) {
-        Object *unkObj = obj->vars[5];
-        if (a3 != D_8013C494) {
+        Object *unkObj = obj->varObj[5];
+        if (a3 != gPracticingPlayer) {
             if (unkObj->vars[8] == 0) {
                 obj->vars[1] = 0x800;
                 obj->vars[2] = 60;
                 return;
             }
         }
-        tmp2 = D_8013C494;
-        obj->vars[1] = v1 = gPlayerInput[tmp2].unk_00;
+        tmp2 = gPracticingPlayer;
+        obj->vars[1] = v1 = gPlayerInput[tmp2].buttons;
     } else {
-        obj->vars[1] = v1 = gPlayerInput[a3].unk_00;
+        obj->vars[1] = v1 = gPlayerInput[a3].buttons;
     }
 
     tmp = obj->vars[2]--;
@@ -234,22 +239,22 @@ void func_8001F1D4(Object *obj) {
         if (v1 & INP_START) {
             Object *unkObj;
             sound_play(2, D_8004A428 != 0 ? 0 : a3 + 4);
-            unkObj = obj->vars[4];
+            unkObj = obj->varObj[4];
             unkObj->vars[7] = 20;
 
             if (D_80080230 == 20) {
                 func_8001EB58(obj);
             } else {
-                func_8001E540(obj, obj->vars[5]);
+                func_8001E540(obj, obj->varObj[5]);
                 if (D_80080230 == 10 || D_80080230 == 11) {
-                    D_80081660[1 - a3]->vars[6] = func_8001E188((u8) (1 - a3));
+                    gCharacterPortrait[1 - a3]->vars[6] = func_8001E188(1 - a3);
                 }
                 obj->currentTask->flags |= 0x80;
             }
         } else if (v1 & (INP_LEFT | INP_RIGHT)) {
             sound_play(2, 6 + a3);
 
-            v0 = obj->unk_084;
+            v0 = obj->spriteId;
             if (v1 & INP_LEFT) {
                 v0--;
             } else {
@@ -270,26 +275,26 @@ void func_8001F1D4(Object *obj) {
                 v0 = 0;
             }
 
-            obj->unk_084 = v0;
+            obj->spriteId = v0;
         }
     }
 }
 
-void func_8001F450(Object *obj) {
+void plyrsel_player_label_update(Object *obj) {
     if (obj->vars[7] != 0) {
         if (obj->vars[8]-- == 0) {
-            obj->unk_084 = obj->vars[0] * 4 - obj->unk_084 + 171;
-            obj->vars[8] = -254 - (obj->vars[0] * 2 - obj->unk_084) * 3;
+            obj->spriteId = obj->vars[0] * 4 - obj->spriteId + 171;
+            obj->vars[8] = -254 - (obj->vars[0] * 2 - obj->spriteId) * 3;
         }
 
         if (--obj->vars[7] == 0) {
-            obj->unk_084 = obj->vars[0] * 2 + 86;
+            obj->spriteId = obj->vars[0] * 2 + 86;
             obj->currentTask->flags |= 0x80;
         }
     }
 }
 
-void func_8001F4E0(Object *obj) {
+void plyrsel_image_vs_update(Object *obj) {
     if (obj->vars[8] < 2) {
         return;
     }
@@ -297,15 +302,15 @@ void func_8001F4E0(Object *obj) {
     if (obj->vars[8] == 2) {
         obj->vars[8] = 3;
         obj->currentTask->counter = 10;
-        D_80081660[0]->flags |= 0x4000000;
-        D_80081660[1]->flags |= 0x4000000;
+        gCharacterPortrait[0]->flags |= OBJ_FLAG_4000000;
+        gCharacterPortrait[1]->flags |= OBJ_FLAG_4000000;
         return;
     }
 
     if (obj->vars[8] == 3) {
         obj->vars[8] = 4;
-        D_80081660[0]->flags |= 0x4000000;
-        D_80081660[1]->flags |= 0x4000000;
+        gCharacterPortrait[0]->flags |= OBJ_FLAG_4000000;
+        gCharacterPortrait[1]->flags |= OBJ_FLAG_4000000;
         obj->flags &= ~4;
         obj->currentTask->counter = 20;
         return;
@@ -321,9 +326,8 @@ void func_8001F4E0(Object *obj) {
     D_8005BFC0 |= 1;
 
     if (D_80080230 == 10 || D_80080230 == 11) {
-        gGameMode = D_800B6328[D_80081668].characterId + GAME_MODE_6;
+        gGameMode = D_800B6328[D_80081668].characterId + GAME_MODE_BATTLE_AARON;
         if (D_800B6328[0].unk_0A + D_800B6328[1].unk_0A == 0) {
-
             gGameMode = D_800B6328[1 - D_80081668].characterId + GAME_MODE_18;
             D_800B6328[1 - D_80081668].unk_06 = 1;
         } else {
@@ -333,67 +337,68 @@ void func_8001F4E0(Object *obj) {
             gGameMode = GAME_MODE_30;
         }
     } else {
-        gGameMode = D_800B6328[obj->vars[11]].characterId + GAME_MODE_6;
+        gGameMode = D_800B6328[obj->vars[11]].characterId + GAME_MODE_BATTLE_AARON;
         D_800B6328[obj->vars[11]].unk_06++;
     }
 
     obj->currentTask->flags |= 0x80;
 }
 
-void func_8001F6E8(Object *obj) {
+void plyrsel_practice_cpu_update(Object *obj) {
     s16 playerId;
-    Object *unkObj;
+    Object *playerLabel;
 
     if (obj->vars[2]-- < 0) {
         obj->vars[2] = 15;
-        obj->unk_084 = obj->vars[1] - obj->unk_084;
+        obj->spriteId = obj->vars[1] - obj->spriteId;
     }
 
     playerId = obj->vars[0];
-    unkObj = D_80081660[playerId]->vars[4];
-    if (unkObj->vars[7]) {
+    playerLabel = gCharacterPortrait[playerId]->varObj[4];
+    if (playerLabel->vars[7]) {
         obj->flags |= 0x10;
     }
 }
 
-void func_8001F748(Object *obj) {
-    if (obj->vars[2]-- < 0) {
-        obj->vars[2] = 15;
-        obj->unk_084 = obj->vars[1] - obj->unk_084;
+void plyrsel_practice_user_update(Object *obj) {
+    if (obj->vars[VAR_COUNTER]-- < 0) {
+        obj->vars[VAR_COUNTER] = 15;
+        obj->spriteId = obj->vars[VAR_SPRITE_ID_SUM] - obj->spriteId;
     }
 
-    if (gPlayerInput[obj->vars[0]].unk_00 & INP_START) {
-        obj->unk_084 = 26 - 2 * obj->vars[0];
-        obj->vars[1] = obj->unk_084 * 2 + 1;
-        obj->pos.x = 245 - obj->vars[0] * 167;
-        obj->vars[0] = 1 - obj->vars[0];
-        obj->currentTask->func = func_8001F6E8;
+    if (gPlayerInput[obj->vars[VAR_PLAYER_ID]].buttons & INP_START) {
+        obj->spriteId = PRACTICE_P2_CPU - 2 * obj->vars[0];
+        obj->vars[VAR_SPRITE_ID_SUM] = obj->spriteId * 2 + 1;
+        obj->pos.x = 245 - obj->vars[VAR_PLAYER_ID] * 167;
+
+        obj->vars[VAR_PLAYER_ID] = 1 - obj->vars[VAR_PLAYER_ID];
+        obj->currentTask->func = plyrsel_practice_cpu_update;
     }
 }
 
 void run_player_selection_mode(void) {
-    Object *sp1CC[2];
-    Object *sp1C4;
+    Object *player_labels[2];
+    Object *image_vs_obj;
     Object *obj;
     s16 player1;
-    Object *sp1B8;
-    UIElement portrait_p1 = { 0, func_8001F1D4, 0, 0x1000, "grpp1.sp2" };
-    UIElement portrait_p2 = { 0, func_8001F1D4, 0, 0x1000, "grpp2.sp2" };
-    UIElement sp17C = { 85, func_8001F450, 0, 0x1000, "options2.sp2" };
-    UIElement sp168 = { 87, func_8001F450, 0, 0x1000, "options2.sp2" };
-    UIElement sp154 = { 26, func_8001F4E0, 0, 0x1000, "bars.sp2" };
-    UIElement sp140 = { 0, func_8001E378, 0, 0x1000, "bars.sp2" };
-    UIElement sp12C = { 6, NULL, 0, 0x1000, "bars.sp2" };
-    UIElement sp118 = { 83, func_8001F6E8, 0, 0x1000, "options2.sp2" };
-    UIElement sp104 = { 20, func_8001F748, 0, 0x1000, "practice.sp2" };
-    UIElement spF0 = { 22, func_8001F748, 0, 0x1000, "practice.sp2" };
+    Object *tens_obj;
+    UIElement portrait_p1 = { GROUP1_AARON, plyrsel_portrait_update, 0, 0x1000, "grpp1.sp2" };
+    UIElement portrait_p2 = { GROUP2_AARON, plyrsel_portrait_update, 0, 0x1000, "grpp2.sp2" };
+    UIElement label_player1 = { OPTIONS_PLAYER_1, plyrsel_player_label_update, 0, 0x1000, "options2.sp2" };
+    UIElement label_player2 = { OPTIONS_PLAYER_2, plyrsel_player_label_update, 0, 0x1000, "options2.sp2" };
+    UIElement image_vs = { 26, plyrsel_image_vs_update, 0, 0x1000, "bars.sp2" };
+    UIElement counter_ones = { 0, func_8001E378, 0, 0x1000, "bars.sp2" };
+    UIElement counter_tens = { 6, NULL, 0, 0x1000, "bars.sp2" };
+    UIElement label_press_start = { OPTIONS_PRESS_START, plyrsel_practice_cpu_update, 0, 0x1000, "options2.sp2" };
+    UIElement p1_user = { PRACTICE_P1_USER, plyrsel_practice_user_update, 0, 0x1000, "practice.sp2" };
+    UIElement p2_user = { PRACTICE_P2_USER, plyrsel_practice_user_update, 0, 0x1000, "practice.sp2" };
     Vec4i portrait_p1_pos = { 84, 129, 0, 0 };
     Vec4i portrait_p2_pos = { 252, 129, 0, 0 };
-    Vec4i spC0 = { 56, 60, 0, 0 };
-    Vec4i spB0 = { 224, 60, 0, 0 };
-    Vec4i spA0 = { 162, 130, 0, 0 };
-    Vec4i sp90 = { 171, 75, 0, 0 };
-    Vec4i sp80 = { 158, 75, 0, 0 };
+    Vec4i label_player1_pos = { 56, 60, 0, 0 };
+    Vec4i label_player2_pos = { 224, 60, 0, 0 };
+    Vec4i image_vs_pos = { 162, 130, 0, 0 };
+    Vec4i counter_ones_pos = { 171, 75, 0, 0 };
+    Vec4i counter_tens_pos = { 158, 75, 0, 0 };
     Vec4i sp70 = { 82, 217, 0, 0 };
     Vec4i sp60 = { 251, 217, 0, 0 };
     Vec4i sp50 = { 78, 217, 0, 0 };
@@ -401,8 +406,8 @@ void run_player_selection_mode(void) {
     s16 char_p1, char_p2;
     s32 unused;
 
-    char_p1 = D_800B6328[0].characterId;
-    char_p2 = D_800B6328[1].characterId;
+    char_p1 = D_800B6328[PLAYER_1].characterId;
+    char_p2 = D_800B6328[PLAYER_2].characterId;
 
     if (char_p1 == DEMITRON && D_80049DF4 == 0) {
         char_p1 = GORE;
@@ -435,37 +440,37 @@ void run_player_selection_mode(void) {
 
     switch (D_80080230) {
         case 10:
-            obj = create_ui_element(&sp70, &sp118, CONTEXT_EEFF);
-            obj->vars[0] = 0;
-            obj->vars[1] = 0xA7;
+            obj = create_ui_element(&sp70, &label_press_start, CONTEXT_EEFF);
+            obj->vars[0] = PLAYER_1;
+            obj->vars[1] = 167;
             asset_open_folder("/plyrsel/select", CONTEXT_EEFF);
             break;
         case 11:
-            obj = create_ui_element(&sp60, &sp118, CONTEXT_EEFF);
-            obj->vars[0] = 1;
-            obj->vars[1] = 0xA7;
+            obj = create_ui_element(&sp60, &label_press_start, CONTEXT_EEFF);
+            obj->vars[0] = PLAYER_2;
+            obj->vars[1] = 167;
             asset_open_folder("/plyrsel/select", CONTEXT_EEFF);
             break;
         case 20:
         case 30:
         case 50:
-            obj = create_ui_element(&sp70, &sp118, CONTEXT_EEFF);
+            obj = create_ui_element(&sp70, &label_press_start, CONTEXT_EEFF);
             obj->vars[0] = 0;
-            obj->vars[1] = 0xA7;
-            obj = create_ui_element(&sp60, &sp118, CONTEXT_EEFF);
+            obj->vars[1] = 167;
+            obj = create_ui_element(&sp60, &label_press_start, CONTEXT_EEFF);
             obj->vars[0] = 1;
-            obj->vars[1] = 0xA7;
+            obj->vars[1] = 167;
             asset_open_folder("/plyrsel/select2", CONTEXT_EEFF);
             break;
         case 40:
-            if (D_8013C494 == 0) {
-                obj = create_ui_element(&sp50, &sp104, CONTEXT_EEFF);
-                obj->vars[0] = 0;
-                obj->vars[1] = 0x29;
+            if (gPracticingPlayer == PLAYER_1) {
+                obj = create_ui_element(&sp50, &p1_user, CONTEXT_EEFF);
+                obj->vars[VAR_PLAYER_ID] = PLAYER_1;
+                obj->vars[VAR_SPRITE_ID_SUM] = PRACTICE_P1_USER * 2 + 1;
             } else {
-                obj = create_ui_element(&sp40, &spF0, CONTEXT_EEFF);
-                obj->vars[0] = 1;
-                obj->vars[1] = 0x2D;
+                obj = create_ui_element(&sp40, &p2_user, CONTEXT_EEFF);
+                obj->vars[VAR_PLAYER_ID] = PLAYER_2;
+                obj->vars[VAR_SPRITE_ID_SUM] = PRACTICE_P2_USER * 2 + 1;
             }
             asset_open_folder("/plyrsel/select3", CONTEXT_EEFF);
             break;
@@ -473,65 +478,64 @@ void run_player_selection_mode(void) {
 
     load_background("select", 0, 8, 0, 0, 1, CONTEXT_EEFF);
 
-    D_80081660[0] = create_ui_element(&portrait_p1_pos, &portrait_p1, CONTEXT_EEFF);
-    D_80081660[0]->vars[0] = 0;
-    D_80081660[0]->unk_084 = char_p1;
-    D_80081660[0]->currentTask->counter = 20;
+    gCharacterPortrait[0] = create_ui_element(&portrait_p1_pos, &portrait_p1, CONTEXT_EEFF);
+    gCharacterPortrait[0]->vars[0] = PLAYER_1;
+    gCharacterPortrait[0]->spriteId = char_p1;
+    gCharacterPortrait[0]->currentTask->counter = 20;
 
-    D_80081660[1] = create_ui_element(&portrait_p2_pos, &portrait_p2, CONTEXT_EEFF);
-    D_80081660[1]->vars[0] = 1;
-    D_80081660[1]->unk_084 = char_p2;
-    D_80081660[1]->currentTask->counter = 20;
+    gCharacterPortrait[1] = create_ui_element(&portrait_p2_pos, &portrait_p2, CONTEXT_EEFF);
+    gCharacterPortrait[1]->vars[0] = PLAYER_2;
+    gCharacterPortrait[1]->spriteId = char_p2;
+    gCharacterPortrait[1]->currentTask->counter = 20;
 
-    sp1CC[0] = create_ui_element(&spC0, &sp17C, CONTEXT_EEFF);
-    sp1CC[0]->vars[0] = 0;
+    player_labels[0] = create_ui_element(&label_player1_pos, &label_player1, CONTEXT_EEFF);
+    player_labels[0]->vars[0] = PLAYER_1;
 
-    sp1CC[1] = create_ui_element(&spB0, &sp168, CONTEXT_EEFF);
-    sp1CC[1]->vars[0] = 1;
+    player_labels[1] = create_ui_element(&label_player2_pos, &label_player2, CONTEXT_EEFF);
+    player_labels[1]->vars[0] = PLAYER_2;
 
-    sp1C4 = create_ui_element(&spA0, &sp154, CONTEXT_EEFF);
-    sp1C4->flags |= 4;
-    sp1C4->vars[11] = -1;
-    sp1C4->flags |= 0x4000000;
+    image_vs_obj = create_ui_element(&image_vs_pos, &image_vs, CONTEXT_EEFF);
+    image_vs_obj->flags |= 4;
+    image_vs_obj->vars[11] = -1;
+    image_vs_obj->flags |= 0x4000000;
 
-    sp1B8 = create_ui_element(&sp80, &sp12C, CONTEXT_EEFF);
-
-    obj = create_ui_element(&sp90, &sp140, CONTEXT_EEFF);
+    tens_obj = create_ui_element(&counter_tens_pos, &counter_tens, CONTEXT_EEFF);
+    obj = create_ui_element(&counter_ones_pos, &counter_ones, CONTEXT_EEFF);
     obj->vars[2] = 60;
-    obj->vars[1] = sp1B8;
-    obj->vars[5] = sp1C4;
+    obj->varObj[1] = tens_obj;
+    obj->varObj[5] = image_vs_obj;
 
-    D_80081660[0]->vars[4] = sp1CC[0];
-    D_80081660[0]->vars[5] = sp1C4;
-    D_80081660[1]->vars[4] = sp1CC[1];
-    D_80081660[1]->vars[5] = sp1C4;
+    gCharacterPortrait[0]->varObj[4] = player_labels[0];
+    gCharacterPortrait[0]->varObj[5] = image_vs_obj;
+    gCharacterPortrait[1]->varObj[4] = player_labels[1];
+    gCharacterPortrait[1]->varObj[5] = image_vs_obj;
 
     switch (D_80080230) {
         case 10:
         case 11:
             player1 = (D_80080230 == 11);
-            D_80081660[1 - player1]->currentTask->func = func_8001EF28;
-            D_80081660[1 - player1]->currentTask->counter = 0;
-            D_80081660[1 - player1]->currentTask->flags = 1;
+            gCharacterPortrait[1 - player1]->currentTask->func = plyrsel_portrait_update_2;
+            gCharacterPortrait[1 - player1]->currentTask->counter = 0;
+            gCharacterPortrait[1 - player1]->currentTask->flags = 1;
 
             if (D_800B6328[player1].unk_08 != 0) {
-                D_80081660[1 - player1]->vars[6] = func_8001E188((u8) (1 - (u32) player1));
-                D_80081660[player1]->currentTask->flags |= 0x80;
-                sp1CC[player1]->vars[7] = 20;
-                sp1C4->vars[8] = 1;
-                sp1C4->vars[9 + player1] = D_800B6328[player1].characterId;
+                gCharacterPortrait[1 - player1]->vars[6] = func_8001E188(1 - (u32) player1);
+                gCharacterPortrait[player1]->currentTask->flags |= 0x80;
+                player_labels[player1]->vars[7] = 20;
+                image_vs_obj->vars[8] = 1;
+                image_vs_obj->vars[9 + player1] = D_800B6328[player1].characterId;
             }
             break;
         case 30:
-            D_80081660[0]->currentTask->func = func_8001EF28;
-            D_80081660[0]->currentTask->counter = 0;
-            D_80081660[0]->currentTask->flags = 1;
-            D_80081660[0]->vars[6] = func_8001E188(0);
+            gCharacterPortrait[0]->currentTask->func = plyrsel_portrait_update_2;
+            gCharacterPortrait[0]->currentTask->counter = 0;
+            gCharacterPortrait[0]->currentTask->flags = 1;
+            gCharacterPortrait[0]->vars[6] = func_8001E188(0);
 
-            D_80081660[1]->currentTask->func = func_8001EF28;
-            D_80081660[1]->currentTask->counter = 0;
-            D_80081660[1]->currentTask->flags = 1;
-            D_80081660[1]->vars[6] = func_8001E188(1);
+            gCharacterPortrait[1]->currentTask->func = plyrsel_portrait_update_2;
+            gCharacterPortrait[1]->currentTask->counter = 0;
+            gCharacterPortrait[1]->currentTask->flags = 1;
+            gCharacterPortrait[1]->vars[6] = func_8001E188(1);
             break;
         case 20:
         case 40:
@@ -541,8 +545,6 @@ void run_player_selection_mode(void) {
 
     func_80001D88();
     func_8002630C(CONTEXT_EEFF);
-
-    // TODO .data start
 }
 
 void func_800201A4(s16 playerId, u16 arg1, u16 arg2) {
@@ -601,160 +603,165 @@ void func_800203A8(s16 playerId, u16 charId, u16 gameMode) {
     gGameMode = gameMode;
 }
 
-u16 cheat_code_play_as_sonork[] = { INP_L, INP_R, INP_CUP, INP_CDOWN, INP_CLEFT, INP_CRIGHT, -1 };
-u16 cheat_code_play_as_sonork_or_demitron[] = { INP_A, INP_B, INP_R, INP_L, INP_CDOWN, INP_CUP, -1 };
+u16 cheat_code_play_as_sonork[] = { INP_L, INP_R, INP_CUP, INP_CDOWN, INP_CLEFT, INP_CRIGHT, CHEAT_END };
+u16 cheat_code_play_as_sonork_or_demitron[] = { INP_A, INP_B, INP_R, INP_L, INP_CDOWN, INP_CUP, CHEAT_END };
 
-u16 cheat_code_ending_aaron[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_R, INP_R, INP_CLEFT, -1 };
-u16 cheat_code_ending_demonica[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_R, INP_R, INP_CUP, -1 };
-u16 cheat_code_ending_eve[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_R, INP_R, INP_CRIGHT, -1 };
-u16 cheat_code_ending_gore[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_R, INP_R, INP_CDOWN, -1 };
-u16 cheat_code_ending_morphix[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_R, INP_R, INP_B, -1 };
-u16 cheat_code_ending_niiki[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_R, INP_R, INP_A, -1 };
-u16 cheat_code_ending_scarlet[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_L, INP_L, INP_CLEFT, -1 };
-u16 cheat_code_ending_sonork[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_L, INP_L, INP_CUP, -1 };
-u16 cheat_code_ending_zenmuron[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_L, INP_L, INP_CRIGHT, -1 };
-u16 cheat_code_ending_demitron[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_L, INP_L, INP_CDOWN, -1 };
+u16 cheat_code_ending_aaron[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_R, INP_R, INP_CLEFT, CHEAT_END };
+u16 cheat_code_ending_demonica[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_R, INP_R, INP_CUP, CHEAT_END };
+u16 cheat_code_ending_eve[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_R, INP_R, INP_CRIGHT, CHEAT_END };
+u16 cheat_code_ending_gore[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_R, INP_R, INP_CDOWN, CHEAT_END };
+u16 cheat_code_ending_morphix[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_R, INP_R, INP_B, CHEAT_END };
+u16 cheat_code_ending_niiki[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_R, INP_R, INP_A, CHEAT_END };
+u16 cheat_code_ending_scarlet[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_L, INP_L, INP_CLEFT, CHEAT_END };
+u16 cheat_code_ending_sonork[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_L, INP_L, INP_CUP, CHEAT_END };
+u16 cheat_code_ending_zenmuron[] = {
+    INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_L, INP_L, INP_CRIGHT, CHEAT_END
+};
+u16 cheat_code_ending_demitron[] = {
+    INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_L, INP_L, INP_CDOWN, CHEAT_END
+};
 
-u16 D_8004A114[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_B, INP_B, INP_B, INP_CUP, -1 };
+u16 D_8004A114[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_B, INP_B, INP_B, INP_CUP, CHEAT_END };
 
-u16 D_8004A128[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_B, INP_B, INP_B, INP_B, -1 };
-u16 D_8004A13C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_CLEFT, -1 };
-u16 D_8004A14C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_CUP, -1 };
-u16 D_8004A15C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_CRIGHT, -1 };
-u16 D_8004A16C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_CDOWN, -1 };
-u16 D_8004A17C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_A, INP_CLEFT, -1 };
-u16 D_8004A18C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_A, INP_CUP, -1 };
-u16 D_8004A19C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_A, INP_CRIGHT, -1 };
-u16 D_8004A1AC[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_A, INP_CDOWN, -1 };
+u16 D_8004A128[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_B, INP_B, INP_B, INP_B, CHEAT_END };
+u16 D_8004A13C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_CLEFT, CHEAT_END };
+u16 D_8004A14C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_CUP, CHEAT_END };
+u16 D_8004A15C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_CRIGHT, CHEAT_END };
+u16 D_8004A16C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_CDOWN, CHEAT_END };
+u16 D_8004A17C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_A, INP_CLEFT, CHEAT_END };
+u16 D_8004A18C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_A, INP_CUP, CHEAT_END };
+u16 D_8004A19C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_A, INP_CRIGHT, CHEAT_END };
+u16 D_8004A1AC[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_A, INP_CDOWN, CHEAT_END };
 
-u16 D_8004A1BC[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_CLEFT, -1 };
-u16 D_8004A1CC[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_CUP, -1 };
-u16 D_8004A1E0[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_CRIGHT, -1 };
-u16 D_8004A1F4[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_CDOWN, -1 };
-u16 D_8004A208[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_A, -1 };
-u16 D_8004A21C[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_B, INP_CLEFT, -1 };
-u16 D_8004A230[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_B, INP_CUP, -1 };
-u16 D_8004A244[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_B, INP_CRIGHT, -1 };
-u16 D_8004A258[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_B, INP_B, INP_CDOWN, -1 };
-u16 D_8004A270[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_B, INP_B, INP_A, -1 };
+u16 D_8004A1BC[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_CLEFT, CHEAT_END };
+u16 D_8004A1CC[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_CUP, CHEAT_END };
+u16 D_8004A1E0[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_CRIGHT, CHEAT_END };
+u16 D_8004A1F4[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_CDOWN, CHEAT_END };
+u16 D_8004A208[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_A, CHEAT_END };
+u16 D_8004A21C[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_B, INP_CLEFT, CHEAT_END };
+u16 D_8004A230[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_B, INP_CUP, CHEAT_END };
+u16 D_8004A244[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_B, INP_CRIGHT, CHEAT_END };
+u16 D_8004A258[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_B, INP_B, INP_CDOWN, CHEAT_END };
+u16 D_8004A270[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_B, INP_B, INP_A, CHEAT_END };
 
-UnkSigma D_8004A288[] = { { D_8004A114, func_80020298, 0, 0 },
-                          { cheat_code_play_as_sonork, func_800201A4, 1, 0 },
-                          { cheat_code_play_as_sonork_or_demitron, func_800201A4, 1, 1 },
-                          { cheat_code_ending_aaron, cheat_character_ending, 0, 0 },
-                          { cheat_code_ending_demonica, cheat_character_ending, 2, 0 },
-                          { cheat_code_ending_eve, cheat_character_ending, 3, 0 },
-                          { cheat_code_ending_gore, cheat_character_ending, 4, 0 },
-                          { cheat_code_ending_morphix, cheat_character_ending, 6, 0 },
-                          { cheat_code_ending_niiki, cheat_character_ending, 7, 0 },
-                          { cheat_code_ending_scarlet, cheat_character_ending, 8, 0 },
-                          { cheat_code_ending_sonork, cheat_character_ending, 9, 0 },
-                          { cheat_code_ending_zenmuron, cheat_character_ending, 10, 0 },
-                          { cheat_code_ending_demitron, cheat_character_ending, 1, 0 },
-                          { D_8004A13C, func_800202D0, 0, 0 },
-                          { D_8004A14C, func_800202D0, 1, 0 },
-                          { D_8004A15C, func_800202D0, 2, 0 },
-                          { D_8004A16C, func_800202D0, 3, 0 },
-                          { D_8004A17C, func_800202D0, 4, 0 },
-                          { D_8004A18C, func_800202D0, 5, 0 },
-                          { D_8004A19C, func_800202D0, 6, 0 },
-                          { D_8004A1AC, func_800202D0, 7, 0 },
-                          { D_8004A1BC, func_800203A8, AARON, GAME_MODE_6 },
-                          { D_8004A1CC, func_800203A8, DEMITRON, GAME_MODE_7 },
-                          { D_8004A1E0, func_800203A8, DEMONICA, GAME_MODE_8 },
-                          { D_8004A1F4, func_800203A8, EVE, GAME_MODE_9 },
-                          { D_8004A208, func_800203A8, GORE, GAME_MODE_10 },
-                          { D_8004A21C, func_800203A8, MORPHIX, GAME_MODE_12 },
-                          { D_8004A230, func_800203A8, NIIKI, GAME_MODE_13 },
-                          { D_8004A244, func_800203A8, SCARLET, GAME_MODE_14 },
-                          { D_8004A258, func_800203A8, SONORK, GAME_MODE_15 },
-                          { D_8004A270, func_800203A8, ZENMURON, GAME_MODE_16 },
-                          { D_8004A128, func_800202F0, 0, 0 },
-                          { NULL, NULL, 0, 0 } };
+CheatCode gCheatCodes[] = { { D_8004A114, func_80020298, 0, 0 },
+                            { cheat_code_play_as_sonork, func_800201A4, 1, 0 },
+                            { cheat_code_play_as_sonork_or_demitron, func_800201A4, 1, 1 },
+                            { cheat_code_ending_aaron, cheat_character_ending, 0, 0 },
+                            { cheat_code_ending_demonica, cheat_character_ending, 2, 0 },
+                            { cheat_code_ending_eve, cheat_character_ending, 3, 0 },
+                            { cheat_code_ending_gore, cheat_character_ending, 4, 0 },
+                            { cheat_code_ending_morphix, cheat_character_ending, 6, 0 },
+                            { cheat_code_ending_niiki, cheat_character_ending, 7, 0 },
+                            { cheat_code_ending_scarlet, cheat_character_ending, 8, 0 },
+                            { cheat_code_ending_sonork, cheat_character_ending, 9, 0 },
+                            { cheat_code_ending_zenmuron, cheat_character_ending, 10, 0 },
+                            { cheat_code_ending_demitron, cheat_character_ending, 1, 0 },
+                            { D_8004A13C, func_800202D0, 0, 0 },
+                            { D_8004A14C, func_800202D0, 1, 0 },
+                            { D_8004A15C, func_800202D0, 2, 0 },
+                            { D_8004A16C, func_800202D0, 3, 0 },
+                            { D_8004A17C, func_800202D0, 4, 0 },
+                            { D_8004A18C, func_800202D0, 5, 0 },
+                            { D_8004A19C, func_800202D0, 6, 0 },
+                            { D_8004A1AC, func_800202D0, 7, 0 },
+                            { D_8004A1BC, func_800203A8, AARON, GAME_MODE_BATTLE_AARON },
+                            { D_8004A1CC, func_800203A8, DEMITRON, GAME_MODE_BATTLE_DEMITRON },
+                            { D_8004A1E0, func_800203A8, DEMONICA, GAME_MODE_BATTLE_DEMONICA },
+                            { D_8004A1F4, func_800203A8, EVE, GAME_MODE_BATTLE_EVE },
+                            { D_8004A208, func_800203A8, GORE, GAME_MODE_BATTLE_GORE },
+                            { D_8004A21C, func_800203A8, MORPHIX, GAME_MODE_BATTLE_MORHIX },
+                            { D_8004A230, func_800203A8, NIIKI, GAME_MODE_BATTLE_NIIKI },
+                            { D_8004A244, func_800203A8, SCARLET, GAME_MODE_BATTLE_SCARLET },
+                            { D_8004A258, func_800203A8, SONORK, GAME_MODE_BATTLE_SONORK },
+                            { D_8004A270, func_800203A8, ZENMURON, GAME_MODE_BATTLE_ZENMURON },
+                            { D_8004A128, func_800202F0, 0, 0 },
+                            { NULL, NULL, 0, 0 } };
 
-s16 func_800203F0(u16 *arg0, u16 *arg1) {
-    s16 v1 = 0;
+s16 cheat_common_length(u16 *seq1, u16 *seq2) {
+    s16 length = 0;
 
-    while (*arg0 == *arg1) {
-        if (*arg1 == 0xFFFF || *arg0 == 0xFFFF) {
+    while (*seq1 == *seq2) {
+        if (*seq2 == CHEAT_END || *seq1 == CHEAT_END) {
             break;
         }
-        arg0++;
-        arg1++;
-        v1++;
+        seq1++;
+        seq2++;
+        length++;
     }
 
-    return v1;
+    return length;
 }
 
-void func_80020438(UnkRho *arg0, s16 playerId) {
-    UnkSigma *v0 = arg0->unk_00;
+void func_80020438(CheatCodeState *state, s16 playerId) {
+    CheatCode *cheat = state->cheat;
 
-    arg0->unk_04++;
-    if (v0->unk_00[arg0->unk_04] == 0xFFFF) {
+    state->numValid++;
+    if (cheat->sequence[state->numValid] == CHEAT_END) {
         sound_play(2, 9);
-        v0->unk_04(playerId, v0->unk_08, v0->unk_0A);
-        arg0->unk_00 = NULL;
-        arg0->unk_04 = 0;
+        cheat->handler(playerId, cheat->param1, cheat->param2);
+        state->cheat = NULL;
+        state->numValid = 0;
     }
 }
 
-void func_800204C0(UnkRho *arg0, s16 playerId) {
-    u16 v0;
-    UnkSigma *s1;
-    UnkSigma *ptr;
+void func_800204C0(CheatCodeState *state, s16 playerId) {
+    u16 raw_buttons;
+    CheatCode *current_cheat;
+    CheatCode *ptr;
     s32 unused;
 
     if (!gPlayerInput[playerId].unk_08) {
         return;
     }
-    v0 = gPlayerInput[playerId].unk_06;
-    if (!v0) {
+    raw_buttons = gPlayerInput[playerId].raw_buttons;
+    if (!raw_buttons) {
         return;
     }
 
-    if (v0 & (INP_UP | INP_DOWN | INP_LEFT | INP_RIGHT | INP_CRIGHT)) {
-        if (arg0->buttons == v0) {
+    if (raw_buttons & (INP_UP | INP_DOWN | INP_LEFT | INP_RIGHT | INP_CRIGHT)) {
+        if (state->current_buttons == raw_buttons) {
             gPlayerInput[playerId].unk_08 = FALSE;
             return;
         }
-        arg0->buttons = v0;
+        state->current_buttons = raw_buttons;
     }
 
     gPlayerInput[playerId].unk_08 = FALSE;
-    s1 = arg0->unk_00;
-    if (s1 != NULL) {
-        if (v0 == s1->unk_00[arg0->unk_04]) {
-            func_80020438(arg0, playerId);
+    current_cheat = state->cheat;
+    if (current_cheat != NULL) {
+        if (raw_buttons == current_cheat->sequence[state->numValid]) {
+            func_80020438(state, playerId);
             return;
         }
 
-        for (ptr = s1 + 1; ptr->unk_00 != NULL; ptr++) {
-            if (func_800203F0(s1->unk_00, ptr->unk_00) == arg0->unk_04 && v0 == ptr->unk_00[arg0->unk_04]) {
-                arg0->unk_00 = ptr;
-                func_80020438(arg0, playerId);
+        for (ptr = current_cheat + 1; ptr->sequence != NULL; ptr++) {
+            if (cheat_common_length(current_cheat->sequence, ptr->sequence) == state->numValid &&
+                raw_buttons == ptr->sequence[state->numValid]) {
+                state->cheat = ptr;
+                func_80020438(state, playerId);
                 return;
             }
         }
         gPlayerInput[playerId].unk_08 = TRUE;
         if (0) {} // required to match
 
-        arg0->unk_00 = NULL;
-        arg0->unk_04 = FALSE;
-        arg0->buttons = 0;
+        state->cheat = NULL;
+        state->numValid = FALSE;
+        state->current_buttons = 0;
         return;
     }
 
-    for (s1 = D_8004A288; s1->unk_00 != NULL; s1++) {
-        if (s1->unk_00[0] == v0) {
-            arg0->unk_00 = s1;
-            arg0->unk_04 = 1;
+    for (current_cheat = gCheatCodes; current_cheat->sequence != NULL; current_cheat++) {
+        if (current_cheat->sequence[0] == raw_buttons) {
+            state->cheat = current_cheat;
+            state->numValid = 1;
             return;
         }
     }
 }
 
 void func_80020670(Object *obj) {
-    func_800204C0((UnkRho *) &obj->vars[0], 0);
-    func_800204C0((UnkRho *) &obj->vars[8], 1);
+    func_800204C0((CheatCodeState *) &obj->vars[0], PLAYER_1);
+    func_800204C0((CheatCodeState *) &obj->vars[8], PLAYER_2);
 }

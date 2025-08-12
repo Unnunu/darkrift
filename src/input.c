@@ -131,7 +131,7 @@ void func_80024A90(s16 contId) {
         }
     }
 
-    gPlayerInput[contId].unk_06 = buttons;
+    gPlayerInput[contId].raw_buttons = buttons;
 
     if (gPlayerInput[contId].unk_0C) {
         buttons = func_800249B0(contId, buttons);
@@ -149,18 +149,19 @@ void func_80024A90(s16 contId) {
     }
 
     if (!gPlayerInput[contId].unk_08) {
-        gPlayerInput[contId].unk_04 = gPlayerInput[contId].unk_02;
+        gPlayerInput[contId].held_buttons = gPlayerInput[contId].prev_buttons;
     } else {
-        gPlayerInput[contId].unk_04 &= gPlayerInput[contId].unk_02;
+        gPlayerInput[contId].held_buttons &= gPlayerInput[contId].prev_buttons;
     }
 
-    gPlayerInput[contId].unk_00 = buttons & (~gPlayerInput[contId].unk_02 | ~0x9FF | ~gPlayerInput[contId].unk_04);
+    gPlayerInput[contId].buttons =
+        buttons & (~gPlayerInput[contId].prev_buttons | ~0x9FF | ~gPlayerInput[contId].held_buttons);
 
-    if (buttons != gPlayerInput[contId].unk_02 || (buttons & 0xE020) && !(buttons & 0xD0)) {
+    if (buttons != gPlayerInput[contId].prev_buttons || (buttons & 0xE020) && !(buttons & 0xD0)) {
         gPlayerInput[contId].unk_08 = TRUE;
     }
 
-    gPlayerInput[contId].unk_02 = buttons;
+    gPlayerInput[contId].prev_buttons = buttons;
 }
 #else
 #pragma GLOBAL_ASM("asm/nonmatchings/input/func_80024A90.s")
@@ -171,25 +172,25 @@ void func_80024C98(void) {
     gFrameCounter++;
     cont_read();
 
-    if (gPlayerInput[0].unk_0A && gPlayerInput[0].enabled) {
-        func_80024A90(0);
+    if (gPlayerInput[PLAYER_1].unk_0A && gPlayerInput[PLAYER_1].enabled) {
+        func_80024A90(PLAYER_1);
     } else {
-        gPlayerInput[0].unk_00 = 0;
+        gPlayerInput[PLAYER_1].buttons = 0;
     }
 
-    if (gPlayerInput[1].unk_0A && gPlayerInput[1].enabled) {
-        func_80024A90(1);
+    if (gPlayerInput[PLAYER_2].unk_0A && gPlayerInput[PLAYER_2].enabled) {
+        func_80024A90(PLAYER_2);
     } else {
-        gPlayerInput[1].unk_00 = 0;
+        gPlayerInput[PLAYER_2].buttons = 0;
     }
 }
 
 void func_80024D2C(void) {
-    gPlayerInput[0].unk_08 = gPlayerInput[1].unk_08 = 0;
-    gPlayerInput[0].unk_00 = gPlayerInput[1].unk_00 = 0;
+    gPlayerInput[0].unk_08 = gPlayerInput[1].unk_08 = FALSE;
+    gPlayerInput[0].buttons = gPlayerInput[1].buttons = 0;
     gPlayerInput[0].unk_09 = gPlayerInput[1].unk_09 = FALSE;
     gPlayerInput[1].unk_0A = gPlayerInput[0].unk_0A = TRUE;
-    gPlayerInput[1].unk_02 = gPlayerInput[0].unk_02 = 0;
+    gPlayerInput[1].prev_buttons = gPlayerInput[0].prev_buttons = 0;
     gPlayerInput[1].unk_0C = gPlayerInput[0].unk_0C = TRUE;
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = FALSE;
 }

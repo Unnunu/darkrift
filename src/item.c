@@ -194,7 +194,7 @@ void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(
     arg0->unk_060 = 0x100;
 
     arg0->unk_078 = 0;
-    arg0->unk_084 = 0;
+    arg0->spriteId = 0;
     arg0->unk_086 = -1;
     arg0->unk_088.a = 128;
     arg0->unk_1F8 = 0;
@@ -247,7 +247,7 @@ Object *create_worker(void (*fn_update)(Object *), s16 arg1) {
     return obj;
 }
 
-Object *create_ui_element(Vec3i *pos, UIElement *def, s32 context) {
+Object *create_ui_element(Vec4i *pos, UIElement *def, s32 context) {
     Object *obj;
 
     obj = obj_allocate(def->unk_0C);
@@ -255,7 +255,7 @@ Object *create_ui_element(Vec3i *pos, UIElement *def, s32 context) {
     obj->fn_update = func_80015724;
     obj->flags = def->flags;
     obj->flags |= 0x10000;
-    obj->unk_084 = def->spriteID;
+    obj->spriteId = def->spriteID;
     obj->sprite_map = gAssets[asset_find(def->map_name, context)].data;
 
     return obj;

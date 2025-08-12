@@ -34,5 +34,6 @@ extern Player12 D_800B6328[2];
 extern u8 D_800801F1;
 extern u8 D_800B6350[2][11];
 extern s16 D_80080230;
+extern u16 gPracticingPlayer; // wrong name probably
 
 #endif

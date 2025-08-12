@@ -23,7 +23,7 @@ extern s16 D_80080232;
 #pragma GLOBAL_ASM("asm/nonmatchings/1A0E0/func_80019A9C.s")
 
 void func_80019BD0(Object *obj) {
-    if (D_80080230 == 30 && ((gPlayerInput[0].unk_00 & INP_START) || (gPlayerInput[1].unk_00 & INP_START))) {
+    if (D_80080230 == 30 && ((gPlayerInput[0].buttons & INP_START) || (gPlayerInput[1].buttons & INP_START))) {
         D_8005BFC0 |= 1;
         gGameMode = GAME_MODE_0;
         obj->flags |= 0x10;

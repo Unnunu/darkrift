@@ -2,7 +2,7 @@
 
 const char D_80055010[] = "opencamX.oc";
 
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002C310.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/opencam/abs.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002C328.s")
 

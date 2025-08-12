@@ -617,10 +617,10 @@ void func_800371C0(Object *obj) {
     Model *model = obj->model;
     s32 s6 = FALSE;
 
-    if (obj->unk_084 & 1) {
+    if (obj->spriteId & 1) {
         s6 = TRUE;
     }
-    t7 = (obj->unk_084 + 1) >> 1;
+    t7 = (obj->spriteId + 1) >> 1;
 
     s0 = model->unk_A14;
     while (*(s32 *) s0 != -1) {
@@ -688,7 +688,7 @@ void func_80037CE4(Object *obj) {
 
     temp = obj->flags & 4; // required to match
 
-    index = obj->unk_084;
+    index = obj->spriteId;
     model = obj->model;
     sub2 = model->unk_A28;
     newvar = sub2->unk_154[index];
@@ -780,10 +780,10 @@ void func_800386E8(Object *obj) {
             model->unk_A0E = model->unk_A0C;
         }
 
-        if (obj->unk_084 != obj->unk_086) {
+        if (obj->spriteId != obj->unk_086) {
             func_800371C0(obj);
             func_8003635C(obj);
-            obj->unk_086 = obj->unk_084;
+            obj->unk_086 = obj->spriteId;
         }
 
         math_rotate(&mu->unk_98, &obj->rotation);

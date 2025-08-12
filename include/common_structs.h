@@ -102,10 +102,10 @@ typedef struct UnkDelta {
 } UnkDelta; // size = 0x20
 
 typedef struct PlayerInput {
-    /* 0x00 */ u16 unk_00;
-    /* 0x02 */ u16 unk_02;
-    /* 0x04 */ u16 unk_04;
-    /* 0x06 */ u16 unk_06;
+    /* 0x00 */ u16 buttons;
+    /* 0x02 */ u16 prev_buttons;
+    /* 0x04 */ u16 held_buttons;
+    /* 0x06 */ u16 raw_buttons;
     /* 0x08 */ u8 unk_08;
     /* 0x09 */ u8 unk_09;
     /* 0x0A */ char unk_0A;
@@ -363,10 +363,10 @@ typedef struct AssetSP2Sub3 {
 } AssetSP2Sub3; // size ?
 
 typedef struct AssetSP2Sub2 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ AssetSP2Sub3 *unk_04;
+    /* 0x00 */ s32 numParts;
+    /* 0x04 */ AssetSP2Sub3 *parts;
     /* 0x08 */ s32 tex_index;
-    /* 0x0C */ TextureAsset *unk_0C;
+    /* 0x0C */ TextureAsset *texture;
 } AssetSP2Sub2; // size = 0x10
 
 typedef struct AssetSP2 {
@@ -393,12 +393,15 @@ typedef struct Object {
     /* 0x07C */ s16 unk_07C;
     /* 0x07E */ s16 unk_07E;
     /* 0x080 */ s32 flags;
-    /* 0x084 */ s16 unk_084;
+    /* 0x084 */ s16 spriteId;
     /* 0x086 */ s16 unk_086;
     /* 0x088 */ ColorRGBA unk_088;
     /* 0x08C */ s16 unk_08C;
     /* 0x08E */ char unk_08E[2];
-    /* 0x090 */ s32 vars[13];
+    /* 0x090 */ union {
+        s32 vars[13];
+        struct Object *varObj[13];
+    };
     /* 0x0C4 */ AssetSP2 *sprite_map;
     /* 0x0C8 */ Model *model;
     /* 0x0CC */ char unk_0CC[4];
@@ -473,9 +476,19 @@ typedef struct PlayerSub1 {
     /* 0x02 */ s16 unk_02;
 } PlayerSub1;
 
+typedef struct PlayerSub2 {
+    /* 0x00 */ s32 unk_00;
+} PlayerSub2;
+
 typedef struct Player {
     /* 0x0000 */ Object *unk_00; // type?
-    /* 0x0004 */ char unk_04[0x90 - 4];
+    /* 0x0004 */ char unk_04[2];
+    /* 0x0006 */ s16 unk_06;
+    /* 0x0008 */ char unk_08[0x10];
+    /* 0x0018 */ PlayerSub2 *unk_18;
+    /* 0x001C */ char unk_1C[0x80 - 0x1C];
+    /* 0x0080 */ s32 unk_80;
+    /* 0x0084 */ char unk_84[12];
     /* 0x0090 */ PlayerSub1 *unk_90;
     /* 0x0094 */ char unk_94[0x5F50 - 0x94];
 } Player; // size = 0x5F50
@@ -491,7 +504,9 @@ typedef struct Player12 {
     /* 0x0A */ s16 unk_0A;
     /* 0x0C */ s16 unk_0C;
     /* 0x0E */ u8 unk_0E;
-    /* 0x0F */ char unk_0F[3];
+    /* 0x0F */ u8 unk_0F;
+    /* 0x0F */ u8 unk_10;
+    /* 0x0F */ u8 unk_11;
 } Player12; // size = 0x12
 
 #endif
