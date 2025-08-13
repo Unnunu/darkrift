@@ -233,7 +233,7 @@ segments:
       - [0x49E70, .data, main]
       - [0x49E80, .data, heap]
       - [0x49E90, data]
-      - [0x4A050, .data, 76E0]
+      - [0x4A000, .data, 76E0]
       - [0x4A520, data]
       - [0x4A9F0, .data, 1EA10]
       - [0x4B020, .data, audio]

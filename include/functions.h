@@ -53,5 +53,6 @@ void func_800194E0(s32 arg0);
 s32 abs(s32);
 void func_80014CB4(Texture *tex);
 s32 str_compare(char *arg0, char *arg1);
+u16 func_80037394(Model *arg0, s16 arg1);
 
 #endif

@@ -480,13 +480,23 @@ typedef struct PlayerSub2 {
     /* 0x00 */ s32 unk_00;
 } PlayerSub2;
 
+typedef struct PlayerSub3 {
+    /* 0x00 */ s16 unk_00;
+    /* 0x02 */ u16 unk_02;
+    /* 0x04 */ s32 unk_04;
+    /* 0x08 */ s16 unk_08;
+    /* 0x0C */ char unk_0C[0x38 - 0xA];
+} PlayerSub3; // size = 0x38
+
 typedef struct Player {
     /* 0x0000 */ Object *unk_00; // type?
     /* 0x0004 */ char unk_04[2];
     /* 0x0006 */ s16 unk_06;
     /* 0x0008 */ char unk_08[0x10];
     /* 0x0018 */ PlayerSub2 *unk_18;
-    /* 0x001C */ char unk_1C[0x80 - 0x1C];
+    /* 0x001C */ char unk_1C[4];
+    /* 0x0020 */ PlayerSub3 *unk_20;
+    /* 0x0024 */ char unk_24[0x80 - 0x24];
     /* 0x0080 */ s32 unk_80;
     /* 0x0084 */ char unk_84[12];
     /* 0x0090 */ PlayerSub1 *unk_90;

@@ -39,6 +39,7 @@ extern s8 D_80080129;
 extern s16 D_80081250;
 extern Texture *D_80081254;
 extern s16 D_80080116;
+extern s16 D_8005BED0;
 extern s16 D_8005BED2;
 extern Vec4i D_8004934C;
 extern u16 D_8013C24C;
@@ -52,6 +53,7 @@ extern u8 D_800801F0;
 extern s16 D_8013C2A8;
 extern s16 D_8013C2AA;
 extern s16 D_80051F6C;
+extern s32 D_80081668;
 extern s16 D_80051F70;
 extern void *D_80081274;
 extern void *D_80081278;
@@ -95,7 +97,6 @@ void func_8001A4FC(Object *);
 void func_8001A98C(Object *);
 void func_8001A7DC(Object *);
 void func_8002DA08(Object *arg0);
-void func_80007DB0(Player *arg0, Object *arg1, s32 arg2);
 
 void func_80006AE0(void) {
     D_80081274 = gAssets[asset_find("comhit.k5", 0xABAB)].aux_data;
@@ -218,7 +219,7 @@ void func_80006FB4(void) {
     D_80081430 = 0;
     D_800B6328[PLAYER_1].unk_10 = D_800B6328[PLAYER_2].unk_10 = 0;
 
-    if (D_8005BED2 != 5) {
+    if (D_8005BED2 != GAME_MODE_PLAYER_SELECTION) {
         func_80006E6C();
     }
 
@@ -277,9 +278,32 @@ void func_800071F0(Object *obj) {
     func_80037E28(obj);
 }
 
-const char D_80053F14[] = "tc";
+// unknown data
+s32 D_80049400[] = { 0x40000, task_default_func, 0x2800, 0x10000000, 0, "tc", func_800071F0, 0x1000, 0 };
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007248.s")
+void func_80007248(void) {
+    s32 sp2C = D_800B6328[1].unk_06;
+    Vec4i sp1C = { 0, -500, 0, 0 };
+    Texture *bg;
+
+    func_80006FB4();
+    bg = load_background("bg2", 0, 74, 0x2000, 0x10000, 0, sp2C);
+    bg->height -= 16;
+
+    load_background("bg0", 0, 15, 0x1000, 0x10000, 1, sp2C);
+
+    func_8001B5B0("arena", sp2C);
+    func_80029630();
+
+    gCamera->currentTask->counter = 0;
+    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->stackPos = 0;
+
+    func_80006AE0();
+    func_80001D88();
+    func_800070C0();
+}
 
 void func_80007374(void) {
     s32 sp2C = D_800B6328[1].unk_06;
@@ -461,26 +485,146 @@ void func_80007A68(void) {
     func_800070C0();
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007B68.s")
+void func_80007B68(Object *obj) {
+    s16 a3;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007DB0.s")
+    a3 = 1 - D_800B6328[PLAYER_2].unk_02;
+    D_80080118 = 100;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/76E0/func_80007F4C.s")
-void func_80007F4C(s32, s32, s32);
+    if (D_8005BFC0 & 0x100) {
+        obj->vars[1]++;
+        if (obj->vars[1] == 4) {
+            obj->vars[1] = 0;
+            if (D_80081250 + D_80081254->unk_1C + 40) {
+                D_80081254->unk_1C--;
+            } else {
+                if (D_80080230 != GAME_MODE_30) {
+                    D_800B6328[D_80081668].unk_06 = 1;
+                    D_800B6328[1 - D_80081668].unk_06 = 0;
+                    gGameMode = D_800B6328[D_80081668].characterId + GAME_MODE_BATTLE_AARON;
+                } else {
+                    gGameMode = D_800B6328[1 - D_80081668].characterId + GAME_MODE_BATTLE_AARON;
+                    D_800B6328[PLAYER_1].unk_02 = 1;
+                }
+                D_8005BFC0 |= 0x81;
+                obj->flags |= 0x10;
+            }
+        }
 
-s32 D_80049450[] = { 0x013C012A, 0x014B0000 };
+        gPlayerInput[a3].unk_08 = TRUE;
+        if ((gPlayerInput[a3].buttons & INP_START) ||
+            D_80080230 == GAME_MODE_30 && (gPlayerInput[1 - a3].buttons & INP_START)) {
+            func_80014CB4(D_80081254);
+            if (D_80080230 != GAME_MODE_30) {
+                gGameMode = D_800B6328[D_80081668].characterId + GAME_MODE_BATTLE_AARON;
+                D_800B6328[D_80081668].unk_06 = 1;
+                D_800B6328[1 - D_80081668].unk_06 = 0;
+            } else {
+                gGameMode = GAME_MODE_0;
+            }
+            D_8005BFC0 |= 0x81;
+            obj->flags |= 0x10;
+            D_80081254->flags &= ~2;
+        }
+    }
+}
+
+u16 D_80049434[] = { 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 298, 314, 330, 315, 316, 298, 331, 0 };
+
+void func_80007DB0(Player *arg0, Object *arg1, s32 arg2) {
+    s16 i;
+    s16 a1;
+    s16 v0;
+    s16 s4;
+    char *name = "intXX.mov";
+
+    s4 = 0;
+    for (i = 0; D_80049434[i] != 0; i++) {
+        // modifying string stored in .rodata section isn't good practice
+        name[3] = (i / 10) + '0';
+        name[4] = (i % 10) + '0';
+
+        if ((v0 = asset_find(name, arg2)) >= 0) {
+            a1 = arg0->unk_20[D_80049434[i]].unk_08;
+            arg1->model->unk_12C[a1] = gAssets[v0].data;
+            s4++;
+            arg0->unk_20[D_80049434[i]].unk_02 = func_80037394(arg1->model, a1);
+        }
+    }
+}
+
+void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
+    s32 s0;
+    Object *obj;
+    Object *a1;
+    Object *v1;
+
+    s0 = D_800B6328[PLAYER_2].unk_02;
+    func_8002630C(0xABAB);
+    D_800B6328[s0].unk_10 = 1;
+    D_800B6328[1 - s0].unk_10 = 0;
+
+    if (D_8005BED2 != GAME_MODE_PLAYER_SELECTION && D_8005BED0 != GAME_MODE_29) {
+        func_80006E6C();
+    }
+
+    if (arg0) {
+        obj = create_worker(func_80007B68, 0x1000);
+        obj->vars[0] = 480;
+    }
+
+    func_800052EC(0);
+    func_800052EC(1);
+
+    D_800B6328[PLAYER_1].unk_0F = D_800B6328[PLAYER_2].unk_0F = 1;
+
+    a1 = D_80080228[1 - s0];
+    a1->pos.x = 0;
+    a1->pos.z = 0;
+    a1->rotation.y = 0x400;
+
+    D_80080228[s0]->pos.x = -5000;
+    D_80080228[s0]->pos.z = -5000;
+    D_80080228[s0]->flags |= 4;
+
+    D_800AA488[PLAYER_1].unk_80 |= 0x400000;
+    D_800AA488[PLAYER_2].unk_80 |= 0x400000;
+
+    if (D_800B6328[1 - s0].characterId != MORPHIX) {
+        a1->flags |= 0x10000000;
+    }
+
+    D_8005BFC0 |= 4;
+
+    gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
+    gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = TRUE;
+
+    D_800801F0 = 0;
+
+    D_800AA488[PLAYER_1].unk_80 |= 0x100000;
+    D_800AA488[PLAYER_2].unk_80 |= 0x100000;
+
+    D_800AA488[PLAYER_1].unk_18->unk_00 |= 0x80;
+    D_800AA488[PLAYER_2].unk_18->unk_00 |= 0x80;
+
+    func_80007DB0(D_800AA488 + 1 - s0, a1, arg2);
+    func_8002DA08(gCamera);
+    func_8000636C(D_800AA488 + 1 - s0, arg1, 1);
+    D_8008012C |= 4;
+}
 
 void func_800081A8(void) {
-    s32 temp_s0 = D_800B6328[1].unk_06;
+    s32 temp_s0 = D_800B6328[PLAYER_2].unk_06;
 
     asset_open_folder("/gore/goreint", 0x3000);
-    func_80007F4C(1, 0x70, 0x3000);
+    func_80007F4C(TRUE, 0x70, 0x3000);
     D_80081254 = load_background("goreint", 0, 250, 0, 0, 2, 0x3000);
     D_80081250 = D_80081254->height;
     load_background("bg3", 0, 74, 0x2000, 0x10000, 0, temp_s0);
     load_background("bg0", 0, 15, 0x1000, 0x10000, 1, temp_s0);
     func_8001B5B0("arena", temp_s0);
     func_80001D88();
+
     func_8002630C(0x3000);
     func_800070C0();
     if (D_80080230 != 30) {
@@ -492,13 +636,14 @@ void func_800082CC(void) {
     s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/aaro/aaroint", 0x3000);
-    func_80007F4C(1, 0x70, 0x3000);
+    func_80007F4C(TRUE, 0x70, 0x3000);
     D_80081254 = load_background("aaroint", 0, 250, 0, 0, 2, 0x3000);
     D_80081250 = D_80081254->height;
     load_background("bg2", 0, 74, 0x10000, 0x10000, 0, temp_s0);
     load_background("bg0", 0, 15, 0x8000, 0x10000, 1, temp_s0);
     func_8001B5B0("arena", temp_s0);
     func_80001D88();
+
     func_8002630C(0x3000);
     func_800070C0();
     if (D_80080230 != 30) {
@@ -510,7 +655,7 @@ void func_800083EC(void) {
     s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/demi/demiint", 0x3000);
-    func_80007F4C(1, 0x70, 0x3000);
+    func_80007F4C(TRUE, 0x70, 0x3000);
     D_80081254 = load_background("demiint", 0, 250, 0, 0, 2, 0x3000);
     D_80081250 = D_80081254->height;
     load_background("bg2", 0, -8, 0x2000, 0x10000, 0, temp_s0);
@@ -528,7 +673,7 @@ void func_80008510(void) {
     s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/demo/demoint", 0x3000);
-    func_80007F4C(1, 0x70, 0x3000);
+    func_80007F4C(TRUE, 0x70, 0x3000);
     D_80081254 = load_background("demoint", 0, 250, 0, 0, 2, 0x3000);
     D_80081250 = D_80081254->height;
     load_background("bg2", 0, 32, 0x2000, 0x10000, 0, temp_s0);
@@ -546,7 +691,7 @@ void func_80008634(void) {
     s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/eve/eveint", 0x3000);
-    func_80007F4C(1, 0x70, 0x3000);
+    func_80007F4C(TRUE, 0x70, 0x3000);
     D_80081254 = load_background("eveint", 0, 250, 0, 0, 2, 0x3000);
     D_80081250 = D_80081254->height;
     load_background("bg2", 0, 52, 0x2000, 0x10000, 0, temp_s0);
@@ -564,7 +709,7 @@ void func_80008758(void) {
     s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/morp/morpint", 0x3000);
-    func_80007F4C(1, 0x70, 0x3000);
+    func_80007F4C(TRUE, 0x70, 0x3000);
     D_80081254 = load_background("morpint", 0, 250, 0, 0, 2, 0x3000);
     D_80081250 = D_80081254->height;
     load_background("bg2", 0, 96, 0x2000, 0x10000, 0, temp_s0);
@@ -582,7 +727,7 @@ void func_8000887C(void) {
     s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/niik/niikint", 0x3000);
-    func_80007F4C(1, 0x70, 0x3000);
+    func_80007F4C(TRUE, 0x70, 0x3000);
     D_80081254 = load_background("niikint", 0, 250, 0, 0, 2, 0x3000);
     D_80081250 = D_80081254->height;
     load_background("bg2", 0, 94, 0x2000, 0x10000, 0, temp_s0);
@@ -600,7 +745,7 @@ void func_800089A0(void) {
     s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/scar/scarint", 0x3000);
-    func_80007F4C(1, 0x70, 0x3000);
+    func_80007F4C(TRUE, 0x70, 0x3000);
     D_80081254 = load_background("scarint", 0, 250, 0, 0, 2, 0x3000);
     D_80081250 = D_80081254->height;
     load_background("bg2", 0, 0, 0x2000, 0x10000, 0, temp_s0);
@@ -618,7 +763,7 @@ void func_80008AC4(void) {
     s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/sono/sonoint", 0x3000);
-    func_80007F4C(1, 0x70, 0x3000);
+    func_80007F4C(TRUE, 0x70, 0x3000);
     D_80081254 = load_background("sonoint", 0, 250, 0, 0, 2, 0x3000);
     D_80081250 = D_80081254->height;
     load_background("bg2", 0, 26, 0x2000, 0x10000, 0, temp_s0);
@@ -636,7 +781,7 @@ void func_80008BE8(void) {
     s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/zenm/zenmint", 0x3000);
-    func_80007F4C(1, 0x70, 0x3000);
+    func_80007F4C(TRUE, 0x70, 0x3000);
     D_80081254 = load_background("zenmint", 0, 250, 0, 0, 2, 0x3000);
     D_80081250 = D_80081254->height;
     load_background("bg2", 0, -6, 0x2000, 0x10000, 0, temp_s0);
@@ -691,7 +836,7 @@ void func_80008D98(void) {
     D_8005BFC0 &= 0xFFEE;
     D_8008012C &= ~0x20;
     asset_open_folder("/sono/sonoboss", 0x3000);
-    func_80007F4C(0, 346, 0x3000);
+    func_80007F4C(FALSE, 346, 0x3000);
     load_background("bg2", 0, 26, 0x2000, 0x10000, 0, 0);
     load_background("bg0", 0, -24, 0x1000, 0x10000, 1, 0);
     func_8001B5B0("arena", 0);
@@ -1153,7 +1298,7 @@ void run_0_mode(void) {
     D_8008012C |= 0x20;
     D_8005BFC0 |= 4;
 
-    if (D_8005BED2 == 1) {
+    if (D_8005BED2 == GAME_MODE_1) {
         UnkSam *assetData = gAssets[asset_find("title.k2", 0x2000)].aux_data;
         v1 = func_8002BFF0(&D_8004934C, 0x1000, func_800199E0, assetData);
         v1->flags |= 0x01000000;

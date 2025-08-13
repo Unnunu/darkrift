@@ -94,7 +94,6 @@ extern UnkDispStruct *D_8005BFE8;
 extern DisplayData D_8005BFF0[];
 extern DisplayData *D_80080100;
 extern s16 D_80080116;
-extern s16 D_80080118;
 extern s32 D_8008012C;
 extern DISPCB D_80080140[20];
 extern s32 D_80080190[20];
