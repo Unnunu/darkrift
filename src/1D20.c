@@ -12,7 +12,7 @@ typedef s32 (*DISPCB)(s32);
 
 extern u16 D_80049330[];
 extern s32 D_80049CF0;
-extern UnkDelta D_8004BB48[];
+extern GameMode gGameModes[];
 extern Gfx D_8004CA68[];
 extern Gfx D_8004CB00[];
 
@@ -86,11 +86,9 @@ extern u16 D_8005BFC0;
 extern u16 gGameMode;
 extern u16 D_8005BFCE;
 extern void *gFramebuffers[];
-extern Gfx *D_8005BFD8;
+
 extern Gfx *D_8005BFDC;
 extern Gfx *D_8005BFE0;
-extern UnkDispStruct *D_8005BFE4;
-extern UnkDispStruct *D_8005BFE8;
 extern DisplayData D_8005BFF0[];
 extern DisplayData *D_80080100;
 extern s16 D_80080116;
@@ -180,7 +178,7 @@ void func_8000132C(void) {
     func_800212C8();
 
     for (ptr = D_80080100->unk_10080; ptr != D_8005BFE8; ptr++) {
-        PUSH_UNK_DISP(D_8005BFE4, ptr->unk_00, ptr->unk_04, ptr->unk_08, ptr->unk_0C);
+        PUSH_UNK_DISP(D_8005BFE4, ptr->unk_00, ptr->unk_04, ptr->vertices, ptr->unk_0C);
     }
     gDPFullSync(D_8005BFD8++);
     gSPEndDisplayList(D_8005BFD8++);
@@ -223,7 +221,7 @@ Object *func_8000194C(void) {
         return NULL;
     }
 
-    obj->fn_update = func_80015C58;
+    obj->fn_render = func_80015C58;
     sound_play(2, obj->vars[2]);
     gTasksDisabled = TRUE;
     D_8005BEFC = 0;
@@ -311,10 +309,11 @@ void func_80001FB0(s32 arg0, Vtx *arg1) {
     D_8005BF00.unk_04 = 0;
     D_8005BF00.unk_08 = 4;
     D_8005BF00.unk_09 = 0;
-    D_8005BF00.unk_0B = D_8005BF00.unk_0A = 2;
+    D_8005BF00.unk_0A = 2;
+    D_8005BF00.unk_0B = 2;
     D_8005BF00.unk_0C = &D_8005BF58;
 
-    gDPPipeSync(D_8005BF00.unk_0C);
+    gDPPipeSync(&D_8005BF58);
     gDPSetCombineMode(&D_8005BF60, G_CC_SHADE, G_CC_SHADE);
 
     gtStateSetOthermode(&D_8005BF10, GT_RENDERMODE, G_RM_OPA_SURF | G_RM_OPA_SURF2);
@@ -402,7 +401,7 @@ void func_800023E4(Object *obj) {
     if (obj->vars[0] >= 7) {
         osViBlack(0);
         D_8005BEFC = 255;
-        obj->fn_update = func_80002340;
+        obj->fn_render = func_80002340;
     }
 
     func_80002178(255, NULL);
@@ -424,7 +423,7 @@ void func_80002448(Object *obj) {
     D_8005BFC0 |= 4;
     if (obj->flags & 0x10) {
         obj->flags &= ~0x10;
-        obj->fn_update = func_800023E4;
+        obj->fn_render = func_800023E4;
     }
     func_80002178(255, NULL);
 }
@@ -452,7 +451,7 @@ void func_80002590(Object *obj) {
         return;
     }
 
-    obj->fn_update = func_80002528;
+    obj->fn_render = func_80002528;
     if (!(D_8005BFC0 & 0x800)) {
         osViBlack(1);
     }
@@ -465,8 +464,8 @@ void func_80002648(Object *obj) {
     D_8008012C |= 0x10;
     audio_fade_out_all(obj, 0);
 
-    if (obj->fn_update != func_80002648) {
-        obj->fn_update = func_80002590;
+    if (obj->fn_render != func_80002648) {
+        obj->fn_render = func_80002590;
     }
 
     if (D_8005BEFC + 8 < 255) {
@@ -481,7 +480,7 @@ void func_80002648(Object *obj) {
         return;
     }
 
-    obj->fn_update = func_80002528;
+    obj->fn_render = func_80002528;
     if (!(D_8005BFC0 & 0x800)) {
         osViBlack(1);
     }
@@ -496,7 +495,7 @@ void func_80002744(Object *obj) {
     }
 
     D_8005BFC0 &= ~0x80;
-    obj->fn_update = func_80002648;
+    obj->fn_render = func_80002648;
     func_80002178(D_8005BEFC, NULL);
 }
 
@@ -508,7 +507,7 @@ void func_800027A0(void) {
     while (TRUE) {
         D_8005BED0 = gGameMode;
         create_worker(func_80002448, 0x1100);
-        D_8004BB48[gGameMode].fn_run();
+        gGameModes[gGameMode].fn_run();
         if (!(D_8005BFC0 & 0x800)) {
             osViBlack(1);
         }

@@ -563,7 +563,7 @@ void audio_fade_out_all(Object *obj, s32 arg1) {
     }
 
     if (gMusicVolumeFading + gSoundVolumeFading == 0) {
-        obj->fn_update = func_80021778;
+        obj->fn_render = func_80021778;
     }
 }
 

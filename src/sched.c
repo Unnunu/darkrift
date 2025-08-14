@@ -239,26 +239,26 @@ void sched_wait_vretrace(u8 arg0) {
     }
 }
 
-#ifdef NON_MATCHING
+#ifdef NON_EQUIVALENT
 void func_800031FC(u16 arg0) {
-    s32 unused[20];
+    s32 unused[19];
+    u32 a3;
     UnkStruct800031FC sp28;
     UnkStruct800031FC sp20;
     s32 tmp;
-
     sp28 = D_8004937C;
     sp20 = D_80049384;
-    gScreenWidth = 320;
-    gScreenHeight = 240;
 
-    gFramebuffers[0] = 0x803B4FC0;
-    tmp = gScreenWidth * gScreenHeight * 2;
-    gFramebuffers[1] = 0x803B4FC0 + tmp;
+    a3 = 0x803B4FC0;
+    gScreenHeight = 240;
+    gScreenWidth = 320;
+
+    gFramebuffers[0] = a3;
+    tmp = gScreenHeight * gScreenWidth * 2;
+    gFramebuffers[1] = a3 + tmp;
 
     D_80080124 = D_80080120 = ((u32) &D_8013F0B0 + 0x40) & ~0x3F;
-    // gHeapBase = ((u32) D_80080124 + 0x25800 + 0x40) & ~0x3F;
-    gHeapBase = (u32) D_80080124 + 0x25840;
-    gHeapBase = (void *) (((u32) gHeapBase) & ~0x3F);
+    gHeapBase = (void *) (((u32) D_80080120 + 0x25800 + 0x40) & ~0x3F);
     init_heap();
     func_80025E6C();
     func_80025EDC(D_80080124, 0x25800);
@@ -266,19 +266,20 @@ void func_800031FC(u16 arg0) {
     func_80024D2C();
     audio_init();
     func_80002C54();
-    D_80080110 = D_8004BB48[arg0].unk_0C;
-    D_80080112 = D_8004BB48[arg0].unk_0D;
-    D_80080114 = D_8004BB48[arg0].unk_0E;
+    D_80080110 = gGameModes[arg0].unk_0C;
+    D_80080112 = gGameModes[arg0].unk_0D;
+    D_80080114 = gGameModes[arg0].unk_0E;
     func_8002A8C0(&gTaskPool, 50, sizeof(ObjectTask));
     func_8002AC10();
     gCamera = camera_create();
-    D_80080136 = D_8004BB48[arg0].unk_14;
-    D_80080138 = D_8004BB48[arg0].unk_16;
-    D_80080130 = D_8004BB48[arg0].unk_10;
-    D_80080132 = D_8004BB48[arg0].unk_11;
-    D_80080134 = D_8004BB48[arg0].unk_12;
+    D_80080136 = gGameModes[arg0].unk_14;
+    D_80080138 = gGameModes[arg0].unk_16;
+    D_80080130 = gGameModes[arg0].unk_10;
+    D_80080132 = gGameModes[arg0].unk_11;
+    D_80080134 = gGameModes[arg0].unk_12;
     D_8008012C = 0;
     memcpy(&D_801389B8, &D_8004CBC8, sizeof(OSTask));
+
     D_8013C228 = NULL;
     D_80080116 = D_80080118 = 0;
     D_80080129 = TRUE;
@@ -306,20 +307,20 @@ void func_80003468(u16 arg0) {
     func_800007C8();
     func_80026250();
     audio_reset();
-    D_80080110 = D_8004BB48[arg0].unk_0C;
-    D_80080112 = D_8004BB48[arg0].unk_0D;
-    D_80080114 = D_8004BB48[arg0].unk_0E;
+    D_80080110 = gGameModes[arg0].unk_0C;
+    D_80080112 = gGameModes[arg0].unk_0D;
+    D_80080114 = gGameModes[arg0].unk_0E;
     func_8002A8C0(&gTaskPool, 50, sizeof(ObjectTask));
     func_8002AC10();
     gCamera = camera_create();
     func_80024D2C();
     func_80002C54();
     D_80049CF0 = 0;
-    D_80080136 = D_8004BB48[arg0].unk_14;
-    D_80080138 = D_8004BB48[arg0].unk_16;
-    D_80080130 = D_8004BB48[arg0].unk_10;
-    D_80080132 = D_8004BB48[arg0].unk_11;
-    D_80080134 = D_8004BB48[arg0].unk_12;
+    D_80080136 = gGameModes[arg0].unk_14;
+    D_80080138 = gGameModes[arg0].unk_16;
+    D_80080130 = gGameModes[arg0].unk_10;
+    D_80080132 = gGameModes[arg0].unk_11;
+    D_80080134 = gGameModes[arg0].unk_12;
     D_8008012C = 0;
     D_8013C228 = NULL;
     D_80080118 = 0;

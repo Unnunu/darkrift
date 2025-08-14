@@ -65,7 +65,7 @@ void func_8001A674(Object *);
 void func_8001A334(Object *);
 void func_8002EA50(Object *, s32);
 s32 func_8000636C(Player *arg0, s32 arg1, s32 arg2);
-Object *func_8002BFF0(Vec4i *, s16, void (*)(Object *), UnkSam *);
+Object *func_8002BFF0(Vec4i *, s32, void (*)(Object *), UnkSam *);
 void func_800199E0(Object *);
 void sound_stop_one(s32, s32);
 void func_80020670(Object *);
@@ -266,6 +266,7 @@ void func_800070F0(void) {
 
     func_80006AE0();
     func_80001D88();
+
     func_800070C0();
 }
 
@@ -989,14 +990,14 @@ void func_800095A8(void) {
 }
 
 void func_8000965C(s32 arg0) {
-    D_80080136 = D_8004BB48[arg0].unk_14;
-    D_80080138 = D_8004BB48[arg0].unk_16;
-    D_80080130 = D_8004BB48[arg0].unk_10;
-    D_80080132 = D_8004BB48[arg0].unk_11;
-    D_80080134 = D_8004BB48[arg0].unk_12;
-    D_80080110 = D_8004BB48[arg0].unk_0C;
-    D_80080112 = D_8004BB48[arg0].unk_0D;
-    D_80080114 = D_8004BB48[arg0].unk_0E;
+    D_80080136 = gGameModes[arg0].unk_14;
+    D_80080138 = gGameModes[arg0].unk_16;
+    D_80080130 = gGameModes[arg0].unk_10;
+    D_80080132 = gGameModes[arg0].unk_11;
+    D_80080134 = gGameModes[arg0].unk_12;
+    D_80080110 = gGameModes[arg0].unk_0C;
+    D_80080112 = gGameModes[arg0].unk_0D;
+    D_80080114 = gGameModes[arg0].unk_0E;
 }
 
 void func_800096D0(u8 arg0) {
@@ -1343,7 +1344,7 @@ void func_8000A578(Object *obj) {
     }
 
     sound_stop_one(0x2000, 8); // @bug wrong player id
-    obj->fn_update = func_8000A514;
+    obj->fn_render = func_8000A514;
     load_background("dr_title", 0, 0, 0, 0, 1, CONTEXT_2000);
     v0 = create_ui_element(&sp34, &sp44, 0x2000);
     v0->currentTask->counter = 60;

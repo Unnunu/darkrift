@@ -54,5 +54,10 @@ s32 abs(s32);
 void func_80014CB4(Texture *tex);
 s32 str_compare(char *arg0, char *arg1);
 u16 func_80037394(Model *arg0, s16 arg1);
+void func_800386E8(Object *);
+void func_800359E4(Model *, s32);
+void func_800352FC(Model *, s32);
+void func_8003795C(Object *);
+void func_80037CE4(Object *);
 
 #endif

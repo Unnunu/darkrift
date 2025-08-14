@@ -343,3 +343,5 @@ gCharacterPortrait = 0x80081660; // size:0x8
 abs = 0x8002C310;
 gPracticingPlayer = 0x8013C494;
 D_800B6350 = 0x800B6350; // size:22
+
+gGameModes = 0x8004BB48;

@@ -5,10 +5,10 @@
 
 extern s32 *D_8013C4E8;
 extern s32 D_8013C540;
-extern char *D_80053010;
+extern K2Def D_80053010;
 extern Vec4i D_8004934C;
 extern UnkDispStruct **D_8013C4E0;
-Object *func_8002BC84(Vec4i *, s32, char **, s32);
+Object *func_8002BC84(Vec4i *, s32, K2Def *, s32);
 void func_800028E0(s32 arg0, s32 arg1);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034090.s")
@@ -85,7 +85,7 @@ void func_8003561C(Object *, s32);
 void func_80035CCC(UnkSam *arg0) {
     s32 count;
     u32 i;
-    UnkSamSub *s1;
+    UnkCameraSub6 *s1;
     s32 unused[4];
     u32 j;
     UnkDispStruct **var1;
@@ -94,16 +94,16 @@ void func_80035CCC(UnkSam *arg0) {
     s32 temp2;
 
     count = arg0->unk_128;
-    s1 = arg0->unk_31C = (UnkSamSub *) mem_alloc(count * sizeof(UnkSamSub), "model.c", 766);
+    s1 = arg0->unk_31C = (UnkCameraSub6 *) mem_alloc(count * sizeof(UnkCameraSub6), "model.c", 766);
     temp = 1; // required to match
     var1 = arg0->unk_154;
     for (i = 0; i < count; i++, s1++) {
         s1->unk_00 = temp;
 
         func_8003517C(arg0, i, &sp58);
-        s1->unk_14 = sp58.x;
-        s1->unk_18 = sp58.y;
-        s1->unk_1C = sp58.z;
+        s1->unk_14.x = sp58.x;
+        s1->unk_14.y = sp58.y;
+        s1->unk_14.z = sp58.z;
 
         s1->unk_04[0] = i;
         s1->unk_08 = -1;
@@ -128,7 +128,7 @@ void func_80035DF8(UnkSam *arg0, s32 arg1) {
     a2 = arg0->unk_238[arg1];
 
     for (i = 0; i < a2; i++) {
-        PUSH_UNK_DISP(D_8005BFE4, NULL, v0->unk_04, v0->unk_08, v0->unk_0C);
+        PUSH_UNK_DISP(D_8005BFE4, NULL, v0->unk_04, v0->vertices, v0->unk_0C);
         v0++;
     }
 }
@@ -190,13 +190,13 @@ void func_80035F5C(Object *obj) {
 void func_80036194(Object *arg0, char *arg1, s32 arg2) {
     Object *v0;
 
-    str_copy(D_80053010, arg1);
+    str_copy(D_80053010.unk_00, arg1);
     v0 = func_8002BC84(&D_8004934C, 0, &D_80053010, arg2);
 
     v0->vars[0] = v0->model->unk_128;
     v0->vars[1] = arg0;
     v0->model->unk_128 = arg0->model->unk_128;
-    v0->fn_update = func_80035F5C;
+    v0->fn_render = func_80035F5C;
 
     v0->unk_0D0.unk_98.y.x = 0.0f;
     v0->unk_0D0.unk_98.x.y = 0.0f;
@@ -720,11 +720,11 @@ void func_80037CE4(Object *obj) {
     sub6 = &model->unk_A50;
     math_mtxf2mtx(&sub->unk_18, &D_800813E0);
     nv2 = sub2->unk_238[index];
-    model->unk_A38 = sub;
+    model->unk_A30.unk_08[0] = sub;
 
-    sub6->unk_28 = newvar;
-    sub6->unk_38 = nv2;
-    model->unk_A48 = D_8013C4E8;
+    sub6->unk_28[0] = newvar;
+    sub6->unk_38[0] = nv2;
+    model->unk_A30.unk_18 = D_8013C4E8;
     D_8013C4E8 = &model->unk_A30;
 }
 
@@ -736,7 +736,7 @@ void func_800386E8(Object *obj) {
     UnkMu *spAC;
     s32 j;
     u32 i;
-    UnkCameraSub5 *new_var;
+    UnkCameraSub6 *new_var;
     Matrix4f *a1;
     UnkDispStructPart2 *s0;
     s32 sp94;
@@ -790,7 +790,7 @@ void func_800386E8(Object *obj) {
         math_translate(&mu->unk_98, &obj->pos);
         func_80014974(mu);
 
-        if (model->unk_604 != 0) {
+        if (model->unk_604 != NULL) {
             if (obj->flags & 0x800) {
                 func_8003561C(obj, -10000);
             } else {

@@ -1,15 +1,19 @@
 #include "common.h"
 #include "task.h"
+#include "string.h"
 
 extern ItemPool D_8013C2B0;
 extern ItemPool D_8013C2C0;
 
 extern Vec3s D_80049344;
-extern Vec3i D_8004934C;
+extern Vec4i D_8004934C;
 extern Object *D_80052C50;
 extern s32 D_80052C54;
+extern UnkObjRender *D_8013C4E8;
 
+void func_800345D8(s32);
 void task_default_func(Object *arg0);
+void func_80012450(Mtx *);
 
 void func_8002A8C0(ItemPool *arg0, u32 count, u32 element_size) {
     s16 i;
@@ -150,13 +154,132 @@ void func_8002ADFC(Object *obj) {
     D_8013C2B0.count++;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002AF08.s")
+// unused
+void func_8002AF08(UnkDispStructPart2 *arg0) {
+    func_80012450(&arg0->unk_18);
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002AF28.s")
+// unused
+void func_8002AF28(UnkDispStruct *arg0) {
+    u32 i;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002AF8C.s")
+    func_8002AF08(arg0->unk_04);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/item/obj_update_all.s")
+    for (i = 0; i < arg0->unk_04->unk_00.unk_08; i++) {}
+    for (i = 0; i < arg0->unk_04->unk_00.unk_0A; i++) {}
+}
+
+void func_8002AF8C(Object *obj) {
+    u32 dxAbs, dzAbs;
+    u32 minDelta;
+    Object *curr;
+    s32 temp2;
+    s32 temp3;
+
+    for (curr = D_80052C50; curr != NULL; curr = curr->nextObject) {
+        if (curr != obj && (obj->unk_07C & curr->unk_07A)) {
+            if (obj->pos.x - curr->pos.x > 0) {
+                dxAbs = obj->pos.x - curr->pos.x;
+            } else {
+                dxAbs = -(obj->pos.x - curr->pos.x);
+            }
+            if (obj->pos.z - curr->pos.z > 0) {
+                dzAbs = obj->pos.z - curr->pos.z;
+            } else {
+                dzAbs = -(obj->pos.z - curr->pos.z);
+            }
+
+            if (dxAbs < dzAbs) {
+                minDelta = dxAbs;
+            } else {
+                minDelta = dzAbs;
+            }
+            temp3 = dxAbs + dzAbs - (minDelta >> 1);
+            temp2 = temp3 - obj->unk_1FC - curr->unk_1FC;
+            if (temp2 <= 0) {
+                if (obj->unk_076 & 2) {
+                    obj->unk_1E8(obj, curr);
+                }
+                if (curr->unk_076 & 2) {
+                    curr->unk_1E8(curr, obj);
+                }
+                break;
+            }
+        }
+    }
+}
+
+void obj_update_all(void) {
+    Object *obj;
+    Object *tempObj;
+    UnkObjRender *renderInfo;
+    s32 s1;
+    u32 i;
+    u32 j;
+    UnkDispStruct *v0;
+    u32 t2;
+    s32 temp2;
+
+    D_8013C4E8 = NULL;
+    obj = D_80052C50;
+    while (obj != NULL) {
+        if (obj->unk_07C != 0) {
+            func_8002AF8C(obj);
+        }
+
+        if ((obj->flags & 0x10) && !(obj->flags & 4)) {
+            obj->flags |= 4;
+        } else if (obj->flags & 0x10) {
+            if (obj->unk_076 & 8) {
+                obj->unk_078 |= 8;
+                obj->unk_1E8(obj, NULL);
+            }
+            if (obj->flags & 0x20000000) {
+                func_800345D8(obj->unk_208);
+            }
+            task_clear(obj->taskList);
+            obj->taskList = NULL;
+            tempObj = obj;
+            obj = obj->nextObject;
+            func_8002ADFC(tempObj);
+        } else {
+            obj->fn_render(obj);
+            obj = obj->nextObject;
+        }
+    }
+
+    for (renderInfo = D_8013C4E8; renderInfo != NULL; renderInfo = renderInfo->unk_18) {
+        s1 = renderInfo->unk_04->unk_24;
+        if (renderInfo->unk_04->unk_00) {
+            for (i = 0; i < s1; i++) {
+                if (renderInfo->unk_1C & 1) {
+                    continue;
+                }
+                v0 = renderInfo->unk_04->unk_28[i];
+                t2 = renderInfo->unk_04->unk_38[i];
+                for (j = 0; j < t2; j++) {
+                    if (renderInfo->unk_1C & 2) {
+                        PUSH_UNK_DISP(D_8005BFE8, NULL, (j != 0) ? v0->unk_04 : renderInfo->unk_08[i], v0->vertices,
+                                      v0->unk_0C);
+                        v0++;
+                    } else {
+                        PUSH_UNK_DISP(D_8005BFE4, NULL, (j != 0) ? v0->unk_04 : renderInfo->unk_08[i], v0->vertices,
+                                      v0->unk_0C);
+                        v0++;
+                    }
+                }
+            }
+        } else {
+            s32 temp = D_8005BFCE * s1;
+            for (i = 0; i < s1; i++) {
+                // matrix ??
+                gSPMatrix(D_8005BFD8++, VIRTUAL_TO_PHYSICAL(renderInfo->unk_04->unk_28[i + temp]),
+                          G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                gSPDisplayList(D_8005BFD8++, VIRTUAL_TO_PHYSICAL(renderInfo->unk_04->unk_48[i]));
+            }
+        }
+    }
+}
 
 #ifdef NON_EQUIVALENT
 void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(Object *)) {
@@ -233,16 +356,95 @@ void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(
 void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(Object *));
 #endif
 
-#pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002B850.s")
+void func_8002B850(Object *obj, UnkSam *arg1) {
+    Model *model;
+    u32 s5;
+    UnkMu *s7;
+    UnkMu *v0;
+    StructAA8 *s2;
+    u32 i;
+    s32 a3;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002B9AC.s")
+    model = obj->model;
+    s5 = arg1->unk_128;
+    s7 = &model->unk_010;
 
-Object *create_worker(void (*fn_update)(Object *), s16 arg1) {
+    func_80012A20(&obj->unk_0D0, s7, -1, -2);
+    model->unk_128 = v0 = mem_alloc(s5 * sizeof(UnkMu), "item.c", 453);
+
+    s2 = arg1->unk_150;
+    model->unk_AA8 = &s2[1];
+    model->unk_9E4.x = s2->x;
+    model->unk_9E4.y = s2->y;
+    model->unk_9E4.z = s2->z;
+    math_translate(&model->unk_010.unk_98, &model->unk_9E4);
+
+    for (i = 0; i < s5; i++) {
+        s2 = arg1->unk_150 + i + 1;
+        a3 = s2->unk_00;
+        if (a3 >= 0) {
+            func_80012A20(&v0[a3], &v0[i], i, a3);
+        } else {
+            func_80012A20(s7, &v0[i], i, a3);
+        }
+        math_translate(&v0[i].unk_98, &s2->x);
+    }
+}
+
+Object *func_8002B9AC(Vec4i *arg0, char *arg1, K2Def *arg2, s32 arg3) {
+    Object *obj;
+    char sp78[20];
+    Model *model;
+    UnkFrodo *s5;
+
+    if (arg1 == NULL) {
+        obj = obj_allocate(arg2->unk_0A);
+        str_copy(sp78, arg2->unk_00);
+        obj_init(obj, arg0, &D_80049344, NULL, arg2->unk_04);
+    } else {
+        str_copy(sp78, arg1);
+        if (arg2 != NULL) {
+            obj = obj_allocate(arg2->unk_0A);
+            obj_init(obj, arg0, &D_80049344, NULL, arg2->unk_04);
+        } else {
+            obj = obj_allocate(0x1000);
+            obj_init(obj, arg0, &D_80049344, NULL, NULL);
+        }
+    }
+
+    obj->fn_render = func_8003795C;
+    obj->flags = 1;
+    model = obj->model = mem_alloc(sizeof(Model), "item.c", 523);
+
+    str_concat(sp78, ".kmd");
+    s5 = model->unk_A24 = gAssets[asset_find(sp78, arg3)].aux_data;
+    model->unk_A28 = NULL;
+    model->unk_000 = s5->sam.unk_128;
+
+    if (s5->sam.unk_150 != NULL) {
+        func_8002B850(obj, &s5->sam);
+    } else {
+        obj->model->unk_128 = NULL;
+    }
+
+    model->unk_12C = s5->sam.unk_148;
+    model->unk_A2C = s5->unk_A64;
+
+    if (arg2 != NULL && arg2->unk_0C != 0) {
+        func_800352FC(model, arg2->unk_0C);
+    } else {
+        model->unk_604 = NULL;
+    }
+
+    return obj;
+}
+
+Object *create_worker(void (*fn_render)(Object *), s16 arg1) {
     Object *obj;
 
     obj = obj_allocate(arg1);
     obj_init(obj, &D_8004934C, &D_80049344, NULL, NULL);
-    obj->fn_update = fn_update;
+    obj->fn_render = fn_render;
     obj->flags = 8;
     return obj;
 }
@@ -252,7 +454,7 @@ Object *create_ui_element(Vec4i *pos, UIElement *def, s32 context) {
 
     obj = obj_allocate(def->unk_0C);
     obj_init(obj, pos, &D_80049344, NULL, def->func);
-    obj->fn_update = func_80015724;
+    obj->fn_render = func_80015724;
     obj->flags = def->flags;
     obj->flags |= 0x10000;
     obj->spriteId = def->spriteID;
@@ -261,29 +463,186 @@ Object *create_ui_element(Vec4i *pos, UIElement *def, s32 context) {
     return obj;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002BC84.s")
-
-#pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002BF1C.s")
-
-#pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002BFF0.s")
-void func_800386E8(Object *);
-/*
-Object *func_8002BFF0(Vec4i *arg0, s16 arg1, void (*arg2)(Object *), UnkSam *arg3) {
+#ifdef NON_MATCHING
+Object *func_8002BC84(Vec4i *arg0, char *arg1, K2Def *arg2, s32 arg3) {
     Object *obj;
+    char sp78[20];
+    Model *model;
+    UnkSam *s5;
+    u32 s6;
+    s32 i;
+
+    if (arg1 == NULL) {
+        obj = obj_allocate(arg2->unk_0A);
+        str_copy(sp78, arg2->unk_00);
+        obj_init(obj, arg0, &D_80049344, NULL, arg2->unk_04);
+    } else {
+        str_copy(sp78, arg1);
+        if (arg2 != NULL) {
+            obj = obj_allocate(arg2->unk_0A);
+            obj_init(obj, arg0, &D_80049344, NULL, arg2->unk_04);
+        } else {
+            obj = obj_allocate(0x1000);
+            obj_init(obj, arg0, &D_80049344, NULL, NULL);
+        }
+    }
+
+    obj->fn_render = func_800386E8;
+    obj->flags = 1;
+    obj->model = (Model *) GET_ITEM(D_8013C2C0);
+
+    model = obj->model;
+    s5 = model->unk_A28 = gAssets[asset_find(sp78, arg3)].aux_data;
+    model->unk_A24 = NULL;
+    s6 = model->unk_000 = s5->unk_128;
+
+    for (i = 0; i < s6; i++) {
+        memcpy(&model->unk_AB0[i].unk_00, s5->unk_2A8[i], sizeof(UnkDispStructPart2Sub));
+        memcpy(&model->unk_AB0[30 + i].unk_00, s5->unk_2A8[i], sizeof(UnkDispStructPart2Sub));
+        model->unk_1F50[i] = FALSE;
+        model->unk_1F6E[i] = FALSE;
+    }
+
+    if (s5->unk_150 != NULL) {
+        func_8002B850(obj, s5);
+    } else {
+        obj->model->unk_128 = NULL;
+    }
+
+    model->unk_12C = s5->unk_148;
+    model->unk_A2C = s5->unk_234;
+    model->unk_A0E = -1;
+
+    if (arg2 != NULL && arg2->unk_0C != 0) {
+        func_800359E4(model, arg2->unk_0C);
+    } else {
+        model->unk_604 = NULL;
+    }
+
+    obj->flags |= 0x40000;
+    model->unk_A1C = model->unk_A20 = 0;
+    return obj;
+}
+#else
+#pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002BC84.s")
+Object *func_8002BC84(Vec4i *arg0, char *arg1, K2Def *arg2, s32 arg3);
+#endif
+
+Object *func_8002BF1C(Vec4i *arg0, K2Def *arg1, s32 arg2) {
+    Object *obj;
+    UnkCameraSub6 *new_var;
+
+    if (D_8013C2C0.count >= 2) {
+        obj = func_8002BC84(arg0, NULL, arg1, arg2);
+        obj->fn_render = func_80037CE4;
+        obj->spriteId = arg1->unk_14;
+        obj->flags |= arg1->unk_10 | 2;
+        obj->unk_088.a = 128;
+
+        new_var = &obj->model->unk_A50;
+        new_var->unk_00 = 1;
+        new_var->unk_24 = 1;
+        obj->model->unk_A30.unk_04 = new_var;
+        if (obj->flags & 0x800) {
+            obj->model->unk_A30.unk_00 = -0x80000000;
+        } else {
+            obj->model->unk_A30.unk_00 = 0x7FFFFFFF;
+        }
+        obj->model->unk_A30.unk_1C = 0;
+        return obj;
+    } else {
+        return NULL;
+    }
+}
+
+Object *func_8002BFF0(Vec4i *arg0, s32 arg1, void (*arg2)(Object *), UnkSam *arg3) {
+    u32 s6;
+    Object *obj;
+    Model *model;
+    u32 i;
+    s32 unused[5];
 
     obj = obj_allocate(arg1);
-    obj_init(obj, arg0, &D_80049344, 0, arg2);
-    obj->fn_update = func_800386E8;
+    obj_init(obj, arg0, &D_80049344, NULL, arg2);
+
+    obj->fn_render = func_800386E8;
     obj->flags = 1;
 
     if (D_8013C2C0.count == 0) {
-        obj->fn_update = task_default_func;
+        obj->fn_render = task_default_func;
         obj->flags = 0x10;
-        obj->camera = NULL;
+        obj->model = NULL;
         return NULL;
     }
 
-    return obj;
-}*/
+    obj->model = (Model *) GET_ITEM(D_8013C2C0);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002C27C.s")
+    model = obj->model;
+    model->unk_A28 = arg3;
+    model->unk_A24 = NULL;
+    s6 = model->unk_000 = arg3->unk_128;
+
+    for (i = 0; i < s6; i++) {
+        memcpy(&model->unk_AB0[i].unk_00, arg3->unk_2A8[i], sizeof(UnkDispStructPart2Sub));
+        memcpy(&model->unk_AB0[30 + i].unk_00, arg3->unk_2A8[i], sizeof(UnkDispStructPart2Sub));
+        model->unk_1F50[i] = model->unk_5E4[i] = FALSE;
+        model->unk_1F6E[i] = FALSE;
+    }
+
+    if (arg3->unk_150 != NULL) {
+        func_8002B850(obj, arg3);
+    } else {
+        obj->model->unk_128 = NULL;
+        func_80012A20(&obj->unk_0D0, &model->unk_010, -1, -2);
+        model->unk_9E4.x = 0;
+        model->unk_9E4.y = 0;
+        model->unk_9E4.z = 0;
+        math_translate(&model->unk_010.unk_98, &model->unk_9E4);
+    }
+
+    model->unk_12C = arg3->unk_148;
+    model->unk_A2C = arg3->unk_234;
+    obj->flags |= 0x44000;
+    model->unk_9C8 = s6;
+    model->unk_604 = arg3->unk_31C;
+
+    for (i = 0; i < model->unk_9C8; i++) {
+        model->unk_608[i].unk_04 = &arg3->unk_31C[i];
+    }
+
+    model->unk_A0C = 0;
+    model->unk_A1C = model->unk_A20 = 0;
+
+    if (model->unk_12C != NULL) {
+        func_80037500(obj);
+    }
+
+    if (arg3->unk_3CC & 1) {
+        obj->flags |= 0x80000000;
+    }
+
+    return obj;
+}
+
+Object *func_8002C27C(Vec4i *arg0, s32 arg1, void (*arg2)(Object *), UnkSam *arg3) {
+    Object *obj;
+    UnkCameraSub6 *new_var;
+
+    if (D_8013C2C0.count == 0) {
+        return NULL;
+    }
+
+    obj = func_8002BFF0(arg0, arg1, arg2, arg3);
+    obj->fn_render = func_80037CE4;
+    obj->spriteId = 0;
+    obj->flags |= 0x6002;
+    obj->unk_088.a = 128;
+
+    new_var = &obj->model->unk_A50;
+    new_var->unk_00 = 1;
+    new_var->unk_24 = 1;
+    obj->model->unk_A30.unk_04 = new_var;
+    obj->model->unk_A30.unk_00 = -9000;
+    obj->model->unk_A30.unk_1C = 0;
+    return obj;
+}

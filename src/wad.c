@@ -49,10 +49,6 @@ typedef struct WadFile {
     /* 0x08 */ WadFolder folders[1];
 } WadFile;
 
-typedef struct UnkFrodo {
-    /* 0x00 */ char unk_00[0xA68];
-} UnkFrodo; // szie = 0xA68
-
 extern s32 gNumAssets;
 
 extern Asset gAssets[256];

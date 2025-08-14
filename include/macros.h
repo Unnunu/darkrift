@@ -20,10 +20,10 @@
     array.count++;
 
 #define PUSH_UNK_DISP(pkt, a, b, c, d) \
-    pkt->unk_00 = a;                   \
-    pkt->unk_04 = b;                   \
-    pkt->unk_08 = c;                   \
-    pkt->unk_0C = d;                   \
+    pkt->unk_00 = (a);                 \
+    pkt->unk_04 = (b);                 \
+    pkt->vertices = (c);               \
+    pkt->unk_0C = (d);                 \
     pkt++;
 
 #endif

@@ -21,7 +21,7 @@ extern Matrix4f D_800813E0;
 extern OSMesgQueue gSchedSPTaskQueue;
 extern UnkDispStruct *D_8005BFE4;
 extern Player D_800AA488[2];
-extern UnkDelta D_8004BB48[];
+extern GameMode gGameModes[];
 extern s16 D_80080110;
 extern s16 D_80080112;
 extern s16 D_80080114;
@@ -35,5 +35,8 @@ extern u8 D_800801F1;
 extern u8 D_800B6350[2][11];
 extern s16 D_80080230;
 extern u16 gPracticingPlayer; // wrong name probably
+extern UnkDispStruct *D_8005BFE4;
+extern UnkDispStruct *D_8005BFE8;
+extern Gfx *D_8005BFD8;
 
 #endif

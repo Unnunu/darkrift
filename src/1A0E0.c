@@ -45,7 +45,7 @@ void func_80019C48(Object *obj) {
 
 void func_80019CC0(Object *obj) {
     if (D_8005BEFC - 8 < D_80080118) {
-        obj->fn_update = func_80019C48;
+        obj->fn_render = func_80019C48;
     } else {
         D_8005BEFC -= 8;
     }
@@ -60,7 +60,7 @@ void func_80019D2C(Object *obj) {
         mem_free(D_80049AE0);
         D_80049AE0 = NULL;
         load_background("kronos", 0, 60, 0, 180, 1, CONTEXT_2000);
-        obj->fn_update = func_80019CC0;
+        obj->fn_render = func_80019CC0;
     }
 
     func_80002178(D_8005BEFC, &D_80049BA8[D_8005BFCE]);
@@ -70,7 +70,7 @@ void func_80019DE4(Object *obj) {
     obj->vars[0]++;
     if (obj->vars[0] > 180) {
         obj->vars[0] = 0;
-        obj->fn_update = func_80019D2C;
+        obj->fn_render = func_80019D2C;
     }
     func_80019BD0(obj);
 }
@@ -90,7 +90,7 @@ void func_80019F40(Object *obj) {
     if (D_80081250 + D_80049AE8 + SCREEN_HEIGHT >= 0 &&
         ((gPlayerInput[0].unk_00 & INP_START) || (gPlayerInput[1].unk_00 & INP_START))) {
         D_80081254->flags |= 0x10;
-        obj->fn_update = func_8000A578;
+        obj->fn_render = func_8000A578;
     }
 }*/
 

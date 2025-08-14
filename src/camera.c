@@ -259,7 +259,7 @@ Object *camera_create(void) {
     func_80012AA8(&gCameraViewMatrix);
     func_80012AA8(&gCameraPerspMatrix);
 
-    obj->fn_update = camera_update;
+    obj->fn_render = camera_update;
     D_8013C668.z = 0;
 
     obj->model = mem_alloc(sizeof(Model), "camera.c", 247);
