@@ -2,6 +2,7 @@
 #include "task.h"
 #include "camera.h"
 #include "string.h"
+#include "PR/gt.h"
 
 extern s32 *D_8013C4E8;
 extern s32 D_8013C540;
@@ -29,32 +30,196 @@ void func_800343EC(void) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_800345D8.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034648.s")
+void func_80034648(UnkDispStructPart2 *arg0, s32 transparent) {
+    Gfx *gfx = &arg0->unk_00.unk_10;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034708.s")
+    func_80000E0C(gfx, 0, sizeof(Gfx));
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034860.s")
+    gtStateSetOthermode(gfx, GT_RENDERMODE, G_RM_AA_ZB_OPA_SURF | G_RM_AA_ZB_OPA_SURF2);
+    gtStateSetOthermode(gfx, GT_CYCLETYPE, G_CYC_1CYCLE);
+    gtStateSetOthermode(gfx, GT_TEXTFILT, G_TF_BILERP);
+    gtStateSetOthermode(gfx, GT_TEXTCONV, G_TC_FILT);
+    gtStateSetOthermode(gfx, GT_TEXTPERSP, G_TP_PERSP);
+    gtStateSetOthermode(gfx, GT_TEXTLUT, G_TT_RGBA16);
+    gtStateSetOthermode(gfx, GT_PIPELINE, G_PM_NPRIMITIVE);
+
+    arg0->unk_00.unk_00 |= 1;
+}
+
+void func_80034708(UnkDispStructPart2 *arg0, s32 arg1, s32 transparent) {
+    Gfx *gfx = &arg0->unk_00.unk_10;
+
+    func_80000E0C(gfx, 0, sizeof(Gfx));
+    if (arg1 && !transparent) {
+        gtStateSetOthermode(gfx, GT_RENDERMODE, G_RM_OPA_SURF | G_RM_OPA_SURF2);
+    } else if (!arg1 && !transparent) {
+        gtStateSetOthermode(gfx, GT_RENDERMODE, G_RM_AA_OPA_SURF | G_RM_AA_OPA_SURF2);
+    } else if (arg1 && transparent) {
+        gtStateSetOthermode(gfx, GT_RENDERMODE, G_RM_XLU_SURF | G_RM_XLU_SURF2);
+    } else if (!arg1 && transparent) {
+        gtStateSetOthermode(gfx, GT_RENDERMODE, G_RM_AA_XLU_SURF | G_RM_AA_XLU_SURF2);
+    }
+
+    gtStateSetOthermode(gfx, GT_CYCLETYPE, G_CYC_1CYCLE);
+    gtStateSetOthermode(gfx, GT_TEXTFILT, G_TF_BILERP);
+    gtStateSetOthermode(gfx, GT_TEXTCONV, G_TC_FILT);
+    gtStateSetOthermode(gfx, GT_TEXTPERSP, G_TP_PERSP);
+    gtStateSetOthermode(gfx, GT_TEXTLUT, G_TT_RGBA16);
+    gtStateSetOthermode(gfx, GT_PIPELINE, G_PM_NPRIMITIVE);
+
+    arg0->unk_00.unk_00 &= ~1;
+}
+
+s32 func_80034860(Object *obj) {
+    Model *model;
+    u32 j;
+    UnkDispStructPart2 *array;
+    UnkSam *s4;
+    u32 i;
+    s32 count;
+    UnkDispStructPart2 *s7;
+    UnkDispStructPart2 *fp;
+    s32 flags;
+    s32 s5;
+    s32 transparent;
+    u8 *ptr;
+
+    flags = obj->flags;
+    model = obj->model;
+    s4 = model->unk_A28;
+    count = model->unk_000;
+    s7 = model->unk_AB0;
+    fp = model->unk_AB0 + 30;
+    s5 = obj->flags & 0x40000000;
+    transparent = flags & 0x2000;
+    ptr = model->unk_1F6E;
+
+    for (i = 0; i < count; s7++, fp++, i++) {
+        s32 s3 = ptr[i];
+
+        if (s3 && !D_800801E2) {
+            func_80034648(s7, transparent);
+            func_80034648(fp, transparent);
+        } else {
+            func_80034708(s7, s5, transparent);
+            func_80034708(fp, s5, transparent);
+        }
+
+        array = s4->unk_2A8[i];
+        for (j = 1; j < s4->unk_238[i]; j++) {
+            if (s3 && !D_800801E2) {
+                func_80034648(&array[j], transparent);
+            } else {
+                func_80034708(&array[j], s5, transparent);
+            }
+        }
+    }
+
+    return 0;
+}
 
 void func_800349F0(Object *obj) {
     u32 i;
     Model *model = obj->model;
     s32 count = model->unk_000;
-    s8 *buffer = model->unk_1F6E;
+    u8 *buffer = model->unk_1F6E;
 
     for (i = 0; i < count; i++) {
         buffer[i] = 1;
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034A58.s")
+void func_80034A58(Object *obj) {
+    Model *model = obj->model;
+    u32 i;
+    s32 a2 = model->unk_000;
+    u8 *ptr2 = model->unk_1F6E;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034AB8.s")
-void func_80034AB8(Object *);
+    for (i = 0; i < a2; i++) {
+        ptr2[i] = 0;
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034C18.s")
+void func_80034AB8(Object *obj) {
+    Model *model = obj->model;
+    u32 i;
+    s32 a2 = model->unk_000;
+    u8 *ptr1;
+    u8 *ptr2;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034D54.s")
-void func_80034D54(void);
+    ptr2 = model->unk_1F6E;
+    ptr1 = model->unk_1F50;
+
+    if (D_8008012C & 0x10) {
+        if (!(obj->flags & 0x40000000)) {
+            memcpy(ptr1, ptr2, a2);
+            func_80034A58(obj);
+            func_800028E0(func_80034860, obj);
+            obj->flags |= 0x40000000;
+            D_8008012C |= 8;
+        }
+        return;
+    }
+
+    if (!(D_8008012C & 0x10) && (obj->flags & 0x40000000)) {
+        if (D_800801E2) {
+            D_8008012C &= ~8;
+        } else {
+            memcpy(ptr2, ptr1, a2);
+            func_800028E0(func_80034860, obj);
+            obj->flags &= ~0x40000000;
+        }
+        return;
+    }
+
+    for (i = 0; i < a2; i++) {
+        if (ptr1[i] != ptr2[i]) {
+            memcpy(ptr1, ptr2, a2);
+            func_800028E0(func_80034860, obj);
+            break;
+        }
+    }
+}
+
+void func_80034C18(Object *obj, u8 *arg1) {
+    Model *model = obj->model;
+    s32 count = model->unk_000;
+    u32 i;
+    u8 *ptr1 = model->unk_1F50;
+    u8 *ptr2 = model->unk_1F6E;
+
+    if (D_8008012C & 0x10) {
+        for (i = 0; i < count; i++) {
+            ptr1[i] = ptr2[i] = arg1[i];
+        }
+    } else {
+        for (i = 0; i < count; i++) {
+            ptr2[i] = arg1[i];
+        }
+    }
+}
+
+s32 func_80034D54(Object *obj) {
+    Model *model = obj->model;
+    ColorRGBA *color;
+    u8 v1 = obj->unk_088.a;
+    u32 i;
+    u32 count = model->unk_000;
+    UnkSam *sam = model->unk_A28;
+    UnkDispStruct *disp;
+    Gfx *gfx;
+
+    for (i = 0; i < count; i++) {
+        disp = sam->unk_154[i];
+        gfx = disp->unk_04->unk_00.unk_0C;
+        color = &obj->unk_200;
+        if (gfx->words.w0 == 0xFA000000) {
+            gDPSetPrimColor(gfx, 0, 0, color->r, color->g, color->b, v1);
+        }
+    }
+
+    return 0;
+}
 
 void func_80034F34(Object *obj) {
     ColorRGBA *color1 = &obj->unk_200;
@@ -157,7 +322,7 @@ void func_80035F5C(Object *obj) {
         return;
     }
 
-    D_8013C4E0 = model->unk_A24->unk_154;
+    D_8013C4E0 = model->unk_A24->sam.unk_154;
     func_80012AA8(&sp98);
     s6 = D_8005BFCE * 30;
 

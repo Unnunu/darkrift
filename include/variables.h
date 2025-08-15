@@ -38,5 +38,6 @@ extern u16 gPracticingPlayer; // wrong name probably
 extern UnkDispStruct *D_8005BFE4;
 extern UnkDispStruct *D_8005BFE8;
 extern Gfx *D_8005BFD8;
+extern u8 D_800801E2;
 
 #endif

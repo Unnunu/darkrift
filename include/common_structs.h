@@ -53,7 +53,7 @@ typedef struct UnkDispStructPart2Sub {
     /* 0x0A */ u8 unk_0A;
     /* 0x0B */ u8 unk_0B;
     /* 0x0C */ Gfx *unk_0C;
-    /* 0x10 */ char unk_10[8];
+    /* 0x10 */ Gfx unk_10;
 } UnkDispStructPart2Sub; // size = 0x18
 
 typedef struct UnkDispStructPart2 {
@@ -262,7 +262,7 @@ typedef struct UnkSam {
     /* 0x236 */ s16 unk_236;
     /* 0x238 */ s32 unk_238[1]; // size unknown
     /* 0x23C */ char unk_23C[0x2A8 - 0x23C];
-    /* 0x2A8 */ UnkDispStructPart2Sub *unk_2A8[28];
+    /* 0x2A8 */ UnkDispStructPart2 *unk_2A8[28];
     /* 0x318 */ s8 unk_318;
     /* 0x319 */ char unk_319[3];
     /* 0x31C */ UnkCameraSub6 *unk_31C;
@@ -339,8 +339,8 @@ typedef struct Model {
     /* 0x0AA8 */ StructAA8 *unk_AA8;
     /* 0x0AAC */ char unk_AAC[4];
     /* 0x0AB0 */ UnkDispStructPart2 unk_AB0[60];
-    /* 0x1F50 */ s8 unk_1F50[30];
-    /* 0x1F6E */ s8 unk_1F6E[30];
+    /* 0x1F50 */ u8 unk_1F50[30];
+    /* 0x1F6E */ u8 unk_1F6E[30];
     /* 0x1F8C */ char unk_1F8C[4];
 } Model; // size = 0x1F90
 

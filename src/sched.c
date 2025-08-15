@@ -20,7 +20,6 @@ extern OSTime D_8005BEF0;
 
 extern s32 D_8008011C;
 extern u8 D_80080128;
-extern s8 D_800801E2;
 extern s8 D_800801E4;
 extern s8 D_800801E5;
 extern s32 D_800801E8;
