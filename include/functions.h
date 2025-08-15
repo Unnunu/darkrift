@@ -12,7 +12,6 @@ s32 func_80000EA8(s32 size);
 void func_80000F70(s32 arg0);
 void func_8002A8C0(ItemPool *arg0, u32 arg1, u32 arg2);
 void func_80000E0C(u8 *arg0, u8 arg1, u32 arg2);
-Object *func_80015FB4(s32);
 void func_80015C58(Object *);
 void sound_play(u32, u32);
 void func_80021918(Object *arg0, s32 arg1);
@@ -59,5 +58,7 @@ void func_800359E4(Model *, s32);
 void func_800352FC(Model *, s32);
 void func_8003795C(Object *);
 void func_80037CE4(Object *);
+Object *func_8002BFF0(Vec4i *, s32, void (*)(Object *), UnkSam *);
+Object *func_80015FB4(vs16);
 
 #endif

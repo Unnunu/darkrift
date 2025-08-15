@@ -4,11 +4,24 @@
 #include "string.h"
 #include "PR/gt.h"
 
-extern s32 *D_8013C4E8;
+typedef struct GlobalObjD {
+    /* 0x00 */ s32 unk_00;
+    /* 0x04 */ s32 unk_04;
+    /* 0x08 */ s32 unk_08;
+    /* 0x0C */ char unk_0C[0x1C];
+    /* 0x2C */ Object *unk_28;
+    /* 0x2C */ struct GlobalObjD *unk_2C;
+    /* 0x30 */ struct GlobalObjD *unk_30;
+} GlobalObjD; // size = 0x34
+
+extern UnkObjRender *D_8013C4E8;
 extern s32 D_8013C540;
 extern K2Def D_80053010;
 extern Vec4i D_8004934C;
 extern UnkDispStruct **D_8013C4E0;
+extern GlobalObjD *D_8013C4EC;
+extern ItemPool D_8013C4F0;
+
 Object *func_8002BC84(Vec4i *, s32, K2Def *, s32);
 void func_800028E0(s32 arg0, s32 arg1);
 
@@ -24,11 +37,47 @@ void func_800343EC(void) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_800343F8.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034508.s")
+void func_80034508(void) {
+    D_8013C4EC = NULL;
+    func_8002A8C0(&D_8013C4F0, 5, sizeof(GlobalObjD));
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_8003453C.s")
+void func_8003453C(Object *obj, u8 *arg1) {
+    GlobalObjD *objD;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_800345D8.s")
+    if (D_8013C4F0.count == 0) {
+        return;
+    }
+
+    objD = (GlobalObjD *) GET_ITEM(D_8013C4F0);
+    obj->flags |= 0x20000000;
+
+    objD->unk_2C = D_8013C4EC;
+    objD->unk_30 = NULL;
+    if (D_8013C4EC != NULL) {
+        D_8013C4EC->unk_30 = objD;
+    }
+    D_8013C4EC = objD;
+
+    objD->unk_28 = obj;
+    objD->unk_00 = arg1[0];
+    objD->unk_04 = arg1[1];
+    objD->unk_08 = arg1[2];
+    obj->unk_208 = objD;
+}
+
+void func_800345D8(GlobalObjD *arg0) {
+    if (arg0->unk_30 != NULL) {
+        arg0->unk_30->unk_2C = arg0->unk_2C;
+    } else {
+        D_8013C4EC = arg0->unk_2C;
+    }
+    if (arg0->unk_2C != NULL) {
+        arg0->unk_2C->unk_30 = arg0->unk_30;
+    }
+
+    RELEASE_ITEM(D_8013C4F0, arg0);
+}
 
 void func_80034648(UnkDispStructPart2 *arg0, s32 transparent) {
     Gfx *gfx = &arg0->unk_00.unk_10;
@@ -233,10 +282,61 @@ void func_80034F34(Object *obj) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_80034FC8.s")
+void func_80034FC8(Model *model, s32 arg1, Vec4i *arg2) {
+    AssetGmdSub2 *a1;
+    s32 a, b, c;
+    s32 i, count;
+    AssetGmdSub3 *array;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_8003517C.s")
-void func_8003517C(UnkSam *, s32, Vec4i *);
+    a = 0;
+    b = 0;
+    c = 0;
+
+    if (model->unk_A24 != NULL) {
+        a1 = &model->unk_A24->sam.unk_04->unk_04[arg1];
+    } else {
+        a1 = &model->unk_A28->unk_04->unk_04[arg1];
+    }
+
+    count = a1->unk_00;
+    array = a1->unk_08;
+
+    for (i = 0; i < count; i++) {
+        a += array[i].unk_00.x;
+        b += array[i].unk_00.y;
+        c += array[i].unk_00.z;
+    }
+
+    arg2->x = a / count;
+    arg2->y = b / count;
+    arg2->z = c / count;
+}
+
+void func_8003517C(UnkSam *sam, s32 arg1, Vec4i *arg2) {
+    AssetGmdSub2 *a1;
+    s32 a, b, c;
+    s32 i, count;
+    AssetGmdSub3 *array;
+
+    a = 0;
+    b = 0;
+    c = 0;
+
+    a1 = &sam->unk_04->unk_04[arg1];
+
+    count = a1->unk_00;
+    array = a1->unk_08;
+
+    for (i = 0; i < count; i++) {
+        a += array[i].unk_00.x;
+        b += array[i].unk_00.y;
+        c += array[i].unk_00.z;
+    }
+
+    arg2->x = a / count;
+    arg2->y = b / count;
+    arg2->z = c / count;
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/D_800551D0.s")
 

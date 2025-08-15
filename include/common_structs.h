@@ -186,10 +186,15 @@ typedef struct AssetGmdSub1 {
     /* 0x0C */ s32 unk_0C;
 } AssetGmdSub1; // size = 0x10
 
+typedef struct AssetGmdSub3 {
+    /* 0x00 */ Vec3s unk_00;
+    /* 0x06 */ char unk_06[10];
+} AssetGmdSub3; // size = 0x10
+
 typedef struct AssetGmdSub2 {
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
+    /* 0x08 */ AssetGmdSub3 *unk_08;
     /* 0x0C */ s32 unk_0C;
     /* 0x10 */ char unk_10[0x8];
     /* 0x18 */ s32 unk_18;
@@ -406,7 +411,7 @@ typedef struct Object {
     /* 0x1FC */ s32 unk_1FC;
     /* 0x200 */ ColorRGBA unk_200;
     /* 0x204 */ ColorRGBA unk_204;
-    /* 0x208 */ s32 unk_208;
+    /* 0x208 */ struct GlobalObjD *unk_208;
     /* 0x20C */ char unk_20C[4];
     /* 0x210 */ struct Object *nextObject;
     /* 0x214 */ struct Object *prevObject;
@@ -519,5 +524,13 @@ typedef struct K2Def {
     /* 0x10 */ s32 unk_10;
     /* 0x14 */ s32 unk_14;
 } K2Def;
+
+typedef struct Unk80015E74 {
+    /* 0x00 */ char *unk_00;
+    /* 0x04 */ u16 unk_04;
+    /* 0x06 */ u16 unk_06;
+    /* 0x08 */ void (*unk_08)(Object *);
+    /* 0x0C */ s32 unk_0C;
+} Unk80015E74;
 
 #endif
