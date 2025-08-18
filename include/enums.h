@@ -61,6 +61,8 @@ enum GameModes {
 #define INP_DOWN 0x4000
 #define INP_LEFT 0x8000
 
+#define INP_DIRECTION (INP_UP | INP_RIGHT | INP_DOWN | INP_LEFT)
+
 enum AssetContext { CONTEXT_2000 = 0x2000, CONTEXT_EEFF = 0xEEFF };
 
 enum CharacterIds {

@@ -23,7 +23,7 @@ Matrix4f gCameraProjectionMatrix;
 Vec3s D_8013C668;
 Matrix4f D_8013C670;
 Matrix4f D_8013C6B0;
-UnkMu D_8013C6F0;
+Transform D_8013C6F0;
 s32 D_8013C808[4];
 Vec4i D_8013C818;
 s32 D_8013C828;
@@ -264,11 +264,11 @@ Object *camera_create(void) {
 
     obj->model = mem_alloc(sizeof(Model), "camera.c", 247);
     obj->model->unk_000 = 1;
-    obj->model->unk_128 = &D_8013C6F0;
+    obj->model->transforms = &D_8013C6F0;
     obj->model->unk_AA8 = D_8013C808;
 
     func_80012A20(NULL, &obj->model->unk_010, -1, -2);
-    func_80012A20(&obj->model->unk_010, obj->model->unk_128, 0, -1);
+    func_80012A20(&obj->model->unk_010, obj->model->transforms, 0, -1);
 
     obj->model->unk_9E4.x = obj->model->unk_9E4.y = obj->model->unk_9E4.z = 0;
     obj->model->unk_12C = &D_80053030;

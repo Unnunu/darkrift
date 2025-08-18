@@ -1,8 +1,52 @@
 #include "common.h"
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1B6E0/func_8001AAE0.s")
+extern Gfx **D_80049CF0;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1B6E0/func_8001B26C.s")
+extern s16 D_800815E8;
+extern s16 D_800815EA;
+extern s16 D_800815FE;
+extern s16 D_80081600;
+extern s16 D_80081602;
+extern s16 D_80081604;
+extern u16 *D_80081610;
+extern Mtx D_80081618;
+
+#pragma GLOBAL_ASM("asm/nonmatchings/1B6E0/func_8001AAE0.s")
+void func_8001AAE0(void);
+
+void func_8001B26C(void) {
+    s16 i, j;
+    s16 v0, a0;
+
+    func_8001AAE0();
+
+    gDPLoadTLUT_pal16(D_8005BFD8++, 0, VIRTUAL_TO_PHYSICAL(D_80081610));
+    gSPMatrix(D_8005BFD8++, VIRTUAL_TO_PHYSICAL(&D_80081618), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+
+    for (i = D_80081602 - 1; i < D_80081604 + 1; i++) {
+        for (j = D_800815FE; j < D_80081600 + 1; j++) {
+            if (j >= 0) {
+                a0 = j % D_800815E8;
+            } else {
+                a0 = j % D_800815E8;
+                if (a0 != 0) {
+                    a0 += D_800815E8;
+                }
+            }
+
+            if (i >= 0) {
+                v0 = i % D_800815EA;
+            } else {
+                v0 = i % D_800815EA;
+                if (v0 != 0) {
+                    v0 += D_800815EA;
+                }
+            }
+
+            gSPDisplayList(D_8005BFD8++, VIRTUAL_TO_PHYSICAL(D_80049CF0[v0 * D_800815E8 + a0]));
+        }
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1B6E0/func_8001B5B0.s")
 

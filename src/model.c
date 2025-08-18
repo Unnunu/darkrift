@@ -14,7 +14,7 @@ typedef struct GlobalObjD {
     /* 0x30 */ struct GlobalObjD *unk_30;
 } GlobalObjD; // size = 0x34
 
-extern UnkObjRender *D_8013C4E8;
+extern ModelNodeRenderInfo *D_8013C4E8;
 extern s32 D_8013C540;
 extern K2Def D_80053010;
 extern Vec4i D_8004934C;
@@ -342,15 +342,88 @@ void func_8003517C(UnkSam *sam, s32 arg1, Vec4i *arg2) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_800352FC.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_8003561C.s")
-void func_8003561C(Object *, s32);
+void func_8003561C(Object *obj, s32 arg1) {
+    Model *model;
+    Matrix4f *fp;
+    u32 i;
+    ModelNodeRenderInfo *s6;
+    s32 sp74;
+    Transform *s5;
+    ModelNode *s1;
+    f32 x, y, z, w;
+    u32 a00;
+    s32 a1, a3;
+    ModelNode *a2;
+    u32 flags;
+
+    model = obj->model;
+    s6 = model->unk_608;
+    sp74 = model->unk_9C8;
+    s5 = model->transforms;
+
+    if (obj->flags & 0x01000000) {
+        fp = &D_8013C6B0;
+    } else {
+        fp = &gCameraProjectionMatrix;
+    }
+
+    for (i = 0; i < sp74; i++) {
+        s1 = s6[i].unk_04;
+        if (s5 != NULL) {
+            Matrix4f *mtx = (s1->unk_20 >= 0) ? &s5[s1->unk_20].wolrd_matrix : &s5[s1->unk_04[0]].wolrd_matrix;
+            math_mtxf_mul(mtx, fp, &D_800813E0);
+        } else {
+            math_mtxf_mul(&model->unk_010.wolrd_matrix, fp, &D_800813E0);
+        }
+
+        x = D_800813E0.x.x * s1->unk_14.x + D_800813E0.y.x * s1->unk_14.y + D_800813E0.z.x * s1->unk_14.z +
+            D_800813E0.w.x;
+        y = D_800813E0.x.y * s1->unk_14.x + D_800813E0.y.y * s1->unk_14.y + D_800813E0.z.y * s1->unk_14.z +
+            D_800813E0.w.y;
+        z = D_800813E0.x.z * s1->unk_14.x + D_800813E0.y.z * s1->unk_14.y + D_800813E0.z.z * s1->unk_14.z +
+            D_800813E0.w.z;
+        w = D_800813E0.x.w * s1->unk_14.x + D_800813E0.y.w * s1->unk_14.y + D_800813E0.z.w * s1->unk_14.z +
+            D_800813E0.w.w;
+
+        if (w != 0.0f) {
+            x /= w;
+            y /= w;
+        } else {
+            x = y = z = 2.0f;
+        }
+
+        if (!(obj->flags & 0x200000)) {
+            s6[i].flags = (x > 1.2 || x < -1.2 || y > 1.2 || y < -1.2);
+        } else {
+            s6[i].flags &= ~1;
+        }
+
+        s6[i].priority = arg1 + z;
+    }
+
+    for (i = 1; i < sp74; i++) {
+        a2 = s6[i].unk_04;
+        a1 = s6[i].priority;
+        a3 = s6[i].flags;
+        a00 = i;
+        for (a00 = i; a00 != 0 && s6[a00 - 1].priority < a1; a00--) {
+            s6[a00].unk_04 = s6[a00 - 1].unk_04;
+            s6[a00].priority = s6[a00 - 1].priority;
+            s6[a00].flags = s6[a00 - 1].flags;
+        }
+
+        s6[a00].unk_04 = a2;
+        s6[a00].priority = a1;
+        s6[a00].flags = a3;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_800359E4.s")
 
 void func_80035CCC(UnkSam *arg0) {
     s32 count;
     u32 i;
-    UnkCameraSub6 *s1;
+    ModelNode *s1;
     s32 unused[4];
     u32 j;
     UnkDispStruct **var1;
@@ -359,7 +432,7 @@ void func_80035CCC(UnkSam *arg0) {
     s32 temp2;
 
     count = arg0->unk_128;
-    s1 = arg0->unk_31C = (UnkCameraSub6 *) mem_alloc(count * sizeof(UnkCameraSub6), "model.c", 766);
+    s1 = arg0->unk_31C = (ModelNode *) mem_alloc(count * sizeof(ModelNode), "model.c", 766);
     temp = 1; // required to match
     var1 = arg0->unk_154;
     for (i = 0; i < count; i++, s1++) {
@@ -407,15 +480,15 @@ void func_80035F5C(Object *obj) {
     Matrix4f sp98;
     f32 v1, a0;
     UnkDispStructPart2 *sub;
-    UnkMu *trans;
+    Transform *trans;
     s32 unused[4];
     UnkDispStruct **sub3;
     Matrix4f *newvar;
 
     model = obj->model;
-    trans = model->unk_128;
+    trans = model->transforms;
     parent = (Object *) obj->vars[1];
-    newvar = &obj->unk_0D0.unk_98;
+    newvar = &obj->transform.local_matrix;
     sub3 = model->unk_A28->unk_154;
 
     if (parent->flags & 0x4) {
@@ -427,7 +500,7 @@ void func_80035F5C(Object *obj) {
     s6 = D_8005BFCE * 30;
 
     for (i = 0; i < model->unk_000; i++) {
-        func_80014718(&sp98, &trans[i].unk_D8, newvar);
+        func_80014718(&sp98, &trans[i].wolrd_matrix, newvar);
         math_mtxf_mul(&sp98, &gCameraProjectionMatrix, &D_800813E0);
 
         if (D_800813E0.w.w != 0.0f) {
@@ -446,7 +519,7 @@ void func_80035F5C(Object *obj) {
         sub = j + model->unk_AB0;
         if (&D_800813E0 && &D_800813E0) {} // required to match
 
-        math_mtxf2mtx(&sub->unk_18, &D_800813E0);
+        math_mtxf2mtx(&sub->matrix, &D_800813E0);
         sub3[i]->unk_04 = sub;
         func_80035DF8(model->unk_A28, i);
     }
@@ -458,19 +531,42 @@ void func_80036194(Object *arg0, char *arg1, s32 arg2) {
     str_copy(D_80053010.unk_00, arg1);
     v0 = func_8002BC84(&D_8004934C, 0, &D_80053010, arg2);
 
-    v0->vars[0] = v0->model->unk_128;
+    v0->vars[0] = v0->model->transforms;
     v0->vars[1] = arg0;
-    v0->model->unk_128 = arg0->model->unk_128;
+    v0->model->transforms = arg0->model->transforms;
     v0->fn_render = func_80035F5C;
 
-    v0->unk_0D0.unk_98.y.x = 0.0f;
-    v0->unk_0D0.unk_98.x.y = 0.0f;
-    v0->unk_0D0.unk_98.y.y = 0.0f;
-    v0->unk_0D0.unk_98.z.y = 0.0f;
-    v0->unk_0D0.unk_98.y.z = -1.5f;
+    v0->transform.local_matrix.y.x = 0.0f;
+    v0->transform.local_matrix.x.y = 0.0f;
+    v0->transform.local_matrix.y.y = 0.0f;
+    v0->transform.local_matrix.z.y = 0.0f;
+    v0->transform.local_matrix.y.z = -1.5f;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_80036228.s")
+void func_80036228(Transform *arg0, Transform *arg1) {
+    Mtx *s0;
+    Transform *iter;
+
+    s0 = &arg1->unk_00[D_8005BFCE];
+    math_mtxf2mtx(s0, &arg1->wolrd_matrix);
+    arg1->unk_94 = &s0->m[1][2];
+
+    if (arg0 != NULL) {
+        gSPMatrix(D_8005BFD8++, VIRTUAL_TO_PHYSICAL(s0), G_MTX_PUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    } else {
+        gSPMatrix(D_8005BFD8++, VIRTUAL_TO_PHYSICAL(s0), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    }
+
+    for (iter = arg1->firstChild; iter != NULL; iter = iter->nextSibling) {
+        func_80036228(arg1, iter);
+    }
+
+    if (arg1->unk_8C >= 0) {
+        gSPDisplayList(D_8005BFD8++, VIRTUAL_TO_PHYSICAL(D_8013C4E0[arg1->unk_8C]));
+    }
+
+    gSPPopMatrix(D_8005BFD8++, G_MTX_MODELVIEW);
+}
 
 void func_8003635C(Object *obj) {
     Model *model = obj->model;
@@ -478,7 +574,7 @@ void func_8003635C(Object *obj) {
     s32 i;
     s16 v1;
     u8 *ptr;
-    UnkMu *trans;
+    Transform *trans;
     Vec4i sp88;
     s32 unused[5];
     Vec4i *vec1;
@@ -492,35 +588,35 @@ void func_8003635C(Object *obj) {
     vec1 = model->unk_404;
     vec3 = model->unk_134;
     count = model->unk_000;
-    trans = model->unk_128;
+    trans = model->transforms;
 
     for (i = 0; i < count; i++) {
         if (ptr[i]) {
-            math_rotate(&trans[i].unk_98, &vec3[i]);
-            func_800139A0(&trans[i].unk_98, &vec4[i]);
+            math_rotate(&trans[i].local_matrix, &vec3[i]);
+            func_800139A0(&trans[i].local_matrix, &vec4[i]);
 
-            trans[i].unk_98.w.x = vec2[i].x + vec1[i].x;
-            trans[i].unk_98.w.y = vec2[i].y + vec1[i].y;
-            trans[i].unk_98.w.z = vec2[i].z + vec1[i].z;
+            trans[i].local_matrix.w.x = vec2[i].x + vec1[i].x;
+            trans[i].local_matrix.w.y = vec2[i].y + vec1[i].y;
+            trans[i].local_matrix.w.z = vec2[i].z + vec1[i].z;
             ptr[i] = FALSE;
         }
     }
 
     if (model->unk_9F4 || model->unk_132 != 0) {
-        math_rotate(&model->unk_010.unk_98, &model->unk_9CC);
-        func_800139A0(&model->unk_010.unk_98, &model->unk_9F8);
+        math_rotate(&model->unk_010.local_matrix, &model->unk_9CC);
+        func_800139A0(&model->unk_010.local_matrix, &model->unk_9F8);
         model->unk_9F4 = FALSE;
     }
 
     if (obj->flags & 0x400) {
-        model->unk_010.unk_98.w.y = model->unk_9D4.y;
+        model->unk_010.local_matrix.w.y = model->unk_9D4.y;
         sp88.y = 0;
         if (obj->flags & 0x20000) {
             sp88.x = model->unk_9D4.x - model->unk_9E4.x - model->unk_A1C;
             v1 = sp88.x - model->unk_002;
             model->unk_002 = sp88.x;
             sp88.x = v1;
-            model->unk_010.unk_98.w.x = model->unk_9E4.x;
+            model->unk_010.local_matrix.w.x = model->unk_9E4.x;
         } else {
             sp88.x = 0;
         }
@@ -536,7 +632,7 @@ void func_8003635C(Object *obj) {
             model->unk_006 = sp88.z;
             sp88.z = v1;
 
-            model->unk_010.unk_98.w.z = model->unk_9E4.z;
+            model->unk_010.local_matrix.w.z = model->unk_9E4.z;
             func_8001370C(&sp88, &obj->rotation);
             if (!(obj->flags & 0x8000)) {
                 obj->pos.x += sp88.x;
@@ -544,9 +640,9 @@ void func_8003635C(Object *obj) {
             }
         }
     } else {
-        model->unk_010.unk_98.w.x = model->unk_9D4.x;
-        model->unk_010.unk_98.w.y = model->unk_9D4.y;
-        model->unk_010.unk_98.w.z = model->unk_9D4.z;
+        model->unk_010.local_matrix.w.x = model->unk_9D4.x;
+        model->unk_010.local_matrix.w.y = model->unk_9D4.y;
+        model->unk_010.local_matrix.w.z = model->unk_9D4.z;
 
         if (model->unk_00C != 0) {
             sp88.x = 0;
@@ -932,17 +1028,65 @@ void func_800371C0(Object *obj) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80037500.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_80037788.s")
-void func_80037788(UnkCameraSub4 *, s32);
+void func_80037788(ModelNodeRenderInfo *nodeList, s32 numNodes) {
+    u32 i, j;
+    ModelNodeRenderInfo *v1;
+    ModelNodeRenderInfo *a1;
+
+    if (D_8013C4E8 != NULL) {
+        v1 = D_8013C4E8;
+
+        if (D_8013C4E8->priority < nodeList->priority) {
+            i = 1;
+            a1 = D_8013C4E8 = nodeList;
+        } else {
+            i = 0;
+            a1 = D_8013C4E8 = v1;
+            v1 = v1->next;
+        }
+
+        while (v1 != NULL && i < numNodes) {
+            if (v1->priority < nodeList[i].priority) {
+                a1->next = &nodeList[i];
+                a1 = &nodeList[i];
+                i++;
+            } else {
+                a1->next = v1;
+                a1 = v1;
+                v1 = v1->next;
+            }
+        }
+
+        while (v1 != NULL) {
+            a1->next = v1;
+            a1 = v1;
+            v1 = v1->next;
+        }
+
+        for (j = i; j < numNodes; j++) {
+            a1->next = &nodeList[j];
+            a1 = &nodeList[j];
+        }
+
+        a1->next = NULL;
+    } else {
+        a1 = D_8013C4E8 = nodeList;
+        for (j = 1; j < numNodes; j++) {
+            a1->next = &nodeList[j];
+            a1 = &nodeList[j];
+        }
+        a1->next = NULL;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_8003795C.s")
 
 void func_80037CE4(Object *obj) {
     Model *model;
-    UnkMu *mu;
+    Transform *mu;
     UnkSam *sub2;
     s32 index;
-    UnkCameraSub6 *sub6;
+    ModelNode *sub6;
     UnkDispStruct *newvar;
     s32 sp4C;
     s32 nv2;
@@ -965,7 +1109,7 @@ void func_80037CE4(Object *obj) {
         return;
     }
 
-    mu = &obj->unk_0D0;
+    mu = &obj->transform;
     AB0 = model->unk_AB0;
 
     if (obj->flags & 0x2000) {
@@ -977,19 +1121,19 @@ void func_80037CE4(Object *obj) {
         obj->rotation.y = D_8013C668.y;
     }
 
-    math_rotate(&mu->unk_98, &obj->rotation);
-    math_translate(&mu->unk_98, &obj->pos);
-    math_mtxf_mul(&mu->unk_98, &gCameraProjectionMatrix, &D_800813E0);
+    math_rotate(&mu->local_matrix, &obj->rotation);
+    math_translate(&mu->local_matrix, &obj->pos);
+    math_mtxf_mul(&mu->local_matrix, &gCameraProjectionMatrix, &D_800813E0);
 
     sub = AB0 + sp4C;
     sub6 = &model->unk_A50;
-    math_mtxf2mtx(&sub->unk_18, &D_800813E0);
+    math_mtxf2mtx(&sub->matrix, &D_800813E0);
     nv2 = sub2->unk_238[index];
     model->unk_A30.unk_08[0] = sub;
 
     sub6->unk_28[0] = newvar;
     sub6->unk_38[0] = nv2;
-    model->unk_A30.unk_18 = D_8013C4E8;
+    model->unk_A30.next = D_8013C4E8;
     D_8013C4E8 = &model->unk_A30;
 }
 
@@ -998,22 +1142,22 @@ void func_80037CE4(Object *obj) {
 void func_800386E8(Object *obj) {
     UnkDispStruct **s2;
     Model *model;
-    UnkMu *spAC;
+    Transform *spAC;
     s32 j;
     u32 i;
-    UnkCameraSub6 *new_var;
+    ModelNode *new_var;
     Matrix4f *a1;
     UnkDispStructPart2 *s0;
     s32 sp94;
-    UnkCameraSub4 *q;
+    ModelNodeRenderInfo *renderInfo;
     s32 s6;
-    UnkMu *mu;
+    Transform *objTransform;
     Matrix4f *nu;
     UnkDispStructPart2 *s7;
     s32 unused[8];
 
     model = obj->model;
-    spAC = model->unk_128;
+    spAC = model->transforms;
     s2 = model->unk_A28->unk_154;
     sp94 = 30 * D_8005BFCE;
 
@@ -1022,7 +1166,7 @@ void func_800386E8(Object *obj) {
         return;
     }
 
-    mu = &obj->unk_0D0;
+    objTransform = &obj->transform;
 
     if (obj->flags & 0x10000000) {
         func_800349F0(obj);
@@ -1051,9 +1195,9 @@ void func_800386E8(Object *obj) {
             obj->unk_086 = obj->spriteId;
         }
 
-        math_rotate(&mu->unk_98, &obj->rotation);
-        math_translate(&mu->unk_98, &obj->pos);
-        func_80014974(mu);
+        math_rotate(&objTransform->local_matrix, &obj->rotation);
+        math_translate(&objTransform->local_matrix, &obj->pos);
+        func_80014974(objTransform);
 
         if (model->unk_604 != NULL) {
             if (obj->flags & 0x800) {
@@ -1062,11 +1206,11 @@ void func_800386E8(Object *obj) {
                 func_8003561C(obj, 0);
             }
 
-            q = model->unk_608;
+            renderInfo = model->unk_608;
             for (i = 0; i < model->unk_9C8; i++) {
-                new_var = q[i].unk_04;
+                new_var = renderInfo[i].unk_04;
                 if (obj->flags & 0x02000000) {
-                    q[i].unk_1C |= 2;
+                    renderInfo[i].flags |= 2;
                 }
 
                 s6 = new_var->unk_24;
@@ -1082,26 +1226,26 @@ void func_800386E8(Object *obj) {
                     }
 
                     if (spAC != NULL) {
-                        math_mtxf_mul(&spAC[s1].unk_D8, a1, &D_800813E0);
+                        math_mtxf_mul(&spAC[s1].wolrd_matrix, a1, &D_800813E0);
                     } else {
-                        math_mtxf_mul(&model->unk_010.unk_D8, a1, &D_800813E0);
+                        math_mtxf_mul(&model->unk_010.wolrd_matrix, a1, &D_800813E0);
                     }
 
                     s0 = &s7[s1 + sp94];
-                    math_mtxf2mtx(&s0->unk_18, &D_800813E0);
-                    q[i].unk_08[j] = s0;
+                    math_mtxf2mtx(&s0->matrix, &D_800813E0);
+                    renderInfo[i].unk_08[j] = s0;
                 }
             }
 
-            func_80037788(q, model->unk_9C8);
+            func_80037788(renderInfo, model->unk_9C8);
         }
     } else {
         s0 = model->unk_AB0;
-        math_rotate(&mu->unk_98, &obj->rotation);
-        math_translate(&mu->unk_98, &obj->pos);
-        func_80014974(mu);
-        math_mtxf_mul(&mu->unk_98, &gCameraProjectionMatrix, &D_800813E0);
-        math_mtxf2mtx(&(s0 + sp94)->unk_18, &D_800813E0);
+        math_rotate(&objTransform->local_matrix, &obj->rotation);
+        math_translate(&objTransform->local_matrix, &obj->pos);
+        func_80014974(objTransform);
+        math_mtxf_mul(&objTransform->local_matrix, &gCameraProjectionMatrix, &D_800813E0);
+        math_mtxf2mtx(&(s0 + sp94)->matrix, &D_800813E0);
         func_80035DF8(model->unk_A28, 0);
         (*s2)->unk_04 = s0 + sp94;
     }

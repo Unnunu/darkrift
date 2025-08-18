@@ -7,9 +7,9 @@ extern ItemPool D_8013C2C0;
 
 extern Vec3s D_80049344;
 extern Vec4i D_8004934C;
-extern Object *D_80052C50;
+
 extern s32 D_80052C54;
-extern UnkObjRender *D_8013C4E8;
+extern ModelNodeRenderInfo *D_8013C4E8;
 
 void func_800345D8(s32);
 void task_default_func(Object *arg0);
@@ -144,8 +144,8 @@ void func_8002ADFC(Object *obj) {
         D_8013C2C0.elements[D_8013C2C0.unk_0C] = obj->model;
         D_8013C2C0.count++;
 
-        if (obj->model->unk_128 != NULL) {
-            mem_free(obj->model->unk_128);
+        if (obj->model->transforms != NULL) {
+            mem_free(obj->model->transforms);
         }
     }
 
@@ -156,7 +156,7 @@ void func_8002ADFC(Object *obj) {
 
 // unused
 void func_8002AF08(UnkDispStructPart2 *arg0) {
-    func_80012450(&arg0->unk_18);
+    func_80012450(&arg0->matrix);
 }
 
 // unused
@@ -212,7 +212,7 @@ void func_8002AF8C(Object *obj) {
 void obj_update_all(void) {
     Object *obj;
     Object *tempObj;
-    UnkObjRender *renderInfo;
+    ModelNodeRenderInfo *renderInfo;
     s32 s1;
     u32 i;
     u32 j;
@@ -248,17 +248,17 @@ void obj_update_all(void) {
         }
     }
 
-    for (renderInfo = D_8013C4E8; renderInfo != NULL; renderInfo = renderInfo->unk_18) {
+    for (renderInfo = D_8013C4E8; renderInfo != NULL; renderInfo = renderInfo->next) {
         s1 = renderInfo->unk_04->unk_24;
         if (renderInfo->unk_04->unk_00) {
             for (i = 0; i < s1; i++) {
-                if (renderInfo->unk_1C & 1) {
+                if (renderInfo->flags & 1) {
                     continue;
                 }
                 v0 = renderInfo->unk_04->unk_28[i];
                 t2 = renderInfo->unk_04->unk_38[i];
                 for (j = 0; j < t2; j++) {
-                    if (renderInfo->unk_1C & 2) {
+                    if (renderInfo->flags & 2) {
                         PUSH_UNK_DISP(D_8005BFE8, NULL, (j != 0) ? v0->unk_04 : renderInfo->unk_08[i], v0->vertices,
                                       v0->unk_0C);
                         v0++;
@@ -272,7 +272,6 @@ void obj_update_all(void) {
         } else {
             s32 temp = D_8005BFCE * s1;
             for (i = 0; i < s1; i++) {
-                // matrix ??
                 gSPMatrix(D_8005BFD8++, VIRTUAL_TO_PHYSICAL(renderInfo->unk_04->unk_28[i + temp]),
                           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
                 gSPDisplayList(D_8005BFD8++, VIRTUAL_TO_PHYSICAL(renderInfo->unk_04->unk_48[i]));
@@ -282,10 +281,10 @@ void obj_update_all(void) {
 }
 
 #ifdef NON_EQUIVALENT
-void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(Object *)) {
+void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, Transform *arg3, void (*arg4)(Object *)) {
     s16 i;
 
-    func_80012A20(arg3, &arg0->unk_0D0, -2, -3);
+    func_80012A20(arg3, &arg0->transform, -2, -3);
 
     arg0->unk_076 = 0;
     arg0->unk_088.r = arg0->unk_088.g = arg0->unk_088.b = 160;
@@ -340,8 +339,8 @@ void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(
     arg0->currentTask->next = 0;
     arg0->currentTask->stackPos = 0;
 
-    math_rotate(&arg0->unk_0D0.unk_98, arg2);
-    math_translate(&arg0->unk_0D0.unk_98, arg1);
+    math_rotate(&arg0->transform.local_matrix, arg2);
+    math_translate(&arg0->transform.local_matrix, arg1);
 
     for (i = 0; i < 13; i++) {
         arg0->vars[i] = 0;
@@ -353,14 +352,14 @@ void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(
 }
 #else
 #pragma GLOBAL_ASM("asm/nonmatchings/item/obj_init.s")
-void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, UnkMu *arg3, void (*arg4)(Object *));
+void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, Transform *arg3, void (*arg4)(Object *));
 #endif
 
 void func_8002B850(Object *obj, UnkSam *arg1) {
     Model *model;
     u32 s5;
-    UnkMu *s7;
-    UnkMu *v0;
+    Transform *s7;
+    Transform *v0;
     StructAA8 *s2;
     u32 i;
     s32 a3;
@@ -369,15 +368,15 @@ void func_8002B850(Object *obj, UnkSam *arg1) {
     s5 = arg1->unk_128;
     s7 = &model->unk_010;
 
-    func_80012A20(&obj->unk_0D0, s7, -1, -2);
-    model->unk_128 = v0 = mem_alloc(s5 * sizeof(UnkMu), "item.c", 453);
+    func_80012A20(&obj->transform, s7, -1, -2);
+    model->transforms = v0 = mem_alloc(s5 * sizeof(Transform), "item.c", 453);
 
     s2 = arg1->unk_150;
     model->unk_AA8 = &s2[1];
     model->unk_9E4.x = s2->x;
     model->unk_9E4.y = s2->y;
     model->unk_9E4.z = s2->z;
-    math_translate(&model->unk_010.unk_98, &model->unk_9E4);
+    math_translate(&model->unk_010.local_matrix, &model->unk_9E4);
 
     for (i = 0; i < s5; i++) {
         s2 = arg1->unk_150 + i + 1;
@@ -387,7 +386,7 @@ void func_8002B850(Object *obj, UnkSam *arg1) {
         } else {
             func_80012A20(s7, &v0[i], i, a3);
         }
-        math_translate(&v0[i].unk_98, &s2->x);
+        math_translate(&v0[i].local_matrix, &s2->x);
     }
 }
 
@@ -424,7 +423,7 @@ Object *func_8002B9AC(Vec4i *arg0, char *arg1, K2Def *arg2, s32 arg3) {
     if (s5->sam.unk_150 != NULL) {
         func_8002B850(obj, &s5->sam);
     } else {
-        obj->model->unk_128 = NULL;
+        obj->model->transforms = NULL;
     }
 
     model->unk_12C = s5->sam.unk_148;
@@ -506,7 +505,7 @@ Object *func_8002BC84(Vec4i *arg0, char *arg1, K2Def *arg2, s32 arg3) {
     if (s5->unk_150 != NULL) {
         func_8002B850(obj, s5);
     } else {
-        obj->model->unk_128 = NULL;
+        obj->model->transforms = NULL;
     }
 
     model->unk_12C = s5->unk_148;
@@ -530,7 +529,7 @@ Object *func_8002BC84(Vec4i *arg0, char *arg1, K2Def *arg2, s32 arg3);
 
 Object *func_8002BF1C(Vec4i *arg0, K2Def *arg1, s32 arg2) {
     Object *obj;
-    UnkCameraSub6 *new_var;
+    ModelNode *new_var;
 
     if (D_8013C2C0.count >= 2) {
         obj = func_8002BC84(arg0, NULL, arg1, arg2);
@@ -544,11 +543,11 @@ Object *func_8002BF1C(Vec4i *arg0, K2Def *arg1, s32 arg2) {
         new_var->unk_24 = 1;
         obj->model->unk_A30.unk_04 = new_var;
         if (obj->flags & 0x800) {
-            obj->model->unk_A30.unk_00 = -0x80000000;
+            obj->model->unk_A30.priority = -0x80000000;
         } else {
-            obj->model->unk_A30.unk_00 = 0x7FFFFFFF;
+            obj->model->unk_A30.priority = 0x7FFFFFFF;
         }
-        obj->model->unk_A30.unk_1C = 0;
+        obj->model->unk_A30.flags = 0;
         return obj;
     } else {
         return NULL;
@@ -592,12 +591,12 @@ Object *func_8002BFF0(Vec4i *arg0, s32 arg1, void (*arg2)(Object *), UnkSam *arg
     if (arg3->unk_150 != NULL) {
         func_8002B850(obj, arg3);
     } else {
-        obj->model->unk_128 = NULL;
-        func_80012A20(&obj->unk_0D0, &model->unk_010, -1, -2);
+        obj->model->transforms = NULL;
+        func_80012A20(&obj->transform, &model->unk_010, -1, -2);
         model->unk_9E4.x = 0;
         model->unk_9E4.y = 0;
         model->unk_9E4.z = 0;
-        math_translate(&model->unk_010.unk_98, &model->unk_9E4);
+        math_translate(&model->unk_010.local_matrix, &model->unk_9E4);
     }
 
     model->unk_12C = arg3->unk_148;
@@ -626,7 +625,7 @@ Object *func_8002BFF0(Vec4i *arg0, s32 arg1, void (*arg2)(Object *), UnkSam *arg
 
 Object *func_8002C27C(Vec4i *arg0, s32 arg1, void (*arg2)(Object *), UnkSam *arg3) {
     Object *obj;
-    UnkCameraSub6 *new_var;
+    ModelNode *new_var;
 
     if (D_8013C2C0.count == 0) {
         return NULL;
@@ -642,7 +641,7 @@ Object *func_8002C27C(Vec4i *arg0, s32 arg1, void (*arg2)(Object *), UnkSam *arg
     new_var->unk_00 = 1;
     new_var->unk_24 = 1;
     obj->model->unk_A30.unk_04 = new_var;
-    obj->model->unk_A30.unk_00 = -9000;
-    obj->model->unk_A30.unk_1C = 0;
+    obj->model->unk_A30.priority = -9000;
+    obj->model->unk_A30.flags = 0;
     return obj;
 }

@@ -45,24 +45,24 @@ f32 func_80012978(s16 arg0) {
 f32 func_80012978(u16 arg0);
 #endif
 
-void func_80012A20(UnkMu *parent, UnkMu *arg1, s32 arg2, s32 arg3) {
-    func_80012B34(&arg1->unk_00);
-    func_80012B34(&arg1->unk_40);
-    func_80012AA8(&arg1->unk_98);
-    func_80012AA8(&arg1->unk_D8);
+void func_80012A20(Transform *parent, Transform *arg1, s32 arg2, s32 arg3) {
+    func_80012B34(&arg1->unk_00[0]);
+    func_80012B34(&arg1->unk_00[1]);
+    func_80012AA8(&arg1->local_matrix);
+    func_80012AA8(&arg1->wolrd_matrix);
 
     arg1->unk_90 = arg3;
     arg1->unk_8C = arg2;
 
     if (parent != NULL) {
-        UnkMu *temp = parent->unk_80;
-        parent->unk_80 = arg1;
+        Transform *temp = parent->firstChild;
+        parent->firstChild = arg1;
 
-        arg1->unk_80 = NULL;
-        arg1->unk_84 = temp;
+        arg1->firstChild = NULL;
+        arg1->nextSibling = temp;
     } else {
-        arg1->unk_80 = NULL;
-        arg1->unk_84 = NULL;
+        arg1->firstChild = NULL;
+        arg1->nextSibling = NULL;
     }
 
     arg1->parent = parent;
@@ -378,16 +378,16 @@ void func_80014718(Matrix4f *arg0, Matrix4f *arg1, Matrix4f *arg2) {
     arg0->w.z = arg1->w.x * arg2->x.z + arg1->w.y * arg2->y.z + arg1->w.z * arg2->z.z + arg2->w.z;
 }
 
-void func_80014974(UnkMu *arg0) {
-    UnkMu *ptr;
+void func_80014974(Transform *transform) {
+    Transform *ptr;
 
-    if (arg0->parent != NULL) {
-        func_80014718(&arg0->unk_D8, &arg0->unk_98, &arg0->parent->unk_D8);
+    if (transform->parent != NULL) {
+        func_80014718(&transform->wolrd_matrix, &transform->local_matrix, &transform->parent->wolrd_matrix);
     } else {
-        func_800146B4(&arg0->unk_D8, &arg0->unk_98);
+        func_800146B4(&transform->wolrd_matrix, &transform->local_matrix);
     }
 
-    for (ptr = arg0->unk_80; ptr != NULL; ptr = ptr->unk_84) {
+    for (ptr = transform->firstChild; ptr != NULL; ptr = ptr->nextSibling) {
         func_80014974(ptr);
     }
 }

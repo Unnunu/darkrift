@@ -58,7 +58,7 @@ typedef struct UnkDispStructPart2Sub {
 
 typedef struct UnkDispStructPart2 {
     /* 0x00 */ UnkDispStructPart2Sub unk_00;
-    /* 0x18 */ Mtx unk_18;
+    /* 0x18 */ Mtx matrix;
 } UnkDispStructPart2; // size = 0x58
 
 typedef struct UnkDispStruct {
@@ -164,18 +164,17 @@ typedef struct ItemPool {
     /* 0x0C */ s16 unk_0C;
 } ItemPool; // size >= 0xE
 
-typedef struct UnkMu {
-    /* 0x00 */ Mtx unk_00;
-    /* 0x40 */ Mtx unk_40;
-    /* 0x80 */ struct UnkMu *unk_80;
-    /* 0x84 */ struct UnkMu *unk_84;
-    /* 0x88 */ struct UnkMu *parent;
+typedef struct Transform {
+    /* 0x00 */ Mtx unk_00[2];
+    /* 0x80 */ struct Transform *firstChild;
+    /* 0x84 */ struct Transform *nextSibling;
+    /* 0x88 */ struct Transform *parent;
     /* 0x8C */ s32 unk_8C;
     /* 0x90 */ s32 unk_90;
     /* 0x94 */ s32 unk_94;
-    /* 0x98 */ Matrix4f unk_98;
-    /* 0xD8 */ Matrix4f unk_D8;
-} UnkMu; // size >= 0x118
+    /* 0x98 */ Matrix4f local_matrix;
+    /* 0xD8 */ Matrix4f wolrd_matrix;
+} Transform; // size >= 0x118
 
 typedef struct AssetGmdSub1 {
     /* 0x00 */ s32 unk_00;
@@ -238,7 +237,7 @@ typedef struct StructAA8 {
     /* 0x0C */ s32 z;
 } StructAA8; // size = 0x10
 
-typedef struct UnkCameraSub6 {
+typedef struct ModelNode {
     /* 0x00 */ u8 unk_00;
     /* 0x04 */ s32 unk_04[1];
     /* 0x08 */ s32 unk_08;
@@ -250,7 +249,7 @@ typedef struct UnkCameraSub6 {
     /* 0x28 */ UnkDispStruct *unk_28[4];
     /* 0x38 */ s32 unk_38[4];
     /* 0x48 */ Gfx *unk_48[4];
-} UnkCameraSub6; // size = 0x58
+} ModelNode; // size = 0x58
 
 typedef struct UnkSam {
     /* 0x000 */ s32 unk_00;
@@ -270,7 +269,7 @@ typedef struct UnkSam {
     /* 0x2A8 */ UnkDispStructPart2 *unk_2A8[28];
     /* 0x318 */ s8 unk_318;
     /* 0x319 */ char unk_319[3];
-    /* 0x31C */ UnkCameraSub6 *unk_31C;
+    /* 0x31C */ ModelNode *unk_31C;
     /* 0x320 */ u8 unk_320;
     /* 0x321 */ u8 unk_321;
     /* 0x322 */ u8 unk_322;
@@ -285,20 +284,13 @@ typedef struct UnkFrodo {
     /* 0xA64 */ u16 unk_A64;
 } UnkFrodo; // szie = 0xA68
 
-typedef struct UnkCameraSub4 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ UnkCameraSub6 *unk_04;
-    /* 0x08 */ UnkDispStructPart2 *unk_08[5];
-    /* 0x1C */ s32 unk_1C;
-} UnkCameraSub4; // size = 0x20
-
-typedef struct UnkObjRender {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ UnkCameraSub6 *unk_04;
+typedef struct ModelNodeRenderInfo {
+    /* 0x00 */ s32 priority;
+    /* 0x04 */ ModelNode *unk_04;
     /* 0x08 */ UnkDispStructPart2 *unk_08[4];
-    /* 0x18 */ struct UnkObjRender *unk_18;
-    /* 0x1C */ s32 unk_1C;
-} UnkObjRender; // size = 0x20
+    /* 0x18 */ struct ModelNodeRenderInfo *next;
+    /* 0x1C */ s32 flags;
+} ModelNodeRenderInfo; // size = 0x20
 
 typedef struct Model {
     /* 0x0000 */ s16 unk_000;
@@ -308,8 +300,8 @@ typedef struct Model {
     /* 0x0008 */ char unk_008[4];
     /* 0x000C */ s16 unk_00C;
     /* 0x000E */ char unk_00E[2];
-    /* 0x0010 */ UnkMu unk_010;
-    /* 0x0128 */ UnkMu *unk_128;
+    /* 0x0010 */ Transform unk_010;
+    /* 0x0128 */ Transform *transforms;
     /* 0x012C */ s32 *unk_12C;
     /* 0x0130 */ s16 unk_130;
     /* 0x0132 */ s16 unk_132;
@@ -317,8 +309,8 @@ typedef struct Model {
     /* 0x0224 */ Vec4i unk_224[30];
     /* 0x0404 */ Vec4i unk_404[30];
     /* 0x05E4 */ u8 unk_5E4[32];
-    /* 0x0604 */ UnkCameraSub6 *unk_604;
-    /* 0x0608 */ UnkCameraSub4 unk_608[30];
+    /* 0x0604 */ ModelNode *unk_604;
+    /* 0x0608 */ ModelNodeRenderInfo unk_608[30];
     /* 0x09C8 */ s32 unk_9C8;
     /* 0x09CC */ Vec3s unk_9CC;
     /* 0x09D2 */ char unk_9D2[2];
@@ -339,8 +331,8 @@ typedef struct Model {
     /* 0x0A24 */ UnkFrodo *unk_A24;
     /* 0x0A28 */ UnkSam *unk_A28;
     /* 0x0A2C */ s32 unk_A2C;
-    /* 0x0A30 */ UnkObjRender unk_A30;
-    /* 0x0A50 */ UnkCameraSub6 unk_A50;
+    /* 0x0A30 */ ModelNodeRenderInfo unk_A30;
+    /* 0x0A50 */ ModelNode unk_A50;
     /* 0x0AA8 */ StructAA8 *unk_AA8;
     /* 0x0AAC */ char unk_AAC[4];
     /* 0x0AB0 */ UnkDispStructPart2 unk_AB0[60];
@@ -401,7 +393,7 @@ typedef struct Object {
     /* 0x0C4 */ AssetSP2 *sprite_map;
     /* 0x0C8 */ Model *model;
     /* 0x0CC */ char unk_0CC[4];
-    /* 0x0D0 */ UnkMu unk_0D0;
+    /* 0x0D0 */ Transform transform;
     /* 0x1E8 */ void (*unk_1E8)(struct Object *, struct Object *);
     /* 0x1EC */ void (*fn_render)(struct Object *);
     /* 0x1F0 */ struct ObjectTask *taskList;
