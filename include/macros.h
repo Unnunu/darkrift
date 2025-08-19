@@ -26,4 +26,9 @@
     pkt->unk_0C = (d);                 \
     pkt++;
 
+#define ABS(x) ((x) > 0 ? (x) : -(x))
+// #define MIN(x, y) ((x) < (y) ? (x) : (y))
+
+#define DISTANCE(dx, dy) (dx + dy - (MIN(dx, dy) >> 1))
+
 #endif

@@ -92,17 +92,10 @@ void func_80038E8C(Object *obj, Vec3i *arg1, s32 arg2, s32 arg3) {
 }
 
 void func_80038F34(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    s32 v0;
     s32 v1;
     f32 fv0;
 
-    if (arg2 < arg3) {
-        v0 = arg2;
-    } else {
-        v0 = arg3;
-    }
-
-    v1 = (arg2 + arg3) - (v0 >> 1);
+    v1 = DISTANCE(arg2, arg3);
     D_8013C59C = D_8013C5A0;
 
     if (v1 != 0) {
@@ -132,11 +125,11 @@ void func_80038F34(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 void camera_update(Object *obj) {
     s32 deltaX, deltaY, deltaZ;
     Model *model = obj->model;
-    u32 absDeltaX, absDeltaZ, minDelta;
+    s32 unused2;
+    u32 absDeltaX, absDeltaZ;
     s32 unused;
     Vec4i sp48;
     u32 sp3C;
-    s32 unused2;
 
     task_execute(obj);
 
@@ -184,23 +177,9 @@ void camera_update(Object *obj) {
     gCameraPreviousHeading = gCameraHeading;
     gCameraHeading = func_80012518(deltaZ, deltaX);
 
-    if (deltaX > 0) {
-        absDeltaX = deltaX;
-    } else {
-        absDeltaX = -deltaX;
-    }
-    if (deltaZ > 0) {
-        absDeltaZ = deltaZ;
-    } else {
-        absDeltaZ = -deltaZ;
-    }
-    if (absDeltaX < absDeltaZ) {
-        minDelta = absDeltaX;
-    } else {
-        minDelta = absDeltaZ;
-    }
-
-    sp3C = (absDeltaX + absDeltaZ) - (minDelta >> 1);
+    absDeltaX = ABS(deltaX);
+    absDeltaZ = ABS(deltaZ);
+    sp3C = DISTANCE(absDeltaX, absDeltaZ);
     D_8013C594 = (f32) deltaY / (f32) sp3C;
     func_80038F34(deltaX, deltaZ, absDeltaX, absDeltaZ);
 

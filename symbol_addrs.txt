@@ -345,3 +345,5 @@ gPracticingPlayer = 0x8013C494;
 D_800B6350 = 0x800B6350; // size:22
 
 gGameModes = 0x8004BB48;
+D_800814E0 = 0x800814E0; // size:0x80
+D_80081560 = 0x80081560; // size:0x80

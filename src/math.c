@@ -277,7 +277,7 @@ void func_8001370C(Vec4i *arg0, Vec3s *arg1) {
     arg0->z = temp = z >= 0.0 ? z + 0.5 : z - 0.5;
 }
 
-void func_8001386C(Vec3i *arg0, Vec3i *arg1, Matrix4f *arg2) {
+void func_8001386C(Vec4i *arg0, Vec4i *arg1, Matrix4f *arg2) {
     f32 x, y, z;
     f64 temp;
 

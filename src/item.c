@@ -171,31 +171,14 @@ void func_8002AF28(UnkDispStruct *arg0) {
 
 void func_8002AF8C(Object *obj) {
     u32 dxAbs, dzAbs;
-    u32 minDelta;
-    Object *curr;
     s32 temp2;
-    s32 temp3;
+    Object *curr;
 
     for (curr = D_80052C50; curr != NULL; curr = curr->nextObject) {
         if (curr != obj && (obj->unk_07C & curr->unk_07A)) {
-            if (obj->pos.x - curr->pos.x > 0) {
-                dxAbs = obj->pos.x - curr->pos.x;
-            } else {
-                dxAbs = -(obj->pos.x - curr->pos.x);
-            }
-            if (obj->pos.z - curr->pos.z > 0) {
-                dzAbs = obj->pos.z - curr->pos.z;
-            } else {
-                dzAbs = -(obj->pos.z - curr->pos.z);
-            }
-
-            if (dxAbs < dzAbs) {
-                minDelta = dxAbs;
-            } else {
-                minDelta = dzAbs;
-            }
-            temp3 = dxAbs + dzAbs - (minDelta >> 1);
-            temp2 = temp3 - obj->unk_1FC - curr->unk_1FC;
+            dxAbs = ABS(obj->pos.x - curr->pos.x);
+            dzAbs = ABS(obj->pos.z - curr->pos.z);
+            temp2 = DISTANCE(dxAbs, dzAbs) - obj->unk_1FC - curr->unk_1FC;
             if (temp2 <= 0) {
                 if (obj->unk_076 & 2) {
                     obj->unk_1E8(obj, curr);

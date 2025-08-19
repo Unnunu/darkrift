@@ -1,5 +1,13 @@
 #include "common.h"
 
+Object *D_80081460;
+char D_80081464[4];
+char D_80081468[0x28];
+char D_80081490[0x8];
+char D_80081498[0x18];
+char D_800814B0[0x18];
+char D_800814C8[0x18];
+
 #pragma GLOBAL_ASM("asm/nonmatchings/18A10/func_80017E10.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/18A10/func_80017F00.s")

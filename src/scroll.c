@@ -12,8 +12,6 @@ extern Gfx *D_8005BFE0;
 extern s16 D_80080130;
 extern s16 D_80080132;
 extern s16 D_80080134;
-extern u16 gScreenWidth;
-extern u16 gScreenHeight;
 
 Texture *load_background(char *name, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 flags, s32 context) {
     Texture *head;

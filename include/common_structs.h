@@ -40,9 +40,8 @@ typedef struct Quad {
 typedef struct UnkDispStructPart1 {
     /* 0x00 */ s16 perspNorm;
     /* 0x02 */ char unk_02[0xE];
-    /* 0x10 */ s32 unk_10;
-    /* 0x14 */ s32 unk_14;
-    /* 0x18 */ char unk_18[0x64 - 0x18];
+    /* 0x10 */ s32 unk_10[16];
+    /* 0x50 */ char unk_50[0x14];
 } UnkDispStructPart1; // size = 0x64
 
 typedef struct UnkDispStructPart2Sub {
@@ -176,13 +175,19 @@ typedef struct Transform {
     /* 0xD8 */ Matrix4f wolrd_matrix;
 } Transform; // size >= 0x118
 
+typedef struct AssetGmdSub4 {
+    /* 0x00 */ char unk_00[8];
+    /* 0x08 */ s32 unk_08;
+    /* 0x0C */ s32 unk_0C;
+} AssetGmdSub4;
+
 typedef struct AssetGmdSub1 {
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ s16 unk_04;
     /* 0x06 */ s16 unk_06;
     /* 0x08 */ s16 unk_08;
     /* 0x0A */ s16 unk_0A;
-    /* 0x0C */ s32 unk_0C;
+    /* 0x0C */ AssetGmdSub4 *unk_0C;
 } AssetGmdSub1; // size = 0x10
 
 typedef struct AssetGmdSub3 {
@@ -476,6 +481,11 @@ typedef struct PlayerSub3 {
     /* 0x0C */ char unk_0C[0x38 - 0xA];
 } PlayerSub3; // size = 0x38
 
+typedef struct PlayerSub4 {
+    /* 0x00 */ s32 unk_00;
+    /* 0x04 */ f32 unk_04;
+} PlayerSub4;
+
 typedef struct Player {
     /* 0x0000 */ Object *unk_00; // type?
     /* 0x0004 */ char unk_04[2];
@@ -488,7 +498,9 @@ typedef struct Player {
     /* 0x0080 */ s32 unk_80;
     /* 0x0084 */ char unk_84[12];
     /* 0x0090 */ PlayerSub1 *unk_90;
-    /* 0x0094 */ char unk_94[0x5F50 - 0x94];
+    /* 0x0094 */ char unk_94[0x1A0 - 0x94];
+    /* 0x01A0 */ PlayerSub4 *unk_1A0;
+    /* 0x01A4 */ char unk_1A4[0x5F50 - 0x1A4];
 } Player; // size = 0x5F50
 
 typedef struct Player12 {

@@ -19,9 +19,8 @@ typedef struct CheatCodeState {
     /* 0x08 */ s32 current_buttons;
 } CheatCodeState;
 
-extern Object *gCharacterPortrait[2];
 extern s16 D_80080230;
-extern u32 D_80081668;
+
 extern u8 D_8004A428;
 extern AssetSP2Sub3 *D_8013C234;
 extern AssetSP2Sub3 *D_8013C238;
@@ -29,29 +28,32 @@ extern AssetSP2Sub3 *D_8013C238;
 u8 D_80049DF0 = 0;
 u8 D_80049DF4 = 0;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1EA10/func_8001DE10.s")
+Object *gCharacterPortrait[2];
+u32 D_80081668;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1EA10/func_8001DFE4.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001DE10.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1EA10/func_8001E188.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001DFE4.s")
+
+#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001E188.s")
 u8 func_8001E188(u8 arg0);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1EA10/func_8001E378.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001E378.s")
 void func_8001E378(Object *);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1EA10/func_8001E540.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001E540.s")
 void func_8001E540(Object *, Object *);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1EA10/func_8001E5D8.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001E5D8.s")
 s16 func_8001E5D8(s16 arg0);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1EA10/func_8001E624.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001E624.s")
 void func_8001E624(Object *);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1EA10/func_8001E834.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001E834.s")
 void func_8001E834(Object *, Object *, Object *);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1EA10/func_8001EA24.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001EA24.s")
 void func_8001EA24(Object *);
 
 #ifdef NON_MATCHING
@@ -114,7 +116,7 @@ void func_8001EB58(Object *obj) {
     obj->currentTask->counter = 20;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/1EA10/func_8001EB58.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001EB58.s")
 void func_8001EB58(Object *obj);
 UIElement D_80049DF8 = { 11, NULL, 0, 0x1000, "bars.sp2" };
 UIElement D_80049E0C = { 39, func_8001EA24, 0, 0x1000, "bars.sp2" };

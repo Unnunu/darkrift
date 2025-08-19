@@ -60,12 +60,12 @@ segments:
       - [0x1000, hasm, entry]
 
       #game
-      - [0x1050, c, main]
+      - [0x1050, c, thread]
       - [0x1310, c, heap]
-      - [0x1D20, c]
+      - [0x1D20, c, main]
       - [0x34B0, c, sched]
       - [0x41D0, c]
-      - [0x76E0, c]
+      - [0x76E0, c, game_modes]
       - [0xC8F0, c, kmd]
       - [0xF530, c]
       - [0x13050, c, math]
@@ -73,8 +73,9 @@ segments:
       - [0x167C0, c]
       - [0x18A10, c]
       - [0x1A0E0, c]
-      - [0x1B6E0, c]
-      - [0x1EA10, c]
+      - [0x1B6E0, c, gmd_pcl]
+      - [0x1C3D0, c]
+      - [0x1EA10, c, plyrsel]
       - [0x212B0, c, audio]
       - [0x22940, c]
       - [0x23D00, c]
@@ -230,12 +231,14 @@ segments:
       - [0x48590, textbin, rsp/gspDarkRift3D]
       - [0x49050, textbin, rsp/aspMain]
 
-      - [0x49E70, .data, main]
+      - [0x49E70, .data, thread]
       - [0x49E80, .data, heap]
       - [0x49E90, data]
-      - [0x4A000, .data, 76E0]
+      - [0x4A000, .data, game_modes]
       - [0x4A520, data]
-      - [0x4A9F0, .data, 1EA10]
+      - [0x4A8F0, .data, gmd_pcl]
+      - [0x4A910, data]
+      - [0x4A9F0, .data, plyrsel]
       - [0x4B020, .data, audio]
       - [0x4B0C0, data]
       - [0x4B0F0, .data, input]
@@ -267,15 +270,16 @@ segments:
       - [0x54950, .data, ../ultralib/src/os/syncputchars]
       - [0x54960, bin]
       - [0x54A10, .rodata, 41D0]
-      - [0x54AC0, .rodata, 76E0]
+      - [0x54AC0, .rodata, game_modes]
       - [0x55330, .rodata, kmd]
       - [0x553B0, .rodata, math]
       - [0x553D0, .rodata, scroll]
       - [0x553F0, .rodata, 167C0]
       - [0x554B0, .rodata, 18A10]
       - [0x554E0, .rodata, 1A0E0]
-      - [0x55530, .rodata, 1B6E0]
-      - [0x555C0, .rodata, 1EA10]
+      - [0x55530, .rodata, gmd_pcl]
+      - [0x55540, .rodata, 1C3D0]
+      - [0x555C0, .rodata, plyrsel]
       - [0x55830, .rodata, audio]
       - [0x55870, .rodata, 22940]
       - [0x55A30, .rodata, wad]
@@ -308,13 +312,18 @@ segments:
       - { start: 0x56C60, type: databin, name: rsp/gspDarkRift3D, linker_section_order: .rodata}
       - { start: 0x57460, type: databin, name: rsp/aspMain, linker_section_order: .rodata}
 
-      - { type: .bss, vram: 0x80056EE0, name: main }
+      - { type: .bss, vram: 0x80056EE0, name: thread }
       - { type: .bss, vram: 0x8005AE90, name: heap }
       - { type: bss, vram: 0x8005BED0, name: bss1 }
+      - { type: .bss, vram: 0x8005BEE0, name: main }
+      - { type: bss, vram: 0x8005BF00, name: bss2 }
+      - { type: .bss, vram: 0x80081460, name: 18A10 }
+      - { type: .bss, vram: 0x800814E0, name: gmd_pcl }
+      - { type: .bss, vram: 0x80081660, name: plyrsel }
       - { type: .bss, vram: 0x80081670, name: audio }
-      - { type: bss, vram: 0x800A4930, name: bss2 }
+      - { type: bss, vram: 0x800A4930, name: bss3 }
       - { type: .bss, vram: 0x800B63A0, name: cont }
-      - { type: bss, vram: 0x800B6400, name: bss3 }
+      - { type: bss, vram: 0x800B6400, name: bss4 }
       - { type: .bss, vram: 0x8013C550, name: task }
       - { type: .bss, vram: 0x8013C560, name: camera }
       - { type: .bss, vram: 0x8013C840, name: ../ultralib/src/os/initialize }
@@ -326,7 +335,7 @@ segments:
       - { type: .bss, vram: 0x8013ED80, name: ../ultralib/src/os/timerintr,  }
       - { type: .bss, vram: 0x8013EDC0, name: ../ultralib/src/io/piacs }
       - { type: .bss, vram: 0x8013EDE0, name: ../ultralib/src/io/siacs }
-      - { type: bss, vram: 0x8013EE00, name: bss4 }
+      - { type: bss, vram: 0x8013EE00, name: bss5 }
       
 
   - type: bin

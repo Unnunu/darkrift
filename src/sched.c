@@ -35,7 +35,6 @@ extern Gfx *D_8005BFE0;
 extern UnkDispStruct *D_8005BFE4;
 extern u8 *gFramebuffers[];
 extern u16 D_8005BFCE;
-extern u16 gScreenWidth;
 extern u16 gScreenHeight;
 extern u8 D_80080129;
 extern s32 D_80049AE8;
