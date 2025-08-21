@@ -46,7 +46,7 @@ OSTask D_8004CBC8 = {
 };
 */
 
-extern UnkDispStructPart1 D_8004CC20;
+extern RenderContext D_8004CC20;
 /*
 OSTask D_8004CC88 = {
     {
@@ -69,21 +69,21 @@ OSTask D_8004CC88 = {
     }
 };
 */
-extern UnkDispStructPart2 D_8004CCC8;
-extern UnkDispStructPart2 D_8004CD30;
+extern BatchInfo D_8004CCC8;
+extern BatchInfo D_8004CD30;
 
 extern u8 gTasksDisabled;
 
 extern s16 D_8005BED0;
 extern u16 D_8005BED2;
-extern UnkDispStructPart2 D_8005BF00;
+extern BatchInfo D_8005BF00;
 extern u16 D_8005BFC0;
 extern u16 gGameMode;
 extern u16 D_8005BFCE;
 extern void *gFramebuffers[];
 
 extern Gfx *D_8005BFDC;
-extern Gfx *D_8005BFE0;
+extern Gfx *gOverlayGfxPos;
 extern DisplayData D_8005BFF0[];
 extern DisplayData *D_80080100;
 extern s16 D_80080116;
@@ -112,20 +112,20 @@ void func_80002744(Object *obj);
 
 void func_80001120(void) {
     D_80080100 = &D_8005BFF0[D_8005BFCE];
-    D_8005BFD8 = D_80080100->unk_80;
-    D_8005BFE4 = D_80080100->unk_8080;
+    gMainGfxPos = D_80080100->gfxMain;
+    gMainBatchPos = D_80080100->batchMain;
 
-    gSPSegment(D_8005BFD8++, 0x01, gFramebuffers[D_8005BFCE]);
-    gSPSegment(D_8005BFD8++, 0x00, 0x00000000);
+    gSPSegment(gMainGfxPos++, 0x01, gFramebuffers[D_8005BFCE]);
+    gSPSegment(gMainGfxPos++, 0x00, 0x00000000);
 
-    D_8004CC20.unk_10[0] = 0;
-    D_8004CC20.unk_10[1] = PHYSICAL_TO_VIRTUAL(gFramebuffers[D_8005BFCE]);
+    D_8004CC20.segmentTable[0] = 0;
+    D_8004CC20.segmentTable[1] = PHYSICAL_TO_VIRTUAL(gFramebuffers[D_8005BFCE]);
 
-    PUSH_UNK_DISP(D_8005BFE4, osVirtualToPhysical(&D_8004CC20), &D_8004CCC8, NULL, NULL);
-    gDPFullSync(D_8005BFD8++);
-    gSPEndDisplayList(D_8005BFD8++);
-    PUSH_UNK_DISP(D_8005BFE4, NULL, &D_8004CD30, NULL, NULL);
-    PUSH_UNK_DISP(D_8005BFE4, NULL, NULL, NULL, NULL);
+    gSPTriBatch(gMainBatchPos, (RenderContext *) osVirtualToPhysical(&D_8004CC20), &D_8004CCC8, NULL, NULL);
+    gDPFullSync(gMainGfxPos++);
+    gSPEndDisplayList(gMainGfxPos++);
+    gSPTriBatch(gMainBatchPos, NULL, &D_8004CD30, NULL, NULL);
+    gSPTriBatch(gMainBatchPos, NULL, NULL, NULL, NULL);
     func_800030E4();
     sched_wait_vretrace(TRUE);
     sched_execute_tasks();
@@ -135,63 +135,63 @@ void func_80001120(void) {
 
 void func_8000132C(void) {
     OSTime time1;
-    UnkDispStruct *ptr;
+    Batch *ptr;
     s32 i;
 
     time1 = osGetTime();
     func_80024C98();
 
     D_80080100 = &D_8005BFF0[D_8005BFCE];
-    D_8005BFD8 = D_80080100->unk_80;
+    gMainGfxPos = D_80080100->gfxMain;
     D_8005BFDC = D_80080100->unk_4080;
-    D_8005BFE0 = D_80080100->unk_6080;
-    D_8005BFE4 = D_80080100->unk_8080;
-    D_8005BFE8 = D_80080100->unk_10080;
+    gOverlayGfxPos = D_80080100->gfxOverlay;
+    gMainBatchPos = D_80080100->batchMain;
+    gOverlayBatchPos = D_80080100->batchOverlay;
 
-    gSPSegment(D_8005BFD8++, 0x01, gFramebuffers[D_8005BFCE]);
-    gSPSegment(D_8005BFD8++, 0x00, 0x00000000);
+    gSPSegment(gMainGfxPos++, 0x01, gFramebuffers[D_8005BFCE]);
+    gSPSegment(gMainGfxPos++, 0x00, 0x00000000);
 
-    D_8004CC20.unk_10[0] = 0;
-    D_8004CC20.unk_10[1] = VIRTUAL_TO_PHYSICAL(gFramebuffers[D_8005BFCE]);
+    D_8004CC20.segmentTable[0] = 0;
+    D_8004CC20.segmentTable[1] = VIRTUAL_TO_PHYSICAL(gFramebuffers[D_8005BFCE]);
 
     if (D_8008012C & 2) {
-        gSPDisplayList(D_8005BFE0++, D_8004CA68);
+        gSPDisplayList(gOverlayGfxPos++, D_8004CA68);
     }
 
-    PUSH_UNK_DISP(D_8005BFE4, osVirtualToPhysical(&D_8004CC20), &D_8004CCC8, NULL, NULL);
+    gSPTriBatch(gMainBatchPos, (RenderContext *) osVirtualToPhysical(&D_8004CC20), &D_8004CCC8, NULL, NULL);
     obj_update_all();
-    gSPDisplayList(D_8005BFD8++, D_8004CA68);
+    gSPDisplayList(gMainGfxPos++, D_8004CA68);
     func_80002978();
     bg_draw();
 
     if (!(D_8008012C & 1)) {
-        gSPDisplayList(D_8005BFD8++, D_80080100->unk_4080);
+        gSPDisplayList(gMainGfxPos++, D_80080100->unk_4080);
     }
-    gSPDisplayList(D_8005BFD8++, D_8004CB00);
-    gSPMatrix(D_8005BFD8++, VIRTUAL_TO_PHYSICAL(&D_80080100->mtxViewProj),
+    gSPDisplayList(gMainGfxPos++, D_8004CB00);
+    gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(&D_80080100->mtxViewProj),
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPPerspNorm(D_8005BFD8++, D_80080100->perspNorm);
+    gSPPerspNorm(gMainGfxPos++, D_80080100->perspNorm);
     D_8004CC20.perspNorm = D_80080100->perspNorm;
-    gDPSetFogColor(D_8005BFD8++, D_80080130, D_80080132, D_80080134, 255);
-    gSPFogPosition(D_8005BFD8++, D_80080136, D_80080138);
+    gDPSetFogColor(gMainGfxPos++, D_80080130, D_80080132, D_80080134, 255);
+    gSPFogPosition(gMainGfxPos++, D_80080136, D_80080138);
     if (D_80049CF0 != 0) {
         func_8001B26C();
     }
     func_800212C8();
 
-    for (ptr = D_80080100->unk_10080; ptr != D_8005BFE8; ptr++) {
-        PUSH_UNK_DISP(D_8005BFE4, ptr->unk_00, ptr->unk_04, ptr->vertices, ptr->unk_0C);
+    for (ptr = D_80080100->batchOverlay; ptr != gOverlayBatchPos; ptr++) {
+        gSPTriBatch(gMainBatchPos, ptr->context, ptr->info, ptr->vertices, ptr->triangles);
     }
-    gDPFullSync(D_8005BFD8++);
-    gSPEndDisplayList(D_8005BFD8++);
+    gDPFullSync(gMainGfxPos++);
+    gSPEndDisplayList(gMainGfxPos++);
 
     gSPEndDisplayList(D_8005BFDC++);
 
-    gDPFullSync(D_8005BFE0++);
-    gSPEndDisplayList(D_8005BFE0++);
+    gDPFullSync(gOverlayGfxPos++);
+    gSPEndDisplayList(gOverlayGfxPos++);
 
-    PUSH_UNK_DISP(D_8005BFE4, NULL, &D_8004CD30, NULL, NULL);
-    PUSH_UNK_DISP(D_8005BFE4, NULL, NULL, NULL, NULL);
+    gSPTriBatch(gMainBatchPos, NULL, &D_8004CD30, NULL, NULL);
+    gSPTriBatch(gMainBatchPos, NULL, NULL, NULL, NULL);
 
     D_8005BEE0 += osGetTime() - time1;
     func_800030E4();
@@ -303,13 +303,13 @@ void func_80001FB0(s32 arg0, Vtx *arg1) {
         arg1 = &D_800492B0[D_8005BFCE * 4];
     }
 
-    D_8005BF00.unk_00.unk_00 = 0;
-    D_8005BF00.unk_00.unk_04 = 0;
-    D_8005BF00.unk_00.unk_08 = 4;
-    D_8005BF00.unk_00.unk_09 = 0;
-    D_8005BF00.unk_00.unk_0A = 2;
-    D_8005BF00.unk_00.unk_0B = 2;
-    D_8005BF00.unk_00.unk_0C = &D_8005BF58;
+    D_8005BF00.header.unk_00 = 0;
+    D_8005BF00.header.unk_04 = 0;
+    D_8005BF00.header.numVertices = 4;
+    D_8005BF00.header.unk_09 = 0;
+    D_8005BF00.header.numTriangles = 2;
+    D_8005BF00.header.numTriangles2 = 2;
+    D_8005BF00.header.unk_0C = &D_8005BF58;
 
     gDPPipeSync(&D_8005BF58);
     gDPSetCombineMode(&D_8005BF60, G_CC_SHADE, G_CC_SHADE);
@@ -331,7 +331,7 @@ void func_80001FB0(s32 arg0, Vtx *arg1) {
     arg1[3].v.cn[3] = arg0;
     arg1[3].v.cn[0] = arg1[3].v.cn[1] = arg1[3].v.cn[2] = D_80080116;
 
-    PUSH_UNK_DISP(D_8005BFE8, NULL, &D_8005BF00, arg1, D_80049330);
+    gSPTriBatch(gOverlayBatchPos, NULL, &D_8005BF00, arg1, D_80049330);
 }
 #else
 #pragma GLOBAL_ASM("asm/nonmatchings/main/func_80001FB0.s")
@@ -344,14 +344,14 @@ void func_80002178(s32 arg0, Quad *arg1) {
         arg1 = &D_800492B0[D_8005BFCE];
     }
 
-    D_8005BF00.unk_00 = 0;
-    D_8005BF00.unk_04 = 0;
-    D_8005BF00.unk_08 = 4;
-    D_8005BF00.unk_09 = 0;
-    D_8005BF00.unk_0B = D_8005BF00.unk_0A = 2;
-    D_8005BF00.unk_0C = &D_8005BF58;
+    D_8005BF00.header.unk_00 = 0;
+    D_8005BF00.header.unk_04 = 0;
+    D_8005BF00.header.numVertices = 4;
+    D_8005BF00.header.unk_09 = 0;
+    D_8005BF00.header.numTriangles2 = D_8005BF00.header.numTriangles = 2;
+    D_8005BF00.header.unk_0C = &D_8005BF58;
 
-    gDPPipeSync(D_8005BF00.unk_0C);
+    gDPPipeSync(D_8005BF00.header.unk_0C);
     gDPSetCombineMode(&D_8005BF60, G_CC_SHADE, G_CC_SHADE);
 
     gtStateSetOthermode(&D_8005BF10, GT_RENDERMODE, G_RM_XLU_SURF | G_RM_XLU_SURF2);
@@ -371,7 +371,7 @@ void func_80002178(s32 arg0, Quad *arg1) {
     arg1->v[3].v.cn[3] = arg0;
     arg1->v[3].v.cn[0] = arg1->v[3].v.cn[1] = arg1->v[3].v.cn[2] = D_80080116;
 
-    PUSH_UNK_DISP(D_8005BFE8, NULL, &D_8005BF00, arg1, D_80049330);
+    gSPTriBatch(gOverlayBatchPos, NULL, &D_8005BF00, arg1, D_80049330);
 }
 #else
 #pragma GLOBAL_ASM("asm/nonmatchings/main/func_80002178.s")

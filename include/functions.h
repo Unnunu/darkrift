@@ -62,5 +62,6 @@ Object *func_8002BFF0(Vec4i *, s32, void (*)(Object *), UnkSam *);
 Object *func_80015FB4(vs16);
 void func_8001386C(Vec4i *arg0, Vec4i *arg1, Matrix4f *arg2);
 s32 func_80012854(s32 arg0);
+void func_80012AF4(Matrix4f *);
 
 #endif

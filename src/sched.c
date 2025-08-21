@@ -30,9 +30,9 @@ extern OSTask D_8004CBC8;
 extern OSTask D_8004CC88;
 extern OSTask D_801389B8;
 extern DisplayData *D_80080100;
-extern Gfx *D_8005BFD8;
-extern Gfx *D_8005BFE0;
-extern UnkDispStruct *D_8005BFE4;
+extern Gfx *gMainGfxPos;
+extern Gfx *gOverlayGfxPos;
+extern Batch *gMainBatchPos;
 extern u8 *gFramebuffers[];
 extern u16 D_8005BFCE;
 extern u16 gScreenHeight;
@@ -97,35 +97,35 @@ void func_800028E0(s32 arg0, s32 arg1) {
 }
 
 void func_80002978(void) {
-    gDPPipeSync(D_8005BFD8++);
-    gDPSetCycleType(D_8005BFD8++, G_CYC_FILL);
+    gDPPipeSync(gMainGfxPos++);
+    gDPSetCycleType(gMainGfxPos++, G_CYC_FILL);
 
     if (!(D_8008012C & 8)) {
-        gDPSetDepthImage(D_8005BFD8++, VIRTUAL_TO_PHYSICAL(D_80080120));
-        gDPSetColorImage(D_8005BFD8++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, VIRTUAL_TO_PHYSICAL(D_80080120));
-        gDPSetFillColor(D_8005BFD8++, GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0));
-        gDPFillRectangle(D_8005BFD8++, 0, 0, gScreenWidth - 1, gScreenHeight - 1);
+        gDPSetDepthImage(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(D_80080120));
+        gDPSetColorImage(gMainGfxPos++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, VIRTUAL_TO_PHYSICAL(D_80080120));
+        gDPSetFillColor(gMainGfxPos++, GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0));
+        gDPFillRectangle(gMainGfxPos++, 0, 0, gScreenWidth - 1, gScreenHeight - 1);
         D_800801E2 = 0;
     } else {
         D_800801E2 = 1;
     }
 
-    gDPSetColorImage(D_8005BFD8++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, 0x01000000);
+    gDPSetColorImage(gMainGfxPos++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, 0x01000000);
 
     if (D_80080129) {
         if (D_80049AE8 > 0) {
-            gDPSetFillColor(D_8005BFD8++, (GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1) << 16) |
-                                              GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1));
-            gDPFillRectangle(D_8005BFD8++, 0, 0, gScreenWidth - 1, D_80049AE8 + 20);
+            gDPSetFillColor(gMainGfxPos++, (GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1) << 16) |
+                                               GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1));
+            gDPFillRectangle(gMainGfxPos++, 0, 0, gScreenWidth - 1, D_80049AE8 + 20);
         }
     } else {
-        gDPSetFillColor(D_8005BFD8++, (GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1) << 16) |
-                                          GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1));
-        gDPFillRectangle(D_8005BFD8++, 0, 0, gScreenWidth - 1, gScreenHeight - 1);
+        gDPSetFillColor(gMainGfxPos++, (GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1) << 16) |
+                                           GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1));
+        gDPFillRectangle(gMainGfxPos++, 0, 0, gScreenWidth - 1, gScreenHeight - 1);
     }
 
-    gDPPipeSync(D_8005BFD8++);
-    gDPSetCycleType(D_8005BFD8++, G_CYC_COPY);
+    gDPPipeSync(gMainGfxPos++);
+    gDPSetCycleType(gMainGfxPos++, G_CYC_COPY);
 }
 
 void func_80002C54(void) {
@@ -192,11 +192,11 @@ void sched_execute_tasks(void) {
     D_8008011C = func_80021338();
     if (D_80080128 == 0) {
         // prepare two graphics task, one for f3d ucode, and the other for dr ucode
-        D_8004CBC8.t.data_ptr = D_80080100->unk_80;
-        D_8004CBC8.t.data_size = (D_8005BFD8 - D_80080100->unk_80) * sizeof(Gfx);
+        D_8004CBC8.t.data_ptr = D_80080100->gfxMain;
+        D_8004CBC8.t.data_size = (gMainGfxPos - D_80080100->gfxMain) * sizeof(Gfx);
 
-        D_8004CC88.t.data_ptr = D_80080100->unk_8080;
-        D_8004CC88.t.data_size = (D_8005BFE4 - D_80080100->unk_8080) * sizeof(UnkDispStruct);
+        D_8004CC88.t.data_ptr = D_80080100->batchMain;
+        D_8004CC88.t.data_size = (gMainBatchPos - D_80080100->batchMain) * sizeof(Batch);
 
         osSendMesg(&gSchedSPTaskQueue, (OSMesg) &D_8004CBC8, OS_MESG_BLOCK);
         osSendMesg(&gSchedSPTaskQueue, (OSMesg) &D_8004CC88, OS_MESG_BLOCK);
@@ -204,8 +204,8 @@ void sched_execute_tasks(void) {
         D_8008011C += 2;
 
         if (D_8008012C & 2) {
-            D_801389B8.t.data_ptr = D_80080100->unk_6080;
-            D_801389B8.t.data_size = (D_8005BFE0 - D_80080100->unk_6080) * sizeof(Gfx);
+            D_801389B8.t.data_ptr = D_80080100->gfxOverlay;
+            D_801389B8.t.data_size = (gOverlayGfxPos - D_80080100->gfxOverlay) * sizeof(Gfx);
             osSendMesg(&gSchedSPTaskQueue, (OSMesg) &D_801389B8, OS_MESG_BLOCK);
             D_8008011C++;
         }

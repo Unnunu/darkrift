@@ -44,6 +44,9 @@ extern s32 D_8013C370;
 extern s32 D_8013C37C;
 extern s32 D_8013C380;
 extern s32 D_8013C384;
+extern s16 D_8013C38A;
+extern s16 D_8013C38C;
+extern s16 D_8013C38E;
 
 const char D_80055010[] = "opencamX.oc";
 
@@ -96,12 +99,53 @@ void func_8002D1A8(Object *);
 #pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002DFCC.s")
 void func_8002DFCC(s32);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002E628.s")
-void func_8002E628(Vec4i *arg0, f32 *arg1, f32 *arg2, f32 *arg3);
+void func_8002E628(Vec4i *arg0, f32 *arg1, f32 *arg2, f32 *arg3) {
+    f32 x, y, z;
+    f32 temp;
+    x = arg0->x;
+    z = arg0->z;
+    y = arg0->y;
+    *arg2 = 0;
+    *arg1 = 0;
+    *arg3 = 0;
+
+    if (*gCamera->model->unk_12C == 0) {
+        *arg1 = gCameraProjectionMatrix.x.x * x + gCameraProjectionMatrix.y.x * y + gCameraProjectionMatrix.z.x * z +
+                gCameraProjectionMatrix.w.x;
+        *arg2 = gCameraProjectionMatrix.x.y * x + gCameraProjectionMatrix.y.y * y + gCameraProjectionMatrix.z.y * z +
+                gCameraProjectionMatrix.w.y;
+        temp = gCameraProjectionMatrix.x.w * x + gCameraProjectionMatrix.y.w * y + gCameraProjectionMatrix.z.w * z +
+               gCameraProjectionMatrix.w.w;
+        if (temp != 0) {
+            *arg1 /= temp;
+            *arg2 /= temp;
+            if (*arg1 < 0) {
+                *arg3 = -*arg1;
+            } else {
+                *arg3 = *arg1;
+            }
+        }
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002E750.s")
+void func_8002E750(Object *);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002EA50.s")
+void func_8002EA50(Object *arg0, s32 arg1) {
+    s32 sp24;
+    s32 sp20;
+
+    sp24 = arg0->pos.x - gCameraTarget.x;
+    sp20 = arg0->pos.z - gCameraTarget.z;
+    D_8013C38A = (guRandom() % 2) + 2;
+    D_8013C38C = -1;
+    D_8013C38E = (guRandom() % 2) + 1;
+    arg0->currentTask->func = func_8002E750;
+    arg0->currentTask->counter = 0;
+    arg0->vars[3] = arg1;
+    arg0->vars[1] = func_80012518(sp20, sp24);
+    func_8002E750(arg0);
+}
 
 void func_8002EB2C(Object *obj) {
     s32 sp10C;

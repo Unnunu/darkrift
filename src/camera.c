@@ -50,9 +50,9 @@ void func_80038E00(Object *obj, s32 arg1) {
 
     obj->rotation.y = 0x400;
 
-    model->unk_404[1].x = 0;
-    model->unk_404[1].y = 0;
-    model->unk_404[1].z = 0;
+    model->nodePosition[1].x = 0;
+    model->nodePosition[1].y = 0;
+    model->nodePosition[1].z = 0;
 
     D_8013C818.x = D_8013C818.y = D_8013C818.z = 0;
 
@@ -144,11 +144,11 @@ void camera_update(Object *obj) {
             func_8003635C(obj);
             obj->unk_086 = obj->spriteId;
 
-            unused = model->unk_404[0].x; // required to match
-            if (unused != 0 || model->unk_404[0].y != 0 || model->unk_404[0].z != 0) {
-                sp48.x = model->unk_404[0].x;
-                sp48.y = model->unk_404[0].y;
-                sp48.z = model->unk_404[0].z;
+            unused = model->nodePosition[0].x; // required to match
+            if (unused != 0 || model->nodePosition[0].y != 0 || model->nodePosition[0].z != 0) {
+                sp48.x = model->nodePosition[0].x;
+                sp48.y = model->nodePosition[0].y;
+                sp48.z = model->nodePosition[0].z;
                 func_8001370C(&sp48, &obj->rotation);
                 gCameraTarget.x = D_8013C818.x + sp48.x;
                 gCameraTarget.y = D_8013C818.y + sp48.y;
@@ -242,7 +242,7 @@ Object *camera_create(void) {
     D_8013C668.z = 0;
 
     obj->model = mem_alloc(sizeof(Model), "camera.c", 247);
-    obj->model->unk_000 = 1;
+    obj->model->numNodes = 1;
     obj->model->transforms = &D_8013C6F0;
     obj->model->unk_AA8 = D_8013C808;
 

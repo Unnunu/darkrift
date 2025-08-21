@@ -127,7 +127,7 @@ Object *obj_allocate(s16 arg0) {
 Object *obj_allocate(s16 arg0);
 #endif
 
-void func_8002ADFC(Object *obj) {
+void obj_delete(Object *obj) {
     D_80052C54--;
     if (obj->prevObject == NULL) {
         obj->nextObject->prevObject = NULL;
@@ -155,18 +155,18 @@ void func_8002ADFC(Object *obj) {
 }
 
 // unused
-void func_8002AF08(UnkDispStructPart2 *arg0) {
-    func_80012450(&arg0->matrix);
+void func_8002AF08(BatchInfo *arg0) {
+    func_80012450(&arg0->transform);
 }
 
 // unused
-void func_8002AF28(UnkDispStruct *arg0) {
+void func_8002AF28(Batch *arg0) {
     u32 i;
 
-    func_8002AF08(arg0->unk_04);
+    func_8002AF08(arg0->info);
 
-    for (i = 0; i < arg0->unk_04->unk_00.unk_08; i++) {}
-    for (i = 0; i < arg0->unk_04->unk_00.unk_0A; i++) {}
+    for (i = 0; i < arg0->info->header.numVertices; i++) {}
+    for (i = 0; i < arg0->info->header.numTriangles; i++) {}
 }
 
 void func_8002AF8C(Object *obj) {
@@ -199,7 +199,7 @@ void obj_update_all(void) {
     s32 s1;
     u32 i;
     u32 j;
-    UnkDispStruct *v0;
+    Batch *v0;
     u32 t2;
     s32 temp2;
 
@@ -224,7 +224,7 @@ void obj_update_all(void) {
             obj->taskList = NULL;
             tempObj = obj;
             obj = obj->nextObject;
-            func_8002ADFC(tempObj);
+            obj_delete(tempObj);
         } else {
             obj->fn_render(obj);
             obj = obj->nextObject;
@@ -242,12 +242,12 @@ void obj_update_all(void) {
                 t2 = renderInfo->unk_04->unk_38[i];
                 for (j = 0; j < t2; j++) {
                     if (renderInfo->flags & 2) {
-                        PUSH_UNK_DISP(D_8005BFE8, NULL, (j != 0) ? v0->unk_04 : renderInfo->unk_08[i], v0->vertices,
-                                      v0->unk_0C);
+                        gSPTriBatch(gOverlayBatchPos, NULL, (j != 0) ? v0->info : renderInfo->unk_08[i], v0->vertices,
+                                    v0->triangles);
                         v0++;
                     } else {
-                        PUSH_UNK_DISP(D_8005BFE4, NULL, (j != 0) ? v0->unk_04 : renderInfo->unk_08[i], v0->vertices,
-                                      v0->unk_0C);
+                        gSPTriBatch(gMainBatchPos, NULL, (j != 0) ? v0->info : renderInfo->unk_08[i], v0->vertices,
+                                    v0->triangles);
                         v0++;
                     }
                 }
@@ -255,9 +255,9 @@ void obj_update_all(void) {
         } else {
             s32 temp = D_8005BFCE * s1;
             for (i = 0; i < s1; i++) {
-                gSPMatrix(D_8005BFD8++, VIRTUAL_TO_PHYSICAL(renderInfo->unk_04->unk_28[i + temp]),
+                gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(renderInfo->unk_04->unk_28[i + temp]),
                           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-                gSPDisplayList(D_8005BFD8++, VIRTUAL_TO_PHYSICAL(renderInfo->unk_04->unk_48[i]));
+                gSPDisplayList(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(renderInfo->unk_04->unk_48[i]));
             }
         }
     }
@@ -401,7 +401,7 @@ Object *func_8002B9AC(Vec4i *arg0, char *arg1, K2Def *arg2, s32 arg3) {
     str_concat(sp78, ".kmd");
     s5 = model->unk_A24 = gAssets[asset_find(sp78, arg3)].aux_data;
     model->unk_A28 = NULL;
-    model->unk_000 = s5->sam.unk_128;
+    model->numNodes = s5->sam.unk_128;
 
     if (s5->sam.unk_150 != NULL) {
         func_8002B850(obj, &s5->sam);
@@ -476,11 +476,11 @@ Object *func_8002BC84(Vec4i *arg0, char *arg1, K2Def *arg2, s32 arg3) {
     model = obj->model;
     s5 = model->unk_A28 = gAssets[asset_find(sp78, arg3)].aux_data;
     model->unk_A24 = NULL;
-    s6 = model->unk_000 = s5->unk_128;
+    s6 = model->numNodes = s5->unk_128;
 
     for (i = 0; i < s6; i++) {
-        memcpy(&model->unk_AB0[i].unk_00, s5->unk_2A8[i], sizeof(UnkDispStructPart2Sub));
-        memcpy(&model->unk_AB0[30 + i].unk_00, s5->unk_2A8[i], sizeof(UnkDispStructPart2Sub));
+        memcpy(&model->unk_AB0[i].header, s5->unk_2A8[i], sizeof(BatchHeader));
+        memcpy(&model->unk_AB0[30 + i].header, s5->unk_2A8[i], sizeof(BatchHeader));
         model->unk_1F50[i] = FALSE;
         model->unk_1F6E[i] = FALSE;
     }
@@ -526,9 +526,9 @@ Object *func_8002BF1C(Vec4i *arg0, K2Def *arg1, s32 arg2) {
         new_var->unk_24 = 1;
         obj->model->unk_A30.unk_04 = new_var;
         if (obj->flags & 0x800) {
-            obj->model->unk_A30.priority = -0x80000000;
+            obj->model->unk_A30.zOrder = -0x80000000;
         } else {
-            obj->model->unk_A30.priority = 0x7FFFFFFF;
+            obj->model->unk_A30.zOrder = 0x7FFFFFFF;
         }
         obj->model->unk_A30.flags = 0;
         return obj;
@@ -562,11 +562,11 @@ Object *func_8002BFF0(Vec4i *arg0, s32 arg1, void (*arg2)(Object *), UnkSam *arg
     model = obj->model;
     model->unk_A28 = arg3;
     model->unk_A24 = NULL;
-    s6 = model->unk_000 = arg3->unk_128;
+    s6 = model->numNodes = arg3->unk_128;
 
     for (i = 0; i < s6; i++) {
-        memcpy(&model->unk_AB0[i].unk_00, arg3->unk_2A8[i], sizeof(UnkDispStructPart2Sub));
-        memcpy(&model->unk_AB0[30 + i].unk_00, arg3->unk_2A8[i], sizeof(UnkDispStructPart2Sub));
+        memcpy(&model->unk_AB0[i].header, arg3->unk_2A8[i], sizeof(BatchHeader));
+        memcpy(&model->unk_AB0[30 + i].header, arg3->unk_2A8[i], sizeof(BatchHeader));
         model->unk_1F50[i] = model->unk_5E4[i] = FALSE;
         model->unk_1F6E[i] = FALSE;
     }
@@ -624,7 +624,7 @@ Object *func_8002C27C(Vec4i *arg0, s32 arg1, void (*arg2)(Object *), UnkSam *arg
     new_var->unk_00 = 1;
     new_var->unk_24 = 1;
     obj->model->unk_A30.unk_04 = new_var;
-    obj->model->unk_A30.priority = -9000;
+    obj->model->unk_A30.zOrder = -9000;
     obj->model->unk_A30.flags = 0;
     return obj;
 }

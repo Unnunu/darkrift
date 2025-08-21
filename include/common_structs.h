@@ -37,44 +37,44 @@ typedef struct Quad {
     Vtx v[4];
 } Quad;
 
-typedef struct UnkDispStructPart1 {
+typedef struct RenderContext {
     /* 0x00 */ s16 perspNorm;
     /* 0x02 */ char unk_02[0xE];
-    /* 0x10 */ s32 unk_10[16];
+    /* 0x10 */ s32 segmentTable[16];
     /* 0x50 */ char unk_50[0x14];
-} UnkDispStructPart1; // size = 0x64
+} RenderContext; // size = 0x64
 
-typedef struct UnkDispStructPart2Sub {
+typedef struct BatchHeader {
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ s32 unk_04;
-    /* 0x08 */ u8 unk_08;
+    /* 0x08 */ u8 numVertices;
     /* 0x09 */ u8 unk_09;
-    /* 0x0A */ u8 unk_0A;
-    /* 0x0B */ u8 unk_0B;
+    /* 0x0A */ u8 numTriangles;
+    /* 0x0B */ u8 numTriangles2;
     /* 0x0C */ Gfx *unk_0C;
     /* 0x10 */ Gfx unk_10;
-} UnkDispStructPart2Sub; // size = 0x18
+} BatchHeader; // size = 0x18
 
-typedef struct UnkDispStructPart2 {
-    /* 0x00 */ UnkDispStructPart2Sub unk_00;
-    /* 0x18 */ Mtx matrix;
-} UnkDispStructPart2; // size = 0x58
+typedef struct BatchInfo {
+    /* 0x00 */ BatchHeader header;
+    /* 0x18 */ Mtx transform;
+} BatchInfo; // size = 0x58
 
-typedef struct UnkDispStruct {
-    /* 0x00 */ u32 unk_00;
-    /* 0x04 */ UnkDispStructPart2 *unk_04;
+typedef struct Batch {
+    /* 0x00 */ RenderContext *context;
+    /* 0x04 */ BatchInfo *info;
     /* 0x08 */ Vtx *vertices;
-    /* 0x0C */ u16 *unk_0C;
-} UnkDispStruct; // size = 0x10
+    /* 0x0C */ u16 *triangles;
+} Batch; // size = 0x10
 
 typedef struct DisplayData {
     /* 0x0000 */ Mtx mtxViewProj;
     /* 0x0040 */ char unk_40[0x40];
-    /* 0x0080 */ Gfx unk_80[0x800];
+    /* 0x0080 */ Gfx gfxMain[0x800];
     /* 0x4080 */ Gfx unk_4080[0x400];
-    /* 0x6080 */ Gfx unk_6080[0x400];
-    /* 0x8080 */ UnkDispStruct unk_8080[0x800];
-    /* 0x10080 */ UnkDispStruct unk_10080[0x200];
+    /* 0x6080 */ Gfx gfxOverlay[0x400];
+    /* 0x8080 */ Batch batchMain[0x800];
+    /* 0x10080 */ Batch batchOverlay[0x200];
     /* 0x12080 */ u16 perspNorm;
     /* 0x12082 */ char unk_12082[6];
 } DisplayData; // size = 0x12088
@@ -176,9 +176,11 @@ typedef struct Transform {
 } Transform; // size >= 0x118
 
 typedef struct AssetGmdSub4 {
-    /* 0x00 */ char unk_00[8];
+    /* 0x00 */ u32 unk_00;
+    /* 0x04 */ u32 unk_04;
     /* 0x08 */ s32 unk_08;
     /* 0x0C */ s32 unk_0C;
+    /* 0x10 */ u32 unk_10[1];
 } AssetGmdSub4;
 
 typedef struct AssetGmdSub1 {
@@ -192,14 +194,18 @@ typedef struct AssetGmdSub1 {
 
 typedef struct AssetGmdSub3 {
     /* 0x00 */ Vec3s unk_00;
-    /* 0x06 */ char unk_06[10];
+    /* 0x06 */ s16 unk_06;
+    /* 0x08 */ s16 unk_08;
+    /* 0x0A */ s16 unk_0A;
+    /* 0x0C */ s16 unk_0C;
+    /* 0x0E */ s16 unk_0E;
 } AssetGmdSub3; // size = 0x10
 
 typedef struct AssetGmdSub2 {
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ s32 unk_04;
     /* 0x08 */ AssetGmdSub3 *unk_08;
-    /* 0x0C */ s32 unk_0C;
+    /* 0x0C */ Vec3s *unk_0C;
     /* 0x10 */ char unk_10[0x8];
     /* 0x18 */ s32 unk_18;
     /* 0x1C */ AssetGmdSub1 *unk_1C;
@@ -251,7 +257,7 @@ typedef struct ModelNode {
     /* 0x14 */ Vec3i unk_14;
     /* 0x20 */ s32 unk_20;
     /* 0x24 */ u32 unk_24;
-    /* 0x28 */ UnkDispStruct *unk_28[4];
+    /* 0x28 */ Batch *unk_28[4];
     /* 0x38 */ s32 unk_38[4];
     /* 0x48 */ Gfx *unk_48[4];
 } ModelNode; // size = 0x58
@@ -265,13 +271,13 @@ typedef struct UnkSam {
     /* 0x148 */ s32 *unk_148;
     /* 0x14C */ s32 unk_14C;
     /* 0x150 */ StructAA8 *unk_150;
-    /* 0x154 */ UnkDispStruct *unk_154[1]; // size unknown
+    /* 0x154 */ Batch *unk_154[1]; // size unknown
     /* 0x158 */ char unk_158[0x234 - 0x158];
     /* 0x234 */ u16 unk_234;
     /* 0x236 */ s16 unk_236;
     /* 0x238 */ s32 unk_238[1]; // size unknown
     /* 0x23C */ char unk_23C[0x2A8 - 0x23C];
-    /* 0x2A8 */ UnkDispStructPart2 *unk_2A8[28];
+    /* 0x2A8 */ BatchInfo *unk_2A8[28];
     /* 0x318 */ s8 unk_318;
     /* 0x319 */ char unk_319[3];
     /* 0x31C */ ModelNode *unk_31C;
@@ -290,15 +296,15 @@ typedef struct UnkFrodo {
 } UnkFrodo; // szie = 0xA68
 
 typedef struct ModelNodeRenderInfo {
-    /* 0x00 */ s32 priority;
+    /* 0x00 */ s32 zOrder;
     /* 0x04 */ ModelNode *unk_04;
-    /* 0x08 */ UnkDispStructPart2 *unk_08[4];
+    /* 0x08 */ BatchInfo *unk_08[4];
     /* 0x18 */ struct ModelNodeRenderInfo *next;
     /* 0x1C */ s32 flags;
 } ModelNodeRenderInfo; // size = 0x20
 
 typedef struct Model {
-    /* 0x0000 */ s16 unk_000;
+    /* 0x0000 */ s16 numNodes;
     /* 0x0002 */ s16 unk_002;
     /* 0x0004 */ s16 unk_004;
     /* 0x0006 */ s16 unk_006;
@@ -307,12 +313,12 @@ typedef struct Model {
     /* 0x000E */ char unk_00E[2];
     /* 0x0010 */ Transform unk_010;
     /* 0x0128 */ Transform *transforms;
-    /* 0x012C */ s32 *unk_12C;
+    /* 0x012C */ s32 **unk_12C;
     /* 0x0130 */ s16 unk_130;
     /* 0x0132 */ s16 unk_132;
-    /* 0x0134 */ Vec4s unk_134[30];
-    /* 0x0224 */ Vec4i unk_224[30];
-    /* 0x0404 */ Vec4i unk_404[30];
+    /* 0x0134 */ Vec4s nodeRotation[30];
+    /* 0x0224 */ Vec4i nodeScale[30];
+    /* 0x0404 */ Vec4i nodePosition[30];
     /* 0x05E4 */ u8 unk_5E4[32];
     /* 0x0604 */ ModelNode *unk_604;
     /* 0x0608 */ ModelNodeRenderInfo unk_608[30];
@@ -327,7 +333,7 @@ typedef struct Model {
     /* 0x0A0C */ s16 unk_A0C;
     /* 0x0A0E */ s16 unk_A0E;
     /* 0x0A10 */ s32 unk_A10;
-    /* 0x0A14 */ s32 *unk_A14;
+    /* 0x0A14 */ u8 *unk_A14;
     /* 0x0A18 */ s32 unk_A18;
     /* 0x0A1C */ s16 unk_A1C;
     /* 0x0A1E */ s16 unk_A1E;
@@ -340,7 +346,7 @@ typedef struct Model {
     /* 0x0A50 */ ModelNode unk_A50;
     /* 0x0AA8 */ StructAA8 *unk_AA8;
     /* 0x0AAC */ char unk_AAC[4];
-    /* 0x0AB0 */ UnkDispStructPart2 unk_AB0[60];
+    /* 0x0AB0 */ BatchInfo unk_AB0[60];
     /* 0x1F50 */ u8 unk_1F50[30];
     /* 0x1F6E */ u8 unk_1F6E[30];
     /* 0x1F8C */ char unk_1F8C[4];

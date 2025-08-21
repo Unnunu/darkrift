@@ -1,6 +1,13 @@
 #include "common.h"
 #include "string.h"
 
+typedef struct Unk8000C3CC {
+    /* 0x00 */ s8 a;
+    /* 0x01 */ s8 b;
+    /* 0x02 */ s8 c;
+    /* 0x03 */ s8 d;
+} Unk8000C3CC; // size = 4
+
 void func_8000C158(AssetGmd *, u8);
 
 void func_8000BCF0(AssetGmdSub2 *arg0, AssetUnkHeader2 *arg1, u32 arg2) {
@@ -136,11 +143,94 @@ void func_8000C18C(s32 *arg0, s32 arg1, u32 arg2);
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000C1C4.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000C258.s")
+u16 func_8000C258(Vec3s *arg0, u16 arg1, u16 arg2);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000C328.s")
+void func_8000C328(Vec3s *arg0, u16 arg1, s32 arg2, s32 *arg3, s32 *arg4);
 
+#ifdef NON_MATCHING
+void func_8000C3CC(UnkSam *arg0, s32 arg1, u8 arg2, u8 *arg3) {
+    u32 sp95C;
+    u32 sp950;
+    s32 sp940;
+    s32 sp93C;
+    u8 sp933;
+    u8 sp932;
+    Vec3s *sp928;
+    AssetGmdSub3 *sp914;
+    Unk8000C3CC *sp770[10];
+    s32 sp5E0[10];
+    s32 sp450[10];
+    u32 sp44C;
+    AssetGmdSub3 *sp2BC[10];
+    u32 i; // s2
+    s32 sp11C[10];
+    AssetGmdSub2 *sp104;
+    s32 s3;
+    Unk8000C3CC *v0;
+
+    sp933 = 0;
+    sp932 = 0;
+    sp44C = 0;
+
+    sp104 = &arg0->unk_04->unk_04[arg1];
+    sp950 = sp104->unk_18;
+    s3 = sp104->unk_00;
+    sp914 = sp104->unk_08;
+    sp928 = sp104->unk_0C;
+
+    if (arg0->unk_318) {
+        for (i = 0; i < s3; i++) {
+            sp914[i].unk_08 >>= 1;
+            sp914[i].unk_0A >>= 1;
+        }
+    }
+
+    for (sp95C = 0; sp95C < sp950; sp95C++) {
+        u16 s33 = sp104->unk_1C[sp95C].unk_08;
+        u16 s4 = sp104->unk_1C[sp95C].unk_0A;
+        u16 s1 = sp104->unk_1C[sp95C].unk_04;
+        Vec3s *s02 = &sp928[sp104->unk_1C[sp95C].unk_06];
+
+        sp11C[sp95C] = sp44C;
+
+        if (s33 <= 16) {
+            sp770[sp44C] = v0 = mem_alloc(s4 * sizeof(Unk8000C3CC), "kmd.c", 0x1A5);
+            for (i = 0; i < s4; i++) {
+                v0[i].a = s02[i].x - s1;
+                v0[i].b = s02[i].y - s1;
+                v0[i].c = s02[i].z - s1;
+                v0[i].d = 0;
+            }
+            sp5E0[sp44C] = s4;
+            sp450[sp44C] = s33;
+            sp2BC[sp44C] = &sp914[s1];
+            sp44C++;
+        } else {
+            u16 v02;
+
+            v02 = func_8000C258(s02, s1, s4);
+            sp2BC[sp44C] = &sp914[v02];
+            func_8000C328(s02, v02, s4, &sp93C, &sp940);
+            sp5E0[sp44C] = sp93C;
+            s4 -= sp93C;
+            sp450[sp44C] = sp940;
+            sp770[sp44C] = v0 = mem_alloc(sp93C * sizeof(Unk8000C3CC), "kmd.c", 0x1A5);
+            sp44C++;
+
+            for (i = 0; i < sp93C; i++) {
+                v0[i].a = s02[i].x - v02;
+                v0[i].b = s02[i].y - v02;
+                v0[i].c = s02[i].z - v02;
+                v0[i].d = 0;
+            }
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000C3CC.s")
-void func_8000C3CC(UnkSam *, s32, u8, u8 *);
+void func_8000C3CC(UnkSam *arg0, s32 arg1, u8 arg2, u8 *arg3);
+#endif
 
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000D11C.s")
 

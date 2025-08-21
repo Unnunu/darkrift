@@ -19,11 +19,11 @@
     array.elements[++array.unk_0C] = (u8 *) item; \
     array.count++;
 
-#define PUSH_UNK_DISP(pkt, a, b, c, d) \
-    pkt->unk_00 = (a);                 \
-    pkt->unk_04 = (b);                 \
-    pkt->vertices = (c);               \
-    pkt->unk_0C = (d);                 \
+#define gSPTriBatch(pkt, a, b, c, d) \
+    pkt->context = (a);              \
+    pkt->info = (b);                 \
+    pkt->vertices = (c);             \
+    pkt->triangles = (d);            \
     pkt++;
 
 #define ABS(x) ((x) > 0 ? (x) : -(x))

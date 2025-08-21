@@ -6,9 +6,9 @@ extern s32 D_80049AE4;
 extern s32 D_80049AE8;
 extern s32 D_80081428;
 extern u8 D_80080129;
-extern Gfx *D_8005BFD8;
+extern Gfx *gMainGfxPos;
 extern Gfx *D_8005BFDC;
-extern Gfx *D_8005BFE0;
+extern Gfx *gOverlayGfxPos;
 extern s16 D_80080130;
 extern s16 D_80080132;
 extern s16 D_80080134;
@@ -94,7 +94,7 @@ void texture_render(Texture *tex, s32 texYOffset, s32 posY, u32 height, u32 scro
     image = tex->raster;
     image += texYOffset * tex->width;
     texWidth = tex->width;
-    dlist = (tex->flags & 2) ? &D_8005BFE0 : &D_8005BFD8;
+    dlist = (tex->flags & 2) ? &gOverlayGfxPos : &gMainGfxPos;
 
     gDPLoadTLUT_pal256((*dlist)++, VIRTUAL_TO_PHYSICAL(tex->palette));
 
@@ -241,13 +241,13 @@ void bg_draw(void) {
     if (maxY > 0 && D_80080129 && !(D_8008012C & 0x40)) {
         s32 t3 = MIN(64, SCREEN_HEIGHT - maxY);
 
-        gDPPipeSync(D_8005BFD8++);
-        gDPSetCycleType(D_8005BFD8++, G_CYC_FILL);
-        gDPSetFillColor(D_8005BFD8++, (GPACK_RGBA5551(D_80080130, D_80080132, D_80080134, 1) << 16) |
-                                          GPACK_RGBA5551(D_80080130, D_80080132, D_80080134, 1));
-        gDPFillRectangle(D_8005BFD8++, 0, maxY, gScreenWidth - 1, maxY + t3 - 1);
-        gDPPipeSync(D_8005BFD8++);
-        gDPSetCycleType(D_8005BFD8++, G_CYC_COPY);
+        gDPPipeSync(gMainGfxPos++);
+        gDPSetCycleType(gMainGfxPos++, G_CYC_FILL);
+        gDPSetFillColor(gMainGfxPos++, (GPACK_RGBA5551(D_80080130, D_80080132, D_80080134, 1) << 16) |
+                                           GPACK_RGBA5551(D_80080130, D_80080132, D_80080134, 1));
+        gDPFillRectangle(gMainGfxPos++, 0, maxY, gScreenWidth - 1, maxY + t3 - 1);
+        gDPPipeSync(gMainGfxPos++);
+        gDPSetCycleType(gMainGfxPos++, G_CYC_COPY);
     }
 }
 
@@ -287,7 +287,7 @@ void func_80015724(Object *obj) {
     palette = texture->data + texture->width * texture->height;
 
     if (obj->flags & 0x4000000) {
-        dlist = &D_8005BFE0;
+        dlist = &gOverlayGfxPos;
         D_8008012C |= 2;
     } else {
         dlist = &D_8005BFDC;

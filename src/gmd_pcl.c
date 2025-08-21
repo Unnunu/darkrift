@@ -170,8 +170,8 @@ void func_8001B26C(void) {
 
     func_8001AAE0();
 
-    gDPLoadTLUT_pal16(D_8005BFD8++, 0, VIRTUAL_TO_PHYSICAL(D_80081610));
-    gSPMatrix(D_8005BFD8++, VIRTUAL_TO_PHYSICAL(&D_80081618), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gDPLoadTLUT_pal16(gMainGfxPos++, 0, VIRTUAL_TO_PHYSICAL(D_80081610));
+    gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(&D_80081618), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     for (i = D_80081602 - 1; i < D_80081604 + 1; i++) {
         for (j = D_800815FE; j < D_80081600 + 1; j++) {
@@ -193,7 +193,7 @@ void func_8001B26C(void) {
                 }
             }
 
-            gSPDisplayList(D_8005BFD8++, VIRTUAL_TO_PHYSICAL(D_80049CF0[v0 * D_800815E8 + a0]));
+            gSPDisplayList(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(D_80049CF0[v0 * D_800815E8 + a0]));
         }
     }
 }
