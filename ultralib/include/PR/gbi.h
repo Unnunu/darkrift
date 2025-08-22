@@ -3026,7 +3026,11 @@ typedef union {
 #define TXL2WORDS(txls, b_txl) MAX(1, ((txls) * (b_txl) / 8))
 #define CALC_DXT(width, b_txl) (((1 << G_TX_DXT_FRAC) + TXL2WORDS(width, b_txl) - 1) / TXL2WORDS(width, b_txl))
 
+#ifdef LIBULTRA_DARK_RIFT
+#define TXL2WORDS_4b(txls) ((txls) / 16)
+#else
 #define TXL2WORDS_4b(txls) MAX(1, ((txls) / 16))
+#endif
 #define CALC_DXT_4b(width) (((1 << G_TX_DXT_FRAC) + TXL2WORDS_4b(width) - 1) / TXL2WORDS_4b(width))
 
 #define gDPLoadTileGeneric(pkt, c, tile, uls, ult, lrs, lrt)                              \

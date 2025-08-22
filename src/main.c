@@ -308,7 +308,7 @@ void func_80001FB0(s32 arg0, Vtx *arg1) {
     D_8005BF00.header.numVertices = 4;
     D_8005BF00.header.unk_09 = 0;
     D_8005BF00.header.numTriangles = 2;
-    D_8005BF00.header.numTriangles2 = 2;
+    D_8005BF00.header.unk_0B = 2;
     D_8005BF00.header.unk_0C = &D_8005BF58;
 
     gDPPipeSync(&D_8005BF58);
@@ -348,7 +348,7 @@ void func_80002178(s32 arg0, Quad *arg1) {
     D_8005BF00.header.unk_04 = 0;
     D_8005BF00.header.numVertices = 4;
     D_8005BF00.header.unk_09 = 0;
-    D_8005BF00.header.numTriangles2 = D_8005BF00.header.numTriangles = 2;
+    D_8005BF00.header.unk_0B = D_8005BF00.header.numTriangles = 2;
     D_8005BF00.header.unk_0C = &D_8005BF58;
 
     gDPPipeSync(D_8005BF00.header.unk_0C);

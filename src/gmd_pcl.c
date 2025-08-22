@@ -205,7 +205,7 @@ void func_8001B5B0(char *name, s32 arg1) {
     char sp48[20];
     Vec3s sp40;
     s32 unused;
-    AssetGmdSub4 *a3;
+    TextureAsset *a3;
     AssetGmdSub1 *sub1;
     Vec4i sp24 = { 0, 0, 6000, 0 };
 

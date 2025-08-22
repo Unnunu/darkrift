@@ -21,12 +21,12 @@ extern Vec4i D_8004934C;
 extern Batch **D_8013C4E0;
 extern GlobalObjD *D_8013C4EC;
 extern ItemPool D_8013C4F0;
-extern AssetGmdSub4 *D_8013C500[];
+extern TextureAsset *D_8013C500[];
 
 Object *func_8002BC84(Vec4i *, s32, K2Def *, s32);
 void func_800028E0(s32 arg0, s32 arg1);
 
-void func_80034090(AssetGmdSub4 *arg0) {
+void func_80034090(TextureAsset *arg0) {
     u32 i;
 
     for (i = 0; i < D_8013C540; i++) {
@@ -40,7 +40,7 @@ void func_80034090(AssetGmdSub4 *arg0) {
 
 s32 func_800340E8(void *arg0) {
     u32 i, j;
-    AssetGmdSub4 *v1;
+    TextureAsset *v1;
     u32 tmp;
     u32 a3;
     u32 *ptr;
@@ -48,9 +48,9 @@ s32 func_800340E8(void *arg0) {
 
     for (i = 0; i < D_8013C540; i++) {
         v1 = D_8013C500[i];
-        tmp = (v1->unk_00 * v1->unk_04) / 8;
-        ptr = v1->unk_10;
-        a3 = v1->unk_10[0];
+        tmp = (v1->width * v1->height) / 8;
+        ptr = v1->data;
+        a3 = v1->data[0];
 
         for (j = 0; j < tmp - 1; j++, ptr++) {
             *ptr <<= 4;
@@ -69,7 +69,7 @@ s32 func_800340E8(void *arg0) {
 
 s32 func_8003424C(void *arg0) {
     u32 i, j, k;
-    AssetGmdSub4 *v1;
+    TextureAsset *v1;
     u32 tmp;
     u32 a3;
     u32 *ptr;
@@ -81,10 +81,10 @@ s32 func_8003424C(void *arg0) {
 
     for (i = 0; i < D_8013C540; i++) {
         v1 = D_8013C500[i];
-        tmp = v1->unk_00 / 8;
-        ptr = v1->unk_10;
+        tmp = v1->width / 8;
+        ptr = v1->data;
 
-        for (j = 0; j < v1->unk_04; j++) {
+        for (j = 0; j < v1->height; j++) {
             a3 = *ptr;
             for (k = 0; k < tmp - 1; k++, ptr++) {
                 *ptr <<= 4;
@@ -385,7 +385,7 @@ void func_80034FC8(Model *model, s32 arg1, Vec4i *arg2) {
     AssetGmdSub2 *a1;
     s32 a, b, c;
     s32 i, count;
-    AssetGmdSub3 *array;
+    Vtx *array;
 
     a = 0;
     b = 0;
@@ -397,13 +397,13 @@ void func_80034FC8(Model *model, s32 arg1, Vec4i *arg2) {
         a1 = &model->unk_A28->unk_04->unk_04[arg1];
     }
 
-    count = a1->unk_00;
-    array = a1->unk_08;
+    count = a1->numVertices;
+    array = a1->vertices;
 
     for (i = 0; i < count; i++) {
-        a += array[i].unk_00.x;
-        b += array[i].unk_00.y;
-        c += array[i].unk_00.z;
+        a += array[i].v.ob[0];
+        b += array[i].v.ob[1];
+        c += array[i].v.ob[2];
     }
 
     arg2->x = a / count;
@@ -415,7 +415,7 @@ void func_8003517C(UnkSam *sam, s32 arg1, Vec4i *arg2) {
     AssetGmdSub2 *a1;
     s32 a, b, c;
     s32 i, count;
-    AssetGmdSub3 *array;
+    Vtx *vertices;
 
     a = 0;
     b = 0;
@@ -423,13 +423,13 @@ void func_8003517C(UnkSam *sam, s32 arg1, Vec4i *arg2) {
 
     a1 = &sam->unk_04->unk_04[arg1];
 
-    count = a1->unk_00;
-    array = a1->unk_08;
+    count = a1->numVertices;
+    vertices = a1->vertices;
 
     for (i = 0; i < count; i++) {
-        a += array[i].unk_00.x;
-        b += array[i].unk_00.y;
-        c += array[i].unk_00.z;
+        a += vertices[i].v.ob[0];
+        b += vertices[i].v.ob[1];
+        c += vertices[i].v.ob[2];
     }
 
     arg2->x = a / count;
