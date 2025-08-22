@@ -299,7 +299,9 @@ void func_8000C3CC(UnkSam *arg0, s32 arg1, u8 arg2, Unk8000C3CCArg3 *arg3) {
             sp932 = FALSE;
         } else if (!sp932 && (u8) (t0->unk_00 >= 0)) {
             gDPPipeSync(gfx++);
-            *gfx++ = arg3->unk_00;
+            gfx->words.w0 = arg3->unk_00.words.w0;
+            gfx->words.w1 = arg3->unk_00.words.w1;
+            gfx++;
             sp933 = FALSE;
             sp932 = TRUE;
         }
