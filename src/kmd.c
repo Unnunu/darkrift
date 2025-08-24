@@ -149,10 +149,6 @@ s32 func_8000C258(Vec3s *arg0, s32 arg1, s32 arg2);
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000C328.s")
 void func_8000C328(Vec3s *arg0, s32 arg1, s32 arg2, s32 *arg3, s32 *arg4);
 
-// #ifdef NON_MATCHING
-
-#define G_IM_SIZ_8b_SHIFTL 1
-
 void func_8000C3CC(UnkSam *arg0, s32 arg1, u8 arg2, Unk8000C3CCArg3 *arg3) {
     u32 sp95C;
     s32 s3;
@@ -188,6 +184,8 @@ void func_8000C3CC(UnkSam *arg0, s32 arg1, u8 arg2, Unk8000C3CCArg3 *arg3) {
     s32 sp11C[100];
     Batch *sp118;
     s32 padding3[2];
+    u8 *palette1;
+    u8 *palette2;
     AssetGmdSub2 *sp104;
 
     sp933 = FALSE;
@@ -322,18 +320,18 @@ void func_8000C3CC(UnkSam *arg0, s32 arg1, u8 arg2, Unk8000C3CCArg3 *arg3) {
             tex = t0->unk_0C;
             if (tex->unk_08 == 4) {
                 if (!arg2) {
-                    u8 *palette = arg0->unk_04->unk_C0 + tex->unk_0C * 0x20;
-                    palette[1] &= ~1;
-                    gDPLoadTLUT_pal16(gfx++, 0, VIRTUAL_TO_PHYSICAL(palette));
+                    palette1 = arg0->unk_04->unk_C0 + tex->unk_0C * 0x20;
+                    palette1[1] &= ~1;
+                    gDPLoadTLUT_pal16(gfx++, 0, VIRTUAL_TO_PHYSICAL(palette1));
                 }
                 gDPLoadTextureBlock_4b(gfx++, tex->data, G_IM_FMT_CI, tex->width, tex->height, 0,
                                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                                        G_TX_NOLOD, G_TX_NOLOD);
             } else {
                 if (!arg2) {
-                    u8 *palette = arg0->unk_04->unk_C4 + tex->unk_0C * 0x200;
-                    palette[1] &= ~1;
-                    gDPLoadTLUT_pal256(gfx++, VIRTUAL_TO_PHYSICAL(palette));
+                    palette2 = arg0->unk_04->unk_C4 + tex->unk_0C * 0x200;
+                    palette2[1] &= ~1;
+                    gDPLoadTLUT_pal256(gfx++, VIRTUAL_TO_PHYSICAL(palette2));
                 }
                 gDPLoadTextureBlock(gfx++, tex->data, G_IM_FMT_CI, G_IM_SIZ_8b, tex->width, tex->height, 0,
                                     G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
@@ -343,10 +341,6 @@ void func_8000C3CC(UnkSam *arg0, s32 arg1, u8 arg2, Unk8000C3CCArg3 *arg3) {
         gSPNoOp(gfx++);
     }
 }
-// #else
-// #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000C3CC.s")
-// void func_8000C3CC(UnkSam *arg0, s32 arg1, u8 arg2, Unk8000C3CCArg3 *arg3);
-// #endif
 
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000D11C.s")
 

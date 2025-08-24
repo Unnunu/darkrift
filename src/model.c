@@ -50,7 +50,7 @@ s32 func_800340E8(void *arg0) {
         v1 = D_8013C500[i];
         tmp = (v1->width * v1->height) / 8;
         ptr = v1->data;
-        a3 = v1->data[0];
+        a3 = ((u32*)v1->data)[0];
 
         for (j = 0; j < tmp - 1; j++, ptr++) {
             *ptr <<= 4;
