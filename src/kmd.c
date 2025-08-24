@@ -144,7 +144,7 @@ void func_8000C18C(s32 *arg0, s32 arg1, u32 arg2);
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000C1C4.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000C258.s")
-u16 func_8000C258(Vec3s *arg0, s32 arg1, s32 arg2);
+s32 func_8000C258(Vec3s *arg0, s32 arg1, s32 arg2);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000C328.s")
 void func_8000C328(Vec3s *arg0, s32 arg1, s32 arg2, s32 *arg3, s32 *arg4);
@@ -165,31 +165,30 @@ void func_8000C3CC(UnkSam *arg0, s32 arg1, u8 arg2, Unk8000C3CCArg3 *arg3) {
     s32 sp93C;
     s32 s4;
     BatchInfo *s1;
-    s32 v02;
     u8 sp933;
     u8 sp932;
+    s32 v02;
     Vec3su *sp928;
     s32 padding[4];
     Vtx *sp914;
     Vtx *a11;
+    s32 padding2;
+    s32 s11;
+    Vec3su *s02;
+    s32 size;
     Unk8000C3CC *sp770[100];
     s32 sp5E0[100];
     s32 sp450[100];
     u32 sp44C;
     Vtx *sp2BC[100];
     s32 sp2B8;
-    u32 i; // s2
-    s32 sp11C[100];
-    Batch *sp118;
-    AssetGmdSub2 *sp104;
+    u32 i;
     AssetGmdSub1 *t0;
     TextureAsset *tex;
-
-    s32 s33;
-
-    s32 s11;
-    Vec3su *s02;
-    s32 size;
+    s32 sp11C[100];
+    Batch *sp118;
+    s32 padding3[2];
+    AssetGmdSub2 *sp104;
 
     sp933 = FALSE;
     sp932 = FALSE;
@@ -212,13 +211,14 @@ void func_8000C3CC(UnkSam *arg0, s32 arg1, u8 arg2, Unk8000C3CCArg3 *arg3) {
         t0 = sp104->unk_1C + sp95C;
         s4 = t0->unk_0A;
         s11 = t0->unk_04;
-        s33 = t0->unk_08;
-        s02 = &sp928[t0->unk_06];
+        s3 = t0->unk_08;
+        s02 = sp928;
+        s02 += t0->unk_06;
 
         sp11C[sp95C] = sp44C;
 
-        if (s33 <= 16U) {
-            sp770[sp44C] = v0 = mem_alloc(s4 * sizeof(Unk8000C3CC), "kmd.c", 421);
+        if (s3 <= 16U) {
+            v0 = sp770[sp44C] = mem_alloc(s4 * sizeof(Unk8000C3CC), "kmd.c", 421);
             for (i = 0; i < s4; s02++, i++) {
                 v0[i].a = s02->x - s11;
                 v0[i].b = s02->y - s11;
@@ -226,27 +226,29 @@ void func_8000C3CC(UnkSam *arg0, s32 arg1, u8 arg2, Unk8000C3CCArg3 *arg3) {
                 v0[i].d = 0;
             }
             sp5E0[sp44C] = s4;
-            sp450[sp44C] = s33;
-            sp2BC[sp44C] = &sp914[s11];
+            sp2BC[sp44C] = sp914;
+            sp2BC[sp44C] += s11;
+            sp450[sp44C] = s3;
             sp44C++;
         } else {
             do {
-                v02 = func_8000C258(s02, s11, s4);
-                sp2BC[sp44C] = &sp914[v02];
-                func_8000C328(s02, v02, s4, &sp93C, &sp940);
+                s11 = func_8000C258(s02, s11, s4);
+                sp2BC[sp44C] = sp914;
+                sp2BC[sp44C] += s11;
+                func_8000C328(s02, s11, s4, &sp93C, &sp940);
                 s4 -= sp93C;
                 sp5E0[sp44C] = sp93C;
                 sp450[sp44C] = sp940;
                 v0 = sp770[sp44C] = mem_alloc(sp93C * sizeof(Unk8000C3CC), "kmd.c", 0x1C1);
                 sp44C++;
 
-                for (i = 0; i < sp93C; s02++, i++) {
-                    v0[i].a = s02->x - v02;
-                    v0[i].b = s02->y - v02;
-                    v0[i].c = s02->z - v02;
+                for (i = 0; i < sp93C; i++, s02++) {
+                    v0[i].a = s02->x - s11;
+                    v0[i].b = s02->y - s11;
+                    v0[i].c = s02->z - s11;
                     v0[i].d = 0;
                 }
-                s11 = v02 + sp940;
+                s11 += sp940;
             } while (s4 != 0);
         }
     }
@@ -258,25 +260,24 @@ void func_8000C3CC(UnkSam *arg0, s32 arg1, u8 arg2, Unk8000C3CCArg3 *arg3) {
         sp118[i].context = NULL;
         sp118[i].vertices = sp2BC[i];
         sp118[i].triangles = sp770[i];
-        sp118[i].info = &s1[i];
-
         sp2B8 += sp5E0[i] * 4; // ??
+        sp118[i].info = s1 + i;
 
-        func_80000E0C(&s1[i], 0, sizeof(BatchInfo));
-        s1[i].header.unk_00 = arg3->unk_0C;
-        s1[i].header.unk_04 = 0;
-        s1[i].header.numVertices = sp450[i];
-        s1[i].header.unk_09 = 0;
-        s1[i].header.numTriangles = sp5E0[i];
-        s1[i].header.unk_0B = (i != 0) ? 1 : 0;
-        s1[i].header.unk_0C = NULL;
-        gtStateSetOthermode(&s1[i].header.unk_10, GT_RENDERMODE, arg3->renderMode);
-        gtStateSetOthermode(&s1[i].header.unk_10, GT_CYCLETYPE, G_CYC_1CYCLE);
-        gtStateSetOthermode(&s1[i].header.unk_10, GT_TEXTFILT, G_TF_BILERP);
-        gtStateSetOthermode(&s1[i].header.unk_10, GT_TEXTCONV, G_TC_FILT);
-        gtStateSetOthermode(&s1[i].header.unk_10, GT_TEXTPERSP, G_TP_PERSP);
-        gtStateSetOthermode(&s1[i].header.unk_10, GT_TEXTLUT, G_TT_RGBA16);
-        gtStateSetOthermode(&s1[i].header.unk_10, GT_PIPELINE, G_PM_NPRIMITIVE);
+        func_80000E0C(s1 + i, 0, sizeof(BatchInfo));
+        (s1+i)->header.unk_00 = arg3->unk_0C;
+        (s1+i)->header.unk_04 = 0;
+        (s1+i)->header.numVertices = sp450[i];
+        (s1+i)->header.unk_09 = 0;
+        (s1+i)->header.numTriangles = sp5E0[i];
+        (s1+i)->header.unk_0B = (i != 0) ? 1 : 0;
+        (s1+i)->header.unk_0C = NULL;
+        gtStateSetOthermode(&(s1+i)->header.unk_10, GT_RENDERMODE, arg3->renderMode);
+        gtStateSetOthermode(&(s1+i)->header.unk_10, GT_CYCLETYPE, G_CYC_1CYCLE);
+        gtStateSetOthermode(&(s1+i)->header.unk_10, GT_TEXTFILT, G_TF_BILERP);
+        gtStateSetOthermode(&(s1+i)->header.unk_10, GT_TEXTCONV, G_TC_FILT);
+        gtStateSetOthermode(&(s1+i)->header.unk_10, GT_TEXTPERSP, G_TP_PERSP);
+        gtStateSetOthermode(&(s1+i)->header.unk_10, GT_TEXTLUT, G_TT_RGBA16);
+        gtStateSetOthermode(&(s1+i)->header.unk_10, GT_PIPELINE, G_PM_NPRIMITIVE);
     }
     arg0->unk_238[arg1] = sp44C;
 
@@ -311,9 +312,10 @@ void func_8000C3CC(UnkSam *arg0, s32 arg1, u8 arg2, Unk8000C3CCArg3 *arg3) {
                 sp118[i].info->header.unk_00 |= 2;
             }
 
-            s33 = t0->unk_08;
-            a11 = &sp914[t0->unk_04];
-            for (i = 0; i < s33; i++) {
+            s3 = t0->unk_08;
+            a11 = sp914;
+            a11 += t0->unk_04;
+            for (i = 0; i < s3; i++) {
                 a11[i].v.cn[0] = a11[i].v.cn[1] = a11[i].v.cn[2] = 255;
             }
 
