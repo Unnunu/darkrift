@@ -27,7 +27,7 @@ void func_80015BC0(Object *obj) {
 }
 
 void func_80015C58(Object *obj) {
-    if (obj->spriteId >= obj->model->unk_A08) {
+    if (obj->spriteId >= obj->modInst->unk_A08) {
         if (--obj->vars[1] <= 0) {
             if (obj->vars[0] < obj->unk_088.a) {
                 obj->unk_088.a -= obj->vars[0];
@@ -50,7 +50,7 @@ void func_80015CD8(Object *obj) {
             sound_play(2, obj->vars[2]);
         }
 
-        if (obj->spriteId < obj->model->unk_A08 - 1) {
+        if (obj->spriteId < obj->modInst->unk_A08 - 1) {
             obj->spriteId++;
         }
     }
@@ -62,7 +62,7 @@ void func_80015D60(Object *obj) {
         sound_play(2, obj->vars[2]);
     }
 
-    if (obj->spriteId >= obj->model->unk_A08) {
+    if (obj->spriteId >= obj->modInst->unk_A08) {
         if (--obj->vars[1] <= 0) {
             if (obj->vars[0] < obj->unk_088.a) {
                 obj->unk_088.a -= obj->vars[0];
@@ -181,7 +181,7 @@ void func_80016144(Object *obj) {
 
     obj->flags &= ~4;
     if ((gPlayerInput[1 - D_8013C24C].buttons & INP_DIRECTION) && obj->vars[1] == 0) {
-        if (obj->spriteId < obj->model->unk_A08) {
+        if (obj->spriteId < obj->modInst->unk_A08) {
             obj->spriteId += 30;
         }
         unkObj = D_8013C23C->varObj[5];
@@ -190,7 +190,7 @@ void func_80016144(Object *obj) {
 
     obj->vars[1] = gPlayerInput[1 - D_8013C24C].buttons; // probably bug
 
-    if (obj->spriteId >= obj->model->unk_A08) {
+    if (obj->spriteId >= obj->modInst->unk_A08) {
         if (--obj->vars[1] <= 0) {
             if (obj->vars[0] < obj->unk_088.a) {
                 obj->unk_088.a -= obj->vars[0];

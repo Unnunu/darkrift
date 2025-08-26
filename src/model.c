@@ -18,7 +18,7 @@ extern ModelNodeRenderInfo *D_8013C4E8;
 extern u32 D_8013C540;
 extern K2Def D_80053010;
 extern Vec4i D_8004934C;
-extern Batch **D_8013C4E0;
+extern Gfx **D_8013C4E0;
 extern GlobalObjD *D_8013C4EC;
 extern ItemPool D_8013C4F0;
 extern TextureAsset *D_8013C500[];
@@ -50,7 +50,7 @@ s32 func_800340E8(void *arg0) {
         v1 = D_8013C500[i];
         tmp = (v1->width * v1->height) / 8;
         ptr = v1->data;
-        a3 = ((u32*)v1->data)[0];
+        a3 = ((u32 *) v1->data)[0];
 
         for (j = 0; j < tmp - 1; j++, ptr++) {
             *ptr <<= 4;
@@ -106,13 +106,13 @@ void func_800343EC(void) {
 }
 
 void func_800343F8(Object *obj, u8 arg1) {
-    Model *model = obj->model;
+    ModelInstance *model = obj->modInst;
     UnkSam *sam = model->unk_A28;
     s32 numNodes = model->numNodes;
     u32 i, j;
-    AssetGmdSub2 *s1;
+    ModelNodeAsset *s1;
     s32 s2;
-    AssetGmdSub1 *sub1;
+    BatchAsset *sub1;
 
     if (D_8013C540 == 0) {
         if (arg1) {
@@ -123,12 +123,12 @@ void func_800343F8(Object *obj, u8 arg1) {
     }
 
     for (i = 0; i < numNodes; i++) {
-        s1 = &sam->unk_04->unk_04[i];
-        s2 = s1->unk_18;
+        s1 = &sam->unk_04->nodes[i];
+        s2 = s1->numParts;
         for (j = 0; j < s2; j++) {
-            sub1 = s1->unk_1C + j;
+            sub1 = s1->batchAssets + j;
             if ((u8) (sub1->unk_00 >= 0)) {
-                func_80034090(sub1->unk_0C);
+                func_80034090(sub1->texture);
             }
         }
     }
@@ -179,9 +179,9 @@ void func_800345D8(GlobalObjD *arg0) {
 }
 
 void func_80034648(BatchInfo *arg0, s32 transparent) {
-    Gfx *gfx = &arg0->header.unk_10;
+    Gfx *gfx = &arg0->header.otherMode;
 
-    func_80000E0C(gfx, 0, sizeof(Gfx));
+    mem_fill(gfx, 0, sizeof(Gfx));
 
     gtStateSetOthermode(gfx, GT_RENDERMODE, G_RM_AA_ZB_OPA_SURF | G_RM_AA_ZB_OPA_SURF2);
     gtStateSetOthermode(gfx, GT_CYCLETYPE, G_CYC_1CYCLE);
@@ -195,9 +195,9 @@ void func_80034648(BatchInfo *arg0, s32 transparent) {
 }
 
 void func_80034708(BatchInfo *arg0, s32 arg1, s32 transparent) {
-    Gfx *gfx = &arg0->header.unk_10;
+    Gfx *gfx = &arg0->header.otherMode;
 
-    func_80000E0C(gfx, 0, sizeof(Gfx));
+    mem_fill(gfx, 0, sizeof(Gfx));
     if (arg1 && !transparent) {
         gtStateSetOthermode(gfx, GT_RENDERMODE, G_RM_OPA_SURF | G_RM_OPA_SURF2);
     } else if (!arg1 && !transparent) {
@@ -219,7 +219,7 @@ void func_80034708(BatchInfo *arg0, s32 arg1, s32 transparent) {
 }
 
 s32 func_80034860(Object *obj) {
-    Model *model;
+    ModelInstance *model;
     u32 j;
     BatchInfo *array;
     UnkSam *s4;
@@ -233,7 +233,7 @@ s32 func_80034860(Object *obj) {
     u8 *ptr;
 
     flags = obj->flags;
-    model = obj->model;
+    model = obj->modInst;
     s4 = model->unk_A28;
     count = model->numNodes;
     s7 = model->unk_AB0;
@@ -253,8 +253,8 @@ s32 func_80034860(Object *obj) {
             func_80034708(fp, s5, transparent);
         }
 
-        array = s4->unk_2A8[i];
-        for (j = 1; j < s4->unk_238[i]; j++) {
+        array = s4->batchInfos[i];
+        for (j = 1; j < s4->batchCounts[i]; j++) {
             if (s3 && !D_800801E2) {
                 func_80034648(&array[j], transparent);
             } else {
@@ -268,7 +268,7 @@ s32 func_80034860(Object *obj) {
 
 void func_800349F0(Object *obj) {
     u32 i;
-    Model *model = obj->model;
+    ModelInstance *model = obj->modInst;
     s32 count = model->numNodes;
     u8 *buffer = model->unk_1F6E;
 
@@ -278,7 +278,7 @@ void func_800349F0(Object *obj) {
 }
 
 void func_80034A58(Object *obj) {
-    Model *model = obj->model;
+    ModelInstance *model = obj->modInst;
     u32 i;
     s32 a2 = model->numNodes;
     u8 *ptr2 = model->unk_1F6E;
@@ -289,7 +289,7 @@ void func_80034A58(Object *obj) {
 }
 
 void func_80034AB8(Object *obj) {
-    Model *model = obj->model;
+    ModelInstance *model = obj->modInst;
     u32 i;
     s32 a2 = model->numNodes;
     u8 *ptr1;
@@ -330,7 +330,7 @@ void func_80034AB8(Object *obj) {
 }
 
 void func_80034C18(Object *obj, u8 *arg1) {
-    Model *model = obj->model;
+    ModelInstance *model = obj->modInst;
     s32 count = model->numNodes;
     u32 i;
     u8 *ptr1 = model->unk_1F50;
@@ -348,7 +348,7 @@ void func_80034C18(Object *obj, u8 *arg1) {
 }
 
 s32 func_80034D54(Object *obj) {
-    Model *model = obj->model;
+    ModelInstance *model = obj->modInst;
     ColorRGBA *color;
     u8 v1 = obj->unk_088.a;
     u32 i;
@@ -358,8 +358,8 @@ s32 func_80034D54(Object *obj) {
     Gfx *gfx;
 
     for (i = 0; i < count; i++) {
-        disp = sam->unk_154[i];
-        gfx = disp->info->header.unk_0C;
+        disp = sam->batches[i];
+        gfx = disp->info->header.texGfx;
         color = &obj->unk_200;
         if (gfx->words.w0 == 0xFA000000) {
             gDPSetPrimColor(gfx, 0, 0, color->r, color->g, color->b, v1);
@@ -381,8 +381,8 @@ void func_80034F34(Object *obj) {
     }
 }
 
-void func_80034FC8(Model *model, s32 arg1, Vec4i *arg2) {
-    AssetGmdSub2 *a1;
+void func_80034FC8(ModelInstance *model, s32 arg1, Vec4i *arg2) {
+    ModelNodeAsset *a1;
     s32 a, b, c;
     s32 i, count;
     Vtx *array;
@@ -392,9 +392,9 @@ void func_80034FC8(Model *model, s32 arg1, Vec4i *arg2) {
     c = 0;
 
     if (model->unk_A24 != NULL) {
-        a1 = &model->unk_A24->sam.unk_04->unk_04[arg1];
+        a1 = &model->unk_A24->sam.unk_04->nodes[arg1];
     } else {
-        a1 = &model->unk_A28->unk_04->unk_04[arg1];
+        a1 = &model->unk_A28->unk_04->nodes[arg1];
     }
 
     count = a1->numVertices;
@@ -412,7 +412,7 @@ void func_80034FC8(Model *model, s32 arg1, Vec4i *arg2) {
 }
 
 void func_8003517C(UnkSam *sam, s32 arg1, Vec4i *arg2) {
-    AssetGmdSub2 *a1;
+    ModelNodeAsset *a1;
     s32 a, b, c;
     s32 i, count;
     Vtx *vertices;
@@ -421,7 +421,7 @@ void func_8003517C(UnkSam *sam, s32 arg1, Vec4i *arg2) {
     b = 0;
     c = 0;
 
-    a1 = &sam->unk_04->unk_04[arg1];
+    a1 = &sam->unk_04->nodes[arg1];
 
     count = a1->numVertices;
     vertices = a1->vertices;
@@ -442,7 +442,7 @@ void func_8003517C(UnkSam *sam, s32 arg1, Vec4i *arg2) {
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_800352FC.s")
 
 void func_8003561C(Object *obj, s32 arg1) {
-    Model *model;
+    ModelInstance *model;
     Matrix4f *fp;
     u32 i;
     ModelNodeRenderInfo *s6;
@@ -455,7 +455,7 @@ void func_8003561C(Object *obj, s32 arg1) {
     ModelNode *a2;
     u32 flags;
 
-    model = obj->model;
+    model = obj->modInst;
     s6 = model->unk_608;
     sp74 = model->unk_9C8;
     s5 = model->transforms;
@@ -533,7 +533,7 @@ void func_80035CCC(UnkSam *arg0) {
     count = arg0->unk_128;
     s1 = arg0->unk_31C = (ModelNode *) mem_alloc(count * sizeof(ModelNode), "model.c", 766);
     temp = 1; // required to match
-    var1 = arg0->unk_154;
+    var1 = arg0->batches;
     for (i = 0; i < count; i++, s1++) {
         s1->unk_00 = temp;
 
@@ -551,7 +551,7 @@ void func_80035CCC(UnkSam *arg0) {
         for (j = 0; j < temp2; j++) {
             s32 v0 = s1->unk_04[j];
             s1->unk_28[j] = var1[v0];
-            s1->unk_38[j] = arg0->unk_238[v0];
+            s1->unk_38[j] = arg0->batchCounts[v0];
         }
     }
 }
@@ -561,8 +561,8 @@ void func_80035DF8(UnkSam *arg0, s32 arg1) {
     s32 a2;
     Batch *v0;
 
-    v0 = arg0->unk_154[arg1];
-    a2 = arg0->unk_238[arg1];
+    v0 = arg0->batches[arg1];
+    a2 = arg0->batchCounts[arg1];
 
     for (i = 0; i < a2; i++) {
         gSPTriBatch(gMainBatchPos, NULL, v0->info, v0->vertices, v0->triangles);
@@ -571,7 +571,7 @@ void func_80035DF8(UnkSam *arg0, s32 arg1) {
 }
 
 void func_80035F5C(Object *obj) {
-    Model *model;
+    ModelInstance *model;
     Object *parent;
     s16 j;
     s16 i;
@@ -584,17 +584,17 @@ void func_80035F5C(Object *obj) {
     Batch **sub3;
     Matrix4f *newvar;
 
-    model = obj->model;
+    model = obj->modInst;
     trans = model->transforms;
     parent = (Object *) obj->vars[1];
     newvar = &obj->transform.local_matrix;
-    sub3 = model->unk_A28->unk_154;
+    sub3 = model->unk_A28->batches;
 
     if (parent->flags & 0x4) {
         return;
     }
 
-    D_8013C4E0 = model->unk_A24->sam.unk_154;
+    D_8013C4E0 = model->unk_A24->sam.dlist;
     func_80012AA8(&sp98);
     s6 = D_8005BFCE * 30;
 
@@ -630,9 +630,9 @@ void func_80036194(Object *arg0, char *arg1, s32 arg2) {
     str_copy(D_80053010.unk_00, arg1);
     v0 = func_8002BC84(&D_8004934C, 0, &D_80053010, arg2);
 
-    v0->vars[0] = v0->model->transforms;
+    v0->vars[0] = v0->modInst->transforms;
     v0->vars[1] = arg0;
-    v0->model->transforms = arg0->model->transforms;
+    v0->modInst->transforms = arg0->modInst->transforms;
     v0->fn_render = func_80035F5C;
 
     v0->transform.local_matrix.y.x = 0.0f;
@@ -668,7 +668,7 @@ void func_80036228(Transform *arg0, Transform *arg1) {
 }
 
 void func_8003635C(Object *obj) {
-    Model *model = obj->model;
+    ModelInstance *model = obj->modInst;
     s32 count;
     s32 i;
     s16 v1;
@@ -773,10 +773,10 @@ void func_8003635C(Object *obj) {
 
 void model_anim_param_lerp(u8 *arg0, s16 *arg1, Object *obj) {
     s32 nodeId;
-    Model *model;
+    ModelInstance *model;
 
     nodeId = arg0[2];
-    model = obj->model;
+    model = obj->modInst;
 
     if (nodeId == 0xFF) {
         switch (arg0[3] & 0xF) {
@@ -871,10 +871,10 @@ void model_anim_param_lerp(u8 *arg0, s16 *arg1, Object *obj) {
 
 void model_anim_param_set(u8 *script, s16 *value, Object *obj) {
     s32 nodeId;
-    Model *model;
+    ModelInstance *model;
 
     nodeId = script[2];
-    model = obj->model;
+    model = obj->modInst;
 
     if (nodeId == 0xFF) {
         switch (script[3] & 0xF) {
@@ -969,11 +969,11 @@ void model_anim_param_set(u8 *script, s16 *value, Object *obj) {
 void model_anim_param_add(u8 *arg0, u8 *arg1, Object *obj) {
     s32 value;
     s32 nodeId;
-    Model *model;
+    ModelInstance *model;
     Vec4s *temp;
 
     nodeId = arg0[2];
-    model = obj->model;
+    model = obj->modInst;
     value = *arg1;
 
     if (value & 0x80) {
@@ -1074,7 +1074,7 @@ void model_anim_param_add(u8 *arg0, u8 *arg1, Object *obj) {
 void func_800371C0(Object *obj) {
     u8 *script;
     s16 animFrame;
-    Model *model = obj->model;
+    ModelInstance *model = obj->modInst;
     s32 lerp = FALSE;
 
     if (obj->spriteId & 1) {
@@ -1139,7 +1139,7 @@ u16 func_80037394(Model *model, s16 arg1) {
     */
 
 void func_800373FC(Object *obj) {
-    Model *model = obj->model;
+    ModelInstance *model = obj->modInst;
     Vec4i *temp = model->nodePosition;
     Transform *transforms = model->transforms;
     s16 i;
@@ -1160,7 +1160,7 @@ void func_800373FC(Object *obj) {
 }
 
 void func_80037500(Object *obj) {
-    Model *model = obj->model;
+    ModelInstance *model = obj->modInst;
     s32 v1;
     u32 i;
     u32 j;
@@ -1288,7 +1288,7 @@ void func_80037788(ModelNodeRenderInfo *nodeList, s32 numNodes) {
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_8003795C.s")
 
 void func_80037CE4(Object *obj) {
-    Model *model;
+    ModelInstance *model;
     Transform *mu;
     UnkSam *sub2;
     s32 index;
@@ -1304,9 +1304,9 @@ void func_80037CE4(Object *obj) {
     temp = obj->flags & 4; // required to match
 
     index = obj->spriteId;
-    model = obj->model;
+    model = obj->modInst;
     sub2 = model->unk_A28;
-    newvar = sub2->unk_154[index];
+    newvar = sub2->batches[index];
     sp4C = D_8005BFCE * 30 + index;
 
     task_execute(obj);
@@ -1334,7 +1334,7 @@ void func_80037CE4(Object *obj) {
     sub = AB0 + sp4C;
     sub6 = &model->unk_A50;
     math_mtxf2mtx(&sub->transform, &D_800813E0);
-    nv2 = sub2->unk_238[index];
+    nv2 = sub2->batchCounts[index];
     model->unk_A30.unk_08[0] = sub;
 
     sub6->unk_28[0] = newvar;
@@ -1347,7 +1347,7 @@ void func_80037CE4(Object *obj) {
 
 void func_800386E8(Object *obj) {
     Batch **s2;
-    Model *model;
+    ModelInstance *model;
     Transform *spAC;
     s32 j;
     u32 i;
@@ -1362,9 +1362,9 @@ void func_800386E8(Object *obj) {
     BatchInfo *s7;
     s32 unused[8];
 
-    model = obj->model;
+    model = obj->modInst;
     spAC = model->transforms;
-    s2 = model->unk_A28->unk_154;
+    s2 = model->unk_A28->batches;
     sp94 = 30 * D_8005BFCE;
 
     task_execute(obj);

@@ -1739,7 +1739,7 @@ typedef union {
     {                                                                                                     \
         { (_SHIFTL(G_VTX, 24, 8) | _SHIFTL((n), 12, 8) | _SHIFTL((v0) + (n), 1, 7)), (unsigned int) (v) } \
     }
-#elif (defined(F3DEX_GBI) || defined(F3DLP_GBI))
+#elif (defined(F3DEX_GBI) || defined(F3DLP_GBI)) && !defined(LIBULTRA_DARK_RIFT)
 /*
  * F3DEX_GBI: G_VTX GBI format was changed to support 64 vertice.
  *
@@ -1883,7 +1883,7 @@ typedef union {
  * Note: the SP1Triangle() and line macros multiply the vertex indices
  * by 10, this is an optimization for the microcode.
  */
-#if (defined(F3DLP_GBI) || defined(F3DEX_GBI))
+#if (defined(F3DLP_GBI) || defined(F3DEX_GBI)) && !defined(LIBULTRA_DARK_RIFT)
 #define __gsSP1Triangle_w1(v0, v1, v2) (_SHIFTL((v0) * 2, 16, 8) | _SHIFTL((v1) * 2, 8, 8) | _SHIFTL((v2) * 2, 0, 8))
 #define __gsSP1Triangle_w1f(v0, v1, v2, flag)         \
     (((flag) == 0)   ? __gsSP1Triangle_w1(v0, v1, v2) \
@@ -1902,6 +1902,13 @@ typedef union {
      : ((flag) == 2) ? __gsSP1Triangle_w1(v2, v0, v1) \
                      : __gsSP1Triangle_w1(v3, v1, v2))
 #else
+#define __gsSP1Triangle_w1f(v0, v1, v2, flag) \
+    (_SHIFTL((flag), 24, 8) | _SHIFTL((v0) * 10, 16, 8) | _SHIFTL((v1) * 10, 8, 8) | _SHIFTL((v2) * 10, 0, 8))
+#define __gsSPLine3D_w1f(v0, v1, wd, flag) \
+    (_SHIFTL((flag), 24, 8) | _SHIFTL((v0) * 10, 16, 8) | _SHIFTL((v1) * 10, 8, 8) | _SHIFTL((wd), 0, 8))
+#endif
+
+#ifdef LIBULTRA_DARK_RIFT
 #define __gsSP1Triangle_w1f(v0, v1, v2, flag) \
     (_SHIFTL((flag), 24, 8) | _SHIFTL((v0) * 10, 16, 8) | _SHIFTL((v1) * 10, 8, 8) | _SHIFTL((v2) * 10, 0, 8))
 #define __gsSPLine3D_w1f(v0, v1, wd, flag) \

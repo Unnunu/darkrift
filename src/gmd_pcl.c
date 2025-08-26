@@ -200,13 +200,13 @@ void func_8001B26C(void) {
 
 void func_8001B5B0(char *name, s32 arg1) {
     PclAsset *sp74;
-    AssetGmdSub2 *sub2;
+    ModelNodeAsset *sub2;
     char sp5C[20];
     char sp48[20];
     Vec3s sp40;
     s32 unused;
     TextureAsset *a3;
-    AssetGmdSub1 *sub1;
+    BatchAsset *sub1;
     Vec4i sp24 = { 0, 0, 6000, 0 };
 
     str_copy(sp5C, name);
@@ -216,15 +216,15 @@ void func_8001B5B0(char *name, s32 arg1) {
     str_copy(sp48, name);
     str_concat(sp48, ".GMD");
     D_8008160C = gAssets[asset_find(sp48, arg1)].aux_data;
-    D_80049CF0 = &D_8008160C->sam.unk_154; // TODO: type
+    D_80049CF0 = &D_8008160C->sam.dlist;
 
-    sub2 = D_8008160C->sam.unk_04->unk_04;
-    sub1 = sub2->unk_1C;
-    a3 = sub1->unk_0C;
-    if (a3->unk_08 == 4) {
-        D_80081610 = D_8008160C->sam.unk_04->unk_C0 + a3->unk_0C * 0x20; // TODO: type
+    sub2 = D_8008160C->sam.unk_04->nodes;
+    sub1 = sub2->batchAssets;
+    a3 = sub1->texture;
+    if (a3->format == 4) {
+        D_80081610 = D_8008160C->sam.unk_04->palettes16 + a3->palIndex * 0x20; // TODO: type
     } else {
-        D_80081610 = D_8008160C->sam.unk_04->unk_C4 + a3->unk_0C * 0x200; // TODO: type
+        D_80081610 = D_8008160C->sam.unk_04->palettes256 + a3->palIndex * 0x200; // TODO: type
     }
 
     D_800815E8 = sp74->unk_00;

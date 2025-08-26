@@ -29,7 +29,7 @@ Texture *load_background(char *name, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
 
     tex->width = asset->width;
     tex->height = asset->height;
-    tex->colorIndexed = asset->unk_08;
+    tex->colorIndexed = asset->format;
     tex->flags = flags;
     tex->unk_20 = arg3;
     tex->unk_24 = arg4;

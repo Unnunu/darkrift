@@ -33,7 +33,7 @@ s8 D_8013C834;
 s32 D_8013C838;
 
 void func_80038E00(Object *obj, s32 arg1) {
-    Model *model = obj->model;
+    ModelInstance *model = obj->modInst;
 
     model->unk_A0C = 0;
     obj->unk_086 = model->unk_A0E = -1;
@@ -56,12 +56,12 @@ void func_80038E00(Object *obj, s32 arg1) {
 
     D_8013C818.x = D_8013C818.y = D_8013C818.z = 0;
 
-    obj->model->unk_A08 = 0x7FFF;
+    obj->modInst->unk_A08 = 0x7FFF;
     gCameraFarClip = 11000;
 }
 
 void func_80038E8C(Object *obj, Vec3i *arg1, s32 arg2, s32 arg3) {
-    Model *model = obj->model;
+    ModelInstance *model = obj->modInst;
 
     model->unk_A0E = -1;
     model->unk_A0C = 0;
@@ -69,7 +69,7 @@ void func_80038E8C(Object *obj, Vec3i *arg1, s32 arg2, s32 arg3) {
 
     obj->spriteId = 0;
 
-    obj->model->unk_A08 = 0x7FFF;
+    obj->modInst->unk_A08 = 0x7FFF;
 
     *model->unk_12C = arg3;
 
@@ -124,7 +124,7 @@ void func_80038F34(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 void camera_update(Object *obj) {
     s32 deltaX, deltaY, deltaZ;
-    Model *model = obj->model;
+    ModelInstance *model = obj->modInst;
     s32 unused2;
     u32 absDeltaX, absDeltaZ;
     s32 unused;
@@ -241,23 +241,23 @@ Object *camera_create(void) {
     obj->fn_render = camera_update;
     D_8013C668.z = 0;
 
-    obj->model = mem_alloc(sizeof(Model), "camera.c", 247);
-    obj->model->numNodes = 1;
-    obj->model->transforms = &D_8013C6F0;
-    obj->model->unk_AA8 = D_8013C808;
+    obj->modInst = mem_alloc(sizeof(ModelInstance), "camera.c", 247);
+    obj->modInst->numNodes = 1;
+    obj->modInst->transforms = &D_8013C6F0;
+    obj->modInst->unk_AA8 = D_8013C808;
 
-    func_80012A20(NULL, &obj->model->unk_010, -1, -2);
-    func_80012A20(&obj->model->unk_010, obj->model->transforms, 0, -1);
+    func_80012A20(NULL, &obj->modInst->unk_010, -1, -2);
+    func_80012A20(&obj->modInst->unk_010, obj->modInst->transforms, 0, -1);
 
-    obj->model->unk_9E4.x = obj->model->unk_9E4.y = obj->model->unk_9E4.z = 0;
-    obj->model->unk_12C = &D_80053030;
+    obj->modInst->unk_9E4.x = obj->modInst->unk_9E4.y = obj->modInst->unk_9E4.z = 0;
+    obj->modInst->unk_12C = &D_80053030;
     D_80053030 = FALSE;
-    obj->model->unk_A20 = obj->model->unk_A1C = obj->model->unk_00C = 0;
+    obj->modInst->unk_A20 = obj->modInst->unk_A1C = obj->modInst->unk_00C = 0;
 
     obj->flags |= 0x20400;
     obj->flags &= ~0x8000;
 
-    obj->model->unk_A0C = obj->model->unk_A0E = -3;
+    obj->modInst->unk_A0C = obj->modInst->unk_A0E = -3;
 
     camera_default_view();
 

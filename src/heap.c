@@ -5,8 +5,7 @@
 #define HEAP_SIZE 0x23E806
 
 void heap_link(ChunkHeader *arg0, ChunkHeader **arg1);
-
-extern OSMesgQueue gSchedDMAQueue;
+void mem_move(u32 *dest, u32 *src, u32 size);
 
 ChunkHeader *sFreeChunksList = NULL;
 ChunkHeader *sAllocatedChunksList = NULL;
@@ -31,7 +30,7 @@ void func_80000710(s32 arg0, s32 arg1) {
     }
 }
 
-void init_heap(void) {
+void heap_init(void) {
     sFreeChunksList = (ChunkHeader *) gHeapBase;
 
     sFreeChunksList->end = ((u32) (gHeapBase) + HEAP_SIZE) & ~7;
@@ -41,61 +40,89 @@ void init_heap(void) {
     sAllocatedSize = 0;
     sFreeChunksList->guard = MEM_GUARD_MAGIC;
 
-    sFreeSize = get_free_mem(sFreeChunksList);
+    sFreeSize = heap_get_free_mem(sFreeChunksList);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/heap/func_800007C8.s")
-#if 0
-void func_800007C8(void) {
-    s32 s1;
-    s32 s2;
-    void* a2;
+void heap_reset(void) {
+    s32 end;
+    s32 last_slot_index;
+    void *last_slot_data;
     s32 v0;
     s32 i;
-    ChunkHeader* s0;
+    ChunkHeader *slotHeader;
+    s32 slot_data_size;
+    void *new_data;
+    ChunkHeader *newvar;
 
     sAllocatedSize = 0;
+
     sFreeChunksList = gHeapBase;
-    sFreeChunksList->unk_00 = 1;
-    sFreeChunksList->unk_0C = 0;
-    sFreeChunksList->unk_08 = 0;
-    sAllocatedChunksList = 0;
+    sFreeChunksList->flags = 1;
+    sFreeChunksList->previous = NULL;
+    sFreeChunksList->next = NULL;
+
+    sAllocatedChunksList = NULL;
     sFreeChunksList->guard = MEM_GUARD_MAGIC;
 
-    s1 = ((u32)(gHeapBase) + HEAP_SIZE) & ~7;
+    end = ((u32) (gHeapBase) + HEAP_SIZE) & ~7;
 
-    while (TRUE) {
-        s2 = -1;
-        a2 = NULL;
+    do {
+        last_slot_index = -1;
+        last_slot_data = NULL;
 
-        for (i = 0; i < 0x100; i++) {
-            if (!(D_8005AEB8[i].unk_00 & 1) && (u32)D_8005AEB8[i].unk_04 < s1 && D_8005AEB8[i].unk_04 > a2) {
-                a2 = D_8005AEB8[i].unk_04;
-                s2 = i;
+        for (i = 0; i < ARRAY_COUNT(D_8005AEB8); i++) {
+            UnkGamma *slot = D_8005AEB8 + i;
+            if (!(slot->unk_00 & 1) && (u32) slot->data < end) {
+                void *slot_data = slot->data;
+                if (slot_data > last_slot_data) {
+                    last_slot_data = slot_data;
+                    last_slot_index = i;
+                }
+                if (!sFreeChunksList) {} // required for matching
             }
         }
 
-        if (s2 >= 0) {
-            s0 = (u32)(D_8005AEB8[s2].unk_04) - sizeof(ChunkHeader);
+        if (last_slot_index >= 0) {
+            s32 newvar2 = (u32) D_8005AEB8[last_slot_index].data - sizeof(ChunkHeader);
+            slotHeader = (ChunkHeader *) newvar2;
+            slot_data_size = slotHeader->end - (u32) slotHeader - sizeof(ChunkHeader);
+            new_data = end - slot_data_size;
+            if (new_data != D_8005AEB8[last_slot_index].data) {
+                slotHeader = end - slotHeader->end + (s32) slotHeader;
+                mem_move(new_data, D_8005AEB8[last_slot_index].data, slot_data_size);
+                slotHeader->end = end;
+                slotHeader->flags = 0;
+                slotHeader->next = slotHeader->previous = NULL;
+                slotHeader->guard = MEM_GUARD_MAGIC;
+            } else {
+                slotHeader->next = slotHeader->previous = NULL;
+            }
+
+            end = slotHeader;
+            sAllocatedSize = sAllocatedSize + slotHeader->end - (u32) (newvar = slotHeader) - sizeof(ChunkHeader);
+            heap_link(slotHeader, &sAllocatedChunksList);
+            if (D_8005AEB8[last_slot_index].move_cb != NULL) {
+                D_8005AEB8[last_slot_index].move_cb(new_data, D_8005AEB8[last_slot_index].data,
+                                                    D_8005AEB8[last_slot_index].priv);
+            }
+            D_8005AEB8[last_slot_index].data = new_data;
         }
+    } while (last_slot_index >= 0);
 
-        if (s2 < 0) {
-            break;
-        }
-    }
-}
-#endif
-
-void reset_heap(ChunkHeader *arg0, s32 end) {
-    arg0->end = end;
-    arg0->flags = 1;
-    arg0->next = NULL;
-    arg0->previous = NULL;
-    arg0->guard = MEM_GUARD_MAGIC;
-    heap_link(arg0, &sFreeChunksList);
+    sFreeChunksList->end = end;
+    sFreeSize = heap_get_free_mem(sFreeChunksList);
 }
 
-s32 func_80000A1C(void) {
+void heap_set(ChunkHeader *list, s32 end) {
+    list->end = end;
+    list->flags = 1;
+    list->next = NULL;
+    list->previous = NULL;
+    list->guard = MEM_GUARD_MAGIC;
+    heap_link(list, &sFreeChunksList);
+}
+
+s32 heap_check(void) {
     ChunkHeader *ptr;
     s32 ret = TRUE;
 
@@ -112,7 +139,7 @@ s32 func_80000A1C(void) {
     return ret;
 }
 
-s32 get_free_mem(ChunkHeader *chunk) {
+s32 heap_get_free_mem(ChunkHeader *chunk) {
     s32 totalSize = 0;
 
     while (chunk != NULL) {
@@ -158,7 +185,7 @@ void heap_merge_chunks(void) {
     ChunkHeader *current;
     ChunkHeader *ptr;
 
-    sFreeSize = get_free_mem(sFreeChunksList);
+    sFreeSize = heap_get_free_mem(sFreeChunksList);
     D_80049288 = FALSE;
 
     current = sFreeChunksList;
@@ -186,64 +213,61 @@ void heap_merge_chunks(void) {
 #ifdef NON_MATCHING
 void *do_mem_alloc(u32 size) {
     ChunkHeader *current;
-    s32 curSize;
+    u32 curSize;
     u32 bestSize;
     ChunkHeader *bestChunk;
     ChunkHeader *s1;
 
-    while (TRUE) {
-        sAllocatedSize += size;
-        sFreeSize = get_free_mem(sFreeChunksList);
+restart:
+    sAllocatedSize += size;
+    sFreeSize = heap_get_free_mem(sFreeChunksList);
 
-        if (size == 0) {
-            return NULL;
-        }
+    if (size == 0) {
+        return NULL;
+    }
 
-        size = (size + 0xF) & ~0xF;
+    size = (size + 0xF) & ~0xF;
 
-        bestChunk = NULL;
-        bestSize = 0x7FFFFFFF;
-        current = sFreeChunksList;
-        while (current != NULL) {
-            curSize = current->end - ((u32) current) - sizeof(ChunkHeader);
+    bestChunk = NULL;
+    bestSize = 0x7FFFFFFF;
 
-            if (curSize == size) {
-                bestSize = curSize;
-                bestChunk = current;
-                break;
-            }
+    for (current = sFreeChunksList; current != NULL; current = current->next) {
+        curSize = current->end - ((u32) current) - sizeof(ChunkHeader);
 
-            if (curSize < bestSize && size + sizeof(ChunkHeader) < curSize) {
-                bestSize = curSize;
-                bestChunk = current;
-            }
-
-            current = current->next;
-        }
-
-        if (bestChunk != NULL) {
-            s1 = bestChunk;
-            if (size < bestSize) {
-                u32 end = (s64) bestChunk->end;
-                s1 = bestChunk->end - size - sizeof(ChunkHeader);
-                bestChunk->end = s1;
-                s1->flags = 0;
-                s1->guard = MEM_GUARD_MAGIC;
-                s1->end = end;
-            } else {
-                bestChunk->flags &= ~1;
-                bestChunk->guard = MEM_GUARD_MAGIC;
-                heap_unlink(bestChunk);
-            }
+        if (curSize == size) {
+            bestSize = curSize;
+            bestChunk = current;
             break;
         }
 
+        if (curSize < bestSize && size + sizeof(ChunkHeader) < curSize) {
+            bestSize = curSize;
+            bestChunk = current;
+        }
+    }
+
+    if (bestChunk != NULL) {
+        s1 = bestChunk;
+        if (size < bestSize) {
+            u32 end = bestChunk->end;
+            bestChunk->end = bestChunk->end - size - sizeof(ChunkHeader);
+            s1 = bestChunk->end;
+            s1->flags = 0;
+            s1->guard = MEM_GUARD_MAGIC;
+            s1->end = end;
+        } else {
+            bestChunk->flags &= ~1;
+            bestChunk->guard = MEM_GUARD_MAGIC;
+            heap_unlink(bestChunk);
+        }
+    } else {
         if (sFreeChunksList == NULL || !D_80049288) {
             return NULL;
         }
 
         heap_merge_chunks();
         sAllocatedSize -= size;
+        goto restart;
     }
 
     heap_link(s1, &sAllocatedChunksList);
@@ -269,7 +293,7 @@ void mem_free(void *ptr) {
     D_80049288 = TRUE;
 }
 
-void func_80000E0C(u8 *arg0, u8 arg1, u32 arg2) {
+void mem_fill(u8 *arg0, u8 arg1, u32 arg2) {
     s32 i;
 
     for (i = 0; i < arg2; i++) {
@@ -277,7 +301,7 @@ void func_80000E0C(u8 *arg0, u8 arg1, u32 arg2) {
     }
 }
 
-void func_80000E40(u32 *dest, u32 *src, u32 size) {
+void mem_move(u32 *dest, u32 *src, u32 size) {
     s32 i;
     u32 *temp = src;
 
@@ -290,21 +314,21 @@ void func_80000E40(u32 *dest, u32 *src, u32 size) {
     }
 }
 
-s32 func_80000EA8(s32 size) {
+s32 mem_alloc_slot(s32 size) {
     s32 i;
 
     if (D_8005BEB8 < 0x100) {
-        D_8005AEB8[D_8005BEB8].unk_04 = do_mem_alloc(size);
+        D_8005AEB8[D_8005BEB8].data = do_mem_alloc(size);
         D_8005AEB8[D_8005BEB8].unk_00 = 0;
-        D_8005AEB8[D_8005BEB8].unk_0C = 0;
+        D_8005AEB8[D_8005BEB8].move_cb = 0;
         return D_8005BEB8++;
     }
 
     for (i = 0; i < 0x100; i++) {
         if (D_8005AEB8[i].unk_00 & 1) {
-            D_8005AEB8[i].unk_04 = do_mem_alloc(size);
+            D_8005AEB8[i].data = do_mem_alloc(size);
             D_8005AEB8[i].unk_00 = 0;
-            D_8005AEB8[i].unk_0C = 0;
+            D_8005AEB8[i].move_cb = 0;
             return i;
         }
     }
@@ -312,10 +336,10 @@ s32 func_80000EA8(s32 size) {
     return -1;
 }
 
-void func_80000F70(s32 arg0) {
-    mem_free(D_8005AEB8[arg0].unk_04);
-    D_8005AEB8[arg0].unk_00 = 1;
-    D_8005AEB8[arg0].unk_0C = NULL;
+void mem_free_slot(s32 slotIndex) {
+    mem_free(D_8005AEB8[slotIndex].data);
+    D_8005AEB8[slotIndex].unk_00 = 1;
+    D_8005AEB8[slotIndex].move_cb = NULL;
 }
 
 void dma_read(s32 romAddr, void *vramAddr, s32 size) {
@@ -332,9 +356,9 @@ void dma_read_noblock(s32 romAddr, void *vramAddr, s32 size) {
     osInvalDCache(0, 0x3FFFFF);
 }
 
-void func_800010D4(s32 arg0, void (*arg1)(void *arg0, s32 arg1, s32 arg2), s32 arg2) {
-    D_8005AEB8[arg0].unk_0C = arg1;
-    D_8005AEB8[arg0].unk_08 = arg2;
+void heap_set_move_callback(s32 slotIndex, void (*move_cb)(void *arg0, s32 arg1, s32 arg2), s32 priv) {
+    D_8005AEB8[slotIndex].move_cb = move_cb;
+    D_8005AEB8[slotIndex].priv = priv;
 }
 
 void *mem_alloc(s32 size, const char *file, s32 line) {

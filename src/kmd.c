@@ -2,23 +2,23 @@
 #include "string.h"
 #include "PR/gt.h"
 
-typedef struct Unk8000C3CC {
-    /* 0x00 */ s8 a;
-    /* 0x01 */ s8 b;
-    /* 0x02 */ s8 c;
+typedef struct BatchTriangle {
+    /* 0x00 */ s8 vi0;
+    /* 0x01 */ s8 vi1;
+    /* 0x02 */ s8 vi2;
     /* 0x03 */ s8 d;
-} Unk8000C3CC; // size = 4
+} BatchTriangle; // size = 4
 
 void func_8000C158(AssetGmd *, u8);
 
-void func_8000BCF0(AssetGmdSub2 *arg0, AssetUnkHeader2 *arg1, u32 arg2) {
+void func_8000BCF0(ModelNodeAsset *arg0, AssetUnkHeader2 *arg1, u32 arg2) {
     arg0->numVertices = arg1->unk_00;
     arg0->unk_04 = arg1->unk_04;
     arg0->vertices = arg1->unk_08 + (s32) arg1;
-    arg0->unk_0C = arg1->unk_0C + (s32) arg1;
+    arg0->triangles = arg1->unk_0C + (s32) arg1;
 
     if (arg2 >= 2) {
-        arg0->unk_18 = *(s32 *) (arg1->unk_10 + (s32) arg1);
+        arg0->numParts = *(s32 *) (arg1->unk_10 + (s32) arg1);
     }
 }
 
@@ -28,15 +28,15 @@ void func_8000BCF0(AssetGmdSub2 *arg0, AssetUnkHeader2 *arg1, u32 arg2) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000BDA8.s")
 
-void func_8000BDB0(AssetGmd *arg0, AssetGmdSub1 *arg1) {
+void func_8000BDB0(AssetGmd *arg0, BatchAsset *arg1) {
     if (arg1->unk_00 >= 0) {
         if ((u8) (arg0->unk_B0 == 1)) {
-            arg1->unk_0C = (s32) arg0->unk_B8 + arg1->unk_00;
+            arg1->texture = (s32) arg0->unk_B8 + arg1->unk_00;
         } else {
-            arg1->unk_0C = (s32) arg0->unk_B8 + arg0->unk_B8->offsets[arg0->numEntries + arg1->unk_00 + 1];
+            arg1->texture = (s32) arg0->unk_B8 + arg0->unk_B8->offsets[arg0->numNodes + arg1->unk_00 + 1];
         }
     } else {
-        arg1->unk_0C = 0;
+        arg1->texture = 0;
     }
 }
 
@@ -44,48 +44,48 @@ void func_8000BE18(AssetGmd *arg0) {
     AssetUnkHeader *s7;
     s32 sp40;
     u32 i;
-    AssetGmdSub2 *s2;
+    ModelNodeAsset *s2;
     s32 s1;
     u32 j;
 
-    s7 = (AssetUnkHeader *) D_8005AEB8[arg0->unk_AC].unk_04;
-    arg0->unk_04 = (AssetGmdSub2 *) ((s32) arg0 + sizeof(AssetGmd) + arg0->numEntries * sizeof(AssetGmdSub1));
+    s7 = (AssetUnkHeader *) D_8005AEB8[arg0->unk_AC].data;
+    arg0->nodes = (ModelNodeAsset *) ((s32) arg0 + sizeof(AssetGmd) + arg0->numNodes * sizeof(BatchAsset));
     arg0->unk_B8 = s7;
 
     if (!((u8) (arg0->unk_B0 == 1))) {
-        sp40 = s7->offsets[arg0->numEntries];
+        sp40 = s7->offsets[arg0->numNodes];
     }
     arg0->unk_B4 = sp40;
 
-    for (i = 0; i < arg0->numEntries; i++) {
-        s2 = arg0->unk_04 + i;
+    for (i = 0; i < arg0->numNodes; i++) {
+        s2 = arg0->nodes + i;
         func_8000BCF0(s2, (AssetUnkHeader2 *) ((s32) s7 + s7->offsets[i]), arg0->unk_B0);
         if ((u8) (arg0->unk_B0 == 1)) {
-            s2->unk_1C = &arg0->unk_CC[i];
+            s2->batchAssets = &arg0->unk_CC[i];
         } else {
-            s2->unk_1C = (AssetGmdSub1 *) ((s32) s7 + s7->offsets[arg0->numEntries + sp40 + i + 2]);
+            s2->batchAssets = (BatchAsset *) ((s32) s7 + s7->offsets[arg0->numNodes + sp40 + i + 2]);
         }
 
-        s1 = s2->unk_18;
+        s1 = s2->numParts;
         for (j = 0; j < s1; j++) {
-            func_8000BDB0(arg0, &s2->unk_1C[j]);
+            func_8000BDB0(arg0, &s2->batchAssets[j]);
         }
     }
 
     if (!((u8) (arg0->unk_B0 == 1))) {
-        arg0->unk_C0 = (s32) s7 + s7->offsets[arg0->numEntries + sp40 + arg0->numEntries + 2];
-        arg0->unk_C4 = (s32) s7 + s7->offsets[arg0->numEntries + sp40 + arg0->numEntries + 3];
+        arg0->palettes16 = (s32) s7 + s7->offsets[arg0->numNodes + sp40 + arg0->numNodes + 2];
+        arg0->palettes256 = (s32) s7 + s7->offsets[arg0->numNodes + sp40 + arg0->numNodes + 3];
     }
 
     if ((u8) (arg0->unk_B0 == 1)) {
-        if (s7->offsets[2 * arg0->numEntries] != -1) {
-            arg0->unk_08 = (s32) s7 + s7->offsets[2 * arg0->numEntries];
+        if (s7->offsets[2 * arg0->numNodes] != -1) {
+            arg0->unk_08 = (s32) s7 + s7->offsets[2 * arg0->numNodes];
         } else {
             arg0->unk_08 = NULL;
         }
     } else {
-        if (s7->offsets[arg0->numEntries + arg0->unk_B4 + 1] != -1) {
-            arg0->unk_08 = (s32) s7 + s7->offsets[arg0->numEntries + arg0->unk_B4 + 1];
+        if (s7->offsets[arg0->numNodes + arg0->unk_B4 + 1] != -1) {
+            arg0->unk_08 = (s32) s7 + s7->offsets[arg0->numNodes + arg0->unk_B4 + 1];
         } else {
             arg0->unk_08 = NULL;
         }
@@ -96,20 +96,20 @@ void func_8000C044(AssetGmd *arg0, AssetUnkHeader *arg1) {
     u32 i;
     s32 var1, var2;
 
-    arg0->unk_04 = (AssetGmdSub2 *) ((s32) arg0 + sizeof(AssetGmd) + arg0->numEntries * sizeof(AssetGmdSub1));
+    arg0->nodes = (ModelNodeAsset *) ((s32) arg0 + sizeof(AssetGmd) + arg0->numNodes * sizeof(BatchAsset));
 
-    for (i = 0; i < arg0->numEntries; i++) {
-        AssetGmdSub2 *temp = arg0->unk_04 + i;
-        temp->unk_18 = 1;
+    for (i = 0; i < arg0->numNodes; i++) {
+        ModelNodeAsset *temp = arg0->nodes + i;
+        temp->numParts = 1;
 
         var1 = ((AssetUnkHeader2 *) ((s32) arg1 + arg1->offsets[i]))->unk_00;
         var2 = ((AssetUnkHeader2 *) ((s32) arg1 + arg1->offsets[i]))->unk_04;
 
-        arg0->unk_CC[i].unk_00 = arg1->offsets[arg0->numEntries + i];
-        arg0->unk_CC[i].unk_04 = 0;
-        arg0->unk_CC[i].unk_06 = 0;
-        arg0->unk_CC[i].unk_08 = var1;
-        arg0->unk_CC[i].unk_0A = var2;
+        arg0->unk_CC[i].unk_00 = arg1->offsets[arg0->numNodes + i];
+        arg0->unk_CC[i].vertIndex = 0;
+        arg0->unk_CC[i].triOffset = 0;
+        arg0->unk_CC[i].numVertices = var1;
+        arg0->unk_CC[i].numTriangles = var2;
     }
 }
 
@@ -117,7 +117,7 @@ void func_8000C0E4(AssetGmd *arg0, s32 slot) {
     AssetUnkHeader *sp1C;
 
     arg0->unk_AC = slot;
-    sp1C = D_8005AEB8[slot].unk_04;
+    sp1C = D_8005AEB8[slot].data;
     func_8000C158(arg0, sp1C->signature[0]);
 
     if ((u8) (arg0->unk_B0 == 1)) {
@@ -142,196 +142,197 @@ void func_8000C158(AssetGmd *arg0, u8 arg1) {
 void func_8000C18C(s32 *arg0, s32 arg1, u32 arg2);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000C1C4.s")
+void func_8000C1C4(UnkFrodo *arg0, s32 arg1);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000C258.s")
-s32 func_8000C258(Vec3s *arg0, s32 arg1, s32 arg2);
+s32 func_8000C258(Vec3su *arg0, s32 arg1, s32 arg2);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000C328.s")
-void func_8000C328(Vec3s *arg0, s32 arg1, s32 arg2, s32 *arg3, s32 *arg4);
+void func_8000C328(Vec3su *arg0, s32 arg1, s32 arg2, s32 *arg3, s32 *arg4);
 
-void func_8000C3CC(UnkSam *arg0, s32 arg1, u8 arg2, Unk8000C3CCArg3 *arg3) {
-    u32 sp95C;
-    s32 s3;
-    Unk8000C3CC *v0;
-    u32 sp950;
+void func_8000C3CC(UnkSam *arg0, s32 nodeId, u8 arg2, Unk8000C3CCArg3 *arg3) {
+    u32 partIndex;
+    s32 numVerts;
+    BatchTriangle *triangle;
+    u32 numParts;
     Gfx *gfx;
-    s32 a3;
-    s32 a0;
+    s32 partLastBatch;
+    s32 partFirstBatch;
     s32 sp940;
     s32 sp93C;
-    s32 s4;
-    BatchInfo *s1;
+    s32 numTriangles;
+    BatchInfo *batchInfos;
     u8 sp933;
     u8 sp932;
     s32 v02;
-    Vec3su *sp928;
+    Vec3su *triangles;
     s32 padding[4];
-    Vtx *sp914;
+    Vtx *vertices;
     Vtx *a11;
     s32 padding2;
-    s32 s11;
-    Vec3su *s02;
+    s32 vertIndex;
+    Vec3su *triPtr;
     s32 size;
-    Unk8000C3CC *sp770[100];
-    s32 sp5E0[100];
-    s32 sp450[100];
-    u32 sp44C;
-    Vtx *sp2BC[100];
+    BatchTriangle *triangleBuffer[100];
+    s32 numTriBuffer[100];
+    s32 numVertBuffer[100];
+    u32 numBatches;
+    Vtx *vertexBuffer[100];
     s32 sp2B8;
     u32 i;
-    AssetGmdSub1 *t0;
+    BatchAsset *nodeBatch;
     TextureAsset *tex;
     s32 sp11C[100];
-    Batch *sp118;
+    Batch *batchArray;
     s32 padding3[2];
-    u8 *palette1;
-    u8 *palette2;
-    AssetGmdSub2 *sp104;
+    u8 *pal16;
+    u8 *pal256;
+    ModelNodeAsset *node;
 
     sp933 = FALSE;
     sp932 = FALSE;
-    sp44C = 0;
+    numBatches = 0;
 
-    sp104 = &arg0->unk_04->unk_04[arg1];
-    sp950 = sp104->unk_18;
-    s3 = sp104->numVertices;
-    sp914 = sp104->vertices;
-    sp928 = sp104->unk_0C;
+    node = &arg0->unk_04->nodes[nodeId];
+    numParts = node->numParts;
+    numVerts = node->numVertices;
+    vertices = node->vertices;
+    triangles = node->triangles;
 
     if (arg0->unk_318) {
-        for (i = 0; i < s3; i++) {
-            sp914[i].v.tc[0] >>= 1;
-            sp914[i].v.tc[1] >>= 1;
+        for (i = 0; i < numVerts; i++) {
+            vertices[i].v.tc[0] >>= 1;
+            vertices[i].v.tc[1] >>= 1;
         }
     }
 
-    for (sp95C = 0; sp95C < sp950; sp95C++) {
-        t0 = sp104->unk_1C + sp95C;
-        s4 = t0->unk_0A;
-        s11 = t0->unk_04;
-        s3 = t0->unk_08;
-        s02 = sp928;
-        s02 += t0->unk_06;
+    for (partIndex = 0; partIndex < numParts; partIndex++) {
+        nodeBatch = node->batchAssets + partIndex;
+        numTriangles = nodeBatch->numTriangles;
+        vertIndex = nodeBatch->vertIndex;
+        numVerts = nodeBatch->numVertices;
+        triPtr = triangles;
+        triPtr += nodeBatch->triOffset;
 
-        sp11C[sp95C] = sp44C;
+        sp11C[partIndex] = numBatches;
 
-        if (s3 <= 16U) {
-            v0 = sp770[sp44C] = mem_alloc(s4 * sizeof(Unk8000C3CC), "kmd.c", 421);
-            for (i = 0; i < s4; s02++, i++) {
-                v0[i].a = s02->x - s11;
-                v0[i].b = s02->y - s11;
-                v0[i].c = s02->z - s11;
-                v0[i].d = 0;
+        if (numVerts <= 16U) {
+            triangle = triangleBuffer[numBatches] = mem_alloc(numTriangles * sizeof(BatchTriangle), "kmd.c", 421);
+            for (i = 0; i < numTriangles; triPtr++, i++) {
+                triangle[i].vi0 = triPtr->x - vertIndex;
+                triangle[i].vi1 = triPtr->y - vertIndex;
+                triangle[i].vi2 = triPtr->z - vertIndex;
+                triangle[i].d = 0;
             }
-            sp5E0[sp44C] = s4;
-            sp2BC[sp44C] = sp914;
-            sp2BC[sp44C] += s11;
-            sp450[sp44C] = s3;
-            sp44C++;
+            numTriBuffer[numBatches] = numTriangles;
+            vertexBuffer[numBatches] = vertices;
+            vertexBuffer[numBatches] += vertIndex;
+            numVertBuffer[numBatches] = numVerts;
+            numBatches++;
         } else {
             do {
-                s11 = func_8000C258(s02, s11, s4);
-                sp2BC[sp44C] = sp914;
-                sp2BC[sp44C] += s11;
-                func_8000C328(s02, s11, s4, &sp93C, &sp940);
-                s4 -= sp93C;
-                sp5E0[sp44C] = sp93C;
-                sp450[sp44C] = sp940;
-                v0 = sp770[sp44C] = mem_alloc(sp93C * sizeof(Unk8000C3CC), "kmd.c", 0x1C1);
-                sp44C++;
+                vertIndex = func_8000C258(triPtr, vertIndex, numTriangles);
+                vertexBuffer[numBatches] = vertices;
+                vertexBuffer[numBatches] += vertIndex;
+                func_8000C328(triPtr, vertIndex, numTriangles, &sp93C, &sp940);
+                numTriangles -= sp93C;
+                numTriBuffer[numBatches] = sp93C;
+                numVertBuffer[numBatches] = sp940;
+                triangle = triangleBuffer[numBatches] = mem_alloc(sp93C * sizeof(BatchTriangle), "kmd.c", 449);
+                numBatches++;
 
-                for (i = 0; i < sp93C; i++, s02++) {
-                    v0[i].a = s02->x - s11;
-                    v0[i].b = s02->y - s11;
-                    v0[i].c = s02->z - s11;
-                    v0[i].d = 0;
+                for (i = 0; i < sp93C; i++, triPtr++) {
+                    triangle[i].vi0 = triPtr->x - vertIndex;
+                    triangle[i].vi1 = triPtr->y - vertIndex;
+                    triangle[i].vi2 = triPtr->z - vertIndex;
+                    triangle[i].d = 0;
                 }
-                s11 += sp940;
-            } while (s4 != 0);
+                vertIndex += sp940;
+            } while (numTriangles != 0);
         }
     }
 
-    sp118 = arg0->unk_154[arg1] = (Batch *) mem_alloc(sp44C * sizeof(Batch), "kmd.c", 469);
-    s1 = arg0->unk_2A8[arg1] = (BatchInfo *) mem_alloc(sp44C * sizeof(BatchInfo), "kmd.c", 470);
+    batchArray = arg0->batches[nodeId] = (Batch *) mem_alloc(numBatches * sizeof(Batch), "kmd.c", 469);
+    batchInfos = arg0->batchInfos[nodeId] = (BatchInfo *) mem_alloc(numBatches * sizeof(BatchInfo), "kmd.c", 470);
 
-    for (i = 0; i < sp44C; i++) {
-        sp118[i].context = NULL;
-        sp118[i].vertices = sp2BC[i];
-        sp118[i].triangles = sp770[i];
-        sp2B8 += sp5E0[i] * 4; // ??
-        sp118[i].info = s1 + i;
+    for (i = 0; i < numBatches; i++) {
+        batchArray[i].context = NULL;
+        batchArray[i].vertices = vertexBuffer[i];
+        batchArray[i].triangles = triangleBuffer[i];
+        sp2B8 += numTriBuffer[i] * 4; // ??
+        batchArray[i].info = batchInfos + i;
 
-        func_80000E0C(s1 + i, 0, sizeof(BatchInfo));
-        (s1+i)->header.unk_00 = arg3->unk_0C;
-        (s1+i)->header.unk_04 = 0;
-        (s1+i)->header.numVertices = sp450[i];
-        (s1+i)->header.unk_09 = 0;
-        (s1+i)->header.numTriangles = sp5E0[i];
-        (s1+i)->header.unk_0B = (i != 0) ? 1 : 0;
-        (s1+i)->header.unk_0C = NULL;
-        gtStateSetOthermode(&(s1+i)->header.unk_10, GT_RENDERMODE, arg3->renderMode);
-        gtStateSetOthermode(&(s1+i)->header.unk_10, GT_CYCLETYPE, G_CYC_1CYCLE);
-        gtStateSetOthermode(&(s1+i)->header.unk_10, GT_TEXTFILT, G_TF_BILERP);
-        gtStateSetOthermode(&(s1+i)->header.unk_10, GT_TEXTCONV, G_TC_FILT);
-        gtStateSetOthermode(&(s1+i)->header.unk_10, GT_TEXTPERSP, G_TP_PERSP);
-        gtStateSetOthermode(&(s1+i)->header.unk_10, GT_TEXTLUT, G_TT_RGBA16);
-        gtStateSetOthermode(&(s1+i)->header.unk_10, GT_PIPELINE, G_PM_NPRIMITIVE);
+        mem_fill(batchInfos + i, 0, sizeof(BatchInfo));
+        (batchInfos + i)->header.unk_00 = arg3->unk_0C;
+        (batchInfos + i)->header.unk_04 = 0;
+        (batchInfos + i)->header.numVertices = numVertBuffer[i];
+        (batchInfos + i)->header.unk_09 = 0;
+        (batchInfos + i)->header.numTriangles = numTriBuffer[i];
+        (batchInfos + i)->header.unk_0B = (i != 0) ? 1 : 0;
+        (batchInfos + i)->header.texGfx = NULL;
+        gtStateSetOthermode(&(batchInfos + i)->header.otherMode, GT_RENDERMODE, arg3->renderMode);
+        gtStateSetOthermode(&(batchInfos + i)->header.otherMode, GT_CYCLETYPE, G_CYC_1CYCLE);
+        gtStateSetOthermode(&(batchInfos + i)->header.otherMode, GT_TEXTFILT, G_TF_BILERP);
+        gtStateSetOthermode(&(batchInfos + i)->header.otherMode, GT_TEXTCONV, G_TC_FILT);
+        gtStateSetOthermode(&(batchInfos + i)->header.otherMode, GT_TEXTPERSP, G_TP_PERSP);
+        gtStateSetOthermode(&(batchInfos + i)->header.otherMode, GT_TEXTLUT, G_TT_RGBA16);
+        gtStateSetOthermode(&(batchInfos + i)->header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
     }
-    arg0->unk_238[arg1] = sp44C;
+    arg0->batchCounts[nodeId] = numBatches;
 
-    size = 22 * sizeof(Gfx) * sp950; // TODO: make constant
+    size = 22 * sizeof(Gfx) * numParts; // TODO: make constant
     gfx = (Gfx *) mem_alloc(size, "kmd.c", 501);
-    func_80000E0C(gfx, 0, size);
-    for (sp95C = 0; sp95C < sp950; sp95C++) {
-        t0 = sp104->unk_1C + sp95C;
-        a0 = sp11C[sp95C];
-        a3 = (sp95C + 1 < sp950) ? sp11C[sp95C + 1] : sp44C;
+    mem_fill(gfx, 0, size);
+    for (partIndex = 0; partIndex < numParts; partIndex++) {
+        nodeBatch = node->batchAssets + partIndex;
+        partFirstBatch = sp11C[partIndex];
+        partLastBatch = (partIndex + 1 < numParts) ? sp11C[partIndex + 1] : numBatches;
 
-        sp118[a0].info->header.unk_0C = gfx;
-        if (sp95C == 0 && !(arg3->unk_14 & 1)) {
-            gDPSetPrimColor(gfx++, 0, 0, arg3->unk_10.r, arg3->unk_10.g, arg3->unk_10.b, arg3->unk_10.a);
+        batchArray[partFirstBatch].info->header.texGfx = gfx;
+        if (partIndex == 0 && !(arg3->flags & 1)) {
+            gDPSetPrimColor(gfx++, 0, 0, arg3->primColor.r, arg3->primColor.g, arg3->primColor.b, arg3->primColor.a);
         }
-        if (!sp933 && !((u8) (t0->unk_00 >= 0))) {
+        if (!sp933 && !((u8) (nodeBatch->unk_00 >= 0))) {
             gDPPipeSync(gfx++);
             gDPSetCombineMode(gfx++, G_CC_SHADE, G_CC_SHADE);
             sp933 = TRUE;
             sp932 = FALSE;
-        } else if (!sp932 && (u8) (t0->unk_00 >= 0)) {
+        } else if (!sp932 && (u8) (nodeBatch->unk_00 >= 0)) {
             gDPPipeSync(gfx++);
-            gfx->words.w0 = arg3->unk_00.words.w0;
-            gfx->words.w1 = arg3->unk_00.words.w1;
+            gfx->words.w0 = arg3->combineMode.words.w0;
+            gfx->words.w1 = arg3->combineMode.words.w1;
             gfx++;
             sp933 = FALSE;
             sp932 = TRUE;
         }
 
         if (sp932) {
-            for (i = a0; i < a3; i++) {
-                sp118[i].info->header.unk_00 |= 2;
+            for (i = partFirstBatch; i < partLastBatch; i++) {
+                batchArray[i].info->header.unk_00 |= 2;
             }
 
-            s3 = t0->unk_08;
-            a11 = sp914;
-            a11 += t0->unk_04;
-            for (i = 0; i < s3; i++) {
+            numVerts = nodeBatch->numVertices;
+            a11 = vertices;
+            a11 += nodeBatch->vertIndex;
+            for (i = 0; i < numVerts; i++) {
                 a11[i].v.cn[0] = a11[i].v.cn[1] = a11[i].v.cn[2] = 255;
             }
 
-            tex = t0->unk_0C;
-            if (tex->unk_08 == 4) {
+            tex = nodeBatch->texture;
+            if (tex->format == 4) {
                 if (!arg2) {
-                    palette1 = arg0->unk_04->unk_C0 + tex->unk_0C * 0x20;
-                    palette1[1] &= ~1;
-                    gDPLoadTLUT_pal16(gfx++, 0, VIRTUAL_TO_PHYSICAL(palette1));
+                    pal16 = arg0->unk_04->palettes16 + tex->palIndex * 0x20;
+                    pal16[1] &= ~1;
+                    gDPLoadTLUT_pal16(gfx++, 0, VIRTUAL_TO_PHYSICAL(pal16));
                 }
                 gDPLoadTextureBlock_4b(gfx++, tex->data, G_IM_FMT_CI, tex->width, tex->height, 0,
                                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                                        G_TX_NOLOD, G_TX_NOLOD);
             } else {
                 if (!arg2) {
-                    palette2 = arg0->unk_04->unk_C4 + tex->unk_0C * 0x200;
-                    palette2[1] &= ~1;
-                    gDPLoadTLUT_pal256(gfx++, VIRTUAL_TO_PHYSICAL(palette2));
+                    pal256 = arg0->unk_04->palettes256 + tex->palIndex * 0x200;
+                    pal256[1] &= ~1;
+                    gDPLoadTLUT_pal256(gfx++, VIRTUAL_TO_PHYSICAL(pal256));
                 }
                 gDPLoadTextureBlock(gfx++, tex->data, G_IM_FMT_CI, G_IM_SIZ_8b, tex->width, tex->height, 0,
                                     G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
@@ -342,9 +343,141 @@ void func_8000C3CC(UnkSam *arg0, s32 arg1, u8 arg2, Unk8000C3CCArg3 *arg3) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000D11C.s")
+void func_8000D11C(UnkFrodo *arg0, s32 arg1, u8 arg2) {
+    u32 sp154;
+    Vtx *fp;
+    Vtx *s7;
+    s32 sp148;
+    Vec3su *s1;
+    Gfx *s3;
+    u32 s0;
+    s32 sp138;
+    u32 sp134;
+    BatchAsset *a1;
+    s32 s2;
+    u8 sp12B;
+    u8 sp12A;
+    s32 s6;
+    Vec3su *sp120;
+    s32 t3;
+    TextureAsset *a2;
+    u8 *pal16;
+    u8 *pal256;
+    s32 padding[3];
+    u16 *pz1;
+    u16 *pz2;
+    ModelNodeAsset *v0; // spF8
 
-#pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000DAB0.s")
+    sp12B = FALSE;
+    sp12A = FALSE;
+    s3 = arg0->sam.dlist[arg1];
+    v0 = &arg0->sam.unk_04->nodes[arg1];
+    sp148 = v0->numParts;
+    fp = v0->vertices;
+    sp120 = v0->triangles;
+
+    for (sp154 = 0; sp154 < sp148; sp154++) {
+        a1 = &v0->batchAssets[sp154];
+
+        s6 = a1->numTriangles;
+        t3 = a1->numVertices;
+        s1 = (0, sp120) + a1->triOffset; // @fake
+
+        s2 = a1->vertIndex;
+        s7 = (0, fp) + s2; // @fake
+
+        if (!sp12B && !((u8) (a1->unk_00 >= 0))) {
+            gDPPipeSync(s3++);
+            gSPTexture(s3++, 0, 0, 0, G_TX_RENDERTILE, G_OFF);
+            gDPSetCombineMode(s3++, G_CC_SHADE, G_CC_SHADE);
+            sp12B = TRUE;
+            sp12A = FALSE;
+        } else if (!sp12A && ((u8) (a1->unk_00 >= 0))) {
+            s2 = a1->vertIndex; // @fake
+            gDPPipeSync(s3++);
+            gSPTexture(s3++, 0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON);
+            gDPSetCombineMode(s3++, G_CC_DECALRGB, G_CC_DECALRGB);
+            sp12A = TRUE;
+            sp12B = FALSE;
+        }
+
+        if (sp12A) {
+            a2 = a1->texture;
+            if (a2->format == 4) {
+                if (!arg2) {
+                    pal16 = arg0->sam.unk_04->palettes16 + a2->palIndex * 0x20;
+                    gDPLoadTLUT_pal16(s3++, 0, VIRTUAL_TO_PHYSICAL(pal16));
+                }
+                gDPLoadTextureBlock_4b(s3++, a2->data, G_IM_FMT_CI, a2->width, a2->height, 0,
+                                       G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
+                                       G_TX_NOLOD, G_TX_NOLOD);
+            } else {
+                if (!arg2) {
+                    pal256 = arg0->sam.unk_04->palettes256 + a2->palIndex * 0x200;
+                    gDPLoadTLUT_pal256(s3++, VIRTUAL_TO_PHYSICAL(pal256));
+                }
+                gDPLoadTextureBlock(s3++, a2->data, G_IM_FMT_CI, G_IM_SIZ_8b, a2->width, a2->height, 0,
+                                    G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
+                                    G_TX_NOLOD, G_TX_NOLOD);
+            }
+        }
+
+        if (t3 <= 0x10U) {
+
+            gSPVertex(s3++, s7, t3, 0);
+            for (s0 = 0; s0 < s6; s0++) {
+                pz1 = &s1->z; // @fake
+                gSP1Triangle(s3++, s1->x - s2, s1->y - s2, (*pz1) - s2, 0);
+                s1++;
+            }
+        } else {
+            do {
+                s2 = func_8000C258(s1, s2, s6);
+                s7 = (0, fp) + s2; // @fake
+                func_8000C328(s1, s2, s6, &sp134, &sp138);
+                gSPVertex(s3++, s7, sp138, 0);
+                s6 -= sp134;
+                for (s0 = 0; s0 < sp134; s0++) {
+                    pz2 = &s1->z; // @fake
+                    gSP1Triangle(s3++, s1->x - s2, s1->y - s2, (*pz2) - s2, 0);
+                    s1++;
+                }
+                s2 += sp138;
+            } while (s6 != 0);
+        }
+    }
+
+    gSPEndDisplayList(s3++);
+}
+
+void func_8000DAB0(UnkFrodo *arg0, AssetGmd *arg1, char *name, u8 arg3, s32 arg4) {
+    u32 i;
+    Asset *asset;
+    char sp30[16];
+    s32 v0;
+
+    arg0->sam.unk_04 = arg1;
+    arg0->sam.unk_128 = arg1->numNodes;
+
+    for (i = 0; i < arg0->sam.unk_128; i++) {
+        func_8000C1C4(arg0, i);
+        func_8000D11C(arg0, i, arg3);
+    }
+
+    arg0->sam.unk_150 = v0 = arg0->sam.unk_04->unk_08;
+
+    if (v0 != 0) {
+        str_copy(sp30, name);
+        sp30[3] = '\0';
+        str_concat(sp30, "_anm.anm");
+        asset = &gAssets[asset_find(sp30, arg4)];
+        arg0->sam.unk_148 = D_8005AEB8[asset->memory_slot].data;
+        arg0->sam.unk_14C = asset->aux_data;
+        heap_set_move_callback(asset->memory_slot, func_8000C18C, arg0->sam.unk_14C);
+    } else {
+        arg0->sam.unk_148 = NULL;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000DBC4.s")
 
@@ -354,7 +487,7 @@ void func_8000C3CC(UnkSam *arg0, s32 arg1, u8 arg2, Unk8000C3CCArg3 *arg3) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000E0D8.s")
 
-void func_8000E73C(UnkSam *arg0, AssetGmd *arg1, char *arg2, u8 arg3, Unk8000C3CCArg3 *arg4, s32 arg5) {
+void func_8000E73C(UnkSam *arg0, AssetGmd *arg1, char *name, u8 arg3, Unk8000C3CCArg3 *arg4, s32 arg5) {
     u32 i;
     s32 v1;
     s32 j;
@@ -363,7 +496,7 @@ void func_8000E73C(UnkSam *arg0, AssetGmd *arg1, char *arg2, u8 arg3, Unk8000C3C
     char padding[16];
 
     arg0->unk_04 = arg1;
-    arg0->unk_128 = arg1->numEntries;
+    arg0->unk_128 = arg1->numNodes;
     arg0->unk_318 = arg1->unk_C8;
     arg0->unk_320 = 0;
     arg0->unk_321 = 0;
@@ -380,7 +513,7 @@ void func_8000E73C(UnkSam *arg0, AssetGmd *arg1, char *arg2, u8 arg3, Unk8000C3C
         arg0->unk_150 = NULL;
     }
 
-    str_copy(sp48, arg2);
+    str_copy(sp48, name);
     for (j = 0; sp48[j] != '\0' && j < 16;) {
         if (sp48[j++] == '.') {
             sp48[j - 1] = '\0';
@@ -392,16 +525,16 @@ void func_8000E73C(UnkSam *arg0, AssetGmd *arg1, char *arg2, u8 arg3, Unk8000C3C
     v1 = asset_find(sp48, arg5);
 
     if (v1 < 0) {
-        str_copy(sp48, arg2);
+        str_copy(sp48, name);
         sp48[3] = '\0';
         str_concat(sp48, "_anm.anm");
         v1 = asset_find(sp48, arg5);
     }
 
     if (v1 >= 0) {
-        arg0->unk_148 = D_8005AEB8[gAssets[v1].memory_slot].unk_04;
+        arg0->unk_148 = D_8005AEB8[gAssets[v1].memory_slot].data;
         arg0->unk_14C = gAssets[v1].aux_data;
-        func_800010D4(gAssets[v1].memory_slot, func_8000C18C, arg0->unk_14C);
+        heap_set_move_callback(gAssets[v1].memory_slot, func_8000C18C, arg0->unk_14C);
     } else {
         arg0->unk_148 = NULL;
     }

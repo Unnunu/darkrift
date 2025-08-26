@@ -17,7 +17,7 @@ extern Gfx D_8004CA68[];
 extern Gfx D_8004CB00[];
 
 extern Gfx D_8005BF10;
-extern Gfx D_8005BF58;
+extern Gfx D_8005BF58[2];
 extern Gfx D_8005BF60;
 extern Vtx D_800492B0[];
 extern s32 gMusicVolumeFading;
@@ -309,7 +309,7 @@ void func_80001FB0(s32 arg0, Vtx *arg1) {
     D_8005BF00.header.unk_09 = 0;
     D_8005BF00.header.numTriangles = 2;
     D_8005BF00.header.unk_0B = 2;
-    D_8005BF00.header.unk_0C = &D_8005BF58;
+    D_8005BF00.header.texGfx = &D_8005BF58;
 
     gDPPipeSync(&D_8005BF58);
     gDPSetCombineMode(&D_8005BF60, G_CC_SHADE, G_CC_SHADE);
@@ -339,43 +339,46 @@ void func_80001FB0(s32 arg0, Vtx *arg1);
 #endif
 
 #ifdef NON_MATCHING
-void func_80002178(s32 arg0, Quad *arg1) {
-    if (arg1 == NULL) {
-        arg1 = &D_800492B0[D_8005BFCE];
+void func_80002178(s32 arg0, Vtx *vertices) {
+    Gfx *gfx = D_8005BF58;
+
+    if (vertices == NULL) {
+        vertices = &D_800492B0[D_8005BFCE << 2];
     }
 
     D_8005BF00.header.unk_00 = 0;
     D_8005BF00.header.unk_04 = 0;
     D_8005BF00.header.numVertices = 4;
     D_8005BF00.header.unk_09 = 0;
-    D_8005BF00.header.unk_0B = D_8005BF00.header.numTriangles = 2;
-    D_8005BF00.header.unk_0C = &D_8005BF58;
+    D_8005BF00.header.numTriangles = 2;
+    D_8005BF00.header.unk_0B = 2;
+    D_8005BF00.header.texGfx = D_8005BF58;
 
-    gDPPipeSync(D_8005BF00.header.unk_0C);
-    gDPSetCombineMode(&D_8005BF60, G_CC_SHADE, G_CC_SHADE);
+    gDPPipeSync(gfx++);
+    gDPSetCombineMode(gfx++, G_CC_SHADE, G_CC_SHADE);
 
-    gtStateSetOthermode(&D_8005BF10, GT_RENDERMODE, G_RM_XLU_SURF | G_RM_XLU_SURF2);
-    gtStateSetOthermode(&D_8005BF10, GT_CYCLETYPE, G_CYC_1CYCLE);
-    gtStateSetOthermode(&D_8005BF10, GT_TEXTFILT, G_TF_BILERP);
-    gtStateSetOthermode(&D_8005BF10, GT_TEXTCONV, G_TC_FILT);
-    gtStateSetOthermode(&D_8005BF10, GT_TEXTPERSP, G_TP_PERSP);
-    gtStateSetOthermode(&D_8005BF10, GT_TEXTLUT, G_TT_RGBA16);
-    gtStateSetOthermode(&D_8005BF10, GT_PIPELINE, G_PM_NPRIMITIVE);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_RENDERMODE, G_RM_XLU_SURF | G_RM_XLU_SURF2);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_CYCLETYPE, G_CYC_1CYCLE);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTFILT, G_TF_BILERP);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTCONV, G_TC_FILT);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTPERSP, G_TP_PERSP);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTLUT, G_TT_RGBA16);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
 
-    arg1->v[0].v.cn[3] = arg0;
-    arg1->v[0].v.cn[0] = arg1->v[0].v.cn[1] = arg1->v[0].v.cn[2] = D_80080116;
-    arg1->v[1].v.cn[3] = arg0;
-    arg1->v[1].v.cn[0] = arg1->v[1].v.cn[1] = arg1->v[1].v.cn[2] = D_80080116;
-    arg1->v[2].v.cn[3] = arg0;
-    arg1->v[2].v.cn[0] = arg1->v[2].v.cn[1] = arg1->v[2].v.cn[2] = D_80080116;
-    arg1->v[3].v.cn[3] = arg0;
-    arg1->v[3].v.cn[0] = arg1->v[3].v.cn[1] = arg1->v[3].v.cn[2] = D_80080116;
+    vertices[0].v.cn[3] = arg0;
+    vertices[0].v.cn[0] = vertices[0].v.cn[1] = vertices[0].v.cn[2] = D_80080116;
+    vertices[1].v.cn[3] = arg0;
+    vertices[1].v.cn[0] = vertices[1].v.cn[1] = vertices[1].v.cn[2] = D_80080116;
+    vertices[2].v.cn[3] = arg0;
+    vertices[2].v.cn[0] = vertices[2].v.cn[1] = vertices[2].v.cn[2] = D_80080116;
+    vertices[3].v.cn[3] = arg0;
+    vertices[3].v.cn[0] = vertices[3].v.cn[1] = vertices[3].v.cn[2] = D_80080116;
 
-    gSPTriBatch(gOverlayBatchPos, NULL, &D_8005BF00, arg1, D_80049330);
+    gSPTriBatch(gOverlayBatchPos, NULL, &D_8005BF00, vertices, D_80049330);
 }
 #else
 #pragma GLOBAL_ASM("asm/nonmatchings/main/func_80002178.s")
-void func_80002178(s32 arg0, Quad *arg1);
+void func_80002178(s32 arg0, Vtx *arg1);
 #endif
 
 void func_80002340(Object *obj) {

@@ -42,5 +42,6 @@ extern u8 D_800801E2;
 extern Object *D_80052C50;
 extern u16 gScreenWidth;
 extern u16 gScreenHeight;
+extern OSMesgQueue gSchedDMAQueue;
 
 #endif

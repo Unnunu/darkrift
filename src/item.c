@@ -21,7 +21,7 @@ void func_8002A8C0(ItemPool *arg0, u32 count, u32 element_size) {
 
     arg0->elements = (u8 **) mem_alloc(count * 4, "item.c", 23);
     arg0->buffer = (u8 *) mem_alloc(element_size * count, "item.c", 24);
-    func_80000E0C(arg0->buffer, 0, count * element_size);
+    mem_fill(arg0->buffer, 0, count * element_size);
     arg0->count = count;
     arg0->unk_0C = count - 1;
 
@@ -67,7 +67,7 @@ void func_8002ABCC(s32 count) {
 
 void func_8002AC10(void) {
     func_8002A8C0(&D_8013C2B0, 50, sizeof(Object));
-    func_8002A8C0(&D_8013C2C0, 16, sizeof(Model));
+    func_8002A8C0(&D_8013C2C0, 16, sizeof(ModelInstance));
     D_80052C50 = NULL;
     D_80052C54 = 0;
 }
@@ -141,11 +141,11 @@ void obj_delete(Object *obj) {
 
     if (obj->flags & 1) {
         D_8013C2C0.unk_0C++;
-        D_8013C2C0.elements[D_8013C2C0.unk_0C] = obj->model;
+        D_8013C2C0.elements[D_8013C2C0.unk_0C] = obj->modInst;
         D_8013C2C0.count++;
 
-        if (obj->model->transforms != NULL) {
-            mem_free(obj->model->transforms);
+        if (obj->modInst->transforms != NULL) {
+            mem_free(obj->modInst->transforms);
         }
     }
 
@@ -339,7 +339,7 @@ void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, Transform *arg3, void (*ar
 #endif
 
 void func_8002B850(Object *obj, UnkSam *arg1) {
-    Model *model;
+    ModelInstance *model;
     u32 s5;
     Transform *s7;
     Transform *v0;
@@ -347,7 +347,7 @@ void func_8002B850(Object *obj, UnkSam *arg1) {
     u32 i;
     s32 a3;
 
-    model = obj->model;
+    model = obj->modInst;
     s5 = arg1->unk_128;
     s7 = &model->unk_010;
 
@@ -376,7 +376,7 @@ void func_8002B850(Object *obj, UnkSam *arg1) {
 Object *func_8002B9AC(Vec4i *arg0, char *arg1, K2Def *arg2, s32 arg3) {
     Object *obj;
     char sp78[20];
-    Model *model;
+    ModelInstance *model;
     UnkFrodo *s5;
 
     if (arg1 == NULL) {
@@ -396,7 +396,7 @@ Object *func_8002B9AC(Vec4i *arg0, char *arg1, K2Def *arg2, s32 arg3) {
 
     obj->fn_render = func_8003795C;
     obj->flags = 1;
-    model = obj->model = mem_alloc(sizeof(Model), "item.c", 523);
+    model = obj->modInst = mem_alloc(sizeof(ModelInstance), "item.c", 523);
 
     str_concat(sp78, ".kmd");
     s5 = model->unk_A24 = gAssets[asset_find(sp78, arg3)].aux_data;
@@ -406,7 +406,7 @@ Object *func_8002B9AC(Vec4i *arg0, char *arg1, K2Def *arg2, s32 arg3) {
     if (s5->sam.unk_150 != NULL) {
         func_8002B850(obj, &s5->sam);
     } else {
-        obj->model->transforms = NULL;
+        obj->modInst->transforms = NULL;
     }
 
     model->unk_12C = s5->sam.unk_148;
@@ -449,7 +449,7 @@ Object *create_ui_element(Vec4i *pos, UIElement *def, s32 context) {
 Object *func_8002BC84(Vec4i *arg0, char *arg1, K2Def *arg2, s32 arg3) {
     Object *obj;
     char sp78[20];
-    Model *model;
+    ModelInstance *model;
     UnkSam *s5;
     u32 s6;
     s32 i;
@@ -471,16 +471,16 @@ Object *func_8002BC84(Vec4i *arg0, char *arg1, K2Def *arg2, s32 arg3) {
 
     obj->fn_render = func_800386E8;
     obj->flags = 1;
-    obj->model = (Model *) GET_ITEM(D_8013C2C0);
+    obj->modInst = (ModelInstance *) GET_ITEM(D_8013C2C0);
 
-    model = obj->model;
+    model = obj->modInst;
     s5 = model->unk_A28 = gAssets[asset_find(sp78, arg3)].aux_data;
     model->unk_A24 = NULL;
     s6 = model->numNodes = s5->unk_128;
 
     for (i = 0; i < s6; i++) {
-        memcpy(&model->unk_AB0[i].header, s5->unk_2A8[i], sizeof(BatchHeader));
-        memcpy(&model->unk_AB0[30 + i].header, s5->unk_2A8[i], sizeof(BatchHeader));
+        memcpy(&model->unk_AB0[i].header, s5->batchInfos[i], sizeof(BatchHeader));
+        memcpy(&model->unk_AB0[30 + i].header, s5->batchInfos[i], sizeof(BatchHeader));
         model->unk_1F50[i] = FALSE;
         model->unk_1F6E[i] = FALSE;
     }
@@ -488,7 +488,7 @@ Object *func_8002BC84(Vec4i *arg0, char *arg1, K2Def *arg2, s32 arg3) {
     if (s5->unk_150 != NULL) {
         func_8002B850(obj, s5);
     } else {
-        obj->model->transforms = NULL;
+        obj->modInst->transforms = NULL;
     }
 
     model->unk_12C = s5->unk_148;
@@ -521,16 +521,16 @@ Object *func_8002BF1C(Vec4i *arg0, K2Def *arg1, s32 arg2) {
         obj->flags |= arg1->unk_10 | 2;
         obj->unk_088.a = 128;
 
-        new_var = &obj->model->unk_A50;
+        new_var = &obj->modInst->unk_A50;
         new_var->unk_00 = 1;
         new_var->unk_24 = 1;
-        obj->model->unk_A30.unk_04 = new_var;
+        obj->modInst->unk_A30.unk_04 = new_var;
         if (obj->flags & 0x800) {
-            obj->model->unk_A30.zOrder = -0x80000000;
+            obj->modInst->unk_A30.zOrder = -0x80000000;
         } else {
-            obj->model->unk_A30.zOrder = 0x7FFFFFFF;
+            obj->modInst->unk_A30.zOrder = 0x7FFFFFFF;
         }
-        obj->model->unk_A30.flags = 0;
+        obj->modInst->unk_A30.flags = 0;
         return obj;
     } else {
         return NULL;
@@ -540,7 +540,7 @@ Object *func_8002BF1C(Vec4i *arg0, K2Def *arg1, s32 arg2) {
 Object *func_8002BFF0(Vec4i *arg0, s32 arg1, void (*arg2)(Object *), UnkSam *arg3) {
     u32 s6;
     Object *obj;
-    Model *model;
+    ModelInstance *model;
     u32 i;
     s32 unused[5];
 
@@ -553,20 +553,20 @@ Object *func_8002BFF0(Vec4i *arg0, s32 arg1, void (*arg2)(Object *), UnkSam *arg
     if (D_8013C2C0.count == 0) {
         obj->fn_render = task_default_func;
         obj->flags = 0x10;
-        obj->model = NULL;
+        obj->modInst = NULL;
         return NULL;
     }
 
-    obj->model = (Model *) GET_ITEM(D_8013C2C0);
+    obj->modInst = (ModelInstance *) GET_ITEM(D_8013C2C0);
 
-    model = obj->model;
+    model = obj->modInst;
     model->unk_A28 = arg3;
     model->unk_A24 = NULL;
     s6 = model->numNodes = arg3->unk_128;
 
     for (i = 0; i < s6; i++) {
-        memcpy(&model->unk_AB0[i].header, arg3->unk_2A8[i], sizeof(BatchHeader));
-        memcpy(&model->unk_AB0[30 + i].header, arg3->unk_2A8[i], sizeof(BatchHeader));
+        memcpy(&model->unk_AB0[i].header, arg3->batchInfos[i], sizeof(BatchHeader));
+        memcpy(&model->unk_AB0[30 + i].header, arg3->batchInfos[i], sizeof(BatchHeader));
         model->unk_1F50[i] = model->unk_5E4[i] = FALSE;
         model->unk_1F6E[i] = FALSE;
     }
@@ -574,7 +574,7 @@ Object *func_8002BFF0(Vec4i *arg0, s32 arg1, void (*arg2)(Object *), UnkSam *arg
     if (arg3->unk_150 != NULL) {
         func_8002B850(obj, arg3);
     } else {
-        obj->model->transforms = NULL;
+        obj->modInst->transforms = NULL;
         func_80012A20(&obj->transform, &model->unk_010, -1, -2);
         model->unk_9E4.x = 0;
         model->unk_9E4.y = 0;
@@ -620,11 +620,11 @@ Object *func_8002C27C(Vec4i *arg0, s32 arg1, void (*arg2)(Object *), UnkSam *arg
     obj->flags |= 0x6002;
     obj->unk_088.a = 128;
 
-    new_var = &obj->model->unk_A50;
+    new_var = &obj->modInst->unk_A50;
     new_var->unk_00 = 1;
     new_var->unk_24 = 1;
-    obj->model->unk_A30.unk_04 = new_var;
-    obj->model->unk_A30.zOrder = -9000;
-    obj->model->unk_A30.flags = 0;
+    obj->modInst->unk_A30.unk_04 = new_var;
+    obj->modInst->unk_A30.zOrder = -9000;
+    obj->modInst->unk_A30.flags = 0;
     return obj;
 }

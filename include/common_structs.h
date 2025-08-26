@@ -55,8 +55,8 @@ typedef struct BatchHeader {
     /* 0x09 */ u8 unk_09;
     /* 0x0A */ u8 numTriangles;
     /* 0x0B */ u8 unk_0B;
-    /* 0x0C */ Gfx *unk_0C;
-    /* 0x10 */ Gfx unk_10;
+    /* 0x0C */ Gfx *texGfx;
+    /* 0x10 */ Gfx otherMode;
 } BatchHeader; // size = 0x18
 
 typedef struct BatchInfo {
@@ -123,9 +123,9 @@ typedef struct PlayerInput {
 
 typedef struct UnkGamma {
     /* 0x00 */ s32 unk_00;
-    /* 0x04 */ void *unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
+    /* 0x04 */ void *data;
+    /* 0x08 */ s32 priv;
+    /* 0x0C */ void (*move_cb)(s32, s32, s32);
 } UnkGamma; // size = 0x10
 
 typedef struct ChunkHeader {
@@ -140,8 +140,8 @@ typedef struct ChunkHeader {
 typedef struct TextureAsset {
     /* 0x00 */ u32 width;
     /* 0x04 */ u32 height;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
+    /* 0x08 */ s32 format;
+    /* 0x0C */ s32 palIndex;
     /* 0x10 */ u8 data[1];
 } TextureAsset;
 
@@ -179,24 +179,24 @@ typedef struct Transform {
     /* 0xD8 */ Matrix4f wolrd_matrix;
 } Transform; // size >= 0x118
 
-typedef struct AssetGmdSub1 {
+typedef struct BatchAsset {
     /* 0x00 */ s32 unk_00;
-    /* 0x04 */ u16 unk_04;
-    /* 0x06 */ u16 unk_06;
-    /* 0x08 */ u16 unk_08;
-    /* 0x0A */ u16 unk_0A;
-    /* 0x0C */ TextureAsset *unk_0C;
-} AssetGmdSub1; // size = 0x10
+    /* 0x04 */ u16 vertIndex;
+    /* 0x06 */ u16 triOffset;
+    /* 0x08 */ u16 numVertices;
+    /* 0x0A */ u16 numTriangles;
+    /* 0x0C */ TextureAsset *texture;
+} BatchAsset; // size = 0x10
 
-typedef struct AssetGmdSub2 {
+typedef struct ModelNodeAsset {
     /* 0x00 */ s32 numVertices;
     /* 0x04 */ s32 unk_04;
     /* 0x08 */ Vtx *vertices;
-    /* 0x0C */ Vec3su *unk_0C;
+    /* 0x0C */ Vec3su *triangles;
     /* 0x10 */ char unk_10[0x8];
-    /* 0x18 */ s32 unk_18;
-    /* 0x1C */ AssetGmdSub1 *unk_1C;
-} AssetGmdSub2; // size = 0x20
+    /* 0x18 */ s32 numParts;
+    /* 0x1C */ BatchAsset *batchAssets;
+} ModelNodeAsset; // size = 0x20
 
 typedef struct AssetUnkHeader {
     /* 0x00 */ u8 signature[4]; // '2KMD' or '@KMD' ??
@@ -205,8 +205,8 @@ typedef struct AssetUnkHeader {
 } AssetUnkHeader;
 
 typedef struct AssetGmd {
-    /* 0x00 */ u32 numEntries;
-    /* 0x04 */ AssetGmdSub2 *unk_04;
+    /* 0x00 */ u32 numNodes;
+    /* 0x04 */ ModelNodeAsset *nodes;
     /* 0x08 */ s32 unk_08;
     /* 0x0C */ char unk_0C[0xA0];
     /* 0xAC */ s32 unk_AC;
@@ -214,10 +214,10 @@ typedef struct AssetGmd {
     /* 0xB4 */ s32 unk_B4;
     /* 0xB8 */ AssetUnkHeader *unk_B8;
     /* 0xBC */ char unk_BC[4];
-    /* 0xC0 */ u8 *unk_C0;
-    /* 0xC4 */ u8 *unk_C4;
+    /* 0xC0 */ u8 *palettes16;
+    /* 0xC4 */ u8 *palettes256;
     /* 0xC8 */ u8 unk_C8;
-    /* 0xCC */ AssetGmdSub1 unk_CC[0];
+    /* 0xCC */ BatchAsset unk_CC[0];
 } AssetGmd; // size = 0xCC
 
 typedef struct AssetUnkHeader2 {
@@ -258,13 +258,14 @@ typedef struct UnkSam {
     /* 0x148 */ s32 *unk_148;
     /* 0x14C */ s32 unk_14C;
     /* 0x150 */ StructAA8 *unk_150;
-    /* 0x154 */ Batch *unk_154[1]; // size unknown
-    /* 0x158 */ char unk_158[0x234 - 0x158];
+    /* 0x154 */ union {
+        Batch *batches[28];
+        Gfx *dlist[28 * 2];
+    };
     /* 0x234 */ u16 unk_234;
     /* 0x236 */ s16 unk_236;
-    /* 0x238 */ s32 unk_238[1]; // size unknown
-    /* 0x23C */ char unk_23C[0x2A8 - 0x23C];
-    /* 0x2A8 */ BatchInfo *unk_2A8[28];
+    /* 0x238 */ s32 batchCounts[28];
+    /* 0x2A8 */ BatchInfo *batchInfos[28];
     /* 0x318 */ u8 unk_318;
     /* 0x319 */ char unk_319[3];
     /* 0x31C */ ModelNode *unk_31C;
@@ -290,7 +291,7 @@ typedef struct ModelNodeRenderInfo {
     /* 0x1C */ s32 flags;
 } ModelNodeRenderInfo; // size = 0x20
 
-typedef struct Model {
+typedef struct ModelInstance {
     /* 0x0000 */ s16 numNodes;
     /* 0x0002 */ s16 unk_002;
     /* 0x0004 */ s16 unk_004;
@@ -337,7 +338,7 @@ typedef struct Model {
     /* 0x1F50 */ u8 unk_1F50[30];
     /* 0x1F6E */ u8 unk_1F6E[30];
     /* 0x1F8C */ char unk_1F8C[4];
-} Model; // size = 0x1F90
+} ModelInstance; // size = 0x1F90
 
 typedef struct AssetSP2Sub3 {
     /* 0x00 */ s32 unk_00;
@@ -389,7 +390,7 @@ typedef struct Object {
         struct Object *varObj[13];
     };
     /* 0x0C4 */ AssetSP2 *sprite_map;
-    /* 0x0C8 */ Model *model;
+    /* 0x0C8 */ ModelInstance *modInst;
     /* 0x0CC */ char unk_0CC[4];
     /* 0x0D0 */ Transform transform;
     /* 0x1E8 */ void (*unk_1E8)(struct Object *, struct Object *);
@@ -531,11 +532,11 @@ typedef struct Unk80015E74 {
 } Unk80015E74;
 
 typedef struct Unk8000C3CCArg3 {
-    /* 0x00 */ Gfx unk_00;
+    /* 0x00 */ Gfx combineMode;
     /* 0x08 */ s32 renderMode;
     /* 0x0C */ s32 unk_0C;
-    /* 0x0C */ ColorRGBA unk_10;
-    /* 0x0C */ s32 unk_14;
+    /* 0x0C */ ColorRGBA primColor;
+    /* 0x0C */ s32 flags;
 } Unk8000C3CCArg3;
 
 #endif

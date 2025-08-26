@@ -3,7 +3,7 @@
 #include "camera.h"
 #include "task.h"
 
-void init_heap(void);
+void heap_init(void);
 extern void *gHeapBase;
 
 extern long long int gspDarkRift3DTextStart[], gspDarkRift3DTextEnd[];
@@ -69,7 +69,7 @@ extern s32 D_80049AE8;
 extern s32 D_80081428;
 extern s32 D_80049CF0;
 
-void func_800007C8(void);
+void heap_reset(void);
 void func_80026250(void);
 void audio_reset(void);
 void func_8002AC10(void);
@@ -257,7 +257,7 @@ void func_800031FC(u16 arg0) {
 
     D_80080124 = D_80080120 = ((u32) &D_8013F0B0 + 0x40) & ~0x3F;
     gHeapBase = (void *) (((u32) D_80080120 + 0x25800 + 0x40) & ~0x3F);
-    init_heap();
+    heap_init();
     func_80025E6C();
     func_80025EDC(D_80080124, 0x25800);
     func_80012490();
@@ -302,7 +302,7 @@ void func_80003468(u16 arg0) {
     D_80049AE4 = 0;
     D_80049AE8 = 0;
     D_80081428 = 0;
-    func_800007C8();
+    heap_reset();
     func_80026250();
     audio_reset();
     D_80080110 = gGameModes[arg0].unk_0C;
