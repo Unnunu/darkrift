@@ -219,9 +219,9 @@ void func_8000C3CC(UnkSam *arg0, s32 nodeId, u8 arg2, Unk8000C3CCArg3 *arg3) {
         if (numVerts <= 16U) {
             triangle = triangleBuffer[numBatches] = mem_alloc(numTriangles * sizeof(BatchTriangle), "kmd.c", 421);
             for (i = 0; i < numTriangles; triPtr++, i++) {
-                triangle[i].vi0 = triPtr->x - vertIndex;
-                triangle[i].vi1 = triPtr->y - vertIndex;
-                triangle[i].vi2 = triPtr->z - vertIndex;
+                triangle[i].vi0 = triPtr->vi[0] - vertIndex;
+                triangle[i].vi1 = triPtr->vi[1] - vertIndex;
+                triangle[i].vi2 = triPtr->vi[2] - vertIndex;
                 triangle[i].d = 0;
             }
             numTriBuffer[numBatches] = numTriangles;
@@ -242,9 +242,9 @@ void func_8000C3CC(UnkSam *arg0, s32 nodeId, u8 arg2, Unk8000C3CCArg3 *arg3) {
                 numBatches++;
 
                 for (i = 0; i < sp93C; i++, triPtr++) {
-                    triangle[i].vi0 = triPtr->x - vertIndex;
-                    triangle[i].vi1 = triPtr->y - vertIndex;
-                    triangle[i].vi2 = triPtr->z - vertIndex;
+                    triangle[i].vi0 = triPtr->vi[0] - vertIndex;
+                    triangle[i].vi1 = triPtr->vi[1] - vertIndex;
+                    triangle[i].vi2 = triPtr->vi[2] - vertIndex;
                     triangle[i].d = 0;
                 }
                 vertIndex += sp940;
@@ -426,8 +426,8 @@ void func_8000D11C(UnkFrodo *arg0, s32 arg1, u8 arg2) {
 
             gSPVertex(s3++, s7, t3, 0);
             for (s0 = 0; s0 < s6; s0++) {
-                pz1 = &s1->z; // @fake
-                gSP1Triangle(s3++, s1->x - s2, s1->y - s2, (*pz1) - s2, 0);
+                pz1 = &s1->vi[2]; // @fake
+                gSP1Triangle(s3++, s1->vi[0] - s2, s1->vi[1] - s2, (*pz1) - s2, 0);
                 s1++;
             }
         } else {
@@ -438,8 +438,8 @@ void func_8000D11C(UnkFrodo *arg0, s32 arg1, u8 arg2) {
                 gSPVertex(s3++, s7, sp138, 0);
                 s6 -= sp134;
                 for (s0 = 0; s0 < sp134; s0++) {
-                    pz2 = &s1->z; // @fake
-                    gSP1Triangle(s3++, s1->x - s2, s1->y - s2, (*pz2) - s2, 0);
+                    pz2 = &s1->vi[2]; // @fake
+                    gSP1Triangle(s3++, s1->vi[0] - s2, s1->vi[1] - s2, (*pz2) - s2, 0);
                     s1++;
                 }
                 s2 += sp138;
@@ -480,12 +480,145 @@ void func_8000DAB0(UnkFrodo *arg0, AssetGmd *arg1, char *name, u8 arg3, s32 arg4
 }
 
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000DBC4.s")
+s32 func_8000DBC4(UnkSam *arg0, s32 arg1, s16 *arg2);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000DF5C.s")
+void func_8000DF5C(Vec3f *);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000DFF0.s")
+s32 func_8000DFF0(u32 arg0, u32 arg1, Vec3su *arg2, Vec3f *arg3, u32 arg4, u16 *arg5);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000E0D8.s")
+void func_8000E0D8(UnkSam *arg0) {
+    u32 i; // sp114 ??
+    u32 sp110;
+    u32 s0;
+    u32 s1;
+    ModelNodeAsset *s6;
+    Vtx *s00;
+    Vec3su *s4;
+    u16 j;
+    u16 k;
+    u16 l;
+    Vec3s *vec;
+    UnkSamSub *sub;
+    Vec3f *spE8;
+    Vec3f *fp;
+    s32 padding3[2];
+    Vec3f *vec2;
+    f32 x, y, z;
+    s16 spCA;
+    s16 *spC4;
+    Vec3s spBC;
+    s32 padding2;
+    u16 s5;
+    s16 temp;
+    f32 fv0;
+    Vtx *v0;
+    Vtx *v1;
+    Vtx *a1;
+    Vec3f sp98;
+
+    s0 = 0;
+    s1 = 0;
+    for (i = 0; i < arg0->unk_128; i++) {
+        s6 = &arg0->unk_04->nodes[i];
+        if (s0 < s6->numVertices) {
+            s0 = s6->numVertices;
+        }
+        if (s1 < s6->unk_04) {
+            s1 = s6->unk_04;
+        }
+    }
+
+    spE8 = mem_alloc(s0 * 12, "kmd.c", 854);
+    fp = mem_alloc(s1 * 12, "kmd.c", 855);
+    spC4 = mem_alloc(s0 * 2, "kmd.c", 856);
+    mem_fill(spE8, 0, s0 * 12);
+    mem_fill(fp, 0, s1 * 12);
+
+    for (i = 0; i < arg0->unk_128; i++) {
+        spCA = func_8000DBC4(arg0, i, spC4);
+        s6 = &arg0->unk_04->nodes[i];
+        s5 = s6->unk_04;
+        s00 = s6->vertices;
+        s4 = s6->triangles;
+
+        for (j = 0; j < s5; j++, s4++) {
+            a1 = s00;
+            a1 += s4->vi[0];
+            v0 = s00;
+            v0 += s4->vi[1];
+            v1 = s00;
+            v1 += s4->vi[2];
+
+            sp98.x = a1->v.ob[1] * (v0->v.ob[2] - v1->v.ob[2]) + v0->v.ob[1] * (v1->v.ob[2] - a1->v.ob[2]) +
+                     v1->v.ob[1] * (a1->v.ob[2] - v0->v.ob[2]);
+            sp98.y = a1->v.ob[2] * (v0->v.ob[0] - v1->v.ob[0]) + v0->v.ob[2] * (v1->v.ob[0] - a1->v.ob[0]) +
+                     v1->v.ob[2] * (a1->v.ob[0] - v0->v.ob[0]);
+            sp98.z = a1->v.ob[0] * (v0->v.ob[1] - v1->v.ob[1]) + v0->v.ob[0] * (v1->v.ob[1] - a1->v.ob[1]) +
+                     v1->v.ob[0] * (a1->v.ob[1] - v0->v.ob[1]);
+            func_8000DF5C(&sp98);
+            fp[j].x = sp98.x;
+            fp[j].y = sp98.y;
+            fp[j].z = sp98.z;
+        }
+
+        for (k = 0; k < spCA; k++) {
+            s4 = s6->triangles;
+            for (j = 0; j < s5; j++, s4++) {
+                vec2 = fp;
+                vec2 += j;
+                for (l = 0; l < 3; l++) {
+                    if (k == spC4[s4->vi[l]] && func_8000DFF0(k, j, s6->triangles, fp, s5, spC4) == 0) {
+                        spE8[k].x += vec2->x;
+                        spE8[k].y += vec2->y;
+                        spE8[k].z += vec2->z;
+                    }
+                }
+            }
+        }
+
+        sub = arg0->unk_324[i];
+        vec = &spBC;
+        for (sp110 = 0; sp110 < spCA; sp110++) {
+            x = spE8[sp110].x;
+            y = spE8[sp110].y;
+            z = spE8[sp110].z;
+            fv0 = sqrtf(SQ(x) + SQ(y) + SQ(z));
+            if (fv0 != 0) {
+                spE8[sp110].x /= fv0;
+                spE8[sp110].y /= fv0;
+                spE8[sp110].z /= fv0;
+            } else {
+                spE8[sp110].x = spE8[sp110].y = spE8[sp110].z = 0.0;
+            }
+
+            vec->x = temp =
+                ((spE8[sp110].x * 128.0f) >= 0.0) ? ((spE8[sp110].x * 128.0f) + 0.5) : ((spE8[sp110].x * 128.0f) - 0.5);
+            if (temp > 127) {
+                vec->x = 127;
+            }
+            vec->y = temp =
+                ((spE8[sp110].y * 128.0f) >= 0.0) ? ((spE8[sp110].y * 128.0f) + 0.5) : ((spE8[sp110].y * 128.0f) - 0.5);
+            if (temp > 127) {
+                vec->y = 127;
+            }
+            vec->z = temp =
+                ((spE8[sp110].z * 128.0f) >= 0.0) ? ((spE8[sp110].z * 128.0f) + 0.5) : ((spE8[sp110].z * 128.0f) - 0.5);
+            if (temp > 127) {
+                vec->z = 127;
+            }
+
+            sub[sp110].unk_00 = vec->x;
+            sub[sp110].unk_01 = vec->y;
+            sub[sp110].unk_02 = vec->z;
+        }
+    }
+
+    mem_free(spE8);
+    mem_free(fp);
+    mem_free(spC4);
+}
 
 void func_8000E73C(UnkSam *arg0, AssetGmd *arg1, char *name, u8 arg3, Unk8000C3CCArg3 *arg4, s32 arg5) {
     u32 i;

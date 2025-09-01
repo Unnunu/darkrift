@@ -30,5 +30,6 @@
 // #define MIN(x, y) ((x) < (y) ? (x) : (y))
 
 #define DISTANCE(dx, dy) (dx + dy - (MIN(dx, dy) >> 1))
+#define SQ(x) ((x) * (x))
 
 #endif

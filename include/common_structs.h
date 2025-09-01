@@ -18,7 +18,7 @@ typedef struct Vec3s {
 } Vec3s;
 
 typedef struct Vec3su {
-    u16 x, y, z;
+    u16 vi[3];
 } Vec3su;
 
 typedef struct Vec4s {
@@ -249,6 +249,14 @@ typedef struct ModelNode {
     /* 0x48 */ Gfx *unk_48[4];
 } ModelNode; // size = 0x58
 
+typedef struct UnkSamSub {
+    /* 0x00 */ u8 unk_00;
+    /* 0x01 */ u8 unk_01;
+    /* 0x02 */ u8 unk_02;
+    /* 0x03 */ u8 unk_03;
+    /* 0x04 */ char unk_04[0x60];
+} UnkSamSub; // size = 0x64;
+
 typedef struct UnkSam {
     /* 0x000 */ s32 unk_00;
     /* 0x004 */ AssetGmd *unk_04;
@@ -273,7 +281,8 @@ typedef struct UnkSam {
     /* 0x321 */ u8 unk_321;
     /* 0x322 */ u8 unk_322;
     /* 0x323 */ u8 unk_323;
-    /* 0x324 */ char unk_324[0x3CC - 0x324];
+    /* 0x324 */ UnkSamSub *unk_324[1];
+    /* 0x328 */ char unk_328[0x3CC - 0x328];
     /* 0x3CC */ s32 unk_3CC;
 } UnkSam; // size = 0x3D0
 
