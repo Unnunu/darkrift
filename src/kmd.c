@@ -22,11 +22,28 @@ void func_8000BCF0(ModelNodeAsset *arg0, AssetUnkHeader2 *arg1, u32 arg2) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000BD38.s")
+s32 func_8000BD38(AssetGmd *arg0) {
+    s32 sum = 0;
+    u32 i;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000BD70.s")
+    for (i = 0; i < arg0->numNodes; i++) {
+        sum += arg0->nodes[i].numVertices;
+    }
+    return sum;
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000BDA8.s")
+s32 func_8000BD70(AssetGmd *arg0) {
+    s32 sum = 0;
+    u32 i;
+
+    for (i = 0; i < arg0->numNodes; i++) {
+        sum += arg0->nodes[i].unk_04;
+    }
+    return sum;
+}
+
+void func_8000BDA8(s32 arg0) {
+}
 
 void func_8000BDB0(AssetGmd *arg0, BatchAsset *arg1) {
     if (arg1->unk_00 >= 0) {
@@ -138,17 +155,68 @@ void func_8000C158(AssetGmd *arg0, u8 arg1) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000C18C.s")
-void func_8000C18C(s32 *arg0, s32 arg1, u32 arg2);
+void func_8000C18C(s32 *new_data, s32 *old_data, void *priv) {
+    s32 i;
+    u32 size = (u32) priv;
+    s32 delta = (u32) new_data - (u32) old_data;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000C1C4.s")
-void func_8000C1C4(UnkFrodo *arg0, s32 arg1);
+    for (i = 0; i < size; i++) {
+        new_data[i] += delta;
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000C258.s")
-s32 func_8000C258(Vec3su *arg0, s32 arg1, s32 arg2);
+void func_8000C1C4(UnkFrodo *arg0, s32 arg1) {
+    ModelNodeAsset *v0 = &arg0->sam.unk_04->nodes[arg1];
+    u32 numParts = v0->numParts;
+    u32 numVertices = v0->numVertices;
+    u32 unk_04 = v0->unk_04;
+    s32 size;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000C328.s")
-void func_8000C328(Vec3su *arg0, s32 arg1, s32 arg2, s32 *arg3, s32 *arg4);
+    size = numParts * sizeof(Gfx) * 21 + (numVertices / 8) * sizeof(Gfx) + unk_04 * sizeof(Gfx); // TODO constant
+    arg0->sam.dlist[arg1] = mem_alloc(size, "kmd.c", 297);
+    arg0->unk_A64 = size;
+}
+
+s32 func_8000C258(u16 *arg0, u32 arg1, s32 arg2) {
+    u32 i;
+
+    for (i = 0; i < arg2 * 3; i++) {
+        if (arg1 > arg0[i]) {
+            arg1 = arg0[i];
+        }
+        if (arg0[i] * 0) {} // @fake
+    }
+
+    return arg1;
+}
+
+void func_8000C328(Vec3su *arg0, u32 arg1, u32 arg2, s32 *arg3, s32 *arg4) {
+    u32 v0;
+
+    *arg3 = *arg4 = 0;
+    v0 = arg1;
+
+    while (arg2) {
+        if (arg0->vi[0] > arg1 + 15 || arg0->vi[1] > arg1 + 15 || arg0->vi[2] > arg1 + 15) {
+            break;
+        }
+        if (v0 < arg0->vi[0]) {
+            v0 = arg0->vi[0];
+        }
+        if (v0 < arg0->vi[1]) {
+            v0 = arg0->vi[1];
+        }
+        if (v0 < arg0->vi[2]) {
+            v0 = arg0->vi[2];
+        }
+
+        arg2--;
+        arg0++;
+        (*arg3)++;
+    }
+
+    *arg4 = v0 - arg1 + 1;
+}
 
 void func_8000C3CC(UnkSam *arg0, s32 nodeId, u8 arg2, Unk8000C3CCArg3 *arg3) {
     u32 partIndex;
@@ -366,7 +434,7 @@ void func_8000D11C(UnkFrodo *arg0, s32 arg1, u8 arg2) {
     s32 padding[3];
     u16 *pz1;
     u16 *pz2;
-    ModelNodeAsset *v0; // spF8
+    ModelNodeAsset *v0;
 
     sp12B = FALSE;
     sp12A = FALSE;
@@ -381,10 +449,12 @@ void func_8000D11C(UnkFrodo *arg0, s32 arg1, u8 arg2) {
 
         s6 = a1->numTriangles;
         t3 = a1->numVertices;
-        s1 = (0, sp120) + a1->triOffset; // @fake
+        s1 = sp120;
+        s1 += a1->triOffset;
 
         s2 = a1->vertIndex;
-        s7 = (0, fp) + s2; // @fake
+        s7 = fp;
+        s7 += a1->vertIndex;
 
         if (!sp12B && !((u8) (a1->unk_00 >= 0))) {
             gDPPipeSync(s3++);
@@ -393,7 +463,6 @@ void func_8000D11C(UnkFrodo *arg0, s32 arg1, u8 arg2) {
             sp12B = TRUE;
             sp12A = FALSE;
         } else if (!sp12A && ((u8) (a1->unk_00 >= 0))) {
-            s2 = a1->vertIndex; // @fake
             gDPPipeSync(s3++);
             gSPTexture(s3++, 0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON);
             gDPSetCombineMode(s3++, G_CC_DECALRGB, G_CC_DECALRGB);
@@ -426,20 +495,19 @@ void func_8000D11C(UnkFrodo *arg0, s32 arg1, u8 arg2) {
 
             gSPVertex(s3++, s7, t3, 0);
             for (s0 = 0; s0 < s6; s0++) {
-                pz1 = &s1->vi[2]; // @fake
-                gSP1Triangle(s3++, s1->vi[0] - s2, s1->vi[1] - s2, (*pz1) - s2, 0);
+                gSP1Triangle(s3++, s1->vi[0] - s2, s1->vi[1] - s2, s1->vi[2] - s2, 0);
                 s1++;
             }
         } else {
             do {
                 s2 = func_8000C258(s1, s2, s6);
-                s7 = (0, fp) + s2; // @fake
+                s7 = fp;
+                s7 += s2;
                 func_8000C328(s1, s2, s6, &sp134, &sp138);
                 gSPVertex(s3++, s7, sp138, 0);
                 s6 -= sp134;
                 for (s0 = 0; s0 < sp134; s0++) {
-                    pz2 = &s1->vi[2]; // @fake
-                    gSP1Triangle(s3++, s1->vi[0] - s2, s1->vi[1] - s2, (*pz2) - s2, 0);
+                    gSP1Triangle(s3++, s1->vi[0] - s2, s1->vi[1] - s2, s1->vi[2] - s2, 0);
                     s1++;
                 }
                 s2 += sp138;
@@ -479,17 +547,93 @@ void func_8000DAB0(UnkFrodo *arg0, AssetGmd *arg1, char *name, u8 arg3, s32 arg4
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000DBC4.s")
-s32 func_8000DBC4(UnkSam *arg0, s32 arg1, s16 *arg2);
+s32 func_8000DBC4(UnkSam *arg0, s32 arg1, s16 *arg2) {
+    ModelNodeAsset *a3;
+    s32 t4;
+    u32 i;
+    u32 j;
+    u32 t5;
+    Vtx *t3;
+    UnkSamSub *sub;
+    s16 a2;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000DF5C.s")
-void func_8000DF5C(Vec3f *);
+    t4 = 0;
+    a3 = &arg0->unk_04->nodes[arg1];
+    t5 = a3->numVertices;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/kmd/func_8000DFF0.s")
-s32 func_8000DFF0(u32 arg0, u32 arg1, Vec3su *arg2, Vec3f *arg3, u32 arg4, u16 *arg5);
+    for (i = 0; i < t5; i++) {
+        arg2[i] = i;
+    }
+
+    t3 = a3->vertices;
+
+    for (i = 0; i < t5 - 1; i++) {
+        if (arg2[i] == i) {
+            t4++;
+            for (j = 1; j < t5; j++) {
+                if (t3[i].v.ob[0] == t3[j].v.ob[0] && t3[i].v.ob[1] == t3[j].v.ob[1] &&
+                    t3[i].v.ob[2] == t3[j].v.ob[2]) {
+                    arg2[j] = t4 - 1;
+                }
+            }
+        }
+    }
+
+    sub = mem_alloc(t4 * sizeof(UnkSamSub), "kmd.c", 761);
+    arg0->unk_324[arg1] = sub;
+    arg0->unk_394[arg1] = t4;
+
+    for (i = 0; i < t4; i++) {
+        a2 = 0;
+        for (j = 0; j < t5; j++) {
+            if (arg2[j] == i) {
+                sub[i].unk_04[a2].r = t3[j].v.cn[0];
+                sub[i].unk_04[a2].g = t3[j].v.cn[1];
+                sub[i].unk_04[a2].b = t3[j].v.cn[2];
+                sub[i].unk_44[a2++] = j;
+                sub[i].unk_44[a2] = -1;
+            }
+        }
+    }
+
+    return t4;
+}
+
+void func_8000DF5C(f32 *arg0) {
+    f32 mag;
+
+    mag = sqrtf(SQ(arg0[0]) + SQ(arg0[1]) + SQ(arg0[2]));
+    if (mag != 0.0f) {
+        arg0[0] /= mag;
+        arg0[1] /= mag;
+        arg0[2] /= mag;
+    } else {
+        arg0[0] = arg0[2] = 0.0f;
+        arg0[1] = -1.0f;
+    }
+}
+
+s32 func_8000DFF0(u32 arg0, u32 arg1, u16 *arg2, Vec3f *arg3, u32 arg4, u16 *arg5) {
+    u32 i;
+    s32 j;
+    Vec3f *pos1 = &arg3[arg1];
+
+    arg2 += 3 * arg1 + 3;
+    for (i = arg1 + 1; i < arg4; i++, arg2 += 3) {
+        for (j = 0; j < 3; j++) {
+            if (arg0 == arg5[arg2[j]]) {
+                if (pos1->x == arg3[i].x && pos1->y == arg3[i].y && pos1->z == arg3[i].z) {
+                    return TRUE;
+                }
+            }
+        }
+    }
+
+    return FALSE;
+}
 
 void func_8000E0D8(UnkSam *arg0) {
-    u32 i; // sp114 ??
+    u32 i;
     u32 sp110;
     u32 s0;
     u32 s1;
@@ -516,7 +660,7 @@ void func_8000E0D8(UnkSam *arg0) {
     Vtx *v0;
     Vtx *v1;
     Vtx *a1;
-    Vec3f sp98;
+    f32 sp98[3];
 
     s0 = 0;
     s1 = 0;
@@ -551,16 +695,16 @@ void func_8000E0D8(UnkSam *arg0) {
             v1 = s00;
             v1 += s4->vi[2];
 
-            sp98.x = a1->v.ob[1] * (v0->v.ob[2] - v1->v.ob[2]) + v0->v.ob[1] * (v1->v.ob[2] - a1->v.ob[2]) +
-                     v1->v.ob[1] * (a1->v.ob[2] - v0->v.ob[2]);
-            sp98.y = a1->v.ob[2] * (v0->v.ob[0] - v1->v.ob[0]) + v0->v.ob[2] * (v1->v.ob[0] - a1->v.ob[0]) +
-                     v1->v.ob[2] * (a1->v.ob[0] - v0->v.ob[0]);
-            sp98.z = a1->v.ob[0] * (v0->v.ob[1] - v1->v.ob[1]) + v0->v.ob[0] * (v1->v.ob[1] - a1->v.ob[1]) +
-                     v1->v.ob[0] * (a1->v.ob[1] - v0->v.ob[1]);
-            func_8000DF5C(&sp98);
-            fp[j].x = sp98.x;
-            fp[j].y = sp98.y;
-            fp[j].z = sp98.z;
+            sp98[0] = a1->v.ob[1] * (v0->v.ob[2] - v1->v.ob[2]) + v0->v.ob[1] * (v1->v.ob[2] - a1->v.ob[2]) +
+                      v1->v.ob[1] * (a1->v.ob[2] - v0->v.ob[2]);
+            sp98[1] = a1->v.ob[2] * (v0->v.ob[0] - v1->v.ob[0]) + v0->v.ob[2] * (v1->v.ob[0] - a1->v.ob[0]) +
+                      v1->v.ob[2] * (a1->v.ob[0] - v0->v.ob[0]);
+            sp98[2] = a1->v.ob[0] * (v0->v.ob[1] - v1->v.ob[1]) + v0->v.ob[0] * (v1->v.ob[1] - a1->v.ob[1]) +
+                      v1->v.ob[0] * (a1->v.ob[1] - v0->v.ob[1]);
+            func_8000DF5C(sp98);
+            fp[j].x = sp98[0];
+            fp[j].y = sp98[1];
+            fp[j].z = sp98[2];
         }
 
         for (k = 0; k < spCA; k++) {

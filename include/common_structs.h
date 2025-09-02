@@ -254,7 +254,8 @@ typedef struct UnkSamSub {
     /* 0x01 */ u8 unk_01;
     /* 0x02 */ u8 unk_02;
     /* 0x03 */ u8 unk_03;
-    /* 0x04 */ char unk_04[0x60];
+    /* 0x04 */ ColorRGBA unk_04[16]; // size ?
+    /* 0x44 */ s16 unk_44[16];
 } UnkSamSub; // size = 0x64;
 
 typedef struct UnkSam {
@@ -281,8 +282,8 @@ typedef struct UnkSam {
     /* 0x321 */ u8 unk_321;
     /* 0x322 */ u8 unk_322;
     /* 0x323 */ u8 unk_323;
-    /* 0x324 */ UnkSamSub *unk_324[1];
-    /* 0x328 */ char unk_328[0x3CC - 0x328];
+    /* 0x324 */ UnkSamSub *unk_324[28];
+    /* 0x394 */ s16 unk_394[28];
     /* 0x3CC */ s32 unk_3CC;
 } UnkSam; // size = 0x3D0
 
