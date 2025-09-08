@@ -446,7 +446,7 @@ Object *create_ui_element(Vec4i *pos, UIElement *def, s32 context) {
 }
 
 #ifdef NON_MATCHING
-Object *func_8002BC84(Vec4i *arg0, char *arg1, K2Def *arg2, s32 arg3) {
+Object *func_8002BC84(Vec4i *arg0, char *arg1, K2Def *arg2, u32 arg3) {
     Object *obj;
     char sp78[20];
     ModelInstance *model;
@@ -507,10 +507,10 @@ Object *func_8002BC84(Vec4i *arg0, char *arg1, K2Def *arg2, s32 arg3) {
 }
 #else
 #pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002BC84.s")
-Object *func_8002BC84(Vec4i *arg0, char *arg1, K2Def *arg2, s32 arg3);
+Object *func_8002BC84(Vec4i *arg0, char *arg1, K2Def *arg2, u32 arg3);
 #endif
 
-Object *func_8002BF1C(Vec4i *arg0, K2Def *arg1, s32 arg2) {
+Object *func_8002BF1C(Vec4i *arg0, UnkK2Def *arg1, s32 arg2) {
     Object *obj;
     ModelNode *new_var;
 

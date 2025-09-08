@@ -189,7 +189,7 @@ void str_toupper(char *str) {
     }
 }
 
-u32 asset_find(char *name, s32 context) {
+u32 asset_find(char *name, u32 context) {
     u32 i;
 
     str_toupper(name);

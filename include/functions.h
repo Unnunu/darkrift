@@ -30,7 +30,7 @@ void func_8002630C(s32 arg0);
 void func_80002178(s32 arg0, Vtx *arg1);
 void func_80018AD0(Object *);
 Object *create_ui_element(Vec4i *arg0, UIElement *arg1, s32 arg2);
-u32 asset_find(char *name, s32 context);
+u32 asset_find(char *name, u32 context);
 void str_concat(char *dst, char *src);
 // void str_copy(char *arg0, char *arg1);
 void math_mtxf_mul(Matrix4f *, Matrix4f *, Matrix4f *);
@@ -63,5 +63,12 @@ Object *func_80015FB4(vs16);
 void func_8001386C(Vec4i *arg0, Vec4i *arg1, Matrix4f *arg2);
 s32 func_80012854(s32 arg0);
 void func_80012AF4(Matrix4f *);
+Object *func_8002BC84(Vec4i *, char *, K2Def *, u32);
+void func_8002A890(Player *);
+void func_80036194(Object *arg0, char *arg1, u32 arg2);
+void func_800248C4(Object *);
+void func_8003184C(Object *);
+void func_80010664(Player *, UnkTauSub *);
+void func_800321C0(void);
 
 #endif

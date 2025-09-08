@@ -23,7 +23,6 @@ extern GlobalObjD *D_8013C4EC;
 extern ItemPool D_8013C4F0;
 extern TextureAsset *D_8013C500[];
 
-Object *func_8002BC84(Vec4i *, s32, K2Def *, s32);
 void func_800028E0(s32 arg0, s32 arg1);
 
 void func_80034090(TextureAsset *arg0) {
@@ -624,11 +623,11 @@ void func_80035F5C(Object *obj) {
     }
 }
 
-void func_80036194(Object *arg0, char *arg1, s32 arg2) {
+void func_80036194(Object *arg0, char *arg1, u32 arg2) {
     Object *v0;
 
     str_copy(D_80053010.unk_00, arg1);
-    v0 = func_8002BC84(&D_8004934C, 0, &D_80053010, arg2);
+    v0 = func_8002BC84(&D_8004934C, NULL, &D_80053010, arg2);
 
     v0->vars[0] = v0->modInst->transforms;
     v0->vars[1] = arg0;

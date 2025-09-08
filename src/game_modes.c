@@ -13,19 +13,8 @@ typedef struct UnkObjDef4 {
     /* 0x0C */ s32 unk_0C;
 } UnkObjDef4; // size = 0x10
 
-typedef struct UnkTauSub {
-    /* 0x00 */ char *unk_00;
-} UnkTauSub;
-
-typedef struct UnkTau {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ UnkTauSub *unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-} UnkTau; // size = 0x10
-
 extern s16 D_80051F68;
-extern UnkTau D_8004B844[];
+
 extern s32 D_8008012C;
 extern Object *D_80081460;
 extern s16 D_80049B30[];
@@ -59,7 +48,6 @@ extern void *D_80081274;
 extern void *D_80081278;
 extern u16 D_8013C250;
 extern u16 D_80080234;
-extern Object *D_80080228[];
 
 void func_8001A674(Object *);
 void func_8001A334(Object *);
@@ -605,8 +593,8 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
     D_800AA488[PLAYER_1].unk_80 |= 0x100000;
     D_800AA488[PLAYER_2].unk_80 |= 0x100000;
 
-    D_800AA488[PLAYER_1].unk_18->unk_00 |= 0x80;
-    D_800AA488[PLAYER_2].unk_18->unk_00 |= 0x80;
+    D_800AA488[PLAYER_1].unk_18->flags |= 0x80;
+    D_800AA488[PLAYER_2].unk_18->flags |= 0x80;
 
     func_80007DB0(D_800AA488 + 1 - s0, a1, arg2);
     func_8002DA08(gCamera);
@@ -895,8 +883,8 @@ void func_80008FDC(void) {
 
     D_800AA488[PLAYER_1].unk_80 |= 0x100000;
     D_800AA488[PLAYER_2].unk_80 |= 0x100000;
-    D_800AA488[PLAYER_1].unk_18->unk_00 |= 0x80;
-    D_800AA488[PLAYER_2].unk_18->unk_00 |= 0x80;
+    D_800AA488[PLAYER_1].unk_18->flags |= 0x80;
+    D_800AA488[PLAYER_2].unk_18->flags |= 0x80;
 
     func_80007DB0(&D_800AA488[sp42], a1, 0x3000);
     func_8002DA08(gCamera);
@@ -927,7 +915,7 @@ void func_800092B0(void) {
     char sp38[12];
 
     var1 = 1 - D_800B6328[PLAYER_2].unk_02;
-    sp54 = D_800AA488[var1].unk_06;
+    sp54 = D_800AA488[var1].characterId;
     func_800263A8();
     asset_open_folder("/title/ending", 0x4000);
 
@@ -1058,8 +1046,8 @@ void func_800096D0(u8 arg0) {
 
     D_800AA488[PLAYER_1].unk_80 |= 0x100000;
     D_800AA488[PLAYER_2].unk_80 |= 0x100000;
-    D_800AA488[PLAYER_1].unk_18->unk_00 |= 0x80;
-    D_800AA488[PLAYER_2].unk_18->unk_00 |= 0x80;
+    D_800AA488[PLAYER_1].unk_18->flags |= 0x80;
+    D_800AA488[PLAYER_2].unk_18->flags |= 0x80;
 
     func_8002DA08(gCamera);
     func_80007DB0(&D_800AA488[nv], a3, 0x4000);
@@ -1154,7 +1142,7 @@ void func_80009CE0(void) {
     Object *obj;
 
     sp56 = 1 - D_800B6328[PLAYER_2].unk_02;
-    sp54 = D_800AA488[sp56].unk_06;
+    sp54 = D_800AA488[sp56].characterId;
 
     asset_open_folder("/title/ending", 0x4000);
 

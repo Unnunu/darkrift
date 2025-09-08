@@ -382,7 +382,9 @@ typedef struct Object {
     /* 0x058 */ s32 unk_058;
     /* 0x05C */ s32 unk_05C;
     /* 0x060 */ s32 unk_060;
-    /* 0x064 */ char unk_064[0x74 - 0x64];
+    /* 0x064 */ char unk_064[0x70 - 0x64];
+    /* 0x070 */ s16 unk_070;
+    /* 0x072 */ s16 unk_072;
     /* 0x074 */ s16 unk_074;
     /* 0x076 */ s16 unk_076;
     /* 0x078 */ s16 unk_078;
@@ -468,18 +470,9 @@ typedef struct Texture {
     /* 0x28 */ struct Texture *next;
 } Texture; // size = 0x2C
 
-typedef struct PlayerSub1 {
-    /* 0x00 */ char unk_00[2];
-    /* 0x02 */ s16 unk_02;
-} PlayerSub1;
-
-typedef struct PlayerSub2 {
-    /* 0x00 */ s32 unk_00;
-} PlayerSub2;
-
 typedef struct PlayerSub3 {
     /* 0x00 */ s16 unk_00;
-    /* 0x02 */ u16 unk_02;
+    /* 0x02 */ s16 unk_02;
     /* 0x04 */ s32 unk_04;
     /* 0x08 */ s16 unk_08;
     /* 0x0C */ char unk_0C[0x38 - 0xA];
@@ -490,21 +483,50 @@ typedef struct PlayerSub4 {
     /* 0x04 */ f32 unk_04;
 } PlayerSub4;
 
+typedef struct PlayerSub5 {
+    /* 0x00 */ s32 unk_00;
+} PlayerSub5;
+
+typedef struct PlayerSub6 {
+    /* 0x0000 */ char unk_00[0x1458];
+} PlayerSub6; // size = 0x1458;
+
 typedef struct Player {
-    /* 0x0000 */ Object *unk_00; // type?
-    /* 0x0004 */ char unk_04[2];
-    /* 0x0006 */ s16 unk_06;
-    /* 0x0008 */ char unk_08[0x10];
-    /* 0x0018 */ PlayerSub2 *unk_18;
+    /* 0x0000 */ Object *unk_00;
+    /* 0x0004 */ s16 unk_04;
+    /* 0x0006 */ s16 characterId;
+    /* 0x0008 */ ObjectTask *unk_08;
+    /* 0x000C */ ObjectTask *unk_0C;
+    /* 0x0010 */ ObjectTask *unk_10;
+    /* 0x0014 */ ObjectTask *unk_14;
+    /* 0x0018 */ ObjectTask *unk_18;
     /* 0x001C */ char unk_1C[4];
     /* 0x0020 */ PlayerSub3 *unk_20;
-    /* 0x0024 */ char unk_24[0x80 - 0x24];
+    /* 0x0024 */ PlayerSub5 *unk_24;
+    /* 0x0028 */ char unk_28[0x7E - 0x28];
+    /* 0x007E */ s16 unk_7E;
     /* 0x0080 */ s32 unk_80;
     /* 0x0084 */ char unk_84[12];
-    /* 0x0090 */ PlayerSub1 *unk_90;
-    /* 0x0094 */ char unk_94[0x1A0 - 0x94];
+    /* 0x0090 */ PlayerSub3 *unk_90;
+    /* 0x0094 */ char unk_94[0x184 - 0x94];
+    /* 0x0184 */ s8 unk_184;
+    /* 0x0185 */ char unk_185[0x1B];
     /* 0x01A0 */ PlayerSub4 *unk_1A0;
-    /* 0x01A4 */ char unk_1A4[0x5F50 - 0x1A4];
+    /* 0x01A4 */ char unk_1A4[0x28];
+    /* 0x01D0 */ Transform unk_1D0;
+    /* 0x02E8 */ Transform unk_2E8;
+    /* 0x0400 */ char unk_400[0xDC0 - 0x400];
+    /* 0x0DC0 */ void *unk_DC0[3]; // size unknown
+    /* 0x0DCC */ void *unk_DCC[3]; // size unknown
+    /* 0x0DD8 */ char unk_DD8[0x10];
+    /* 0x0DE8 */ PlayerSub6 unk_DE8;
+    /* 0x2240 */ PlayerSub6 unk_2240;
+    /* 0x3698 */ PlayerSub6 unk_3698;
+    /* 0x4AF0 */ PlayerSub6 unk_4AF0;
+    /* 0x5F48 */ s16 unk_5F48;
+    /* 0x5F4A */ u8 unk_5F4A;
+    /* 0x5F4B */ u8 unk_5F4B;
+    /* 0x5F4C */ s32 unk_5F4C;
 } Player; // size = 0x5F50
 
 typedef struct Player12 {
@@ -529,9 +551,17 @@ typedef struct K2Def {
     /* 0x08 */ s16 unk_08;
     /* 0x0A */ s16 unk_0A;
     /* 0x0C */ s32 unk_0C;
+} K2Def;
+
+typedef struct UnkK2Def {
+    /* 0x00 */ char *unk_00;
+    /* 0x04 */ void (*unk_04)(Object *);
+    /* 0x08 */ s16 unk_08;
+    /* 0x0A */ s16 unk_0A;
+    /* 0x0C */ s32 unk_0C;
     /* 0x10 */ s32 unk_10;
     /* 0x14 */ s32 unk_14;
-} K2Def;
+} UnkK2Def;
 
 typedef struct Unk80015E74 {
     /* 0x00 */ char *unk_00;
@@ -548,5 +578,22 @@ typedef struct Unk8000C3CCArg3 {
     /* 0x0C */ ColorRGBA primColor;
     /* 0x0C */ s32 flags;
 } Unk8000C3CCArg3;
+
+typedef struct UnkTauSub {
+    /* 0x00 */ s32 unk_00;
+    /* 0x04 */ s32 unk_04;
+    /* 0x08 */ s32 unk_08;
+    /* 0x0C */ s32 unk_0C;
+    /* 0x10 */ s32 unk_10;
+    /* 0x14 */ s32 unk_14;
+    /* 0x18 */ s32 unk_18;
+    /* 0x1C */ s32 unk_1C;
+} UnkTauSub;
+
+typedef struct UnkTau {
+    /* 0x00 */ UnkTauSub *unk_00;
+    /* 0x04 */ K2Def *unk_04;
+    /* 0x08 */ s32 unk_08[2];
+} UnkTau; // size = 0x10
 
 #endif
