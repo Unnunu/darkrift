@@ -46,8 +46,8 @@ f32 func_80012978(u16 arg0);
 #endif
 
 void func_80012A20(Transform *parent, Transform *arg1, s32 arg2, s32 arg3) {
-    func_80012B34(&arg1->unk_00[0]);
-    func_80012B34(&arg1->unk_00[1]);
+    func_80012B34(&arg1->mtx[0]);
+    func_80012B34(&arg1->mtx[1]);
     func_80012AA8(&arg1->local_matrix);
     func_80012AA8(&arg1->wolrd_matrix);
 

@@ -168,7 +168,7 @@ typedef struct ItemPool {
 } ItemPool; // size >= 0xE
 
 typedef struct Transform {
-    /* 0x00 */ Mtx unk_00[2];
+    /* 0x00 */ Mtx mtx[2];
     /* 0x80 */ struct Transform *firstChild;
     /* 0x84 */ struct Transform *nextSibling;
     /* 0x88 */ struct Transform *parent;
@@ -237,14 +237,11 @@ typedef struct StructAA8 {
 
 typedef struct ModelNode {
     /* 0x00 */ u8 unk_00;
-    /* 0x04 */ s32 unk_04[1];
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ s32 unk_10;
+    /* 0x04 */ s32 unk_04[4];
     /* 0x14 */ Vec3i unk_14;
     /* 0x20 */ s32 unk_20;
     /* 0x24 */ u32 unk_24;
-    /* 0x28 */ Batch *unk_28[4];
+    /* 0x28 */ Batch *unk_28[4]; // union Batch or Mtx
     /* 0x38 */ s32 unk_38[4];
     /* 0x48 */ Gfx *unk_48[4];
 } ModelNode; // size = 0x58
@@ -545,12 +542,17 @@ typedef struct Player12 {
     /* 0x0F */ u8 unk_11;
 } Player12; // size = 0x12
 
+typedef struct K2DefSub {
+    /* 0x00 */ s32 unk_00[4];
+    /* 0x10 */ s32 unk_10;
+} K2DefSub; // size = 0x14
+
 typedef struct K2Def {
     /* 0x00 */ char *unk_00;
     /* 0x04 */ void (*unk_04)(Object *);
     /* 0x08 */ s16 unk_08;
     /* 0x0A */ s16 unk_0A;
-    /* 0x0C */ s32 unk_0C;
+    /* 0x0C */ K2DefSub *unk_0C;
 } K2Def;
 
 typedef struct UnkK2Def {

@@ -438,7 +438,82 @@ void func_8003517C(UnkSam *sam, s32 arg1, Vec4i *arg2) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/model/D_800551D0.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_800352FC.s")
+void func_800352FC(ModelInstance *arg0, K2DefSub *arg1) {
+    u32 s1;
+    s32 s2, s3, s4;
+    u32 sp7C;
+    u32 sp78;
+    s32 s5;
+    s32 tmp;
+    s32 tmp2;
+    K2DefSub *ptr;
+    Vec4i sp58;
+    ModelNode *s7;
+    Transform *sp50;
+    Gfx **sp4C;
+
+    sp50 = arg0->transforms;
+    sp4C = arg0->unk_A24->sam.batches;
+    if (s7) {}
+    sp7C = 0;
+    ptr = arg1;
+    while (ptr->unk_00[0] >= 0) {
+        ptr++;
+        sp7C++;
+    }
+    arg0->unk_9C8 = sp7C;
+
+    arg0->unk_604 = s7 = mem_alloc(sp7C * sizeof(ModelNode), "model.c", 0x21C);
+
+    for (sp78 = 0; sp78 < sp7C; sp78++) {
+        if (arg1->unk_10 >= 0) {
+            func_80034FC8(arg0, tmp = arg1->unk_10, &sp58);
+            s7->unk_14.x = sp58.x;
+            s7->unk_14.y = sp58.y;
+            s7->unk_14.z = sp58.z;
+        } else {
+            s4 = s3 = s2 = 0;
+            for (s1 = 0; s1 < 4; s1++) {
+                if (arg1->unk_00[s1] >= 0) {
+                    func_80034FC8(arg0, tmp = arg1->unk_00[s1], &sp58);
+                    s4 += sp58.x;
+                    s3 += sp58.y;
+                    s2 += sp58.z;
+                } else {
+                    break;
+                }
+            }
+            s7->unk_14.x = s4 / (s32) s1;
+            s7->unk_14.y = s3 / (s32) s1;
+            s7->unk_14.z = s2 / (s32) s1;
+        }
+
+        for (s1 = 0; s1 < 4; s1++) {
+            tmp = s7->unk_04[s1] = arg1->unk_00[s1];
+            if (tmp < 0) {
+                break;
+            }
+        }
+
+        s7->unk_20 = arg1->unk_10;
+        s7->unk_24 = s1;
+
+        for (s5 = 0; s5 < s1; s5++) {
+            tmp2 = s7->unk_04[s5];
+            s7->unk_28[s5] = sp50[tmp2].mtx + 0;
+            s7->unk_28[s1 + s5] = sp50[tmp2].mtx + 1;
+            s7->unk_48[s5] = sp4C[tmp2];
+        }
+
+        s7->unk_00 = 0;
+        s7++;
+        arg1++;
+    }
+
+    for (s1 = 0; s1 < arg0->unk_9C8; s1++) {
+        arg0->unk_608[s1].unk_04 = arg0->unk_604 + s1;
+    }
+}
 
 void func_8003561C(Object *obj, s32 arg1) {
     ModelInstance *model;
@@ -516,7 +591,81 @@ void func_8003561C(Object *obj, s32 arg1) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_800359E4.s")
+void func_800359E4(ModelInstance *arg0, K2DefSub *arg1) {
+    u32 s1;
+    s32 s2, s3, s4;
+    u32 sp7C;
+    u32 sp78;
+    s32 s5;
+    s32 tmp;
+    s32 tmp2;
+    s32 pad3;
+    Vec4i sp58;
+    K2DefSub *ptr;
+    ModelNode *s7;
+    Batch **sp54;
+    u32 pad2;
+
+    sp54 = arg0->unk_A28->batches;
+
+    sp7C = 0;
+    ptr = arg1;
+    while (ptr->unk_00[0] >= 0) {
+        ptr++;
+        sp7C++;
+    }
+    arg0->unk_9C8 = sp7C;
+
+    arg0->unk_604 = s7 = mem_alloc(sp7C * sizeof(ModelNode), "model.c", 0x2B5);
+
+    for (sp78 = 0; sp78 < sp7C; sp78++) {
+        s7->unk_00 = 1;
+        if (arg1->unk_10 >= 0) {
+            func_80034FC8(arg0, tmp = arg1->unk_10, &sp58);
+            s7->unk_14.x = sp58.x;
+            s7->unk_14.y = sp58.y;
+            s7->unk_14.z = sp58.z;
+        } else {
+            s4 = s3 = s2 = 0;
+            for (s1 = 0; s1 < 4; s1++) {
+                if (arg1->unk_00[s1] >= 0) {
+                    func_80034FC8(arg0, tmp2 = arg1->unk_00[s1], &sp58);
+                    s4 += sp58.x;
+                    s3 += sp58.y;
+                    s2 += sp58.z;
+                } else {
+                    break;
+                }
+            }
+            s7->unk_14.x = s4 / (s32) s1;
+            s7->unk_14.y = s3 / (s32) s1;
+            s7->unk_14.z = s2 / (s32) s1;
+        }
+
+        for (s1 = 0; s1 < 4; s1++) {
+            if ((s7->unk_04[s1] = arg1->unk_00[s1]) < 0) {
+                break;
+            }
+        }
+
+        s7->unk_20 = arg1->unk_10;
+        s7->unk_24 = s1;
+
+        pad2 = s1;
+        for (s5 = 0; s5 < pad2; s5++) {
+            s32 tmp2 = s7->unk_04[s5];
+            s7->unk_28[s5] = sp54[tmp2];
+            s7->unk_38[s5] = arg0->unk_A28->batchCounts[tmp2];
+        }
+
+        arg1++;
+        s7++;
+    }
+
+    for (s1 = 0; s1 < arg0->unk_9C8; s1++) {
+        arg0->unk_608[s1].unk_04 = arg0->unk_604 + s1;
+    }
+}
 
 void func_80035CCC(UnkSam *arg0) {
     s32 count;
@@ -542,7 +691,7 @@ void func_80035CCC(UnkSam *arg0) {
         s1->unk_14.z = sp58.z;
 
         s1->unk_04[0] = i;
-        s1->unk_08 = -1;
+        s1->unk_04[1] = -1;
         s1->unk_20 = i;
         s1->unk_24 = temp;
 
@@ -645,7 +794,7 @@ void func_80036228(Transform *arg0, Transform *arg1) {
     Mtx *s0;
     Transform *iter;
 
-    s0 = &arg1->unk_00[D_8005BFCE];
+    s0 = &arg1->mtx[D_8005BFCE];
     math_mtxf2mtx(s0, &arg1->wolrd_matrix);
     arg1->unk_94 = &s0->m[1][2];
 

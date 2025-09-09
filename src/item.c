@@ -412,7 +412,7 @@ Object *func_8002B9AC(Vec4i *arg0, char *arg1, K2Def *arg2, s32 arg3) {
     model->unk_12C = s5->sam.unk_148;
     model->unk_A2C = s5->unk_A64;
 
-    if (arg2 != NULL && arg2->unk_0C != 0) {
+    if (arg2 != NULL && arg2->unk_0C != NULL) {
         func_800352FC(model, arg2->unk_0C);
     } else {
         model->unk_604 = NULL;
@@ -495,7 +495,7 @@ Object *func_8002BC84(Vec4i *arg0, char *arg1, K2Def *arg2, u32 arg3) {
     model->unk_A2C = s5->unk_234;
     model->unk_A0E = -1;
 
-    if (arg2 != NULL && arg2->unk_0C != 0) {
+    if (arg2 != NULL && arg2->unk_0C != NULL) {
         func_800359E4(model, arg2->unk_0C);
     } else {
         model->unk_604 = NULL;
