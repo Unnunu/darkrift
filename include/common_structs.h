@@ -565,7 +565,8 @@ typedef struct Player {
     /* 0x01A4 */ char unk_1A4[0x28];
     /* 0x01D0 */ Transform unk_1D0;
     /* 0x02E8 */ Transform unk_2E8;
-    /* 0x0400 */ char unk_400[0xDC0 - 0x400];
+    /* 0x0400 */ char unk_400[0xDBE - 0x400];
+    /* 0x0DBE */ s16 unk_DBE;
     /* 0x0DC0 */ void *unk_DC0[3]; // size unknown
     /* 0x0DCC */ void *unk_DCC[3]; // size unknown
     /* 0x0DD8 */ char unk_DD8[0x10];

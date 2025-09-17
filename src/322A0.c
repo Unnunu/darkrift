@@ -25,3 +25,5 @@
 #pragma GLOBAL_ASM("asm/nonmatchings/322A0/func_80032044.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/322A0/func_8003208C.s")
+
+#pragma GLOBAL_ASM("asm/nonmatchings/322A0/func_80032130.s")

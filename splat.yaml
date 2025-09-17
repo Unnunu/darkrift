@@ -91,7 +91,7 @@ segments:
       - [0x2CF10, c, opencam]
       - [0x305A0, c]
       - [0x322A0, c]
-      - [0x32D30, c]
+      - [0x32DC0, c, practice]
       - [0x34C90, c, model]
       - [0x396C0, c, task]
       - [0x39A00, c, camera]
@@ -249,7 +249,7 @@ segments:
       - [0x4CC10, data]
       - [0x4D350, .data, cont]
       - [0x4D360, data]
-      - [0x53BF0, .data, 32D30]
+      - [0x53980, .data, practice]
       - [0x53C10, .data, model]
       - [0x53C20, .data, task]
       - [0x53C30, .data, camera]
@@ -292,7 +292,7 @@ segments:
       - [0x55C10, .rodata, opencam]
       - [0x55C50, .rodata, 305A0]
       - [0x55D00, .rodata, 322A0]
-      - [0x55D20, .rodata, 32D30]
+      - [0x55D20, .rodata, practice]
       - [0x55DD0, .rodata, model]
       - [0x55EE0, .rodata, camera]
       - [0x55EF0, .rodata, ../ultralib/src/audio/seq]
@@ -328,6 +328,8 @@ segments:
       - { type: bss, vram: 0x800A4930, name: bss3 }
       - { type: .bss, vram: 0x800B63A0, name: cont }
       - { type: bss, vram: 0x800B6400, name: bss4 }
+      - { type: .bss, vram: 0x8013C3D0, name: practice }
+      - { type: bss, vram: 0x8013C4A0, name: bss5 }
       - { type: .bss, vram: 0x8013C4E0, name: model }
       - { type: .bss, vram: 0x8013C550, name: task }
       - { type: .bss, vram: 0x8013C560, name: camera }
@@ -340,7 +342,7 @@ segments:
       - { type: .bss, vram: 0x8013ED80, name: ../ultralib/src/os/timerintr,  }
       - { type: .bss, vram: 0x8013EDC0, name: ../ultralib/src/io/piacs }
       - { type: .bss, vram: 0x8013EDE0, name: ../ultralib/src/io/siacs }
-      - { type: bss, vram: 0x8013EE00, name: bss5 }
+      - { type: bss, vram: 0x8013EE00, name: bss6 }
       
 
   - type: bin

@@ -34,7 +34,6 @@ extern Player12 D_800B6328[2];
 extern u8 D_800801F1;
 extern u8 D_800B6350[2][11];
 extern s16 D_80080230;
-extern u16 gPracticingPlayer; // wrong name probably
 extern Batch *gMainBatchPos;
 extern Batch *gOverlayBatchPos;
 extern Gfx *gMainGfxPos;
@@ -46,5 +45,17 @@ extern OSMesgQueue gSchedDMAQueue;
 extern UnkTau D_8004B844[];
 extern Object *D_80080228[];
 extern s16 D_8005BED0;
+extern ItemPool D_8013C2B0;
+extern u16 gPracticingPlayer;
+extern s16 *D_800522EC[];
+extern s16 *D_80052524[];
+extern s16 *D_8005264C[];
+extern s16 *D_80052770[];
+extern s16 *D_800523E4[];
+extern s16 *D_80052864[];
+extern s16 *D_8005296C[];
+extern s16 *D_80052A48[];
+extern s16 *D_80052B18[];
+extern s16 *D_80052C18[];
 
 #endif

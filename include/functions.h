@@ -70,5 +70,6 @@ void func_800248C4(Object *);
 void func_8003184C(Object *);
 void func_80010664(Player *, UnkTauSub *);
 void func_800321C0(void);
+void func_8000132C(void);
 
 #endif

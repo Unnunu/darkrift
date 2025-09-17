@@ -2,7 +2,6 @@
 #include "task.h"
 #include "string.h"
 
-extern ItemPool D_8013C2B0;
 extern ItemPool D_8013C2C0;
 
 extern Vec3s D_80049344;
