@@ -249,6 +249,7 @@ segments:
       - [0x4CC10, data]
       - [0x4D350, .data, cont]
       - [0x4D360, data]
+      - [0x53BF0, .data, 32D30]
       - [0x53C10, .data, model]
       - [0x53C20, .data, task]
       - [0x53C30, .data, camera]

@@ -576,7 +576,8 @@ typedef struct Player {
     /* 0x5F48 */ s16 unk_5F48;
     /* 0x5F4A */ u8 unk_5F4A;
     /* 0x5F4B */ u8 unk_5F4B;
-    /* 0x5F4C */ s32 unk_5F4C;
+    /* 0x5F4C */ s16 unk_5F4C;
+    /* 0x5F4E */ s16 unk_5F4E;
 } Player; // size = 0x5F50
 
 typedef struct Player12 {
