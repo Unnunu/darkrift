@@ -1,7 +1,7 @@
 #include "camera.h"
 #include "task.h"
 
-s32 D_80053030 = 0;
+s32 D_80053030[] = { 0 };
 
 Object *gCamera;
 s32 D_8013C564; // unused
@@ -35,11 +35,11 @@ s32 D_8013C838;
 void func_80038E00(Object *obj, s32 arg1) {
     ModelInstance *model = obj->modInst;
 
-    model->unk_A0C = 0;
+    model->currentAnimId = 0;
     obj->unk_086 = model->unk_A0E = -1;
     obj->spriteId = 0;
 
-    *model->unk_12C = arg1;
+    model->animations[0] = arg1;
 
     gCameraTarget.x = gCameraTarget.z = 0;
     gCameraTarget.y = -480;
@@ -56,7 +56,7 @@ void func_80038E00(Object *obj, s32 arg1) {
 
     D_8013C818.x = D_8013C818.y = D_8013C818.z = 0;
 
-    obj->modInst->unk_A08 = 0x7FFF;
+    obj->modInst->numAnimFrames = 0x7FFF;
     gCameraFarClip = 11000;
 }
 
@@ -64,14 +64,14 @@ void func_80038E8C(Object *obj, Vec3i *arg1, s32 arg2, s32 arg3) {
     ModelInstance *model = obj->modInst;
 
     model->unk_A0E = -1;
-    model->unk_A0C = 0;
+    model->currentAnimId = 0;
     obj->unk_086 = model->unk_A0E;
 
     obj->spriteId = 0;
 
-    obj->modInst->unk_A08 = 0x7FFF;
+    obj->modInst->numAnimFrames = 0x7FFF;
 
-    *model->unk_12C = arg3;
+    model->animations[0] = arg3;
 
     obj->rotation.x = obj->rotation.z = 0;
     obj->rotation.y = arg2;
@@ -133,10 +133,10 @@ void camera_update(Object *obj) {
 
     task_execute(obj);
 
-    if (*model->unk_12C) {
-        if (model->unk_A0C != model->unk_A0E) {
+    if (model->animations[0]) {
+        if (model->currentAnimId != model->unk_A0E) {
             func_80037500(obj);
-            model->unk_A0E = model->unk_A0C;
+            model->unk_A0E = model->currentAnimId;
         }
 
         if (obj->spriteId != obj->unk_086) {
@@ -186,7 +186,7 @@ void camera_update(Object *obj) {
     D_8013C668.y = -0xC00 - gCameraHeading;
     D_8013C668.x = -func_80012518(deltaY, sp3C);
 
-    if (!(D_8008012C & 0x20) || *model->unk_12C) {
+    if (!(D_8008012C & 0x20) || model->animations[0]) {
         D_80081428 = D_8013C828;
         D_80049AE8 = D_8013C82C - (s32) (D_8013C830 * 0.2f);
     }
@@ -250,14 +250,14 @@ Object *camera_create(void) {
     func_80012A20(&obj->modInst->unk_010, obj->modInst->transforms, 0, -1);
 
     obj->modInst->unk_9E4.x = obj->modInst->unk_9E4.y = obj->modInst->unk_9E4.z = 0;
-    obj->modInst->unk_12C = &D_80053030;
-    D_80053030 = FALSE;
+    obj->modInst->animations = D_80053030;
+    D_80053030[0] = NULL;
     obj->modInst->unk_A20 = obj->modInst->unk_A1C = obj->modInst->unk_00C = 0;
 
     obj->flags |= 0x20400;
     obj->flags &= ~0x8000;
 
-    obj->modInst->unk_A0C = obj->modInst->unk_A0E = -3;
+    obj->modInst->currentAnimId = obj->modInst->unk_A0E = -3;
 
     camera_default_view();
 

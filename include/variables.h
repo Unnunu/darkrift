@@ -45,5 +45,6 @@ extern u16 gScreenHeight;
 extern OSMesgQueue gSchedDMAQueue;
 extern UnkTau D_8004B844[];
 extern Object *D_80080228[];
+extern s16 D_8005BED0;
 
 #endif

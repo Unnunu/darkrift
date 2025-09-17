@@ -109,7 +109,7 @@ void func_8002E628(Vec4i *arg0, f32 *arg1, f32 *arg2, f32 *arg3) {
     *arg1 = 0;
     *arg3 = 0;
 
-    if (*gCamera->modInst->unk_12C == 0) {
+    if (*gCamera->modInst->animations == 0) {
         *arg1 = gCameraProjectionMatrix.x.x * x + gCameraProjectionMatrix.y.x * y + gCameraProjectionMatrix.z.x * z +
                 gCameraProjectionMatrix.w.x;
         *arg2 = gCameraProjectionMatrix.x.y * x + gCameraProjectionMatrix.y.y * y + gCameraProjectionMatrix.z.y * z +
@@ -413,7 +413,7 @@ void func_8002EB2C(Object *obj) {
 
     D_80081428 = D_8013C828;
 
-    if (*gCamera->modInst->unk_12C == 0 && !(D_800AA488[PLAYER_1].unk_80 & 0x400000) &&
+    if (*gCamera->modInst->animations == 0 && !(D_800AA488[PLAYER_1].unk_80 & 0x400000) &&
             !(D_800AA488[PLAYER_2].unk_80 & 0x400000) ||
         D_8013C250 != 0) {
         func_8002D1A8(obj);

@@ -74,7 +74,6 @@ extern BatchInfo D_8004CD30;
 
 extern u8 gTasksDisabled;
 
-extern s16 D_8005BED0;
 extern u16 D_8005BED2;
 extern BatchInfo D_8005BF00;
 extern u16 D_8005BFC0;

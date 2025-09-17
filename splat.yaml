@@ -249,6 +249,7 @@ segments:
       - [0x4CC10, data]
       - [0x4D350, .data, cont]
       - [0x4D360, data]
+      - [0x53C10, .data, model]
       - [0x53C20, .data, task]
       - [0x53C30, .data, camera]
 
@@ -326,6 +327,7 @@ segments:
       - { type: bss, vram: 0x800A4930, name: bss3 }
       - { type: .bss, vram: 0x800B63A0, name: cont }
       - { type: bss, vram: 0x800B6400, name: bss4 }
+      - { type: .bss, vram: 0x8013C4E0, name: model }
       - { type: .bss, vram: 0x8013C550, name: task }
       - { type: .bss, vram: 0x8013C560, name: camera }
       - { type: .bss, vram: 0x8013C840, name: ../ultralib/src/os/initialize }

@@ -5,23 +5,34 @@
 #include "PR/gt.h"
 
 typedef struct GlobalObjD {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ char unk_0C[0x1C];
+    /* 0x00 */ u32 unk_00;
+    /* 0x04 */ u32 unk_04;
+    /* 0x08 */ u32 unk_08;
+    /* 0x0C */ s32 unk_0C;
+    /* 0x10 */ s32 unk_10;
+    /* 0x14 */ s32 unk_14;
+    /* 0x18 */ s32 unk_18;
+    /* 0x1C */ s32 unk_1C;
+    /* 0x20 */ s32 unk_20;
+    /* 0x24 */ s32 unk_24;
     /* 0x2C */ Object *unk_28;
     /* 0x2C */ struct GlobalObjD *unk_2C;
     /* 0x30 */ struct GlobalObjD *unk_30;
 } GlobalObjD; // size = 0x34
 
-extern ModelNodeRenderInfo *D_8013C4E8;
-extern u32 D_8013C540;
-extern K2Def D_80053010;
 extern Vec4i D_8004934C;
-extern Gfx **D_8013C4E0;
-extern GlobalObjD *D_8013C4EC;
-extern ItemPool D_8013C4F0;
-extern TextureAsset *D_8013C500[];
+
+// .data
+K2Def D_80053010 = { "xxxxxxxxx", NULL, 0, 0xF9C, NULL };
+
+// .bss
+Gfx **D_8013C4E0;
+s32 D_8013C4E4_unused;
+ModelNodeRenderInfo *D_8013C4E8;
+GlobalObjD *D_8013C4EC;
+ItemPool D_8013C4F0;
+TextureAsset *D_8013C500[16];
+u32 D_8013C540;
 
 void func_800028E0(s32 arg0, s32 arg1);
 
@@ -435,8 +446,6 @@ void func_8003517C(UnkSam *sam, s32 arg1, Vec4i *arg2) {
     arg2->y = b / count;
     arg2->z = c / count;
 }
-
-#pragma GLOBAL_ASM("asm/nonmatchings/model/D_800551D0.s")
 
 void func_800352FC(ModelInstance *arg0, K2DefSub *arg1) {
     u32 s1;
@@ -1232,17 +1241,17 @@ void func_800371C0(Object *obj) {
 
     script = model->unk_A14;
     while (*(s32 *) script != -1) {
-        s32 frameStart = script[0];
-        s32 frameEnd = script[1];
+        s32 firstFrame = script[0];
+        s32 lastFrame = script[1];
 
-        if (animFrame > frameEnd || animFrame < frameStart) {
+        if (animFrame > lastFrame || animFrame < firstFrame) {
             if (script[3] & 0xF) {
-                script += frameEnd * 2 - frameStart * 2 + 6;
+                script += lastFrame * 2 - firstFrame * 2 + 6;
                 if ((s32) script & 3) {
                     script += 2;
                 }
             } else {
-                script += frameEnd - frameStart + 5;
+                script += lastFrame - firstFrame + 5;
                 while ((s32) script & 3) {
                     script++;
                 }
@@ -1250,17 +1259,17 @@ void func_800371C0(Object *obj) {
         } else {
             if (script[3] & 0xF) {
                 if (lerp) {
-                    model_anim_param_lerp(script, script + 4 + animFrame * 2 - frameStart * 2, obj);
+                    model_anim_param_lerp(script, script + 4 + animFrame * 2 - firstFrame * 2, obj);
                 } else {
-                    model_anim_param_set(script, script + 4 + animFrame * 2 - frameStart * 2, obj);
+                    model_anim_param_set(script, script + 4 + animFrame * 2 - firstFrame * 2, obj);
                 }
-                script += frameEnd * 2 - frameStart * 2 + 6;
+                script += lastFrame * 2 - firstFrame * 2 + 6;
                 if ((s32) script & 3) {
                     script += 2;
                 }
             } else {
-                model_anim_param_add(script, script + 4 + animFrame - frameStart, obj);
-                script += frameEnd - frameStart + 5;
+                model_anim_param_add(script, script + 4 + animFrame - firstFrame, obj);
+                script += lastFrame - firstFrame + 5;
                 while ((s32) script & 3) {
                     script++;
                 }
@@ -1269,22 +1278,19 @@ void func_800371C0(Object *obj) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_80037394.s")
-/*
-u16 func_80037394(Model *model, s16 arg1) {
-    u8 v1;
+u16 func_80037394(ModelInstance *model, s16 arg1) {
+    AnimEntry *firstEntry;
 
-    v1 = *(model->unk_12C[arg1] + 1);
+    firstEntry = model->animations[arg1]->entries;
 
-    if ((v1 & 0xF0) != 0 && (v1 & 0x0F) != 0) {
-        model->unk_A08 = (u8) (*model->unk_12C[arg1]) * ((v1 & 0xF0) >> 4);
+    if ((firstEntry->b3 & 0xF0) != 0 && (firstEntry->b3 & 0x0F) != 0) {
+        model->numAnimFrames = model->animations[arg1]->b3 * ((firstEntry->b3 & 0xF0) >> 4);
     } else {
-        model->unk_A08 = (u8) (*model->unk_12C[arg1]) * 2;
+        model->numAnimFrames = model->animations[arg1]->b3 * 2;
     }
 
-    return model->unk_A08;
+    return model->numAnimFrames;
 }
-    */
 
 void func_800373FC(Object *obj) {
     ModelInstance *model = obj->modInst;
@@ -1315,12 +1321,12 @@ void func_80037500(Object *obj) {
     s32 v12;
 
     model->unk_00C = 0;
-    model->unk_A14 = model->unk_12C[model->unk_A0C] + 1;
-    v1 = model->unk_A14[3];
+    model->unk_A14 = model->animations[model->currentAnimId]->entries;
+    v1 = model->unk_A14->b3;
     if ((v1 & 0xF0) != 0 && (v1 & 0x0F) != 0) {
-        model->unk_A08 = ((u8 *) (model->unk_12C[model->unk_A0C]))[3] * ((v1 & 0xF0) >> 4);
+        model->numAnimFrames = model->animations[model->currentAnimId]->b3 * ((v1 & 0xF0) >> 4);
     } else {
-        model->unk_A08 = ((u8 *) (model->unk_12C[model->unk_A0C]))[3] * 2;
+        model->numAnimFrames = model->animations[model->currentAnimId]->b3 * 2;
     }
 
     if (model->transforms != NULL) {
@@ -1433,7 +1439,66 @@ void func_80037788(ModelNodeRenderInfo *nodeList, s32 numNodes) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_8003795C.s")
+void func_8003795C(Object *obj) {
+    ModelInstance *model;
+    Transform *s5;
+    Transform *s1;
+    u32 i;
+    Mtx *s6;
+    s32 pad2;
+    s32 sp6C;
+    s32 pad[3];
+
+    model = obj->modInst;
+    sp6C = model->numNodes;
+    s5 = model->transforms;
+    s1 = &obj->transform;
+
+    task_execute(obj);
+
+    math_rotate(&s1->local_matrix, &obj->rotation);
+    math_translate(&s1->local_matrix, &obj->pos);
+    func_80014974(s1);
+
+    D_8013C4E0 = model->unk_A24->sam.dlist;
+
+    if (model->animations != NULL) {
+        if (model->currentAnimId != model->unk_A0E) {
+            func_80037500(obj);
+            model->unk_A0E = model->currentAnimId;
+        }
+
+        if (obj->spriteId != obj->unk_086) {
+            func_800371C0(obj);
+            func_8003635C(obj);
+            obj->unk_086 = obj->spriteId;
+        }
+
+        if (model->unk_604 != NULL) {
+            func_8003561C(obj, 0);
+
+            for (i = 0; i < sp6C; i++) {
+                math_mtxf2mtx(&s5[i].mtx[D_8005BFCE], &s5[i].wolrd_matrix);
+            }
+
+            func_80037788(model->unk_608, model->unk_9C8);
+        } else {
+            for (i = 0; i < sp6C; i++) {
+                s6 = &s5[i].mtx[D_8005BFCE];
+                math_mtxf2mtx(s6, &s5[i].wolrd_matrix);
+                gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(s6), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                gSPDisplayList(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(D_8013C4E0[i]));
+            }
+        }
+    } else {
+        s6 = &s1->mtx[D_8005BFCE];
+        math_mtxf2mtx(s6, &s1->wolrd_matrix);
+        gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(s6), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        for (i = 0; i < sp6C; i++) {
+            gSPDisplayList(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(D_8013C4E0[i]));
+        }
+    }
+}
 
 void func_80037CE4(Object *obj) {
     ModelInstance *model;
@@ -1491,7 +1556,213 @@ void func_80037CE4(Object *obj) {
     D_8013C4E8 = &model->unk_A30;
 }
 
+#ifdef NON_EQUIVALENT
+void func_80037E28(Object *obj) {
+    GameMode *a2;
+    ModelInstance *v1;
+    UnkKappa *v0;
+    u32 t6;     // sp160
+    UnkSam *t0; // sp168
+    u32 t2;     // sp158
+    s32 sp154;
+    GlobalObjD *a1;
+    UnkSamSub *s0;
+    Matrix4f *t4;
+    u32 s7;
+    s32 deltaX, deltaY, deltaZ;
+    s32 absDeltaX, absDeltaY, absDeltaZ;
+    s32 a22;
+    s32 v05;
+    s32 s00, s11, s22;
+    s32 v06;
+    ColorRGBA *ra;
+    s32 a33, t00, t11;
+    s32 temp1;
+    s32 vv0, vv1, tt4;
+    s32 vertId;
+    s32 padding[12];
+    s32 v07;
+    s32 v08;
+    s32 kek;
+    ColorRGBA *col;
+    u8 a;
+    Vec4i *pos;
+    s32 v12;
+    s32 v02;
+    Vtx *vert;
+    s32 sp90;
+    s32 sp8C;
+    s32 sp88;
+    s32 sp84;
+    s32 sp80;
+    s32 sp7C;
+    s32 sp78;
+    s32 sp74;
+    s32 sp70;
+    s32 sp6C;
+    s32 sp68;
+    s32 sp64;
+    s32 sp60;
+    s32 sp5C;
+    s32 sp58;
+    s32 sp54;
+    s32 sp50;
+    s32 sp4C;
+    s32 sp48;
+    s32 sp44;
+    s32 sp40;
+
+    v1 = obj->modInst;
+    t6 = gFrameCounter & 7;
+    a2 = &gGameModes[D_8005BED0];
+
+    t2 = v1->numNodes;
+    t0 = v1->unk_A28;
+    ra = &a2->unk_1C; // TODO make ColorRGBA
+
+    v0 = a2->unk_18;
+    sp6C = v0->unk_0;
+    sp68 = v0->unk_1;
+    sp64 = v0->unk_2;
+    sp54 = v0->unk_4;
+    sp50 = v0->unk_8;
+    sp4C = v0->unk_C;
+    sp60 = v0->unk_10;
+    sp5C = v0->unk_11;
+    sp58 = v0->unk_12;
+    sp48 = v0->unk_14;
+    sp44 = v0->unk_18;
+    sp40 = v0->unk_1C;
+
+    for (a1 = D_8013C4EC; a1 != NULL; a1 = a1->unk_2C) {
+        a = a1->unk_28->unk_088.a;
+        a1->unk_1C = (a1->unk_00 * a) / 256;
+        a1->unk_20 = (a1->unk_04 * a) / 256;
+        a1->unk_24 = (a1->unk_08 * a) / 256;
+    }
+
+    for (; t6 < t2; t6 += 8) {
+        sp154 = t0->unk_394[t6];
+        s0 = t0->unk_324[t6];
+        t4 = &v1->transforms[t6].wolrd_matrix;
+
+        sp90 = (s32) (v1->transforms[t6].wolrd_matrix.x.x * 1024.0f);
+        sp8C = (s32) (v1->transforms[t6].wolrd_matrix.x.y * 1024.0f);
+        sp88 = (s32) (v1->transforms[t6].wolrd_matrix.x.z * 1024.0f);
+        sp84 = (s32) (v1->transforms[t6].wolrd_matrix.y.x * 1024.0f);
+        sp80 = (s32) (v1->transforms[t6].wolrd_matrix.y.y * 1024.0f);
+        sp7C = (s32) (v1->transforms[t6].wolrd_matrix.y.z * 1024.0f);
+        sp78 = (s32) (v1->transforms[t6].wolrd_matrix.z.x * 1024.0f);
+        sp74 = (s32) (v1->transforms[t6].wolrd_matrix.z.y * 1024.0f);
+        sp70 = (s32) (v1->transforms[t6].wolrd_matrix.z.z * 1024.0f);
+
+        for (a1 = D_8013C4EC; a1 != NULL; a1 = a1->unk_2C) {
+            pos = &a1->unk_28->pos;
+            absDeltaX = deltaX = pos->x - t4->w.x;
+            absDeltaY = deltaY = pos->y - t4->w.y;
+            absDeltaZ = deltaZ = pos->z - t4->w.z;
+
+            if (deltaX < 0) {
+                absDeltaX = -deltaX;
+            }
+            if (deltaY < 0) {
+                absDeltaY = -deltaY;
+            }
+            if (deltaZ < 0) {
+                absDeltaZ = -deltaZ;
+            }
+
+            v05 = DISTANCE(absDeltaX, absDeltaZ);
+            temp1 = DISTANCE(v05, absDeltaY) * 128;
+
+            a1->unk_0C = deltaX;
+            a1->unk_10 = deltaY;
+            a1->unk_14 = deltaZ;
+            a1->unk_18 = temp1;
+        }
+
+        for (s7 = 0; s7 < sp154; s7++) {
+            vv0 = s0[s7].unk_00;
+            vv1 = s0[s7].unk_01;
+            tt4 = s0[s7].unk_02;
+
+            a33 = ra->r;
+            t00 = ra->g;
+            t11 = ra->b;
+
+            if (vv0 & 0x80) {
+                vv0 |= ~0xFF;
+            }
+            if (vv1 & 0x80) {
+                vv1 |= ~0xFF;
+            }
+            if (tt4 & 0x80) {
+                tt4 |= ~0xFF;
+            }
+
+            s00 = ((sp90 * vv0) >> 10) + ((sp84 * vv1) >> 10) + ((sp78 * tt4) >> 10);
+            s11 = ((sp8C * vv0) >> 10) + ((sp80 * vv1) >> 10) + ((sp74 * tt4) >> 10);
+            s22 = ((sp88 * vv0) >> 10) + ((sp7C * vv1) >> 10) + ((sp70 * tt4) >> 10);
+
+            v06 = sp54 * s00 + sp50 * s11 + sp4C * s22;
+            if (v06 > 0) {
+                a33 += (sp6C * v06) >> 14;
+                t00 += (sp68 * v06) >> 14;
+                t11 += (sp64 * v06) >> 14;
+            }
+
+            v06 = sp48 * s00 + sp44 * s11 + sp40 * s22;
+            if (v06 > 0) {
+                a33 += (sp60 * v06) >> 14;
+                t00 += (sp5C * v06) >> 14;
+                t11 += (sp58 * v06) >> 14;
+            }
+
+            for (a1 = D_8013C4EC; a1 != NULL; a1 = a1->unk_2C) {
+                v12 = a1->unk_18;
+                v06 = a1->unk_0C * s00 + a1->unk_10 * s11 + a1->unk_14 * s22;
+                if (v06 > 0) {
+                    a33 += (a1->unk_1C * v06) / v12 * 2;
+                    t00 += (a1->unk_20 * v06) / v12 * 2;
+                    t11 += (a1->unk_24 * v06) / v12 * 2;
+                }
+            }
+
+            if (a33 > 255 || t00 > 255 || t11 > 255) {
+                v02 = 0;
+                if (v02 < a33) {
+                    v02 = a33;
+                }
+                if (v02 < t00) {
+                    v02 = t00;
+                }
+                if (v02 < t11) {
+                    v02 = t11;
+                }
+
+                a33 = a33 * 255 / v02;
+                t00 = t00 * 255 / v02;
+                t11 = t11 * 255 / v02;
+            }
+            a22 = 0;
+            while ((kek = s0[s7].unk_44[a22]) >= 0) {
+                vert = &t0->unk_04->nodes[t6].vertices[kek];
+                col = &s0[s7].unk_04[a22];
+                if (col->r != 255 || col->g != 255 || col->b != 255) {
+                    a22++;
+                } else {
+                    vert->v.cn[0] = a33;
+                    vert->v.cn[1] = t00;
+                    vert->v.cn[2] = t11;
+                    a22++;
+                }
+            }
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80037E28.s")
+#endif
 
 void func_800386E8(Object *obj) {
     Batch **s2;
@@ -1537,10 +1808,10 @@ void func_800386E8(Object *obj) {
         obj->rotation.x = D_8013C668.x;
     }
 
-    if (model->unk_12C != NULL) {
-        if (model->unk_A0C != model->unk_A0E) {
+    if (model->animations != NULL) {
+        if (model->currentAnimId != model->unk_A0E) {
             func_80037500(obj);
-            model->unk_A0E = model->unk_A0C;
+            model->unk_A0E = model->currentAnimId;
         }
 
         if (obj->spriteId != obj->unk_086) {

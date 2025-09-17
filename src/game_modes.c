@@ -28,7 +28,6 @@ extern s8 D_80080129;
 extern s16 D_80081250;
 extern Texture *D_80081254;
 extern s16 D_80080116;
-extern s16 D_8005BED0;
 extern s16 D_8005BED2;
 extern Vec4i D_8004934C;
 extern u16 D_8013C24C;
@@ -535,7 +534,7 @@ void func_80007DB0(Player *arg0, Object *arg1, s32 arg2) {
 
         if ((v0 = asset_find(name, arg2)) >= 0) {
             a1 = arg0->unk_20[D_80049434[i]].unk_08;
-            arg1->modInst->unk_12C[a1] = gAssets[v0].data;
+            arg1->modInst->animations[a1] = gAssets[v0].data;
             s4++;
             arg0->unk_20[D_80049434[i]].unk_02 = func_80037394(arg1->modInst, a1);
         }
@@ -794,7 +793,7 @@ void func_80008D0C(Object *obj) {
 
 void func_80008D64(Object *obj) {
     obj->spriteId++;
-    if (obj->spriteId >= obj->modInst->unk_A08 - 1) {
+    if (obj->spriteId >= obj->modInst->numAnimFrames - 1) {
         obj->spriteId = 0;
     }
 }

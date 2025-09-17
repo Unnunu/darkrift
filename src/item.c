@@ -409,7 +409,7 @@ Object *func_8002B9AC(Vec4i *arg0, char *arg1, K2Def *arg2, s32 arg3) {
         obj->modInst->transforms = NULL;
     }
 
-    model->unk_12C = s5->sam.unk_148;
+    model->animations = s5->sam.unk_148;
     model->unk_A2C = s5->unk_A64;
 
     if (arg2 != NULL && arg2->unk_0C != NULL) {
@@ -491,7 +491,7 @@ Object *func_8002BC84(Vec4i *arg0, char *arg1, K2Def *arg2, u32 arg3) {
         obj->modInst->transforms = NULL;
     }
 
-    model->unk_12C = s5->unk_148;
+    model->animations = s5->unk_148;
     model->unk_A2C = s5->unk_234;
     model->unk_A0E = -1;
 
@@ -582,7 +582,7 @@ Object *func_8002BFF0(Vec4i *arg0, s32 arg1, void (*arg2)(Object *), UnkSam *arg
         math_translate(&model->unk_010.local_matrix, &model->unk_9E4);
     }
 
-    model->unk_12C = arg3->unk_148;
+    model->animations = arg3->unk_148;
     model->unk_A2C = arg3->unk_234;
     obj->flags |= 0x44000;
     model->unk_9C8 = s6;
@@ -592,10 +592,10 @@ Object *func_8002BFF0(Vec4i *arg0, s32 arg1, void (*arg2)(Object *), UnkSam *arg
         model->unk_608[i].unk_04 = &arg3->unk_31C[i];
     }
 
-    model->unk_A0C = 0;
+    model->currentAnimId = 0;
     model->unk_A1C = model->unk_A20 = 0;
 
-    if (model->unk_12C != NULL) {
+    if (model->animations != NULL) {
         func_80037500(obj);
     }
 
