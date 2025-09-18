@@ -28,7 +28,6 @@ extern s32 D_80052CC8;
 extern u8 D_80052CE0;
 
 extern s16 D_8008020E;
-extern s32 D_80080210;
 extern Vec4i *D_80080220;
 extern Vec4i *D_80080224;
 extern Object *D_80080228[];
@@ -282,12 +281,12 @@ void func_8002EB2C(Object *obj) {
     }
 
     sp34.x = D_80080220->x;
-    sp34.y = D_800AA488[PLAYER_1].unk_1A0->unk_04;
+    sp34.y = gPlayers[PLAYER_1].unk_1A0->unk_04;
     sp34.z = D_80080220->z;
     func_8002E628(&sp34, &sp60, &sp5C, &sp50);
 
     sp34.x = D_80080224->x;
-    sp34.y = D_800AA488[PLAYER_2].unk_1A0->unk_04;
+    sp34.y = gPlayers[PLAYER_2].unk_1A0->unk_04;
     sp34.z = D_80080224->z;
     func_8002E628(&sp34, &sp58, &sp54, &sp4C);
 
@@ -413,8 +412,8 @@ void func_8002EB2C(Object *obj) {
 
     D_80081428 = D_8013C828;
 
-    if (*gCamera->modInst->animations == 0 && !(D_800AA488[PLAYER_1].unk_80 & 0x400000) &&
-            !(D_800AA488[PLAYER_2].unk_80 & 0x400000) ||
+    if (*gCamera->modInst->animations == 0 && !(gPlayers[PLAYER_1].unk_80 & 0x400000) &&
+            !(gPlayers[PLAYER_2].unk_80 & 0x400000) ||
         D_8013C250 != 0) {
         func_8002D1A8(obj);
     }

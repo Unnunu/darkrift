@@ -81,22 +81,6 @@ enum CharacterIds {
 
 enum Players { PLAYER_1, PLAYER_2 };
 
-enum SpriteIds {
-    GROUP1_AARON = 0,
-    GROUP2_AARON = 0,
-    OPTIONS_PRESS_START = 83,
-    OPTIONS_PLAYER_1 = 85,
-    OPTIONS_PLAYER_2 = 87,
-    PRACTICE_P1_USER = 20,
-    PRACTICE_P1_USER_HL = 21,
-    PRACTICE_P2_USER = 22,
-    PRACTICE_P2_USER_HL = 23,
-    PRACTICE_P1_CPU = 24,
-    PRACTICE_P1_CPU_HL = 25,
-    PRACTICE_P2_CPU = 26,
-    PRACTICE_P2_CPU_HL = 27
-};
-
 enum ObjectFlags { OBJ_FLAG_4000000 = 0x4000000 };
 
 #endif

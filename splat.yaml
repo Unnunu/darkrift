@@ -234,7 +234,7 @@ segments:
       - [0x49E70, .data, thread]
       - [0x49E80, .data, heap]
       - [0x49E90, data]
-      - [0x49FA0, .data, 41D0]
+      - [0x49F90, .data, 41D0]
       - [0x49FD0, data]
       - [0x4A000, .data, game_modes]
       - [0x4A520, data]

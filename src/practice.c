@@ -1,17 +1,18 @@
 #include "common.h"
 #include "task.h"
+#include "sprite_ids.h"
 
 u32 D_80052D80[] = { 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5 };
 
-UIElement D_80052DAC = { 30, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
-UIElement D_80052DC0 = { 31, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
-UIElement D_80052DD4 = { 32, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
-UIElement D_80052DE8 = { 66, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
-UIElement D_80052DFC = { 66, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
-UIElement D_80052E10 = { 1, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
-UIElement D_80052E24 = { 1, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
-UIElement D_80052E38 = { 1, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
-UIElement D_80052E4C = { 0, task_default_func, 0, 0x1000, "practice.sp2" };
+UIElement D_80052DAC = { SPR_PRA_PAUSE_MENU_3, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
+UIElement D_80052DC0 = { SPR_PRA_BLUE_ON, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
+UIElement D_80052DD4 = { SPR_PRA_BLUE_OFF, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
+UIElement D_80052DE8 = { SPR_PRA_AARON, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
+UIElement D_80052DFC = { SPR_PRA_AARON, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
+UIElement D_80052E10 = { SPR_PRA_RED_DIGIT_1, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
+UIElement D_80052E24 = { SPR_PRA_RED_DIGIT_1, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
+UIElement D_80052E38 = { SPR_PRA_RED_DIGIT_1, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
+UIElement D_80052E4C = { SPR_PRA_RED_DIGIT_0, task_default_func, 0, 0x1000, "practice.sp2" };
 
 Vec4i D_80052E60 = { 164, 133, 0, 0 };
 Vec4i D_80052E70 = { 177, 93, 0, 0 };
@@ -30,9 +31,36 @@ Vec4i D_80052F20 = { 86, 51, 0, 0 };
 s16 **D_80052F30[] = { D_800522EC, D_80052524, D_8005264C, D_80052770, D_800523E4,
                        D_80052864, D_8005296C, D_80052A48, D_80052B18, D_80052C18 };
 
-s32 D_80052F58[] = { 0, 78, 53, 0, 80, 0, 0, 0, 55 };
-s32 D_80052F7C[] = { 0, 57, 63, 85, 61, 89, 86, 94, 59, 88, 90, 93, 87, 92, 91, 84 };
-s32 D_80052FBC[] = { 0, 37, 49, 51, 45, 0, 47, 0, 41, 39, 0, 0, 43 };
+s32 D_80052F58[] = { 0, SPR_PRA_BUTTON_L, SPR_PRA_BUTTON_A, 0, SPR_PRA_BUTTON_R, 0, 0, 0, SPR_PRA_BUTTON_B };
+s32 D_80052F7C[] = { 0,
+                     SPR_PRA_BUTTON_C_UP,
+                     SPR_PRA_BUTTON_C_RIGHT,
+                     SPR_PRA_BUTTON_C_UP_RIGHT,
+                     SPR_PRA_BUTTON_C_DOWN,
+                     SPR_PRA_BUTTON_C_UP_DOWN,
+                     SPR_PRA_BUTTON_C_DOWN_RIGHT,
+                     SPR_PRA_BUTTON_C_UP_DOWN_RIGHT,
+                     SPR_PRA_BUTTON_C_LEFT,
+                     SPR_PRA_BUTTON_C_UP_LEFT,
+                     SPR_PRA_BUTTON_C_LEFT_RIGHT,
+                     SPR_PRA_BUTTON_C_UP_LEFT_RIGHT,
+                     SPR_PRA_BUTTON_C_DOWN_LEFT,
+                     SPR_PRA_BUTTON_C_UP_DOWN_LEFT,
+                     SPR_PRA_BUTTON_C_DOWN_LEFT_RIGHT,
+                     SPR_PRA_BUTTON_C_ALL };
+s32 D_80052FBC[] = { 0,
+                     SPR_PRA_ARROW_UP,
+                     SPR_PRA_ARROW_RIGHT,
+                     SPR_PRA_ARROW_UP_RIGHT,
+                     SPR_PRA_ARROW_DOWN,
+                     0,
+                     SPR_PRA_ARROW_DOWN_RIGHT,
+                     0,
+                     SPR_PRA_ARROW_LEFT,
+                     SPR_PRA_ARROW_UP_LEFT,
+                     0,
+                     0,
+                     SPR_PRA_ARROW_DOWN_LEFT };
 
 u16 D_8013C3D0;
 s32 D_8013C3D4_unused;
@@ -46,7 +74,7 @@ s16 D_8013C42A;
 s16 D_8013C42C;
 s32 D_8013C430;
 s32 D_8013C434;
-s32 D_8013C438;
+s32 gPracticePauseMenuSelection;
 s32 D_8013C43C;
 s32 D_8013C440;
 s32 D_8013C444;
@@ -90,10 +118,10 @@ void func_800335BC(void);
 void func_80033958(void);
 void func_80033AB0(void);
 
-void func_800321C0(void) {
+void practice_init_hud(void) {
     Object *temp_v0_2;
 
-    D_8013C438 = 112;
+    gPracticePauseMenuSelection = 112;
     D_8013C430 = 16;
     D_8013C434 = 65;
     D_8013C43C = D_8013C440 = 0;
@@ -101,11 +129,11 @@ void func_800321C0(void) {
 
     D_8013C40A = 0;
     D_8013C444 = 0;
-    D_800AA488[1 - gPracticingPlayer].unk_80 |= 0x200000;
+    gPlayers[1 - gPracticingPlayer].unk_80 |= 0x200000;
     D_800B6328[1 - gPracticingPlayer].unk_02 = 0;
 
     temp_v0_2 = create_ui_element(&D_80052ED0, &D_80052E4C, 0xABAB);
-    temp_v0_2->spriteId = 0x41;
+    temp_v0_2->spriteId = SPR_PRA_DAMAGE;
     temp_v0_2->currentTask->func = func_800332D0;
 
     D_8013C480 = create_ui_element(&D_80052EE0, &D_80052E4C, 0xABAB);
@@ -125,10 +153,10 @@ void func_800321C0(void) {
     D_8013C490->taskList = NULL;
 
     gPlayerInput[gPracticingPlayer].unk_0C = FALSE;
-    D_800AA488[gPracticingPlayer].unk_5F4E = D_800AA488[gPracticingPlayer].unk_5F4C = 0;
+    gPlayers[gPracticingPlayer].unk_5F4E = gPlayers[gPracticingPlayer].unk_5F4C = 0;
 }
 
-void func_80032434(s32 arg0) {
+void practice_enter_pause(s32 playerId) {
     Object *v0;
 
     while (gTaskPool.count < 10 || D_8013C2B0.count < 10) {
@@ -173,9 +201,9 @@ void func_80032434(s32 arg0) {
     v0 = create_worker(func_800327D8, 0x1064);
     task_clear(v0->taskList);
     v0->taskList = NULL;
-    v0->vars[0] = arg0;
+    v0->vars[0] = playerId;
 
-    D_8013C450 = D_8013C438;
+    D_8013C450 = gPracticePauseMenuSelection;
     D_8013C448 = D_8013C430;
     D_8013C44C = D_8013C434;
     D_8013C454 = D_8013C43C;
@@ -201,20 +229,20 @@ void func_80032750(Object *obj) {
 }
 
 void func_800327D8(Object *obj) {
-    s16 sp1E;
-    u16 sp1C;
+    s16 playerId;
+    u16 buttons;
 
-    sp1E = obj->vars[0];
-    sp1C = 0;
+    playerId = obj->vars[0];
+    buttons = 0;
 
     func_80002178(160, NULL);
 
-    if (gPlayerInput[sp1E].unk_08) {
-        sp1C = gPlayerInput[sp1E].raw_buttons;
-        gPlayerInput[sp1E].unk_08 = FALSE;
+    if (gPlayerInput[playerId].unk_08) {
+        buttons = gPlayerInput[playerId].raw_buttons;
+        gPlayerInput[playerId].unk_08 = FALSE;
     }
 
-    if (!sp1C) {
+    if (!buttons) {
         obj->vars[1] = 0;
         return;
     }
@@ -224,30 +252,30 @@ void func_800327D8(Object *obj) {
     }
     obj->vars[1] = 10;
 
-    if (sp1C & INP_DOWN) {
-        D_8013C438++;
-        if (D_8013C438 > 118) {
-            D_8013C438 = 112;
+    if (buttons & INP_DOWN) {
+        gPracticePauseMenuSelection++;
+        if (gPracticePauseMenuSelection > 118) {
+            gPracticePauseMenuSelection = 112;
         }
 
-        if (D_8013C438 == 114 && D_8013C430 != 18) {
-            D_8013C438 = 115;
-        } else if (D_8013C438 == 116 && D_8013C434 != 66) {
-            D_8013C438 = 117;
+        if (gPracticePauseMenuSelection == 114 && D_8013C430 != 18) {
+            gPracticePauseMenuSelection = 115;
+        } else if (gPracticePauseMenuSelection == 116 && D_8013C434 != 66) {
+            gPracticePauseMenuSelection = 117;
         }
-    } else if (sp1C & INP_UP) {
-        D_8013C438--;
-        if (D_8013C438 < 112) {
-            D_8013C438 = 118;
+    } else if (buttons & INP_UP) {
+        gPracticePauseMenuSelection--;
+        if (gPracticePauseMenuSelection < 112) {
+            gPracticePauseMenuSelection = 118;
         }
 
-        if (D_8013C438 == 114 && D_8013C430 != 18) {
-            D_8013C438 = 113;
-        } else if (D_8013C438 == 116 && D_8013C434 != 66) {
-            D_8013C438 = 115;
+        if (gPracticePauseMenuSelection == 114 && D_8013C430 != 18) {
+            gPracticePauseMenuSelection = 113;
+        } else if (gPracticePauseMenuSelection == 116 && D_8013C434 != 66) {
+            gPracticePauseMenuSelection = 115;
         }
-    } else if (sp1C & INP_RIGHT) {
-        switch (D_8013C438) {
+    } else if (buttons & INP_RIGHT) {
+        switch (gPracticePauseMenuSelection) {
             case 113:
                 D_8013C430++;
                 if (D_8013C430 > 18) {
@@ -262,21 +290,21 @@ void func_800327D8(Object *obj) {
                 break;
             case 114:
                 D_8013C43C++;
-                if (D_8013C43C >= D_80052D80[D_800AA488[sp1E].characterId]) {
+                if (D_8013C43C >= D_80052D80[gPlayers[playerId].characterId]) {
                     D_8013C43C = 0;
                 }
                 break;
             case 116:
                 D_8013C440++;
-                if (D_8013C440 >= D_80052D80[D_800AA488[1 - sp1E].characterId]) {
+                if (D_8013C440 >= D_80052D80[gPlayers[1 - playerId].characterId]) {
                     D_8013C440 = 0;
                 }
                 break;
         }
     }
 
-    if (sp1C & INP_LEFT) {
-        switch (D_8013C438) {
+    if (buttons & INP_LEFT) {
+        switch (gPracticePauseMenuSelection) {
             case 113:
                 D_8013C430--;
                 if (D_8013C430 < 16) {
@@ -292,20 +320,20 @@ void func_800327D8(Object *obj) {
             case 114:
                 D_8013C43C--;
                 if (D_8013C43C < 0) {
-                    D_8013C43C = D_80052D80[D_800AA488[sp1E].characterId] - 1;
+                    D_8013C43C = D_80052D80[gPlayers[playerId].characterId] - 1;
                 }
                 break;
             case 116:
                 D_8013C440--;
                 if (D_8013C440 < 0) {
-                    D_8013C440 = D_80052D80[D_800AA488[1 - sp1E].characterId] - 1;
+                    D_8013C440 = D_80052D80[gPlayers[1 - playerId].characterId] - 1;
                 }
                 break;
         }
     }
 
-    if (sp1C & INP_START) {
-        switch (D_8013C438) {
+    if (buttons & INP_START) {
+        switch (gPracticePauseMenuSelection) {
             case 118:
                 D_8005BFC0 |= 0xC1;
                 gGameMode = GAME_MODE_0;
@@ -314,7 +342,7 @@ void func_800327D8(Object *obj) {
             case 112:
                 D_8005BFC0 |= 0x40;
                 obj->flags |= 0x10;
-                D_8013C438 = D_8013C450;
+                gPracticePauseMenuSelection = D_8013C450;
                 D_8013C430 = D_8013C448;
                 D_8013C434 = D_8013C44C;
                 D_8013C43C = D_8013C454;
@@ -341,11 +369,11 @@ void func_80032CEC(Object *obj) {
 
 void func_80032D2C(Object *obj) {
     D_8013C45C = D_8013C45D = D_8013C45E = D_8013C45F = FALSE;
-    obj->spriteId = 77;
+    obj->spriteId = SPR_PRA_PAUSE_MENU_4;
 
-    switch (D_8013C438) {
+    switch (gPracticePauseMenuSelection) {
         case 112:
-            obj->spriteId = 28;
+            obj->spriteId = SPR_PRA_PAUSE_MENU_1;
             break;
         case 113:
             D_8013C45C = TRUE;
@@ -354,7 +382,7 @@ void func_80032D2C(Object *obj) {
             D_8013C45D = TRUE;
             break;
         case 117:
-            obj->spriteId = 29;
+            obj->spriteId = SPR_PRA_PAUSE_MENU_2;
             break;
         case 114:
             D_8013C45E = TRUE;
@@ -363,7 +391,7 @@ void func_80032D2C(Object *obj) {
             D_8013C45F = TRUE;
             break;
         case 118:
-            obj->spriteId = 30;
+            obj->spriteId = SPR_PRA_PAUSE_MENU_3;
             break;
     }
     func_80032CEC(obj);
@@ -372,16 +400,16 @@ void func_80032D2C(Object *obj) {
 void func_80032E00(Object *obj) {
     switch (D_8013C430) {
         case 16:
-            obj->spriteId = 31;
+            obj->spriteId = SPR_PRA_BLUE_ON;
             func_800335BC();
             break;
         case 17:
-            obj->spriteId = 32;
+            obj->spriteId = SPR_PRA_BLUE_OFF;
             func_800335BC();
             break;
         case 18:
-            obj->spriteId = 33;
-            if (D_8013C434 == 66 && D_8013C438 != 115) {
+            obj->spriteId = SPR_PRA_BLUE_COMBOS;
+            if (D_8013C434 == 66 && gPracticePauseMenuSelection != 115) {
                 D_8013C434 = 65;
             }
             func_80033958();
@@ -397,21 +425,21 @@ void func_80032E00(Object *obj) {
 void func_80032EDC(Object *obj) {
     switch (D_8013C434) {
         case 64:
-            obj->spriteId = 31;
-            D_800AA488[1 - gPracticingPlayer].unk_DBE = 50;
-            D_800AA488[1 - gPracticingPlayer].unk_80 &= ~0x200000;
+            obj->spriteId = SPR_PRA_BLUE_ON;
+            gPlayers[1 - gPracticingPlayer].unk_DBE = 50;
+            gPlayers[1 - gPracticingPlayer].unk_80 &= ~0x200000;
             break;
         case 66:
             if (D_8013C430 == 18) {
                 D_8013C430 = 16;
             }
-            obj->spriteId = 33;
+            obj->spriteId = SPR_PRA_BLUE_COMBOS;
             func_80033AB0();
-            D_800AA488[1 - gPracticingPlayer].unk_80 |= 0x200000;
+            gPlayers[1 - gPracticingPlayer].unk_80 |= 0x200000;
             break;
         case 65:
-            obj->spriteId = 32;
-            D_800AA488[1 - gPracticingPlayer].unk_80 |= 0x200000;
+            obj->spriteId = SPR_PRA_BLUE_OFF;
+            gPlayers[1 - gPracticingPlayer].unk_80 |= 0x200000;
             break;
     }
 
@@ -422,14 +450,14 @@ void func_80032EDC(Object *obj) {
 }
 
 void func_8003307C(Object *obj) {
-    s16 v0;
+    s16 characterId;
 
     if (D_8013C430 == 18) {
-        v0 = D_800AA488[gPracticingPlayer].characterId;
-        if (v0 >= CHARACTER_5) {
-            v0--;
+        characterId = gPlayers[gPracticingPlayer].characterId;
+        if (characterId >= CHARACTER_5) {
+            characterId--;
         }
-        obj->spriteId = v0 + 66;
+        obj->spriteId = characterId + SPR_PRA_AARON;
         obj->flags &= ~4;
     } else {
         obj->flags |= 4;
@@ -439,14 +467,14 @@ void func_8003307C(Object *obj) {
 }
 
 void func_80033124(Object *obj) {
-    s16 v0;
+    s16 characterId;
 
     if (D_8013C434 == 66) {
-        v0 = D_800AA488[1 - gPracticingPlayer].characterId;
-        if (v0 >= CHARACTER_5) {
-            v0--;
+        characterId = gPlayers[1 - gPracticingPlayer].characterId;
+        if (characterId >= CHARACTER_5) {
+            characterId--;
         }
-        obj->spriteId = v0 + 66;
+        obj->spriteId = characterId + SPR_PRA_AARON;
         obj->flags &= ~4;
     } else {
         obj->flags |= 4;
@@ -458,13 +486,13 @@ void func_80033124(Object *obj) {
 void func_800331D0(Object *obj) {
     if (D_8013C430 == 18) {
         obj->flags &= ~4;
-        obj->spriteId = D_8013C43C + 1;
+        obj->spriteId = D_8013C43C + SPR_PRA_RED_DIGIT_1;
     } else {
         obj->flags |= 4;
     }
 
     if (D_8013C45E) {
-        obj->spriteId = D_8013C43C + 11;
+        obj->spriteId = D_8013C43C + SPR_PRA_GREEN_DIGIT_1;
     }
     func_80032CEC(obj);
 }
@@ -472,13 +500,13 @@ void func_800331D0(Object *obj) {
 void func_80033250(Object *obj) {
     if (D_8013C434 == 66) {
         obj->flags &= ~4;
-        obj->spriteId = D_8013C440 + 1;
+        obj->spriteId = D_8013C440 + SPR_PRA_RED_DIGIT_1;
     } else {
         obj->flags |= 4;
     }
 
     if (D_8013C45F) {
-        obj->spriteId = D_8013C440 + 11;
+        obj->spriteId = D_8013C440 + SPR_PRA_GREEN_DIGIT_1;
     }
     func_80032CEC(obj);
 }
@@ -493,7 +521,7 @@ void func_800332D0(Object *obj) {
     u32 nv = 100U;
     u32 nv2 = 10;
 
-    player = &D_800AA488[gPracticingPlayer];
+    player = &gPlayers[gPracticingPlayer];
 
     v1 = player->unk_5F4E;
     if (v1 > 99) {
@@ -533,7 +561,7 @@ void func_800333F4(void) {
     D_8013C408 = 0;
     sp4C.y -= 20;
     D_8013C460 = create_ui_element(&sp3C, &D_80052DAC, 0xABAB);
-    D_8013C460->spriteId = 76;
+    D_8013C460->spriteId = SPR_PRA_AUTO_PLAY;
     D_8013C460->currentTask->func = func_80033E94;
 }
 
@@ -659,8 +687,8 @@ void func_80033958(void) {
     s16 *tmp2;
     s16 t3;
 
-    s2 = D_800AA488 + gPracticingPlayer;
-    v1 = D_800AA488[gPracticingPlayer].characterId;
+    s2 = gPlayers + gPracticingPlayer;
+    v1 = gPlayers[gPracticingPlayer].characterId;
     if (v1 >= CHARACTER_5) {
         v1--;
     }
@@ -695,8 +723,8 @@ void func_80033AB0(void) {
     s16 *tmp2;
     s16 t3;
 
-    s2 = D_800AA488 + 1 - gPracticingPlayer;
-    v1 = D_800AA488[1 - gPracticingPlayer].characterId;
+    s2 = gPlayers + 1 - gPracticingPlayer;
+    v1 = gPlayers[1 - gPracticingPlayer].characterId;
     if (v1 >= CHARACTER_5) {
         v1--;
     }
@@ -729,7 +757,7 @@ void func_80033C38(void) {
         a2 = (D_8013C430 == 18) ? gPracticingPlayer : 1 - gPracticingPlayer;
 
         if (D_8013C42A < D_8013C428) {
-            new_var = &D_800AA488[a2].unk_2C[D_8013C410[D_8013C42A]];
+            new_var = &gPlayers[a2].unk_2C[D_8013C410[D_8013C42A]];
             gPlayerInput[a2].buttons = new_var->unk_02;
             gPlayerInput[a2].unk_08 = TRUE;
         } else {
@@ -749,7 +777,7 @@ void func_80033D64(void) {
     } else {
         a2 = 1 - gPracticingPlayer;
     }
-    player = &D_800AA488[a2];
+    player = &gPlayers[a2];
 
     if (D_8013C444 != 0) {
         func_80033C38();
@@ -801,12 +829,12 @@ void func_80033FB0(Object *obj) {
     }
 
     if (gPlayerInput[gPracticingPlayer].unk_09) {
-        if (obj->vars[2] != 0x29) {
-            if (obj->vars[2] == 0x31) {
-                obj->spriteId = (q = (obj->spriteId & 1) == 0) + 0x29;
+        if (obj->vars[2] != SPR_PRA_ARROW_LEFT) {
+            if (obj->vars[2] == SPR_PRA_ARROW_RIGHT) {
+                obj->spriteId = (q = (obj->spriteId & 1) == 0) + SPR_PRA_ARROW_LEFT;
             }
         } else {
-            obj->spriteId = (q = (obj->spriteId & 1) == 0) + 0x31;
+            obj->spriteId = (q = (obj->spriteId & 1) == 0) + SPR_PRA_ARROW_RIGHT;
         }
     } else {
         obj->spriteId = (q = (obj->spriteId & 1) == 0) + obj->vars[2];

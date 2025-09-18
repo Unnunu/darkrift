@@ -1,4 +1,5 @@
 #include "common.h"
+#include "sprite_ids.h"
 
 #define VAR_PLAYER_ID 0
 #define VAR_SPRITE_ID_SUM 1
@@ -369,7 +370,7 @@ void plyrsel_practice_user_update(Object *obj) {
     }
 
     if (gPlayerInput[obj->vars[VAR_PLAYER_ID]].buttons & INP_START) {
-        obj->spriteId = PRACTICE_P2_CPU - 2 * obj->vars[0];
+        obj->spriteId = SPR_PRA_P2_CPU - 2 * obj->vars[0];
         obj->vars[VAR_SPRITE_ID_SUM] = obj->spriteId * 2 + 1;
         obj->pos.x = 245 - obj->vars[VAR_PLAYER_ID] * 167;
 
@@ -392,8 +393,8 @@ void run_player_selection_mode(void) {
     UIElement counter_ones = { 0, func_8001E378, 0, 0x1000, "bars.sp2" };
     UIElement counter_tens = { 6, NULL, 0, 0x1000, "bars.sp2" };
     UIElement label_press_start = { OPTIONS_PRESS_START, plyrsel_practice_cpu_update, 0, 0x1000, "options2.sp2" };
-    UIElement p1_user = { PRACTICE_P1_USER, plyrsel_practice_user_update, 0, 0x1000, "practice.sp2" };
-    UIElement p2_user = { PRACTICE_P2_USER, plyrsel_practice_user_update, 0, 0x1000, "practice.sp2" };
+    UIElement p1_user = { SPR_PRA_P1_USER, plyrsel_practice_user_update, 0, 0x1000, "practice.sp2" };
+    UIElement p2_user = { SPR_PRA_P2_USER, plyrsel_practice_user_update, 0, 0x1000, "practice.sp2" };
     Vec4i portrait_p1_pos = { 84, 129, 0, 0 };
     Vec4i portrait_p2_pos = { 252, 129, 0, 0 };
     Vec4i label_player1_pos = { 56, 60, 0, 0 };
@@ -468,11 +469,11 @@ void run_player_selection_mode(void) {
             if (gPracticingPlayer == PLAYER_1) {
                 obj = create_ui_element(&sp50, &p1_user, CONTEXT_EEFF);
                 obj->vars[VAR_PLAYER_ID] = PLAYER_1;
-                obj->vars[VAR_SPRITE_ID_SUM] = PRACTICE_P1_USER * 2 + 1;
+                obj->vars[VAR_SPRITE_ID_SUM] = SPR_PRA_P1_USER * 2 + 1;
             } else {
                 obj = create_ui_element(&sp40, &p2_user, CONTEXT_EEFF);
                 obj->vars[VAR_PLAYER_ID] = PLAYER_2;
-                obj->vars[VAR_SPRITE_ID_SUM] = PRACTICE_P2_USER * 2 + 1;
+                obj->vars[VAR_SPRITE_ID_SUM] = SPR_PRA_P2_USER * 2 + 1;
             }
             asset_open_folder("/plyrsel/select3", CONTEXT_EEFF);
             break;

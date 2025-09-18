@@ -151,7 +151,7 @@ void func_80034508(void) {
     func_8002A8C0(&D_8013C4F0, 5, sizeof(GlobalObjD));
 }
 
-void func_8003453C(Object *obj, u8 *arg1) {
+void func_8003453C(Object *obj, ColorRGBA *arg1) {
     GlobalObjD *objD;
 
     if (D_8013C4F0.count == 0) {
@@ -169,9 +169,9 @@ void func_8003453C(Object *obj, u8 *arg1) {
     D_8013C4EC = objD;
 
     objD->unk_28 = obj;
-    objD->unk_00 = arg1[0];
-    objD->unk_04 = arg1[1];
-    objD->unk_08 = arg1[2];
+    objD->unk_00 = arg1->r;
+    objD->unk_04 = arg1->g;
+    objD->unk_08 = arg1->b;
     obj->unk_208 = objD;
 }
 

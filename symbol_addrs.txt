@@ -334,7 +334,7 @@ gScreenHeight = 0x8005BFCA;
 obj_update_all = 0x8002B0AC;
 bg_draw = 0x800153C4;
 
-D_800AA488 = 0x800AA488; //size:0xBEA0
+gPlayers = 0x800AA488; //size:0xBEA0
 D_800B6328 = 0x800B6328; //size:0x24
 
 create_ui_element = 0x8002BBD4;
@@ -355,3 +355,5 @@ gOverlayBatchPos = 0x8005BFE8;
 
 mem_fill = 0x80000E0C;
 heap_set_move_callback = 0x800010D4;
+
+practice_enter_pause = 0x80032434;

@@ -20,7 +20,7 @@ extern s32 gFrameCounter;
 extern Matrix4f D_800813E0;
 extern OSMesgQueue gSchedSPTaskQueue;
 extern Batch *gMainBatchPos;
-extern Player D_800AA488[2];
+extern Player gPlayers[2];
 extern GameMode gGameModes[];
 extern s16 D_80080110;
 extern s16 D_80080112;
@@ -57,5 +57,6 @@ extern s16 *D_8005296C[];
 extern s16 *D_80052A48[];
 extern s16 *D_80052B18[];
 extern s16 *D_80052C18[];
+extern s32 D_80080210;
 
 #endif

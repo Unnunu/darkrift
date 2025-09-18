@@ -1,5 +1,6 @@
 #include "common.h"
 #include "camera.h"
+#include "sprite_ids.h"
 
 typedef struct UnkObjDef2 {
     /* 0x00 */ s32 unk_00;
@@ -97,8 +98,8 @@ void func_80006AE0(void) {
     }
 
     D_800801F0 = 0;
-    D_800AA488[PLAYER_1].unk_80 |= 0x100000;
-    D_800AA488[PLAYER_2].unk_80 |= 0x100000;
+    gPlayers[PLAYER_1].unk_80 |= 0x100000;
+    gPlayers[PLAYER_2].unk_80 |= 0x100000;
     D_80051F6C = D_80051F70 = D_8013C2A8 = D_8013C2AA = 0;
     D_8013C250 = 0;
 }
@@ -114,8 +115,8 @@ void func_80006C14(void) {
     }
 
     D_800801F0 = 0;
-    D_800AA488[PLAYER_1].unk_80 |= 0x100000;
-    D_800AA488[PLAYER_2].unk_80 |= 0x100000;
+    gPlayers[PLAYER_1].unk_80 |= 0x100000;
+    gPlayers[PLAYER_2].unk_80 |= 0x100000;
     D_800801F1 = 0;
     D_80051F6C = D_80051F70 = D_8013C2A8 = D_8013C2AA = 0;
 }
@@ -575,8 +576,8 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
     D_80080228[s0]->pos.z = -5000;
     D_80080228[s0]->flags |= 4;
 
-    D_800AA488[PLAYER_1].unk_80 |= 0x400000;
-    D_800AA488[PLAYER_2].unk_80 |= 0x400000;
+    gPlayers[PLAYER_1].unk_80 |= 0x400000;
+    gPlayers[PLAYER_2].unk_80 |= 0x400000;
 
     if (D_800B6328[1 - s0].characterId != MORPHIX) {
         a1->flags |= 0x10000000;
@@ -589,15 +590,15 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
 
     D_800801F0 = 0;
 
-    D_800AA488[PLAYER_1].unk_80 |= 0x100000;
-    D_800AA488[PLAYER_2].unk_80 |= 0x100000;
+    gPlayers[PLAYER_1].unk_80 |= 0x100000;
+    gPlayers[PLAYER_2].unk_80 |= 0x100000;
 
-    D_800AA488[PLAYER_1].unk_18->flags |= 0x80;
-    D_800AA488[PLAYER_2].unk_18->flags |= 0x80;
+    gPlayers[PLAYER_1].unk_18->flags |= 0x80;
+    gPlayers[PLAYER_2].unk_18->flags |= 0x80;
 
-    func_80007DB0(D_800AA488 + 1 - s0, a1, arg2);
+    func_80007DB0(gPlayers + 1 - s0, a1, arg2);
     func_8002DA08(gCamera);
-    func_8000636C(D_800AA488 + 1 - s0, arg1, 1);
+    func_8000636C(gPlayers + 1 - s0, arg1, 1);
     D_8008012C |= 4;
 }
 
@@ -784,7 +785,7 @@ void func_80008BE8(void) {
 }
 
 void func_80008D0C(Object *obj) {
-    if (D_800AA488->unk_00->spriteId + 2 == D_800AA488->unk_90->unk_02) {
+    if (gPlayers->unk_00->spriteId + 2 == gPlayers->unk_90->unk_02) {
         D_8005BFC0 |= 1;
         obj->flags |= 0x10;
         gGameMode = GAME_MODE_LOGO;
@@ -861,7 +862,7 @@ void func_80008FDC(void) {
     func_800052EC(0);
     func_800052EC(1);
 
-    a1 = D_800AA488[sp42].unk_00;
+    a1 = gPlayers[sp42].unk_00;
     a1->pos.x = a1->pos.z = 0;
     a1->rotation.y = 0x400;
 
@@ -869,8 +870,8 @@ void func_80008FDC(void) {
     D_80080228[1 - sp42]->pos.z = -5000;
     D_80080228[1 - sp42]->flags |= 4;
 
-    D_800AA488[PLAYER_1].unk_80 |= 0x400000;
-    D_800AA488[PLAYER_2].unk_80 |= 0x400000;
+    gPlayers[PLAYER_1].unk_80 |= 0x400000;
+    gPlayers[PLAYER_2].unk_80 |= 0x400000;
 
     a1->flags |= 0x10000000;
     D_8005BFC0 |= 4;
@@ -880,14 +881,14 @@ void func_80008FDC(void) {
 
     D_800801F0 = 0;
 
-    D_800AA488[PLAYER_1].unk_80 |= 0x100000;
-    D_800AA488[PLAYER_2].unk_80 |= 0x100000;
-    D_800AA488[PLAYER_1].unk_18->flags |= 0x80;
-    D_800AA488[PLAYER_2].unk_18->flags |= 0x80;
+    gPlayers[PLAYER_1].unk_80 |= 0x100000;
+    gPlayers[PLAYER_2].unk_80 |= 0x100000;
+    gPlayers[PLAYER_1].unk_18->flags |= 0x80;
+    gPlayers[PLAYER_2].unk_18->flags |= 0x80;
 
-    func_80007DB0(&D_800AA488[sp42], a1, 0x3000);
+    func_80007DB0(&gPlayers[sp42], a1, 0x3000);
     func_8002DA08(gCamera);
-    func_8000636C(&D_800AA488[sp42], 346, 1);
+    func_8000636C(&gPlayers[sp42], 346, 1);
     D_8008012C |= 4;
     create_worker(func_8001A674, 0x1000);
     func_80006AE0();
@@ -914,7 +915,7 @@ void func_800092B0(void) {
     char sp38[12];
 
     var1 = 1 - D_800B6328[PLAYER_2].unk_02;
-    sp54 = D_800AA488[var1].characterId;
+    sp54 = gPlayers[var1].characterId;
     func_800263A8();
     asset_open_folder("/title/ending", 0x4000);
 
@@ -1002,11 +1003,11 @@ void func_800096D0(u8 arg0) {
     func_800052EC(0);
     func_800052EC(1);
 
-    s0 = D_800AA488[t9].unk_00;
-    a3 = D_800AA488[nv].unk_00;
+    s0 = gPlayers[t9].unk_00;
+    a3 = gPlayers[nv].unk_00;
 
-    D_800AA488[PLAYER_1].unk_80 |= 0x400000;
-    D_800AA488[PLAYER_2].unk_80 |= 0x400000;
+    gPlayers[PLAYER_1].unk_80 |= 0x400000;
+    gPlayers[PLAYER_2].unk_80 |= 0x400000;
 
     s0->pos.x = sp58[1].x;
     s0->pos.y = sp58[1].y;
@@ -1017,10 +1018,10 @@ void func_800096D0(u8 arg0) {
 
     if (!arg0) {
         if (D_800B6328[t9].characterId == SONORK) {
-            D_800AA488[t9].unk_00->pos.x -= 400;
+            gPlayers[t9].unk_00->pos.x -= 400;
         } else if (D_800B6328[t9].characterId == DEMONICA) {
-            D_800AA488[t9].unk_00->pos.x += 1200;
-            if (D_800AA488[nv].unk_00) {} // required to match
+            gPlayers[t9].unk_00->pos.x += 1200;
+            if (gPlayers[nv].unk_00) {} // required to match
         }
     }
 
@@ -1043,14 +1044,14 @@ void func_800096D0(u8 arg0) {
     gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = TRUE;
     D_800801F0 = 0;
 
-    D_800AA488[PLAYER_1].unk_80 |= 0x100000;
-    D_800AA488[PLAYER_2].unk_80 |= 0x100000;
-    D_800AA488[PLAYER_1].unk_18->flags |= 0x80;
-    D_800AA488[PLAYER_2].unk_18->flags |= 0x80;
+    gPlayers[PLAYER_1].unk_80 |= 0x100000;
+    gPlayers[PLAYER_2].unk_80 |= 0x100000;
+    gPlayers[PLAYER_1].unk_18->flags |= 0x80;
+    gPlayers[PLAYER_2].unk_18->flags |= 0x80;
 
     func_8002DA08(gCamera);
-    func_80007DB0(&D_800AA488[nv], a3, 0x4000);
-    func_80007DB0(&D_800AA488[t9], s0, 0x4000);
+    func_80007DB0(&gPlayers[nv], a3, 0x4000);
+    func_80007DB0(&gPlayers[t9], s0, 0x4000);
     D_8008012C |= 4;
     load_background("bg2", 0, -27, 0x2000, 0x10000, 0, nv);
     load_background("bg0", nv * 0, 8, 0x1000, 0x10000, 1, nv);
@@ -1124,8 +1125,8 @@ void func_800099F0(void) {
 
     func_800096D0(FALSE);
     asset_open_folder("/demi/demidust", 0xABAB);
-    func_8000636C(&D_800AA488[sp7E], 365, 1);
-    func_8000636C(&D_800AA488[sp24], 366, 1);
+    func_8000636C(&gPlayers[sp7E], 365, 1);
+    func_8000636C(&gPlayers[sp24], 366, 1);
     create_worker(func_8001A7DC, 0x1000);
     func_80001D88();
     func_8002630C(0x4000);
@@ -1141,7 +1142,7 @@ void func_80009CE0(void) {
     Object *obj;
 
     sp56 = 1 - D_800B6328[PLAYER_2].unk_02;
-    sp54 = D_800AA488[sp56].characterId;
+    sp54 = gPlayers[sp56].characterId;
 
     asset_open_folder("/title/ending", 0x4000);
 
@@ -1182,8 +1183,8 @@ void func_80009E8C(void) {
     sp7E = D_800B6328[PLAYER_2].unk_06;
     sp24 = 1 - sp7E;
 
-    player2 = &D_800AA488[sp24];
-    player1 = &D_800AA488[sp7E];
+    player2 = &gPlayers[sp24];
+    player1 = &gPlayers[sp7E];
 
     D_800801F0 = 1;
     D_80080234 = 1;

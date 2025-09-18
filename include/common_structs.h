@@ -560,7 +560,8 @@ typedef struct Player {
     /* 0x00A0 */ PlayerSub7 *unk_A0;
     /* 0x00A4 */ char unk_A4[0x184 - 0xA4];
     /* 0x0184 */ s8 unk_184;
-    /* 0x0185 */ char unk_185[0x1B];
+    /* 0x0185 */ char unk_185[0x13];
+    /* 0x0198 */ char unk_198[0x8];
     /* 0x01A0 */ PlayerSub4 *unk_1A0;
     /* 0x01A4 */ char unk_1A4[0x28];
     /* 0x01D0 */ Transform unk_1D0;
