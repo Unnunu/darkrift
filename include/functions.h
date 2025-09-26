@@ -80,5 +80,9 @@ void func_8000EA80(Vec3s *, u16, Object *, s32 *);
 void func_8001D070(Object *);
 void func_8001CE18(Object *);
 s16 func_8002CDFC(s16 arg0, s16 arg1);
+void func_8002856C(Object *);
+void func_80023ED0(Object *);
+void func_80024078(Object *);
+void func_800287AC(Object *);
 
 #endif

@@ -677,4 +677,11 @@ typedef struct UnkTau {
     /* 0x08 */ s32 unk_08[2];
 } UnkTau; // size = 0x10
 
+// TODO move this struct
+typedef struct Unk_8004BA6C {
+    /* 0x00 */ u16 unk_00;
+    /* 0x02 */ u16 unk_02;
+    /* 0x04 */ u16 unk_04;
+} Unk_8004BA6C; // size = 0xC
+
 #endif

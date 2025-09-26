@@ -1,16 +1,10 @@
 #include "common.h"
 
-typedef struct Unk_8004BA6C {
-    /* 0x00 */ u16 unk_00;
-    /* 0x02 */ u16 unk_02;
-    /* 0x04 */ u16 unk_04;
-} Unk_8004BA6C; // size = 0xC
-
 extern s32 D_8004BA14[];
 extern Unk_8004BA6C *D_8004BA40[];
 extern Unk_8004BA6C *D_8004BA6C[];
 
-s32 D_80052D60 = 0;
+Object *D_80052D60 = NULL;
 s16 D_80052D64[] = { 0, 0 };
 s16 D_80052D68[] = { 0, 0 };
 s16 D_80052D6C[] = { 0, 0 };
