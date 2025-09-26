@@ -74,7 +74,6 @@ void func_8002CB28(void);
 #pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002CDE4.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002CDFC.s")
-s16 func_8002CDFC(s16 arg0, s16 arg1);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002CE58.s")
 
@@ -281,12 +280,12 @@ void func_8002EB2C(Object *obj) {
     }
 
     sp34.x = D_80080220->x;
-    sp34.y = gPlayers[PLAYER_1].unk_1A0->unk_04;
+    sp34.y = gPlayers[PLAYER_1].unk_198.unk_08->y;
     sp34.z = D_80080220->z;
     func_8002E628(&sp34, &sp60, &sp5C, &sp50);
 
     sp34.x = D_80080224->x;
-    sp34.y = gPlayers[PLAYER_2].unk_1A0->unk_04;
+    sp34.y = gPlayers[PLAYER_2].unk_198.unk_08->y;
     sp34.z = D_80080224->z;
     func_8002E628(&sp34, &sp58, &sp54, &sp4C);
 

@@ -9,16 +9,21 @@ typedef struct UnkOmicron {
     /* 0x1008 */ s32 unk_1008;
 } UnkOmicron;
 
+typedef struct UnkQwe {
+    /* 0x00 */ s16 unk_00;
+    /* 0x04 */ char *unk_04;
+} UnkQwe; // size = 8
+
 extern s16 D_8004A730[];
 extern s16 D_8004A748[];
 extern char D_8004B654[]; // TODO: type
 extern char D_8004B674[]; // TODO: type
 extern char D_8004B774[]; // TODO: type
 extern char D_8004B794[]; // TODO: type
+extern UnkQwe D_8004B94C[];
 extern PlayerSub5 D_8004C1E8[];
 
 extern UnkOmicron D_80080238;
-extern s32 D_8008020C;
 extern s32 D_80080214;
 extern s32 D_80080218;
 extern u16 D_80080236;
@@ -60,10 +65,60 @@ void func_800045B4(s16 arg0, s16 arg1);
 #pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_80004B30.s")
 void func_80004B30(Object *, s16, s16);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_80004D40.s")
+void func_80004D40(Asset *asset) {
+    s16 v1;
+    s16 v2;
+    u8 sp2B;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_80004E14.s")
-void func_80004E14(s16);
+    v1 = D_800B6328[1 - asset->context].characterId;
+    sp2B = asset->name[6];
+    asset->name[6] = '\0';
+
+    if (str_compare(asset->name, D_8004B94C[v1].unk_04) != 0) {
+        v1 += 11;
+        if (str_compare(asset->name, D_8004B94C[v1].unk_04) != 0) {
+            asset->name[0] = '\0';
+            asset->flags |= 1;
+            return;
+        }
+    }
+    asset->name[6] = sp2B;
+    func_80026BE0(asset);
+    asset->context += 0x5000;
+}
+
+void func_80004E14(s16 playerId) {
+    char sp38[40];
+    char sp2C[12];
+    u8 characterId = D_800B6328[playerId].characterId;
+
+    if (D_800B6328[playerId].unk_10) {
+        str_copy(sp38, "/aaro/dummy");
+    } else {
+        str_copy(sp2C, D_8004B844[characterId].unk_04->unk_00);
+        str_copy(sp38, "/");
+        str_concat(sp38, sp2C);
+        str_concat(sp38, "/");
+        str_concat(sp38, sp2C);
+        if (playerId != PLAYER_1) {
+            str_concat(sp38, "2");
+        } else {
+            str_concat(sp38, "1");
+        }
+        if (D_800B6328[playerId].unk_06) {
+            str_concat(sp38, "_h");
+        } else {
+            str_concat(sp38, "_v");
+        }
+    }
+
+    if (str_compare(sp38, gPlayers[playerId].unk_980)) {
+        func_8002630C(playerId);
+        str_copy(gPlayers[playerId].unk_980, sp38);
+    }
+    D_8013C228 = func_80004D40;
+    asset_open_folder(sp38, playerId);
+}
 
 void func_80004FC0(Object *obj) {
     ColorRGBA *sp1C = obj->varObj[0];
@@ -148,7 +203,7 @@ void func_800052EC(s16 playerId) {
 
     func_80004E14(playerId);
 
-    gPlayers[playerId].unk_04 = playerId;
+    gPlayers[playerId].playerId = playerId;
     gPlayers[playerId].unk_80 = 0;
     spD6 = gPlayers[playerId].characterId = D_800B6328[playerId].characterId;
 
@@ -275,12 +330,12 @@ void func_800052EC(s16 playerId) {
 
     func_80012150(&gPlayers[playerId].unk_DE8, spDC->modInst,
                   &spDC->modInst->transforms[D_8004B844[spD6].unk_00->unk_08].wolrd_matrix,
-                  &gPlayers[playerId].unk_2E8.wolrd_matrix, &spDC->pos, &D_8004B844[spD6].unk_08[playerId]);
+                  &gPlayers[playerId].unk_198.unk_2E8.wolrd_matrix, &spDC->pos, &D_8004B844[spD6].unk_08[playerId]);
 
     if (D_8004B844[spD6].unk_00->unk_1C >= 0) {
         func_80012150(&gPlayers[playerId].unk_2240, spDC->modInst,
                       &spDC->modInst->transforms[D_8004B844[spD6].unk_00->unk_04].wolrd_matrix,
-                      &gPlayers[playerId].unk_1D0.wolrd_matrix, &spDC->pos, &D_8004B844[spD6].unk_08[playerId]);
+                      &gPlayers[playerId].unk_198.unk_1D0.wolrd_matrix, &spDC->pos, &D_8004B844[spD6].unk_08[playerId]);
         gPlayers[playerId].unk_5F4A = 1;
     } else {
         gPlayers[playerId].unk_5F4A = 0;

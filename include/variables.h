@@ -58,5 +58,7 @@ extern s16 *D_80052A48[];
 extern s16 *D_80052B18[];
 extern s16 *D_80052C18[];
 extern s32 D_80080210;
+extern void (*D_8013C228)(Asset *);
+extern s32 D_8008020C;
 
 #endif

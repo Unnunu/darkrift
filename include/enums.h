@@ -76,7 +76,8 @@ enum CharacterIds {
     NIIKI = 7,
     SCARLET = 8,
     SONORK = 9,
-    ZENMURON = 10
+    ZENMURON = 10,
+    NUM_CHARACTERS = 11
 };
 
 enum Players { PLAYER_1, PLAYER_2 };

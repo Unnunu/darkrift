@@ -59,7 +59,6 @@ void func_80024A38(s32);
 void func_800343EC(void);
 void func_80023200(void);
 extern s32 D_8008012C;
-extern void (*D_8013C228)(Asset *);
 extern s16 D_80080116;
 extern s16 D_8006E072;
 extern s16 D_800800FA;

@@ -78,7 +78,6 @@ extern ALSeqMarker gMusicMarkerStart;
 extern ALSeqMarker gMusicMarkerEnd;
 extern ALBankFile *gAudioBankFiles[3];
 extern u8 gSfxPlayerOn[];
-extern void (*D_8013C228)(Asset *);
 
 extern s32 gMusicVolumeFading;
 
@@ -99,7 +98,6 @@ void func_80035CCC(UnkSam *);
 void func_8000E0D8(UnkSam *);
 
 void func_80026B74(Asset *);
-void func_80026BE0(Asset *arg0);
 void func_80027680(Asset *);
 void func_8000BE18(AssetGmd *);
 

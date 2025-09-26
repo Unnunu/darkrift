@@ -75,5 +75,10 @@ void func_800063C4(Player *, s32, s32);
 void func_80021DC4(Object *);
 void func_80021E34(Object *);
 void func_8003453C(Object *obj, ColorRGBA *arg1);
+void func_80026BE0(Asset *arg0);
+void func_8000EA80(Vec3s *, u16, Object *, s32 *);
+void func_8001D070(Object *);
+void func_8001CE18(Object *);
+s16 func_8002CDFC(s16 arg0, s16 arg1);
 
 #endif

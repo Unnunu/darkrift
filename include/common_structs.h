@@ -189,7 +189,7 @@ typedef struct Transform {
     /* 0x94 */ s32 unk_94;
     /* 0x98 */ Matrix4f local_matrix;
     /* 0xD8 */ Matrix4f wolrd_matrix;
-} Transform; // size >= 0x118
+} Transform; // size = 0x118
 
 typedef struct BatchAsset {
     /* 0x00 */ s32 unk_00;
@@ -500,15 +500,14 @@ typedef struct Texture {
 typedef struct PlayerSub3 {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ s16 unk_02;
-    /* 0x04 */ s32 unk_04;
+    /* 0x04 */ s16 unk_04;
+    /* 0x06 */ s16 unk_06;
     /* 0x08 */ s16 unk_08;
-    /* 0x0C */ char unk_0C[0x38 - 0xA];
+    /* 0x0A */ char unk_0A[0x20 - 0xA];
+    /* 0x20 */ s16 unk_20;
+    /* 0x22 */ char unk_22[0x12];
+    /* 0x34 */ s32 unk_34;
 } PlayerSub3; // size = 0x38
-
-typedef struct PlayerSub4 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ f32 unk_04;
-} PlayerSub4;
 
 typedef struct PlayerSub5 {
     /* 0x00 */ s32 unk_00;
@@ -529,9 +528,25 @@ typedef struct PlayerSub8 {
     /* 0x04 */ char unk_04[0x18];
 } PlayerSub8; // size = 0x1C
 
+typedef struct PlayerSub9 {
+    /* 0x000 */ char unk_00[8];
+    /* 0x008 */ Vec4f *unk_08;
+    /* 0x00C */ Vec4f *unk_0C;
+    /* 0x010 */ Vec4f *unk_10;
+    /* 0x014 */ Vec4f *unk_14;
+    /* 0x018 */ Vec4f *unk_18;
+    /* 0x01C */ char unk_1C[0x1C];
+    /* 0x038 */ Transform unk_1D0;
+    /* 0x150 */ Transform unk_2E8;
+} PlayerSub9;
+
+typedef struct PlayerSubA {
+    /* 0x000 */ s32 unk_00;
+} PlayerSubA;
+
 typedef struct Player {
     /* 0x0000 */ Object *unk_00;
-    /* 0x0004 */ s16 unk_04;
+    /* 0x0004 */ s16 playerId;
     /* 0x0006 */ s16 characterId;
     /* 0x0008 */ ObjectTask *unk_08;
     /* 0x000C */ ObjectTask *unk_0C;
@@ -556,17 +571,25 @@ typedef struct Player {
     /* 0x0080 */ s32 unk_80;
     /* 0x0084 */ char unk_84[12];
     /* 0x0090 */ PlayerSub3 *unk_90;
-    /* 0x0094 */ char unk_94[0xA0 - 0x94];
+    /* 0x0094 */ s32 unk_94;
+    /* 0x0098 */ PlayerSubA *unk_98;
+    /* 0x009C */ s32 unk_9C;
     /* 0x00A0 */ PlayerSub7 *unk_A0;
-    /* 0x00A4 */ char unk_A4[0x184 - 0xA4];
+    /* 0x00A4 */ char unk_A4[0x18];
+    /* 0x00BC */ void (*unk_BC)(Object *);
+    /* 0x00C0 */ s16 unk_C0;
+    /* 0x00C2 */ char unk_C2[0x184 - 0xC2];
     /* 0x0184 */ s8 unk_184;
     /* 0x0185 */ char unk_185[0x13];
-    /* 0x0198 */ char unk_198[0x8];
-    /* 0x01A0 */ PlayerSub4 *unk_1A0;
-    /* 0x01A4 */ char unk_1A4[0x28];
-    /* 0x01D0 */ Transform unk_1D0;
-    /* 0x02E8 */ Transform unk_2E8;
-    /* 0x0400 */ char unk_400[0xDBE - 0x400];
+    /* 0x0198 */ PlayerSub9 unk_198;
+    /* 0x0400 */ char unk_400[0x7E8 - 0x400];
+    /* 0x07E8 */ Matrix4f unk_7E8;
+    /* 0x0828 */ char unk_828[0x900 - 0x828];
+    /* 0x0900 */ Matrix4f unk_900;
+    /* 0x0940 */ char unk_940[0x40];
+    /* 0x0980 */ char unk_980[0x10]; // size unknown
+    /* 0x0990 */ char unk_990[0xDBC - 0x990];
+    /* 0x0DBC */ s16 unk_DBC;
     /* 0x0DBE */ s16 unk_DBE;
     /* 0x0DC0 */ void *unk_DC0[3]; // size unknown
     /* 0x0DCC */ void *unk_DCC[3]; // size unknown

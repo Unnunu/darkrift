@@ -127,11 +127,11 @@ void func_80006CEC(void) {
     D_800AA480 = 0;
 
     D_800B6328[PLAYER_1].characterId = GORE;
-    D_800B6328[PLAYER_1].unk_06 = 1;
+    D_800B6328[PLAYER_1].unk_06 = TRUE;
     D_800B6328[PLAYER_1].unk_02 = 0;
     D_800B6328[PLAYER_1].unk_08 = 0;
     D_800B6328[PLAYER_2].characterId = AARON;
-    D_800B6328[PLAYER_2].unk_06 = 0;
+    D_800B6328[PLAYER_2].unk_06 = FALSE;
     D_800B6328[PLAYER_2].unk_02 = 0;
     D_800B6328[PLAYER_2].unk_08 = 0;
     D_800B6328[PLAYER_1].unk_0E = 0;
@@ -488,8 +488,8 @@ void func_80007B68(Object *obj) {
                 D_80081254->unk_1C--;
             } else {
                 if (D_80080230 != GAME_MODE_30) {
-                    D_800B6328[D_80081668].unk_06 = 1;
-                    D_800B6328[1 - D_80081668].unk_06 = 0;
+                    D_800B6328[D_80081668].unk_06 = TRUE;
+                    D_800B6328[1 - D_80081668].unk_06 = FALSE;
                     gGameMode = D_800B6328[D_80081668].characterId + GAME_MODE_BATTLE_AARON;
                 } else {
                     gGameMode = D_800B6328[1 - D_80081668].characterId + GAME_MODE_BATTLE_AARON;
@@ -506,8 +506,8 @@ void func_80007B68(Object *obj) {
             func_80014CB4(D_80081254);
             if (D_80080230 != GAME_MODE_30) {
                 gGameMode = D_800B6328[D_80081668].characterId + GAME_MODE_BATTLE_AARON;
-                D_800B6328[D_80081668].unk_06 = 1;
-                D_800B6328[1 - D_80081668].unk_06 = 0;
+                D_800B6328[D_80081668].unk_06 = TRUE;
+                D_800B6328[1 - D_80081668].unk_06 = FALSE;
             } else {
                 gGameMode = GAME_MODE_0;
             }
