@@ -26,7 +26,6 @@ extern PlayerSub5 D_8004C1E8[];
 extern UnkOmicron D_80080238;
 extern s32 D_80080214;
 extern s32 D_80080218;
-extern u16 D_80080236;
 
 void func_8000636C(Player *, s32, s32, s16 *);
 void func_80012150(PlayerSub6 *arg0, ModelInstance *arg1, Matrix4f *arg2, Matrix4f *arg3, Vec4i *arg4, s32 *arg5);

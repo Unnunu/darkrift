@@ -90,7 +90,6 @@ segments:
       - [0x2B4C0, c, item]
       - [0x2CF10, c, opencam]
       - [0x305A0, c]
-      - [0x322A0, c]
       - [0x32DC0, c, practice]
       - [0x34C90, c, model]
       - [0x396C0, c, task]
@@ -249,7 +248,7 @@ segments:
       - [0x4CC10, data]
       - [0x4D350, .data, cont]
       - [0x4D360, data]
-      - [0x53960, .data, 322A0]
+      - [0x538F0, .data, 305A0]
       - [0x53980, .data, practice]
       - [0x53C10, .data, model]
       - [0x53C20, .data, task]
@@ -292,7 +291,6 @@ segments:
       - [0x55BD0, .rodata, item]
       - [0x55C10, .rodata, opencam]
       - [0x55C50, .rodata, 305A0]
-      - [0x55D00, .rodata, 322A0]
       - [0x55D20, .rodata, practice]
       - [0x55DD0, .rodata, model]
       - [0x55EE0, .rodata, camera]
@@ -329,7 +327,7 @@ segments:
       - { type: bss, vram: 0x800A4930, name: bss3 }
       - { type: .bss, vram: 0x800B63A0, name: cont }
       - { type: bss, vram: 0x800B6400, name: bss4 }
-      - { type: .bss, vram: 0x8013C3C0, name: 322A0 }
+      - { type: .bss, vram: 0x8013C3A0, name: 305A0 }
       - { type: .bss, vram: 0x8013C3D0, name: practice }
       - { type: bss, vram: 0x8013C4A0, name: bss5 }
       - { type: .bss, vram: 0x8013C4E0, name: model }

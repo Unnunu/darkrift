@@ -31,7 +31,6 @@ extern s16 D_8008020E;
 extern Vec4i *D_80080220;
 extern Vec4i *D_80080224;
 extern Object *D_80080228[];
-extern u16 D_8013C250;
 extern s32 D_8013C344;
 extern s32 D_8013C348;
 extern s32 D_8013C34C;

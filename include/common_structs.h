@@ -505,7 +505,11 @@ typedef struct PlayerSub3 {
     /* 0x08 */ s16 unk_08;
     /* 0x0A */ char unk_0A[0x20 - 0xA];
     /* 0x20 */ s16 unk_20;
-    /* 0x22 */ char unk_22[0x12];
+    /* 0x22 */ char unk_22[0x6];
+    /* 0x28 */ s16 unk_28;
+    /* 0x2A */ s16 unk_2A;
+    /* 0x2C */ s32 unk_2C;
+    /* 0x30 */ s32 unk_30;
     /* 0x34 */ s32 unk_34;
 } PlayerSub3; // size = 0x38
 
@@ -535,7 +539,10 @@ typedef struct PlayerSub9 {
     /* 0x010 */ Vec4f *unk_10;
     /* 0x014 */ Vec4f *unk_14;
     /* 0x018 */ Vec4f *unk_18;
-    /* 0x01C */ char unk_1C[0x1C];
+    /* 0x01C */ char unk_1C[0x10];
+    /* 0x02C */ s32 unk_2C;
+    /* 0x030 */ s32 unk_30;
+    /* 0x034 */ s32 unk_34;
     /* 0x038 */ Transform unk_1D0;
     /* 0x150 */ Transform unk_2E8;
 } PlayerSub9;
@@ -543,6 +550,10 @@ typedef struct PlayerSub9 {
 typedef struct PlayerSubA {
     /* 0x000 */ s32 unk_00;
 } PlayerSubA;
+
+typedef struct PlayerSubB {
+    /* 0x00 */ char unk_00[0x18];
+} PlayerSubB; // size = 0x18
 
 typedef struct Player {
     /* 0x0000 */ Object *unk_00;
@@ -561,7 +572,9 @@ typedef struct Player {
     /* 0x0030 */ s32 unk_30;
     /* 0x0034 */ s16 *unk_34;
     /* 0x0038 */ s16 *unk_38;
-    /* 0x003C */ char unk_3C[0x70 - 0x3C];
+    /* 0x003C */ char unk_3C[0x10];
+    /* 0x004C */ PlayerSubB *unk_4C;
+    /* 0x0050 */ char unk_50[0x20];
     /* 0x0070 */ s32 unk_70;
     /* 0x0074 */ s16 unk_74;
     /* 0x0076 */ s16 unk_76;
@@ -573,14 +586,15 @@ typedef struct Player {
     /* 0x0090 */ PlayerSub3 *unk_90;
     /* 0x0094 */ s32 unk_94;
     /* 0x0098 */ PlayerSubA *unk_98;
-    /* 0x009C */ s32 unk_9C;
+    /* 0x009C */ PlayerSubB *unk_9C;
     /* 0x00A0 */ PlayerSub7 *unk_A0;
     /* 0x00A4 */ char unk_A4[0x18];
     /* 0x00BC */ void (*unk_BC)(Object *);
     /* 0x00C0 */ s16 unk_C0;
     /* 0x00C2 */ char unk_C2[0x184 - 0xC2];
     /* 0x0184 */ s8 unk_184;
-    /* 0x0185 */ char unk_185[0x13];
+    /* 0x0185 */ char unk_185[0xF];
+    /* 0x0194 */ s32 unk_194;
     /* 0x0198 */ PlayerSub9 unk_198;
     /* 0x0400 */ char unk_400[0x7E8 - 0x400];
     /* 0x07E8 */ Matrix4f unk_7E8;
@@ -677,11 +691,22 @@ typedef struct UnkTau {
     /* 0x08 */ s32 unk_08[2];
 } UnkTau; // size = 0x10
 
-// TODO move this struct
 typedef struct Unk_8004BA6C {
     /* 0x00 */ u16 unk_00;
     /* 0x02 */ u16 unk_02;
     /* 0x04 */ u16 unk_04;
 } Unk_8004BA6C; // size = 0xC
+
+typedef struct UnkVec2s {
+    /* 0x00 */ s16 unk_00;
+    /* 0x02 */ s16 unk_02;
+} UnkVec2s; // size = 0x4
+
+typedef struct Unk8004BAF0 {
+    /* 0x00 */ s16 unk_00;
+    /* 0x02 */ s16 unk_02;
+    /* 0x04 */ s16 unk_04;
+    /* 0x06 */ s16 unk_06;
+} Unk8004BAF0; // size = 0x8
 
 #endif

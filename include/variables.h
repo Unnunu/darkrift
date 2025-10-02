@@ -60,5 +60,17 @@ extern s16 *D_80052C18[];
 extern s32 D_80080210;
 extern void (*D_8013C228)(Asset *);
 extern s32 D_8008020C;
+extern u8 D_800801F0;
+extern u16 D_8013C250;
+extern u16 D_80080236;
+extern UnkVec2s D_8004B8F4[];
+extern UnkVec2s D_8004B920[];
+extern s32 D_8004BA14[];
+extern Unk_8004BA6C *D_8004BA40[];
+extern Unk_8004BA6C *D_8004BA6C[];
+extern Unk8004BAF0 D_8004BA98[];
+extern Unk8004BAF0 D_8004BAF0[];
+extern u32 D_8004C178[];
+extern u32 D_8004C1A4[];
 
 #endif

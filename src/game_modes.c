@@ -38,7 +38,7 @@ extern s8 D_80081430;
 extern s32 D_800AA480;
 extern s16 D_80080232;
 extern s16 D_800B6368[11][2];
-extern u8 D_800801F0;
+
 extern s16 D_8013C2A8;
 extern s16 D_8013C2AA;
 extern s16 D_80051F6C;

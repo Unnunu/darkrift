@@ -84,5 +84,7 @@ void func_8002856C(Object *);
 void func_80023ED0(Object *);
 void func_80024078(Object *);
 void func_800287AC(Object *);
+void func_80016264(void);
+Object *func_8002BF1C(Vec4i *arg0, UnkK2Def *arg1, s32 arg2);
 
 #endif
