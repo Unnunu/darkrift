@@ -60,6 +60,7 @@ extern s16 *D_80052C18[];
 extern s32 D_80080210;
 extern void (*D_8013C228)(Asset *);
 extern s32 D_8008020C;
+extern s32 D_8008021C;
 extern u8 D_800801F0;
 extern u16 D_8013C250;
 extern u16 D_80080236;
@@ -72,5 +73,6 @@ extern Unk8004BAF0 D_8004BA98[];
 extern Unk8004BAF0 D_8004BAF0[];
 extern u32 D_8004C178[];
 extern u32 D_8004C1A4[];
+extern s32 D_80080214;
 
 #endif

@@ -522,7 +522,7 @@ void run_player_selection_mode(void) {
             gCharacterPortrait[1 - player1]->currentTask->flags = 1;
 
             if (D_800B6328[player1].unk_08 != 0) {
-                gCharacterPortrait[1 - player1]->vars[6] = func_8001E188(1 - (u32) player1);
+                gCharacterPortrait[1 - player1]->vars[6] = func_8001E188(1 - player1);
                 gCharacterPortrait[player1]->currentTask->flags |= 0x80;
                 player_labels[player1]->vars[7] = 20;
                 image_vs_obj->vars[8] = 1;

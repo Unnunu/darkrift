@@ -454,7 +454,7 @@ typedef struct GlobalObjBSub {
 } GlobalObjBSub; // size = 0xC
 
 typedef struct ObjectTask {
-    /* 0x00 */ s32 flags;
+    /* 0x00 */ u32 flags;
     /* 0x04 */ void (*func)(Object *);
     /* 0x08 */ char unk_08[0x18];
     /* 0x20 */ u16 stackPos;

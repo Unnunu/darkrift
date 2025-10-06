@@ -248,6 +248,7 @@ segments:
       - [0x4CC10, data]
       - [0x4D350, .data, cont]
       - [0x4D360, data]
+      - [0x538D0, .data, opencam]
       - [0x538F0, .data, 305A0]
       - [0x53980, .data, practice]
       - [0x53C10, .data, model]

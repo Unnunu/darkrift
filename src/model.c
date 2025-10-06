@@ -34,8 +34,6 @@ ItemPool D_8013C4F0;
 TextureAsset *D_8013C500[16];
 u32 D_8013C540;
 
-void func_800028E0(s32 arg0, s32 arg1);
-
 void func_80034090(TextureAsset *arg0) {
     u32 i;
 

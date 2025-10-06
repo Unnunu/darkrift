@@ -24,7 +24,6 @@ extern UnkQwe D_8004B94C[];
 extern PlayerSub5 D_8004C1E8[];
 
 extern UnkOmicron D_80080238;
-extern s32 D_80080214;
 extern s32 D_80080218;
 
 void func_8000636C(Player *, s32, s32, s16 *);

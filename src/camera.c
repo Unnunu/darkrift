@@ -29,10 +29,10 @@ Vec4i D_8013C818;
 s32 D_8013C828;
 s32 D_8013C82C;
 s32 D_8013C830;
-s8 D_8013C834;
+u8 D_8013C834;
 s32 D_8013C838;
 
-void func_80038E00(Object *obj, s32 arg1) {
+void func_80038E00(Object *obj, AnimHeader **arg1) {
     ModelInstance *model = obj->modInst;
 
     model->currentAnimId = 0;
@@ -263,7 +263,7 @@ Object *camera_create(void) {
 
     obj->flags |= 0x20;
     D_8013C59C = D_8013C5A0 = 0.0f;
-    D_8013C834 = 0;
+    D_8013C834 = FALSE;
 
     return obj;
 }

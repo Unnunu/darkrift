@@ -12,5 +12,8 @@ extern s32 D_8013C82C;
 extern s32 D_8013C830;
 extern s32 gCameraHeading;
 extern s32 D_8013C828;
+extern u8 D_8013C834;
+
+void func_80038E00(Object *obj, AnimHeader **arg1);
 
 #endif
