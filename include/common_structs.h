@@ -517,8 +517,18 @@ typedef struct PlayerSub5 {
     /* 0x00 */ s32 unk_00;
 } PlayerSub5;
 
+typedef struct PlayerSub6Sub1 {
+    /* 0x00 */ char unk_00[0xA0];
+} PlayerSub6Sub1; // size >= 0xA0
+
 typedef struct PlayerSub6 {
-    /* 0x0000 */ char unk_00[0x1458];
+    /* 0x0000 */ char unk_00[0xC];
+    /* 0x000C */ PlayerSub6Sub1 unk_0C;
+    /* 0x00AC */ char unk_AC[0x40];
+    /* 0x00EC */ PlayerSub6Sub1 unk_EC;
+    /* 0x018C */ char unk_18C[0x1D0 - 0x18C];
+    /* 0x01D0 */ s32 unk_1D0;
+    /* 0x01D4 */ char unk_1D4[0x1458 - 0x1D4];
 } PlayerSub6; // size = 0x1458;
 
 typedef struct PlayerSub7 {

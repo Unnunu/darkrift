@@ -41,6 +41,8 @@ extern Object *D_80080228[];
 extern s16 D_8013C224;
 extern s16 D_8013C304;
 extern f32 D_8013C308;
+extern s16 D_8013C33C;
+extern s16 D_8013C33E;
 extern s32 D_8013C340;
 extern s32 D_8013C344;
 extern s32 D_8013C348;
@@ -62,6 +64,7 @@ extern s16 D_8013C38E;
 extern f32 D_8013C5A0;
 
 void func_8002EB2C(Object *obj);
+void func_8002D278(Object *obj, u8 arg1);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/opencam/abs.s")
 
@@ -74,29 +77,276 @@ void func_8002C340(void);
 #pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002C3FC.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002C490.s")
+void func_8002C490(Object *obj);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002C6E8.s")
-void func_8002C6E8(Object *obj);
+void func_8002C6E8(Object *obj) {
+    func_8002C490(obj);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002C854.s")
+    if (obj->spriteId >= obj->modInst->numAnimFrames - 1 || (gPlayerInput[PLAYER_1].buttons & INP_START) ||
+        (gPlayerInput[PLAYER_2].buttons & INP_START)) {
+        if (D_80080230 != 40) {
+            func_80017CA8();
+        } else {
+            gPlayers[PLAYER_1].unk_80 &= ~0x100000;
+            gPlayers[PLAYER_2].unk_80 &= ~0x100000;
+            D_8005BFC0 &= ~4;
+        }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002C9F4.s")
+        D_80049AE4 = 0;
+        D_8013C828 = D_8013C304;
+        D_8013C5A0 = D_8013C308;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002CAEC.s")
+        func_8002D278(obj, FALSE);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002CB28.s")
-void func_8002CB28(void);
+        obj->currentTask->func = func_8002EB2C;
+        obj->modInst->animations[0] = NULL;
+        gPlayerInput[PLAYER_1].unk_08 = gPlayerInput[PLAYER_2].unk_08 = FALSE;
+        D_8008012C &= ~0x11;
+    }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002CDE4.s")
+    gPlayers[PLAYER_1].unk_00->flags |= 0x200000;
+    gPlayers[PLAYER_2].unk_00->flags |= 0x200000;
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002CDFC.s")
+void func_8002C854(Object *obj) {
+    u32 v0;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002CE58.s")
+    v0 = gPlayerInput[PLAYER_1].buttons;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002CFD4.s")
-s32 func_8002CFD4(void *arg0);
+    gPlayers[PLAYER_1].unk_80 |= 0x100000;
+    gPlayers[PLAYER_2].unk_80 |= 0x100000;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002D160.s")
+    if (v0 & INP_R) {
+        D_8013C588 -= 10;
+    } else if (v0 & INP_CUP) {
+        gCameraTarget.y -= 10;
+    } else if (v0 & INP_CDOWN) {
+        gCameraTarget.y += 10;
+    } else if (v0 & INP_CLEFT) {
+        obj->pos.z -= 10;
+    } else if (v0 & INP_CRIGHT) {
+        obj->pos.z += 10;
+    } else if (v0 & INP_L) {
+        D_8013C588 += 10;
+    } else if (v0 & INP_UP) {
+        obj->pos.y += 10;
+    } else if (v0 & INP_DOWN) {
+        obj->pos.y -= 10;
+    } else if (v0 & INP_B) {
+        obj->pos.z += 10;
+    } else if (v0 & INP_A) {
+        obj->pos.z -= 10;
+    } else if (v0 & INP_R) {
+        gPlayers[PLAYER_1].unk_00->pos.x = -1600;
+        gPlayers[PLAYER_2].unk_00->pos.x = 1600;
+    } else if (v0 & INP_L) {
+        gPlayers[PLAYER_1].unk_00->pos.x = -400;
+        gPlayers[PLAYER_2].unk_00->pos.x = 400;
+    }
+}
+
+void func_8002C9F4(Object *obj) {
+    u32 temp1;
+    u32 v1;
+    u32 a1;
+    UnkKappa *v0;
+
+    v0 = gGameModes[D_8005BED0].unk_18;
+    temp1 = gPlayerInput[PLAYER_1].buttons;
+    v1 = temp1 & 0xFFFF;
+    a1 = temp1 >> 16;
+    temp1 = v1;
+
+    if (temp1 != 0 || a1 != 0) {
+        switch (temp1) {
+            case 0x80:
+                obj->pos.x = -2000;
+                obj->pos.z = 0;
+                break;
+            case 0x20:
+                obj->pos.x = 2000;
+                obj->pos.z = 0;
+                break;
+            case 0x10:
+                obj->pos.x = 20;
+                obj->pos.z = 20;
+                obj->pos.y = -2000;
+                break;
+            case 0x40:
+                obj->pos.x = 0;
+                obj->pos.z = -2000;
+                break;
+        }
+
+        switch (a1) {
+            case 0x80:
+                v0->unk_4 = -127;
+                v0->unk_C = 0;
+                break;
+            case 0x20:
+                v0->unk_4 = 127;
+                v0->unk_C = 0;
+                break;
+            case 0x10:
+                v0->unk_4 = 0;
+                v0->unk_C = 127;
+                break;
+            case 0x40:
+                v0->unk_4 = 0;
+                v0->unk_C = -127;
+                break;
+        }
+    }
+}
+
+void func_8002CAEC(Object *obj) {
+    obj->pos.x = 0;
+    obj->pos.y = -480;
+    obj->pos.z = -2300;
+    gCameraTarget.y = -480;
+    D_8013C588 = 597;
+    obj->currentTask->func = func_8002C854;
+}
+
+void func_8002CB28(void) {
+    Object *player1;
+    Object *player2;
+    s16 sp26;
+
+    player1 = D_80080228[PLAYER_1];
+    player2 = D_80080228[PLAYER_2];
+    D_8013C33C = (0xC00 - player1->rotation.y) & 0xFFF;
+    D_8013C33E = (0xC00 - player2->rotation.y) & 0xFFF;
+
+    if (abs(func_8002CDFC(D_8008020E, D_8013C33C)) < 0x400) {
+        ((Player *) player1->varObj[0])->unk_80 |= 8;
+        ((Player *) player1->varObj[0])->unk_80 &= ~0x200;
+    } else {
+        sp26 = func_8002CDFC(D_8008020C - 0x800, D_8013C33C);
+        if (abs(sp26) > 140) {
+            if (sp26 < 0) {
+                sp26 = -140;
+            } else {
+                sp26 = 140;
+            }
+        }
+
+        if (!(((Player *) player1->varObj[0])->unk_80 & 0x420010)) {
+            player1->rotation.y = 0xC00 - D_8013C33C - sp26;
+        }
+
+        if ((gPlayers[PLAYER_1].unk_DBC = abs(sp26)) < 8) {
+            ((Player *) player1->varObj[0])->unk_80 |= 0x200;
+        } else {
+            ((Player *) player1->varObj[0])->unk_80 &= ~0x200;
+        }
+        ((Player *) player1->varObj[0])->unk_80 &= ~0x8;
+    }
+
+    if (abs(func_8002CDFC(D_8008020E, D_8013C33E)) < 0x400) {
+        sp26 = func_8002CDFC(D_8008020E, D_8013C33E);
+        if (abs(sp26) > 140) {
+            if (sp26 < 0) {
+                sp26 = -140;
+            } else {
+                sp26 = 140;
+            }
+        }
+
+        if (!(((Player *) player2->varObj[0])->unk_80 & 0x420010)) {
+            player2->rotation.y = 0xC00 - D_8013C33E - sp26;
+        }
+
+        if ((gPlayers[PLAYER_2].unk_DBC = abs(sp26)) < 8) {
+            ((Player *) player2->varObj[0])->unk_80 |= 0x200;
+        } else {
+            ((Player *) player2->varObj[0])->unk_80 &= ~0x200;
+        }
+        ((Player *) player2->varObj[0])->unk_80 &= ~0x8;
+    } else {
+        ((Player *) player2->varObj[0])->unk_80 |= 8;
+        ((Player *) player2->varObj[0])->unk_80 &= ~0x200;
+    }
+}
+
+s32 func_8002CDE4(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    arg0 -= arg1;
+    arg0 = (arg0 * arg3) >> 16;
+    return arg2 + arg0;
+}
+
+s16 func_8002CDFC(s16 arg0, s16 arg1) {
+    s16 v1;
+
+    v1 = (arg0 & 0xFFF) - (arg1 & 0xFFF);
+    if (v1 > 0x800) {
+        v1 -= 0x1000;
+    }
+    if (v1 < -0x800) {
+        v1 += 0x1000;
+    }
+    return v1;
+}
+
+void func_8002CE58(s32 arg0, s32 arg1) {
+    Object *obj;
+
+    for (obj = D_80052C50; obj != NULL; obj = obj->nextObject) {
+        if (!(obj->flags & 0x10000)) {
+            obj->pos.x += arg0;
+            obj->pos.z += arg1;
+            func_80014974(&obj->transform);
+        }
+    }
+
+    gPlayers[PLAYER_1].unk_DE8.unk_1D0 = gPlayers[PLAYER_1].unk_2240.unk_1D0 = gPlayers[PLAYER_1].unk_3698.unk_1D0 =
+        gPlayers[PLAYER_1].unk_4AF0.unk_1D0 = gPlayers[PLAYER_2].unk_DE8.unk_1D0 = gPlayers[PLAYER_2].unk_2240.unk_1D0 =
+            gPlayers[PLAYER_2].unk_3698.unk_1D0 = gPlayers[PLAYER_2].unk_4AF0.unk_1D0 = 0;
+
+    func_80010BE4(&gPlayers[PLAYER_1].unk_DE8.unk_0C);
+    func_80010BE4(&gPlayers[PLAYER_1].unk_DE8.unk_EC);
+    func_80010BE4(&gPlayers[PLAYER_1].unk_2240.unk_0C);
+    func_80010BE4(&gPlayers[PLAYER_1].unk_2240.unk_EC);
+    func_80010BE4(&gPlayers[PLAYER_1].unk_3698.unk_0C);
+    func_80010BE4(&gPlayers[PLAYER_1].unk_3698.unk_EC);
+    func_80010BE4(&gPlayers[PLAYER_1].unk_4AF0.unk_0C);
+    func_80010BE4(&gPlayers[PLAYER_1].unk_4AF0.unk_EC);
+    func_80010BE4(&gPlayers[PLAYER_2].unk_DE8.unk_0C);
+    func_80010BE4(&gPlayers[PLAYER_2].unk_DE8.unk_EC);
+    func_80010BE4(&gPlayers[PLAYER_2].unk_2240.unk_0C);
+    func_80010BE4(&gPlayers[PLAYER_2].unk_2240.unk_EC);
+    func_80010BE4(&gPlayers[PLAYER_2].unk_3698.unk_0C);
+    func_80010BE4(&gPlayers[PLAYER_2].unk_3698.unk_EC);
+    func_80010BE4(&gPlayers[PLAYER_2].unk_4AF0.unk_0C);
+    func_80010BE4(&gPlayers[PLAYER_2].unk_4AF0.unk_EC);
+}
+
+s32 func_8002CFD4(void *arg0) {
+    s32 a3, a1;
+
+    a3 = gCamera->vars[3];
+    a1 = gCamera->vars[4];
+
+    if (gCameraTarget.x > 0x2300 || gCamera->pos.x > 0x2300 || gCameraTarget.x < -0x2300 || gCamera->pos.x < -0x2300 ||
+        gCameraTarget.z > 0x2300 || gCamera->pos.z > 0x2300 || gCameraTarget.z < -0x2300 || gCamera->pos.z < -0x2300) {
+
+        gCameraTarget.x += a3;
+        gCameraTarget.z += a1;
+        func_8002CE58(a3, a1);
+        if (gCamera->pos.x != 0 || gCamera->pos.z != 0 || gCameraTarget.x != 0 || gCameraTarget.z != 0) {
+            guLookAtF(&gCameraViewMatrix, gCamera->pos.x, gCamera->pos.y, gCamera->pos.z, gCameraTarget.x,
+                      gCameraTarget.y, gCameraTarget.z, 0.0f, -1.0f, 0.0f);
+            math_mtxf_mul(&gCameraViewMatrix, &gCameraPerspMatrix, &gCameraProjectionMatrix);
+        }
+    }
+    return 0;
+}
+
+s32 func_8002D160(s32 arg0) {
+    func_8002CE58(-gCameraTarget.x, -gCameraTarget.z);
+    gCameraTarget.x = gCameraTarget.z = 0;
+    return 0;
+}
 
 void func_8002D1A8(Object *obj) {
     s32 a2, a3;

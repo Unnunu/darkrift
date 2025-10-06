@@ -88,5 +88,6 @@ void func_80016264(void);
 Object *func_8002BF1C(Vec4i *arg0, UnkK2Def *arg1, s32 arg2);
 void func_80017CA8(void);
 void func_800028E0(s32 arg0, s32 arg1);
+void func_80010BE4(PlayerSub6Sub1 *);
 
 #endif
