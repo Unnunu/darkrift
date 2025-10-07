@@ -1,85 +1,173 @@
 #include "common.h"
 #include "camera.h"
 
-extern s32 D_80049AE4;
+s32 D_80052C60 = 170;
+s32 D_80052C64 = 500;
+s32 D_80052C68_unused[] = { 0, 0xFFFFFE20, 0xFFFFF704, 0 };
+s32 D_80052C78 = 0x400;
+s32 D_80052C7C = 0x480000;
+s32 D_80052C80 = 0x1C000;
+s32 D_80052C84 = 0x20000;
+s32 D_80052C88 = 0x100000;
+s32 D_80052C8C = 0;
+s32 D_80052C90 = 200;
+s32 D_80052C94 = 0x240000;
+s32 D_80052C98 = 0x2000;
+s32 D_80052C9C = 0xE000;
+s32 D_80052CA0 = 0x40000;
+s32 D_80052CA4 = 0;
+s32 D_80052CA8_unused = 0;
+s32 D_80052CAC = 0x400;
+s8 D_80052CB0 = 0;
+u8 D_80052CB4 = FALSE;
+s32 D_80052CB8 = 0;
+s32 D_80052CBC = 0;
+s32 D_80052CC0 = 0;
+s32 D_80052CC4 = 0x8000;
+s32 D_80052CC8 = 0;
+char *D_80052CCC = "opencamX.oc";
 
-extern s32 D_80052C60;
-extern s32 D_80052C64;
-extern s32 D_80052C78;
-extern s32 D_80052C7C;
-extern s32 D_80052C80;
-extern s32 D_80052C84;
-extern s32 D_80052C88;
-extern s32 D_80052C8C;
-extern s32 D_80052C90;
-extern s32 D_80052C94;
-extern s32 D_80052C98;
-extern s32 D_80052C9C;
-extern s32 D_80052CA0;
-extern s32 D_80052CA4;
-extern s32 D_80052CAC;
-extern s8 D_80052CB0;
-extern u8 D_80052CB4;
-extern s32 D_80052CB8;
-extern s32 D_80052CBC;
-extern s32 D_80052CC0;
-extern s32 D_80052CC4;
-extern s32 D_80052CC8;
-const char D_80055010[] = "opencamX.oc";
-extern char *D_80052CCC;
-
-extern s32 D_800801F4;
-extern s32 D_800801F8;
-extern s32 D_80080200;
-extern s32 D_80080204;
-extern s32 D_80080208;
-extern s16 D_8008020E;
-extern Vec4i *D_80080220;
-extern Vec4i *D_80080224;
-extern Object *D_80080228[];
-
-extern s16 D_8013C224;
-extern s16 D_8013C304;
-extern f32 D_8013C308;
-extern s16 D_8013C33C;
-extern s16 D_8013C33E;
-extern s32 D_8013C340;
-extern s32 D_8013C344;
-extern s32 D_8013C348;
-extern s32 D_8013C34C;
-extern s32 D_8013C350;
-extern s32 D_8013C354;
-extern s32 D_8013C358;
-extern s32 D_8013C35C;
-extern s32 D_8013C360;
-extern s32 D_8013C364;
-extern s32 D_8013C36C;
-extern s32 D_8013C370;
-extern s32 D_8013C37C;
-extern s32 D_8013C380;
-extern s32 D_8013C384;
-extern s16 D_8013C38A;
-extern s16 D_8013C38C;
-extern s16 D_8013C38E;
-extern f32 D_8013C5A0;
+Vec4i D_8013C2E0;
+Vec4i D_8013C2F0;
+s16 D_8013C300;
+s16 D_8013C302;
+s16 D_8013C304;
+f32 D_8013C308;
+s32 D_8013C30C_unused;
+Vec4i D_8013C310;
+Vec4i D_8013C320;
+s16 D_8013C330_unused;
+s16 D_8013C332;
+s16 D_8013C334;
+s16 D_8013C336;
+f32 D_8013C338;
+s16 D_8013C33C;
+s16 D_8013C33E;
+s32 D_8013C340;
+s32 D_8013C344;
+s32 D_8013C348;
+s32 D_8013C34C;
+s32 D_8013C350;
+s32 D_8013C354;
+s32 D_8013C358;
+s32 D_8013C35C;
+s32 D_8013C360;
+s32 D_8013C364;
+s32 D_8013C368_unused;
+s32 D_8013C36C;
+s32 D_8013C370;
+s32 D_8013C374_unused;
+s32 D_8013C378_unused;
+s32 D_8013C37C;
+s32 D_8013C380;
+s32 D_8013C384;
+s16 D_8013C388_unused;
+s16 D_8013C38A;
+s16 D_8013C38C;
+s16 D_8013C38E;
+s32 D_8013C390_unused;
 
 void func_8002EB2C(Object *obj);
 void func_8002D278(Object *obj, u8 arg1);
+void func_8002DFCC(u8 arg0);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/abs.s")
+s32 abs(s32 arg0) {
+    return arg0 < 0 ? -arg0 : arg0;
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002C328.s")
-s32 func_8002C328(s32 arg0);
+s32 func_8002C328(s32 arg0) {
+    return arg0 < 0 ? -arg0 : arg0;
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002C340.s")
-void func_8002C340(void);
+void func_8002C340(void) {
+    D_8013C320.x = gCameraTarget.x;
+    D_8013C320.y = gCameraTarget.y;
+    D_8013C320.z = gCameraTarget.z;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002C3FC.s")
+    D_8013C310.x = gCamera->pos.x;
+    D_8013C310.y = gCamera->pos.y;
+    D_8013C310.z = gCamera->pos.z;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002C490.s")
-void func_8002C490(Object *obj);
+    D_8013C332 = D_80049AE4;
+    D_8013C334 = D_80049AE8;
+    D_8013C336 = D_8013C828;
+    D_8013C338 = D_8013C5A0;
+
+    if (D_8005BED0 <= GAME_MODE_17) {
+        D_8008012C |= 1;
+    }
+}
+
+void func_8002C3FC(void) {
+    D_8013C302 = D_80049AE4;
+
+    D_8013C2F0.x = gCameraTarget.x;
+    D_8013C2F0.y = gCameraTarget.y;
+    D_8013C2F0.z = gCameraTarget.z;
+
+    D_8013C2E0.x = gCamera->pos.x;
+    D_8013C2E0.y = gCamera->pos.y;
+    D_8013C2E0.z = gCamera->pos.z;
+
+    D_8013C300 = D_80049AE8;
+    D_8013C304 = D_8013C828;
+    D_8013C308 = D_8013C5A0;
+}
+
+void func_8002C490(Object *obj) {
+
+    func_8002C3FC();
+
+    obj->pos.x = D_8013C310.x;
+    obj->pos.y = D_8013C310.y;
+    obj->pos.z = D_8013C310.z;
+
+    gCameraTarget.x = D_8013C320.x;
+    gCameraTarget.y = D_8013C320.y;
+    gCameraTarget.z = D_8013C320.z;
+
+    D_80049AE4 = D_8013C332;
+    D_80049AE8 = D_8013C334;
+    D_8013C828 = D_8013C336;
+    D_8013C5A0 = D_8013C338;
+
+    func_8002D278(obj, FALSE);
+    func_8002C340();
+
+    if (obj->modInst->animations[0] != NULL) {
+        obj->spriteId++;
+        if (obj->spriteId >= obj->modInst->numAnimFrames - 1) {
+            obj->modInst->animations[0] = NULL;
+            if (!D_800801F0 || D_80080234 == 0) {
+                obj->currentTask->func = func_8002EB2C;
+                obj->currentTask->counter = 1;
+                D_8008012C &= ~1;
+                gPlayers[PLAYER_1].unk_00->flags &= ~0x200000;
+                gPlayers[PLAYER_2].unk_00->flags &= ~0x200000;
+                return;
+            }
+            D_8013C834 = TRUE;
+        }
+    }
+
+    D_8008012C &= ~0x20;
+
+    obj->pos.x = D_8013C2E0.x;
+    obj->pos.y = D_8013C2E0.y;
+    obj->pos.z = D_8013C2E0.z;
+
+    gCameraTarget.x = D_8013C2F0.x;
+    gCameraTarget.y = D_8013C2F0.y;
+    gCameraTarget.z = D_8013C2F0.z;
+
+    D_80049AE8 = D_8013C300 - (s32) (D_8013C830 * 0.2f);
+    D_80049AE4 = 0;
+    D_8013C828 = D_8013C304;
+    D_8013C5A0 = D_8013C308;
+}
 
 void func_8002C6E8(Object *obj) {
+
     func_8002C490(obj);
 
     if (obj->spriteId >= obj->modInst->numAnimFrames - 1 || (gPlayerInput[PLAYER_1].buttons & INP_START) ||
@@ -373,8 +461,128 @@ void func_8002D1A8(Object *obj) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/func_8002D278.s")
-void func_8002D278(Object *obj, u8 arg1);
+void func_8002D278(Object *obj, u8 arg1) {
+    s32 pad1[3];
+    s32 spD8;
+    s32 spD4;
+    s32 spD0;
+    s32 pad2[3];
+    s32 spC0;
+    s32 spBC;
+    s32 spB8;
+    s32 pad3[4];
+    s32 spA4;
+    s32 spA0;
+    s32 sp9C;
+    s32 v02;
+    s32 a0;
+    s32 dx, dy, dz;
+    u32 dxAbs, dzAbs;
+    s32 temp2;
+    s32 sp78;
+    Vec4i sp68;
+    Vec4s sp60;
+    s32 pad5[4];
+    f32 ft5;
+    s32 temp;
+
+    if (D_8013C250 == 0) {
+        D_8008012C |= 0x20;
+    } else {
+        D_8008012C &= ~0x20;
+    }
+
+    func_8002DFCC(FALSE);
+
+    if (D_80080210 > 800) {
+        spC0 = ((D_80080210 - 800) * D_8013C354) >> 0x10;
+    } else {
+        spC0 = 0;
+    }
+    if (spC0 > D_8013C350) {
+        spC0 = D_8013C350;
+    }
+
+    obj->vars[2] = spC0 = ((spC0 - obj->vars[2]) ^ 0) + obj->vars[2]; // @fake ^ 0
+    spD8 = obj->vars[1];
+
+    v02 = func_8002CDFC(D_8008020E, spD8);
+    if (v02 < 0) {
+        a0 = v02 + D_80052CAC;
+    } else {
+        a0 = v02 - D_80052CAC;
+    }
+    obj->vars[1] = temp = spD8 + a0;
+
+    func_8002CB28();
+    if (func_8002CDFC(D_8008020E, spD8) > 0) {
+        D_80080228[PLAYER_1]->flags &= ~0x200;
+        gPlayerInput[PLAYER_1].unk_09 = FALSE;
+        D_80080228[PLAYER_2]->flags |= 0x200;
+        gPlayerInput[PLAYER_2].unk_09 = TRUE;
+    } else {
+        D_80080228[PLAYER_1]->flags |= 0x200;
+        gPlayerInput[PLAYER_1].unk_09 = TRUE;
+        D_80080228[PLAYER_2]->flags &= ~0x200;
+        gPlayerInput[PLAYER_2].unk_09 = FALSE;
+    }
+
+    gCameraTarget.y = ((D_8013C360 * spC0) >> 0x10) + D_80052CBC - 480;
+    spD4 = ((D_80080224->x + D_80080220->x) >> 1) - gCameraTarget.x;
+    spD0 = ((D_80080224->z + D_80080220->z) >> 1) - gCameraTarget.z;
+    gCameraTarget.x += spD4;
+    gCameraTarget.z += spD0;
+
+    spBC = ((func_80012854(temp) * D_8013C34C) >> 12) + gCameraTarget.x;
+    spB8 = ((-func_80012854(temp + 0x400) * D_8013C34C) >> 12) + gCameraTarget.z;
+    spA4 = (func_80012854(temp) * D_8013C348) >> 12;
+    spA0 = (-func_80012854(temp + 0x400) * D_8013C348) >> 12;
+    sp9C = (spC0 * D_8013C344) >> 12;
+
+    obj->pos.x = ((spC0 * spA4) >> 12) + spBC;
+    obj->pos.z = ((spC0 * spA0) >> 12) + spB8;
+    obj->pos.y = D_8013C35C + D_80052CB8 - sp9C;
+
+    if (spD4 != 0 || spD0 != 0) {
+        sp68.x = spD4;
+        sp68.z = -spD0;
+        sp60.y = (0x400 - gCameraHeading) & 0xFFF;
+        sp60.x = sp60.z = 0;
+        func_8001370C(&sp68, &sp60);
+        if (sp68.x > 0) {
+            sp78 = (u32) (sqrtf(SQ(spD4) + SQ(spD0)) + 0.5) >> 1;
+        } else if (sp68.x < 0) {
+            sp78 = -((u32) (sqrtf(SQ(spD4) + SQ(spD0)) + 0.5) >> 1);
+        }
+        D_80049AE4 += sp78;
+    }
+
+    dx = gCameraTarget.x - gCamera->pos.x;
+    dy = gCameraTarget.y - gCamera->pos.y;
+    dz = gCameraTarget.z - gCamera->pos.z;
+    dxAbs = ABS(dx);
+    dzAbs = ABS(dz);
+    ft5 = DISTANCE(dxAbs, dzAbs);
+    D_8013C594 = dy / ft5;
+
+    func_80038F34(dx, dz, dxAbs, dzAbs);
+
+    D_80049AE8 = D_8013C82C;
+    if (spC0 > 1500) {
+        D_80049AE8 += (D_8013C364 * (spC0 - 1500)) >> 0x10;
+        if (obj->vars || obj->vars) {} // @fake
+    }
+    D_80081428 = D_8013C828;
+
+    if (arg1) {
+        func_8002D1A8(obj);
+        if (obj->pos.x != 0 || obj->pos.z != 0 || gCameraTarget.x != 0 || gCameraTarget.z != 0) {
+            guLookAtF(&gCameraViewMatrix, obj->pos.x, obj->pos.y, obj->pos.z, gCameraTarget.x, gCameraTarget.y,
+                      gCameraTarget.z, 0.0f, -1.0f, 0.0f);
+            math_mtxf_mul(&gCameraViewMatrix, &gCameraPerspMatrix, &gCameraProjectionMatrix);
+        }
+    }
+}
 
 void func_8002DA08(Object *obj) {
     gCameraTarget.y = -480;

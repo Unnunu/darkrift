@@ -74,5 +74,17 @@ extern Unk8004BAF0 D_8004BAF0[];
 extern u32 D_8004C178[];
 extern u32 D_8004C1A4[];
 extern s32 D_80080214;
+extern u16 D_80080234;
+extern s32 D_800801F4;
+extern s32 D_800801F8;
+extern s32 D_80080200;
+extern s32 D_80080204;
+extern s32 D_80080208;
+extern s16 D_8008020E;
+extern Vec4i *D_80080220;
+extern Vec4i *D_80080224;
+extern Object *D_80080228[];
+extern s16 D_8013C224;
+extern s32 D_80049AE4;
 
 #endif

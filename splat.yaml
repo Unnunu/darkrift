@@ -248,7 +248,7 @@ segments:
       - [0x4CC10, data]
       - [0x4D350, .data, cont]
       - [0x4D360, data]
-      - [0x538D0, .data, opencam]
+      - [0x53860, .data, opencam]
       - [0x538F0, .data, 305A0]
       - [0x53980, .data, practice]
       - [0x53C10, .data, model]
@@ -328,6 +328,7 @@ segments:
       - { type: bss, vram: 0x800A4930, name: bss3 }
       - { type: .bss, vram: 0x800B63A0, name: cont }
       - { type: bss, vram: 0x800B6400, name: bss4 }
+      - { type: .bss, vram: 0x8013C2E0, name: opencam }
       - { type: .bss, vram: 0x8013C3A0, name: 305A0 }
       - { type: .bss, vram: 0x8013C3D0, name: practice }
       - { type: bss, vram: 0x8013C4A0, name: bss5 }

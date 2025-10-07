@@ -263,7 +263,7 @@ void math_translate(Matrix4f *arg0, Vec4i *arg1) {
     arg0->w.z = arg1->z;
 }
 
-void func_8001370C(Vec4i *arg0, Vec3s *arg1) {
+void func_8001370C(Vec4i *arg0, Vec4s *arg1) {
     f32 x, y, z;
     f64 temp;
     math_rotate(&D_800813E0, arg1);
