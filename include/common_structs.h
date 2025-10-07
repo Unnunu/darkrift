@@ -617,7 +617,10 @@ typedef struct Player {
     /* 0x0DBE */ s16 unk_DBE;
     /* 0x0DC0 */ void *unk_DC0[3]; // size unknown
     /* 0x0DCC */ void *unk_DCC[3]; // size unknown
-    /* 0x0DD8 */ char unk_DD8[0x10];
+    /* 0x0DD8 */ char unk_DD8[4];
+    /* 0x0DDC */ UnkSam *unk_DDC;
+    /* 0x0DE0 */ char unk_DE0[4];
+    /* 0x0DE4 */ UnkSam *unk_DE4;
     /* 0x0DE8 */ PlayerSub6 unk_DE8;
     /* 0x2240 */ PlayerSub6 unk_2240;
     /* 0x3698 */ PlayerSub6 unk_3698;
@@ -718,5 +721,21 @@ typedef struct Unk8004BAF0 {
     /* 0x04 */ s16 unk_04;
     /* 0x06 */ s16 unk_06;
 } Unk8004BAF0; // size = 0x8
+
+typedef struct GlobalObjD {
+    /* 0x00 */ u32 unk_00;
+    /* 0x04 */ u32 unk_04;
+    /* 0x08 */ u32 unk_08;
+    /* 0x0C */ s32 unk_0C;
+    /* 0x10 */ s32 unk_10;
+    /* 0x14 */ s32 unk_14;
+    /* 0x18 */ s32 unk_18;
+    /* 0x1C */ s32 unk_1C;
+    /* 0x20 */ s32 unk_20;
+    /* 0x24 */ s32 unk_24;
+    /* 0x2C */ Object *unk_28;
+    /* 0x2C */ struct GlobalObjD *unk_2C;
+    /* 0x30 */ struct GlobalObjD *unk_30;
+} GlobalObjD; // size = 0x34
 
 #endif

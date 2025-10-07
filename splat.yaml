@@ -225,6 +225,7 @@ segments:
       - [0x47020, hasm,  ../ultralib/src/os/getcause]
       - [0x47030, c, ../ultralib/src/os/atomic]
       - [0x47090, hasm, ../ultralib/src/gu/libm_vals]
+
       - [0x47090, textbin, rsp/rspboot]
       - [0x47160, textbin, rsp/gspFast3D]
       - [0x48590, textbin, rsp/gspDarkRift3D]
@@ -248,6 +249,9 @@ segments:
       - [0x4CC10, data]
       - [0x4D350, .data, cont]
       - [0x4D360, data]
+      - [0x52F10, .data, 28C10]
+      - [0x52F30, data]
+      - [0x53850, .data, item]
       - [0x53860, .data, opencam]
       - [0x538F0, .data, 305A0]
       - [0x53980, .data, practice]
@@ -328,6 +332,7 @@ segments:
       - { type: bss, vram: 0x800A4930, name: bss3 }
       - { type: .bss, vram: 0x800B63A0, name: cont }
       - { type: bss, vram: 0x800B6400, name: bss4 }
+      - { type: .bss, vram: 0x8013C2B0, name: item }
       - { type: .bss, vram: 0x8013C2E0, name: opencam }
       - { type: .bss, vram: 0x8013C3A0, name: 305A0 }
       - { type: .bss, vram: 0x8013C3D0, name: practice }

@@ -4,22 +4,6 @@
 #include "string.h"
 #include "PR/gt.h"
 
-typedef struct GlobalObjD {
-    /* 0x00 */ u32 unk_00;
-    /* 0x04 */ u32 unk_04;
-    /* 0x08 */ u32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ s32 unk_10;
-    /* 0x14 */ s32 unk_14;
-    /* 0x18 */ s32 unk_18;
-    /* 0x1C */ s32 unk_1C;
-    /* 0x20 */ s32 unk_20;
-    /* 0x24 */ s32 unk_24;
-    /* 0x2C */ Object *unk_28;
-    /* 0x2C */ struct GlobalObjD *unk_2C;
-    /* 0x30 */ struct GlobalObjD *unk_30;
-} GlobalObjD; // size = 0x34
-
 extern Vec4i D_8004934C;
 
 // .data

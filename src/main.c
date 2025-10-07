@@ -1,5 +1,6 @@
 #include "common.h"
 #include "PR/gt.h"
+#include "task.h"
 
 #define gSPPerspNorm(pkt, dl)                       \
     {                                               \
@@ -71,8 +72,6 @@ OSTask D_8004CC88 = {
 */
 extern BatchInfo D_8004CCC8;
 extern BatchInfo D_8004CD30;
-
-extern u8 gTasksDisabled;
 
 extern u16 D_8005BED2;
 extern BatchInfo D_8005BF00;

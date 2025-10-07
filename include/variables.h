@@ -86,5 +86,9 @@ extern Vec4i *D_80080224;
 extern Object *D_80080228[];
 extern s16 D_8013C224;
 extern s32 D_80049AE4;
+extern Vec3s D_80049344;
+extern Vec4i D_8004934C;
+extern s32 D_80052C54;
+extern ModelNodeRenderInfo *D_8013C4E8;
 
 #endif

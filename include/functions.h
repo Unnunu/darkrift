@@ -89,5 +89,12 @@ Object *func_8002BF1C(Vec4i *arg0, UnkK2Def *arg1, s32 arg2);
 void func_80017CA8(void);
 void func_800028E0(s32 arg0, s32 arg1);
 void func_80010BE4(PlayerSub6Sub1 *);
+void func_800345D8(GlobalObjD *);
+void task_default_func(Object *arg0);
+void func_80012450(Mtx *);
+void func_800343F8(Object *obj, u8 arg1);
+Object *func_80030908(void);
+void func_80021D40(Object *obj);
+u8 func_80022B44(Player *arg0, Player *arg1, void *arg2);
 
 #endif

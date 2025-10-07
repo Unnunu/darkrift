@@ -2,17 +2,12 @@
 #include "task.h"
 #include "string.h"
 
-extern ItemPool D_8013C2C0;
+Object *D_80052C50 = NULL;
+s32 D_80052C54 = 0;
 
-extern Vec3s D_80049344;
-extern Vec4i D_8004934C;
-
-extern s32 D_80052C54;
-extern ModelNodeRenderInfo *D_8013C4E8;
-
-void func_800345D8(s32);
-void task_default_func(Object *arg0);
-void func_80012450(Mtx *);
+ItemPool D_8013C2B0;
+ItemPool D_8013C2C0;
+s32 D_8013C2D0_unused;
 
 void func_8002A8C0(ItemPool *arg0, u32 count, u32 element_size) {
     s16 i;
