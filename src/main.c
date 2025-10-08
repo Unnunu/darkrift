@@ -11,14 +11,11 @@
 
 typedef s32 (*DISPCB)(s32);
 
-extern u16 D_80049330[];
 extern s32 D_80049CF0;
 extern GameMode gGameModes[];
 extern Gfx D_8004CA68[];
 extern Gfx D_8004CB00[];
 
-extern Gfx D_8005BF10;
-extern Gfx D_8005BF58[2];
 extern Gfx D_8005BF60;
 extern Vtx D_800492B0[];
 extern s32 gMusicVolumeFading;
@@ -74,7 +71,6 @@ extern BatchInfo D_8004CCC8;
 extern BatchInfo D_8004CD30;
 
 extern u16 D_8005BED2;
-extern BatchInfo D_8005BF00;
 extern u16 D_8005BFC0;
 extern u16 gGameMode;
 extern u16 D_8005BFCE;
@@ -309,8 +305,8 @@ void func_80001FB0(s32 arg0, Vtx *arg1) {
     D_8005BF00.header.unk_0B = 2;
     D_8005BF00.header.texGfx = &D_8005BF58;
 
-    gDPPipeSync(&D_8005BF58);
-    gDPSetCombineMode(&D_8005BF60, G_CC_SHADE, G_CC_SHADE);
+    gDPPipeSync(&D_8005BF58[0]);
+    gDPSetCombineMode(&D_8005BF58[1], G_CC_SHADE, G_CC_SHADE);
 
     gtStateSetOthermode(&D_8005BF10, GT_RENDERMODE, G_RM_OPA_SURF | G_RM_OPA_SURF2);
     gtStateSetOthermode(&D_8005BF10, GT_CYCLETYPE, G_CYC_1CYCLE);

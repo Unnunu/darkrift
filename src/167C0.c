@@ -1,7 +1,6 @@
 #include "common.h"
 
 extern s16 D_80049390;
-extern Object *D_8013C23C;
 extern Unk80015E74 D_8004C008[];
 extern Unk80015E74 D_8004C0C8[];
 extern u8 D_8004A42C;

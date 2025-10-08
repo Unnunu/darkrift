@@ -38,11 +38,7 @@ extern s32 D_800AA480;
 extern s16 D_80080232;
 extern s16 D_800B6368[11][2];
 
-extern s16 D_8013C2A8;
-extern s16 D_8013C2AA;
-extern s16 D_80051F6C;
 extern s32 D_80081668;
-extern s16 D_80051F70;
 extern void *D_80081274;
 extern void *D_80081278;
 extern u16 D_8013C250;

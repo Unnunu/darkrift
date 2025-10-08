@@ -379,8 +379,8 @@ typedef struct ModelInstance {
 
 typedef struct AssetSP2Sub3 {
     /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
+    /* 0x04 */ u32 unk_04;
+    /* 0x08 */ u32 unk_08;
     /* 0x0C */ s32 unk_0C;
     /* 0x10 */ s32 unk_10;
     /* 0x14 */ s32 unk_14;
@@ -585,7 +585,8 @@ typedef struct Player {
     /* 0x003C */ char unk_3C[0x10];
     /* 0x004C */ PlayerSubB *unk_4C;
     /* 0x0050 */ char unk_50[0x20];
-    /* 0x0070 */ s32 unk_70;
+    /* 0x0070 */ s16 unk_70;
+    /* 0x0072 */ s16 unk_72;
     /* 0x0074 */ s16 unk_74;
     /* 0x0076 */ s16 unk_76;
     /* 0x0078 */ s32 unk_78;

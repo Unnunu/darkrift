@@ -1,11 +1,15 @@
 #include "common.h"
+#include "PR/gt.h"
 #include "task.h"
 
 const char D_80054F70[] = "dusthit.sp3";
 
 extern Vec4i D_8004A5D0[];
 extern Vec4i D_8004A680[];
+extern Vtx D_80051F78[2][4];
+extern Vtx D_80051FF8[2][4];
 extern Vec4i *D_800520D8[];
+
 extern s32 D_80081434;
 extern s32 D_80081438;
 
@@ -21,6 +25,9 @@ extern Object *D_8013C258[2][10];
 void func_8002A050(Object *obj);
 void func_8002A0EC(Object *obj);
 void func_80029F58(Object *obj);
+void func_80028E84(void);
+
+void func_8000636C(Player *, s32, s32);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_80028010.s")
 
@@ -42,22 +49,211 @@ void func_80029F58(Object *obj);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_800287AC.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_80028890.s")
+void func_80028890(Object *obj) {
+    gPlayerInput[PLAYER_1].unk_0A = FALSE;
+    gPlayerInput[PLAYER_2].unk_0A = FALSE;
 
+    if (obj->vars[0] == 0) {
+        if (gPlayers[PLAYER_1].unk_7C == 0 && gPlayers[PLAYER_2].unk_7C == 0) {
+            func_80028E84();
+            obj->vars[0] = 240;
+        }
+    } else {
+        obj->vars[0]--;
+        if (obj->vars[0] == 0) {
+            D_8005BFC0 |= 1;
+            obj->currentTask->flags |= 0x80;
+        }
+    }
+}
+
+#ifdef NON_EQUIVALENT
+s16 func_80028928(s16 playerId) {
+    return (u32) (gPlayers[playerId].unk_70 * 80 * 0x10000) / 400 / 0x10000;
+}
+#else
 #pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_80028928.s")
+s16 func_80028928(s16 playerId);
+#endif
 
-#pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_80028990.s")
+void func_80028990(Vtx *vtx) {
+    Gfx *gfx = D_8005BF58;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_80028AE4.s")
-void func_80028AE4(Object *);
+    if (D_8008012C & 1) {
+        return;
+    }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_80028E84.s")
+    D_8005BF00.header.unk_00 = 0;
+    D_8005BF00.header.unk_04 = 0;
+    D_8005BF00.header.numVertices = 4;
+    D_8005BF00.header.unk_09 = 0;
+    D_8005BF00.header.numTriangles = 2;
+    D_8005BF00.header.unk_0B = 2;
+    D_8005BF00.header.texGfx = D_8005BF58;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_80028F38.s")
+    gDPPipeSync(gfx++);
+    gDPSetCombineMode(gfx++, G_CC_SHADE, G_CC_SHADE);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_80028FCC.s")
+    gtStateSetOthermode(&D_8005BF10, GT_RENDERMODE, G_RM_XLU_SURF | G_RM_XLU_SURF2);
+    gtStateSetOthermode(&D_8005BF10, GT_CYCLETYPE, G_CYC_1CYCLE);
+    gtStateSetOthermode(&D_8005BF10, GT_TEXTFILT, G_TF_BILERP);
+    gtStateSetOthermode(&D_8005BF10, GT_TEXTCONV, G_TC_FILT);
+    gtStateSetOthermode(&D_8005BF10, GT_TEXTPERSP, G_TP_PERSP);
+    gtStateSetOthermode(&D_8005BF10, GT_TEXTLUT, G_TT_RGBA16);
+    gtStateSetOthermode(&D_8005BF10, GT_PIPELINE, G_PM_NPRIMITIVE);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_80029044.s")
+    gSPTriBatch(gOverlayBatchPos, NULL, &D_8005BF00, vtx, D_80049330);
+}
+
+void func_80028AE4(Object *obj) {
+    s32 unused;
+    s16 sp22;
+    s16 a2;
+    s16 sp1E;
+    s16 sp1C;
+
+    sp22 = D_8005BFCE;
+
+    if (D_800801F0) {
+        D_80051F6C = D_80051F70 = D_8013C2A8 = D_8013C2AA = 0;
+    }
+
+    if (D_8013C2A8 != 0) {
+        func_80028990(D_80051F78[sp22]);
+        D_8013C2A8--;
+    } else if (D_80051F6C > 0) {
+        D_80051F6C--;
+        D_80051F78[sp22][0].v.ob[0] = D_80051F78[sp22][2].v.ob[0] = D_80051F78[sp22][1].v.ob[0] - 4 * D_80051F6C;
+        func_80028990(D_80051F78[sp22]);
+    }
+
+    sp1C = func_80028928(PLAYER_1);
+    if (sp1C != D_8013C230) {
+        a2 = D_8013C230 - sp1C;
+        D_8013C2A8 = 30 - D_8013C2A8 - D_80051F6C;
+        if (D_8013C2A8 < 0) {
+            D_8013C2A8 = 0;
+        }
+
+        D_80051F6C += a2;
+        D_8013C234->unk_04 += a2;
+        D_8013C234->unk_10 += a2;
+        if (D_8013C234->unk_04 >= D_8013C234->unk_08) {
+            D_8013C234->unk_04 = D_8013C234->unk_08;
+        }
+
+        D_80051F78[0][1].v.ob[0] = D_80051F78[1][1].v.ob[0] = D_80051F78[0][3].v.ob[0] = D_80051F78[1][3].v.ob[0] =
+            (35 + D_8013C234->unk_04) << 2;
+        D_80051F78[0][0].v.ob[0] = D_80051F78[1][0].v.ob[0] = D_80051F78[0][2].v.ob[0] = D_80051F78[1][2].v.ob[0] =
+            D_80051F78[0][1].v.ob[0] - 4 * D_80051F6C;
+
+        func_80028990(D_80051F78[sp22]);
+        D_8013C230 = sp1C;
+    }
+
+    if (D_8013C2AA != 0) {
+        func_80028990(D_80051FF8[sp22]);
+        D_8013C2AA--;
+    } else if (D_80051F70 > 0) {
+        D_80051F70--;
+        D_80051FF8[sp22][1].v.ob[0] = D_80051FF8[sp22][3].v.ob[0] = D_80051FF8[sp22][0].v.ob[0] + 4 * D_80051F70;
+        func_80028990(D_80051FF8[sp22]);
+    }
+
+    sp1E = func_80028928(PLAYER_2);
+    if (sp1E != D_8013C232) {
+        a2 = D_8013C232 - sp1E;
+        // clang-format off
+        D_8013C2AA = 30 - D_8013C2AA - D_80051F70;\
+        if (D_8013C2AA < 0) {
+            D_8013C2AA = 0;
+        }
+        // clang-format on
+
+        D_80051F70 += a2;
+        D_8013C238->unk_08 -= a2;
+        if (D_8013C238->unk_04 >= D_8013C238->unk_08) {
+            D_8013C238->unk_04 = D_8013C238->unk_08;
+        }
+
+        D_80051FF8[0][0].v.ob[0] = D_80051FF8[1][0].v.ob[0] = D_80051FF8[0][2].v.ob[0] = D_80051FF8[1][2].v.ob[0] =
+            (217 + D_8013C238->unk_08) << 2;
+        D_80051FF8[0][1].v.ob[0] = D_80051FF8[1][1].v.ob[0] = D_80051FF8[0][3].v.ob[0] = D_80051FF8[1][3].v.ob[0] =
+            D_80051FF8[0][0].v.ob[0] + 4 * D_80051F70;
+
+        func_80028990(D_80051FF8[sp22]);
+        D_8013C232 = sp1E;
+    }
+}
+
+void func_80028E84(void) {
+    s16 v0, v1;
+
+    v0 = gPlayers[PLAYER_1].unk_00->unk_070;
+    v1 = gPlayers[PLAYER_2].unk_00->unk_070;
+    if (v0 > v1) {
+        func_8000636C(&gPlayers[PLAYER_1], 132, 1);
+        func_8000636C(&gPlayers[PLAYER_2], 384, 1);
+    } else if (v0 < v1) {
+        func_8000636C(&gPlayers[PLAYER_1], 384, 1);
+        func_8000636C(&gPlayers[PLAYER_2], 132, 1);
+    } else {
+        func_8000636C(&gPlayers[PLAYER_1], 384, 1);
+        func_8000636C(&gPlayers[PLAYER_2], 384, 1);
+    }
+}
+
+void func_80028F38(Object *obj) {
+    Object *v1;
+
+    if (D_800801F0) {
+        obj->currentTask->flags |= 0x80;
+    }
+
+    obj->currentTask->counter = 60;
+
+    v1 = obj->varObj[0];
+    if (--v1->spriteId < 0) {
+        v1->spriteId = 9;
+        if (--obj->spriteId < 0) {
+            obj->spriteId = 0;
+            D_800801F0 = TRUE;
+            v1->spriteId = 0;
+            obj->currentTask->flags |= 0x80;
+        }
+    }
+}
+
+void func_80028FCC(void) {
+    if (D_80080230 != 40 && D_8004C1D4 != 0) {
+        D_8013C240->currentTask->func = func_80028F38;
+        D_8013C240->currentTask->counter = 0;
+        D_8013C240->currentTask->flags = 1;
+        D_8013C23C->currentTask->counter = 120;
+    }
+}
+
+void func_80029044(void) {
+    s16 i = 0;
+    Object *a0;
+
+    if (D_8013C248 != NULL) {
+        D_8013C248->flags |= 0x10;
+        D_8013C248->flags &= ~0x4000000;
+        D_80081438++;
+        D_80081434++;
+
+        while (D_8013C248->varObj[i] != NULL) {
+            D_80081438++;
+            D_80081434++;
+            D_8013C248->varObj[i]->flags |= 0x10;
+            D_8013C248->varObj[i]->flags &= ~0x4000000;
+            i++;
+        }
+
+        D_8013C248 = NULL;
+    }
+}
 
 void func_80029130(void) {
     UIElement sp74 = { 28, NULL, 0x4000000, 0x1001, "bars.sp2" };

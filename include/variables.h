@@ -92,5 +92,14 @@ extern s32 D_80052C54;
 extern ModelNodeRenderInfo *D_8013C4E8;
 extern s16 D_8004C1D4;
 extern s16 D_8004C1D0;
+extern Object *D_8013C23C;
+extern s16 D_8013C2AA;
+extern s16 D_8013C2A8;
+extern s16 D_80051F70;
+extern s16 D_80051F6C;
+extern BatchInfo D_8005BF00;
+extern Gfx D_8005BF58[2];
+extern Gfx D_8005BF10;
+extern u16 D_80049330[];
 
 #endif
