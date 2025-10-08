@@ -2,25 +2,57 @@
 #include "PR/gt.h"
 #include "task.h"
 
-const char D_80054F70[] = "dusthit.sp3";
-
 extern Vec4i D_8004A5D0[];
 extern Vec4i D_8004A680[];
-extern Vtx D_80051F78[2][4];
-extern Vtx D_80051FF8[2][4];
-extern Vec4i *D_800520D8[];
 
 extern s32 D_80081434;
 extern s32 D_80081438;
 
-extern s16 D_8013C230;
-extern s16 D_8013C232;
-extern AssetSP2Sub3 *D_8013C234;
-extern AssetSP2Sub3 *D_8013C238;
-extern Object *D_8013C240;
-extern Object *D_8013C244;
-extern Object *D_8013C248;
-extern Object *D_8013C258[2][10];
+void func_80028558(Object *obj);
+
+UnkK2Def D_80051F50 = { "dusthit.sp3", func_80028558, 0, 0x1100, 0, 0x2800, 0 };
+s16 D_80051F68 = 0;
+s16 D_80051F6C = 0;
+s16 D_80051F70 = 0;
+Vtx D_80051F78[2][4] = { { { { { 140, 112, 0 }, 0, { 0, 0 }, { 255, 255, 255, 255 } } },
+                           { { { 140, 112, 0 }, 0, { 0, 0 }, { 255, 255, 255, 255 } } },
+                           { { { 140, 152, 0 }, 0, { 0, 0 }, { 255, 255, 255, 255 } } },
+                           { { { 140, 152, 0 }, 0, { 0, 0 }, { 255, 255, 255, 255 } } } },
+                         { { { { 140, 112, 0 }, 0, { 0, 0 }, { 255, 255, 255, 255 } } },
+                           { { { 140, 112, 0 }, 0, { 0, 0 }, { 255, 255, 255, 255 } } },
+                           { { { 140, 152, 0 }, 0, { 0, 0 }, { 255, 255, 255, 255 } } },
+                           { { { 140, 152, 0 }, 0, { 0, 0 }, { 255, 255, 255, 255 } } } } };
+Vtx D_80051FF8[2][4] = { { { { { 1188, 112, 0 }, 0, { 0, 0 }, { 255, 255, 255, 255 } } },
+                           { { { 1188, 112, 0 }, 0, { 0, 0 }, { 255, 255, 255, 255 } } },
+                           { { { 1188, 152, 0 }, 0, { 0, 0 }, { 255, 255, 255, 255 } } },
+                           { { { 1188, 152, 0 }, 0, { 0, 0 }, { 255, 255, 255, 255 } } } },
+                         { { { { 1188, 112, 0 }, 0, { 0, 0 }, { 255, 255, 255, 255 } } },
+                           { { { 1188, 112, 0 }, 0, { 0, 0 }, { 255, 255, 255, 255 } } },
+                           { { { 1188, 152, 0 }, 0, { 0, 0 }, { 255, 255, 255, 255 } } },
+                           { { { 1188, 152, 0 }, 0, { 0, 0 }, { 255, 255, 255, 255 } } } } };
+Vec4i D_80052078 = { 63, 220, 0, 0 };
+Vec4i D_80052088 = { 72, 220, 0, 0 };
+Vec4i D_80052098 = { 81, 220, 0, 0 };
+Vec4i D_800520A8 = { 268, 220, 0, 0 };
+Vec4i D_800520B8 = { 277, 220, 0, 0 };
+Vec4i D_800520C8 = { 286, 220, 0, 0 };
+Vec4i *D_800520D8[] = { &D_80052078, &D_80052088, &D_80052098, &D_800520A8, &D_800520B8, &D_800520C8 };
+
+s16 D_8013C230;
+s16 D_8013C232;
+AssetSP2Sub3 *D_8013C234;
+AssetSP2Sub3 *D_8013C238;
+Object *D_8013C23C;
+Object *D_8013C240;
+Object *D_8013C244;
+Object *D_8013C248;
+s16 D_8013C24C;
+s16 D_8013C24E;
+u16 D_8013C250;
+s32 D_8013C254_unused;
+Object *D_8013C258[2][10];
+s16 D_8013C2A8;
+s16 D_8013C2AA;
 
 void func_8002A050(Object *obj);
 void func_8002A0EC(Object *obj);
@@ -29,25 +61,227 @@ void func_80028E84(void);
 
 void func_8000636C(Player *, s32, s32);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_80028010.s")
+void func_80028010(Object *obj) {
+    obj->flags &= ~4;
+    if (obj->spriteId <= 12) {
+        obj->spriteId++;
+        if (obj->unk_088.a > 100) {
+            obj->unk_088.a -= 8;
+        } else if (obj->unk_088.a > 3) {
+            obj->unk_088.a -= 3;
+        }
+        obj->currentTask->counter = 2;
+    } else {
+        obj->flags |= 0x14;
+        obj->currentTask->flags |= 0x80;
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_80028090.s")
+void func_80028090(Object *obj) {
+    if (--obj->vars[1] <= 0) {
+        obj->flags &= ~4;
+        if (obj->spriteId <= 8) {
+            obj->spriteId++;
+            if (obj->unk_088.a > 100) {
+                obj->unk_088.a -= 8;
+            } else if (obj->unk_088.a > 4) {
+                obj->unk_088.a -= 2;
+            }
+            obj->currentTask->counter = 2;
+        } else {
+            obj->flags |= 0x14;
+            obj->currentTask->flags |= 0x80;
+        }
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_80028120.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_800281F8.s")
+void func_800281F8(s16 arg0, Vec4i *arg1, Vec4i *arg2) {
+    s32 sp2C;
+    s32 sp28;
+    s32 sp24;
+    s32 sp20;
+    s32 sp1C;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_80028360.s")
+    sp28 = arg1->x;
+    sp24 = arg1->z;
+    sp2C = (u32) (sqrtf(SQ(sp28) + SQ(sp24)) + 0.5);
+    sp20 = arg0 + sp2C;
+    sp1C = func_80012518(sp24, sp28);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_80028400.s")
+    arg2->x = (func_80012854(sp1C) * sp20) >> 12;
+    arg2->z = (-func_80012854(sp1C + 0x400) * sp20) >> 12;
+    arg2->y = arg1->y;
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_80028464.s")
+void func_80028360(Object *obj) {
+    Object *v0;
+    Object *v1;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_80028558.s")
+    if (--obj->unk_08C <= 0) {
+        obj->unk_08C = obj->vars[2];
+        v1 = obj->varObj[3];
+        v0 = func_8002BF1C(&v1->pos, &D_80051F50, 0xABAB);
+        if (v0 == NULL) {
+            return;
+        } else {
+            v0->currentTask->func = func_80028010;
+            v0->unk_058 = v0->unk_05C = v0->unk_060 = 0x64000;
+            if (--obj->vars[1] < 0) {
+                obj->flags |= 0x10;
+            }
+        }
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_8002856C.s")
+void func_80028400(Object *obj) {
+    Object *v0;
+    Player *player = (Player *) obj->varObj[0];
 
-#pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_800287AC.s")
+    v0 = create_worker(func_80028360, 0x1000);
+    if (v0 == NULL) {
+        return;
+    }
+
+    v0->varObj[0] = player;
+    v0->vars[1] = 4;
+    v0->vars[2] = 3;
+    v0->varObj[3] = obj;
+    v0->unk_088.a = 100;
+    v0->unk_08C = 0;
+}
+
+void func_80028464(Object *obj) {
+    s16 playerId = obj->vars[0];
+    Object *v0 = gPlayers[playerId].unk_00;
+    Vec4i sp20;
+
+    if (v0->pos.y != 0) {
+        return;
+    }
+    sp20.x = v0->modInst->unk_010.wolrd_matrix.w.x;
+    sp20.y = v0->modInst->unk_010.wolrd_matrix.w.y;
+    sp20.z = v0->modInst->unk_010.wolrd_matrix.w.z;
+
+    if (obj) {} // @fake
+
+    if (obj->vars[2] != 0) {
+        func_800281F8(obj->vars[2], &sp20, &obj->pos);
+    } else {
+        obj->pos.x = sp20.x;
+        obj->pos.z = sp20.z;
+    }
+
+    obj->pos.y = 0;
+    obj->currentTask->func = func_80028090;
+}
+
+void func_80028558(Object *obj) {
+    obj->currentTask->func = func_80028464;
+}
+
+void func_8002856C(Object *obj) {
+    Object *v0;
+    s16 s0 = ((Player *) obj->varObj[0])->playerId;
+
+    v0 = func_8002BF1C(&D_8004934C, &D_80051F50, 0xABAB);
+    if (v0 == NULL) {
+        return;
+    } else {
+        v0->unk_058 = v0->unk_05C = v0->unk_060 = 0x64000;
+        v0->currentTask->counter = 10;
+        v0->unk_08C = 1;
+        v0->vars[0] = s0;
+        v0->vars[1] = 0;
+        v0->vars[2] = 150;
+        v0->unk_088.a = 60;
+        v0->flags |= 4;
+    }
+
+    v0 = func_8002BF1C(&D_8004934C, &D_80051F50, 0xABAB);
+    if (v0 == NULL) {
+        return;
+    } else {
+        v0->unk_058 = v0->unk_05C = v0->unk_060 = 0x64000;
+        v0->currentTask->counter = 10;
+        v0->unk_08C = 1;
+        v0->vars[0] = s0;
+        v0->vars[1] = 3;
+        v0->vars[2] = 50;
+        v0->unk_088.a = 60;
+        v0->flags |= 4;
+    }
+
+    v0 = func_8002BF1C(&D_8004934C, &D_80051F50, 0xABAB);
+    if (v0 == NULL) {
+        return;
+    } else {
+        v0->unk_058 = v0->unk_05C = v0->unk_060 = 0x64000;
+        v0->currentTask->counter = 10;
+        v0->unk_08C = 1;
+        v0->vars[0] = s0;
+        v0->vars[1] = 5;
+        v0->vars[2] = -200;
+        v0->unk_088.a = 40;
+        v0->flags |= 4;
+    }
+
+    v0 = func_8002BF1C(&D_8004934C, &D_80051F50, 0xABAB);
+    if (v0 == NULL) {
+        return;
+    } else {
+        v0->unk_058 = v0->unk_05C = v0->unk_060 = 0x64000;
+        v0->currentTask->counter = 10;
+        v0->unk_08C = 1;
+        v0->vars[0] = s0;
+        v0->vars[1] = 7;
+        v0->vars[2] = 100;
+        v0->unk_088.a = 40;
+        v0->flags |= 4;
+    }
+
+    v0 = func_8002BF1C(&D_8004934C, &D_80051F50, 0xABAB);
+    if (v0 == NULL) {
+        return;
+    } else {
+        v0->currentTask->counter = 10;
+        v0->unk_058 = v0->unk_05C = v0->unk_060 = 0x64000;
+        v0->unk_08C = 1;
+        v0->vars[0] = s0;
+        v0->vars[1] = 9;
+        v0->vars[2] = -250;
+        v0->unk_088.a = 30;
+        v0->flags |= 4;
+    }
+}
+
+void func_800287AC(Object *obj) {
+    u32 i;
+    Object *v0;
+    s16 s4 = ((Player *) obj->varObj[0])->playerId;
+    s32 a, b;
+
+    a = 0;
+    b = -250;
+    for (i = 0; i < 13; i++) {
+        v0 = func_8002BF1C(&D_8004934C, &D_80051F50, 0xABAB);
+        if (v0 == NULL) {
+            return;
+        }
+
+        v0->vars[1] = a;
+        v0->vars[2] = b;
+        v0->unk_058 = v0->unk_05C = v0->unk_060 = 0x64000;
+        v0->unk_08C = 1;
+        v0->vars[0] = s4;
+        v0->unk_088.a = 40;
+        v0->flags |= 4;
+
+        b += 50;
+        a += 3;
+    }
+}
 
 void func_80028890(Object *obj) {
     gPlayerInput[PLAYER_1].unk_0A = FALSE;
