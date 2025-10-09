@@ -6,8 +6,7 @@
 #include "enums.h"
 #include "common_structs.h"
 #include "functions.h"
-#include "variables.h"
-
 typedef u8 Addr[];
+#include "variables.h"
 
 #endif

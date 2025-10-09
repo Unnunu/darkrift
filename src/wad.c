@@ -1,6 +1,7 @@
 #include "common.h"
 #include "ld_addrs.h"
 #include "string.h"
+#include "PR/gt.h"
 
 enum WadFileTypes {
     WAD_FILE_ANM = 0,
@@ -49,41 +50,26 @@ typedef struct WadFile {
     /* 0x08 */ WadFolder folders[1];
 } WadFile;
 
-extern s32 gNumAssets;
+typedef struct AnimAsset {
+    /* 0x00 */ s32 unk_00;
+    /* 0x04 */ s32 unk_04[1];
+} AnimAsset;
 
-extern Asset gAssets[256];
-extern s32 D_8013C200;
-extern WadFile *gWadFile;
-extern s32 D_8013C208;
-extern u8 *gWadRomAddress;
-extern WadFolder *gWadCurrentFolder;
-extern s32 D_8013C214;
-extern s32 D_8013C218;
-extern u32 gWadNumFiles;
-extern u32 gWadNumFolders;
+s32 gNumAssets = 0;
 
-extern Unk8000C3CCArg3 D_80049920;
-extern Unk8000C3CCArg3 D_80049938;
-extern Unk8000C3CCArg3 D_80049950;
-extern Unk8000C3CCArg3 D_80049968;
-extern ALBankFile *gMusicBankFile;
-extern s32 gMusicBankFileSize;
-extern u8 gMusicIsPlaying;
-extern ALSeqPlayer *gMusicPlayer;
-extern ALSeq *gMusicSequence;
-extern s32 gMusicVolume;
-extern u8 *gCurrentSongData;
-extern s32 gCurrentSongDataSize;
-extern ALSeqMarker gMusicMarkerStart;
-extern ALSeqMarker gMusicMarkerEnd;
-extern ALBankFile *gAudioBankFiles[3];
-extern u8 gSfxPlayerOn[];
-
-extern s32 gMusicVolumeFading;
-
-extern s8 D_8004A472;
-
-extern Addr D_7DE880;
+Asset gAssets[256];
+s32 D_8013C200;
+WadFile *gWadFile;
+s32 D_8013C208;
+u8 *gWadRomAddress;
+WadFolder *gWadCurrentFolder;
+s32 D_8013C214;
+s32 D_8013C218;
+u32 gWadNumFiles;
+u32 gWadNumFolders;
+s16 D_8013C224;
+s16 D_8013C226;
+void (*D_8013C228)(Asset *);
 
 void sound_init_player(ALBankFile *arg0, u8 *arg1, u32 arg2);
 void mem_move(u32 *dest, u32 *src, u32 size);
@@ -115,6 +101,7 @@ void asset_reload_k5(Asset *);
 void func_80026DF0(Asset *);
 void asset_load_tex(Asset *);
 void asset_load_sp2(Asset *);
+void func_800271C0(Asset *);
 void asset_load_gmd(Asset *);
 void asset_load_k3(Asset *);
 void asset_load_k4(Asset *);
@@ -593,16 +580,69 @@ void assets_clear_unused(void) {
     for (i = 0; i < gNumAssets; i++) {}
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80026DF0.s")
+void func_80026DF0(Asset *asset) {
+    AnimAsset *animAsset;
+    s32 a3;
+    u32 i;
+    s32 *v1;
+    AnimHeader **v0;
+    u32 a0;
+
+    func_80026BE0(asset);
+    animAsset = (AnimHeader **) asset->data;
+    a3 = animAsset->unk_00;
+
+    a0 = (u32) ((u32) animAsset + 4 + 4 * a3);
+    v1 = animAsset->unk_04;
+
+    for (i = 0; i < a3; i++) {
+        v0 = animAsset;
+        v0[i] = (AnimHeader *) (a0 + v1[i]);
+    }
+
+    asset->aux_data = a3;
+}
 
 void asset_load_tex(Asset *asset) {
     func_80026BE0(asset);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80026EEC.s")
+void func_80026EEC(Asset *asset) {
+    AssetSP2 *header;
+    s32 i;
+    AssetSP2Sub2 *entry;
+    TextureAsset *textures[4];
 
+    header = asset->data;
+    entry = header->sprites;
+    for (i = 0; i < 4 && (header->texture_name[i][0]) != '\0'; i++) {
+        textures[i] = gAssets[asset_find(header->texture_name[i], asset->context)].data;
+    }
+
+    for (i = 0; i < header->numSprites; i++, entry++) {
+        entry->texture = textures[entry->tex_index];
+    }
+}
+
+#ifdef NON_MATCHING
+void func_80027004(AssetSP2 *arg0, AssetSP2 *arg1, s32 arg2) {
+    s32 addr_diff;
+    u32 i;
+    AssetSP2Sub2 *a2;
+    AssetSP2 *v1;
+
+    addr_diff = ((u32) arg0 - (u32) arg1);
+    v1 = arg0;
+    a2 = arg0->sprites = (AssetSP2Sub2 *) ((u32) arg0->sprites + addr_diff);
+
+    for (i = 0; i < v1->numSprites; i++) {
+        a2[i].parts = (AssetSP2Sub3 *) ((u32) a2[i].parts + addr_diff);
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80027004.s")
-void func_80027004(void *arg0, s32 arg1, s32 arg2);
+void func_80027004(AssetSP2 *arg0, AssetSP2 *arg1, s32 arg2);
+#endif
 
 #ifdef NON_MATCHING
 void asset_load_sp2(Asset *asset) {
@@ -639,7 +679,29 @@ void asset_load_sp2(Asset *asset) {
 #pragma GLOBAL_ASM("asm/nonmatchings/wad/asset_load_sp2.s")
 #endif
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_800271C0.s")
+void func_800271C0(Asset *asset) {
+    AssetUnkHeader *unkHeader;
+    UnkFrodo *sp38;
+    s32 sp34;
+    s32 sp30;
+    AssetGmd *sp2C;
+
+    func_80026BE0(asset);
+    unkHeader = asset->data;
+    sp34 = asset->memory_slot;
+    sp30 = unkHeader->numEntries;
+    asset->aux_memory_slot = asset->memory_slot;
+    asset->size = sp30 * sizeof(ModelNodeAsset) + sp30 * sizeof(BatchAsset) + sizeof(AssetGmd);
+
+    func_80026A94(asset, asset->size);
+    sp2C = (AssetGmd *) (asset->data);
+    sp2C->numNodes = sp30;
+    func_8000C0E4(sp2C, sp34);
+
+    sp38 = mem_alloc(sizeof(UnkFrodo), "wad.c", 742);
+    func_8000DAB0(sp38, sp2C, asset->name, 0, asset->context);
+    asset->aux_data = sp38;
+}
 
 void asset_load_gmd(Asset *asset) {
     AssetUnkHeader *unkHeader;
@@ -775,7 +837,17 @@ void asset_load_tmd(Asset *asset) {
     s1->unk_C8 = 0;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80027680.s")
+void func_80027680(Asset *asset) {
+    UnkFrodo *s0;
+    AssetGmd *sp28;
+
+    s0 = mem_alloc(sizeof(UnkFrodo), "wad.c", 950);
+    sp28 = asset->data;
+
+    func_8000BE18(sp28);
+    func_8000DAB0(s0, sp28, asset->name, 0, asset->context);
+    asset->aux_data = s0;
+}
 
 void asset_reload_tmd(Asset *asset) {
     UnkSam *s0;
@@ -914,7 +986,16 @@ void asset_load_sfx(Asset *asset) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80027C54.s")
+void func_80027C54(Batch *arg0, Gfx **arg1) {
+    Gfx *gfx;
+    if (arg1 == NULL) {
+        gtStateSetOthermode(&arg0->info->header.otherMode, GT_RENDERMODE, G_RM_XLU_SURF | G_RM_XLU_SURF2);
+    } else {
+        gfx = *arg1;
+        gDPSetPrimColor(gfx++, 0, 0, 255, 255, 255, 255);
+        *arg1 = gfx;
+    }
+}
 
 void asset_load_sp3(Asset *asset) {
     AssetUnkHeader *unkHeader;

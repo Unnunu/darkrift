@@ -101,5 +101,24 @@ extern BatchInfo D_8005BF00;
 extern Gfx D_8005BF58[2];
 extern Gfx D_8005BF10;
 extern u16 D_80049330[];
+extern Unk8000C3CCArg3 D_80049920;
+extern Unk8000C3CCArg3 D_80049938;
+extern Unk8000C3CCArg3 D_80049950;
+extern Unk8000C3CCArg3 D_80049968;
+extern ALBankFile *gMusicBankFile;
+extern s32 gMusicBankFileSize;
+extern u8 gMusicIsPlaying;
+extern ALSeqPlayer *gMusicPlayer;
+extern ALSeq *gMusicSequence;
+extern s32 gMusicVolume;
+extern u8 *gCurrentSongData;
+extern s32 gCurrentSongDataSize;
+extern ALSeqMarker gMusicMarkerStart;
+extern ALSeqMarker gMusicMarkerEnd;
+extern ALBankFile *gAudioBankFiles[3];
+extern u8 gSfxPlayerOn[];
+extern s32 gMusicVolumeFading;
+extern s8 D_8004A472;
+extern Addr D_7DE880;
 
 #endif

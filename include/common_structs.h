@@ -267,13 +267,31 @@ typedef struct UnkSamSub {
     /* 0x44 */ s16 unk_44[16];
 } UnkSamSub; // size = 0x64;
 
+typedef union AnimEntry {
+    s32 w;
+    struct {
+        u8 b0;
+        u8 b1;
+        u8 b2;
+        u8 b3;
+    };
+} AnimEntry;
+
+typedef struct AnimHeader {
+    u8 b0;
+    u8 b1;
+    u8 b2;
+    u8 b3;
+    AnimEntry entries[1];
+} AnimHeader;
+
 typedef struct UnkSam {
     /* 0x000 */ s32 unk_00;
     /* 0x004 */ AssetGmd *unk_04;
     /* 0x008 */ char unk_08[0x128 - 8];
     /* 0x128 */ s32 unk_128;
     /* 0x12C */ char unk_12C[0x148 - 0x12C];
-    /* 0x148 */ s32 *unk_148;
+    /* 0x148 */ AnimHeader **unk_148;
     /* 0x14C */ s32 unk_14C;
     /* 0x150 */ StructAA8 *unk_150;
     /* 0x154 */ union {
@@ -309,24 +327,6 @@ typedef struct ModelNodeRenderInfo {
     /* 0x18 */ struct ModelNodeRenderInfo *next;
     /* 0x1C */ s32 flags;
 } ModelNodeRenderInfo; // size = 0x20
-
-typedef union AnimEntry {
-    s32 w;
-    struct {
-        u8 b0;
-        u8 b1;
-        u8 b2;
-        u8 b3;
-    };
-} AnimEntry;
-
-typedef struct AnimHeader {
-    u8 b0;
-    u8 b1;
-    u8 b2;
-    u8 b3;
-    AnimEntry entries[1];
-} AnimHeader;
 
 typedef struct ModelInstance {
     /* 0x0000 */ s16 numNodes;
