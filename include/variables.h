@@ -120,5 +120,10 @@ extern u8 gSfxPlayerOn[];
 extern s32 gMusicVolumeFading;
 extern s8 D_8004A472;
 extern Addr D_7DE880;
+extern OSMesgQueue gSchedDMAQueue;
+extern s32 D_8013C208;
+extern s32 D_8013C218;
+extern OSContPad *gContData[MAXCONTROLLERS];
+extern u16 D_800AA450[2][8];
 
 #endif

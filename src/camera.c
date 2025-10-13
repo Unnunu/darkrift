@@ -60,7 +60,7 @@ void func_80038E00(Object *obj, AnimHeader **arg1) {
     gCameraFarClip = 11000;
 }
 
-void func_80038E8C(Object *obj, Vec3i *arg1, s32 arg2, s32 arg3) {
+void func_80038E8C(Object *obj, Vec4i *arg1, s32 arg2, AnimHeader *arg3) {
     ModelInstance *model = obj->modInst;
 
     model->unk_A0E = -1;

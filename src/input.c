@@ -1,10 +1,5 @@
 #include "common.h"
 
-extern u16 D_800AA450[2][8];
-extern OSContPad *gContData[MAXCONTROLLERS];
-
-extern s32 gFrameCounter;
-
 // R_CBUTTONS, L_CBUTTONS, D_CBUTTONS, U_CBUTTONS
 s32 D_8004A4F0[] = {
     0,
@@ -69,8 +64,6 @@ s32 D_8004A580[] = {
     0,                     // Z_TRIG + B_BUTTON + A_BUTTON
     0                      // START_BUTTON + Z_TRIG + B_BUTTON + A_BUTTON
 };
-
-void cont_read(void);
 
 u16 func_800249B0(u16 contId, u16 buttons) {
     u16 i;

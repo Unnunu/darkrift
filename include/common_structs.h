@@ -453,10 +453,22 @@ typedef struct GlobalObjBSub {
     /* 0x08 */ s16 counter;
 } GlobalObjBSub; // size = 0xC
 
+typedef struct ObjectTaskSub {
+    union {
+        s32 unk_00_i;
+        void (*unk_00_f)(Object *);
+    };
+    /* 0x04 */ char unk_04[4];
+    /* 0x08 */ s32 unk_08;
+    /* 0x0C */ s32 unk_0C;
+    /* 0x10 */ void (*unk_10)(Object *);
+    /* 0x14 */ char unk_14[4];
+} ObjectTaskSub; // size >= 0xC
+
 typedef struct ObjectTask {
     /* 0x00 */ u32 flags;
     /* 0x04 */ void (*func)(Object *);
-    /* 0x08 */ char unk_08[0x18];
+    /* 0x08 */ ObjectTaskSub unk_08;
     /* 0x20 */ u16 stackPos;
     /* 0x22 */ char unk_22[2];
     /* 0x24 */ GlobalObjBSub stack[8];
@@ -505,11 +517,14 @@ typedef struct PlayerSub3 {
     /* 0x08 */ s16 unk_08;
     /* 0x0A */ char unk_0A[0x20 - 0xA];
     /* 0x20 */ s16 unk_20;
-    /* 0x22 */ char unk_22[0x6];
+    /* 0x22 */ s16 unk_22;
+    /* 0x24 */ s32 unk_24;
     /* 0x28 */ s16 unk_28;
     /* 0x2A */ s16 unk_2A;
-    /* 0x2C */ s32 unk_2C;
-    /* 0x30 */ s32 unk_30;
+    /* 0x2C */ s16 unk_2C;
+    /* 0x2E */ s16 unk_2E;
+    /* 0x30 */ s16 unk_30;
+    /* 0x32 */ s16 unk_32;
     /* 0x34 */ s32 unk_34;
 } PlayerSub3; // size = 0x38
 
@@ -565,6 +580,17 @@ typedef struct PlayerSubB {
     /* 0x00 */ char unk_00[0x18];
 } PlayerSubB; // size = 0x18
 
+typedef struct PlayerSubC {
+    /* 0x00 */ u8 unk_00;
+    /* 0x01 */ u8 unk_01;
+    /* 0x02 */ u8 unk_02;
+    /* 0x03 */ u8 unk_03;
+    /* 0x04 */ u8 unk_04;
+    /* 0x05 */ u8 unk_05;
+    /* 0x06 */ u8 unk_06;
+    /* 0x07 */ u8 unk_07;
+} PlayerSubC; // size = 0x8
+
 typedef struct Player {
     /* 0x0000 */ Object *unk_00;
     /* 0x0004 */ s16 playerId;
@@ -582,9 +608,13 @@ typedef struct Player {
     /* 0x0030 */ s32 unk_30;
     /* 0x0034 */ s16 *unk_34;
     /* 0x0038 */ s16 *unk_38;
-    /* 0x003C */ char unk_3C[0x10];
+    /* 0x003C */ char unk_3C[4];
+    /* 0x0040 */ PlayerSubC *unk_40;
+    /* 0x0044 */ char unk_44[8];
     /* 0x004C */ PlayerSubB *unk_4C;
-    /* 0x0050 */ char unk_50[0x20];
+    /* 0x0050 */ char unk_50[0x18];
+    /* 0x0068 */ u8 *unk_68;
+    /* 0x006C */ s32 unk_6C;
     /* 0x0070 */ s16 unk_70;
     /* 0x0072 */ s16 unk_72;
     /* 0x0074 */ s16 unk_74;
@@ -602,7 +632,8 @@ typedef struct Player {
     /* 0x00A4 */ char unk_A4[0x18];
     /* 0x00BC */ void (*unk_BC)(Object *);
     /* 0x00C0 */ s16 unk_C0;
-    /* 0x00C2 */ char unk_C2[0x184 - 0xC2];
+    /* 0x00C2 */ char unk_C2[0x180 - 0xC2];
+    /* 0x0180 */ s32 unk_180;
     /* 0x0184 */ s8 unk_184;
     /* 0x0185 */ char unk_185[0xF];
     /* 0x0194 */ s32 unk_194;

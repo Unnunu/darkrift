@@ -270,9 +270,6 @@ gFramebuffers = 0x8005BFD0;
 sched_execute_tasks = 0x80002F60;
 
 gAssets = 0x80138A00; // size:0x1000
-gWadFile = 0x8013C204;
-gWadCurrentFolder = 0x8013C210;
-gWadNumFiles = 0x8013C21C;
 gWadRomAddress = 0x8013C20C;
 gWadNumFolders = 0x8013C220;
 asset_find = 0x80025DB4;

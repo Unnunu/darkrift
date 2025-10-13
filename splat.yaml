@@ -249,7 +249,8 @@ segments:
       - [0x4C740, .data, some_data]
       - [0x4CC10, data]
       - [0x4D350, .data, cont]
-      - [0x4D360, data]
+      - [0x4D360, .data, lzhuf]
+      - [0x4D5B0, data]
       - [0x52B40, .data, wad]
       - [0x52B50, .data, 28C10]
       - [0x52E20, data]
@@ -335,7 +336,8 @@ segments:
       - { type: .bss, vram: 0x80081670, name: audio }
       - { type: bss, vram: 0x800A4930, name: bss3 }
       - { type: .bss, vram: 0x800B63A0, name: cont }
-      - { type: bss, vram: 0x800B6400, name: bss4 }
+      - { type: .bss, vram: 0x800B6400, name: lzhuf }
+      - { type: bss, vram: 0x800B85B0, name: bss4 }
       - { type: .bss, vram: 0x80138A00, name: wad }
       - { type: .bss, vram: 0x8013C230, name: 28C10 }
       - { type: .bss, vram: 0x8013C2B0, name: item }

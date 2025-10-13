@@ -96,5 +96,17 @@ void func_800343F8(Object *obj, u8 arg1);
 Object *func_80030908(void);
 void func_80021D40(Object *obj);
 u8 func_80022B44(Player *arg0, Player *arg1, void *arg2);
+void cont_read(void);
+u8 func_80005EE4(Player *, u8, u16);
+void func_80034C18(Object *obj, u8 *arg1);
+void func_80034A58(Object *obj);
+void func_8002C340(void);
+void func_80038E8C(Object *obj, Vec4i *arg1, s32 arg2, AnimHeader *arg3);
+void func_8002C490(Object *obj);
+u8 func_8001BB80(Player *);
+void func_8001BB2C(Player *);
+u8 func_8001C53C(Player *, u8);
+u8 func_8000642C(Player *, u8);
+u8 func_800069C0(Player *);
 
 #endif
