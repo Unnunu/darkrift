@@ -10,7 +10,7 @@ typedef struct UnkThetaSub {
 } UnkThetaSub; // size = 0x28
 
 typedef struct UnkTheta {
-    /* 0x0000 */ BatchInfo unk_00[12]; // size unknown
+    /* 0x0000 */ BatchInfo unk_00[12];
     /* 0x0420 */ Vtx unk_420[120];
     /* 0x0BA0 */ Vtx unk_BA0[120];
     /* 0x1320 */ s32 unk_1320;

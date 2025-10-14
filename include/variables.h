@@ -125,5 +125,12 @@ extern s32 D_8013C208;
 extern s32 D_8013C218;
 extern OSContPad *gContData[MAXCONTROLLERS];
 extern u16 D_800AA450[2][8];
+extern u8 D_8004C1D8[];
+extern s16 D_80052D64[];
+extern s16 D_80052D68[];
+extern s16 D_80052D6C[];
+extern s16 D_80052D70[];
+extern s16 D_80052D74[];
+extern s16 D_80052D78[];
 
 #endif

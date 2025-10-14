@@ -976,8 +976,8 @@ void func_8003184C(Object *arg0) {
         }
     }
 
-    math_rotate(&temp_ra->unk_7E8, &sp60);
-    math_rotate(&temp_ra->unk_900, &sp58);
+    math_rotate(&temp_ra->unk_750.local_matrix, &sp60);
+    math_rotate(&temp_ra->unk_868.local_matrix, &sp58);
 }
 #else
 #pragma GLOBAL_ASM("asm/nonmatchings/305A0/func_8003184C.s")

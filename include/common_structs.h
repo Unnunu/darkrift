@@ -644,11 +644,9 @@ typedef struct Player {
     /* 0x0185 */ char unk_185[0xF];
     /* 0x0194 */ s32 unk_194;
     /* 0x0198 */ PlayerSub9 unk_198;
-    /* 0x0400 */ char unk_400[0x7E8 - 0x400];
-    /* 0x07E8 */ Matrix4f unk_7E8;
-    /* 0x0828 */ char unk_828[0x900 - 0x828];
-    /* 0x0900 */ Matrix4f unk_900;
-    /* 0x0940 */ char unk_940[0x40];
+    /* 0x0400 */ char unk_400[0x750 - 0x400];
+    /* 0x0750 */ Transform unk_750;
+    /* 0x0868 */ Transform unk_868;
     /* 0x0980 */ char unk_980[0x10]; // size unknown
     /* 0x0990 */ char unk_990[0xDBC - 0x990];
     /* 0x0DBC */ s16 unk_DBC;

@@ -30,7 +30,10 @@ void func_80012150(PlayerSub6 *arg0, ModelInstance *arg1, Matrix4f *arg2, Matrix
 
 #pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_800035D0.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_800036E8.s")
+void func_800036E8(Object *obj) {
+    obj->flags |= 0x10;
+    D_80080234 = 1;
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_80003704.s")
 
@@ -57,10 +60,68 @@ void func_80004304(char *arg0, char *arg1, char *arg2) {
 #pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_800045B4.s")
 void func_800045B4(s16 arg0, s16 arg1);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_80004AE0.s")
+void func_80004AE0(Transform *arg0) {
+    Transform *next;
+    Transform *prev;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_80004B30.s")
-void func_80004B30(Object *, s16, s16);
+    prev = arg0->parent->firstChild;
+
+    if (prev == arg0) {
+        arg0->parent->firstChild = arg0->nextSibling;
+        arg0->nextSibling = NULL;
+        return;
+    }
+
+    next = prev->nextSibling;
+    while (arg0 != next) {
+        prev = next;
+        next = next->nextSibling;
+    }
+
+    prev->nextSibling = arg0->nextSibling;
+    arg0->nextSibling = NULL;
+}
+
+void func_80004B30(Object *obj, s16 playerId, s16 arg2) {
+    Transform *s1;
+    Transform *sp38;
+    Transform *s0;
+    StructAA8 *v1 = obj->modInst->unk_AA8;
+
+    v1[D_8004C1D8[arg2]].x = 0;
+    v1[D_8004C1D8[arg2]].y = 0;
+    v1[D_8004C1D8[arg2]].z = 0;
+
+    s0 = &obj->modInst->transforms[D_8004C1D8[arg2]];
+    s1 = &gPlayers[playerId].unk_750;
+    func_80012A20(s0->parent, s1, -3, -3);
+    s1->local_matrix.w.x = s0->local_matrix.w.x;
+    s1->local_matrix.w.y = s0->local_matrix.w.y;
+    s1->local_matrix.w.z = s0->local_matrix.w.z;
+    func_80004AE0(s0);
+    sp38 = s0->firstChild;
+    func_80012A20(s1, s0, -3, -3);
+    s0->firstChild = sp38;
+
+    v1[0].x = 0;
+    v1[0].y = 0;
+    v1[0].z = 0;
+
+    s0 = &obj->modInst->transforms[0];
+    s1 = &gPlayers[playerId].unk_868;
+    func_80012A20(s0->parent, s1, -3, -3);
+    s1->local_matrix.w.x = s0->local_matrix.w.x;
+    s1->local_matrix.w.y = s0->local_matrix.w.y;
+    s1->local_matrix.w.z = s0->local_matrix.w.z;
+    func_80004AE0(s0);
+    sp38 = s0->firstChild;
+    func_80012A20(s1, s0, -3, -3);
+    s0->firstChild = sp38;
+
+    D_80052D64[playerId] = D_80052D68[playerId] = D_80052D6C[playerId] = D_80052D70[playerId] = D_80052D74[playerId] =
+        0;
+    D_80052D78[playerId] = 2;
+}
 
 void func_80004D40(Asset *asset) {
     s16 v1;
