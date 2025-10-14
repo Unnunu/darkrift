@@ -124,8 +124,8 @@ void func_8002FD78(Object *obj) {
     s16 playerId = player->playerId;
 
     player->unk_80 &= ~0x400;
-    obj->modInst->unk_A1C = D_8004BA98[player->characterId].unk_00;
-    obj->modInst->unk_A20 = D_8004BA98[player->characterId].unk_04;
+    obj->modInst->unk_A1C = D_8004BA98[player->characterId].x;
+    obj->modInst->unk_A20 = D_8004BA98[player->characterId].z;
     obj->currentTask->counter = 2;
     obj->currentTask->func = func_8002FBC8;
     obj->currentTask->counter = 2;
@@ -138,8 +138,8 @@ void func_8002FE10(Object *obj) {
     s16 playerId = player->playerId;
 
     player->unk_80 &= ~0x400;
-    obj->modInst->unk_A20 = D_8004BAF0[player->characterId].unk_04;
-    obj->modInst->unk_A1C = D_8004BAF0[player->characterId].unk_00;
+    obj->modInst->unk_A20 = D_8004BAF0[player->characterId].z;
+    obj->modInst->unk_A1C = D_8004BAF0[player->characterId].x;
     obj->currentTask->counter = 2;
     obj->currentTask->func = func_8002FBC8;
     D_8013C3A0[playerId].x = obj->pos.x;

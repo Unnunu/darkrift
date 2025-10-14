@@ -81,7 +81,7 @@ segments:
       - [0x23D00, c]
       - [0x24930, c]
       - [0x255B0, c, input]
-      - [0x25980, c, some_data] # find proper place for this
+      - [0x25980, c, tables]
       - [0x25980, c, cont]
       - [0x25B50, c, lzhuf]
       - [0x26740, c, wad]
@@ -244,10 +244,10 @@ segments:
       - [0x4A9F0, .data, plyrsel]
       - [0x4B020, .data, audio]
       - [0x4B0C0, data]
+      - [0x4B0D0, .data, 23D00]
       - [0x4B0F0, .data, input]
       - [0x4B1C0, data]
-      - [0x4C740, .data, some_data]
-      - [0x4CC10, data]
+      - [0x4C660, .data, tables]
       - [0x4D350, .data, cont]
       - [0x4D360, .data, lzhuf]
       - [0x4D5B0, data]
@@ -295,7 +295,7 @@ segments:
       - [0x55540, .rodata, 1C3D0]
       - [0x555C0, .rodata, plyrsel]
       - [0x55830, .rodata, audio]
-      - [0x55870, .rodata, 22940]
+      - [0x55870, .rodata, tables]
       - [0x55A30, .rodata, wad]
       - [0x55B70, .rodata, 28C10]
       - [0x55BD0, .rodata, item]
@@ -334,7 +334,9 @@ segments:
       - { type: .bss, vram: 0x800814E0, name: gmd_pcl }
       - { type: .bss, vram: 0x80081660, name: plyrsel }
       - { type: .bss, vram: 0x80081670, name: audio }
-      - { type: bss, vram: 0x800A4930, name: bss3 }
+      - { type: .bss, vram: 0x800A4930, name: 23D00 }
+      - { type: .bss, vram: 0x800AA430, name: input }
+      - { type: bss, vram: 0x800AA450, name: bss3 }
       - { type: .bss, vram: 0x800B63A0, name: cont }
       - { type: .bss, vram: 0x800B6400, name: lzhuf }
       - { type: bss, vram: 0x800B85B0, name: bss4 }

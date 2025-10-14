@@ -46,7 +46,6 @@ extern u16 D_8013C250;
 void func_8001A674(Object *);
 void func_8001A334(Object *);
 void func_8002EA50(Object *, s32);
-s32 func_8000636C(Player *arg0, s32 arg1, s32 arg2);
 Object *func_8002BFF0(Vec4i *, s32, void (*)(Object *), UnkSam *);
 void func_800199E0(Object *);
 void sound_stop_one(s32, s32);

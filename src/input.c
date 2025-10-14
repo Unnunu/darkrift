@@ -65,6 +65,8 @@ s32 D_8004A580[] = {
     0                      // START_BUTTON + Z_TRIG + B_BUTTON + A_BUTTON
 };
 
+PlayerInput gPlayerInput[2];
+
 u16 func_800249B0(u16 contId, u16 buttons) {
     u16 i;
     u16 mask;

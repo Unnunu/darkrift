@@ -93,9 +93,9 @@ void func_80023FDC(Object *obj) {
 
     if (obj->modInst->unk_006 != 0) {
         if (player->unk_90->unk_34 & 4) {
-            obj->modInst->unk_006 = D_8004BA98[characterId].unk_04;
+            obj->modInst->unk_006 = D_8004BA98[characterId].z;
         } else {
-            obj->modInst->unk_006 = D_8004BAF0[characterId].unk_04;
+            obj->modInst->unk_006 = D_8004BAF0[characterId].z;
         }
         obj->modInst->unk_9D4.z = obj->modInst->unk_9E4.z;
     } else {

@@ -59,7 +59,7 @@ void func_800352FC(ModelInstance *, K2DefSub *);
 void func_8003795C(Object *);
 void func_80037CE4(Object *);
 Object *func_8002BFF0(Vec4i *, s32, void (*)(Object *), UnkSam *);
-Object *func_80015FB4(vs16);
+Object *func_80015FB4(s16);
 void func_8001386C(Vec4i *arg0, Vec4i *arg1, Matrix4f *arg2);
 s32 func_80012854(s32 arg0);
 void func_80012AF4(Matrix4f *);
@@ -108,5 +108,6 @@ void func_8001BB2C(Player *);
 u8 func_8001C53C(Player *, u8);
 u8 func_8000642C(Player *, u8);
 u8 func_800069C0(Player *);
+s32 func_8000636C(Player *arg0, s32 arg1, s32 arg2);
 
 #endif

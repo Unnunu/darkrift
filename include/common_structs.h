@@ -529,7 +529,13 @@ typedef struct PlayerSub3 {
 } PlayerSub3; // size = 0x38
 
 typedef struct PlayerSub5 {
-    /* 0x00 */ s32 unk_00;
+    /* 0x00 */ s16 unk_00;
+    /* 0x02 */ s16 unk_02;
+    /* 0x04 */ void (*unk_04)(Object *);
+    /* 0x08 */ void (*unk_08)(Object *);
+    /* 0x0C */ void (*unk_0C)(Object *);
+    /* 0x10 */ s16 unk_10;
+    /* 0x12 */ s16 unk_12;
 } PlayerSub5;
 
 typedef struct PlayerSub6Sub1 {
@@ -746,13 +752,6 @@ typedef struct UnkVec2s {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ s16 unk_02;
 } UnkVec2s; // size = 0x4
-
-typedef struct Unk8004BAF0 {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
-    /* 0x04 */ s16 unk_04;
-    /* 0x06 */ s16 unk_06;
-} Unk8004BAF0; // size = 0x8
 
 typedef struct GlobalObjD {
     /* 0x00 */ u32 unk_00;

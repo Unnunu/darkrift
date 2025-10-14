@@ -59,8 +59,6 @@ void func_8002A0EC(Object *obj);
 void func_80029F58(Object *obj);
 void func_80028E84(void);
 
-void func_8000636C(Player *, s32, s32);
-
 void func_80028010(Object *obj) {
     obj->flags &= ~4;
     if (obj->spriteId <= 12) {

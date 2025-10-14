@@ -5,8 +5,6 @@ extern Unk80015E74 D_8004C008[];
 extern Unk80015E74 D_8004C0C8[];
 extern u8 D_8004A42C;
 extern s16 D_8004C1D0;
-extern Unk80015E74 D_8004C058;
-extern Unk80015E74 D_8004C068;
 
 void func_80016A00(Object *);
 
@@ -125,10 +123,10 @@ void func_80015F60(Object *arg0, Object *arg1) {
     D_8013C23C->currentTask->counter = 30;
 }
 
-Object *func_80015FB4(vs16 arg0) { // fake match ?
+Object *func_80015FB4(s16 arg0) {
     Object *obj;
 
-    obj = func_80015E74(&D_8004C008[arg0], 0xABAB);
+    obj = func_80015E74(D_8004C008 + arg0, 0xABAB);
     if (obj != NULL && arg0 == 3) {
         obj->unk_1E8 = func_80015F60;
         obj->unk_076 |= 8;
@@ -141,7 +139,7 @@ Object *func_80016020(s32 arg0, s32 arg1, s32 arg2) {
     s32 unused;
     Object *obj;
 
-    obj = func_80015E74(&D_8004C0C8[arg0], arg2);
+    obj = func_80015E74(D_8004C0C8 + arg0, arg2);
 
     if (obj != NULL) {
         obj->currentTask->counter = arg1;
@@ -162,9 +160,9 @@ u16 func_800160C8(s32 arg0) {
     Object *obj;
 
     if (D_800B6328[PLAYER_1].unk_08 == D_8004C1D0 - 1 && D_800B6328[PLAYER_2].unk_08 == D_8004C1D0 - 1) {
-        a0 = &D_8004C058;
+        a0 = &D_8004C008[5];
     } else {
-        a0 = &D_8004C068;
+        a0 = &D_8004C008[6];
     }
     obj = func_80015E74(a0, 0xABAB);
     if (obj != NULL) {
