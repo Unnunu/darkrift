@@ -132,5 +132,9 @@ extern s16 D_80052D6C[];
 extern s16 D_80052D70[];
 extern s16 D_80052D74[];
 extern s16 D_80052D78[];
+extern u16 D_8013C24C;
+extern s32 D_8013C430;
+extern s32 D_8013C434;
+extern s32 D_8013C444;
 
 #endif

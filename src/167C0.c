@@ -171,8 +171,6 @@ u16 func_800160C8(s32 arg0) {
     return a0->unk_04;
 }
 
-extern u16 D_8013C24C;
-
 void func_80016144(Object *obj) {
     Object *unkObj;
 

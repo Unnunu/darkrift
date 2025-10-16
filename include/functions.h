@@ -109,5 +109,18 @@ u8 func_8001C53C(Player *, u8);
 u8 func_8000642C(Player *, u8);
 u8 func_800069C0(Player *);
 s32 func_8000636C(Player *arg0, s32 arg1, s32 arg2);
+void func_8002EB2C(Object *obj);
+void func_8002D278(Object *obj, u8 arg1);
+void func_8002DA08(Object *arg0);
+void func_800177C0(Object *);
+u8 func_80030BB0(Object *);
+void func_800115A0(PlayerSub6 *, u8);
+void func_800338D0(void);
+void func_80033D64(void);
+void func_8001B810(Player *);
+s32 func_8000FE9C(Player *, Player *); // TODO wrong signature
+void func_8000F494(Player *, Player *);
+void func_80010280(Player *, Player *);
+void func_8000FB30(Player *, Player *);
 
 #endif

@@ -518,7 +518,8 @@ typedef struct PlayerSub3 {
     /* 0x0A */ char unk_0A[0x20 - 0xA];
     /* 0x20 */ s16 unk_20;
     /* 0x22 */ s16 unk_22;
-    /* 0x24 */ s32 unk_24;
+    /* 0x24 */ s16 unk_24;
+    /* 0x26 */ s16 unk_26;
     /* 0x28 */ s16 unk_28;
     /* 0x2A */ s16 unk_2A;
     /* 0x2C */ s16 unk_2C;
@@ -606,7 +607,7 @@ typedef struct Player {
     /* 0x0010 */ ObjectTask *unk_10;
     /* 0x0014 */ ObjectTask *unk_14;
     /* 0x0018 */ ObjectTask *unk_18;
-    /* 0x001C */ char unk_1C[4];
+    /* 0x001C */ s32 unk_1C;
     /* 0x0020 */ PlayerSub3 *unk_20;
     /* 0x0024 */ PlayerSub5 *unk_24;
     /* 0x0028 */ s32 unk_28;
@@ -616,7 +617,8 @@ typedef struct Player {
     /* 0x0038 */ s16 *unk_38;
     /* 0x003C */ char unk_3C[4];
     /* 0x0040 */ PlayerSubC *unk_40;
-    /* 0x0044 */ char unk_44[8];
+    /* 0x0044 */ s32 *unk_44;
+    /* 0x0048 */ s32 unk_48;
     /* 0x004C */ PlayerSubB *unk_4C;
     /* 0x0050 */ char unk_50[0x18];
     /* 0x0068 */ u8 *unk_68;
@@ -625,13 +627,15 @@ typedef struct Player {
     /* 0x0072 */ s16 unk_72;
     /* 0x0074 */ s16 unk_74;
     /* 0x0076 */ s16 unk_76;
-    /* 0x0078 */ s32 unk_78;
+    /* 0x0078 */ s16 unk_78;
+    /* 0x007A */ s16 unk_7A;
     /* 0x007C */ s16 unk_7C;
     /* 0x007E */ s16 unk_7E;
     /* 0x0080 */ s32 unk_80;
     /* 0x0084 */ char unk_84[12];
     /* 0x0090 */ PlayerSub3 *unk_90;
-    /* 0x0094 */ s32 unk_94;
+    /* 0x0094 */ s16 unk_94;
+    /* 0x0096 */ s16 unk_96;
     /* 0x0098 */ PlayerSubA *unk_98;
     /* 0x009C */ PlayerSubB *unk_9C;
     /* 0x00A0 */ PlayerSub7 *unk_A0;
@@ -640,15 +644,19 @@ typedef struct Player {
     /* 0x00C0 */ s16 unk_C0;
     /* 0x00C2 */ char unk_C2[0x180 - 0xC2];
     /* 0x0180 */ s32 unk_180;
-    /* 0x0184 */ s8 unk_184;
+    /* 0x0184 */ u8 unk_184;
     /* 0x0185 */ char unk_185[0xF];
     /* 0x0194 */ s32 unk_194;
     /* 0x0198 */ PlayerSub9 unk_198;
     /* 0x0400 */ char unk_400[0x750 - 0x400];
     /* 0x0750 */ Transform unk_750;
     /* 0x0868 */ Transform unk_868;
-    /* 0x0980 */ char unk_980[0x10]; // size unknown
-    /* 0x0990 */ char unk_990[0xDBC - 0x990];
+    /* 0x0980 */ char unk_980[40];
+    /* 0x09A8 */ s32 unk_9A8;
+    /* 0x09AC */ s32 unk_9AC;
+    /* 0x09B0 */ s32 unk_9B0;
+    /* 0x09B4 */ s32 unk_9B4;
+    /* 0x09B8 */ char unk_9B8[0xDBC - 0x9B8];
     /* 0x0DBC */ s16 unk_DBC;
     /* 0x0DBE */ s16 unk_DBE;
     /* 0x0DC0 */ void *unk_DC0[3]; // size unknown

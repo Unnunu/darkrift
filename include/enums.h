@@ -80,7 +80,7 @@ enum CharacterIds {
     NUM_CHARACTERS = 11
 };
 
-enum Players { PLAYER_1, PLAYER_2 };
+enum Players { PLAYER_1 = 0, PLAYER_2 = 1 };
 
 enum ObjectFlags { OBJ_FLAG_4000000 = 0x4000000 };
 

@@ -313,7 +313,7 @@ void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, Transform *arg3, void (*ar
         arg0->currentTask->stackPos = 0;
     }
 
-    arg0->currentTask->next = 0;
+    arg0->currentTask->next = NULL;
     arg0->currentTask->stackPos = 0;
 
     math_rotate(&arg0->transform.local_matrix, arg2);
