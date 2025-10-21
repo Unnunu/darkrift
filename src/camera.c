@@ -1,7 +1,7 @@
 #include "camera.h"
 #include "task.h"
 
-s32 D_80053030[] = { 0 };
+AnimHeader *D_80053030[] = { NULL };
 
 Object *gCamera;
 s32 D_8013C564; // unused
@@ -32,7 +32,7 @@ s32 D_8013C830;
 u8 D_8013C834;
 s32 D_8013C838;
 
-void func_80038E00(Object *obj, AnimHeader **arg1) {
+void func_80038E00(Object *obj, AnimHeader *arg1) {
     ModelInstance *model = obj->modInst;
 
     model->currentAnimId = 0;

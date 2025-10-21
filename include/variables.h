@@ -136,5 +136,6 @@ extern u16 D_8013C24C;
 extern s32 D_8013C430;
 extern s32 D_8013C434;
 extern s32 D_8013C444;
+extern s16 D_8004C1E4;
 
 #endif

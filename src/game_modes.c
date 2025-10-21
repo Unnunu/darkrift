@@ -20,7 +20,6 @@ extern s32 D_8008012C;
 extern Object *D_80081460;
 extern s16 D_80049B30[];
 
-extern s16 D_8004C1E4;
 extern u8 D_8004A428;
 extern s32 gMusicVolume;
 extern s32 gSoundVolume;

@@ -396,8 +396,96 @@ void func_80004304(char *arg0, char *arg1, char *arg2) {
     str_concat(arg0, arg2);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_80004334.s")
-void func_80004334(AssetDB *, s16);
+typedef struct AssetDB2 {
+    /* 0x00 */ char unk_00[12];
+} AssetDB2; // size = 0xC
+
+typedef struct AssetDB1 {
+    /* 0x00 */ s32 unk_00;
+    /* 0x04 */ AssetDB2 unk_04[1];
+} AssetDB1;
+
+typedef struct AssetDB3 {
+    /* 0x00 */ s32 unk_00;
+    /* 0x04 */ s16 unk_04[1];
+} AssetDB3;
+
+s16 D_80049390 = -1;
+s16 D_80049394 = -1;
+s32 func_8001C114(Player *); // @fake signature
+void func_8001C1C0(Player *);
+void func_8001BF40(Player *);
+s32 func_8001DFE4(s32 arg0);
+
+void func_80004334(AssetDB *arg0, s16 playerId) {
+    AssetDB1 *v1;
+    AssetDB3 *a2;
+    s32 s2;
+    s32 i;
+    s32 pad;
+
+    gPlayers[playerId].unk_50 = arg0->unk_30 + (u32) arg0;
+    gPlayers[playerId].unk_54 = arg0->unk_34 + (u32) arg0;
+
+    v1 = arg0->unk_38 + (u32) arg0;
+    gPlayers[playerId].unk_DB8 = v1->unk_00;
+    gPlayers[playerId].unk_58 = v1->unk_04;
+    gPlayers[playerId].unk_5C = v1->unk_00 + v1->unk_04; // required to match
+
+    a2 = arg0->unk_3C + (u32) arg0;
+    gPlayers[playerId].unk_DBA = a2->unk_00;
+    gPlayers[playerId].unk_64 = a2->unk_04;
+    gPlayers[playerId].unk_60 = (((a2->unk_00 & 1) + a2->unk_00) & 0xFFFFFFFF) + a2->unk_04; // required to match
+
+    gPlayers[playerId].unk_180 = 0x20000;
+    gPlayers[playerId].unk_A8 = 0;
+    gPlayers[playerId].unk_B4 = &D_80049394;
+    gPlayers[playerId].unk_B8 = &D_80049394;
+    gPlayers[playerId].unk_BC = 0;
+    gPlayers[playerId].unk_C0 = 0;
+    gPlayers[playerId].unk_C4 = 0;
+
+    gPlayerInput[playerId].unk_0A = FALSE;
+
+    if (D_80080230 == 30) {
+        if (playerId != PLAYER_1) {
+            func_8001C114(gPlayers + playerId);
+        } else {
+            func_8001C1C0(gPlayers + PLAYER_1);
+        }
+    } else if (D_800B6328[playerId].unk_0F) {
+        if (D_8004C1E4 == 2 && D_800B6328[playerId].unk_04 == 0) {
+            D_800B6328[playerId].unk_04 = 2;
+        }
+        s2 = D_800B6328[playerId].unk_04;
+
+        func_8001C114(gPlayers + playerId);
+        D_800B6328[playerId].unk_0F = FALSE;
+        for (i = 0; i < s2; i++) {
+            func_8001BF40(gPlayers + playerId);
+        }
+    } else {
+        switch (D_8004C1E4) {
+            case 1:
+            case 2:
+                func_8001BF40(gPlayers + playerId);
+                break;
+            case 0:
+                switch (func_8001DFE4(playerId)) {
+                    case 0:
+                        func_8001C1C0(gPlayers + playerId);
+                        break;
+                    default:
+                        func_8001BF40(gPlayers + playerId);
+                        break;
+                    case 4:
+                    case 7:
+                        break;
+                }
+                break;
+        }
+    }
+}
 
 void func_800045B4(s16 playerId, s16 characterId) {
     char sp94[20];
@@ -488,8 +576,6 @@ void func_800045B4(s16 playerId, s16 characterId) {
         if (s0->unk_24 == -1 || s0->unk_26 == -1) {
             s0->unk_24 = s0->unk_04 + 3;
             s0->unk_26 = s0->unk_06 - 1;
-            do {
-            } while (0); // @fake
         }
     }
 
@@ -660,9 +746,6 @@ void func_800050B0(Object *obj) {
     obj->pos.y = m->w.y;
     obj->pos.z = m->w.z;
 }
-
-s32 D_80049390 = 0xFFFF0000;
-s32 D_80049394 = 0xFFFF0000;
 
 void func_800050FC(u16 arg0, u16 arg1) {
     ColorRGBA sp38[] = { { 0, 200, 0, 0 }, { 200, 0, 0, 0 } };
@@ -871,11 +954,215 @@ void func_800052EC(s16 playerId) {
     func_800050FC(playerId, spD6);
 }
 
-s32 D_800493CC = 0xFFFFFE70;
+void func_80005B70(s16 playerId) {
+    Object *obj = gPlayers[playerId].unk_00;
+    s16 characterId;
+    Vec4i spB4[] = { { -400, 0, 0, 0 }, { 400, 0, 0, 0 } };
+    s16 spB0[] = { 0, 0x800 };
+    s32 zero = 0;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_80005B70.s")
+    gPlayers[playerId].playerId = playerId;
+    gPlayers[playerId].unk_80 = 0;
+    gPlayers[playerId].unk_180 = 0;
+    gPlayers[playerId].characterId = characterId = D_800B6328[playerId].characterId;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_80005EE4.s")
+    obj->rotation.y = 0xC00 - spB0[playerId];
+    obj->pos.x = spB4[playerId].x;
+    obj->pos.y = spB4[playerId].y;
+    obj->pos.z = spB4[playerId].z;
+    obj->fn_render = func_80003DA4;
+    obj->varObj[0] = gPlayers + playerId;
+
+    gPlayers[playerId].unk_08->counter = 0;
+    gPlayers[playerId].unk_08->flags = 1;
+    gPlayers[playerId].unk_08->func = task_default_func;
+    gPlayers[playerId].unk_08->stackPos = zero; // required to match
+    gPlayers[playerId].unk_0C->counter = 0;
+    gPlayers[playerId].unk_0C->flags = 1;
+    gPlayers[playerId].unk_0C->func = task_default_func;
+    gPlayers[playerId].unk_0C->stackPos = 0;
+    gPlayers[playerId].unk_10->counter = 0;
+    gPlayers[playerId].unk_10->flags = 1;
+    gPlayers[playerId].unk_10->func = func_800248C4;
+    gPlayers[playerId].unk_10->stackPos = 0;
+    gPlayers[playerId].unk_14->counter = 0;
+    gPlayers[playerId].unk_14->flags = 1;
+    gPlayers[playerId].unk_14->func = task_default_func;
+    gPlayers[playerId].unk_14->stackPos = 0;
+    gPlayers[playerId].unk_18->counter = 0;
+    gPlayers[playerId].unk_18->flags = 1;
+    gPlayers[playerId].unk_18->func = func_8003184C;
+    gPlayers[playerId].unk_18->stackPos = 0;
+
+    D_80080214 = D_8004A730[D_800B6328[PLAYER_1].characterId] + D_8004A730[D_800B6328[PLAYER_2].characterId];
+    D_80080218 = D_8004A748[D_800B6328[PLAYER_1].characterId] + D_8004A748[D_800B6328[PLAYER_2].characterId];
+    D_8008020C = 0x800;
+    D_80080238.unk_1000 = D_80080238.unk_1002 = 0;
+    D_80080236 = 1;
+    D_80080238.unk_1008 = gFrameCounter;
+    obj->rotation.y = 0xC00 - spB0[playerId];
+    D_80080210 = 1600;
+    obj->flags = (obj->flags & 0x2000) | 1;
+    D_80080238.unk_1000 = D_80080238.unk_1002 = 0;
+    D_80080236 = 1;
+
+    if (D_800B6328[playerId].unk_02) {
+        func_8000636C(gPlayers + playerId, 282, 0);
+    } else {
+        func_8000636C(gPlayers + playerId, 68, 0);
+    }
+
+    if (playerId != PLAYER_1) {
+        D_80080236 = FALSE;
+    }
+
+    gPlayers[playerId].unk_90 = gPlayers[playerId].unk_20 + gPlayers[playerId].unk_7E;
+    obj->unk_070 = D_800B6328[playerId].unk_0C;
+
+    if (playerId == PLAYER_1) {
+        gPlayerInput[playerId].unk_09 = TRUE;
+    }
+
+    gPlayers[playerId].unk_184 = FALSE;
+}
+
+// #pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_80005EE4.s")
+u8 func_80005EE4(Player *player, u8 arg1, u16 arg2) {
+    u16 sp4E;
+    u16 sp4C;
+    ObjectTask *unk_0C;
+    PlayerSubE *sp44;
+    u16 sp42;
+    PlayerSub5 *sp3C;
+    s32 pad1;
+    ObjectTaskSub *pad2;
+    PlayerSubD *pad3;
+    PlayerSub3 *sp2C;
+    u16 sp2A;
+    PlayerSub8 *sp24;
+    s16 sp22;
+    u16 i;
+
+    sp2A = player->unk_34[arg2];
+    sp24 = &player->unk_2C[sp2A];
+    sp4C = sp24->unk_00;
+    sp4E = sp24->unk_08;
+    // clang-format off
+    sp22 = sp24->unk_0A; \
+    if (sp22 == player->unk_7E && !arg1) {
+        sp22 = -1;
+    }
+    // clang-format on
+
+    sp3C = player->unk_24 + sp4E;
+    pad3 = player->unk_30 + player->unk_7E;
+
+    sp44 = pad3->unk_00 + player->unk_1C;
+    sp42 = pad3->unk_02;
+
+    if (sp3C->unk_0C != NULL && !sp3C->unk_0C(player->unk_00)) {
+        return FALSE;
+    }
+
+    player->unk_A4 = player->unk_A0;
+    player->unk_A0 = sp24;
+
+    unk_0C = player->unk_0C;
+    pad2 = &unk_0C->unk_08;
+    pad2->unk_08 = 0;
+
+    for (i = 0; i < sp42; sp44++, i++) {
+        if (sp44->unk_04 == sp22) {
+            if (player->unk_00->spriteId < sp44->unk_02) {
+                unk_0C->flags |= 4;
+                unk_0C->unk_86 = sp44->unk_02;
+                unk_0C->unk_90.func = func_80024764;
+                unk_0C->unk_90.flags = 1;
+
+                player->unk_08->func = task_default_func;
+                player->unk_08->counter = 0;
+                player->unk_08->flags = 1;
+
+                pad2->unk_08 = sp44->unk_06;
+                pad2->unk_0C = sp44->unk_00;
+                pad2->unk_10 = sp3C->unk_08;
+            } else {
+                unk_0C->func = func_80024764;
+                unk_0C->counter = 0;
+                unk_0C->flags = 1;
+
+                player->unk_08->func = task_default_func;
+                player->unk_08->counter = 0;
+                player->unk_08->flags = 1;
+
+                pad2->unk_08 = sp44->unk_06;
+                pad2->unk_0C = sp44->unk_00;
+                pad2->unk_10 = sp3C->unk_08;
+
+                player->unk_180 |= 0x20000;
+            }
+            goto label;
+        }
+    }
+
+    player->unk_08->func = sp3C->unk_08;
+    player->unk_08->counter = 0;
+    player->unk_08->flags = 1;
+    if (sp22 >= 0) {
+        unk_0C->func = func_80024390;
+        unk_0C->counter = 0;
+        unk_0C->flags = 1;
+    }
+
+label:
+
+    if (sp22 >= 0) {
+        pad2->unk_04 = sp22;
+        pad2->unk_00_f = sp3C->unk_04;
+        player->unk_188 = player->unk_7E;
+        player->unk_7E = sp22;
+
+        sp2C = player->unk_20 + sp22;
+        if (sp2C->unk_2C >= 0 && sp2C->unk_2E == -1) {
+            func_8002C340();
+            func_80038E00(gCamera, player->unk_00->modInst->animations[player->unk_20[sp2C->unk_2C].unk_08]);
+            gCamera->currentTask->func = func_8002C490;
+            gCamera->currentTask->counter = 0;
+            gCamera->currentTask->flags = 1;
+        }
+    } else {
+        unk_0C->func = sp3C->unk_04;
+        unk_0C->flags = 1;
+        unk_0C->counter = 0;
+    }
+
+    player->unk_186 = player->unk_7C;
+    player->unk_18C = player->unk_80;
+    player->unk_7C = sp4E;
+    player->unk_88 = player->unk_28 + sp4C;
+
+    player->unk_80 = sp3C->unk_00 | (player->unk_80 & sp3C->unk_10);
+    player->unk_98 = sp3C;
+    player->unk_74 = sp2A;
+    player->unk_78 = arg2;
+
+    func_800035D0(player);
+
+    if (gPlayers[1 - player->playerId].unk_5F48 < 3) {
+        gPlayers[1 - player->playerId].unk_5F48 = 3;
+    }
+
+    player->unk_8C = gFrameCounter;
+    if (player->unk_88->unk_0C != 0) {
+        player->unk_08->counter = player->unk_88->unk_0C;
+    }
+    player->unk_94 = player->unk_88->unk_0E;
+    player->unk_00->unk_010.z = player->unk_88->unk_08;
+    player->unk_00->flags &= ~0x800;
+    player->unk_76 = player->unk_34[arg2 + 1];
+
+    return TRUE;
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_8000636C.s")
 

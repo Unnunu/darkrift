@@ -100,7 +100,7 @@ void cont_read(void);
 u8 func_80005EE4(Player *, u8, u16);
 void func_80034C18(Object *obj, u8 *arg1);
 void func_80034A58(Object *obj);
-void func_8002C340(void);
+// void func_8002C340(void);
 void func_80038E8C(Object *obj, Vec4i *arg1, s32 arg2, AnimHeader *arg3);
 void func_8002C490(Object *obj);
 u8 func_8001BB80(Player *);
@@ -122,5 +122,7 @@ s32 func_8000FE9C(Player *, Player *); // TODO wrong signature
 void func_8000F494(Player *, Player *);
 void func_80010280(Player *, Player *);
 void func_8000FB30(Player *, Player *);
+void func_80024764(Object *obj);
+void func_80024390(Object *);
 
 #endif

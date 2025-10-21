@@ -127,7 +127,7 @@ typedef struct PlayerInput {
     /* 0x06 */ u16 raw_buttons;
     /* 0x08 */ u8 unk_08;
     /* 0x09 */ u8 unk_09;
-    /* 0x0A */ char unk_0A;
+    /* 0x0A */ u8 unk_0A;
     /* 0x0B */ u8 enabled;
     /* 0x0C */ u8 unk_0C;
     /* 0x0D */ u8 unk_0D;
@@ -448,7 +448,7 @@ typedef struct Object {
 } Object; // size = 0x218
 
 typedef struct GlobalObjBSub {
-    /* 0x00 */ s32 flags;
+    /* 0x00 */ u32 flags;
     /* 0x04 */ void (*func)(Object *);
     /* 0x08 */ s16 counter;
 } GlobalObjBSub; // size = 0xC
@@ -458,7 +458,7 @@ typedef struct ObjectTaskSub {
         s32 unk_00_i;
         void (*unk_00_f)(Object *);
     };
-    /* 0x04 */ char unk_04[4];
+    /* 0x04 */ s32 unk_04;
     /* 0x08 */ s32 unk_08;
     /* 0x0C */ s32 unk_0C;
     /* 0x10 */ void (*unk_10)(Object *);
@@ -530,13 +530,11 @@ typedef struct PlayerSub3 {
 } PlayerSub3; // size = 0x38
 
 typedef struct PlayerSub5 {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
+    /* 0x00 */ s32 unk_00;
     /* 0x04 */ void (*unk_04)(Object *);
     /* 0x08 */ void (*unk_08)(Object *);
-    /* 0x0C */ void (*unk_0C)(Object *);
-    /* 0x10 */ s16 unk_10;
-    /* 0x12 */ s16 unk_12;
+    /* 0x0C */ u8 (*unk_0C)(Object *);
+    /* 0x10 */ s32 unk_10;
 } PlayerSub5;
 
 typedef struct PlayerSub6Sub1 {
@@ -553,15 +551,13 @@ typedef struct PlayerSub6 {
     /* 0x01D4 */ char unk_1D4[0x1458 - 0x1D4];
 } PlayerSub6; // size = 0x1458;
 
-typedef struct PlayerSub7 {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ u16 unk_02;
-} PlayerSub7;
-
 typedef struct PlayerSub8 {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ u16 unk_02;
-    /* 0x04 */ char unk_04[0x18];
+    /* 0x04 */ s32 unk_04;
+    /* 0x08 */ s16 unk_08;
+    /* 0x0A */ s16 unk_0A;
+    /* 0x0C */ char unk_0C[0x10];
 } PlayerSub8; // size = 0x1C
 
 typedef struct PlayerSub9 {
@@ -579,10 +575,6 @@ typedef struct PlayerSub9 {
     /* 0x150 */ Transform unk_2E8;
 } PlayerSub9;
 
-typedef struct PlayerSubA {
-    /* 0x000 */ s32 unk_00;
-} PlayerSubA;
-
 typedef struct PlayerSubB {
     /* 0x00 */ char unk_00[0x18];
 } PlayerSubB; // size = 0x18
@@ -598,6 +590,26 @@ typedef struct PlayerSubC {
     /* 0x07 */ u8 unk_07;
 } PlayerSubC; // size = 0x8
 
+typedef struct PlayerSubD {
+    /* 0x00 */ s16 unk_00;
+    /* 0x02 */ u16 unk_02;
+} PlayerSubD; // size = 0x4
+
+typedef struct PlayerSubE {
+    /* 0x00 */ s16 unk_00;
+    /* 0x02 */ s16 unk_02;
+    /* 0x04 */ s16 unk_04;
+    /* 0x06 */ s16 unk_06;
+} PlayerSubE; // size = 0x8
+
+typedef struct PlayerSubF {
+    /* 0x00 */ s32 unk_00[2];
+    /* 0x08 */ s16 unk_08;
+    /* 0x0A */ s16 unk_0A;
+    /* 0x0C */ s16 unk_0C;
+    /* 0x0E */ s16 unk_0E;
+} PlayerSubF; // size = 0x10
+
 typedef struct Player {
     /* 0x0000 */ Object *unk_00;
     /* 0x0004 */ s16 playerId;
@@ -607,20 +619,25 @@ typedef struct Player {
     /* 0x0010 */ ObjectTask *unk_10;
     /* 0x0014 */ ObjectTask *unk_14;
     /* 0x0018 */ ObjectTask *unk_18;
-    /* 0x001C */ s32 unk_1C;
+    /* 0x001C */ PlayerSubE *unk_1C;
     /* 0x0020 */ PlayerSub3 *unk_20;
     /* 0x0024 */ PlayerSub5 *unk_24;
-    /* 0x0028 */ s32 unk_28;
+    /* 0x0028 */ PlayerSubF *unk_28;
     /* 0x002C */ PlayerSub8 *unk_2C;
-    /* 0x0030 */ s32 unk_30;
+    /* 0x0030 */ PlayerSubD *unk_30;
     /* 0x0034 */ s16 *unk_34;
     /* 0x0038 */ s16 *unk_38;
-    /* 0x003C */ char unk_3C[4];
+    /* 0x003C */ s32 unk_3C;
     /* 0x0040 */ PlayerSubC *unk_40;
     /* 0x0044 */ s32 *unk_44;
     /* 0x0048 */ s32 unk_48;
     /* 0x004C */ PlayerSubB *unk_4C;
-    /* 0x0050 */ char unk_50[0x18];
+    /* 0x0050 */ s32 unk_50;
+    /* 0x0054 */ s32 unk_54;
+    /* 0x0058 */ s32 unk_58;
+    /* 0x005C */ s32 unk_5C;
+    /* 0x0060 */ s32 unk_60;
+    /* 0x0064 */ s32 unk_64;
     /* 0x0068 */ u8 *unk_68;
     /* 0x006C */ s32 unk_6C;
     /* 0x0070 */ s16 unk_70;
@@ -632,20 +649,33 @@ typedef struct Player {
     /* 0x007C */ s16 unk_7C;
     /* 0x007E */ s16 unk_7E;
     /* 0x0080 */ s32 unk_80;
-    /* 0x0084 */ char unk_84[12];
+    /* 0x0084 */ s32 unk_84;
+    /* 0x0088 */ PlayerSubF *unk_88;
+    /* 0x008C */ s32 unk_8C;
     /* 0x0090 */ PlayerSub3 *unk_90;
     /* 0x0094 */ s16 unk_94;
     /* 0x0096 */ s16 unk_96;
-    /* 0x0098 */ PlayerSubA *unk_98;
+    /* 0x0098 */ PlayerSub5 *unk_98;
     /* 0x009C */ PlayerSubB *unk_9C;
-    /* 0x00A0 */ PlayerSub7 *unk_A0;
-    /* 0x00A4 */ char unk_A4[0x18];
+    /* 0x00A0 */ PlayerSub8 *unk_A0;
+    /* 0x00A4 */ PlayerSub8 *unk_A4;
+    /* 0x00A8 */ s32 unk_A8;
+    /* 0x00AC */ s32 unk_AC;
+    /* 0x00B0 */ s32 unk_B0;
+    /* 0x00B4 */ s16 *unk_B4;
+    /* 0x00B8 */ s16 *unk_B8;
     /* 0x00BC */ void (*unk_BC)(Object *);
     /* 0x00C0 */ s16 unk_C0;
-    /* 0x00C2 */ char unk_C2[0x180 - 0xC2];
+    /* 0x00C2 */ s16 unk_C2;
+    /* 0x00C4 */ s32 unk_C4;
+    /* 0x00C8 */ char unk_C8[0x180 - 0xC8];
     /* 0x0180 */ s32 unk_180;
     /* 0x0184 */ u8 unk_184;
-    /* 0x0185 */ char unk_185[0xF];
+    /* 0x0186 */ s16 unk_186;
+    /* 0x0188 */ s16 unk_188;
+    /* 0x018A */ s16 unk_18A;
+    /* 0x018C */ s32 unk_18C;
+    /* 0x0190 */ s32 unk_190;
     /* 0x0194 */ s32 unk_194;
     /* 0x0198 */ PlayerSub9 unk_198;
     /* 0x0400 */ char unk_400[0x750 - 0x400];
@@ -656,7 +686,9 @@ typedef struct Player {
     /* 0x09AC */ s32 unk_9AC;
     /* 0x09B0 */ s32 unk_9B0;
     /* 0x09B4 */ s32 unk_9B4;
-    /* 0x09B8 */ char unk_9B8[0xDBC - 0x9B8];
+    /* 0x09B8 */ char unk_9B8[1024];
+    /* 0x0DB8 */ s16 unk_DB8;
+    /* 0x0DBA */ s16 unk_DBA;
     /* 0x0DBC */ s16 unk_DBC;
     /* 0x0DBE */ s16 unk_DBE;
     /* 0x0DC0 */ void *unk_DC0[3]; // size unknown

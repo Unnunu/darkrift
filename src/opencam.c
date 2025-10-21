@@ -653,7 +653,7 @@ void func_8002DE20(Object *obj) {
     str_copy(sp18, D_80052CCC);
     sp18[7] = '1' + D_8013C224;
     assetId = asset_find(sp18, 0xABAB);
-    func_80038E00(gCamera, (AnimHeader **) gAssets[assetId].data);
+    func_80038E00(gCamera, (AnimHeader *) gAssets[assetId].data);
     gCamera->currentTask->func = func_8002DCC8;
     gCamera->currentTask->counter = 0;
     gCamera->currentTask->flags = 1;
@@ -672,7 +672,7 @@ void func_8002DEFC(Object *obj) {
     str_copy(sp18, D_80052CCC);
     sp18[7] = '1' + D_8013C224;
     assetId = asset_find(sp18, 0xABAB);
-    func_80038E00(gCamera, (AnimHeader **) gAssets[assetId].data);
+    func_80038E00(gCamera, (AnimHeader *) gAssets[assetId].data);
     gCamera->currentTask->func = func_8002C6E8;
     gCamera->currentTask->counter = 0;
     gCamera->currentTask->flags = 1;
