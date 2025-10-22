@@ -1,8 +1,40 @@
 #include "common.h"
 
-#pragma GLOBAL_ASM("asm/nonmatchings/F530/func_8000E930.s")
+void func_8000E930(Object *obj) {
+    if (obj->spriteId < obj->modInst->numAnimFrames) {
+        D_8008012C |= 0x10;
+        obj->spriteId++;
+        if (obj->spriteId > 12) {
+            if (obj->unk_088.a > obj->vars[0]) {
+                obj->unk_088.a -= obj->vars[0];
+            } else {
+                obj->unk_088.a = 0;
+            }
+        }
+    } else {
+        obj->flags |= 0x10;
+        D_8008012C &= ~0x10;
+        obj->currentTask->flags |= 0x80;
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/F530/func_8000E9D8.s")
+void func_8000E9D8(Object *obj) {
+    if (obj->spriteId < obj->modInst->numAnimFrames) {
+        D_8008012C |= 0x10;
+        obj->spriteId++;
+        if (obj->spriteId > 2) {
+            if (obj->unk_088.a > obj->vars[0]) {
+                obj->unk_088.a -= obj->vars[0];
+            } else {
+                obj->unk_088.a = 0;
+            }
+        }
+    } else {
+        D_8008012C &= ~0x10;
+        obj->flags |= 0x10;
+        obj->currentTask->flags |= 0x80;
+    }
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/F530/func_8000EA80.s")
 

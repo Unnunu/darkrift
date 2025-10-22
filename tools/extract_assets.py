@@ -164,9 +164,41 @@ def process_sp2():
             outpath.parent.mkdir(parents=True, exist_ok=True)
             img.write(outpath)
 
+def process_sym():
+    for g in Path(ASSETS_PATH).glob('**/*.SYM'):
+        content = g.read_bytes()
+        off1, off2, off3, off4 = unpack_from(">IIII", content)
+        off5 = len(content)
+        list1 = []
+        list2 = []
+        list3 = []
+        list4 = []
+        for off in range(off1, off2, 16):
+            list1.append(content[off:off+16].decode('ascii').rstrip('\x00'))
+        for off in range(off2, off3, 32):
+            list2.append(content[off:off+32].decode('ascii').rstrip('\x00'))
+        for off in range(off3, off4, 32):
+            list3.append(content[off:off+32].decode('ascii').rstrip('\x00'))
+        for off in range(off4, off5, 32):
+            list4.append(content[off:off+32].decode('ascii').rstrip('\x00'))
+        with open(g.with_name(f"{g.name}.txt"), "w") as outf:
+            print("===== LIST 1 =====", file=outf)
+            for l in list1:
+                print(f"\t{l}", file=outf)
+            print("===== LIST 2 =====", file=outf)
+            for l in list2:
+                print(f"\t{l}", file=outf)
+            print("===== LIST 3 =====", file=outf)
+            for l in list3:
+                print(f"\t{l}", file=outf)
+            print("===== LIST 4 =====", file=outf)
+            for l in list3:
+                print(f"\t{l}", file=outf)
+
 def analyze():
     process_tex()
     process_sp2()
+    process_sym()
         
 def main():
     assets = Path(ROMFILE).read_bytes()[ASSETS_OFFSET:]
