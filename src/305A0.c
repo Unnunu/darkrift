@@ -563,7 +563,7 @@ void func_80030D60(Object *obj) {
 void func_80030DA8(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
     Player *opponent = &gPlayers[player->playerId != PLAYER_1 ? PLAYER_1 : PLAYER_2];
-    s32 a1 = 97;
+    s16 a1 = 97;
 
     if ((opponent->unk_80 & 0x30400) && D_80080210 < 400 && obj->spriteId >= player->unk_90->unk_04) {
         if (opponent->unk_90->unk_34 & 0x200) {

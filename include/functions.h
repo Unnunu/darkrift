@@ -71,7 +71,7 @@ void func_8003184C(Object *);
 void func_80010664(Player *, UnkTauSub *);
 void practice_init_hud(void);
 void func_8000132C(void);
-void func_800063C4(Player *, s32, s32);
+u8 func_800063C4(Player *, s16, u8);
 void func_80021DC4(Object *);
 void func_80021E34(Object *);
 void func_8003453C(Object *obj, ColorRGBA *arg1);
@@ -108,7 +108,7 @@ void func_8001BB2C(Player *);
 u8 func_8001C53C(Player *, u8);
 u8 func_8000642C(Player *, u8);
 u8 func_800069C0(Player *);
-s32 func_8000636C(Player *arg0, s32 arg1, s32 arg2);
+u8 func_8000636C(Player *arg0, s16 arg1, u8 arg2);
 void func_8002EB2C(Object *obj);
 void func_8002D278(Object *obj, u8 arg1);
 void func_8002DA08(Object *arg0);
@@ -124,5 +124,7 @@ void func_80010280(Player *, Player *);
 void func_8000FB30(Player *, Player *);
 void func_80024764(Object *obj);
 void func_80024390(Object *);
+u8 func_8001B7D0(Player *player, s16 arg1);
+void func_800247CC(Object *);
 
 #endif

@@ -453,12 +453,26 @@ typedef struct GlobalObjBSub {
     /* 0x08 */ s16 counter;
 } GlobalObjBSub; // size = 0xC
 
+typedef struct PlayerSub8 {
+    /* 0x00 */ s16 unk_00;
+    /* 0x02 */ u16 unk_02;
+    /* 0x04 */ u16 unk_04;
+    /* 0x06 */ u16 unk_06;
+    /* 0x08 */ s16 unk_08;
+    /* 0x0A */ s16 unk_0A;
+    /* 0x0C */ u16 unk_0C;
+    /* 0x0E */ char unk_0E[0xE];
+} PlayerSub8; // size = 0x1C
+
 typedef struct ObjectTaskSub {
-    union {
+    /* 0x00 */ union {
         s32 unk_00_i;
         void (*unk_00_f)(Object *);
     };
-    /* 0x04 */ s32 unk_04;
+    /* 0x04 */ union {
+        s32 unk_04;
+        PlayerSub8 *unk_04_ptr;
+    };
     /* 0x08 */ s32 unk_08;
     /* 0x0C */ s32 unk_0C;
     /* 0x10 */ void (*unk_10)(Object *);
@@ -551,15 +565,6 @@ typedef struct PlayerSub6 {
     /* 0x01D4 */ char unk_1D4[0x1458 - 0x1D4];
 } PlayerSub6; // size = 0x1458;
 
-typedef struct PlayerSub8 {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ u16 unk_02;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s16 unk_08;
-    /* 0x0A */ s16 unk_0A;
-    /* 0x0C */ char unk_0C[0x10];
-} PlayerSub8; // size = 0x1C
-
 typedef struct PlayerSub9 {
     /* 0x000 */ char unk_00[8];
     /* 0x008 */ Vec4f *unk_08;
@@ -603,7 +608,10 @@ typedef struct PlayerSubE {
 } PlayerSubE; // size = 0x8
 
 typedef struct PlayerSubF {
-    /* 0x00 */ s32 unk_00[2];
+    /* 0x00 */ s16 unk_00;
+    /* 0x02 */ s16 unk_02;
+    /* 0x04 */ s16 unk_04;
+    /* 0x06 */ s16 unk_06;
     /* 0x08 */ s16 unk_08;
     /* 0x0A */ s16 unk_0A;
     /* 0x0C */ s16 unk_0C;

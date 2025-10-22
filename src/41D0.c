@@ -1026,7 +1026,6 @@ void func_80005B70(s16 playerId) {
     gPlayers[playerId].unk_184 = FALSE;
 }
 
-// #pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_80005EE4.s")
 u8 func_80005EE4(Player *player, u8 arg1, u16 arg2) {
     u16 sp4E;
     u16 sp4C;
@@ -1164,10 +1163,205 @@ label:
     return TRUE;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_8000636C.s")
+u8 func_8000636C(Player *player, s16 arg1, u8 arg2) {
+    s16 v1;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_800063C4.s")
+    v1 = player->unk_38[arg1];
+    player->unk_0C->flags &= ~4;
+    return func_80005EE4(player, arg2, v1);
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_8000642C.s")
+u8 func_800063C4(Player *player, s16 arg1, u8 arg2) {
+    if (D_800B6328[player->playerId].unk_02) {
+        player->unk_94 = 0;
+        return func_8001B7D0(player, arg1);
+    } else {
+        return func_8000636C(player, arg1, arg2);
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_800069C0.s")
+u8 func_8000642C(Player *player, u8 arg1) {
+    ObjectTask *unk_0C;
+    void *sp68;
+    PlayerSub8 *a2;
+    PlayerSub8 *sp60;
+    s16 sp5E;
+    s16 s0;
+    s16 *sp58;
+    s32 pad[2];
+    s32 sp4C;
+    u16 v0;
+    u16 t0;
+    s32 pad2[2];
+    u16 sp3E;
+
+    s0 = player->unk_76;
+    sp68 = NULL;
+    sp60 = player->unk_2C;
+    sp58 = player->unk_34;
+    sp4C = gFrameCounter - player->unk_8C;
+
+    if (D_800801F0) {
+        sp3E = 0;
+    } else if (player->unk_80 & 0x1000) {
+        sp3E = gPlayerInput[player->playerId].prev_buttons;
+    } else {
+        sp3E = gPlayerInput[player->playerId].buttons;
+    }
+
+    while (sp58[s0] >= 0) {
+        a2 = sp60 + sp58[s0];
+        v0 = a2->unk_04;
+        t0 = sp3E & a2->unk_0C;
+
+        if (v0 & 2) {
+            if ((v0 & 0x10) && (!(v0 & 0x800) || !(player->unk_80 & 8))) {
+                s0 += 2;
+            } else {
+                sp5E = s0;
+                sp68 = a2;
+                s0 += 2;
+            }
+            continue;
+        }
+
+        if ((v0 & 8) && player->unk_94 <= 0) {
+            gPlayerInput[player->playerId].unk_08 = FALSE;
+            D_80080236 = TRUE;
+            if (func_80005EE4(player, TRUE, s0)) {
+                D_80080236 = FALSE;
+                return TRUE;
+            }
+
+            D_80080236 = FALSE;
+            s0 += 2;
+            continue;
+        }
+
+        if (sp3E && (v0 & 0x10) && (v0 & 0x800) && (player->unk_80 & 8) &&
+            (a2->unk_02 == 0 || (a2->unk_02 != 0 && t0 == a2->unk_02) || (a2->unk_02 == 0xFFFF && t0 != 0))) {
+            if ((v0 & 4) && player->unk_90 == player->unk_20 + player->unk_7E &&
+                player->unk_90->unk_02 != player->unk_00->spriteId && !(player->unk_80 & 0x4800)) {
+                unk_0C = player->unk_0C;
+                unk_0C->unk_08.unk_00_i = s0;
+                unk_0C->unk_08.unk_04_ptr = a2;
+                unk_0C->flags |= 4;
+                unk_0C->unk_86 = player->unk_90->unk_02 - 1;
+                unk_0C->unk_90.func = func_800247CC;
+                unk_0C->unk_90.flags = 0x41;
+
+                return TRUE;
+            }
+
+            if (func_80005EE4(player, TRUE, s0)) {
+                gPlayerInput[player->playerId].unk_08 = TRUE;
+                return TRUE;
+            }
+
+            s0 += 2;
+            continue;
+        }
+
+        if (a2->unk_02 == t0 && ((v0 & 1) || ((v0 & 4) && player->unk_90 == player->unk_20 + player->unk_7E))) {
+            gPlayerInput[player->playerId].unk_08 = FALSE;
+
+            if (v0 & 0x20) {
+                if (player->unk_90->unk_02 != player->unk_00->spriteId &&
+                    (!(player->unk_80 & 0x4800) || player->unk_90->unk_00 != player->unk_00->spriteId)) {
+                    s0 += 2;
+                } else if (func_80005EE4(player, TRUE, s0)) {
+                    return TRUE;
+                } else {
+                    s0 += 2;
+                }
+                continue;
+            }
+
+            if ((v0 & 4) && player->unk_90->unk_02 != player->unk_00->spriteId && !(player->unk_80 & 0x4800)) {
+                unk_0C = player->unk_0C;
+                unk_0C->unk_08.unk_00_i = s0;
+                unk_0C->unk_08.unk_04_ptr = a2;
+                unk_0C->flags |= 4;
+                unk_0C->unk_86 = player->unk_90->unk_02 - 1;
+                unk_0C->unk_90.func = func_800247CC;
+                unk_0C->unk_90.flags = 0x41;
+                return TRUE;
+            }
+
+            if ((v0 & 0x40)) {
+                if (sp4C <= player->unk_28[a2->unk_00].unk_06) {
+                    if (func_80005EE4(player, TRUE, s0)) {
+                        return TRUE;
+                    } else {
+                        s0 += 2;
+                        continue;
+                    }
+                } else {
+                    s0 += 2;
+                    continue;
+                }
+            }
+
+            if (func_80005EE4(player, TRUE, s0)) {
+                return TRUE;
+            }
+        }
+
+        s0 += 2;
+    }
+
+    if (sp68 != NULL && arg1) {
+        gPlayerInput[player->playerId].unk_08 = FALSE;
+        D_80080236 = TRUE;
+        if (func_80005EE4(player, TRUE, sp5E)) {
+            player->unk_76 = sp58[sp5E + 1];
+            D_80080236 = FALSE;
+            return TRUE;
+        }
+        D_80080236 = FALSE;
+    }
+
+    return FALSE;
+}
+
+u8 func_800069C0(Player *player) {
+    s16 a2;
+    u16 v0;
+    PlayerSub8 *t2;
+    PlayerSub8 *unk_2C;
+    PlayerSub8 *a0;
+    s16 sp26;
+    s16 *sp20;
+
+    a2 = player->unk_76;
+    unk_2C = player->unk_2C;
+    sp20 = player->unk_34;
+    t2 = NULL;
+
+    while (sp20[a2] >= 0) {
+        a0 = unk_2C + sp20[a2];
+        v0 = a0->unk_04;
+        if (v0 & 2) {
+            if (((v0 & 0x10) && (!(v0 & 0x800) || !(player->unk_80 & 8)))) {
+                a2 += 2;
+                continue;
+            }
+            t2 = a0;
+            sp26 = a2;
+            break;
+        }
+        a2 += 2;
+    }
+
+    if (t2 != NULL) {
+        D_80080236 = TRUE;
+        if (func_80005EE4(player, TRUE, sp26)) {
+            player->unk_76 = sp20[sp26 + 1];
+            D_80080236 = FALSE;
+            return TRUE;
+        }
+        D_80080236 = FALSE;
+    }
+
+    return FALSE;
+}
