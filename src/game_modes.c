@@ -37,8 +37,6 @@ extern s16 D_80080232;
 extern s16 D_800B6368[11][2];
 
 extern s32 D_80081668;
-extern void *D_80081274;
-extern void *D_80081278;
 extern u16 D_8013C250;
 
 void func_8001A674(Object *);

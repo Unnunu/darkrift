@@ -66,7 +66,7 @@ extern u16 D_8013C250;
 extern u16 D_80080236;
 extern UnkVec2s D_8004B8F4[];
 extern UnkVec2s D_8004B920[];
-extern s32 D_8004BA14[];
+extern ColorRGBA D_8004BA14[];
 extern Unk_8004BA6C *D_8004BA40[];
 extern Unk_8004BA6C *D_8004BA6C[];
 extern Vec4s D_8004BA98[];
@@ -137,5 +137,7 @@ extern s32 D_8013C430;
 extern s32 D_8013C434;
 extern s32 D_8013C444;
 extern s16 D_8004C1E4;
+extern UnkSam *D_80081274;
+extern UnkSam *D_80081278;
 
 #endif

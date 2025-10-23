@@ -566,13 +566,20 @@ typedef struct PlayerSub6 {
 } PlayerSub6; // size = 0x1458;
 
 typedef struct PlayerSub9 {
-    /* 0x000 */ char unk_00[8];
+    /* 0x000 */ u8 unk_00;
+    /* 0x001 */ u8 unk_01;
+    /* 0x002 */ u8 unk_02;
+    /* 0x003 */ u8 unk_03;
+    /* 0x004 */ char unk_04[4];
     /* 0x008 */ Vec4f *unk_08;
     /* 0x00C */ Vec4f *unk_0C;
     /* 0x010 */ Vec4f *unk_10;
     /* 0x014 */ Vec4f *unk_14;
     /* 0x018 */ Vec4f *unk_18;
-    /* 0x01C */ char unk_1C[0x10];
+    /* 0x018 */ s32 unk_1C;
+    /* 0x018 */ s32 unk_20;
+    /* 0x018 */ Vec4f *unk_24;
+    /* 0x018 */ s32 unk_28;
     /* 0x02C */ s32 unk_2C;
     /* 0x030 */ s32 unk_30;
     /* 0x034 */ s32 unk_34;
@@ -785,7 +792,7 @@ typedef struct UnkTauSub {
 typedef struct UnkTau {
     /* 0x00 */ UnkTauSub *unk_00;
     /* 0x04 */ K2Def *unk_04;
-    /* 0x08 */ s32 unk_08[2];
+    /* 0x08 */ ColorRGBA unk_08[2];
 } UnkTau; // size = 0x10
 
 typedef struct Unk_8004BA6C {
