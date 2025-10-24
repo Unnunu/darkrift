@@ -127,5 +127,6 @@ void func_80024390(Object *);
 u8 func_8001B7D0(Player *player, s16 arg1);
 void func_800247CC(Object *);
 void func_80023BE4(Vec4s *arg0, Object *arg1, ColorRGBA *arg2);
+void func_80028FCC(void);
 
 #endif

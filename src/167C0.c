@@ -1,10 +1,20 @@
 #include "common.h"
+#include "camera.h"
+#include "task.h"
 
 extern s16 D_80049390;
 extern Unk80015E74 D_8004C008[];
 extern Unk80015E74 D_8004C0C8[];
 extern u8 D_8004A42C;
 extern s16 D_8004C1D0;
+
+extern Object *D_8013C23C;
+extern s32 D_80081440;
+extern s32 D_80081444;
+extern s32 D_80081448;
+extern s32 D_8008144C;
+extern s32 D_80081450;
+extern s32 D_80081454;
 
 void func_80016A00(Object *);
 
@@ -253,13 +263,77 @@ const char D_800547F4[] = "bars.sp2";
 #pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_800177C0.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_8001792C.s")
+void func_8001792C(Object *obj);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80017A90.s")
+void func_80017A90(Object *obj) {
+    D_8005BFC0 |= 4;
+    gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = TRUE;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80017B3C.s")
+    if (++obj->vars[0] > 900) {
+        gGameMode = GAME_MODE_29;
+        D_8005BFC0 |= 1;
+        obj->flags |= 0x10;
+    } else if ((gPlayerInput[PLAYER_1].buttons & INP_START) || (gPlayerInput[PLAYER_2].buttons & INP_START)) {
+        D_8005BFC0 |= 1;
+        gGameMode = GAME_MODE_0;
+        obj->flags |= 0x10;
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80017C3C.s")
+void func_80017B3C(Object *obj) {
+    if (D_80080230 == 30) {
+        obj->currentTask->func = func_80017A90;
+        obj->vars[0] = 0;
+        D_8005BFC0 |= 4;
+    } else {
+        obj->currentTask->func = func_8001792C;
+        D_8005BFC0 &= ~4;
+    }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80017C88.s")
+    gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = TRUE;
+    gPlayers[PLAYER_1].unk_80 &= ~0x100000;
+    gPlayers[PLAYER_2].unk_80 &= ~0x100000;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80017CA8.s")
+    if (D_800B6328[PLAYER_1].unk_02) {
+        gPlayers[PLAYER_1].unk_180 &= ~0x20000;
+    }
+    if (D_800B6328[PLAYER_2].unk_02) {
+        gPlayers[PLAYER_2].unk_180 &= ~0x20000;
+    }
+
+    func_80028FCC();
+}
+
+void func_80017C3C(Object *obj) {
+    obj->currentTask->func = func_80017B3C;
+    obj->currentTask->counter = func_80015FB4(0)->modInst->numAnimFrames + 20;
+}
+
+void func_80017C88(Object *obj) {
+    task_execute(obj);
+}
+
+void func_80017CA8(void) {
+    D_8013C23C = create_worker(func_80017C88, 1);
+    D_800801F0 = FALSE;
+    D_8013C834 = 0;
+
+    gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = FALSE;
+    gPlayers[PLAYER_1].unk_80 |= 0x100000;
+    gPlayers[PLAYER_2].unk_80 |= 0x100000;
+    D_8013C250 = FALSE;
+    D_80080234 = FALSE;
+
+    if (D_800B6328[PLAYER_1].unk_02) {
+        gPlayers[PLAYER_1].unk_180 |= 0x20000;
+    }
+    if (D_800B6328[PLAYER_2].unk_02) {
+        gPlayers[PLAYER_2].unk_180 |= 0x20000;
+    }
+
+    D_8013C23C->currentTask->func = func_80017C3C;
+    D_8013C23C->currentTask->counter = 0;
+    D_8013C23C->currentTask->flags = 1;
+    D_8013C23C->currentTask->counter = func_800160C8(D_800B6328[PLAYER_1].unk_08 + D_800B6328[PLAYER_2].unk_08);
+    D_80081440 = D_80081448 = D_8008144C = D_80081450 = D_80081454 = D_80081444 = 0;
+}

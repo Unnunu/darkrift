@@ -681,7 +681,78 @@ void func_80010280(Player *arg0, Player *arg1) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/F530/func_80010664.s")
+void func_80010664(Player *arg0, UnkTauSub *arg1) {
+    arg0->unk_198.unk_08 = &arg0->unk_00->modInst->transforms[arg1->unk_00].wolrd_matrix.w;
+    arg0->unk_198.unk_0C = &arg0->unk_00->modInst->transforms[arg1->unk_04].wolrd_matrix.w;
+    arg0->unk_198.unk_10 = &arg0->unk_00->modInst->transforms[arg1->unk_08].wolrd_matrix.w;
+    arg0->unk_198.unk_14 = &arg0->unk_00->modInst->transforms[arg1->unk_0C].wolrd_matrix.w;
+    arg0->unk_198.unk_18 = &arg0->unk_00->modInst->transforms[arg1->unk_10].wolrd_matrix.w;
+    arg0->unk_198.unk_1C = &arg0->unk_00->modInst->transforms[arg1->unk_14].wolrd_matrix.w;
+    arg0->unk_198.unk_20 = &arg0->unk_00->modInst->transforms[arg1->unk_18].wolrd_matrix.w;
+    arg0->unk_198.unk_28 = &arg0->unk_00->modInst->transforms[0].wolrd_matrix.w;
+
+    if (arg1->unk_6C > 0) {
+        arg0->unk_198.unk_24 = &arg0->unk_00->modInst->transforms[arg1->unk_6C].wolrd_matrix.w;
+        arg0->unk_198.unk_02 = TRUE;
+    } else {
+        arg0->unk_198.unk_02 = FALSE;
+    }
+
+    arg0->unk_198.unk_2C = arg1->unk_24;
+    arg0->unk_198.unk_30 = arg1->unk_28;
+
+    if (arg1->unk_3C.x != 0 || arg1->unk_3C.y != 0 || arg1->unk_3C.z != 0) {
+        arg0->unk_198.unk_01 = TRUE;
+        func_80012A20(&arg0->unk_00->modInst->transforms[arg1->unk_20], &arg0->unk_198.unk_150, -3, -3);
+        arg0->unk_198.unk_150.local_matrix.w.x = arg1->unk_3C.x;
+        arg0->unk_198.unk_150.local_matrix.w.y = arg1->unk_3C.y;
+        arg0->unk_198.unk_150.local_matrix.w.z = arg1->unk_3C.z;
+    } else {
+        arg0->unk_198.unk_01 = FALSE;
+    }
+
+    if (arg1->unk_2C.x != 0 || arg1->unk_2C.y != 0 || arg1->unk_2C.z != 0) {
+        arg0->unk_198.unk_00 = TRUE;
+        func_80012A20(&arg0->unk_00->modInst->transforms[arg1->unk_1C], &arg0->unk_198.unk_38, -3, -3);
+        arg0->unk_198.unk_38.local_matrix.w.x = arg1->unk_2C.x;
+        arg0->unk_198.unk_38.local_matrix.w.y = arg1->unk_2C.y;
+        arg0->unk_198.unk_38.local_matrix.w.z = arg1->unk_2C.z;
+    } else {
+        arg0->unk_198.unk_00 = FALSE;
+    }
+
+    if (arg1->unk_70.x != 0 || arg1->unk_70.y != 0 || arg1->unk_70.z != 0) {
+        arg0->unk_198.unk_03 = TRUE;
+        func_80012A20(&arg0->unk_00->modInst->transforms[arg1->unk_6C], &arg0->unk_198.unk_498, -3, -3);
+        arg0->unk_198.unk_498.local_matrix.w.x = arg1->unk_70.x;
+        arg0->unk_198.unk_498.local_matrix.w.y = arg1->unk_70.y;
+        arg0->unk_198.unk_498.local_matrix.w.z = arg1->unk_70.z;
+    } else {
+        arg0->unk_198.unk_03 = FALSE;
+    }
+
+    if (arg1->unk_5C.x != 0 || arg1->unk_5C.y != 0 || arg1->unk_5C.z != 0) {
+        arg0->unk_198.unk_05 = TRUE;
+        func_80012A20(&arg0->unk_00->modInst->transforms[arg1->unk_10], &arg0->unk_198.unk_380, -3, -3);
+        arg0->unk_198.unk_380.local_matrix.w.x = arg1->unk_5C.x;
+        arg0->unk_198.unk_380.local_matrix.w.y = arg1->unk_5C.y;
+        arg0->unk_198.unk_380.local_matrix.w.z = arg1->unk_5C.z;
+    } else {
+        arg0->unk_198.unk_05 = FALSE;
+    }
+
+    if (arg1->unk_4C.x != 0 || arg1->unk_4C.y != 0 || arg1->unk_4C.z != 0) {
+        arg0->unk_198.unk_04 = TRUE;
+        func_80012A20(&arg0->unk_00->modInst->transforms[arg1->unk_0C], &arg0->unk_198.unk_268, -3, -3);
+        arg0->unk_198.unk_268.local_matrix.w.x = arg1->unk_4C.x;
+        arg0->unk_198.unk_268.local_matrix.w.y = arg1->unk_4C.y;
+        arg0->unk_198.unk_268.local_matrix.w.z = arg1->unk_4C.z;
+    } else {
+        arg0->unk_198.unk_04 = FALSE;
+    }
+}
+
+// split ??
 
 #pragma GLOBAL_ASM("asm/nonmatchings/F530/func_80010B00.s")
 
@@ -689,7 +760,10 @@ void func_80010280(Player *arg0, Player *arg1) {
 
 #pragma GLOBAL_ASM("asm/nonmatchings/F530/func_80010B84.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/F530/func_80010BE4.s")
+void func_80010BE4(PlayerSub6Sub1 *arg0) {
+    func_80010B00(arg0->unk_00, 3);
+    func_80010B00(arg0->unk_50, 3);
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/F530/func_80010C18.s")
 
@@ -698,7 +772,89 @@ void func_80010280(Player *arg0, Player *arg1) {
 #pragma GLOBAL_ASM("asm/nonmatchings/F530/func_800114BC.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/F530/func_800114DC.s")
+void func_800114DC(BatchInfo *);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/F530/func_800115A0.s")
 
+extern Gfx D_80081280[];
+
+#ifdef NON_EQUIVALENT
+void func_80012150(PlayerSub6 *arg0, ModelInstance *arg1, Matrix4f *arg2, Matrix4f *arg3, Vec4i *arg4,
+                   ColorRGBA *arg5) {
+    u32 i, j;
+    Gfx *gfx;
+    u32 a;
+    PlayerSub6Sub2 *s6;
+    BatchInfo *bi;
+
+    arg0->unk_00 = arg1;
+    arg0->unk_04 = arg2;
+    arg0->unk_08 = arg3;
+
+    func_80010BE4(&arg0->unk_0C);
+    func_80010BE4(&arg0->unk_EC);
+
+    arg0->unk_1CC = 0;
+    arg0->unk_1D0 = 0;
+    arg0->unk_1450 = arg4;
+
+    gfx = D_80081280;
+    gDPSetPrimColor(gfx++, 0, 0, 255, 255, 255, 255);
+    gDPSetCombineMode(gfx++, G_CC_SHADE, G_CC_SHADE);
+    gSPNoOp(gfx++);
+
+    for (i = 0, bi = arg0->unk_12D8; i < 4; i++, bi++) {
+        func_800114DC(bi);
+        bi->header.texGfx = D_80081280;
+        bi->header.unk_0B = 0;
+    }
+
+    for (i = 0; i < 16; i++) {
+        s6 = &arg0->unk_1D8[i];
+        func_800114DC(&s6->unk_00);
+        mem_fill(s6->unk_58, 0, sizeof(s6->unk_58));
+
+        if (i == 0) {
+            a = 200;
+            for (j = 0; j < 4; j++) {
+                s6->unk_58[j].unk_00.r = arg5->r;
+                s6->unk_58[j].unk_00.g = arg5->g;
+                s6->unk_58[j].unk_00.b = arg5->b;
+                s6->unk_58[j].unk_00.a = a;
+                s6->unk_58[j].unk_04.r = arg5->r;
+                s6->unk_58[j].unk_04.g = arg5->g;
+                s6->unk_58[j].unk_04.b = arg5->b;
+                s6->unk_58[j].unk_04.a = a;
+                a += 4;
+            }
+        } else {
+            a = 204;
+            for (j = 0; j < 4; j++) {
+                s6->unk_58[j].unk_00.r = arg5->r;
+                s6->unk_58[j].unk_00.g = arg5->g;
+                s6->unk_58[j].unk_00.b = arg5->b;
+                s6->unk_58[j].unk_00.a = a;
+                s6->unk_58[j].unk_04.r = arg5->r;
+                s6->unk_58[j].unk_04.g = arg5->g;
+                s6->unk_58[j].unk_04.b = arg5->b;
+                s6->unk_58[j].unk_04.a = a;
+                a += 4;
+                if (a > 255) {
+                    a = 255;
+                }
+            }
+        }
+
+        s6->unk_F8 = -1;
+    }
+
+    arg0->unk_1438 = arg0->unk_143C = arg0->unk_1440 = 0.0f;
+    arg0->unk_1444 = arg0->unk_1448 = arg0->unk_144C = 0.0f;
+
+    arg0->unk_1454.r = arg5->r;
+    arg0->unk_1454.g = arg5->g;
+    arg0->unk_1454.b = arg5->b;
+}
+#else
 #pragma GLOBAL_ASM("asm/nonmatchings/F530/func_80012150.s")
+#endif
