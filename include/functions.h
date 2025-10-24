@@ -118,7 +118,7 @@ void func_800115A0(PlayerSub6 *, u8);
 void func_800338D0(void);
 void func_80033D64(void);
 void func_8001B810(Player *);
-s32 func_8000FE9C(Player *, Player *); // TODO wrong signature
+// void func_8000FE9C(Player *, Player *);
 void func_8000F494(Player *, Player *);
 void func_80010280(Player *, Player *);
 void func_8000FB30(Player *, Player *);

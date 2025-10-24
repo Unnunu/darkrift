@@ -153,7 +153,7 @@ void practice_init_hud(void) {
     D_8013C490->taskList = NULL;
 
     gPlayerInput[gPracticingPlayer].unk_0C = FALSE;
-    gPlayers[gPracticingPlayer].unk_5F4E = gPlayers[gPracticingPlayer].unk_5F4C = 0;
+    gPlayers[gPracticingPlayer].damage = gPlayers[gPracticingPlayer].total_damage = 0;
 }
 
 void practice_enter_pause(s32 playerId) {
@@ -523,7 +523,7 @@ void func_800332D0(Object *obj) {
 
     player = &gPlayers[gPracticingPlayer];
 
-    v1 = player->unk_5F4E;
+    v1 = player->damage;
     if (v1 > 99) {
         v1 = 99;
     }
@@ -531,7 +531,7 @@ void func_800332D0(Object *obj) {
     D_8013C484->spriteId = a0;
     D_8013C480->spriteId = v1 - a0 * nv2;
 
-    v1 = player->unk_5F4C;
+    v1 = player->total_damage;
     if (v1 > 999) {
         v1 = 999;
     }

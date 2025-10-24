@@ -87,7 +87,7 @@ void func_8002FADC(Object *obj) {
     s1->x = obj->pos.x;
     s1->z = obj->pos.z;
     if (--obj->vars[3] < 0) {
-        player->unk_5F4C = 0;
+        player->total_damage = 0;
     }
 }
 
@@ -201,11 +201,11 @@ void func_80030074(Object *obj) {
     s16 characterId = player->characterId;
 
     if (obj->spriteId == player->unk_90->unk_02 - 1) {
-        player->unk_5F4E = obj->vars[2];
+        player->damage = obj->vars[2];
         if (obj->vars[3] < 0) {
-            player->unk_5F4C += player->unk_5F4E;
+            player->total_damage += player->damage;
         } else {
-            player->unk_5F4C = player->unk_5F4E;
+            player->total_damage = player->damage;
             obj->vars[3] = -1;
         }
 
@@ -241,11 +241,11 @@ void func_800301FC(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
     if (obj->spriteId >= player->unk_90->unk_02 - 2) {
-        player->unk_5F4E = obj->vars[2];
+        player->damage = obj->vars[2];
         if (obj->vars[3] < 0) {
-            player->unk_5F4C += player->unk_5F4E;
+            player->total_damage += player->damage;
         } else {
-            player->unk_5F4C = player->unk_5F4E;
+            player->total_damage = player->damage;
             obj->vars[3] = -1;
         }
 
@@ -1021,10 +1021,10 @@ void func_80031E4C(Unk_8004BA6C *arg0, PlayerSub9 *arg1, Object *arg2) {
             v0 = arg1->unk_08;
             break;
         case 3:
-            v0 = &arg1->unk_1D0.wolrd_matrix.w;
+            v0 = &arg1->unk_38.wolrd_matrix.w;
             break;
         case 4:
-            v0 = &arg1->unk_2E8.wolrd_matrix.w;
+            v0 = &arg1->unk_150.wolrd_matrix.w;
             break;
         case 5:
             v0 = arg1->unk_0C;

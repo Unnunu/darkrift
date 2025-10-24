@@ -922,12 +922,12 @@ void func_800052EC(s16 playerId) {
 
     func_80012150(&gPlayers[playerId].unk_DE8, spDC->modInst,
                   &spDC->modInst->transforms[D_8004B844[spD6].unk_00->unk_08].wolrd_matrix,
-                  &gPlayers[playerId].unk_198.unk_2E8.wolrd_matrix, &spDC->pos, &D_8004B844[spD6].unk_08[playerId]);
+                  &gPlayers[playerId].unk_198.unk_150.wolrd_matrix, &spDC->pos, &D_8004B844[spD6].unk_08[playerId]);
 
     if (D_8004B844[spD6].unk_00->unk_1C >= 0) {
         func_80012150(&gPlayers[playerId].unk_2240, spDC->modInst,
                       &spDC->modInst->transforms[D_8004B844[spD6].unk_00->unk_04].wolrd_matrix,
-                      &gPlayers[playerId].unk_198.unk_1D0.wolrd_matrix, &spDC->pos, &D_8004B844[spD6].unk_08[playerId]);
+                      &gPlayers[playerId].unk_198.unk_38.wolrd_matrix, &spDC->pos, &D_8004B844[spD6].unk_08[playerId]);
         gPlayers[playerId].unk_5F4A = 1;
     } else {
         gPlayers[playerId].unk_5F4A = 0;
