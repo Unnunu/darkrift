@@ -9,14 +9,15 @@ extern u8 D_8004A42C;
 extern s16 D_8004C1D0;
 
 extern Object *D_8013C23C;
-extern s32 D_80081440;
-extern s32 D_80081444;
-extern s32 D_80081448;
+extern Object *D_80081440;
+extern Object *D_80081444;
+extern Object *D_80081448;
 extern s32 D_8008144C;
 extern s32 D_80081450;
-extern s32 D_80081454;
+extern Object *D_80081454;
 
 void func_80016A00(Object *);
+void func_800177C0(Object *);
 
 void func_80015BC0(Object *obj) {
     D_8005BFC0 |= 0xC1;
@@ -145,16 +146,16 @@ Object *func_80015FB4(s16 arg0) {
     return obj;
 }
 
-Object *func_80016020(s32 arg0, s32 arg1, s32 arg2) {
+Object *func_80016020(s32 characterId, s32 arg1, u32 playerId) {
     s32 unused;
     Object *obj;
 
-    obj = func_80015E74(D_8004C0C8 + arg0, arg2);
+    obj = func_80015E74(D_8004C0C8 + characterId, playerId);
 
     if (obj != NULL) {
         obj->currentTask->counter = arg1;
         obj->flags |= 4;
-        if (D_800B6328[arg2].unk_02 != 0) {
+        if (D_800B6328[playerId].unk_02 != 0) {
             obj->vars[2] = 7;
         }
     }
@@ -193,7 +194,7 @@ void func_80016144(Object *obj) {
         unkObj->vars[1] -= 30;
     }
 
-    obj->vars[1] = gPlayerInput[1 - D_8013C24C].buttons; // probably bug
+    obj->vars[1] = gPlayerInput[1 - D_8013C24C].buttons; // probably @bug
 
     if (obj->spriteId >= obj->modInst->numAnimFrames) {
         if (--obj->vars[1] <= 0) {
@@ -223,10 +224,12 @@ void func_80016264(void) {
 #pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_800162A4.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_8001675C.s")
+u32 func_8001675C(Player *arg0, s32 arg1, s32 arg2);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_800167D4.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80016880.s")
+void func_80016880(Object *obj);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_800168F0.s")
 
@@ -239,31 +242,259 @@ void func_80016264(void) {
 #pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80016C34.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80016D90.s")
+ObjFunc func_80016D90(s32 arg0, u8 arg1);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80016F6C.s")
+void func_80016F6C(Object *obj) {
+    s32 sp2C;
+    ObjFunc v02;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_800171EC.s")
+    sp2C = func_8001675C(&gPlayers[D_8013C24C], (gFrameCounter & 1) ? 0x84 : 0xF7, 0x78);
+    func_80016264();
+    obj->varObj[4] = D_80081440 = func_80016020(gPlayers[D_8013C24C].characterId, 6, D_8013C24C);
+    v02 = func_80016D90(D_8013C24C, 0);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80017304.s")
+    obj->vars[0] = sp2C + 0x78;
+    obj->vars[1] = 10;
+    obj->vars[2] = 0xbe;
+    obj->currentTask->func = v02;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_800173DC.s")
+    D_8005BFC0 &= ~0x200;
+    gPlayers[1 - D_8013C24C].unk_00->flags |= 4;
+    gPlayers[D_8013C24C].unk_00->pos.x = gPlayers[D_8013C24C].unk_00->pos.y = gPlayers[D_8013C24C].unk_00->pos.z = 0;
+    gPlayers[1 - D_8013C24C].unk_00->pos.x = gPlayers[1 - D_8013C24C].unk_00->pos.y =
+        gPlayers[1 - D_8013C24C].unk_00->pos.z = 0;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_800175B0.s")
+    gPlayers[PLAYER_1].unk_00->rotation.y = 0;
+    gPlayers[PLAYER_1].unk_80 |= 0x400000;
+    gPlayers[PLAYER_2].unk_80 |= 0x400000;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_800175D8.s")
+    gCameraTarget.x = gCameraTarget.z = 0;
+    gCameraTarget.y = -400;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80017614.s")
+    if (D_800B6328[D_8013C24C].characterId != MORPHIX) {
+        gPlayers[D_8013C24C].unk_00->flags |= 0x10000000;
+    }
 
-const char D_800547F4[] = "bars.sp2";
+    gPlayers[D_8013C24C].unk_00->flags &= ~0x8800000;
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80017650.s")
+void func_800171EC(Object *obj) {
+    s32 pad;
+    Object *v0;
+    ObjFunc a3;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80017728.s")
+    v0 = func_80015FB4(4);
+    a3 = func_80016880;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_800177C0.s")
+    if (v0 != NULL) {
+        v0->currentTask->counter = 5;
+    }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_8001792C.s")
-void func_8001792C(Object *obj);
+    D_80081444 = v0;
+
+    func_8001675C(&gPlayers[PLAYER_2], 0x180, func_8001675C(&gPlayers[PLAYER_1], 0x180, 0x78));
+
+    if (D_8004C1D0 == D_800B6328[PLAYER_1].unk_08 + 1) {
+        a3 = func_80016D90(PLAYER_1, 1);
+    } else {
+        D_800B6328[PLAYER_1].unk_08++;
+    }
+
+    if (D_8004C1D0 == D_800B6328[PLAYER_2].unk_08 + 1) {
+        a3 = func_80016D90(PLAYER_2, 1);
+    } else {
+        D_800B6328[PLAYER_2].unk_08++;
+    }
+
+    obj->vars[0] = 0xf5;
+    obj->vars[1] = 10;
+    obj->vars[2] = 0xbe;
+    obj->varObj[4] = v0;
+
+    obj->currentTask->func = a3;
+}
+
+void func_80017304(Object *obj) {
+    Object *a0;
+
+    if (--obj->vars[0] > 0) {
+        if ((gPlayerInput[PLAYER_1].buttons & INP_START) || (gPlayerInput[PLAYER_2].buttons & INP_START)) {
+            a0 = obj->varObj[4];
+            a0->flags |= 0x10;
+
+            if (gPlayerInput[PLAYER_1].buttons & INP_START) {
+                gPlayerInput[PLAYER_1].unk_08 = FALSE;
+            }
+            if (gPlayerInput[PLAYER_2].buttons & INP_START) {
+                gPlayerInput[PLAYER_2].unk_08 = FALSE;
+            }
+        } else {
+            return;
+        }
+    }
+
+    if (D_8013C24E) {
+        obj->currentTask->func = func_800171EC;
+    } else {
+        gPlayerInput[1 - D_8013C24C].unk_0A = FALSE;
+        gPlayerInput[1 - D_8013C24C].buttons = 0;
+        obj->currentTask->func = func_80016F6C;
+    }
+}
+
+void func_800173DC(Object *obj) {
+    if (gPlayers[PLAYER_1].unk_80 & 0x80) {
+        if (--gPlayers[PLAYER_1].unk_94 > 20) {
+            gPlayers[PLAYER_1].unk_94 = 20;
+        } else {
+            func_8000642C(&gPlayers[PLAYER_1], TRUE);
+        }
+    } else if (gPlayers[PLAYER_2].unk_80 & 0x80) {
+        if (--gPlayers[PLAYER_2].unk_94 > 20) {
+            gPlayers[PLAYER_2].unk_94 = 20;
+        } else {
+            func_8000642C(&gPlayers[PLAYER_2], TRUE);
+        }
+    } else if ((gPlayers[PLAYER_1].unk_80 & 0x40000) && (gPlayers[PLAYER_2].unk_80 & 0x40000)) {
+        if ((gPlayers[PLAYER_1].unk_90->unk_34 & 1) && gPlayers[PLAYER_1].unk_7E != 4) {
+            func_8000636C(&gPlayers[PLAYER_1], 320, FALSE);
+        } else if (gPlayers[PLAYER_1].unk_7E != 17) {
+            func_8000636C(&gPlayers[PLAYER_1], 68, FALSE);
+        }
+
+        if ((gPlayers[PLAYER_2].unk_90->unk_34 & 1) && gPlayers[PLAYER_2].unk_7E != 4) {
+            func_8000636C(&gPlayers[PLAYER_2], 320, FALSE);
+        } else if (gPlayers[PLAYER_2].unk_7E != 17) {
+            func_8000636C(&gPlayers[PLAYER_2], 68, FALSE);
+        }
+
+        gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = TRUE;
+
+        obj->currentTask->func = func_80017304;
+        obj->currentTask->counter = 10;
+        obj->vars[0] = 80;
+        D_80080234 = TRUE;
+    }
+}
+
+void func_800175B0(Object *obj) {
+    if (D_80080234) {
+        obj->currentTask->func = func_800177C0;
+    }
+}
+
+void func_800175D8(Object *obj) {
+    if (++obj->vars[0] & 8) {
+        obj->flags &= ~4;
+    } else {
+        obj->flags |= 4;
+    }
+}
+
+void func_80017614(Object *obj) {
+    if (D_80080234) {
+        obj->flags |= 0x10;
+    }
+    func_800175D8(obj);
+}
+
+void func_80017650(Object *obj) {
+    UIElement sp60 = { 0x26, func_80017614, 0x4000000, 0x1001, "bars.sp2" };
+    Vec4i sp50 = { 250, 220, 0, 0 };
+
+    gPlayerInput[D_8013C24C].unk_0A = TRUE;
+    D_8005BFC0 &= ~0x200;
+    if (TRUE) {
+        D_80080234 = TRUE;
+    }
+    obj->currentTask->func = func_800177C0;
+    obj->currentTask->counter = 45;
+    func_80016264();
+}
+
+void func_80017728(Object *obj) {
+    Object *a0;
+
+    if (--obj->vars[0] > 0) {
+        if (gPlayerInput[D_8013C24C].buttons & INP_START) {
+            a0 = obj->varObj[4];
+            if (a0 != NULL) {
+                a0->flags |= 0x10;
+            }
+
+            if (gPlayerInput[PLAYER_1].buttons & INP_START) {
+                gPlayerInput[PLAYER_1].unk_08 = FALSE;
+            }
+            if (gPlayerInput[PLAYER_2].buttons & INP_START) {
+                gPlayerInput[PLAYER_2].unk_08 = FALSE;
+            }
+        } else {
+            return;
+        }
+    }
+
+    obj->currentTask->func = func_80017650;
+}
+
+void func_800177C0(Object *obj) {
+    D_8005BFC0 &= ~0x200;
+
+    if (!D_80080234) {
+        if (gPlayers[PLAYER_1].unk_00->unk_070 == D_800B6328[PLAYER_1].unk_0C &&
+                gPlayers[PLAYER_2].unk_00->unk_070 == 0 ||
+            gPlayers[PLAYER_1].unk_00->unk_070 == 0 &&
+                gPlayers[PLAYER_2].unk_00->unk_070 == D_800B6328[PLAYER_2].unk_0C) {
+            obj->varObj[4] = D_80081448 = func_80015FB4(11);
+            obj->vars[0] = 90;
+            gPlayerInput[D_8013C24C].unk_0A = TRUE;
+            obj->currentTask->func = func_80017728;
+        } else {
+            obj->currentTask->func = func_80017650;
+        }
+    } else {
+        gPlayerInput[D_8013C24C].unk_0A = TRUE;
+        if (D_8013C24E) {
+            gPlayerInput[1 - D_8013C24C].unk_0A = TRUE;
+            obj->currentTask->func = func_800171EC;
+        } else {
+            obj->currentTask->func = func_80016F6C;
+        }
+    }
+}
+
+void func_8001792C(Object *obj) {
+    Object *newObj;
+
+    if (D_800801F0 || gPlayers[PLAYER_1].unk_00->unk_070 <= 0 || gPlayers[PLAYER_2].unk_00->unk_070 <= 0) {
+        func_80029044();
+        D_800801F0 = TRUE;
+        if (!(D_8005BFC0 & 4)) {
+            D_8005BFC0 |= 4;
+            return;
+        }
+
+        gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = FALSE;
+        if (gPlayers[PLAYER_1].unk_00->unk_070 > gPlayers[PLAYER_2].unk_00->unk_070) {
+            D_8013C24C = PLAYER_1;
+        } else {
+            D_8013C24C = PLAYER_2;
+        }
+
+        D_8013C24E = (gPlayers[PLAYER_1].unk_00->unk_070 == gPlayers[PLAYER_2].unk_00->unk_070);
+
+        if (D_800801F0 && gPlayers[PLAYER_1].unk_00->unk_070 != 0 && gPlayers[PLAYER_2].unk_00->unk_070 != 0) {
+            newObj = func_80015FB4(10);
+            D_80081454 = newObj;
+            obj->varObj[4] = newObj;
+            obj->currentTask->func = func_800173DC;
+        } else {
+            obj->currentTask->func = func_800177C0;
+        }
+
+        D_80080234 = FALSE;
+        obj->currentTask->counter = 45;
+    }
+}
 
 void func_80017A90(Object *obj) {
     D_8005BFC0 |= 4;
@@ -335,5 +566,5 @@ void func_80017CA8(void) {
     D_8013C23C->currentTask->counter = 0;
     D_8013C23C->currentTask->flags = 1;
     D_8013C23C->currentTask->counter = func_800160C8(D_800B6328[PLAYER_1].unk_08 + D_800B6328[PLAYER_2].unk_08);
-    D_80081440 = D_80081448 = D_8008144C = D_80081450 = D_80081454 = D_80081444 = 0;
+    D_80081440 = D_80081448 = D_8008144C = D_80081450 = D_80081454 = D_80081444 = NULL;
 }

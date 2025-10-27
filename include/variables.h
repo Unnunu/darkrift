@@ -139,5 +139,6 @@ extern s32 D_8013C444;
 extern s16 D_8004C1E4;
 extern UnkSam *D_80081274;
 extern UnkSam *D_80081278;
+extern u16 D_8013C24E;
 
 #endif

@@ -239,6 +239,8 @@ segments:
       - [0x49FF0, data]
       - [0x4A000, .data, game_modes]
       - [0x4A520, data]
+      - [0x4A6F0, .data, 167C0]
+      - [0x4A720, data]
       - [0x4A8F0, .data, gmd_pcl]
       - [0x4A910, data]
       - [0x4A9F0, .data, plyrsel]

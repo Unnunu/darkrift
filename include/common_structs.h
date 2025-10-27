@@ -41,6 +41,9 @@ typedef struct Quad {
     Vtx v[4];
 } Quad;
 
+struct Object;
+typedef void (*ObjFunc)(struct Object *);
+
 typedef struct RenderContext {
     /* 0x00 */ s16 perspNorm;
     /* 0x02 */ char unk_02[0xE];
@@ -433,7 +436,7 @@ typedef struct Object {
     /* 0x0CC */ char unk_0CC[4];
     /* 0x0D0 */ Transform transform;
     /* 0x1E8 */ void (*unk_1E8)(struct Object *, struct Object *);
-    /* 0x1EC */ void (*fn_render)(struct Object *);
+    /* 0x1EC */ ObjFunc fn_render;
     /* 0x1F0 */ struct ObjectTask *taskList;
     /* 0x1F4 */ struct ObjectTask *currentTask;
     /* 0x1F8 */ s16 unk_1F8;
@@ -449,7 +452,7 @@ typedef struct Object {
 
 typedef struct GlobalObjBSub {
     /* 0x00 */ u32 flags;
-    /* 0x04 */ void (*func)(Object *);
+    /* 0x04 */ ObjFunc func;
     /* 0x08 */ s16 counter;
 } GlobalObjBSub; // size = 0xC
 
@@ -467,7 +470,7 @@ typedef struct PlayerSub8 {
 typedef struct ObjectTaskSub {
     /* 0x00 */ union {
         s32 unk_00_i;
-        void (*unk_00_f)(Object *);
+        ObjFunc unk_00_f;
     };
     /* 0x04 */ union {
         s32 unk_04;
@@ -475,13 +478,13 @@ typedef struct ObjectTaskSub {
     };
     /* 0x08 */ s32 unk_08;
     /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ void (*unk_10)(Object *);
+    /* 0x10 */ ObjFunc unk_10;
     /* 0x14 */ char unk_14[4];
 } ObjectTaskSub; // size >= 0xC
 
 typedef struct ObjectTask {
     /* 0x00 */ u32 flags;
-    /* 0x04 */ void (*func)(Object *);
+    /* 0x04 */ ObjFunc func;
     /* 0x08 */ ObjectTaskSub unk_08;
     /* 0x20 */ u16 stackPos;
     /* 0x22 */ char unk_22[2];
@@ -496,7 +499,7 @@ typedef struct ObjectTask {
 
 typedef struct UIElement {
     /* 0x00 */ s16 spriteID;
-    /* 0x04 */ void (*func)(Object *);
+    /* 0x04 */ ObjFunc func;
     /* 0x08 */ s32 flags;
     /* 0x0C */ s16 unk_0C;
     /* 0x10 */ char *map_name;
@@ -555,8 +558,8 @@ typedef struct PlayerSub3 {
 
 typedef struct PlayerSub5 {
     /* 0x00 */ s32 unk_00;
-    /* 0x04 */ void (*unk_04)(Object *);
-    /* 0x08 */ void (*unk_08)(Object *);
+    /* 0x04 */ ObjFunc unk_04;
+    /* 0x08 */ ObjFunc unk_08;
     /* 0x0C */ u8 (*unk_0C)(Object *);
     /* 0x10 */ s32 unk_10;
 } PlayerSub5;
@@ -722,7 +725,7 @@ typedef struct Player {
     /* 0x00B0 */ s32 unk_B0;
     /* 0x00B4 */ s16 *unk_B4;
     /* 0x00B8 */ s16 *unk_B8;
-    /* 0x00BC */ void (*unk_BC)(Object *);
+    /* 0x00BC */ ObjFunc unk_BC;
     /* 0x00C0 */ s16 unk_C0;
     /* 0x00C2 */ s16 unk_C2;
     /* 0x00C4 */ s32 unk_C4;
@@ -789,7 +792,7 @@ typedef struct K2DefSub {
 
 typedef struct K2Def {
     /* 0x00 */ char *unk_00;
-    /* 0x04 */ void (*unk_04)(Object *);
+    /* 0x04 */ ObjFunc unk_04;
     /* 0x08 */ s16 unk_08;
     /* 0x0A */ s16 unk_0A;
     /* 0x0C */ K2DefSub *unk_0C;
@@ -797,7 +800,7 @@ typedef struct K2Def {
 
 typedef struct UnkK2Def {
     /* 0x00 */ char *unk_00;
-    /* 0x04 */ void (*unk_04)(Object *);
+    /* 0x04 */ ObjFunc unk_04;
     /* 0x08 */ s16 unk_08;
     /* 0x0A */ s16 unk_0A;
     /* 0x0C */ s32 unk_0C;
@@ -809,7 +812,7 @@ typedef struct Unk80015E74 {
     /* 0x00 */ char *unk_00;
     /* 0x04 */ u16 unk_04;
     /* 0x06 */ u16 unk_06;
-    /* 0x08 */ void (*unk_08)(Object *);
+    /* 0x08 */ ObjFunc unk_08;
     /* 0x0C */ s32 unk_0C;
 } Unk80015E74;
 
