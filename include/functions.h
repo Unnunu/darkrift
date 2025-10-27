@@ -48,7 +48,7 @@ void heap_set_move_callback(s32 arg0, void (*arg1)(void *arg0, s32 arg1, s32 arg
 void func_800139A0(Matrix4f *, Vec4i *);
 void func_80014718(Matrix4f *arg0, Matrix4f *arg1, Matrix4f *arg2);
 void func_80037E28(Object *);
-void func_800194E0(s32 arg0);
+// void func_800194E0(s32 arg0);
 s32 abs(s32);
 void func_80014CB4(Texture *tex);
 s32 str_compare(char *arg0, char *arg1);
@@ -129,5 +129,12 @@ void func_800247CC(Object *);
 void func_80023BE4(Vec4s *arg0, Object *arg1, ColorRGBA *arg2);
 void func_80028FCC(void);
 // void func_80029044(void);
+u8 func_8001E188(u8 arg0);
+void func_80006C14(void);
+void func_80005B70(s16 playerId);
+void func_80006AE0(void);
+void func_80021D30(void);
+void func_8002DEFC(Object *obj);
+void func_80029130(void);
 
 #endif

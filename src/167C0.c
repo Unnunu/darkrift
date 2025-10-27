@@ -12,9 +12,12 @@ extern Object *D_8013C23C;
 extern Object *D_80081440;
 extern Object *D_80081444;
 extern Object *D_80081448;
-extern s32 D_8008144C;
-extern s32 D_80081450;
+extern Object *D_8008144C;
+extern Object *D_80081450;
 extern Object *D_80081454;
+extern s32 D_80081668;
+
+extern s16 D_800B6368[11][2];
 
 void func_80016A00(Object *);
 void func_800177C0(Object *);
@@ -221,28 +224,291 @@ void func_80016264(void) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_800162A4.s")
+void func_800162A4(Object *obj) {
+    Object *v0;
+    Object *v1;
+    u32 i;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_8001675C.s")
-u32 func_8001675C(Player *arg0, s32 arg1, s32 arg2);
+    gPlayers[PLAYER_1].unk_7E = 0;
+    gPlayers[PLAYER_2].unk_7E = 0;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_800167D4.s")
+    func_80005B70(PLAYER_1);
+    func_80005B70(PLAYER_2);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80016880.s")
-void func_80016880(Object *obj);
+    obj->flags |= 0x10;
+    D_8013C224 = gFrameCounter % 5;
+    D_8013C226 = 0;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_800168F0.s")
+    func_80016264();
+    func_80006AE0();
+    func_80021D30();
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_800169C4.s")
+    v0 = obj->varObj[4];
+    if (v0 != NULL) {
+        v0->flags |= 0x10;
+    }
+    if (D_80081440 != NULL) {
+        D_80081440->flags |= 0x10;
+    }
+    if (D_80081448 != NULL) {
+        D_80081448->flags |= 0x10;
+    }
+    if (D_8008144C != NULL) {
+        D_8008144C->flags |= 0x10;
+    }
+    if (D_80081450 != NULL) {
+        D_80081450->flags |= 0x10;
+    }
+    if (D_80081444 != NULL) {
+        D_80081444->flags |= 0x10;
+    }
+    if (D_80081454 != NULL) {
+        D_80081454->flags |= 0x10;
+    }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80016A00.s")
+    gCamera->currentTask->func = func_8002DEFC;
+    gCamera->currentTask->counter = 0;
+    gCameraTarget.x = gCameraTarget.z = 0;
+    gCameraTarget.y = -400;
+    D_8013C834 = FALSE;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80016B6C.s")
+    if (D_8004C1D4 != 0) {
+        D_8013C240->spriteId = 3 + D_8004C1D4 * 3;
+        v1 = D_8013C240->varObj[0];
+        v1->spriteId = 0;
+        D_8013C240->currentTask->func = task_default_func;
+    }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80016C34.s")
+    D_8013C234->unk_10 = D_8013C234->unk_10 - D_8013C234->unk_04 + D_8013C234->unk_08 - 88;
+    D_8013C234->unk_04 = D_8013C234->unk_08 - 88;
+    D_8013C238->unk_08 = D_8013C238->unk_04 + 80;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/167C0/func_80016D90.s")
-ObjFunc func_80016D90(s32 arg0, u8 arg1);
+    D_80051F6C = D_80051F70 = D_8013C2A8 = D_8013C2AA = 0;
+    D_8013C232 = D_8013C230 = 80;
+
+    D_80052D64[0] = D_80052D64[1] = D_80052D68[0] = D_80052D68[1] = D_80052D6C[0] = D_80052D6C[1] = D_8013C3C0[0] =
+        D_8013C3C0[1] = D_80052D70[0] = D_80052D70[1] = D_80052D74[0] = D_80052D74[1] = 0;
+    D_80052D78[0] = D_80052D78[1] = 2;
+
+    if (!D_8013C24E && D_800B6328[D_8013C24C].unk_08 != 0) {
+        D_8013C258[D_8013C24C][D_800B6328[D_8013C24C].unk_08 - 1]->spriteId = 13;
+    } else if (D_8013C24E && D_800B6328[PLAYER_1].unk_08 != 0 && D_800B6328[PLAYER_2].unk_08 != 0) {
+        D_8013C258[PLAYER_1][D_800B6328[PLAYER_1].unk_08 - 1]->spriteId = 13;
+        D_8013C258[PLAYER_2][D_800B6328[PLAYER_2].unk_08 - 1]->spriteId = 13;
+    } else {
+        for (i = 0; i < D_8004C1D0; i++) {
+            D_8013C258[PLAYER_1][i]->spriteId = D_8013C258[PLAYER_2][i]->spriteId = 12;
+        }
+    }
+
+    gPlayers[PLAYER_1].unk_00->spriteId = 2;
+    gPlayers[PLAYER_2].unk_00->spriteId = 2;
+    func_80037500(gPlayers[PLAYER_1].unk_00);
+    func_80037500(gPlayers[PLAYER_2].unk_00);
+
+    func_80012AF4(&gPlayers[PLAYER_1].unk_750.local_matrix);
+    func_80012AF4(&gPlayers[PLAYER_1].unk_868.local_matrix);
+    func_80012AF4(&gPlayers[PLAYER_2].unk_750.local_matrix);
+    func_80012AF4(&gPlayers[PLAYER_2].unk_868.local_matrix);
+
+    func_8003635C(gPlayers[PLAYER_1].unk_00);
+    func_8003635C(gPlayers[PLAYER_2].unk_00);
+    gPlayers[PLAYER_1].unk_00->unk_086 = gPlayers[PLAYER_1].unk_00->spriteId;
+    gPlayers[PLAYER_2].unk_00->unk_086 = gPlayers[PLAYER_2].unk_00->spriteId;
+    gPlayers[PLAYER_1].unk_0C->flags &= ~4;
+    gPlayers[PLAYER_2].unk_0C->flags &= ~4;
+
+    D_8008020C = 0x800;
+    func_80029130();
+}
+
+u32 func_8001675C(Player *player, s32 arg1, u32 arg2) {
+    s32 temp;
+    u32 res;
+
+    func_8000636C(player, arg1, TRUE);
+
+    temp = player->unk_0C->unk_08.unk_04;
+    if (arg2 < player->unk_20[temp].unk_02 + 0x78) {
+        res = player->unk_20[temp].unk_02 + 0x78;
+    } else {
+        res = arg2;
+    }
+    return res;
+}
+
+u8 func_800167D4(void) {
+
+    if ((D_80080230 == 10 || D_80080230 == 11) && D_800B6328[D_8013C24C].unk_02) {
+        gPlayerInput[1 - D_8013C24C].unk_0A = TRUE;
+        return (gPlayerInput[1 - D_8013C24C].buttons & INP_START) != 0;
+    } else {
+        return (gPlayerInput[D_8013C24C].buttons & INP_START) != 0;
+    }
+}
+
+void func_80016880(Object *obj) {
+    gPlayers[PLAYER_1].unk_94 = gPlayers[PLAYER_2].unk_94 = 0;
+
+    if (--obj->vars[1] < 0 && func_800167D4()) {
+        func_800162A4(obj);
+    }
+
+    if (--obj->vars[0] < 0) {
+        func_800162A4(obj);
+    }
+}
+
+void func_800168F0(Object *obj) {
+    gPlayers[PLAYER_1].unk_94 = gPlayers[PLAYER_2].unk_94 = 0;
+
+    if (--obj->vars[1] < 0 && func_800167D4()) {
+        D_8005BFC0 |= 1;
+        obj->currentTask->flags |= 0x80;
+        D_8005BFC0 |= 0x20;
+        obj->flags |= 0x10;
+    }
+
+    if (--obj->vars[0] < 0) {
+        D_8005BFC0 |= 1;
+        obj->currentTask->flags |= 0x80;
+        D_8005BFC0 |= 0x20;
+        obj->flags |= 0x10;
+    }
+}
+
+void func_800169C4(Object *obj) {
+    gGameMode = D_8004C1E4 > 0 ? GAME_MODE_34 : GAME_MODE_37; // not real mode? @bug?
+    obj->currentTask->func = func_800168F0;
+}
+
+void func_80016A00(Object *obj) {
+    Object *a2;
+    s16 i;
+    s16 a3;
+
+    if (D_800B6328[PLAYER_1].unk_02 || D_800B6328[PLAYER_2].unk_02) {
+        a2 = func_80015FB4(7);
+        gGameMode = GAME_MODE_0;
+        D_800B6328[PLAYER_1].unk_0A = D_800B6328[PLAYER_2].unk_0A = 0;
+    } else {
+        a2 = func_80015FB4(7);
+        gGameMode = GAME_MODE_PLAYER_SELECTION;
+
+        if (D_80080230 == 50) {
+            a3 = D_8004C1D0 == D_800B6328[PLAYER_2].unk_08;
+            func_800194E0(10 + a3);
+
+            D_800B6328[1 - a3].unk_02 = TRUE;
+            D_80081668 = 1 - a3;
+
+            for (i = 0; i < NUM_CHARACTERS; i++) {
+                D_800B6350[a3][i] = FALSE;
+            }
+        }
+    }
+
+    obj->currentTask->func = func_800168F0;
+
+    if (a2 != NULL) {
+        a2->vars[1] = 10;
+        a2->vars[0] = a2->modInst->numAnimFrames;
+    } else {
+        obj->vars[1] = 0;
+        obj->vars[0] = 0;
+    }
+}
+
+void func_80016B6C(Object *obj) {
+    Object *v0;
+
+    if (gPlayerInput[1 - D_8013C24C].buttons & INP_START) {
+        func_80006C14();
+
+        if (D_80080230 == 10) {
+            D_800B6350[PLAYER_2][gPlayers[PLAYER_2].characterId] = FALSE;
+        } else if (D_80080230 == 11) {
+            D_800B6350[PLAYER_1][gPlayers[PLAYER_1].characterId] = FALSE;
+        }
+
+        v0 = obj->varObj[3];
+        if (v0 != NULL) {
+            v0->flags |= 4;
+            v0->currentTask->func = task_default_func;
+        }
+
+        func_800162A4(obj);
+    }
+}
+
+void func_80016C34(Object *obj) {
+    Object *a1;
+
+    D_8005BFC0 |= 4;
+
+    if (--obj->vars[2] == 0 || (--obj->vars[1] < 0 && func_800167D4())) {
+        if (D_800B6328[PLAYER_1].unk_02 || D_800B6328[PLAYER_2].unk_02) {
+            obj->varObj[5] = D_8008144C = func_80015FB4(2);
+        } else {
+            obj->varObj[5] = D_8008144C = func_80015FB4(8);
+        }
+        obj->varObj[3] = D_80081450 = func_80015FB4(3);
+
+        gPlayerInput[1 - D_8013C24C].unk_0A = TRUE;
+        obj->currentTask->func = func_80016B6C;
+        a1 = obj->varObj[4];
+        if (a1 != NULL) {
+            a1->flags |= 0x10;
+        }
+        gPlayerInput[D_8013C24C].unk_08 = FALSE;
+        obj->varObj[4] = obj->varObj[5];
+    }
+}
+
+ObjFunc func_80016D90(u32 playerId, u8 arg1) {
+    ObjFunc a3;
+
+    a3 = func_80016880;
+
+    D_800B6328[playerId].unk_08++;
+    if (D_8004C1D0 == D_800B6328[playerId].unk_08) {
+        if (!arg1) {
+            D_800B6328[D_8013C24C].unk_0A++;
+            D_800B6328[1 - D_8013C24C].unk_0A = 0;
+        }
+
+        D_800B6368[D_800B6328[playerId].characterId][0]++;
+        D_800B6368[D_800B6328[1 - playerId].characterId][1]++;
+        D_800801F1 = TRUE;
+
+        switch (D_80080230) {
+            case 10:
+            case 11:
+                if (!D_800B6328[playerId].unk_02) {
+                    D_800B6350[1 - playerId][gPlayers[1 - playerId].characterId] = TRUE;
+
+                    if (func_8001E188(1 - playerId) == -1) {
+                        a3 = func_800169C4;
+                    } else {
+                        gGameMode = GAME_MODE_PLAYER_SELECTION;
+                        a3 = func_800168F0;
+                    }
+                } else {
+                    a3 = func_80016C34;
+                }
+                break;
+            case 20:
+            case 50:
+                a3 = func_80016C34;
+                break;
+            case 30:
+                gGameMode = GAME_MODE_0;
+                break;
+        }
+    }
+
+    return a3;
+}
 
 void func_80016F6C(Object *obj) {
     s32 sp2C;

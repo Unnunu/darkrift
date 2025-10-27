@@ -38,7 +38,8 @@ enum GameModes {
     GAME_MODE_LOGO,
     GAME_MODE_34,
     GAME_MODE_35,
-    GAME_MODE_36
+    GAME_MODE_36,
+    GAME_MODE_37
 };
 
 // TODO: make enum

@@ -140,5 +140,14 @@ extern s16 D_8004C1E4;
 extern UnkSam *D_80081274;
 extern UnkSam *D_80081278;
 extern u16 D_8013C24E;
+extern s16 D_8013C224;
+extern s16 D_8013C226;
+extern Object *D_8013C240;
+extern AssetSP2Sub3 *D_8013C234;
+extern AssetSP2Sub3 *D_8013C238;
+extern s16 D_8013C230;
+extern s16 D_8013C232;
+extern s16 D_8013C3C0[2];
+extern Object *D_8013C258[2][10];
 
 #endif
