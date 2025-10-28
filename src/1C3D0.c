@@ -1,6 +1,10 @@
 #include "common.h"
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001B7D0.s")
+u8 func_8001B7D0(Player *player, s16 arg1) {
+    func_8001BB2C(player);
+    player->unk_180 |= 0x8000;
+    return func_8000636C(player, arg1, 1);
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001B810.s")
 
@@ -23,6 +27,7 @@
 #pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001C2B4.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001C404.s")
+s32 func_8001C404(Object *, s16 **);
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001C48C.s")
 
@@ -70,6 +75,22 @@
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001DC68.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001DDA4.s")
+s32 func_8001DDA4(Object *obj) {
+    s16 *sp1C;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001DDEC.s")
+    if (func_8001C404(obj, &sp1C) != 0) {
+        if (!(*sp1C & 2)) {
+            return 0;
+        } else {
+            return -1;
+        }
+    } else {
+        return 1;
+    }
+}
+
+s32 func_8001DDEC(Object *obj) {
+    obj->vars[11] = 0;
+    obj->vars[9] -= 4;
+    return 1;
+}

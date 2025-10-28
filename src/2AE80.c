@@ -17,8 +17,8 @@ void func_8002A288(Object *obj) {
     Object *sp38;
     ColorRGBA sp30[] = { { 255, 225, 175, 0 }, { 255, 200, 0, 0 } };
 
-    obj->spriteId++;
-    if (obj->spriteId >= obj->modInst->numAnimFrames) {
+    obj->frameIndex++;
+    if (obj->frameIndex >= obj->modInst->numAnimFrames) {
         obj->currentTask->flags |= 0x80;
         obj->flags |= 0x10;
         D_8008012C &= ~0x10;
@@ -30,13 +30,13 @@ void func_8002A288(Object *obj) {
 
     dx = ABS(playerPos->x - oppPos->x);
     dz = ABS(playerPos->z - oppPos->z);
-    if (DISTANCE(dx, dz) < obj->unk_1FC) {
+    if (FAST_HYPOT(dx, dz) < obj->unk_1FC) {
         obj->vars[2] = 0;
 
         sp44.x = oppPos->x;
         sp44.z = oppPos->z;
         sp44.y = 0;
-        sp38 = func_8002BFF0(&sp44, 0x1000, func_80021D40, player->unk_DE4);
+        sp38 = create_model_instance(&sp44, 0x1000, func_80021D40, player->unk_DE4);
         if (sp38 != NULL) {
             func_8003453C(sp38, &sp30[player->playerId]);
             sp38->unk_088.a = 160;
@@ -61,10 +61,10 @@ void func_8002A4E0(Object *obj) {
     ColorRGBA sp28[] = { { 255, 225, 175, 0 }, { 255, 200, 0, 0 } };
 
     if (obj->vars[1] == 0) {
-        sp38.x = obj->modInst->transforms[0].wolrd_matrix.w.x;
-        sp38.y = obj->modInst->transforms[0].wolrd_matrix.w.y;
-        sp38.z = obj->modInst->transforms[0].wolrd_matrix.w.z;
-        v0 = func_8002BFF0(&sp38, 0x1000, func_8002A288, player->unk_DDC);
+        sp38.x = obj->modInst->transforms[0].world_matrix.w.x;
+        sp38.y = obj->modInst->transforms[0].world_matrix.w.y;
+        sp38.z = obj->modInst->transforms[0].world_matrix.w.z;
+        v0 = create_model_instance(&sp38, 0x1000, func_8002A288, player->unk_DDC);
         if (v0 != NULL) {
             v0->unk_088.a = 160;
             v0->vars[1] = 160 / v0->modInst->numAnimFrames;
@@ -79,10 +79,10 @@ void func_8002A4E0(Object *obj) {
             }
         }
     } else if (obj->vars[1] == 8) {
-        sp38.x = obj->modInst->transforms[1].wolrd_matrix.w.x;
-        sp38.y = obj->modInst->transforms[1].wolrd_matrix.w.y;
-        sp38.z = obj->modInst->transforms[1].wolrd_matrix.w.z;
-        v0 = func_8002BFF0(&sp38, 0x1000, func_8002A288, player->unk_DDC);
+        sp38.x = obj->modInst->transforms[1].world_matrix.w.x;
+        sp38.y = obj->modInst->transforms[1].world_matrix.w.y;
+        sp38.z = obj->modInst->transforms[1].world_matrix.w.z;
+        v0 = create_model_instance(&sp38, 0x1000, func_8002A288, player->unk_DDC);
         if (v0 != NULL) {
             v0->unk_088.a = 160;
             v0->vars[1] = 160 / v0->modInst->numAnimFrames;
@@ -93,10 +93,10 @@ void func_8002A4E0(Object *obj) {
             sound_play(player->playerId, 10);
         }
     } else if (obj->vars[1] == 16) {
-        sp38.x = obj->modInst->transforms[2].wolrd_matrix.w.x;
-        sp38.y = obj->modInst->transforms[2].wolrd_matrix.w.y;
-        sp38.z = obj->modInst->transforms[2].wolrd_matrix.w.z;
-        v0 = func_8002BFF0(&sp38, 0x1000, func_8002A288, player->unk_DDC);
+        sp38.x = obj->modInst->transforms[2].world_matrix.w.x;
+        sp38.y = obj->modInst->transforms[2].world_matrix.w.y;
+        sp38.z = obj->modInst->transforms[2].world_matrix.w.z;
+        v0 = create_model_instance(&sp38, 0x1000, func_8002A288, player->unk_DDC);
         if (v0 != NULL) {
             v0->unk_088.a = 160;
             v0->vars[1] = 160 / v0->modInst->numAnimFrames;

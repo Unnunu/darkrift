@@ -24,7 +24,7 @@ Vec3s D_8013C668;
 Matrix4f D_8013C670;
 Matrix4f D_8013C6B0;
 Transform D_8013C6F0;
-s32 D_8013C808[4];
+NodeAttachment D_8013C808;
 Vec4i D_8013C818;
 s32 D_8013C828;
 s32 D_8013C82C;
@@ -32,14 +32,14 @@ s32 D_8013C830;
 u8 D_8013C834;
 s32 D_8013C838;
 
-void func_80038E00(Object *obj, AnimHeader *arg1) {
-    ModelInstance *model = obj->modInst;
+void camera_set_animation(Object *obj, AnimHeader *animation) {
+    ModelInstance *modInst = obj->modInst;
 
-    model->currentAnimId = 0;
-    obj->unk_086 = model->unk_A0E = -1;
-    obj->spriteId = 0;
+    modInst->currentAnimId = 0;
+    obj->previousFrameIndex = modInst->previousAnimId = -1;
+    obj->frameIndex = 0;
 
-    model->animations[0] = arg1;
+    modInst->animations[0] = animation;
 
     gCameraTarget.x = gCameraTarget.z = 0;
     gCameraTarget.y = -480;
@@ -50,9 +50,9 @@ void func_80038E00(Object *obj, AnimHeader *arg1) {
 
     obj->rotation.y = 0x400;
 
-    model->nodePosition[1].x = 0;
-    model->nodePosition[1].y = 0;
-    model->nodePosition[1].z = 0;
+    modInst->nodePosition[1].x = 0;
+    modInst->nodePosition[1].y = 0;
+    modInst->nodePosition[1].z = 0;
 
     D_8013C818.x = D_8013C818.y = D_8013C818.z = 0;
 
@@ -63,11 +63,11 @@ void func_80038E00(Object *obj, AnimHeader *arg1) {
 void func_80038E8C(Object *obj, Vec4i *arg1, s32 arg2, AnimHeader *arg3) {
     ModelInstance *model = obj->modInst;
 
-    model->unk_A0E = -1;
+    model->previousAnimId = -1;
     model->currentAnimId = 0;
-    obj->unk_086 = model->unk_A0E;
+    obj->previousFrameIndex = model->previousAnimId;
 
-    obj->spriteId = 0;
+    obj->frameIndex = 0;
 
     obj->modInst->numAnimFrames = 0x7FFF;
 
@@ -95,7 +95,7 @@ void func_80038F34(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 v1;
     f32 fv0;
 
-    v1 = DISTANCE(arg2, arg3);
+    v1 = FAST_HYPOT(arg2, arg3);
     D_8013C59C = D_8013C5A0;
 
     if (v1 != 0) {
@@ -133,16 +133,16 @@ void camera_update(Object *obj) {
 
     task_execute(obj);
 
-    if (model->animations[0]) {
-        if (model->currentAnimId != model->unk_A0E) {
-            func_80037500(obj);
-            model->unk_A0E = model->currentAnimId;
+    if (model->animations[0] != NULL) {
+        if (model->currentAnimId != model->previousAnimId) {
+            model_change_animation(obj);
+            model->previousAnimId = model->currentAnimId;
         }
 
-        if (obj->spriteId != obj->unk_086) {
-            func_800371C0(obj);
-            func_8003635C(obj);
-            obj->unk_086 = obj->spriteId;
+        if (obj->frameIndex != obj->previousFrameIndex) {
+            model_process_animation(obj);
+            model_update_animated_params(obj);
+            obj->previousFrameIndex = obj->frameIndex;
 
             unused = model->nodePosition[0].x; // required to match
             if (unused != 0 || model->nodePosition[0].y != 0 || model->nodePosition[0].z != 0) {
@@ -156,7 +156,7 @@ void camera_update(Object *obj) {
             }
         }
 
-        obj->pos.y = model->unk_9D4.y;
+        obj->pos.y = model->currentRootPos.y;
     }
 
     guPerspectiveF(&gCameraPerspMatrix, &D_80080100->perspNorm, gCameraFieldOfView, 4.0f / 3.0f, gCameraNearClip,
@@ -179,7 +179,7 @@ void camera_update(Object *obj) {
 
     absDeltaX = ABS(deltaX);
     absDeltaZ = ABS(deltaZ);
-    sp3C = DISTANCE(absDeltaX, absDeltaZ);
+    sp3C = FAST_HYPOT(absDeltaX, absDeltaZ);
     D_8013C594 = (f32) deltaY / (f32) sp3C;
     func_80038F34(deltaX, deltaZ, absDeltaX, absDeltaZ);
 
@@ -206,16 +206,15 @@ Object *camera_create(void) {
 
     obj = obj_allocate(0x1200);
 
-    obj->unk_000.x = obj->unk_000.y = obj->unk_000.z = 0;
-    obj->unk_010.x = obj->unk_010.y = obj->unk_010.z = 0;
+    obj->acceleration.x = obj->acceleration.y = obj->acceleration.z = 0;
+    obj->velocity.x = obj->velocity.y = obj->velocity.z = 0;
     obj->rotation.x = obj->rotation.y = obj->rotation.z = 0;
 
     obj->flags = 0x20;
-    obj->unk_086 = -1;
+    obj->previousFrameIndex = -1;
 
     obj->taskList = (ObjectTask *) GET_ITEM(gTaskPool);
     obj->currentTask = obj->taskList;
-
     obj->currentTask->counter = 0;
     obj->currentTask->flags = 1;
     obj->currentTask->func = task_default_func;
@@ -244,20 +243,20 @@ Object *camera_create(void) {
     obj->modInst = mem_alloc(sizeof(ModelInstance), "camera.c", 247);
     obj->modInst->numNodes = 1;
     obj->modInst->transforms = &D_8013C6F0;
-    obj->modInst->unk_AA8 = D_8013C808;
+    obj->modInst->nodeAttachments = &D_8013C808;
 
-    func_80012A20(NULL, &obj->modInst->unk_010, -1, -2);
-    func_80012A20(&obj->modInst->unk_010, obj->modInst->transforms, 0, -1);
+    func_80012A20(NULL, &obj->modInst->rootTransform, -1, -2);
+    func_80012A20(&obj->modInst->rootTransform, obj->modInst->transforms, 0, -1);
 
-    obj->modInst->unk_9E4.x = obj->modInst->unk_9E4.y = obj->modInst->unk_9E4.z = 0;
+    obj->modInst->baseRootPos.x = obj->modInst->baseRootPos.y = obj->modInst->baseRootPos.z = 0;
     obj->modInst->animations = D_80053030;
     D_80053030[0] = NULL;
-    obj->modInst->unk_A20 = obj->modInst->unk_A1C = obj->modInst->unk_00C = 0;
+    obj->modInst->unk_A20 = obj->modInst->unk_A1C = obj->modInst->anotherVel.z = 0;
 
     obj->flags |= 0x20400;
     obj->flags &= ~0x8000;
 
-    obj->modInst->currentAnimId = obj->modInst->unk_A0E = -3;
+    obj->modInst->currentAnimId = obj->modInst->previousAnimId = -3;
 
     camera_default_view();
 

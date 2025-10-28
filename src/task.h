@@ -2,7 +2,7 @@
 #define _TASK_H
 #include "common.h"
 
-extern u8 gTasksDisabled;
+extern u8 gIsPaused;
 extern ItemPool gTaskPool;
 
 void task_clear(ObjectTask *list);

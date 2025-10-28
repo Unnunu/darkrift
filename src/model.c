@@ -7,7 +7,7 @@
 extern Vec4i D_8004934C;
 
 // .data
-K2Def D_80053010 = { "xxxxxxxxx", NULL, 0, 0xF9C, NULL };
+K2Def gShadowProps = { "xxxxxxxxx", NULL, 0, 0xF9C, NULL };
 
 // .bss
 Gfx **D_8013C4E0;
@@ -99,7 +99,7 @@ void func_800343EC(void) {
 
 void func_800343F8(Object *obj, u8 arg1) {
     ModelInstance *model = obj->modInst;
-    UnkSam *sam = model->unk_A28;
+    Model *sam = model->model;
     s32 numNodes = model->numNodes;
     u32 i, j;
     ModelNodeAsset *s1;
@@ -108,9 +108,9 @@ void func_800343F8(Object *obj, u8 arg1) {
 
     if (D_8013C540 == 0) {
         if (arg1) {
-            func_800028E0(func_800340E8, 0);
+            set_post_render_hook(func_800340E8, NULL);
         } else {
-            func_800028E0(func_8003424C, 0);
+            set_post_render_hook(func_8003424C, NULL);
         }
     }
 
@@ -186,17 +186,17 @@ void func_80034648(BatchInfo *arg0, s32 transparent) {
     arg0->header.unk_00 |= 1;
 }
 
-void func_80034708(BatchInfo *arg0, s32 arg1, s32 transparent) {
+void func_80034708(BatchInfo *arg0, s32 noAntiAliasing, s32 transparent) {
     Gfx *gfx = &arg0->header.otherMode;
 
     mem_fill(gfx, 0, sizeof(Gfx));
-    if (arg1 && !transparent) {
+    if (noAntiAliasing && !transparent) {
         gtStateSetOthermode(gfx, GT_RENDERMODE, G_RM_OPA_SURF | G_RM_OPA_SURF2);
-    } else if (!arg1 && !transparent) {
+    } else if (!noAntiAliasing && !transparent) {
         gtStateSetOthermode(gfx, GT_RENDERMODE, G_RM_AA_OPA_SURF | G_RM_AA_OPA_SURF2);
-    } else if (arg1 && transparent) {
+    } else if (noAntiAliasing && transparent) {
         gtStateSetOthermode(gfx, GT_RENDERMODE, G_RM_XLU_SURF | G_RM_XLU_SURF2);
-    } else if (!arg1 && transparent) {
+    } else if (!noAntiAliasing && transparent) {
         gtStateSetOthermode(gfx, GT_RENDERMODE, G_RM_AA_XLU_SURF | G_RM_AA_XLU_SURF2);
     }
 
@@ -211,46 +211,46 @@ void func_80034708(BatchInfo *arg0, s32 arg1, s32 transparent) {
 }
 
 s32 func_80034860(Object *obj) {
-    ModelInstance *model;
+    ModelInstance *modInst;
     u32 j;
     BatchInfo *array;
-    UnkSam *s4;
+    Model *model;
     u32 i;
     s32 count;
-    BatchInfo *s7;
-    BatchInfo *fp;
+    BatchInfo *batches1;
+    BatchInfo *batches2;
     s32 flags;
-    s32 s5;
+    s32 noAA;
     s32 transparent;
     u8 *ptr;
 
     flags = obj->flags;
-    model = obj->modInst;
-    s4 = model->unk_A28;
-    count = model->numNodes;
-    s7 = model->unk_AB0;
-    fp = model->unk_AB0 + 30;
-    s5 = obj->flags & 0x40000000;
+    modInst = obj->modInst;
+    model = modInst->model;
+    count = modInst->numNodes;
+    batches1 = modInst->renderBatches;
+    batches2 = modInst->renderBatches + 30;
+    noAA = obj->flags & 0x40000000;
     transparent = flags & 0x2000;
-    ptr = model->unk_1F6E;
+    ptr = modInst->unk_1F6E;
 
-    for (i = 0; i < count; s7++, fp++, i++) {
+    for (i = 0; i < count; batches1++, batches2++, i++) {
         s32 s3 = ptr[i];
 
         if (s3 && !D_800801E2) {
-            func_80034648(s7, transparent);
-            func_80034648(fp, transparent);
+            func_80034648(batches1, transparent);
+            func_80034648(batches2, transparent);
         } else {
-            func_80034708(s7, s5, transparent);
-            func_80034708(fp, s5, transparent);
+            func_80034708(batches1, noAA, transparent);
+            func_80034708(batches2, noAA, transparent);
         }
 
-        array = s4->batchInfos[i];
-        for (j = 1; j < s4->batchCounts[i]; j++) {
+        array = model->batchInfos[i];
+        for (j = 1; j < model->batchCounts[i]; j++) {
             if (s3 && !D_800801E2) {
                 func_80034648(&array[j], transparent);
             } else {
-                func_80034708(&array[j], s5, transparent);
+                func_80034708(&array[j], noAA, transparent);
             }
         }
     }
@@ -294,7 +294,7 @@ void func_80034AB8(Object *obj) {
         if (!(obj->flags & 0x40000000)) {
             memcpy(ptr1, ptr2, a2);
             func_80034A58(obj);
-            func_800028E0(func_80034860, obj);
+            set_post_render_hook(func_80034860, obj);
             obj->flags |= 0x40000000;
             D_8008012C |= 8;
         }
@@ -306,7 +306,7 @@ void func_80034AB8(Object *obj) {
             D_8008012C &= ~8;
         } else {
             memcpy(ptr2, ptr1, a2);
-            func_800028E0(func_80034860, obj);
+            set_post_render_hook(func_80034860, obj);
             obj->flags &= ~0x40000000;
         }
         return;
@@ -315,7 +315,7 @@ void func_80034AB8(Object *obj) {
     for (i = 0; i < a2; i++) {
         if (ptr1[i] != ptr2[i]) {
             memcpy(ptr1, ptr2, a2);
-            func_800028E0(func_80034860, obj);
+            set_post_render_hook(func_80034860, obj);
             break;
         }
     }
@@ -340,17 +340,17 @@ void func_80034C18(Object *obj, u8 *arg1) {
 }
 
 s32 func_80034D54(Object *obj) {
-    ModelInstance *model = obj->modInst;
+    ModelInstance *modInst = obj->modInst;
     ColorRGBA *color;
     u8 v1 = obj->unk_088.a;
     u32 i;
-    u32 count = model->numNodes;
-    UnkSam *sam = model->unk_A28;
+    u32 count = modInst->numNodes;
+    Model *model = modInst->model;
     Batch *disp;
     Gfx *gfx;
 
     for (i = 0; i < count; i++) {
-        disp = sam->batches[i];
+        disp = model->batches[i];
         gfx = disp->info->header.texGfx;
         color = &obj->unk_200;
         if (gfx->words.w0 == 0xFA000000) {
@@ -368,7 +368,7 @@ void func_80034F34(Object *obj) {
     color1->a = obj->unk_088.a;
 
     if (color2->r != color1->r || color2->g != color1->g || color2->b != color1->b || color2->a != color1->a) {
-        func_800028E0(func_80034D54, obj);
+        set_post_render_hook(func_80034D54, obj);
         memcpy(&obj->unk_204, &obj->unk_200, sizeof(ColorRGBA));
     }
 }
@@ -383,10 +383,10 @@ void func_80034FC8(ModelInstance *model, s32 arg1, Vec4i *arg2) {
     b = 0;
     c = 0;
 
-    if (model->unk_A24 != NULL) {
-        a1 = &model->unk_A24->sam.unk_04->nodes[arg1];
+    if (model->kmodel != NULL) {
+        a1 = &model->kmodel->model.unk_04->nodes[arg1];
     } else {
-        a1 = &model->unk_A28->unk_04->nodes[arg1];
+        a1 = &model->model->unk_04->nodes[arg1];
     }
 
     count = a1->numVertices;
@@ -403,7 +403,7 @@ void func_80034FC8(ModelInstance *model, s32 arg1, Vec4i *arg2) {
     arg2->z = c / count;
 }
 
-void func_8003517C(UnkSam *sam, s32 arg1, Vec4i *arg2) {
+void func_8003517C(Model *sam, s32 arg1, Vec4i *arg2) {
     ModelNodeAsset *a1;
     s32 a, b, c;
     s32 i, count;
@@ -444,7 +444,7 @@ void func_800352FC(ModelInstance *arg0, K2DefSub *arg1) {
     Gfx **sp4C;
 
     sp50 = arg0->transforms;
-    sp4C = arg0->unk_A24->sam.batches;
+    sp4C = arg0->kmodel->model.batches;
     if (s7) {}
     sp7C = 0;
     ptr = arg1;
@@ -508,11 +508,11 @@ void func_800352FC(ModelInstance *arg0, K2DefSub *arg1) {
 
 void func_8003561C(Object *obj, s32 arg1) {
     ModelInstance *model;
-    Matrix4f *fp;
+    Matrix4f *projMatrix;
     u32 i;
     ModelNodeRenderInfo *s6;
     s32 sp74;
-    Transform *s5;
+    Transform *transforms;
     ModelNode *s1;
     f32 x, y, z, w;
     u32 a00;
@@ -523,21 +523,22 @@ void func_8003561C(Object *obj, s32 arg1) {
     model = obj->modInst;
     s6 = model->unk_608;
     sp74 = model->unk_9C8;
-    s5 = model->transforms;
+    transforms = model->transforms;
 
     if (obj->flags & 0x01000000) {
-        fp = &D_8013C6B0;
+        projMatrix = &D_8013C6B0;
     } else {
-        fp = &gCameraProjectionMatrix;
+        projMatrix = &gCameraProjectionMatrix;
     }
 
     for (i = 0; i < sp74; i++) {
         s1 = s6[i].unk_04;
-        if (s5 != NULL) {
-            Matrix4f *mtx = (s1->unk_20 >= 0) ? &s5[s1->unk_20].wolrd_matrix : &s5[s1->unk_04[0]].wolrd_matrix;
-            math_mtxf_mul(mtx, fp, &D_800813E0);
+        if (transforms != NULL) {
+            Matrix4f *mtx =
+                (s1->unk_20 >= 0) ? &transforms[s1->unk_20].world_matrix : &transforms[s1->unk_04[0]].world_matrix;
+            math_mtxf_mul(mtx, projMatrix, &D_800813E0);
         } else {
-            math_mtxf_mul(&model->unk_010.wolrd_matrix, fp, &D_800813E0);
+            math_mtxf_mul(&model->rootTransform.world_matrix, projMatrix, &D_800813E0);
         }
 
         x = D_800813E0.x.x * s1->unk_14.x + D_800813E0.y.x * s1->unk_14.y + D_800813E0.z.x * s1->unk_14.z +
@@ -582,7 +583,7 @@ void func_8003561C(Object *obj, s32 arg1) {
     }
 }
 
-void func_800359E4(ModelInstance *arg0, K2DefSub *arg1) {
+void func_800359E4(ModelInstance *modInst, K2DefSub *arg1) {
     u32 s1;
     s32 s2, s3, s4;
     u32 sp7C;
@@ -594,10 +595,10 @@ void func_800359E4(ModelInstance *arg0, K2DefSub *arg1) {
     Vec4i sp58;
     K2DefSub *ptr;
     ModelNode *s7;
-    Batch **sp54;
+    Batch **batches;
     u32 pad2;
 
-    sp54 = arg0->unk_A28->batches;
+    batches = modInst->model->batches;
 
     sp7C = 0;
     ptr = arg1;
@@ -605,14 +606,14 @@ void func_800359E4(ModelInstance *arg0, K2DefSub *arg1) {
         ptr++;
         sp7C++;
     }
-    arg0->unk_9C8 = sp7C;
+    modInst->unk_9C8 = sp7C;
 
-    arg0->unk_604 = s7 = mem_alloc(sp7C * sizeof(ModelNode), "model.c", 0x2B5);
+    modInst->unk_604 = s7 = mem_alloc(sp7C * sizeof(ModelNode), "model.c", 0x2B5);
 
     for (sp78 = 0; sp78 < sp7C; sp78++) {
         s7->unk_00 = 1;
         if (arg1->unk_10 >= 0) {
-            func_80034FC8(arg0, tmp = arg1->unk_10, &sp58);
+            func_80034FC8(modInst, tmp = arg1->unk_10, &sp58);
             s7->unk_14.x = sp58.x;
             s7->unk_14.y = sp58.y;
             s7->unk_14.z = sp58.z;
@@ -620,7 +621,7 @@ void func_800359E4(ModelInstance *arg0, K2DefSub *arg1) {
             s4 = s3 = s2 = 0;
             for (s1 = 0; s1 < 4; s1++) {
                 if (arg1->unk_00[s1] >= 0) {
-                    func_80034FC8(arg0, tmp2 = arg1->unk_00[s1], &sp58);
+                    func_80034FC8(modInst, tmp2 = arg1->unk_00[s1], &sp58);
                     s4 += sp58.x;
                     s3 += sp58.y;
                     s2 += sp58.z;
@@ -645,20 +646,20 @@ void func_800359E4(ModelInstance *arg0, K2DefSub *arg1) {
         pad2 = s1;
         for (s5 = 0; s5 < pad2; s5++) {
             s32 tmp2 = s7->unk_04[s5];
-            s7->unk_28[s5] = sp54[tmp2];
-            s7->unk_38[s5] = arg0->unk_A28->batchCounts[tmp2];
+            s7->unk_28[s5] = batches[tmp2];
+            s7->unk_38[s5] = modInst->model->batchCounts[tmp2];
         }
 
         arg1++;
         s7++;
     }
 
-    for (s1 = 0; s1 < arg0->unk_9C8; s1++) {
-        arg0->unk_608[s1].unk_04 = arg0->unk_604 + s1;
+    for (s1 = 0; s1 < modInst->unk_9C8; s1++) {
+        modInst->unk_608[s1].unk_04 = modInst->unk_604 + s1;
     }
 }
 
-void func_80035CCC(UnkSam *arg0) {
+void func_80035CCC(Model *arg0) {
     s32 count;
     u32 i;
     ModelNode *s1;
@@ -669,7 +670,7 @@ void func_80035CCC(UnkSam *arg0) {
     Vec4i sp58;
     s32 temp2;
 
-    count = arg0->unk_128;
+    count = arg0->numNodes;
     s1 = arg0->unk_31C = (ModelNode *) mem_alloc(count * sizeof(ModelNode), "model.c", 766);
     temp = 1; // required to match
     var1 = arg0->batches;
@@ -695,50 +696,50 @@ void func_80035CCC(UnkSam *arg0) {
     }
 }
 
-void func_80035DF8(UnkSam *arg0, s32 arg1) {
+void func_80035DF8(Model *arg0, s32 batchIndex) {
     u32 i;
-    s32 a2;
-    Batch *v0;
+    s32 count;
+    Batch *batch;
 
-    v0 = arg0->batches[arg1];
-    a2 = arg0->batchCounts[arg1];
+    batch = arg0->batches[batchIndex];
+    count = arg0->batchCounts[batchIndex];
 
-    for (i = 0; i < a2; i++) {
-        gSPTriBatch(gMainBatchPos, NULL, v0->info, v0->vertices, v0->triangles);
-        v0++;
+    for (i = 0; i < count; i++) {
+        gSPTriBatch(gMainBatchPos, NULL, batch->info, batch->vertices, batch->triangles);
+        batch++;
     }
 }
 
-void func_80035F5C(Object *obj) {
-    ModelInstance *model;
+void shadow_update(Object *obj) {
+    ModelInstance *modInst;
     Object *parent;
     s16 j;
     s16 i;
     s16 s6;
     Matrix4f sp98;
     f32 v1, a0;
-    BatchInfo *sub;
-    Transform *trans;
+    BatchInfo *batchInfo;
+    Transform *transforms;
     s32 unused[4];
-    Batch **sub3;
-    Matrix4f *newvar;
+    Batch **batches;
+    Matrix4f *local_matrix;
 
-    model = obj->modInst;
-    trans = model->transforms;
+    modInst = obj->modInst;
+    transforms = modInst->transforms;
     parent = (Object *) obj->vars[1];
-    newvar = &obj->transform.local_matrix;
-    sub3 = model->unk_A28->batches;
+    local_matrix = &obj->transform.local_matrix;
+    batches = modInst->model->batches;
 
-    if (parent->flags & 0x4) {
+    if (parent->flags & OBJ_FLAG_HIDDEN) {
         return;
     }
 
-    D_8013C4E0 = model->unk_A24->sam.dlist;
+    D_8013C4E0 = modInst->kmodel->model.dlist;
     func_80012AA8(&sp98);
     s6 = D_8005BFCE * 30;
 
-    for (i = 0; i < model->numNodes; i++) {
-        func_80014718(&sp98, &trans[i].wolrd_matrix, newvar);
+    for (i = 0; i < modInst->numNodes; i++) {
+        func_80014718(&sp98, &transforms[i].world_matrix, local_matrix);
         math_mtxf_mul(&sp98, &gCameraProjectionMatrix, &D_800813E0);
 
         if (D_800813E0.w.w != 0.0f) {
@@ -754,31 +755,31 @@ void func_80035F5C(Object *obj) {
 
         j = i + s6;
 
-        sub = j + model->unk_AB0;
+        batchInfo = j + modInst->renderBatches;
         if (&D_800813E0 && &D_800813E0) {} // required to match
 
-        math_mtxf2mtx(&sub->transform, &D_800813E0);
-        sub3[i]->info = sub;
-        func_80035DF8(model->unk_A28, i);
+        math_mtxf2mtx(&batchInfo->transform, &D_800813E0);
+        batches[i]->info = batchInfo;
+        func_80035DF8(modInst->model, i);
     }
 }
 
-void func_80036194(Object *arg0, char *arg1, u32 arg2) {
-    Object *v0;
+void create_shadow(Object *baseObject, char *asset_name, u32 context) {
+    Object *shadow;
 
-    str_copy(D_80053010.unk_00, arg1);
-    v0 = func_8002BC84(&D_8004934C, NULL, &D_80053010, arg2);
+    str_copy(gShadowProps.name, asset_name);
+    shadow = create_model_instance_with_properties(&D_8004934C, NULL, &gShadowProps, context);
 
-    v0->vars[0] = v0->modInst->transforms;
-    v0->vars[1] = arg0;
-    v0->modInst->transforms = arg0->modInst->transforms;
-    v0->fn_render = func_80035F5C;
+    shadow->vars[0] = shadow->modInst->transforms;
+    shadow->vars[1] = baseObject;
+    shadow->modInst->transforms = baseObject->modInst->transforms;
+    shadow->fn_render = shadow_update;
 
-    v0->transform.local_matrix.y.x = 0.0f;
-    v0->transform.local_matrix.x.y = 0.0f;
-    v0->transform.local_matrix.y.y = 0.0f;
-    v0->transform.local_matrix.z.y = 0.0f;
-    v0->transform.local_matrix.y.z = -1.5f;
+    shadow->transform.local_matrix.y.x = 0.0f;
+    shadow->transform.local_matrix.x.y = 0.0f;
+    shadow->transform.local_matrix.y.y = 0.0f;
+    shadow->transform.local_matrix.z.y = 0.0f;
+    shadow->transform.local_matrix.y.z = -1.5f;
 }
 
 void func_80036228(Transform *arg0, Transform *arg1) {
@@ -786,7 +787,7 @@ void func_80036228(Transform *arg0, Transform *arg1) {
     Transform *iter;
 
     s0 = &arg1->mtx[D_8005BFCE];
-    math_mtxf2mtx(s0, &arg1->wolrd_matrix);
+    math_mtxf2mtx(s0, &arg1->world_matrix);
     arg1->unk_94 = &s0->m[1][2];
 
     if (arg0 != NULL) {
@@ -799,96 +800,97 @@ void func_80036228(Transform *arg0, Transform *arg1) {
         func_80036228(arg1, iter);
     }
 
-    if (arg1->unk_8C >= 0) {
-        gSPDisplayList(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(D_8013C4E0[arg1->unk_8C]));
+    if (arg1->id >= 0) {
+        gSPDisplayList(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(D_8013C4E0[arg1->id]));
     }
 
     gSPPopMatrix(gMainGfxPos++, G_MTX_MODELVIEW);
 }
 
-void func_8003635C(Object *obj) {
+void model_update_animated_params(Object *obj) {
     ModelInstance *model = obj->modInst;
     s32 count;
     s32 i;
     s16 v1;
-    u8 *ptr;
-    Transform *trans;
-    Vec4i sp88;
+    u8 *nodeUpdated;
+    Transform *transforms;
+    Vec4i velocity;
     s32 unused[5];
     Vec4i *nodePosition;
     Vec4s *nodeRotation;
-    StructAA8 *vec2;
+    NodeAttachment *attachments;
     Vec4i *nodeScale;
 
     nodeScale = model->nodeScale;
-    ptr = model->unk_5E4;
-    vec2 = model->unk_AA8;
+    nodeUpdated = model->nodeUpdated;
+    attachments = model->nodeAttachments;
     nodePosition = model->nodePosition;
     nodeRotation = model->nodeRotation;
     count = model->numNodes;
-    trans = model->transforms;
+    transforms = model->transforms;
 
     for (i = 0; i < count; i++) {
-        if (ptr[i]) {
-            math_rotate(&trans[i].local_matrix, &nodeRotation[i]);
-            func_800139A0(&trans[i].local_matrix, &nodeScale[i]);
+        if (nodeUpdated[i]) {
+            math_rotate(&transforms[i].local_matrix, &nodeRotation[i]);
+            func_800139A0(&transforms[i].local_matrix, &nodeScale[i]);
 
-            trans[i].local_matrix.w.x = vec2[i].x + nodePosition[i].x;
-            trans[i].local_matrix.w.y = vec2[i].y + nodePosition[i].y;
-            trans[i].local_matrix.w.z = vec2[i].z + nodePosition[i].z;
-            ptr[i] = FALSE;
+            transforms[i].local_matrix.w.x = attachments[i].x + nodePosition[i].x;
+            transforms[i].local_matrix.w.y = attachments[i].y + nodePosition[i].y;
+            transforms[i].local_matrix.w.z = attachments[i].z + nodePosition[i].z;
+            nodeUpdated[i] = FALSE;
         }
     }
 
-    if (model->unk_9F4 || model->unk_132 != 0) {
-        math_rotate(&model->unk_010.local_matrix, &model->unk_9CC);
-        func_800139A0(&model->unk_010.local_matrix, &model->unk_9F8);
-        model->unk_9F4 = FALSE;
+    if (model->rootUpdated || model->unk_132 != 0) {
+        math_rotate(&model->rootTransform.local_matrix, &model->rootRotation);
+        func_800139A0(&model->rootTransform.local_matrix, &model->rootScale);
+        model->rootUpdated = FALSE;
     }
 
     if (obj->flags & 0x400) {
-        model->unk_010.local_matrix.w.y = model->unk_9D4.y;
-        sp88.y = 0;
-        if (obj->flags & 0x20000) {
-            sp88.x = model->unk_9D4.x - model->unk_9E4.x - model->unk_A1C;
-            v1 = sp88.x - model->unk_002;
-            model->unk_002 = sp88.x;
-            sp88.x = v1;
-            model->unk_010.local_matrix.w.x = model->unk_9E4.x;
-        } else {
-            sp88.x = 0;
-        }
-        sp88.z = model->unk_9D4.z - model->unk_9E4.z;
+        model->rootTransform.local_matrix.w.y = model->currentRootPos.y;
+        velocity.y = 0;
 
-        if (sp88.z != 0 || sp88.x != 0) {
+        if (obj->flags & 0x20000) {
+            velocity.x = model->currentRootPos.x - model->baseRootPos.x - model->unk_A1C;
+            v1 = velocity.x - model->velocity.x;
+            model->velocity.x = velocity.x;
+            velocity.x = v1;
+            model->rootTransform.local_matrix.w.x = model->baseRootPos.x;
+        } else {
+            velocity.x = 0;
+        }
+
+        velocity.z = model->currentRootPos.z - model->baseRootPos.z;
+        if (velocity.z != 0 || velocity.x != 0) {
             v1 = 0;
             if (obj->flags & 0x100000) {
                 obj->flags &= ~0x100000;
             } else {
-                v1 = sp88.z - model->unk_006;
+                v1 = velocity.z - model->velocity.z;
             }
-            model->unk_006 = sp88.z;
-            sp88.z = v1;
+            model->velocity.z = velocity.z;
+            velocity.z = v1;
 
-            model->unk_010.local_matrix.w.z = model->unk_9E4.z;
-            func_8001370C(&sp88, &obj->rotation);
+            model->rootTransform.local_matrix.w.z = model->baseRootPos.z;
+            func_8001370C(&velocity, &obj->rotation);
             if (!(obj->flags & 0x8000)) {
-                obj->pos.x += sp88.x;
-                obj->pos.z += sp88.z;
+                obj->pos.x += velocity.x;
+                obj->pos.z += velocity.z;
             }
         }
     } else {
-        model->unk_010.local_matrix.w.x = model->unk_9D4.x;
-        model->unk_010.local_matrix.w.y = model->unk_9D4.y;
-        model->unk_010.local_matrix.w.z = model->unk_9D4.z;
+        model->rootTransform.local_matrix.w.x = model->currentRootPos.x;
+        model->rootTransform.local_matrix.w.y = model->currentRootPos.y;
+        model->rootTransform.local_matrix.w.z = model->currentRootPos.z;
 
-        if (model->unk_00C != 0) {
-            sp88.x = 0;
-            sp88.z = model->unk_00C - model->unk_006;
-            model->unk_006 = model->unk_00C;
-            func_8001370C(&sp88, &obj->rotation); // @bug sp88.y undefined
-            obj->pos.x += sp88.x;
-            obj->pos.z += sp88.z;
+        if (model->anotherVel.z != 0) {
+            velocity.x = 0;
+            velocity.z = model->anotherVel.z - model->velocity.z;
+            model->velocity.z = model->anotherVel.z;
+            func_8001370C(&velocity, &obj->rotation); // @bug sp88.y undefined
+            obj->pos.x += velocity.x;
+            obj->pos.z += velocity.z;
         }
 
         if (obj->flags & 0x8000000) {
@@ -899,110 +901,113 @@ void func_8003635C(Object *obj) {
 
             obj->flags &= ~0x8000000;
 
-            sp88.y = 0;
-            sp88.x = model->unk_9D4.x;
-            sp88.z = model->unk_9D4.z;
+            velocity.y = 0;
+            velocity.x = model->currentRootPos.x;
+            velocity.z = model->currentRootPos.z;
 
-            func_8001370C(&sp88, &obj->rotation);
-            obj->pos.x -= sp88.x;
-            obj->pos.z -= sp88.z;
+            func_8001370C(&velocity, &obj->rotation);
+            obj->pos.x -= velocity.x;
+            obj->pos.z -= velocity.z;
         }
     }
 }
 
-void model_anim_param_lerp(u8 *arg0, s16 *arg1, Object *obj) {
+void model_anim_param_lerp(u8 *script, s16 *value, Object *obj) {
     s32 nodeId;
     ModelInstance *model;
 
-    nodeId = arg0[2];
+    nodeId = script[2];
     model = obj->modInst;
 
     if (nodeId == 0xFF) {
-        switch (arg0[3] & 0xF) {
+        switch (script[3] & 0xF) {
             case 1:
-                model->unk_9CC.x = (*arg1 + model->unk_9CC.x) >> 1;
-                model->unk_9F4 = TRUE;
+                model->rootRotation.x = (*value + model->rootRotation.x) >> 1;
+                model->rootUpdated = TRUE;
                 break;
             case 2:
-                model->unk_9CC.y = (*arg1 + model->unk_9CC.y) >> 1;
-                model->unk_9F4 = TRUE;
+                model->rootRotation.y = (*value + model->rootRotation.y) >> 1;
+                model->rootUpdated = TRUE;
                 break;
             case 3:
-                model->unk_9CC.z = (*arg1 + model->unk_9CC.z) >> 1;
-                model->unk_9F4 = TRUE;
+                model->rootRotation.z = (*value + model->rootRotation.z) >> 1;
+                model->rootUpdated = TRUE;
                 break;
             case 4:
-                model->unk_9D4.x = ((*arg1 + model->unk_9D4.x - model->unk_9E4.x) >> 1) + model->unk_9E4.x;
+                model->currentRootPos.x =
+                    ((*value + model->currentRootPos.x - model->baseRootPos.x) >> 1) + model->baseRootPos.x;
                 break;
             case 5:
-                model->unk_9D4.y = ((*arg1 + model->unk_9D4.y - model->unk_9E4.y) >> 1) + model->unk_9E4.y;
+                model->currentRootPos.y =
+                    ((*value + model->currentRootPos.y - model->baseRootPos.y) >> 1) + model->baseRootPos.y;
                 break;
             case 6:
-                model->unk_9D4.z = ((*arg1 + model->unk_9D4.z - model->unk_9E4.z) >> 1) + model->unk_9E4.z;
+                model->currentRootPos.z =
+                    ((*value + model->currentRootPos.z - model->baseRootPos.z) >> 1) + model->baseRootPos.z;
                 break;
             case 7:
-                model->unk_9F8.x = (*arg1 + model->unk_9F8.x) >> 1;
-                model->unk_9F4 = TRUE;
+                model->rootScale.x = (*value + model->rootScale.x) >> 1;
+                model->rootUpdated = TRUE;
                 break;
             case 8:
-                model->unk_9F8.y = (*arg1 + model->unk_9F8.y) >> 1;
-                model->unk_9F4 = TRUE;
+                model->rootScale.y = (*value + model->rootScale.y) >> 1;
+                model->rootUpdated = TRUE;
                 break;
             case 9:
-                model->unk_9F8.z = (*arg1 + model->unk_9F8.z) >> 1;
-                model->unk_9F4 = TRUE;
+                model->rootScale.z = (*value + model->rootScale.z) >> 1;
+                model->rootUpdated = TRUE;
                 break;
         }
     } else if (nodeId == 0xFE) {
-        switch (arg0[3] & 0xF) {
+        switch (script[3] & 0xF) {
             case 5:
-                obj->pos.y = (*arg1 + obj->pos.y) >> 1;
+                obj->pos.y = (*value + obj->pos.y) >> 1;
                 break;
             case 6:
-                model->unk_00C = (*arg1 * obj->unk_010.z + model->unk_00C) >> 1;
+                model->anotherVel.z = (*value * obj->velocity.z + model->anotherVel.z) >> 1;
                 break;
             case 2:
-                model->unk_132 = (*arg1 + model->unk_132) >> 1;
+                model->unk_132 = (*value + model->unk_132) >> 1;
                 break;
         }
     } else {
         Vec4s *temp = &model->nodeRotation[nodeId];
-        switch (arg0[3] & 0xF) {
+        switch (script[3] & 0xF) {
             case 1:
-                temp->x = (*arg1 + temp->x) >> 1;
-                model->unk_5E4[nodeId] = 1;
+                temp->x = (*value + temp->x) >> 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 2:
-                temp->y = (*arg1 + temp->y) >> 1;
-                model->unk_5E4[nodeId] = 1;
+                temp->y = (*value + temp->y) >> 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 3:
-                temp->z = (*arg1 + temp->z) >> 1;
-                model->unk_5E4[nodeId] = 1;
+                temp->z = (*value + temp->z) >> 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 4:
-                model->nodePosition[nodeId].x = (f32) ((model->nodePosition[nodeId].x + *arg1) >> 1);
-                model->unk_5E4[nodeId] = 1;
+                model->nodePosition[nodeId].x = (f32) ((model->nodePosition[nodeId].x + *value) >> 1);
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 5:
-                model->nodePosition[nodeId].y = (f32) ((model->nodePosition[nodeId].y + *arg1) >> 1);
-                model->unk_5E4[nodeId] = 1;
+                model->nodePosition[nodeId].y = (f32) ((model->nodePosition[nodeId].y + *value) >> 1);
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 6:
-                model->nodePosition[nodeId].z = (f32) ((model->nodePosition[nodeId].z + *arg1) >> 1);
-                model->unk_5E4[nodeId] = 1;
+                model->nodePosition[nodeId].z = (f32) ((model->nodePosition[nodeId].z + *value) >> 1);
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 7:
-                model->nodeScale[nodeId].x = (*arg1 + model->nodeScale[nodeId].x) >> 1;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeScale[nodeId].x = (*value + model->nodeScale[nodeId].x) >> 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 8:
-                model->nodeScale[nodeId].y = (*arg1 + model->nodeScale[nodeId].y) >> 1;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeScale[nodeId].y = (*value + model->nodeScale[nodeId].y) >> 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 9:
-                model->nodeScale[nodeId].z = (*arg1 + model->nodeScale[nodeId].z) >> 1;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeScale[nodeId].z = (*value + model->nodeScale[nodeId].z) >> 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
         }
     }
@@ -1018,37 +1023,37 @@ void model_anim_param_set(u8 *script, s16 *value, Object *obj) {
     if (nodeId == 0xFF) {
         switch (script[3] & 0xF) {
             case 1:
-                model->unk_9CC.x = *value;
-                model->unk_9F4 = TRUE;
+                model->rootRotation.x = *value;
+                model->rootUpdated = TRUE;
                 break;
             case 2:
-                model->unk_9CC.y = *value;
-                model->unk_9F4 = TRUE;
+                model->rootRotation.y = *value;
+                model->rootUpdated = TRUE;
                 break;
             case 3:
-                model->unk_9CC.z = *value;
-                model->unk_9F4 = TRUE;
+                model->rootRotation.z = *value;
+                model->rootUpdated = TRUE;
                 break;
             case 4:
-                model->unk_9D4.x = *value + model->unk_9E4.x;
+                model->currentRootPos.x = *value + model->baseRootPos.x;
                 break;
             case 5:
-                model->unk_9D4.y = *value + model->unk_9E4.y;
+                model->currentRootPos.y = *value + model->baseRootPos.y;
                 break;
             case 6:
-                model->unk_9D4.z = *value + model->unk_9E4.z;
+                model->currentRootPos.z = *value + model->baseRootPos.z;
                 break;
             case 7:
-                model->unk_9F8.x = *value;
-                model->unk_9F4 = TRUE;
+                model->rootScale.x = *value;
+                model->rootUpdated = TRUE;
                 break;
             case 8:
-                model->unk_9F8.y = *value;
-                model->unk_9F4 = TRUE;
+                model->rootScale.y = *value;
+                model->rootUpdated = TRUE;
                 break;
             case 9:
-                model->unk_9F8.z = *value;
-                model->unk_9F4 = TRUE;
+                model->rootScale.z = *value;
+                model->rootUpdated = TRUE;
                 break;
         }
     } else if (nodeId == 0xFE) {
@@ -1057,7 +1062,7 @@ void model_anim_param_set(u8 *script, s16 *value, Object *obj) {
                 obj->pos.y = *value;
                 break;
             case 6:
-                model->unk_00C = *value * obj->unk_010.z;
+                model->anotherVel.z = *value * obj->velocity.z;
                 break;
             case 2:
                 model->unk_132 = *value;
@@ -1067,39 +1072,39 @@ void model_anim_param_set(u8 *script, s16 *value, Object *obj) {
         switch (script[3] & 0xF) {
             case 1:
                 model->nodeRotation[nodeId].x = *value;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 2:
                 model->nodeRotation[nodeId].y = *value;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 3:
                 model->nodeRotation[nodeId].z = *value;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 4:
                 model->nodePosition[nodeId].x = (f32) *value;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 5:
                 model->nodePosition[nodeId].y = (f32) *value;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 6:
                 model->nodePosition[nodeId].z = (f32) *value;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 7:
                 model->nodeScale[nodeId].x = *value;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 8:
                 model->nodeScale[nodeId].y = *value;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 9:
                 model->nodeScale[nodeId].z = *value;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
         }
     }
@@ -1122,37 +1127,37 @@ void model_anim_param_add(u8 *arg0, u8 *arg1, Object *obj) {
     if (nodeId == 0xFF) {
         switch ((arg0[3] & 0xF0) >> 4) {
             case 1:
-                model->unk_9CC.x += value;
-                model->unk_9F4 = TRUE;
+                model->rootRotation.x += value;
+                model->rootUpdated = TRUE;
                 break;
             case 2:
-                model->unk_9CC.y += value;
-                model->unk_9F4 = TRUE;
+                model->rootRotation.y += value;
+                model->rootUpdated = TRUE;
                 break;
             case 3:
-                model->unk_9CC.z += value;
-                model->unk_9F4 = TRUE;
+                model->rootRotation.z += value;
+                model->rootUpdated = TRUE;
                 break;
             case 4:
-                model->unk_9D4.x += value;
+                model->currentRootPos.x += value;
                 break;
             case 5:
-                model->unk_9D4.y += value;
+                model->currentRootPos.y += value;
                 break;
             case 6:
-                model->unk_9D4.z += value;
+                model->currentRootPos.z += value;
                 break;
             case 7:
-                model->unk_9F8.x += value;
-                model->unk_9F4 = TRUE;
+                model->rootScale.x += value;
+                model->rootUpdated = TRUE;
                 break;
             case 8:
-                model->unk_9F8.y += value;
-                model->unk_9F4 = TRUE;
+                model->rootScale.y += value;
+                model->rootUpdated = TRUE;
                 break;
             case 9:
-                model->unk_9F8.z += value;
-                model->unk_9F4 = TRUE;
+                model->rootScale.z += value;
+                model->rootUpdated = TRUE;
                 break;
         }
     } else if (nodeId == 0xFE) {
@@ -1161,7 +1166,7 @@ void model_anim_param_add(u8 *arg0, u8 *arg1, Object *obj) {
                 obj->pos.y += value;
                 break;
             case 6:
-                model->unk_00C += value * obj->unk_010.z;
+                model->anotherVel.z += value * obj->velocity.z;
                 break;
             case 2:
                 model->unk_132 += value;
@@ -1172,54 +1177,54 @@ void model_anim_param_add(u8 *arg0, u8 *arg1, Object *obj) {
         switch ((arg0[3] & 0xF0) >> 4) {
             case 1:
                 temp->x += value;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 2:
                 temp->y += value;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 3:
                 temp->z += value;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 4:
                 model->nodePosition[nodeId].x += (f32) value;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 5:
                 model->nodePosition[nodeId].y += (f32) value;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 6:
                 model->nodePosition[nodeId].z += (f32) value;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 7:
                 model->nodeScale[nodeId].x += value;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 8:
                 model->nodeScale[nodeId].y += value;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
             case 9:
                 model->nodeScale[nodeId].z += value;
-                model->unk_5E4[nodeId] = 1;
+                model->nodeUpdated[nodeId] = 1;
                 break;
         }
     }
 }
 
-void func_800371C0(Object *obj) {
+void model_process_animation(Object *obj) {
     u8 *script;
     s16 animFrame;
     ModelInstance *model = obj->modInst;
     s32 lerp = FALSE;
 
-    if (obj->spriteId & 1) {
+    if (obj->frameIndex & 1) {
         lerp = TRUE;
     }
-    animFrame = (obj->spriteId + 1) >> 1;
+    animFrame = (obj->frameIndex + 1) >> 1;
 
     script = model->unk_A14;
     while (*(s32 *) script != -1) {
@@ -1290,19 +1295,19 @@ void func_800373FC(Object *obj) {
     }
 
     for (i = 0; i < model->numNodes; i++) {
-        model->nodeRotation[i].x = model->nodeRotation[i].y = model->nodeRotation[i].z = model->unk_5E4[i] = 0;
+        model->nodeRotation[i].x = model->nodeRotation[i].y = model->nodeRotation[i].z = model->nodeUpdated[i] = 0;
         model->nodeScale[i].x = model->nodeScale[i].y = model->nodeScale[i].z = 0x100;
     }
 }
 
-void func_80037500(Object *obj) {
+void model_change_animation(Object *obj) {
     ModelInstance *model = obj->modInst;
     s32 v1;
     u32 i;
     u32 j;
     s32 v12;
 
-    model->unk_00C = 0;
+    model->anotherVel.z = 0;
     model->unk_A14 = model->animations[model->currentAnimId]->entries;
     v1 = model->unk_A14->b3;
     if ((v1 & 0xF0) != 0 && (v1 & 0x0F) != 0) {
@@ -1323,20 +1328,20 @@ void func_80037500(Object *obj) {
     }
 
     for (i = 0; i < model->numNodes; i++) {
-        model->nodeRotation[i].x = model->nodeRotation[i].y = model->nodeRotation[i].z = model->unk_5E4[i] = 0;
+        model->nodeRotation[i].x = model->nodeRotation[i].y = model->nodeRotation[i].z = model->nodeUpdated[i] = 0;
         model->nodeScale[i].x = 0x100;
         model->nodeScale[i].y = 0x100;
         model->nodeScale[i].z = 0x100;
     }
 
-    func_80012AF4(&model->unk_010.local_matrix);
+    func_80012AF4(&model->rootTransform.local_matrix);
 
-    obj->unk_086 = -1;
-    model->unk_002 = model->unk_006 = 0;
+    obj->previousFrameIndex = -1;
+    model->velocity.x = model->velocity.z = 0;
     model->unk_130 = model->unk_132 = 0;
-    model->unk_9D4.x = model->unk_9E4.x;
-    model->unk_9D4.y = model->unk_9E4.y;
-    model->unk_9D4.z = model->unk_9E4.z;
+    model->currentRootPos.x = model->baseRootPos.x;
+    model->currentRootPos.y = model->baseRootPos.y;
+    model->currentRootPos.z = model->baseRootPos.z;
 
     if (obj->flags & 0x400) {
         if (obj->flags & 0x800000) {
@@ -1351,22 +1356,22 @@ void func_80037500(Object *obj) {
         obj->flags |= 0x800000;
     }
 
-    model->unk_9CC.x = model->unk_9CC.y = model->unk_9CC.z = 0;
-    model->unk_9F8.x = model->unk_9F8.y = model->unk_9F8.z = 0x100;
+    model->rootRotation.x = model->rootRotation.y = model->rootRotation.z = 0;
+    model->rootScale.x = model->rootScale.y = model->rootScale.z = 0x100;
     obj->flags &= ~0x8000;
 
-    if (obj->spriteId != 0) {
-        v12 = obj->spriteId;
+    if (obj->frameIndex != 0) {
+        v12 = obj->frameIndex;
         for (j = 0; j < v12; j++) {
-            obj->spriteId = j;
-            func_800371C0(obj);
+            obj->frameIndex = j;
+            model_process_animation(obj);
             if (j == 0) {
-                func_800371C0(obj);
+                model_process_animation(obj);
             }
         }
-        obj->spriteId = v12;
+        obj->frameIndex = v12;
     } else {
-        func_800371C0(obj);
+        model_process_animation(obj);
     }
 }
 
@@ -1421,8 +1426,8 @@ void func_80037788(ModelNodeRenderInfo *nodeList, s32 numNodes) {
     }
 }
 
-void func_8003795C(Object *obj) {
-    ModelInstance *model;
+void model_update_kmd(Object *obj) {
+    ModelInstance *modInst;
     Transform *s5;
     Transform *s1;
     u32 i;
@@ -1431,9 +1436,9 @@ void func_8003795C(Object *obj) {
     s32 sp6C;
     s32 pad[3];
 
-    model = obj->modInst;
-    sp6C = model->numNodes;
-    s5 = model->transforms;
+    modInst = obj->modInst;
+    sp6C = modInst->numNodes;
+    s5 = modInst->transforms;
     s1 = &obj->transform;
 
     task_execute(obj);
@@ -1442,39 +1447,39 @@ void func_8003795C(Object *obj) {
     math_translate(&s1->local_matrix, &obj->pos);
     func_80014974(s1);
 
-    D_8013C4E0 = model->unk_A24->sam.dlist;
+    D_8013C4E0 = modInst->kmodel->model.dlist;
 
-    if (model->animations != NULL) {
-        if (model->currentAnimId != model->unk_A0E) {
-            func_80037500(obj);
-            model->unk_A0E = model->currentAnimId;
+    if (modInst->animations != NULL) {
+        if (modInst->currentAnimId != modInst->previousAnimId) {
+            model_change_animation(obj);
+            modInst->previousAnimId = modInst->currentAnimId;
         }
 
-        if (obj->spriteId != obj->unk_086) {
-            func_800371C0(obj);
-            func_8003635C(obj);
-            obj->unk_086 = obj->spriteId;
+        if (obj->frameIndex != obj->previousFrameIndex) {
+            model_process_animation(obj);
+            model_update_animated_params(obj);
+            obj->previousFrameIndex = obj->frameIndex;
         }
 
-        if (model->unk_604 != NULL) {
+        if (modInst->unk_604 != NULL) {
             func_8003561C(obj, 0);
 
             for (i = 0; i < sp6C; i++) {
-                math_mtxf2mtx(&s5[i].mtx[D_8005BFCE], &s5[i].wolrd_matrix);
+                math_mtxf2mtx(&s5[i].mtx[D_8005BFCE], &s5[i].world_matrix);
             }
 
-            func_80037788(model->unk_608, model->unk_9C8);
+            func_80037788(modInst->unk_608, modInst->unk_9C8);
         } else {
             for (i = 0; i < sp6C; i++) {
                 s6 = &s5[i].mtx[D_8005BFCE];
-                math_mtxf2mtx(s6, &s5[i].wolrd_matrix);
+                math_mtxf2mtx(s6, &s5[i].world_matrix);
                 gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(s6), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
                 gSPDisplayList(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(D_8013C4E0[i]));
             }
         }
     } else {
         s6 = &s1->mtx[D_8005BFCE];
-        math_mtxf2mtx(s6, &s1->wolrd_matrix);
+        math_mtxf2mtx(s6, &s1->world_matrix);
         gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(s6), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         for (i = 0; i < sp6C; i++) {
             gSPDisplayList(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(D_8013C4E0[i]));
@@ -1482,27 +1487,27 @@ void func_8003795C(Object *obj) {
     }
 }
 
-void func_80037CE4(Object *obj) {
-    ModelInstance *model;
+void sprite3d_update(Object *obj) {
+    ModelInstance *modInst;
     Transform *mu;
-    UnkSam *sub2;
+    Model *sub2;
     s32 index;
     ModelNode *sub6;
     Batch *newvar;
-    s32 sp4C;
+    s32 batchIndex;
     s32 nv2;
     BatchInfo *sub;
     s32 unused[5];
-    BatchInfo *AB0;
+    BatchInfo *renderBatches;
     int temp;
 
     temp = obj->flags & 4; // required to match
 
-    index = obj->spriteId;
-    model = obj->modInst;
-    sub2 = model->unk_A28;
+    index = obj->frameIndex;
+    modInst = obj->modInst;
+    sub2 = modInst->model;
     newvar = sub2->batches[index];
-    sp4C = D_8005BFCE * 30 + index;
+    batchIndex = D_8005BFCE * 30 + index;
 
     task_execute(obj);
 
@@ -1511,7 +1516,7 @@ void func_80037CE4(Object *obj) {
     }
 
     mu = &obj->transform;
-    AB0 = model->unk_AB0;
+    renderBatches = modInst->renderBatches;
 
     if (obj->flags & 0x2000) {
         func_80034F34(obj);
@@ -1526,16 +1531,16 @@ void func_80037CE4(Object *obj) {
     math_translate(&mu->local_matrix, &obj->pos);
     math_mtxf_mul(&mu->local_matrix, &gCameraProjectionMatrix, &D_800813E0);
 
-    sub = AB0 + sp4C;
-    sub6 = &model->unk_A50;
+    sub = renderBatches + batchIndex;
+    sub6 = &modInst->unk_A50;
     math_mtxf2mtx(&sub->transform, &D_800813E0);
     nv2 = sub2->batchCounts[index];
-    model->unk_A30.unk_08[0] = sub;
+    modInst->unk_A30.unk_08[0] = sub;
 
     sub6->unk_28[0] = newvar;
     sub6->unk_38[0] = nv2;
-    model->unk_A30.next = D_8013C4E8;
-    D_8013C4E8 = &model->unk_A30;
+    modInst->unk_A30.next = D_8013C4E8;
+    D_8013C4E8 = &modInst->unk_A30;
 }
 
 #ifdef NON_EQUIVALENT
@@ -1543,9 +1548,9 @@ void func_80037E28(Object *obj) {
     GameMode *a2;
     ModelInstance *v1;
     UnkKappa *v0;
-    u32 t6;     // sp160
-    UnkSam *t0; // sp168
-    u32 t2;     // sp158
+    u32 t6;    // sp160
+    Model *t0; // sp168
+    u32 t2;    // sp158
     s32 sp154;
     GlobalObjD *a1;
     UnkSamSub *s0;
@@ -1599,7 +1604,7 @@ void func_80037E28(Object *obj) {
     a2 = &gGameModes[D_8005BED0];
 
     t2 = v1->numNodes;
-    t0 = v1->unk_A28;
+    t0 = v1->model;
     ra = &a2->unk_1C; // TODO make ColorRGBA
 
     v0 = a2->unk_18;
@@ -1626,17 +1631,17 @@ void func_80037E28(Object *obj) {
     for (; t6 < t2; t6 += 8) {
         sp154 = t0->unk_394[t6];
         s0 = t0->unk_324[t6];
-        t4 = &v1->transforms[t6].wolrd_matrix;
+        t4 = &v1->transforms[t6].world_matrix;
 
-        sp90 = (s32) (v1->transforms[t6].wolrd_matrix.x.x * 1024.0f);
-        sp8C = (s32) (v1->transforms[t6].wolrd_matrix.x.y * 1024.0f);
-        sp88 = (s32) (v1->transforms[t6].wolrd_matrix.x.z * 1024.0f);
-        sp84 = (s32) (v1->transforms[t6].wolrd_matrix.y.x * 1024.0f);
-        sp80 = (s32) (v1->transforms[t6].wolrd_matrix.y.y * 1024.0f);
-        sp7C = (s32) (v1->transforms[t6].wolrd_matrix.y.z * 1024.0f);
-        sp78 = (s32) (v1->transforms[t6].wolrd_matrix.z.x * 1024.0f);
-        sp74 = (s32) (v1->transforms[t6].wolrd_matrix.z.y * 1024.0f);
-        sp70 = (s32) (v1->transforms[t6].wolrd_matrix.z.z * 1024.0f);
+        sp90 = (s32) (v1->transforms[t6].world_matrix.x.x * 1024.0f);
+        sp8C = (s32) (v1->transforms[t6].world_matrix.x.y * 1024.0f);
+        sp88 = (s32) (v1->transforms[t6].world_matrix.x.z * 1024.0f);
+        sp84 = (s32) (v1->transforms[t6].world_matrix.y.x * 1024.0f);
+        sp80 = (s32) (v1->transforms[t6].world_matrix.y.y * 1024.0f);
+        sp7C = (s32) (v1->transforms[t6].world_matrix.y.z * 1024.0f);
+        sp78 = (s32) (v1->transforms[t6].world_matrix.z.x * 1024.0f);
+        sp74 = (s32) (v1->transforms[t6].world_matrix.z.y * 1024.0f);
+        sp70 = (s32) (v1->transforms[t6].world_matrix.z.z * 1024.0f);
 
         for (a1 = D_8013C4EC; a1 != NULL; a1 = a1->unk_2C) {
             pos = &a1->unk_28->pos;
@@ -1654,8 +1659,8 @@ void func_80037E28(Object *obj) {
                 absDeltaZ = -deltaZ;
             }
 
-            v05 = DISTANCE(absDeltaX, absDeltaZ);
-            temp1 = DISTANCE(v05, absDeltaY) * 128;
+            v05 = FAST_HYPOT(absDeltaX, absDeltaZ);
+            temp1 = FAST_HYPOT(v05, absDeltaY) * 128;
 
             a1->unk_0C = deltaX;
             a1->unk_10 = deltaY;
@@ -1746,9 +1751,9 @@ void func_80037E28(Object *obj) {
 #pragma GLOBAL_ASM("asm/nonmatchings/model/func_80037E28.s")
 #endif
 
-void func_800386E8(Object *obj) {
+void model_update(Object *obj) {
     Batch **s2;
-    ModelInstance *model;
+    ModelInstance *modInst;
     Transform *spAC;
     s32 j;
     u32 i;
@@ -1763,19 +1768,20 @@ void func_800386E8(Object *obj) {
     BatchInfo *s7;
     s32 unused[8];
 
-    model = obj->modInst;
-    spAC = model->transforms;
-    s2 = model->unk_A28->batches;
+    modInst = obj->modInst;
+    spAC = modInst->transforms;
+    s2 = modInst->model->batches;
     sp94 = 30 * D_8005BFCE;
 
     task_execute(obj);
-    if (obj->flags & 4) {
+
+    if (obj->flags & OBJ_FLAG_HIDDEN) {
         return;
     }
 
     objTransform = &obj->transform;
 
-    if (obj->flags & 0x10000000) {
+    if (obj->flags & OBJ_FLAG_10000000) {
         func_800349F0(obj);
     }
 
@@ -1790,38 +1796,38 @@ void func_800386E8(Object *obj) {
         obj->rotation.x = D_8013C668.x;
     }
 
-    if (model->animations != NULL) {
-        if (model->currentAnimId != model->unk_A0E) {
-            func_80037500(obj);
-            model->unk_A0E = model->currentAnimId;
+    if (modInst->animations != NULL) {
+        if (modInst->currentAnimId != modInst->previousAnimId) {
+            model_change_animation(obj);
+            modInst->previousAnimId = modInst->currentAnimId;
         }
 
-        if (obj->spriteId != obj->unk_086) {
-            func_800371C0(obj);
-            func_8003635C(obj);
-            obj->unk_086 = obj->spriteId;
+        if (obj->frameIndex != obj->previousFrameIndex) {
+            model_process_animation(obj);
+            model_update_animated_params(obj);
+            obj->previousFrameIndex = obj->frameIndex;
         }
 
         math_rotate(&objTransform->local_matrix, &obj->rotation);
         math_translate(&objTransform->local_matrix, &obj->pos);
         func_80014974(objTransform);
 
-        if (model->unk_604 != NULL) {
+        if (modInst->unk_604 != NULL) {
             if (obj->flags & 0x800) {
                 func_8003561C(obj, -10000);
             } else {
                 func_8003561C(obj, 0);
             }
 
-            renderInfo = model->unk_608;
-            for (i = 0; i < model->unk_9C8; i++) {
+            renderInfo = modInst->unk_608;
+            for (i = 0; i < modInst->unk_9C8; i++) {
                 new_var = renderInfo[i].unk_04;
                 if (obj->flags & 0x02000000) {
                     renderInfo[i].flags |= 2;
                 }
 
                 s6 = new_var->unk_24;
-                s7 = model->unk_AB0;
+                s7 = modInst->renderBatches;
 
                 for (j = 0; j < s6; j++) {
                     s32 s1 = new_var->unk_04[j];
@@ -1833,9 +1839,9 @@ void func_800386E8(Object *obj) {
                     }
 
                     if (spAC != NULL) {
-                        math_mtxf_mul(&spAC[s1].wolrd_matrix, a1, &D_800813E0);
+                        math_mtxf_mul(&spAC[s1].world_matrix, a1, &D_800813E0);
                     } else {
-                        math_mtxf_mul(&model->unk_010.wolrd_matrix, a1, &D_800813E0);
+                        math_mtxf_mul(&modInst->rootTransform.world_matrix, a1, &D_800813E0);
                     }
 
                     s0 = &s7[s1 + sp94];
@@ -1844,16 +1850,16 @@ void func_800386E8(Object *obj) {
                 }
             }
 
-            func_80037788(renderInfo, model->unk_9C8);
+            func_80037788(renderInfo, modInst->unk_9C8);
         }
     } else {
-        s0 = model->unk_AB0;
+        s0 = modInst->renderBatches;
         math_rotate(&objTransform->local_matrix, &obj->rotation);
         math_translate(&objTransform->local_matrix, &obj->pos);
         func_80014974(objTransform);
         math_mtxf_mul(&objTransform->local_matrix, &gCameraProjectionMatrix, &D_800813E0);
         math_mtxf2mtx(&(s0 + sp94)->transform, &D_800813E0);
-        func_80035DF8(model->unk_A28, 0);
+        func_80035DF8(modInst->model, 0);
         (*s2)->info = s0 + sp94;
     }
 }

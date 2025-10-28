@@ -165,15 +165,15 @@ void func_8000C18C(s32 *new_data, s32 *old_data, void *priv) {
     }
 }
 
-void func_8000C1C4(UnkFrodo *arg0, s32 arg1) {
-    ModelNodeAsset *v0 = &arg0->sam.unk_04->nodes[arg1];
+void func_8000C1C4(KModel *arg0, s32 arg1) {
+    ModelNodeAsset *v0 = &arg0->model.unk_04->nodes[arg1];
     u32 numParts = v0->numParts;
     u32 numVertices = v0->numVertices;
     u32 unk_04 = v0->unk_04;
     s32 size;
 
     size = numParts * sizeof(Gfx) * 21 + (numVertices / 8) * sizeof(Gfx) + unk_04 * sizeof(Gfx); // TODO constant
-    arg0->sam.dlist[arg1] = mem_alloc(size, "kmd.c", 297);
+    arg0->model.dlist[arg1] = mem_alloc(size, "kmd.c", 297);
     arg0->unk_A64 = size;
 }
 
@@ -218,7 +218,7 @@ void func_8000C328(Vec3su *arg0, u32 arg1, u32 arg2, s32 *arg3, s32 *arg4) {
     *arg4 = v0 - arg1 + 1;
 }
 
-void func_8000C3CC(UnkSam *arg0, s32 nodeId, u8 arg2, Unk8000C3CCArg3 *arg3) {
+void func_8000C3CC(Model *arg0, s32 nodeId, u8 arg2, Unk8000C3CCArg3 *arg3) {
     u32 partIndex;
     s32 numVerts;
     BatchTriangle *triangle;
@@ -411,7 +411,7 @@ void func_8000C3CC(UnkSam *arg0, s32 nodeId, u8 arg2, Unk8000C3CCArg3 *arg3) {
     }
 }
 
-void func_8000D11C(UnkFrodo *arg0, s32 arg1, u8 arg2) {
+void func_8000D11C(KModel *arg0, s32 arg1, u8 arg2) {
     u32 sp154;
     Vtx *fp;
     Vtx *s7;
@@ -438,8 +438,8 @@ void func_8000D11C(UnkFrodo *arg0, s32 arg1, u8 arg2) {
 
     sp12B = FALSE;
     sp12A = FALSE;
-    s3 = arg0->sam.dlist[arg1];
-    v0 = &arg0->sam.unk_04->nodes[arg1];
+    s3 = arg0->model.dlist[arg1];
+    v0 = &arg0->model.unk_04->nodes[arg1];
     sp148 = v0->numParts;
     fp = v0->vertices;
     sp120 = v0->triangles;
@@ -474,7 +474,7 @@ void func_8000D11C(UnkFrodo *arg0, s32 arg1, u8 arg2) {
             a2 = a1->texture;
             if (a2->format == 4) {
                 if (!arg2) {
-                    pal16 = arg0->sam.unk_04->palettes16 + a2->palIndex * 0x20;
+                    pal16 = arg0->model.unk_04->palettes16 + a2->palIndex * 0x20;
                     gDPLoadTLUT_pal16(s3++, 0, VIRTUAL_TO_PHYSICAL(pal16));
                 }
                 gDPLoadTextureBlock_4b(s3++, a2->data, G_IM_FMT_CI, a2->width, a2->height, 0,
@@ -482,7 +482,7 @@ void func_8000D11C(UnkFrodo *arg0, s32 arg1, u8 arg2) {
                                        G_TX_NOLOD, G_TX_NOLOD);
             } else {
                 if (!arg2) {
-                    pal256 = arg0->sam.unk_04->palettes256 + a2->palIndex * 0x200;
+                    pal256 = arg0->model.unk_04->palettes256 + a2->palIndex * 0x200;
                     gDPLoadTLUT_pal256(s3++, VIRTUAL_TO_PHYSICAL(pal256));
                 }
                 gDPLoadTextureBlock(s3++, a2->data, G_IM_FMT_CI, G_IM_SIZ_8b, a2->width, a2->height, 0,
@@ -518,36 +518,36 @@ void func_8000D11C(UnkFrodo *arg0, s32 arg1, u8 arg2) {
     gSPEndDisplayList(s3++);
 }
 
-void func_8000DAB0(UnkFrodo *arg0, AssetGmd *arg1, char *name, u8 arg3, s32 arg4) {
+void func_8000DAB0(KModel *arg0, AssetGmd *arg1, char *name, u8 arg3, s32 arg4) {
     u32 i;
     Asset *asset;
     char sp30[16];
     s32 v0;
 
-    arg0->sam.unk_04 = arg1;
-    arg0->sam.unk_128 = arg1->numNodes;
+    arg0->model.unk_04 = arg1;
+    arg0->model.numNodes = arg1->numNodes;
 
-    for (i = 0; i < arg0->sam.unk_128; i++) {
+    for (i = 0; i < arg0->model.numNodes; i++) {
         func_8000C1C4(arg0, i);
         func_8000D11C(arg0, i, arg3);
     }
 
-    arg0->sam.unk_150 = v0 = arg0->sam.unk_04->unk_08;
+    arg0->model.nodeHierarchy = v0 = arg0->model.unk_04->unk_08;
 
     if (v0 != 0) {
         str_copy(sp30, name);
         sp30[3] = '\0';
         str_concat(sp30, "_anm.anm");
         asset = &gAssets[asset_find(sp30, arg4)];
-        arg0->sam.unk_148 = D_8005AEB8[asset->memory_slot].data;
-        arg0->sam.unk_14C = asset->aux_data;
-        heap_set_move_callback(asset->memory_slot, func_8000C18C, arg0->sam.unk_14C);
+        arg0->model.animations = D_8005AEB8[asset->memory_slot].data;
+        arg0->model.unk_14C = asset->aux_data;
+        heap_set_move_callback(asset->memory_slot, func_8000C18C, arg0->model.unk_14C);
     } else {
-        arg0->sam.unk_148 = NULL;
+        arg0->model.animations = NULL;
     }
 }
 
-s32 func_8000DBC4(UnkSam *arg0, s32 arg1, s16 *arg2) {
+s32 func_8000DBC4(Model *arg0, s32 arg1, s16 *arg2) {
     ModelNodeAsset *a3;
     s32 t4;
     u32 i;
@@ -632,7 +632,7 @@ s32 func_8000DFF0(u32 arg0, u32 arg1, u16 *arg2, Vec3f *arg3, u32 arg4, u16 *arg
     return FALSE;
 }
 
-void func_8000E0D8(UnkSam *arg0) {
+void func_8000E0D8(Model *arg0) {
     u32 i;
     u32 sp110;
     u32 s0;
@@ -664,7 +664,7 @@ void func_8000E0D8(UnkSam *arg0) {
 
     s0 = 0;
     s1 = 0;
-    for (i = 0; i < arg0->unk_128; i++) {
+    for (i = 0; i < arg0->numNodes; i++) {
         s6 = &arg0->unk_04->nodes[i];
         if (s0 < s6->numVertices) {
             s0 = s6->numVertices;
@@ -680,7 +680,7 @@ void func_8000E0D8(UnkSam *arg0) {
     mem_fill(spE8, 0, s0 * 12);
     mem_fill(fp, 0, s1 * 12);
 
-    for (i = 0; i < arg0->unk_128; i++) {
+    for (i = 0; i < arg0->numNodes; i++) {
         spCA = func_8000DBC4(arg0, i, spC4);
         s6 = &arg0->unk_04->nodes[i];
         s5 = s6->unk_04;
@@ -764,7 +764,7 @@ void func_8000E0D8(UnkSam *arg0) {
     mem_free(spC4);
 }
 
-void func_8000E73C(UnkSam *arg0, AssetGmd *arg1, char *name, u8 arg3, Unk8000C3CCArg3 *arg4, s32 arg5) {
+void func_8000E73C(Model *arg0, AssetGmd *arg1, char *name, u8 arg3, Unk8000C3CCArg3 *arg4, s32 arg5) {
     u32 i;
     s32 v1;
     s32 j;
@@ -773,21 +773,21 @@ void func_8000E73C(UnkSam *arg0, AssetGmd *arg1, char *name, u8 arg3, Unk8000C3C
     char padding[16];
 
     arg0->unk_04 = arg1;
-    arg0->unk_128 = arg1->numNodes;
+    arg0->numNodes = arg1->numNodes;
     arg0->unk_318 = arg1->unk_C8;
     arg0->unk_320 = 0;
     arg0->unk_321 = 0;
     arg0->unk_322 = 0;
 
-    for (i = 0; i < arg0->unk_128; i++) {
+    for (i = 0; i < arg0->numNodes; i++) {
         func_8000C3CC(arg0, i, arg3, arg4);
     }
 
     if (arg0->unk_04->unk_08 != 0) {
-        arg0->unk_150 = mem_alloc(arg0->unk_128 * 0x10 + 0x10, "kmd.c", 983);
-        memcpy(arg0->unk_150, arg0->unk_04->unk_08, arg0->unk_128 * 0x10 + 0x10);
+        arg0->nodeHierarchy = mem_alloc(arg0->numNodes * 0x10 + 0x10, "kmd.c", 983);
+        memcpy(arg0->nodeHierarchy, arg0->unk_04->unk_08, arg0->numNodes * 0x10 + 0x10);
     } else {
-        arg0->unk_150 = NULL;
+        arg0->nodeHierarchy = NULL;
     }
 
     str_copy(sp48, name);
@@ -809,10 +809,10 @@ void func_8000E73C(UnkSam *arg0, AssetGmd *arg1, char *name, u8 arg3, Unk8000C3C
     }
 
     if (v1 >= 0) {
-        arg0->unk_148 = D_8005AEB8[gAssets[v1].memory_slot].data;
+        arg0->animations = D_8005AEB8[gAssets[v1].memory_slot].data;
         arg0->unk_14C = gAssets[v1].aux_data;
         heap_set_move_callback(gAssets[v1].memory_slot, func_8000C18C, arg0->unk_14C);
     } else {
-        arg0->unk_148 = NULL;
+        arg0->animations = NULL;
     }
 }

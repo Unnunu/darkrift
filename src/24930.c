@@ -44,35 +44,35 @@ void func_80023D30(Object *obj) {
 void func_80023ED0(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
-    if (obj->spriteId > player->unk_90->unk_00 + 1) {
-        obj->spriteId--;
+    if (obj->frameIndex > player->unk_90->unk_00 + 1) {
+        obj->frameIndex--;
     } else {
-        obj->spriteId--;
+        obj->frameIndex--;
         func_80023D30(obj);
     }
 }
 
 void func_80023F20(Object *obj) {
-    if (obj->spriteId != 0) {
-        obj->spriteId--;
+    if (obj->frameIndex != 0) {
+        obj->frameIndex--;
     } else {
-        obj->spriteId++;
+        obj->frameIndex++;
         obj->currentTask->func = func_80023F54;
     }
 }
 
 void func_80023F54(Object *obj) {
-    if (obj->spriteId < obj->modInst->numAnimFrames - 1) {
-        obj->spriteId++;
+    if (obj->frameIndex < obj->modInst->numAnimFrames - 1) {
+        obj->frameIndex++;
     } else {
-        obj->spriteId--;
+        obj->frameIndex--;
         obj->currentTask->func = func_80023F20;
     }
 }
 
 void func_80023F9C(Object *obj) {
-    if (obj->spriteId < obj->modInst->numAnimFrames - 1) {
-        obj->spriteId++;
+    if (obj->frameIndex < obj->modInst->numAnimFrames - 1) {
+        obj->frameIndex++;
     } else {
         obj->currentTask->flags |= 0x80;
     }
@@ -82,32 +82,32 @@ void func_80023FDC(Object *obj) {
     Player *player;
     s16 characterId;
 
-    if (obj->spriteId < ((Player *) obj->varObj[0])->unk_90->unk_02) {
-        obj->spriteId++;
+    if (obj->frameIndex < ((Player *) obj->varObj[0])->unk_90->unk_02) {
+        obj->frameIndex++;
         return;
     }
 
-    obj->spriteId = 0;
+    obj->frameIndex = 0;
     player = (Player *) obj->varObj[0];
     characterId = player->characterId;
 
-    if (obj->modInst->unk_006 != 0) {
+    if (obj->modInst->velocity.z != 0) {
         if (player->unk_90->unk_34 & 4) {
-            obj->modInst->unk_006 = D_8004BA98[characterId].z;
+            obj->modInst->velocity.z = D_8004BA98[characterId].z;
         } else {
-            obj->modInst->unk_006 = D_8004BAF0[characterId].z;
+            obj->modInst->velocity.z = D_8004BAF0[characterId].z;
         }
-        obj->modInst->unk_9D4.z = obj->modInst->unk_9E4.z;
+        obj->modInst->currentRootPos.z = obj->modInst->baseRootPos.z;
     } else {
-        obj->modInst->unk_A0E = -1;
+        obj->modInst->previousAnimId = -1;
     }
 }
 
 void func_80024078(Object *obj) {
-    if (obj->spriteId < ((Player *) obj->varObj[0])->unk_90->unk_02 - 1) {
-        obj->spriteId++;
+    if (obj->frameIndex < ((Player *) obj->varObj[0])->unk_90->unk_02 - 1) {
+        obj->frameIndex++;
     } else {
-        obj->spriteId++;
+        obj->frameIndex++;
         func_80023D30(obj);
     }
 }
@@ -118,7 +118,7 @@ void func_800240C8(Object *obj) {
 
     if (player->unk_90->unk_2C < 0) {
         obj->currentTask->flags |= 0x80;
-    } else if (obj->spriteId >= player->unk_90->unk_2E) {
+    } else if (obj->frameIndex >= player->unk_90->unk_2E) {
         func_8002C340();
 
         sp2C.x = (gPlayers[PLAYER_1].unk_00->pos.x + gPlayers[PLAYER_2].unk_00->pos.x) >> 1;
@@ -156,7 +156,7 @@ void func_80024214(Object *obj) {
     }
 
     obj->currentTask->func = func_80024078;
-    obj->spriteId++;
+    obj->frameIndex++;
 
     if (v1->unk_34 & 0x10) {
         obj->flags |= 0x400;
@@ -186,8 +186,8 @@ void func_80024390(Object *obj) {
 
     if (player->unk_7E >= 0) {
         sp1C = player->unk_20 + player->unk_7E;
-        if (sp1C->unk_08 == obj->modInst->currentAnimId && obj->spriteId + 1 < sp1C->unk_00) {
-            obj->spriteId++;
+        if (sp1C->unk_08 == obj->modInst->currentAnimId && obj->frameIndex + 1 < sp1C->unk_00) {
+            obj->frameIndex++;
             player->unk_0C->flags |= 4;
             player->unk_0C->unk_86 = sp1C->unk_00 - 2;
             player->unk_0C->unk_90.flags = 1;
@@ -196,7 +196,7 @@ void func_80024390(Object *obj) {
             return;
         }
 
-        if (sp1C->unk_08 == obj->modInst->currentAnimId && obj->spriteId == sp1C->unk_00 - 1) {
+        if (sp1C->unk_08 == obj->modInst->currentAnimId && obj->frameIndex == sp1C->unk_00 - 1) {
             func_80024214(obj);
             return;
         }
@@ -216,13 +216,13 @@ void func_80024390(Object *obj) {
         player->unk_90 = sp1C;
 
         if (player->unk_80 & 0x800) {
-            obj->spriteId = sp1C->unk_02;
+            obj->frameIndex = sp1C->unk_02;
         } else {
-            obj->spriteId = MAX(sp1C->unk_00, sp24->unk_08);
+            obj->frameIndex = MAX(sp1C->unk_00, sp24->unk_08);
         }
 
         obj->modInst->currentAnimId = sp1C->unk_08;
-        obj->modInst->unk_A0E = -1;
+        obj->modInst->previousAnimId = -1;
     }
 
     obj->currentTask->func = sp24->unk_00_f; // ????
@@ -253,8 +253,8 @@ void func_80024640(Object *obj) {
     s32 s2;
     ObjectTaskSub *v0;
 
-    if (obj->spriteId < player->unk_90->unk_02) {
-        obj->spriteId++;
+    if (obj->frameIndex < player->unk_90->unk_02) {
+        obj->frameIndex++;
         return;
     }
 
@@ -265,19 +265,19 @@ void func_80024640(Object *obj) {
     player->unk_08->flags = 1;
     func_80024390(obj);
 
-    if (obj->spriteId >= 2) {
-        func_80037500(obj);
-        obj->modInst->unk_A0E = obj->modInst->currentAnimId;
+    if (obj->frameIndex >= 2) {
+        model_change_animation(obj);
+        obj->modInst->previousAnimId = obj->modInst->currentAnimId;
         obj->flags |= 0x8000;
 
-        s2 = obj->spriteId;
+        s2 = obj->frameIndex;
         for (i = 0; i < s2; i += 2) {
-            obj->spriteId = i;
-            func_800371C0(obj);
+            obj->frameIndex = i;
+            model_process_animation(obj);
         }
 
         obj->flags &= ~0x8000;
-        obj->spriteId = s2;
+        obj->frameIndex = s2;
     }
 
     player->unk_180 &= ~0x20000;
@@ -288,7 +288,7 @@ void func_80024764(Object *obj) {
     PlayerSub3 *temp;
 
     obj->currentTask->func = func_80024640;
-    obj->spriteId = 1;
+    obj->frameIndex = 1;
     temp = obj->currentTask->unk_08.unk_0C + player->unk_20; // required to match
     player->unk_90 = temp;
     obj->modInst->currentAnimId = temp->unk_08;
@@ -309,7 +309,7 @@ void func_800247CC(Object *obj) {
     sp2A = v0->unk_08.unk_00_i;
     sp24 = player->unk_34;
     sp1C = obj->currentTask;
-    obj->spriteId++;
+    obj->frameIndex++;
 
     if (func_80005EE4(player, TRUE, sp2A)) {
         player->unk_76 = sp24[sp2A + 1];
@@ -337,17 +337,17 @@ void func_800248C4(Object *obj) {
 
     if (v1 != -1) {
         s0 += v1;
-        if (obj->spriteId != 0) {
-            if (obj->spriteId == s0->unk_01) {
+        if (obj->frameIndex != 0) {
+            if (obj->frameIndex == s0->unk_01) {
                 sound_play(playerId, s0->unk_00);
             }
-            if (obj->spriteId == s0->unk_03) {
+            if (obj->frameIndex == s0->unk_03) {
                 sound_play(playerId, s0->unk_02);
             }
-            if (obj->spriteId == s0->unk_05) {
+            if (obj->frameIndex == s0->unk_05) {
                 sound_play(playerId, s0->unk_04);
             }
-            if (obj->spriteId == s0->unk_07) {
+            if (obj->frameIndex == s0->unk_07) {
                 sound_play(playerId, s0->unk_06);
             }
         }

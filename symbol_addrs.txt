@@ -6,11 +6,9 @@ osAppNMIBuffer = 0x8000031C;
 cont_read = 0x80024F00;
 gContData = 0x800B63E8;
 
-thread3_main = 0x80000600;
 heap_link = 0x80000A8C;
 heap_unlink = 0x80000AA8;
 heap_merge_chunks = 0x80000B30;
-dma_read = 0x80000FB0;
 dma_read_noblock = 0x80001068;
 do_mem_alloc = 0x80000BD8;
 heap_init = 0x80000744;
@@ -301,7 +299,7 @@ task_execute = 0x80038B10;
 task_clear = 0x80038AC0;
 task_add = 0x80038D50;
 task_default_func = 0x80038DE0;
-gTasksDisabled = 0x80053020;
+gIsPaused = 0x80053020;
 
 audio_init = 0x800207E4;
 sound_set_pan = 0x800219B8;
@@ -354,7 +352,7 @@ mem_fill = 0x80000E0C;
 heap_set_move_callback = 0x800010D4;
 
 practice_enter_pause = 0x80032434;
-D_8013C2C0 = 0x8013C2C0; // size:0x10
+gModelInstancePool = 0x8013C2C0; // size:0x10
 
 D_8004935C = 0x8004935C;
 D_8004B624 = 0x8004B624;
@@ -382,3 +380,16 @@ D_80052C18 = 0x80052C18;
 D_80052F10 = 0x80052F10; // size:0x10
 
 D_8004C008 = 0x8004C008; // size:0xC0
+
+model_update = 0x800386E8;
+model_change_animation = 0x80037500;
+model_update_animated_params = 0x8003635C;
+gZeroRotation = 0x80049344;
+create_model_instance_with_properties = 0x8002BC84;
+init_model_node_transforms = 0x8002B850;
+create_3dsprite = 0x8002C27C;
+create_model_instance = 0x8002BFF0;
+gPostRenderCallbacks = 0x80080140;
+gPostRenderArgs = 0x80080190;
+reset_post_render_hooks = 0x800028B0;
+gObjectList = 0x80052C50;

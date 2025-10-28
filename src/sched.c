@@ -38,8 +38,8 @@ extern u16 D_8005BFCE;
 extern u16 gScreenHeight;
 extern u8 D_80080129;
 extern s32 D_80049AE8;
-extern s32 D_80080140[20];
-extern s32 D_80080190[20];
+extern s32 gPostRenderCallbacks[20];
+extern s32 gPostRenderArgs[20];
 extern s32 D_8013F0B0;
 
 typedef struct UnkStruct800031FC {
@@ -75,21 +75,21 @@ void func_8002AC10(void);
 
 s32 func_80021338(void);
 
-void func_800028B0(void) {
+void reset_post_render_hooks(void) {
     s32 i;
 
-    for (i = 0; i < ARRAY_COUNT(D_80080140); i++) {
-        D_80080140[i] = 0;
+    for (i = 0; i < ARRAY_COUNT(gPostRenderCallbacks); i++) {
+        gPostRenderCallbacks[i] = NULL;
     }
 }
 
-void func_800028E0(s32 arg0, s32 arg1) {
+void set_post_render_hook(s32 (*func)(void *), void *arg) {
     s32 i;
 
-    for (i = 0; i < ARRAY_COUNT(D_80080140); i++) {
-        if (D_80080140[i] == 0) {
-            D_80080140[i] = arg0;
-            D_80080190[i] = arg1;
+    for (i = 0; i < ARRAY_COUNT(gPostRenderCallbacks); i++) {
+        if (gPostRenderCallbacks[i] == 0) {
+            gPostRenderCallbacks[i] = func;
+            gPostRenderArgs[i] = arg;
             return;
         }
     }
@@ -280,9 +280,9 @@ void func_800031FC(u16 arg0) {
     D_8013C228 = NULL;
     D_80080116 = D_80080118 = 0;
     D_80080129 = TRUE;
-    func_800028B0();
+    reset_post_render_hooks();
     func_80034508();
-    D_8005BFC0 = 4;
+    D_8005BFC0 = GAME_FLAG_4;
     func_80024A38(0);
     func_80024A38(1);
     D_8006E072 = 0;
@@ -322,9 +322,9 @@ void func_80003468(u16 arg0) {
     D_8013C228 = NULL;
     D_80080118 = 0;
     D_80080129 = TRUE;
-    func_800028B0();
+    reset_post_render_hooks();
     func_80034508();
-    D_8005BFC0 = 4;
+    D_8005BFC0 = GAME_FLAG_4;
     D_80080128 = 1;
     func_800343EC();
     func_80023200();

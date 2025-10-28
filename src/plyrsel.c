@@ -81,7 +81,7 @@ void func_8001EB58(Object *obj) {
     v0->vars[0] = s1;
     v0->vars[3] = s3;
     s3 = create_ui_element(&sp98[s1], &empty_bar, CONTEXT_EEFF);
-    s3->spriteId = 15 - s1;
+    s3->frameIndex = 15 - s1;
     v0->vars[4] = s3;
 
     v03 = func_8001E5D8(s1);
@@ -133,7 +133,7 @@ void plyrsel_portrait_update_2(Object *obj) {
     s16 v1;
     s16 playerId;
 
-    if (!(D_8005BFC0 & 0x1000)) {
+    if (!(D_8005BFC0 & GAME_FLAG_1000)) {
         return;
     }
 
@@ -149,15 +149,15 @@ void plyrsel_portrait_update_2(Object *obj) {
     }
 
     obj->vars[2] = 15;
-    if (obj->spriteId >= 5) {
-        v1 = obj->spriteId + 1;
+    if (obj->frameIndex >= 5) {
+        v1 = obj->frameIndex + 1;
     } else {
-        v1 = obj->spriteId;
+        v1 = obj->frameIndex;
     }
 
     if (obj->vars[6] == 9 || obj->vars[6] == 1) {
         v1 = obj->vars[6];
-        obj->spriteId = v1 - (v1 == SONORK);
+        obj->frameIndex = v1 - (v1 == SONORK);
     }
 
     if (v1 == obj->vars[6]) {
@@ -204,9 +204,9 @@ void plyrsel_portrait_update_2(Object *obj) {
     }
 
     if (v1 >= CHARACTER_5) {
-        obj->spriteId = v1 - 1;
+        obj->frameIndex = v1 - 1;
     } else {
-        obj->spriteId = v1;
+        obj->frameIndex = v1;
     }
 }
 
@@ -257,7 +257,7 @@ void plyrsel_portrait_update(Object *obj) {
         } else if (v1 & (INP_LEFT | INP_RIGHT)) {
             sound_play(2, 6 + a3);
 
-            v0 = obj->spriteId;
+            v0 = obj->frameIndex;
             if (v1 & INP_LEFT) {
                 v0--;
             } else {
@@ -278,7 +278,7 @@ void plyrsel_portrait_update(Object *obj) {
                 v0 = 0;
             }
 
-            obj->spriteId = v0;
+            obj->frameIndex = v0;
         }
     }
 }
@@ -286,12 +286,12 @@ void plyrsel_portrait_update(Object *obj) {
 void plyrsel_player_label_update(Object *obj) {
     if (obj->vars[7] != 0) {
         if (obj->vars[8]-- == 0) {
-            obj->spriteId = obj->vars[0] * 4 - obj->spriteId + 171;
-            obj->vars[8] = -254 - (obj->vars[0] * 2 - obj->spriteId) * 3;
+            obj->frameIndex = obj->vars[0] * 4 - obj->frameIndex + 171;
+            obj->vars[8] = -254 - (obj->vars[0] * 2 - obj->frameIndex) * 3;
         }
 
         if (--obj->vars[7] == 0) {
-            obj->spriteId = obj->vars[0] * 2 + 86;
+            obj->frameIndex = obj->vars[0] * 2 + 86;
             obj->currentTask->flags |= 0x80;
         }
     }
@@ -326,12 +326,12 @@ void plyrsel_image_vs_update(Object *obj) {
     D_800B6328[0].unk_0C &= ~3;
     D_800B6328[1].unk_0C &= ~3;
     if (0) {} // required to match
-    D_8005BFC0 |= 1;
+    D_8005BFC0 |= GAME_FLAG_MODE_DONE;
 
     if (D_80080230 == 10 || D_80080230 == 11) {
         gGameMode = D_800B6328[D_80081668].characterId + GAME_MODE_BATTLE_AARON;
         if (D_800B6328[0].unk_0A + D_800B6328[1].unk_0A == 0) {
-            gGameMode = D_800B6328[1 - D_80081668].characterId + GAME_MODE_18;
+            gGameMode = D_800B6328[1 - D_80081668].characterId + GAME_MODE_INTRO_AARON;
             D_800B6328[1 - D_80081668].unk_06 = 1;
         } else {
             D_800B6328[D_80081668].unk_06 = 1;
@@ -353,7 +353,7 @@ void plyrsel_practice_cpu_update(Object *obj) {
 
     if (obj->vars[2]-- < 0) {
         obj->vars[2] = 15;
-        obj->spriteId = obj->vars[1] - obj->spriteId;
+        obj->frameIndex = obj->vars[1] - obj->frameIndex;
     }
 
     playerId = obj->vars[0];
@@ -366,12 +366,12 @@ void plyrsel_practice_cpu_update(Object *obj) {
 void plyrsel_practice_user_update(Object *obj) {
     if (obj->vars[VAR_COUNTER]-- < 0) {
         obj->vars[VAR_COUNTER] = 15;
-        obj->spriteId = obj->vars[VAR_SPRITE_ID_SUM] - obj->spriteId;
+        obj->frameIndex = obj->vars[VAR_SPRITE_ID_SUM] - obj->frameIndex;
     }
 
     if (gPlayerInput[obj->vars[VAR_PLAYER_ID]].buttons & INP_START) {
-        obj->spriteId = SPR_PRA_P2_CPU - 2 * obj->vars[0];
-        obj->vars[VAR_SPRITE_ID_SUM] = obj->spriteId * 2 + 1;
+        obj->frameIndex = SPR_PRA_P2_CPU - 2 * obj->vars[0];
+        obj->vars[VAR_SPRITE_ID_SUM] = obj->frameIndex * 2 + 1;
         obj->pos.x = 245 - obj->vars[VAR_PLAYER_ID] * 167;
 
         obj->vars[VAR_PLAYER_ID] = 1 - obj->vars[VAR_PLAYER_ID];
@@ -434,12 +434,12 @@ void run_player_selection_mode(void) {
 
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
     D_8008012C |= 0x20;
-    D_8005BFC0 |= 4;
+    D_8005BFC0 |= GAME_FLAG_4;
 
     asset_open_folder("/plyrsel/plyrsel", CONTEXT_EEFF);
     asset_open_folder("/plyrsel/music", CONTEXT_EEFF);
 
-    D_8005BFC0 |= 0x800;
+    D_8005BFC0 |= GAME_FLAG_800;
 
     switch (D_80080230) {
         case 10:
@@ -483,12 +483,12 @@ void run_player_selection_mode(void) {
 
     gCharacterPortrait[0] = create_ui_element(&portrait_p1_pos, &portrait_p1, CONTEXT_EEFF);
     gCharacterPortrait[0]->vars[0] = PLAYER_1;
-    gCharacterPortrait[0]->spriteId = char_p1;
+    gCharacterPortrait[0]->frameIndex = char_p1;
     gCharacterPortrait[0]->currentTask->counter = 20;
 
     gCharacterPortrait[1] = create_ui_element(&portrait_p2_pos, &portrait_p2, CONTEXT_EEFF);
     gCharacterPortrait[1]->vars[0] = PLAYER_2;
-    gCharacterPortrait[1]->spriteId = char_p2;
+    gCharacterPortrait[1]->frameIndex = char_p2;
     gCharacterPortrait[1]->currentTask->counter = 20;
 
     player_labels[0] = create_ui_element(&label_player1_pos, &label_player1, CONTEXT_EEFF);
@@ -546,7 +546,7 @@ void run_player_selection_mode(void) {
             break;
     }
 
-    func_80001D88();
+    main_loop();
     func_8002630C(CONTEXT_EEFF);
 }
 
@@ -556,7 +556,7 @@ void func_800201A4(s16 playerId, u16 arg1, u16 arg2) {
 }
 
 void func_800201C4(s16 charId, s16 playerId) {
-    D_8005BFC0 |= 1;
+    D_8005BFC0 |= GAME_FLAG_MODE_DONE;
     gGameMode = GAME_MODE_34;
 
     D_800B6328[playerId].characterId = charId;
@@ -590,13 +590,13 @@ void func_800202F0(s16 playerId, u16 arg1, u16 arg2) {
     D_800B6328[playerId].unk_06 = 0;
     D_800B6328[playerId].unk_02 = 0;
     D_800B6328[1 - playerId].unk_02 = 1;
-    D_800801F1 = 1;
+    D_800801F1 = TRUE;
 
     for (i = 0; i < 11; i++) {
         D_800B6350[0][i] = D_800B6350[1][i] = 0;
     }
 
-    D_8005BFC0 |= 1;
+    D_8005BFC0 |= GAME_FLAG_MODE_DONE;
     func_800194E0(playerId + 10);
 }
 

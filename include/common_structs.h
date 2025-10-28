@@ -129,9 +129,9 @@ typedef struct PlayerInput {
     /* 0x04 */ u16 held_buttons;
     /* 0x06 */ u16 raw_buttons;
     /* 0x08 */ u8 unk_08;
-    /* 0x09 */ u8 unk_09;
-    /* 0x0A */ u8 unk_0A;
-    /* 0x0B */ u8 enabled;
+    /* 0x09 */ u8 isMirrored;
+    /* 0x0A */ u8 enabled;
+    /* 0x0B */ u8 connected;
     /* 0x0C */ u8 unk_0C;
     /* 0x0D */ u8 unk_0D;
 } PlayerInput;
@@ -187,11 +187,11 @@ typedef struct Transform {
     /* 0x80 */ struct Transform *firstChild;
     /* 0x84 */ struct Transform *nextSibling;
     /* 0x88 */ struct Transform *parent;
-    /* 0x8C */ s32 unk_8C;
-    /* 0x90 */ s32 unk_90;
+    /* 0x8C */ s32 id;
+    /* 0x90 */ s32 parentId;
     /* 0x94 */ s32 unk_94;
     /* 0x98 */ Matrix4f local_matrix;
-    /* 0xD8 */ Matrix4f wolrd_matrix;
+    /* 0xD8 */ Matrix4f world_matrix;
 } Transform; // size = 0x118
 
 typedef struct BatchAsset {
@@ -243,12 +243,12 @@ typedef struct AssetUnkHeader2 {
     /* 0x10 */ s32 unk_10;
 } AssetUnkHeader2;
 
-typedef struct StructAA8 {
-    /* 0x00 */ s32 unk_00;
+typedef struct NodeAttachment {
+    /* 0x00 */ s32 parent;
     /* 0x04 */ s32 x;
     /* 0x08 */ s32 y;
     /* 0x0C */ s32 z;
-} StructAA8; // size = 0x10
+} NodeAttachment; // size = 0x10
 
 typedef struct ModelNode {
     /* 0x00 */ u8 unk_00;
@@ -288,15 +288,15 @@ typedef struct AnimHeader {
     AnimEntry entries[1];
 } AnimHeader;
 
-typedef struct UnkSam {
+typedef struct Model {
     /* 0x000 */ s32 unk_00;
     /* 0x004 */ AssetGmd *unk_04;
     /* 0x008 */ char unk_08[0x128 - 8];
-    /* 0x128 */ s32 unk_128;
+    /* 0x128 */ s32 numNodes;
     /* 0x12C */ char unk_12C[0x148 - 0x12C];
-    /* 0x148 */ AnimHeader **unk_148;
+    /* 0x148 */ AnimHeader **animations;
     /* 0x14C */ s32 unk_14C;
-    /* 0x150 */ StructAA8 *unk_150;
+    /* 0x150 */ NodeAttachment *nodeHierarchy;
     /* 0x154 */ union {
         Batch *batches[28];
         Gfx *dlist[28 * 2];
@@ -315,13 +315,13 @@ typedef struct UnkSam {
     /* 0x324 */ UnkSamSub *unk_324[28];
     /* 0x394 */ u16 unk_394[28];
     /* 0x3CC */ s32 unk_3CC;
-} UnkSam; // size = 0x3D0
+} Model; // size = 0x3D0
 
-typedef struct UnkFrodo {
-    /* 0x000 */ UnkSam sam;
+typedef struct KModel {
+    /* 0x000 */ Model model;
     /* 0x3D0 */ char unk_3D0[0xA64 - 0x3D0];
     /* 0xA64 */ u16 unk_A64;
-} UnkFrodo; // szie = 0xA68
+} KModel; // szie = 0xA68
 
 typedef struct ModelNodeRenderInfo {
     /* 0x00 */ s32 zOrder;
@@ -333,13 +333,10 @@ typedef struct ModelNodeRenderInfo {
 
 typedef struct ModelInstance {
     /* 0x0000 */ s16 numNodes;
-    /* 0x0002 */ s16 unk_002;
-    /* 0x0004 */ s16 unk_004;
-    /* 0x0006 */ s16 unk_006;
-    /* 0x0008 */ char unk_008[4];
-    /* 0x000C */ s16 unk_00C;
+    /* 0x0002 */ Vec3s velocity;
+    /* 0x0008 */ Vec3s anotherVel;
     /* 0x000E */ char unk_00E[2];
-    /* 0x0010 */ Transform unk_010;
+    /* 0x0010 */ Transform rootTransform;
     /* 0x0128 */ Transform *transforms;
     /* 0x012C */ AnimHeader **animations;
     /* 0x0130 */ s16 unk_130;
@@ -347,19 +344,18 @@ typedef struct ModelInstance {
     /* 0x0134 */ Vec4s nodeRotation[30];
     /* 0x0224 */ Vec4i nodeScale[30];
     /* 0x0404 */ Vec4i nodePosition[30];
-    /* 0x05E4 */ u8 unk_5E4[32];
+    /* 0x05E4 */ u8 nodeUpdated[30];
     /* 0x0604 */ ModelNode *unk_604;
     /* 0x0608 */ ModelNodeRenderInfo unk_608[30];
     /* 0x09C8 */ s32 unk_9C8;
-    /* 0x09CC */ Vec3s unk_9CC;
-    /* 0x09D2 */ char unk_9D2[2];
-    /* 0x09D8 */ Vec4i unk_9D4;
-    /* 0x09E4 */ Vec4i unk_9E4;
-    /* 0x09F4 */ u8 unk_9F4;
-    /* 0x09F8 */ Vec4i unk_9F8;
+    /* 0x09CC */ Vec3s rootRotation;
+    /* 0x09D8 */ Vec4i currentRootPos;
+    /* 0x09E4 */ Vec4i baseRootPos;
+    /* 0x09F4 */ u8 rootUpdated;
+    /* 0x09F8 */ Vec4i rootScale;
     /* 0x0A08 */ s32 numAnimFrames;
     /* 0x0A0C */ s16 currentAnimId;
-    /* 0x0A0E */ s16 unk_A0E;
+    /* 0x0A0E */ s16 previousAnimId;
     /* 0x0A10 */ s32 unk_A10;
     /* 0x0A14 */ AnimEntry *unk_A14;
     /* 0x0A18 */ s32 unk_A18;
@@ -367,14 +363,14 @@ typedef struct ModelInstance {
     /* 0x0A1E */ s16 unk_A1E;
     /* 0x0A20 */ s16 unk_A20;
     /* 0x0A22 */ char unk_A22[2];
-    /* 0x0A24 */ UnkFrodo *unk_A24;
-    /* 0x0A28 */ UnkSam *unk_A28;
+    /* 0x0A24 */ KModel *kmodel;
+    /* 0x0A28 */ Model *model;
     /* 0x0A2C */ s32 unk_A2C;
     /* 0x0A30 */ ModelNodeRenderInfo unk_A30;
     /* 0x0A50 */ ModelNode unk_A50;
-    /* 0x0AA8 */ StructAA8 *unk_AA8;
+    /* 0x0AA8 */ NodeAttachment *nodeAttachments;
     /* 0x0AAC */ char unk_AAC[4];
-    /* 0x0AB0 */ BatchInfo unk_AB0[60];
+    /* 0x0AB0 */ BatchInfo renderBatches[60];
     /* 0x1F50 */ u8 unk_1F50[30];
     /* 0x1F6E */ u8 unk_1F6E[30];
     /* 0x1F8C */ char unk_1F8C[4];
@@ -404,8 +400,8 @@ typedef struct AssetSP2 {
 } AssetSP2;
 
 typedef struct Object {
-    /* 0x000 */ Vec4i unk_000;
-    /* 0x010 */ Vec4i unk_010;
+    /* 0x000 */ Vec4i acceleration;
+    /* 0x010 */ Vec4i velocity;
     /* 0x020 */ Vec4i pos;
     /* 0x030 */ char unk_030[0x50 - 0x30];
     /* 0x050 */ Vec4s rotation;
@@ -422,8 +418,8 @@ typedef struct Object {
     /* 0x07C */ s16 unk_07C;
     /* 0x07E */ s16 unk_07E;
     /* 0x080 */ s32 flags;
-    /* 0x084 */ s16 spriteId;
-    /* 0x086 */ s16 unk_086;
+    /* 0x084 */ s16 frameIndex;
+    /* 0x086 */ s16 previousFrameIndex;
     /* 0x088 */ ColorRGBA unk_088;
     /* 0x08C */ s16 unk_08C;
     /* 0x08E */ char unk_08E[2];
@@ -755,9 +751,9 @@ typedef struct Player {
     /* 0x0DC0 */ void *unk_DC0[3]; // size unknown
     /* 0x0DCC */ void *unk_DCC[3]; // size unknown
     /* 0x0DD8 */ char unk_DD8[4];
-    /* 0x0DDC */ UnkSam *unk_DDC;
+    /* 0x0DDC */ Model *unk_DDC;
     /* 0x0DE0 */ char unk_DE0[4];
-    /* 0x0DE4 */ UnkSam *unk_DE4;
+    /* 0x0DE4 */ Model *unk_DE4;
     /* 0x0DE8 */ PlayerSub6 unk_DE8;
     /* 0x2240 */ PlayerSub6 unk_2240;
     /* 0x3698 */ PlayerSub6 unk_3698;
@@ -781,7 +777,7 @@ typedef struct Player12 {
     /* 0x0C */ s16 unk_0C;
     /* 0x0E */ u8 unk_0E;
     /* 0x0F */ u8 unk_0F;
-    /* 0x0F */ u8 unk_10;
+    /* 0x0F */ u8 isDummy;
     /* 0x0F */ u8 unk_11;
 } Player12; // size = 0x12
 
@@ -791,21 +787,17 @@ typedef struct K2DefSub {
 } K2DefSub; // size = 0x14
 
 typedef struct K2Def {
-    /* 0x00 */ char *unk_00;
-    /* 0x04 */ ObjFunc unk_04;
+    /* 0x00 */ char *name;
+    /* 0x04 */ ObjFunc taskFunc;
     /* 0x08 */ s16 unk_08;
-    /* 0x0A */ s16 unk_0A;
+    /* 0x0A */ s16 objPriority;
     /* 0x0C */ K2DefSub *unk_0C;
 } K2Def;
 
 typedef struct UnkK2Def {
-    /* 0x00 */ char *unk_00;
-    /* 0x04 */ ObjFunc unk_04;
-    /* 0x08 */ s16 unk_08;
-    /* 0x0A */ s16 unk_0A;
-    /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ s32 unk_10;
-    /* 0x14 */ s32 unk_14;
+    /* 0x00 */ K2Def base;
+    /* 0x10 */ s32 flags;
+    /* 0x14 */ s32 startingFrame;
 } UnkK2Def;
 
 typedef struct Unk80015E74 {

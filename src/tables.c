@@ -6,27 +6,27 @@ void run_2_mode(void);
 void run_3_mode(void);
 void run_4_mode(void);
 void run_player_selection_mode(void);
-void func_80007248(void);
-void func_80007374(void);
-void func_80007474(void);
-void run_battle_mode(void);
-void func_800070F0(void);
-void func_80007674(void);
-void func_80007774(void);
-void func_80007868(void);
-void func_80007968(void);
-void func_80007A68(void);
+void run_battle_aaron_mode(void);
+void run_battle_demitron_mode(void);
+void run_battle_demonica_mode(void);
+void run_battle_eve_mode(void);
+void run_battle_gore_mode(void);
+void run_battle_morphix_mode(void);
+void run_battle_niiki_mode(void);
+void run_battle_scarlet_mode(void);
+void run_battle_sonork_mode(void);
+void run_battle_zenmuron_mode(void);
 void run_17_mode(void);
-void func_800082CC(void);
-void func_800083EC(void);
-void func_80008510(void);
-void func_80008634(void);
-void func_800081A8(void);
-void func_80008758(void);
-void func_8000887C(void);
-void func_800089A0(void);
-void func_80008AC4(void);
-void func_80008BE8(void);
+void run_intro_aaron_mode(void);
+void run_intro_demitron_mode(void);
+void run_intro_demonica_mode(void);
+void run_intro_eve_mode(void);
+void run_intro_gore_mode(void);
+void run_intro_morphix_mode(void);
+void run_intro_niiki_mode(void);
+void run_intro_scarlet_mode(void);
+void run_intro_sonork_mode(void);
+void run_intro_zenmuron_mode(void);
 void func_80008D98(void);
 void func_80008FDC(void);
 void func_800092B0(void);
@@ -157,29 +157,29 @@ GameMode gGameModes[] = {
     { run_3_mode, 0x90000, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, 192, 192, 192, 0 },
     { run_4_mode, 0x90000, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, 192, 192, 192, 0 },
     { run_player_selection_mode, 0x20000, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, 192, 192, 192, 0 },
-    { func_80007248, 0xB0000, 0, 0, 0, 0, 0, 113, 108, 97, 0, 945, 1000, &D_8004B624, 69, 55, 88, 0 },
-    { func_80007374, 0xB0000, 0, 113, 65, 59, 0, 234, 89, 69, 0, 850, 1000, &D_8004B644, 84, 26, 25, 0 },
-    { func_80007474, 0xB0000, 0, 19, 32, 28, 0, 4, 4, 14, 0, 945, 1000, &D_8004B664, 36, 77, 54, 0 },
-    { run_battle_mode, 0xB0000, 0, 84, 124, 190, 0, 27, 62, 21, 0, 945, 1000, &D_8004B684, 23, 25, 27, 0 },
-    { func_800070F0, 0xB0000, 0, 67, 107, 186, 0, 40, 32, 40, 0, 945, 1000, &D_8004B6A4, 62, 52, 74, 0 },
-    { func_80007248, 0xB0000, 0, 61, 105, 194, 0, 40, 32, 40, 0, 945, 1000, &D_8004B624, 50, 60, 70, 0 },
-    { func_80007674, 0xB0000, 0, 42, 31, 70, 0, 56, 43, 85, 0, 945, 1000, &D_8004B6C4, 50, 60, 70, 0 },
-    { func_80007774, 0xB0000, 0, 13, 14, 14, 0, 26, 20, 18, 0, 850, 1000, &D_8004B6E4, 63, 29, 33, 0 },
-    { func_80007868, 0xB0000, 0, 36, 32, 30, 0, 123, 94, 69, 0, 945, 1000, &D_8004B704, 53, 43, 52, 0 },
-    { func_80007968, 0xB0000, 0, 112, 105, 109, 0, 114, 101, 81, 0, 945, 1000, &D_8004B724, 56, 46, 34, 0 },
-    { func_80007A68, 0xB0000, 0, 2, 7, 16, 0, 1, 6, 14, 0, 945, 1000, &D_8004B744, 8, 16, 69, 0 },
+    { run_battle_aaron_mode, 0xB0000, 0, 0, 0, 0, 0, 113, 108, 97, 0, 945, 1000, &D_8004B624, 69, 55, 88, 0 },
+    { run_battle_demitron_mode, 0xB0000, 0, 113, 65, 59, 0, 234, 89, 69, 0, 850, 1000, &D_8004B644, 84, 26, 25, 0 },
+    { run_battle_demonica_mode, 0xB0000, 0, 19, 32, 28, 0, 4, 4, 14, 0, 945, 1000, &D_8004B664, 36, 77, 54, 0 },
+    { run_battle_eve_mode, 0xB0000, 0, 84, 124, 190, 0, 27, 62, 21, 0, 945, 1000, &D_8004B684, 23, 25, 27, 0 },
+    { run_battle_gore_mode, 0xB0000, 0, 67, 107, 186, 0, 40, 32, 40, 0, 945, 1000, &D_8004B6A4, 62, 52, 74, 0 },
+    { run_battle_aaron_mode, 0xB0000, 0, 61, 105, 194, 0, 40, 32, 40, 0, 945, 1000, &D_8004B624, 50, 60, 70, 0 },
+    { run_battle_morphix_mode, 0xB0000, 0, 42, 31, 70, 0, 56, 43, 85, 0, 945, 1000, &D_8004B6C4, 50, 60, 70, 0 },
+    { run_battle_niiki_mode, 0xB0000, 0, 13, 14, 14, 0, 26, 20, 18, 0, 850, 1000, &D_8004B6E4, 63, 29, 33, 0 },
+    { run_battle_scarlet_mode, 0xB0000, 0, 36, 32, 30, 0, 123, 94, 69, 0, 945, 1000, &D_8004B704, 53, 43, 52, 0 },
+    { run_battle_sonork_mode, 0xB0000, 0, 112, 105, 109, 0, 114, 101, 81, 0, 945, 1000, &D_8004B724, 56, 46, 34, 0 },
+    { run_battle_zenmuron_mode, 0xB0000, 0, 2, 7, 16, 0, 1, 6, 14, 0, 945, 1000, &D_8004B744, 8, 16, 69, 0 },
     { run_17_mode, 0xB0000, 0, 61, 105, 194, 0, 40, 32, 40, 0, 945, 1000, &D_8004935C, 192, 192, 192, 0 },
-    { func_800082CC, 0xB0000, 0, 0, 0, 0, 0, 113, 108, 97, 0, 945, 1000, &D_8004B624, 69, 55, 88, 0 },
-    { func_800083EC, 0xB0000, 0, 113, 65, 59, 0, 234, 89, 69, 0, 850, 1000, &D_8004B644, 84, 26, 25, 0 },
-    { func_80008510, 0xB0000, 0, 19, 32, 28, 0, 4, 4, 14, 0, 945, 1000, &D_8004B664, 36, 77, 54, 0 },
-    { func_80008634, 0xB0000, 0, 84, 124, 190, 0, 27, 62, 21, 0, 945, 1000, &D_8004B684, 23, 25, 27, 0 },
-    { func_800081A8, 0xB0000, 0, 61, 105, 194, 0, 40, 32, 40, 0, 945, 1000, &D_8004B6A4, 62, 52, 74, 0 },
-    { func_800081A8, 0xB0000, 0, 67, 107, 186, 0, 40, 32, 40, 0, 945, 1000, &D_8004B624, 50, 60, 70, 0 },
-    { func_80008758, 0xB0000, 0, 42, 31, 70, 0, 56, 43, 85, 0, 945, 1000, &D_8004B6C4, 50, 60, 70, 0 },
-    { func_8000887C, 0xB0000, 0, 13, 14, 14, 0, 26, 20, 18, 0, 850, 1000, &D_8004B6E4, 63, 29, 33, 0 },
-    { func_800089A0, 0xB0000, 0, 36, 32, 30, 0, 123, 94, 69, 0, 945, 1000, &D_8004B704, 53, 43, 52, 0 },
-    { func_80008AC4, 0xB0000, 0, 112, 105, 109, 0, 114, 101, 81, 0, 945, 1000, &D_8004B724, 56, 46, 34, 0 },
-    { func_80008BE8, 0xB0000, 0, 2, 7, 16, 0, 1, 6, 14, 0, 945, 1000, &D_8004B744, 8, 16, 69, 0 },
+    { run_intro_aaron_mode, 0xB0000, 0, 0, 0, 0, 0, 113, 108, 97, 0, 945, 1000, &D_8004B624, 69, 55, 88, 0 },
+    { run_intro_demitron_mode, 0xB0000, 0, 113, 65, 59, 0, 234, 89, 69, 0, 850, 1000, &D_8004B644, 84, 26, 25, 0 },
+    { run_intro_demonica_mode, 0xB0000, 0, 19, 32, 28, 0, 4, 4, 14, 0, 945, 1000, &D_8004B664, 36, 77, 54, 0 },
+    { run_intro_eve_mode, 0xB0000, 0, 84, 124, 190, 0, 27, 62, 21, 0, 945, 1000, &D_8004B684, 23, 25, 27, 0 },
+    { run_intro_gore_mode, 0xB0000, 0, 61, 105, 194, 0, 40, 32, 40, 0, 945, 1000, &D_8004B6A4, 62, 52, 74, 0 },
+    { run_intro_gore_mode, 0xB0000, 0, 67, 107, 186, 0, 40, 32, 40, 0, 945, 1000, &D_8004B624, 50, 60, 70, 0 },
+    { run_intro_morphix_mode, 0xB0000, 0, 42, 31, 70, 0, 56, 43, 85, 0, 945, 1000, &D_8004B6C4, 50, 60, 70, 0 },
+    { run_intro_niiki_mode, 0xB0000, 0, 13, 14, 14, 0, 26, 20, 18, 0, 850, 1000, &D_8004B6E4, 63, 29, 33, 0 },
+    { run_intro_scarlet_mode, 0xB0000, 0, 36, 32, 30, 0, 123, 94, 69, 0, 945, 1000, &D_8004B704, 53, 43, 52, 0 },
+    { run_intro_sonork_mode, 0xB0000, 0, 112, 105, 109, 0, 114, 101, 81, 0, 945, 1000, &D_8004B724, 56, 46, 34, 0 },
+    { run_intro_zenmuron_mode, 0xB0000, 0, 2, 7, 16, 0, 1, 6, 14, 0, 945, 1000, &D_8004B744, 8, 16, 69, 0 },
     { func_80008D98, 0xB0000, 0, 112, 105, 109, 0, 114, 101, 81, 0, 945, 1000, &D_8004B724, 56, 46, 34, 0 },
     { func_80008FDC, 0xB0000, 0, 113, 65, 59, 0, 234, 89, 69, 0, 850, 1000, &D_8004B644, 84, 26, 25, 0 },
     { func_800092B0, 0xB0000, 0, 0, 0, 0, 0, 0, 4, 10, 0, 630, 1000, &D_8004935C, 192, 192, 192, 0 },

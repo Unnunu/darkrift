@@ -79,5 +79,5 @@ void thread3_main(void *arg0) {
     osCreateMesgQueue(&gSchedTaskRequestQueue, D_8005AE7C, ARRAY_COUNT(D_8005AE7C));
     osCreateMesgQueue(&gSchedSPTaskQueue, gSchedSPTaskMessages, ARRAY_COUNT(gSchedSPTaskMessages));
     osStartThread(&sThread4);
-    func_800027A0();
+    game_main();
 }

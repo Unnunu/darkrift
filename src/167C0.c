@@ -23,7 +23,7 @@ void func_80016A00(Object *);
 void func_800177C0(Object *);
 
 void func_80015BC0(Object *obj) {
-    D_8005BFC0 |= 0xC1;
+    D_8005BFC0 |= GAME_FLAG_80 | GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
     gGameMode = GAME_MODE_PLAYER_SELECTION;
     func_800194E0(50);
     if (D_800B6328[PLAYER_1].unk_02 != 0) {
@@ -38,7 +38,7 @@ void func_80015BC0(Object *obj) {
 }
 
 void func_80015C58(Object *obj) {
-    if (obj->spriteId >= obj->modInst->numAnimFrames) {
+    if (obj->frameIndex >= obj->modInst->numAnimFrames) {
         if (--obj->vars[1] <= 0) {
             if (obj->vars[0] < obj->unk_088.a) {
                 obj->unk_088.a -= obj->vars[0];
@@ -48,32 +48,32 @@ void func_80015C58(Object *obj) {
             }
         }
     } else {
-        obj->spriteId++;
+        obj->frameIndex++;
     }
 
-    func_800386E8(obj);
+    model_update(obj);
 }
 
 void func_80015CD8(Object *obj) {
     if (--obj->vars[1] <= 0) {
         obj->flags &= ~4;
-        if (obj->spriteId == 0 && obj->vars[2] != -1) {
+        if (obj->frameIndex == 0 && obj->vars[2] != -1) {
             sound_play(2, obj->vars[2]);
         }
 
-        if (obj->spriteId < obj->modInst->numAnimFrames - 1) {
-            obj->spriteId++;
+        if (obj->frameIndex < obj->modInst->numAnimFrames - 1) {
+            obj->frameIndex++;
         }
     }
 }
 
 void func_80015D60(Object *obj) {
     obj->flags &= ~4;
-    if (obj->spriteId == 0 && obj->vars[2] != -1) {
+    if (obj->frameIndex == 0 && obj->vars[2] != -1) {
         sound_play(2, obj->vars[2]);
     }
 
-    if (obj->spriteId >= obj->modInst->numAnimFrames) {
+    if (obj->frameIndex >= obj->modInst->numAnimFrames) {
         if (--obj->vars[1] <= 0) {
             if (obj->vars[0] < obj->unk_088.a) {
                 obj->unk_088.a -= obj->vars[0];
@@ -84,7 +84,7 @@ void func_80015D60(Object *obj) {
             }
         }
     } else {
-        obj->spriteId++;
+        obj->frameIndex++;
     }
 }
 
@@ -102,7 +102,7 @@ void func_80015E24(Object *obj) {
 Object *func_80015E74(Unk80015E74 *arg0, s32 arg1) {
     Object *obj;
     Vec4i sp7C;
-    UnkSam *a3;
+    Model *a3;
     char sp28[80];
 
     sound_stop(2);
@@ -111,7 +111,7 @@ Object *func_80015E74(Unk80015E74 *arg0, s32 arg1) {
 
     a3 = gAssets[asset_find(sp28, arg1)].aux_data;
     sp7C.x = sp7C.y = sp7C.z = 0;
-    obj = func_8002BFF0(&sp7C, 0x1000, arg0->unk_08, a3);
+    obj = create_model_instance(&sp7C, 0x1000, arg0->unk_08, a3);
 
     if (obj != NULL) {
         obj->flags |= 0x1000000;
@@ -180,7 +180,7 @@ u16 func_800160C8(s32 arg0) {
     }
     obj = func_80015E74(a0, 0xABAB);
     if (obj != NULL) {
-        obj->spriteId = arg0 * 2;
+        obj->frameIndex = arg0 * 2;
     }
     return a0->unk_04;
 }
@@ -190,8 +190,8 @@ void func_80016144(Object *obj) {
 
     obj->flags &= ~4;
     if ((gPlayerInput[1 - D_8013C24C].buttons & INP_DIRECTION) && obj->vars[1] == 0) {
-        if (obj->spriteId < obj->modInst->numAnimFrames) {
-            obj->spriteId += 30;
+        if (obj->frameIndex < obj->modInst->numAnimFrames) {
+            obj->frameIndex += 30;
         }
         unkObj = D_8013C23C->varObj[5];
         unkObj->vars[1] -= 30;
@@ -199,7 +199,7 @@ void func_80016144(Object *obj) {
 
     obj->vars[1] = gPlayerInput[1 - D_8013C24C].buttons; // probably @bug
 
-    if (obj->spriteId >= obj->modInst->numAnimFrames) {
+    if (obj->frameIndex >= obj->modInst->numAnimFrames) {
         if (--obj->vars[1] <= 0) {
             if (obj->vars[0] < obj->unk_088.a) {
                 obj->unk_088.a -= obj->vars[0];
@@ -210,14 +210,14 @@ void func_80016144(Object *obj) {
             }
         }
     } else {
-        obj->spriteId++;
+        obj->frameIndex++;
     }
 }
 
 void func_80016264(void) {
     Object *obj;
 
-    for (obj = D_80052C50; obj != NULL; obj = obj->nextObject) {
+    for (obj = gObjectList; obj != NULL; obj = obj->nextObject) {
         if ((obj->flags & 0x4000) || (obj->flags & 2)) {
             obj->flags |= 0x10;
         }
@@ -273,9 +273,9 @@ void func_800162A4(Object *obj) {
     D_8013C834 = FALSE;
 
     if (D_8004C1D4 != 0) {
-        D_8013C240->spriteId = 3 + D_8004C1D4 * 3;
+        D_8013C240->frameIndex = 3 + D_8004C1D4 * 3;
         v1 = D_8013C240->varObj[0];
-        v1->spriteId = 0;
+        v1->frameIndex = 0;
         D_8013C240->currentTask->func = task_default_func;
     }
 
@@ -291,30 +291,30 @@ void func_800162A4(Object *obj) {
     D_80052D78[0] = D_80052D78[1] = 2;
 
     if (!D_8013C24E && D_800B6328[D_8013C24C].unk_08 != 0) {
-        D_8013C258[D_8013C24C][D_800B6328[D_8013C24C].unk_08 - 1]->spriteId = 13;
+        D_8013C258[D_8013C24C][D_800B6328[D_8013C24C].unk_08 - 1]->frameIndex = 13;
     } else if (D_8013C24E && D_800B6328[PLAYER_1].unk_08 != 0 && D_800B6328[PLAYER_2].unk_08 != 0) {
-        D_8013C258[PLAYER_1][D_800B6328[PLAYER_1].unk_08 - 1]->spriteId = 13;
-        D_8013C258[PLAYER_2][D_800B6328[PLAYER_2].unk_08 - 1]->spriteId = 13;
+        D_8013C258[PLAYER_1][D_800B6328[PLAYER_1].unk_08 - 1]->frameIndex = 13;
+        D_8013C258[PLAYER_2][D_800B6328[PLAYER_2].unk_08 - 1]->frameIndex = 13;
     } else {
         for (i = 0; i < D_8004C1D0; i++) {
-            D_8013C258[PLAYER_1][i]->spriteId = D_8013C258[PLAYER_2][i]->spriteId = 12;
+            D_8013C258[PLAYER_1][i]->frameIndex = D_8013C258[PLAYER_2][i]->frameIndex = 12;
         }
     }
 
-    gPlayers[PLAYER_1].unk_00->spriteId = 2;
-    gPlayers[PLAYER_2].unk_00->spriteId = 2;
-    func_80037500(gPlayers[PLAYER_1].unk_00);
-    func_80037500(gPlayers[PLAYER_2].unk_00);
+    gPlayers[PLAYER_1].unk_00->frameIndex = 2;
+    gPlayers[PLAYER_2].unk_00->frameIndex = 2;
+    model_change_animation(gPlayers[PLAYER_1].unk_00);
+    model_change_animation(gPlayers[PLAYER_2].unk_00);
 
     func_80012AF4(&gPlayers[PLAYER_1].unk_750.local_matrix);
     func_80012AF4(&gPlayers[PLAYER_1].unk_868.local_matrix);
     func_80012AF4(&gPlayers[PLAYER_2].unk_750.local_matrix);
     func_80012AF4(&gPlayers[PLAYER_2].unk_868.local_matrix);
 
-    func_8003635C(gPlayers[PLAYER_1].unk_00);
-    func_8003635C(gPlayers[PLAYER_2].unk_00);
-    gPlayers[PLAYER_1].unk_00->unk_086 = gPlayers[PLAYER_1].unk_00->spriteId;
-    gPlayers[PLAYER_2].unk_00->unk_086 = gPlayers[PLAYER_2].unk_00->spriteId;
+    model_update_animated_params(gPlayers[PLAYER_1].unk_00);
+    model_update_animated_params(gPlayers[PLAYER_2].unk_00);
+    gPlayers[PLAYER_1].unk_00->previousFrameIndex = gPlayers[PLAYER_1].unk_00->frameIndex;
+    gPlayers[PLAYER_2].unk_00->previousFrameIndex = gPlayers[PLAYER_2].unk_00->frameIndex;
     gPlayers[PLAYER_1].unk_0C->flags &= ~4;
     gPlayers[PLAYER_2].unk_0C->flags &= ~4;
 
@@ -340,7 +340,7 @@ u32 func_8001675C(Player *player, s32 arg1, u32 arg2) {
 u8 func_800167D4(void) {
 
     if ((D_80080230 == 10 || D_80080230 == 11) && D_800B6328[D_8013C24C].unk_02) {
-        gPlayerInput[1 - D_8013C24C].unk_0A = TRUE;
+        gPlayerInput[1 - D_8013C24C].enabled = TRUE;
         return (gPlayerInput[1 - D_8013C24C].buttons & INP_START) != 0;
     } else {
         return (gPlayerInput[D_8013C24C].buttons & INP_START) != 0;
@@ -363,16 +363,16 @@ void func_800168F0(Object *obj) {
     gPlayers[PLAYER_1].unk_94 = gPlayers[PLAYER_2].unk_94 = 0;
 
     if (--obj->vars[1] < 0 && func_800167D4()) {
-        D_8005BFC0 |= 1;
+        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
         obj->currentTask->flags |= 0x80;
-        D_8005BFC0 |= 0x20;
+        D_8005BFC0 |= GAME_FLAG_20;
         obj->flags |= 0x10;
     }
 
     if (--obj->vars[0] < 0) {
-        D_8005BFC0 |= 1;
+        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
         obj->currentTask->flags |= 0x80;
-        D_8005BFC0 |= 0x20;
+        D_8005BFC0 |= GAME_FLAG_20;
         obj->flags |= 0x10;
     }
 }
@@ -389,7 +389,7 @@ void func_80016A00(Object *obj) {
 
     if (D_800B6328[PLAYER_1].unk_02 || D_800B6328[PLAYER_2].unk_02) {
         a2 = func_80015FB4(7);
-        gGameMode = GAME_MODE_0;
+        gGameMode = GAME_MODE_MAIN_MENU;
         D_800B6328[PLAYER_1].unk_0A = D_800B6328[PLAYER_2].unk_0A = 0;
     } else {
         a2 = func_80015FB4(7);
@@ -444,7 +444,7 @@ void func_80016B6C(Object *obj) {
 void func_80016C34(Object *obj) {
     Object *a1;
 
-    D_8005BFC0 |= 4;
+    D_8005BFC0 |= GAME_FLAG_4;
 
     if (--obj->vars[2] == 0 || (--obj->vars[1] < 0 && func_800167D4())) {
         if (D_800B6328[PLAYER_1].unk_02 || D_800B6328[PLAYER_2].unk_02) {
@@ -454,7 +454,7 @@ void func_80016C34(Object *obj) {
         }
         obj->varObj[3] = D_80081450 = func_80015FB4(3);
 
-        gPlayerInput[1 - D_8013C24C].unk_0A = TRUE;
+        gPlayerInput[1 - D_8013C24C].enabled = TRUE;
         obj->currentTask->func = func_80016B6C;
         a1 = obj->varObj[4];
         if (a1 != NULL) {
@@ -502,7 +502,7 @@ ObjFunc func_80016D90(u32 playerId, u8 arg1) {
                 a3 = func_80016C34;
                 break;
             case 30:
-                gGameMode = GAME_MODE_0;
+                gGameMode = GAME_MODE_MAIN_MENU;
                 break;
         }
     }
@@ -524,7 +524,7 @@ void func_80016F6C(Object *obj) {
     obj->vars[2] = 0xbe;
     obj->currentTask->func = v02;
 
-    D_8005BFC0 &= ~0x200;
+    D_8005BFC0 &= ~GAME_FLAG_200;
     gPlayers[1 - D_8013C24C].unk_00->flags |= 4;
     gPlayers[D_8013C24C].unk_00->pos.x = gPlayers[D_8013C24C].unk_00->pos.y = gPlayers[D_8013C24C].unk_00->pos.z = 0;
     gPlayers[1 - D_8013C24C].unk_00->pos.x = gPlayers[1 - D_8013C24C].unk_00->pos.y =
@@ -602,7 +602,7 @@ void func_80017304(Object *obj) {
     if (D_8013C24E) {
         obj->currentTask->func = func_800171EC;
     } else {
-        gPlayerInput[1 - D_8013C24C].unk_0A = FALSE;
+        gPlayerInput[1 - D_8013C24C].enabled = FALSE;
         gPlayerInput[1 - D_8013C24C].buttons = 0;
         obj->currentTask->func = func_80016F6C;
     }
@@ -634,7 +634,7 @@ void func_800173DC(Object *obj) {
             func_8000636C(&gPlayers[PLAYER_2], 68, FALSE);
         }
 
-        gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = TRUE;
+        gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
 
         obj->currentTask->func = func_80017304;
         obj->currentTask->counter = 10;
@@ -668,8 +668,8 @@ void func_80017650(Object *obj) {
     UIElement sp60 = { 0x26, func_80017614, 0x4000000, 0x1001, "bars.sp2" };
     Vec4i sp50 = { 250, 220, 0, 0 };
 
-    gPlayerInput[D_8013C24C].unk_0A = TRUE;
-    D_8005BFC0 &= ~0x200;
+    gPlayerInput[D_8013C24C].enabled = TRUE;
+    D_8005BFC0 &= ~GAME_FLAG_200;
     if (TRUE) {
         D_80080234 = TRUE;
     }
@@ -703,7 +703,7 @@ void func_80017728(Object *obj) {
 }
 
 void func_800177C0(Object *obj) {
-    D_8005BFC0 &= ~0x200;
+    D_8005BFC0 &= ~GAME_FLAG_200;
 
     if (!D_80080234) {
         if (gPlayers[PLAYER_1].unk_00->unk_070 == D_800B6328[PLAYER_1].unk_0C &&
@@ -712,15 +712,15 @@ void func_800177C0(Object *obj) {
                 gPlayers[PLAYER_2].unk_00->unk_070 == D_800B6328[PLAYER_2].unk_0C) {
             obj->varObj[4] = D_80081448 = func_80015FB4(11);
             obj->vars[0] = 90;
-            gPlayerInput[D_8013C24C].unk_0A = TRUE;
+            gPlayerInput[D_8013C24C].enabled = TRUE;
             obj->currentTask->func = func_80017728;
         } else {
             obj->currentTask->func = func_80017650;
         }
     } else {
-        gPlayerInput[D_8013C24C].unk_0A = TRUE;
+        gPlayerInput[D_8013C24C].enabled = TRUE;
         if (D_8013C24E) {
-            gPlayerInput[1 - D_8013C24C].unk_0A = TRUE;
+            gPlayerInput[1 - D_8013C24C].enabled = TRUE;
             obj->currentTask->func = func_800171EC;
         } else {
             obj->currentTask->func = func_80016F6C;
@@ -734,12 +734,12 @@ void func_8001792C(Object *obj) {
     if (D_800801F0 || gPlayers[PLAYER_1].unk_00->unk_070 <= 0 || gPlayers[PLAYER_2].unk_00->unk_070 <= 0) {
         func_80029044();
         D_800801F0 = TRUE;
-        if (!(D_8005BFC0 & 4)) {
-            D_8005BFC0 |= 4;
+        if (!(D_8005BFC0 & GAME_FLAG_4)) {
+            D_8005BFC0 |= GAME_FLAG_4;
             return;
         }
 
-        gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = FALSE;
+        gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = FALSE;
         if (gPlayers[PLAYER_1].unk_00->unk_070 > gPlayers[PLAYER_2].unk_00->unk_070) {
             D_8013C24C = PLAYER_1;
         } else {
@@ -763,16 +763,16 @@ void func_8001792C(Object *obj) {
 }
 
 void func_80017A90(Object *obj) {
-    D_8005BFC0 |= 4;
-    gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = TRUE;
+    D_8005BFC0 |= GAME_FLAG_4;
+    gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
 
     if (++obj->vars[0] > 900) {
         gGameMode = GAME_MODE_29;
-        D_8005BFC0 |= 1;
+        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
         obj->flags |= 0x10;
     } else if ((gPlayerInput[PLAYER_1].buttons & INP_START) || (gPlayerInput[PLAYER_2].buttons & INP_START)) {
-        D_8005BFC0 |= 1;
-        gGameMode = GAME_MODE_0;
+        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+        gGameMode = GAME_MODE_MAIN_MENU;
         obj->flags |= 0x10;
     }
 }
@@ -781,13 +781,13 @@ void func_80017B3C(Object *obj) {
     if (D_80080230 == 30) {
         obj->currentTask->func = func_80017A90;
         obj->vars[0] = 0;
-        D_8005BFC0 |= 4;
+        D_8005BFC0 |= GAME_FLAG_4;
     } else {
         obj->currentTask->func = func_8001792C;
-        D_8005BFC0 &= ~4;
+        D_8005BFC0 &= ~GAME_FLAG_4;
     }
 
-    gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = TRUE;
+    gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
     gPlayers[PLAYER_1].unk_80 &= ~0x100000;
     gPlayers[PLAYER_2].unk_80 &= ~0x100000;
 
@@ -815,7 +815,7 @@ void func_80017CA8(void) {
     D_800801F0 = FALSE;
     D_8013C834 = 0;
 
-    gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = FALSE;
+    gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = FALSE;
     gPlayers[PLAYER_1].unk_80 |= 0x100000;
     gPlayers[PLAYER_2].unk_80 |= 0x100000;
     D_8013C250 = FALSE;

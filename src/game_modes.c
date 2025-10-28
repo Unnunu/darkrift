@@ -36,13 +36,13 @@ extern s32 D_800AA480;
 extern s16 D_80080232;
 extern s16 D_800B6368[11][2];
 
-extern s32 D_80081668;
+extern u32 D_80081668;
 extern u16 D_8013C250;
 
 void func_8001A674(Object *);
 void func_8001A334(Object *);
 void func_8002EA50(Object *, s32);
-Object *func_8002BFF0(Vec4i *, s32, void (*)(Object *), UnkSam *);
+Object *create_model_instance(Vec4i *, s32, void (*)(Object *), Model *);
 void func_800199E0(Object *);
 void sound_stop_one(s32, s32);
 void func_80020670(Object *);
@@ -80,9 +80,9 @@ void func_80006AE0(void) {
 
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
     if (D_80080230 == 40) {
-        gPlayerInput[1 - gPracticingPlayer].unk_0A = 0;
+        gPlayerInput[1 - gPracticingPlayer].enabled = FALSE;
     } else {
-        gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = TRUE;
+        gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
     }
 
     D_800801F0 = 0;
@@ -97,15 +97,15 @@ void func_80006C14(void) {
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
 
     if (D_80080230 == 40) {
-        gPlayerInput[1 - gPracticingPlayer].unk_0A = 0;
+        gPlayerInput[1 - gPracticingPlayer].enabled = FALSE;
     } else {
-        gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = TRUE;
+        gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
     }
 
     D_800801F0 = 0;
     gPlayers[PLAYER_1].unk_80 |= 0x100000;
     gPlayers[PLAYER_2].unk_80 |= 0x100000;
-    D_800801F1 = 0;
+    D_800801F1 = FALSE;
     D_80051F6C = D_80051F70 = D_8013C2A8 = D_8013C2AA = 0;
 }
 
@@ -127,10 +127,10 @@ void func_80006CEC(void) {
     D_800B6328[PLAYER_1].unk_0C = 400;
     D_800B6328[PLAYER_2].unk_0C = 400;
     D_800B6328[PLAYER_1].unk_0F = D_800B6328[PLAYER_2].unk_0F = 1;
-    D_800B6328[PLAYER_1].unk_10 = D_800B6328[PLAYER_2].unk_10 = 0;
+    D_800B6328[PLAYER_1].isDummy = D_800B6328[PLAYER_2].isDummy = 0;
 
     D_80080232 = D_80080230 = 20;
-    D_800801F1 = 1;
+    D_800801F1 = TRUE;
 
     for (i = 0; i < 2; i++) {
         for (j = 0; j < 11; j++) {
@@ -148,10 +148,9 @@ void func_80006CEC(void) {
 }
 
 void func_80006E0C(Object *obj) {
-    obj->vars[0]--;
-    if (obj->vars[0] < 0) {
+    if (--obj->vars[0] < 0) {
         obj->flags |= 0x10;
-        D_8005BFC0 |= 1;
+        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
         obj->currentTask->flags |= 0x80;
         osViBlack(0);
     }
@@ -173,17 +172,17 @@ void func_80006E6C(void) {
 
     asset_open_folder("/title/wait", 0x6000);
     sp30 = load_background("wait", 0, 0, 0, 0, 1, 0x6000);
-    D_8005BFC0 |= 0x410;
+    D_8005BFC0 |= GAME_FLAG_400 | GAME_FLAG_10;
     D_8008012C |= 0x20;
 
     obj = create_worker(&func_80006E0C, 0x1000);
     obj->vars[0] = 6;
-    func_80001D88();
+    main_loop();
 
     D_80080110 = sp2E;
     D_80080112 = sp2C;
     D_80080114 = sp2A;
-    D_8005BFC0 &= ~0x411;
+    D_8005BFC0 &= ~(GAME_FLAG_400 | GAME_FLAG_10 | GAME_FLAG_MODE_DONE);
     D_8008012C &= ~0x20;
     func_8002630C(0x6000);
     func_80014CB4(sp30);
@@ -193,7 +192,7 @@ void func_80006FB4(void) {
     D_8013C224 = gFrameCounter % 5;
     D_8013C226 = 0;
     D_80081430 = 0;
-    D_800B6328[PLAYER_1].unk_10 = D_800B6328[PLAYER_2].unk_10 = 0;
+    D_800B6328[PLAYER_1].isDummy = D_800B6328[PLAYER_2].isDummy = 0;
 
     if (D_8005BED2 != GAME_MODE_PLAYER_SELECTION) {
         func_80006E6C();
@@ -208,7 +207,7 @@ void func_80006FB4(void) {
     func_800052EC(0);
     func_800052EC(1);
 
-    if (D_800801F1 != 0) {
+    if (D_800801F1) {
         func_80006C14();
     } else {
         func_80006AE0();
@@ -222,7 +221,7 @@ void func_800070C0(void) {
     func_8002630C(0x5001);
 }
 
-void func_800070F0(void) {
+void run_battle_gore_mode(void) {
     s32 sp2C = D_800B6328[1].unk_06;
     Texture *bg;
 
@@ -241,7 +240,7 @@ void func_800070F0(void) {
     gCamera->currentTask->stackPos = 0;
 
     func_80006AE0();
-    func_80001D88();
+    main_loop();
 
     func_800070C0();
 }
@@ -258,7 +257,7 @@ void func_800071F0(Object *obj) {
 // unknown data
 s32 D_80049400[] = { 0x40000, task_default_func, 0x2800, 0x10000000, 0, "tc", func_800071F0, 0x1000, 0 };
 
-void func_80007248(void) {
+void run_battle_aaron_mode(void) {
     s32 sp2C = D_800B6328[1].unk_06;
     Vec4i sp1C = { 0, -500, 0, 0 };
     Texture *bg;
@@ -278,11 +277,11 @@ void func_80007248(void) {
     gCamera->currentTask->stackPos = 0;
 
     func_80006AE0();
-    func_80001D88();
+    main_loop();
     func_800070C0();
 }
 
-void func_80007374(void) {
+void run_battle_demitron_mode(void) {
     s32 sp2C = D_800B6328[1].unk_06;
     Texture *bg;
 
@@ -301,11 +300,11 @@ void func_80007374(void) {
     gCamera->currentTask->stackPos = 0;
 
     func_80006AE0();
-    func_80001D88();
+    main_loop();
     func_800070C0();
 }
 
-void func_80007474(void) {
+void run_battle_demonica_mode(void) {
     s32 sp2C = D_800B6328[1].unk_06;
     Texture *bg;
 
@@ -324,11 +323,11 @@ void func_80007474(void) {
     gCamera->currentTask->stackPos = 0;
 
     func_80006AE0();
-    func_80001D88();
+    main_loop();
     func_800070C0();
 }
 
-void run_battle_mode(void) {
+void run_battle_eve_mode(void) {
     s32 sp2C = D_800B6328[1].unk_06;
     Texture *bg;
 
@@ -347,11 +346,11 @@ void run_battle_mode(void) {
     gCamera->currentTask->stackPos = 0;
 
     func_80006AE0();
-    func_80001D88();
+    main_loop();
     func_800070C0();
 }
 
-void func_80007674(void) {
+void run_battle_morphix_mode(void) {
     s32 sp2C = D_800B6328[1].unk_06;
     Texture *bg;
 
@@ -369,11 +368,11 @@ void func_80007674(void) {
     gCamera->currentTask->stackPos = 0;
 
     func_80006AE0();
-    func_80001D88();
+    main_loop();
     func_800070C0();
 }
 
-void func_80007774(void) {
+void run_battle_niiki_mode(void) {
     s32 sp2C = D_800B6328[1].unk_06;
 
     func_80006FB4();
@@ -389,11 +388,11 @@ void func_80007774(void) {
     gCamera->currentTask->stackPos = 0;
 
     func_80006AE0();
-    func_80001D88();
+    main_loop();
     func_800070C0();
 }
 
-void func_80007868(void) {
+void run_battle_scarlet_mode(void) {
     s32 sp2C = D_800B6328[1].unk_06;
     Texture *bg;
 
@@ -412,11 +411,11 @@ void func_80007868(void) {
     gCamera->currentTask->stackPos = 0;
 
     func_80006AE0();
-    func_80001D88();
+    main_loop();
     func_800070C0();
 }
 
-void func_80007968(void) {
+void run_battle_sonork_mode(void) {
     s32 sp2C = D_800B6328[1].unk_06;
     Texture *bg;
 
@@ -435,11 +434,11 @@ void func_80007968(void) {
     gCamera->currentTask->stackPos = 0;
 
     func_80006AE0();
-    func_80001D88();
+    main_loop();
     func_800070C0();
 }
 
-void func_80007A68(void) {
+void run_battle_zenmuron_mode(void) {
     s32 sp2C = D_800B6328[1].unk_06;
     Texture *bg;
 
@@ -458,7 +457,7 @@ void func_80007A68(void) {
     gCamera->currentTask->stackPos = 0;
 
     func_80006AE0();
-    func_80001D88();
+    main_loop();
     func_800070C0();
 }
 
@@ -468,14 +467,14 @@ void func_80007B68(Object *obj) {
     a3 = 1 - D_800B6328[PLAYER_2].unk_02;
     D_80080118 = 100;
 
-    if (D_8005BFC0 & 0x100) {
+    if (D_8005BFC0 & GAME_FLAG_100) {
         obj->vars[1]++;
         if (obj->vars[1] == 4) {
             obj->vars[1] = 0;
             if (D_80081250 + D_80081254->unk_1C + 40) {
                 D_80081254->unk_1C--;
             } else {
-                if (D_80080230 != GAME_MODE_30) {
+                if (D_80080230 != 30) {
                     D_800B6328[D_80081668].unk_06 = TRUE;
                     D_800B6328[1 - D_80081668].unk_06 = FALSE;
                     gGameMode = D_800B6328[D_80081668].characterId + GAME_MODE_BATTLE_AARON;
@@ -483,23 +482,22 @@ void func_80007B68(Object *obj) {
                     gGameMode = D_800B6328[1 - D_80081668].characterId + GAME_MODE_BATTLE_AARON;
                     D_800B6328[PLAYER_1].unk_02 = 1;
                 }
-                D_8005BFC0 |= 0x81;
+                D_8005BFC0 |= GAME_FLAG_80 | GAME_FLAG_MODE_DONE;
                 obj->flags |= 0x10;
             }
         }
 
         gPlayerInput[a3].unk_08 = TRUE;
-        if ((gPlayerInput[a3].buttons & INP_START) ||
-            D_80080230 == GAME_MODE_30 && (gPlayerInput[1 - a3].buttons & INP_START)) {
+        if ((gPlayerInput[a3].buttons & INP_START) || D_80080230 == 30 && (gPlayerInput[1 - a3].buttons & INP_START)) {
             func_80014CB4(D_80081254);
-            if (D_80080230 != GAME_MODE_30) {
+            if (D_80080230 != 30) {
                 gGameMode = D_800B6328[D_80081668].characterId + GAME_MODE_BATTLE_AARON;
                 D_800B6328[D_80081668].unk_06 = TRUE;
                 D_800B6328[1 - D_80081668].unk_06 = FALSE;
             } else {
-                gGameMode = GAME_MODE_0;
+                gGameMode = GAME_MODE_MAIN_MENU;
             }
-            D_8005BFC0 |= 0x81;
+            D_8005BFC0 |= GAME_FLAG_80 | GAME_FLAG_MODE_DONE;
             obj->flags |= 0x10;
             D_80081254->flags &= ~2;
         }
@@ -538,8 +536,8 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
 
     s0 = D_800B6328[PLAYER_2].unk_02;
     func_8002630C(0xABAB);
-    D_800B6328[s0].unk_10 = 1;
-    D_800B6328[1 - s0].unk_10 = 0;
+    D_800B6328[s0].isDummy = 1;
+    D_800B6328[1 - s0].isDummy = 0;
 
     if (D_8005BED2 != GAME_MODE_PLAYER_SELECTION && D_8005BED0 != GAME_MODE_29) {
         func_80006E6C();
@@ -571,10 +569,10 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
         a1->flags |= 0x10000000;
     }
 
-    D_8005BFC0 |= 4;
+    D_8005BFC0 |= GAME_FLAG_4;
 
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
-    gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = TRUE;
+    gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
 
     D_800801F0 = 0;
 
@@ -590,7 +588,7 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
     D_8008012C |= 4;
 }
 
-void func_800081A8(void) {
+void run_intro_gore_mode(void) {
     s32 temp_s0 = D_800B6328[PLAYER_2].unk_06;
 
     asset_open_folder("/gore/goreint", 0x3000);
@@ -600,7 +598,7 @@ void func_800081A8(void) {
     load_background("bg3", 0, 74, 0x2000, 0x10000, 0, temp_s0);
     load_background("bg0", 0, 15, 0x1000, 0x10000, 1, temp_s0);
     func_8001B5B0("arena", temp_s0);
-    func_80001D88();
+    main_loop();
 
     func_8002630C(0x3000);
     func_800070C0();
@@ -609,7 +607,7 @@ void func_800081A8(void) {
     }
 }
 
-void func_800082CC(void) {
+void run_intro_aaron_mode(void) {
     s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/aaro/aaroint", 0x3000);
@@ -619,7 +617,7 @@ void func_800082CC(void) {
     load_background("bg2", 0, 74, 0x10000, 0x10000, 0, temp_s0);
     load_background("bg0", 0, 15, 0x8000, 0x10000, 1, temp_s0);
     func_8001B5B0("arena", temp_s0);
-    func_80001D88();
+    main_loop();
 
     func_8002630C(0x3000);
     func_800070C0();
@@ -628,7 +626,7 @@ void func_800082CC(void) {
     }
 }
 
-void func_800083EC(void) {
+void run_intro_demitron_mode(void) {
     s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/demi/demiint", 0x3000);
@@ -638,7 +636,7 @@ void func_800083EC(void) {
     load_background("bg2", 0, -8, 0x2000, 0x10000, 0, temp_s0);
     load_background("bg0", 0, 8, 0x1000, 0x10000, 1, temp_s0);
     func_8001B5B0("arena", temp_s0);
-    func_80001D88();
+    main_loop();
     func_8002630C(0x3000);
     func_800070C0();
     if (D_80080230 != 30) {
@@ -646,7 +644,7 @@ void func_800083EC(void) {
     }
 }
 
-void func_80008510(void) {
+void run_intro_demonica_mode(void) {
     s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/demo/demoint", 0x3000);
@@ -656,7 +654,7 @@ void func_80008510(void) {
     load_background("bg2", 0, 32, 0x2000, 0x10000, 0, temp_s0);
     load_background("bg0", 0, -24, 0x1000, 0x10000, 1, temp_s0);
     func_8001B5B0("arena", temp_s0);
-    func_80001D88();
+    main_loop();
     func_8002630C(0x3000);
     func_800070C0();
     if (D_80080230 != 30) {
@@ -664,7 +662,7 @@ void func_80008510(void) {
     }
 }
 
-void func_80008634(void) {
+void run_intro_eve_mode(void) {
     s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/eve/eveint", 0x3000);
@@ -674,7 +672,7 @@ void func_80008634(void) {
     load_background("bg2", 0, 52, 0x2000, 0x10000, 0, temp_s0);
     load_background("bg0", 0, 0, 0x1000, 0x10000, 1, temp_s0);
     func_8001B5B0("arena", temp_s0);
-    func_80001D88();
+    main_loop();
     func_8002630C(0x3000);
     func_800070C0();
     if (D_80080230 != 30) {
@@ -682,7 +680,7 @@ void func_80008634(void) {
     }
 }
 
-void func_80008758(void) {
+void run_intro_morphix_mode(void) {
     s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/morp/morpint", 0x3000);
@@ -692,7 +690,7 @@ void func_80008758(void) {
     load_background("bg2", 0, 96, 0x2000, 0x10000, 0, temp_s0);
     load_background("bg0", 0, 8, 0x1000, 0x10000, 1, temp_s0);
     func_8001B5B0("arena", temp_s0);
-    func_80001D88();
+    main_loop();
     func_8002630C(0x3000);
     func_800070C0();
     if (D_80080230 != 30) {
@@ -700,7 +698,7 @@ void func_80008758(void) {
     }
 }
 
-void func_8000887C(void) {
+void run_intro_niiki_mode(void) {
     s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/niik/niikint", 0x3000);
@@ -710,7 +708,7 @@ void func_8000887C(void) {
     load_background("bg2", 0, 94, 0x2000, 0x10000, 0, temp_s0);
     load_background("bg0", 0, -8, 0x1000, 0x10000, 1, temp_s0);
     func_8001B5B0("arena", temp_s0);
-    func_80001D88();
+    main_loop();
     func_8002630C(0x3000);
     func_800070C0();
     if (D_80080230 != 30) {
@@ -718,7 +716,7 @@ void func_8000887C(void) {
     }
 }
 
-void func_800089A0(void) {
+void run_intro_scarlet_mode(void) {
     s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/scar/scarint", 0x3000);
@@ -728,7 +726,7 @@ void func_800089A0(void) {
     load_background("bg2", 0, 0, 0x2000, 0x10000, 0, temp_s0);
     load_background("bg0", 0, -64, 0x1000, 0x10000, 1, temp_s0);
     func_8001B5B0("arena", temp_s0);
-    func_80001D88();
+    main_loop();
     func_8002630C(0x3000);
     func_800070C0();
     if (D_80080230 != 30) {
@@ -736,7 +734,7 @@ void func_800089A0(void) {
     }
 }
 
-void func_80008AC4(void) {
+void run_intro_sonork_mode(void) {
     s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/sono/sonoint", 0x3000);
@@ -746,7 +744,7 @@ void func_80008AC4(void) {
     load_background("bg2", 0, 26, 0x2000, 0x10000, 0, temp_s0);
     load_background("bg0", 0, -24, 0x1000, 0x10000, 1, temp_s0);
     func_8001B5B0("arena", temp_s0);
-    func_80001D88();
+    main_loop();
     func_8002630C(0x3000);
     func_800070C0();
     if (D_80080230 != 30) {
@@ -754,7 +752,7 @@ void func_80008AC4(void) {
     }
 }
 
-void func_80008BE8(void) {
+void run_intro_zenmuron_mode(void) {
     s32 temp_s0 = D_800B6328[1].unk_06;
 
     asset_open_folder("/zenm/zenmint", 0x3000);
@@ -764,7 +762,7 @@ void func_80008BE8(void) {
     load_background("bg2", 0, -6, 0x2000, 0x10000, 0, temp_s0);
     load_background("bg0", 0, 4, 0x1000, 0x10000, 1, temp_s0);
     func_8001B5B0("arena", temp_s0);
-    func_80001D88();
+    main_loop();
     func_8002630C(0x3000);
     func_800070C0();
     if (D_80080230 != 30) {
@@ -773,17 +771,17 @@ void func_80008BE8(void) {
 }
 
 void func_80008D0C(Object *obj) {
-    if (gPlayers->unk_00->spriteId + 2 == gPlayers->unk_90->unk_02) {
-        D_8005BFC0 |= 1;
+    if (gPlayers->unk_00->frameIndex + 2 == gPlayers->unk_90->unk_02) {
+        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
         obj->flags |= 0x10;
         gGameMode = GAME_MODE_LOGO;
     }
 }
 
 void func_80008D64(Object *obj) {
-    obj->spriteId++;
-    if (obj->spriteId >= obj->modInst->numAnimFrames - 1) {
-        obj->spriteId = 0;
+    obj->frameIndex++;
+    if (obj->frameIndex >= obj->modInst->numAnimFrames - 1) {
+        obj->frameIndex = 0;
     }
 }
 
@@ -801,16 +799,16 @@ void func_80008D98(void) {
     D_800B6328[PLAYER_2].unk_02 = 1;
 
     func_8002630C(0);
-    D_8005BFC0 |= 0x410;
+    D_8005BFC0 |= GAME_FLAG_400 | GAME_FLAG_10;
     D_8008012C |= 0x20;
 
     asset_open_folder("/sono/prize", 0x3000);
     sp30 = load_background("prize", 0, 0x64, 0, 0, 2, 0x3000);
     obj = create_worker(func_80006E0C, 0x1000);
     obj->vars[0] = 6;
-    func_80001D88();
+    main_loop();
 
-    D_8005BFC0 &= 0xFFEE;
+    D_8005BFC0 &= ~(GAME_FLAG_10 | GAME_FLAG_MODE_DONE);
     D_8008012C &= ~0x20;
     asset_open_folder("/sono/sonoboss", 0x3000);
     func_80007F4C(FALSE, 346, 0x3000);
@@ -818,12 +816,12 @@ void func_80008D98(void) {
     load_background("bg0", 0, -24, 0x1000, 0x10000, 1, 0);
     func_8001B5B0("arena", 0);
     a3 = gAssets[asset_find("relic.k2", 0x3000)].aux_data;
-    obj2 = func_8002BFF0(&sp34, 0x1000, func_80008D64, a3);
+    obj2 = create_model_instance(&sp34, 0x1000, func_80008D64, a3);
     obj2->rotation.y = 0x400;
     obj2->unk_088.a = 80;
     create_worker(func_80008D0C, 0x1000);
     func_80014CB4(sp30);
-    func_80001D88();
+    main_loop();
 
     func_8002630C(0x3000);
     func_8002630C(0);
@@ -862,10 +860,10 @@ void func_80008FDC(void) {
     gPlayers[PLAYER_2].unk_80 |= 0x400000;
 
     a1->flags |= 0x10000000;
-    D_8005BFC0 |= 4;
+    D_8005BFC0 |= GAME_FLAG_4;
 
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
-    gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = TRUE;
+    gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
 
     D_800801F0 = 0;
 
@@ -882,7 +880,7 @@ void func_80008FDC(void) {
     func_80006AE0();
 
     a3 = gAssets[asset_find("relic.k5", 0x3000)].aux_data;
-    obj = func_8002BFF0(&sp4C, 0x1000, func_80008D64, a3);
+    obj = create_model_instance(&sp4C, 0x1000, func_80008D64, a3);
     obj->rotation.y = 0x400;
     obj->unk_088.a = 80;
 
@@ -890,7 +888,7 @@ void func_80008FDC(void) {
     load_background("bg0", 0, 8, 0x1000, 0x10000, 1, sp44);
     func_8001B5B0("arena", sp44);
     D_800801F0 = 1;
-    func_80001D88();
+    main_loop();
     func_8002630C(0x3000);
     gGameMode = GAME_MODE_BATTLE_DEMITRON;
 }
@@ -908,23 +906,23 @@ void func_800092B0(void) {
     asset_open_folder("/title/ending", 0x4000);
 
     str_copy(sp44, "/");
-    str_concat(sp44, D_8004B844[sp54].unk_04->unk_00);
+    str_concat(sp44, D_8004B844[sp54].unk_04->name);
     str_concat(sp44, "/");
-    str_concat(sp44, D_8004B844[sp54].unk_04->unk_00);
+    str_concat(sp44, D_8004B844[sp54].unk_04->name);
     str_concat(sp44, "end");
     asset_open_folder(sp44, 0x4000);
 
     obj = create_worker(func_8001A334, 0x1000);
     obj->vars[0] = 60;
 
-    str_copy(sp38, D_8004B844[sp54].unk_04->unk_00);
+    str_copy(sp38, D_8004B844[sp54].unk_04->name);
     str_concat(sp38, "end1");
 
     D_80081254 = load_background(sp38, 0, 40, 0, 0, 1, 0x4000);
     D_80081254 = load_background("passwd", 0, 205, 0, 0, 1, 0x4000);
-    D_8005BFC0 |= 4;
+    D_8005BFC0 |= GAME_FLAG_4;
     D_8008012C |= 0x20;
-    func_80001D88();
+    main_loop();
     func_8002630C(0x4000);
 }
 
@@ -939,15 +937,15 @@ void func_80009480(void) {
     worker->vars[2] = 4;
     func_8001A158(worker, 0x4000);
     D_80080129 = FALSE;
-    D_8005BFC0 |= 4;
+    D_8005BFC0 |= GAME_FLAG_4;
     D_8008012C |= 0x20;
-    func_80001D88();
+    main_loop();
     func_8002630C(0x4000);
 }
 
 void func_80009554(Object *obj) {
     if (gPlayerInput[D_8013C24C].buttons & INP_START) {
-        D_8005BFC0 |= 1;
+        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
         obj->flags |= 0x10;
     }
 }
@@ -958,9 +956,9 @@ void func_800095A8(void) {
     load_background("easyimg", 0, 0, 0, 0, 1, 0x4000);
     create_worker(func_80009554, 0x1000);
     D_80080129 = TRUE;
-    D_8005BFC0 |= 4;
+    D_8005BFC0 |= GAME_FLAG_4;
     D_8008012C |= 0x20;
-    func_80001D88();
+    main_loop();
     func_8002630C(0x4000);
     gGameMode = GAME_MODE_36;
 }
@@ -1027,9 +1025,9 @@ void func_800096D0(u8 arg0) {
     }
     a3->flags |= 0x10000000;
 
-    D_8005BFC0 |= 4;
+    D_8005BFC0 |= GAME_FLAG_4;
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
-    gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = TRUE;
+    gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
     D_800801F0 = 0;
 
     gPlayers[PLAYER_1].unk_80 |= 0x100000;
@@ -1043,7 +1041,7 @@ void func_800096D0(u8 arg0) {
     D_8008012C |= 4;
     load_background("bg2", 0, -27, 0x2000, 0x10000, 0, nv);
     load_background("bg0", nv * 0, 8, 0x1000, 0x10000, 1, nv);
-    func_8000965C(7);
+    func_8000965C(GAME_MODE_BATTLE_DEMITRON);
     func_8001B5B0("arena", nv);
     D_800801F0 = 1;
 }
@@ -1055,12 +1053,11 @@ void func_800099F0(void) {
 
     sp7E = D_800B6328[PLAYER_2].unk_06;
     sp24 = 1 - sp7E;
-    D_800B6328[PLAYER_1].unk_10 = D_800B6328[PLAYER_2].unk_10 = 0;
+    D_800B6328[PLAYER_1].isDummy = D_800B6328[PLAYER_2].isDummy = 0;
     D_800801F0 = 1;
     D_80080234 = 1;
 
     switch (D_800B6328[sp24].characterId) {
-
         case AARON:
             str_copy(sp2C, "/aaro/aarogend");
             break;
@@ -1116,7 +1113,7 @@ void func_800099F0(void) {
     func_8000636C(&gPlayers[sp7E], 365, 1);
     func_8000636C(&gPlayers[sp24], 366, 1);
     create_worker(func_8001A7DC, 0x1000);
-    func_80001D88();
+    main_loop();
     func_8002630C(0x4000);
     func_8002630C(0xABAB);
     gGameMode = GAME_MODE_35;
@@ -1135,13 +1132,13 @@ void func_80009CE0(void) {
     asset_open_folder("/title/ending", 0x4000);
 
     str_copy(sp48, "/");
-    str_concat(sp48, D_8004B844[sp54].unk_04->unk_00);
+    str_concat(sp48, D_8004B844[sp54].unk_04->name);
     str_concat(sp48, "/");
-    str_concat(sp48, D_8004B844[sp54].unk_04->unk_00);
+    str_concat(sp48, D_8004B844[sp54].unk_04->name);
     str_concat(sp48, "end");
     asset_open_folder(sp48, 0x4000);
 
-    str_copy(sp3C, D_8004B844[sp54].unk_04->unk_00);
+    str_copy(sp3C, D_8004B844[sp54].unk_04->name);
     str_concat(sp3C, "end");
     D_80081254 = load_background(sp3C, 0, 250, 0, 0, 2, 0x4000);
     D_80081250 = D_80081254->height;
@@ -1152,13 +1149,13 @@ void func_80009CE0(void) {
     obj->vars[0] = 0;
 
     D_80080129 = FALSE;
-    D_8005BFC0 |= 4;
+    D_8005BFC0 |= GAME_FLAG_4;
     func_8002EA50(gCamera, sp56);
 }
 
 void func_80009E8C(void) {
     Object *obj;
-    UnkSam *a3;
+    Model *a3;
     Vec4i spA0 = { -600, 0, -30, 0 };
     Vec4i sp90 = { -400, 0, 200, 0 };
     Vec4i sp80 = { -400, 0, 0, 0 };
@@ -1176,7 +1173,7 @@ void func_80009E8C(void) {
 
     D_800801F0 = 1;
     D_80080234 = 1;
-    D_800B6328[sp7E].unk_10 = D_800B6328[sp24].unk_10 = 0;
+    D_800B6328[sp7E].isDummy = D_800B6328[sp24].isDummy = 0;
 
     switch (D_800B6328[sp24].characterId) {
         case AARON:
@@ -1227,7 +1224,7 @@ void func_80009E8C(void) {
 
     asset_open_folder("/demi/relic", 0x4000);
     a3 = gAssets[asset_find("relic.k5", 0x4000)].aux_data;
-    obj = func_8002BFF0(&sp80, 0x1000, func_80008D64, a3);
+    obj = create_model_instance(&sp80, 0x1000, func_80008D64, a3);
     obj->unk_088.a = 80;
 
     if (D_800B6328[sp24].characterId == SONORK || D_800B6328[sp24].characterId == DEMONICA) {
@@ -1236,20 +1233,20 @@ void func_80009E8C(void) {
         } else {
             a3 = gAssets[asset_find("dheadp1.k2", 0x4000)].aux_data;
         }
-        obj = func_8002BFF0(&sp80, 0x1000, NULL, a3);
+        obj = create_model_instance(&sp80, 0x1000, NULL, a3);
         obj->rotation.y = -1179;
         obj->unk_088.a = 255;
         obj->flags |= 0x10000000;
     }
 
-    func_80001D88();
+    main_loop();
     func_800263A8();
 }
 
 void func_8000A298(void) {
     s32 i;
 
-    D_800801F1 = 1;
+    D_800801F1 = TRUE;
     D_800B6328[PLAYER_1].unk_0A = D_800B6328[PLAYER_2].unk_0A = 0;
 
     for (i = 0; i < 11; i++) {
@@ -1258,7 +1255,7 @@ void func_8000A298(void) {
     }
 
     D_800B6328[PLAYER_1].unk_0F = D_800B6328[PLAYER_2].unk_0F = 1;
-    gPlayerInput[PLAYER_1].unk_0A = gPlayerInput[PLAYER_2].unk_0A = TRUE;
+    gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
     D_800B6328[PLAYER_1].unk_0C = D_800B6328[PLAYER_2].unk_0C = 400;
     D_800B6328[PLAYER_1].unk_04 = D_800B6328[PLAYER_2].unk_04 = 0;
 }
@@ -1273,11 +1270,11 @@ void run_0_mode(void) {
     asset_open_folder("/title", 0x2000);
     load_background("dr_title", 0, 0, 0, 0, 1, CONTEXT_2000);
     D_8008012C |= 0x20;
-    D_8005BFC0 |= 4;
+    D_8005BFC0 |= GAME_FLAG_4;
 
     if (D_8005BED2 == GAME_MODE_1) {
-        UnkSam *assetData = gAssets[asset_find("title.k2", 0x2000)].aux_data;
-        v1 = func_8002BFF0(&D_8004934C, 0x1000, func_800199E0, assetData);
+        Model *assetData = gAssets[asset_find("title.k2", 0x2000)].aux_data;
+        v1 = create_model_instance(&D_8004934C, 0x1000, func_800199E0, assetData);
         v1->flags |= 0x01000000;
     } else {
         v1 = create_ui_element(&sp30, &sp40, 0x2000);
@@ -1287,7 +1284,8 @@ void run_0_mode(void) {
 
     create_worker(func_80020670, 0x1000);
     func_8000A298();
-    func_80001D88();
+    main_loop();
+
     func_8002630C(0x2000);
     if (gGameMode != GAME_MODE_PLAYER_SELECTION) {
         func_8002630C(0xEEFF);
@@ -1336,7 +1334,7 @@ void run_intro_mode(void) {
 
     D_80080129 = FALSE;
     D_8008012C |= 0x20;
-    D_8005BFC0 |= 4;
+    D_8005BFC0 |= GAME_FLAG_4;
     asset_open_folder("/title/tit_int", CONTEXT_2000);
     asset_open_folder("/plyrsel/plyrsel", CONTEXT_EEFF);
     v0 = create_worker(func_80019F40, 0x1000);
@@ -1347,7 +1345,7 @@ void run_intro_mode(void) {
     D_80081250 = D_80081254->height;
 
     func_8000A298();
-    func_80001D88();
+    main_loop();
     func_8002630C(0x2000);
     if (gGameMode != GAME_MODE_PLAYER_SELECTION) {
         func_8002630C(0xEEFF);
@@ -1357,15 +1355,15 @@ void run_intro_mode(void) {
 void func_8000A828(void) {
     asset_open_folder("/title/error", 0x2000);
     load_background("messpg", 0, 90, 0, 180, 1, CONTEXT_2000);
-    func_80001D88();
+    main_loop();
 }
 
 void run_logo_mode(void) {
     func_800263A8();
-    D_8005BFC0 |= 4;
+    D_8005BFC0 |= GAME_FLAG_4;
     D_8008012C |= 0x20;
     D_8008012C |= 0x40;
-    if (!gPlayerInput[0].enabled && !gPlayerInput[1].enabled) {
+    if (!gPlayerInput[0].connected && !gPlayerInput[1].connected) {
         func_8000A828();
     }
 
@@ -1373,7 +1371,7 @@ void run_logo_mode(void) {
     load_background("vic", 0, 30, 0, 180, 1, CONTEXT_2000);
     load_background("n64lic", 0, 190, 0, 240, 1, CONTEXT_2000);
     create_worker(func_80019DE4, 0x1000);
-    func_80001D88();
+    main_loop();
     func_8002630C(0x2000);
 }
 
@@ -1407,32 +1405,32 @@ void run_1_mode(void) {
     asset_open_folder("/title/option", 0x2000);
     load_background("bgopt", 0, 0, 0, 0, 1, CONTEXT_2000);
     D_8008012C |= 0x20;
-    D_8005BFC0 |= 4;
+    D_8005BFC0 |= GAME_FLAG_4;
 
     s0 = create_ui_element(&spD4, &sp1AC, 0x2000);
 
     v0 = create_ui_element(&spC4, &sp198, 0x2000);
-    v0->spriteId = D_8004C1E4 + 202;
+    v0->frameIndex = D_8004C1E4 + 202;
     v0->vars[3] = s0;
 
     v0 = create_ui_element(&spB4, &sp184, 0x2000);
-    v0->spriteId = D_8004C1D4 + 51;
+    v0->frameIndex = D_8004C1D4 + 51;
     v0->vars[3] = s0;
 
     v0 = create_ui_element(&spA4, &sp170, 0x2000);
-    v0->spriteId = D_8004C1D0 + 11;
+    v0->frameIndex = D_8004C1D0 + 11;
     v0->vars[3] = s0;
 
     v0 = create_ui_element(&sp94, &sp15C, 0x2000);
-    v0->spriteId = D_8004A428 + 7;
+    v0->frameIndex = D_8004A428 + 7;
     v0->vars[3] = s0;
 
     v0 = create_ui_element(&sp84, &sp148, 0x2000);
-    v0->spriteId = gMusicVolume / (0x8000 / 9) + 11;
+    v0->frameIndex = gMusicVolume / (0x8000 / 9) + 11;
     v0->vars[3] = s0;
 
     v0 = create_ui_element(&sp74, &sp134, 0x2000);
-    v0->spriteId = gSoundVolume / (0x8000 / 9) + 11;
+    v0->frameIndex = gSoundVolume / (0x8000 / 9) + 11;
     v0->vars[3] = s0;
 
     v0 = create_ui_element(&sp64, &sp120, 0x2000);
@@ -1447,7 +1445,7 @@ void run_1_mode(void) {
     v0 = create_ui_element(&sp34, &spE4, 0x2000);
     v0->vars[3] = s0;
 
-    func_80001D88();
+    main_loop();
     func_8002630C(0x2000);
 }
 
@@ -1464,28 +1462,28 @@ void func_8000AFA4(Object *obj, s16 arg1) {
 
     switch (i) {
         case 0:
-            obj->spriteId = 67;
+            obj->frameIndex = 67;
             break;
         case 1:
-            obj->spriteId = 65;
+            obj->frameIndex = 65;
             break;
         case 2:
-            obj->spriteId = 68;
+            obj->frameIndex = 68;
             break;
         case 3:
-            obj->spriteId = 66;
+            obj->frameIndex = 66;
             break;
         case 4:
-            obj->spriteId = 61;
+            obj->frameIndex = 61;
             break;
         case 5:
-            obj->spriteId = 64;
+            obj->frameIndex = 64;
             break;
         case 6:
-            obj->spriteId = 63;
+            obj->frameIndex = 63;
             break;
         case 7:
-            obj->spriteId = 62;
+            obj->frameIndex = 62;
             break;
     }
 }
@@ -1527,7 +1525,7 @@ void run_2_mode(void) {
     asset_open_folder("/title/control", 0x2000);
     load_background("bgcont", 0, 0, 0, 0, 1, CONTEXT_2000);
     D_8008012C |= 0x20;
-    D_8005BFC0 |= 4;
+    D_8005BFC0 |= GAME_FLAG_4;
 
     create_ui_element(&sp13C, &sp200, 0x2000);
 
@@ -1616,7 +1614,7 @@ void run_2_mode(void) {
     v0->vars[0] = sp21C;
     v0->vars[1] = sp218;
 
-    func_80001D88();
+    main_loop();
     func_8002630C(0x2000);
 }
 
@@ -1630,8 +1628,8 @@ void run_3_mode(void) {
     D_80081460 = create_ui_element(&sp2C, &sp3C, 0x2000);
     func_80019278();
     D_8008012C |= 0x20;
-    D_8005BFC0 |= 4;
-    func_80001D88();
+    D_8005BFC0 |= GAME_FLAG_4;
+    main_loop();
     func_8002630C(0x2000);
 }
 
@@ -1644,9 +1642,9 @@ void run_4_mode(void) {
     asset_open_folder("/title/stats", 0x2000);
     load_background("aarost", 0, 13, 0, 0, 1, CONTEXT_2000);
     D_8008012C |= 0x20;
-    D_8005BFC0 |= 4;
+    D_8005BFC0 |= GAME_FLAG_4;
     create_worker(func_80018AD0, 0x1000);
-    func_80001D88();
+    main_loop();
     func_8002630C(0x2000);
 }
 
@@ -1676,5 +1674,5 @@ void run_17_mode(void) {
     gCamera->currentTask->func = func_8002DE20;
     gCamera->currentTask->stackPos = 0;
 
-    func_80001D88();
+    main_loop();
 }

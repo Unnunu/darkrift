@@ -35,7 +35,7 @@ u8 func_8002F9A0(Object *obj) {
 void func_8002F9E8(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
-    if (obj->spriteId > 5 && (player->unk_80 & 0x10)) {
+    if (obj->frameIndex > 5 && (player->unk_80 & 0x10)) {
         player->unk_80 &= ~0x10;
         obj->currentTask->flags |= 0x80;
     }
@@ -58,8 +58,8 @@ void func_8002FA78(Object *obj) {
 
 void func_8002FA98(Object *obj) {
     obj->unk_088.a -= 5;
-    obj->spriteId++;
-    if (obj->spriteId > 9) {
+    obj->frameIndex++;
+    if (obj->frameIndex > 9) {
         obj->flags |= 0x10;
     }
     obj->currentTask->counter = 2;
@@ -78,7 +78,7 @@ void func_8002FADC(Object *obj) {
         sp28.x = obj->pos.x;
         sp28.z = obj->pos.z;
         sp28.y = 0;
-        v0 = func_8002BF1C(&sp28, &D_80052CF0, 0xABAB);
+        v0 = create_3dsprite_with_properties(&sp28, &D_80052CF0, 0xABAB);
         if (v0 != NULL) {
             v0->unk_088.a = 60;
         }
@@ -200,7 +200,7 @@ void func_80030074(Object *obj) {
     Player *opponent = gPlayers + 1 - player->playerId;
     s16 characterId = player->characterId;
 
-    if (obj->spriteId == player->unk_90->unk_02 - 1) {
+    if (obj->frameIndex == player->unk_90->unk_02 - 1) {
         player->damage = obj->vars[2];
         if (obj->vars[3] < 0) {
             player->total_damage += player->damage;
@@ -222,7 +222,7 @@ void func_80030074(Object *obj) {
             func_80021DC4(obj);
             break;
         case DEMONICA:
-            if (D_800B6328[1 - player->playerId].characterId == NIIKI && obj->spriteId < player->unk_90->unk_02 - 1) {
+            if (D_800B6328[1 - player->playerId].characterId == NIIKI && obj->frameIndex < player->unk_90->unk_02 - 1) {
                 obj->pos.y = 100;
             } else {
                 obj->pos.y = 0;
@@ -240,7 +240,7 @@ void func_80030074(Object *obj) {
 void func_800301FC(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
-    if (obj->spriteId >= player->unk_90->unk_02 - 2) {
+    if (obj->frameIndex >= player->unk_90->unk_02 - 2) {
         player->damage = obj->vars[2];
         if (obj->vars[3] < 0) {
             player->total_damage += player->damage;
@@ -288,7 +288,7 @@ void func_80030330(Object *obj) {
         return;
     }
 
-    if (obj->spriteId != player->unk_90->unk_02 - 1) {
+    if (obj->frameIndex != player->unk_90->unk_02 - 1) {
         return;
     }
 
@@ -348,7 +348,7 @@ void func_800305FC(Object *obj) {
     s16 oppId;
     s32 unused[3];
 
-    if (obj->spriteId == player->unk_90->unk_04) {
+    if (obj->frameIndex == player->unk_90->unk_04) {
         characterId = player->characterId;
         oppId = 1 - player->playerId;
         func_800063C4(&gPlayers[oppId], D_8004B920[characterId].unk_02, 1);
@@ -434,7 +434,7 @@ Object *func_80030908(void) {
 }
 
 void func_80030954(Object *obj) {
-    if (obj->modInst->unk_010.local_matrix.w.y > -200.0f) {
+    if (obj->modInst->rootTransform.local_matrix.w.y > -200.0f) {
         func_800287AC(obj);
         obj->currentTask->func = func_800309B4;
         obj->currentTask->counter = 20;
@@ -442,7 +442,7 @@ void func_80030954(Object *obj) {
 }
 
 void func_800309B4(Object *obj) {
-    if (obj->modInst->unk_010.local_matrix.w.y > -200.0f) {
+    if (obj->modInst->rootTransform.local_matrix.w.y > -200.0f) {
         return;
     }
 
@@ -452,7 +452,7 @@ void func_800309B4(Object *obj) {
 void func_800309EC(Object *obj) {
     Object *v0;
 
-    if (obj->modInst->unk_010.local_matrix.w.y > -200.0f) {
+    if (obj->modInst->rootTransform.local_matrix.w.y > -200.0f) {
         func_800287AC(obj);
         v0 = func_80030908();
         if (v0 != NULL) {
@@ -467,7 +467,7 @@ void func_800309EC(Object *obj) {
 void func_80030A60(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
-    if (obj->spriteId > (player->unk_90->unk_02 >> 1)) {
+    if (obj->frameIndex > (player->unk_90->unk_02 >> 1)) {
         player->unk_0C->func = func_80024078;
         player->unk_0C->counter = 0;
         player->unk_0C->flags = 1;
@@ -485,8 +485,8 @@ void func_80030A60(Object *obj) {
 void func_80030AFC(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
-    obj->unk_010.y += obj->unk_000.y;
-    obj->pos.y += obj->unk_010.y >> 16;
+    obj->velocity.y += obj->acceleration.y;
+    obj->pos.y += obj->velocity.y >> 16;
 
     if (obj->pos.y >= 0) {
         obj->pos.y = 0;
@@ -499,8 +499,8 @@ void func_80030AFC(Object *obj) {
 }
 
 void func_80030B74(Object *obj) {
-    obj->unk_010.y = 0xFFEC0000;
-    obj->unk_000.y = 0x20000;
+    obj->velocity.y = 0xFFEC0000;
+    obj->acceleration.y = 0x20000;
     obj->currentTask->func = func_80030AFC;
     func_800310C8(obj);
 }
@@ -556,7 +556,7 @@ u8 func_80030C88(Object *obj) {
 void func_80030D60(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
-    obj->currentTask->counter = player->unk_20[player->unk_7E].unk_00 - obj->spriteId + 2;
+    obj->currentTask->counter = player->unk_20[player->unk_7E].unk_00 - obj->frameIndex + 2;
     obj->currentTask->func = func_80030DA8;
 }
 
@@ -565,7 +565,7 @@ void func_80030DA8(Object *obj) {
     Player *opponent = &gPlayers[player->playerId != PLAYER_1 ? PLAYER_1 : PLAYER_2];
     s16 a1 = 97;
 
-    if ((opponent->unk_80 & 0x30400) && D_80080210 < 400 && obj->spriteId >= player->unk_90->unk_04) {
+    if ((opponent->unk_80 & 0x30400) && D_80080210 < 400 && obj->frameIndex >= player->unk_90->unk_04) {
         if (opponent->unk_90->unk_34 & 0x200) {
             a1 = 206;
         }
@@ -644,7 +644,7 @@ void func_800310C8(Object *obj) {
 void func_80031164(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
-    if (obj->spriteId == player->unk_90->unk_02 - 1) {
+    if (obj->frameIndex == player->unk_90->unk_02 - 1) {
         func_800310C8(obj);
     }
 }
@@ -657,7 +657,7 @@ void func_800311A0(Object *obj) {
         opponent->unk_80 |= 0x10;
     }
 
-    if (obj->spriteId >= 24) {
+    if (obj->frameIndex >= 24) {
         player->unk_80 &= ~0x10;
     }
 }
@@ -709,7 +709,7 @@ void func_800313EC(Object *obj) {
     Object *player1 = D_80080228[PLAYER_1];
     Object *player2 = D_80080228[PLAYER_2];
 
-    if (!(player->unk_80 & 8) && obj->spriteId >= player->unk_90->unk_02 - 1) {
+    if (!(player->unk_80 & 8) && obj->frameIndex >= player->unk_90->unk_02 - 1) {
         if (player->playerId != PLAYER_1) {
             player2->rotation.y = 0xC00 - D_8008020C;
         } else {
@@ -775,7 +775,7 @@ u8 func_800315FC(Object *obj) {
         return TRUE;
     }
 
-    return gPlayerInput[player->playerId].unk_09;
+    return gPlayerInput[player->playerId].isMirrored;
 }
 
 u8 func_80031648(Object *obj) {
@@ -785,7 +785,7 @@ u8 func_80031648(Object *obj) {
         return TRUE;
     }
 
-    return ~gPlayerInput[player->playerId].unk_09;
+    return ~gPlayerInput[player->playerId].isMirrored;
 }
 
 u8 func_800316A0(Object *obj) {
@@ -797,7 +797,7 @@ u8 func_800316A0(Object *obj) {
     v1 = gPlayers + (1 - player->playerId);
 
     a1 = (v1->unk_90->unk_34 & 0x100000) &&
-         (v1->unk_90->unk_06 < v1->unk_00->spriteId || v1->unk_90->unk_04 > v1->unk_00->spriteId);
+         (v1->unk_90->unk_06 < v1->unk_00->frameIndex || v1->unk_90->unk_04 > v1->unk_00->frameIndex);
     return a1 > 0;
 }
 
@@ -810,7 +810,7 @@ void func_80031724(Object *obj) {
     v1 = &player->unk_20[player->unk_7E];
 
     if (!(v1->unk_34 & 0x4000) && D_800B6328[player->playerId].unk_02 && (v0->unk_90->unk_34 & 0x100000) &&
-        v0->unk_00->spriteId < v0->unk_90->unk_04) {
+        v0->unk_00->frameIndex < v0->unk_90->unk_04) {
         if (v0->unk_80 & 1) {
             func_800063C4(player, 0x27, 1);
             player->unk_BC = func_8001D070;
@@ -854,7 +854,7 @@ void func_8003184C(Object *arg0) {
     sp58.z = 0;
 
     temp_v0 = temp_ra->unk_7C;
-    temp_ft3 = D_80080228[temp_t8]->modInst->unk_010.wolrd_matrix.y.y + 360.0f;
+    temp_ft3 = D_80080228[temp_t8]->modInst->rootTransform.world_matrix.y.y + 360.0f;
     if (temp_v0 == 0 || temp_v0 == 7 || (temp_ra->unk_90->unk_34 & 0x4000)) {
         sp60.x = func_80012518(temp_ft3, D_80080210);
         var_t2 = func_8002CDFC((s16) ((0xC00 - arg0->rotation.y) & 0xFFF), (s16) (D_8008020C - (temp_t8 << 0xB)));
@@ -988,7 +988,7 @@ void func_80031D4C(Object *obj) {
     Unk_8004BA6C *s0;
 
     for (s0 = D_8004BA40[v0->characterId]; s0->unk_00 != 0; s0++) {
-        if (obj->spriteId == s0->unk_00) {
+        if (obj->frameIndex == s0->unk_00) {
             func_80031E4C(s0, &v0->unk_198, obj);
         }
     }
@@ -999,7 +999,7 @@ void func_80031DCC(Object *obj) {
     Unk_8004BA6C *s0;
 
     for (s0 = D_8004BA6C[v0->characterId]; s0->unk_00 != 0; s0++) {
-        if (obj->spriteId == s0->unk_00) {
+        if (obj->frameIndex == s0->unk_00) {
             func_80031E4C(s0, &v0->unk_198, obj);
         }
     }
@@ -1021,10 +1021,10 @@ void func_80031E4C(Unk_8004BA6C *arg0, PlayerSub9 *arg1, Object *arg2) {
             v0 = arg1->unk_08;
             break;
         case 3:
-            v0 = &arg1->unk_38.wolrd_matrix.w;
+            v0 = &arg1->unk_38.world_matrix.w;
             break;
         case 4:
-            v0 = &arg1->unk_150.wolrd_matrix.w;
+            v0 = &arg1->unk_150.world_matrix.w;
             break;
         case 5:
             v0 = arg1->unk_0C;
@@ -1060,7 +1060,7 @@ void func_80031F60(Object *obj) {
 void func_80031F88(Object *obj) {
     Player *v0 = (Player *) obj->varObj[0];
 
-    if (obj->spriteId == v0->unk_90->unk_02 - 2) {
+    if (obj->frameIndex == v0->unk_90->unk_02 - 2) {
         obj->currentTask->func = func_80031F60;
     }
 }
@@ -1097,7 +1097,7 @@ void func_8003208C(Object *obj) {
     Player *v0 = (Player *) obj->varObj[0];
     s32 v1 = v0->playerId;
 
-    if (obj->spriteId == v0->unk_90->unk_02 - 1) {
+    if (obj->frameIndex == v0->unk_90->unk_02 - 1) {
         sp20.x = sp20.y = 0;
         sp20.z = -D_8013C3C8[v1];
         func_8001370C(&sp20, &obj->rotation);
@@ -1113,7 +1113,7 @@ void func_80032130(Object *obj) {
     Player *v0 = (Player *) obj->varObj[0];
     s32 v1 = v0->playerId;
 
-    if (v0->characterId == DEMITRON && obj->spriteId > 50) {
+    if (v0->characterId == DEMITRON && obj->frameIndex > 50) {
         func_80021DC4(obj);
         obj->currentTask->func = func_80021DC4;
     } else {

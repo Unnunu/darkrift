@@ -135,8 +135,8 @@ void func_8002C490(Object *obj) {
     func_8002C340();
 
     if (obj->modInst->animations[0] != NULL) {
-        obj->spriteId++;
-        if (obj->spriteId >= obj->modInst->numAnimFrames - 1) {
+        obj->frameIndex++;
+        if (obj->frameIndex >= obj->modInst->numAnimFrames - 1) {
             obj->modInst->animations[0] = NULL;
             if (!D_800801F0 || D_80080234 == 0) {
                 obj->currentTask->func = func_8002EB2C;
@@ -170,14 +170,14 @@ void func_8002C6E8(Object *obj) {
 
     func_8002C490(obj);
 
-    if (obj->spriteId >= obj->modInst->numAnimFrames - 1 || (gPlayerInput[PLAYER_1].buttons & INP_START) ||
+    if (obj->frameIndex >= obj->modInst->numAnimFrames - 1 || (gPlayerInput[PLAYER_1].buttons & INP_START) ||
         (gPlayerInput[PLAYER_2].buttons & INP_START)) {
         if (D_80080230 != 40) {
             func_80017CA8();
         } else {
             gPlayers[PLAYER_1].unk_80 &= ~0x100000;
             gPlayers[PLAYER_2].unk_80 &= ~0x100000;
-            D_8005BFC0 &= ~4;
+            D_8005BFC0 &= ~GAME_FLAG_4;
         }
 
         D_80049AE4 = 0;
@@ -379,7 +379,7 @@ s16 func_8002CDFC(s16 arg0, s16 arg1) {
 void func_8002CE58(s32 arg0, s32 arg1) {
     Object *obj;
 
-    for (obj = D_80052C50; obj != NULL; obj = obj->nextObject) {
+    for (obj = gObjectList; obj != NULL; obj = obj->nextObject) {
         if (!(obj->flags & 0x10000)) {
             obj->pos.x += arg0;
             obj->pos.z += arg1;
@@ -457,7 +457,7 @@ void func_8002D1A8(Object *obj) {
     if (a2 != 0 || a3 != 0) {
         obj->vars[3] = a2;
         obj->vars[4] = a3;
-        func_800028E0(func_8002CFD4, NULL);
+        set_post_render_hook(func_8002CFD4, NULL);
     }
 }
 
@@ -517,14 +517,14 @@ void func_8002D278(Object *obj, u8 arg1) {
     func_8002CB28();
     if (func_8002CDFC(D_8008020E, spD8) > 0) {
         D_80080228[PLAYER_1]->flags &= ~0x200;
-        gPlayerInput[PLAYER_1].unk_09 = FALSE;
+        gPlayerInput[PLAYER_1].isMirrored = FALSE;
         D_80080228[PLAYER_2]->flags |= 0x200;
-        gPlayerInput[PLAYER_2].unk_09 = TRUE;
+        gPlayerInput[PLAYER_2].isMirrored = TRUE;
     } else {
         D_80080228[PLAYER_1]->flags |= 0x200;
-        gPlayerInput[PLAYER_1].unk_09 = TRUE;
+        gPlayerInput[PLAYER_1].isMirrored = TRUE;
         D_80080228[PLAYER_2]->flags &= ~0x200;
-        gPlayerInput[PLAYER_2].unk_09 = FALSE;
+        gPlayerInput[PLAYER_2].isMirrored = FALSE;
     }
 
     gCameraTarget.y = ((D_8013C360 * spC0) >> 0x10) + D_80052CBC - 480;
@@ -562,7 +562,7 @@ void func_8002D278(Object *obj, u8 arg1) {
     dz = gCameraTarget.z - gCamera->pos.z;
     dxAbs = ABS(dx);
     dzAbs = ABS(dz);
-    ft5 = DISTANCE(dxAbs, dzAbs);
+    ft5 = FAST_HYPOT(dxAbs, dzAbs);
     D_8013C594 = dy / ft5;
 
     func_80038F34(dx, dz, dxAbs, dzAbs);
@@ -623,7 +623,7 @@ void func_8002DCC8(Object *obj) {
         } else {
             gPlayers[PLAYER_1].unk_80 &= ~0x100000;
             gPlayers[PLAYER_2].unk_80 &= ~0x100000;
-            D_8005BFC0 &= ~4;
+            D_8005BFC0 &= ~GAME_FLAG_4;
         }
 
         D_80049AE4 = 0;
@@ -653,7 +653,7 @@ void func_8002DE20(Object *obj) {
     str_copy(sp18, D_80052CCC);
     sp18[7] = '1' + D_8013C224;
     assetId = asset_find(sp18, 0xABAB);
-    func_80038E00(gCamera, (AnimHeader *) gAssets[assetId].data);
+    camera_set_animation(gCamera, (AnimHeader *) gAssets[assetId].data);
     gCamera->currentTask->func = func_8002DCC8;
     gCamera->currentTask->counter = 0;
     gCamera->currentTask->flags = 1;
@@ -672,7 +672,7 @@ void func_8002DEFC(Object *obj) {
     str_copy(sp18, D_80052CCC);
     sp18[7] = '1' + D_8013C224;
     assetId = asset_find(sp18, 0xABAB);
-    func_80038E00(gCamera, (AnimHeader *) gAssets[assetId].data);
+    camera_set_animation(gCamera, (AnimHeader *) gAssets[assetId].data);
     gCamera->currentTask->func = func_8002C6E8;
     gCamera->currentTask->counter = 0;
     gCamera->currentTask->flags = 1;
@@ -952,14 +952,14 @@ void func_8002EB2C(Object *obj) {
 
     if (func_8002CDFC(D_8008020E, sp104) > 0) {
         D_80080228[PLAYER_1]->flags &= ~0x200;
-        gPlayerInput[PLAYER_1].unk_09 = FALSE;
+        gPlayerInput[PLAYER_1].isMirrored = FALSE;
         D_80080228[PLAYER_2]->flags |= 0x200;
-        gPlayerInput[PLAYER_2].unk_09 = TRUE;
+        gPlayerInput[PLAYER_2].isMirrored = TRUE;
     } else {
         D_80080228[PLAYER_1]->flags |= 0x200;
-        gPlayerInput[PLAYER_1].unk_09 = TRUE;
+        gPlayerInput[PLAYER_1].isMirrored = TRUE;
         D_80080228[PLAYER_2]->flags &= ~0x200;
-        gPlayerInput[PLAYER_2].unk_09 = FALSE;
+        gPlayerInput[PLAYER_2].isMirrored = FALSE;
     }
 
     if (func_8002C328(sp108) < 450 && D_8013C380 < 0x20000) {

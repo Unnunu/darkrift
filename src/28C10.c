@@ -61,8 +61,8 @@ void func_80028E84(void);
 
 void func_80028010(Object *obj) {
     obj->flags &= ~4;
-    if (obj->spriteId <= 12) {
-        obj->spriteId++;
+    if (obj->frameIndex <= 12) {
+        obj->frameIndex++;
         if (obj->unk_088.a > 100) {
             obj->unk_088.a -= 8;
         } else if (obj->unk_088.a > 3) {
@@ -78,8 +78,8 @@ void func_80028010(Object *obj) {
 void func_80028090(Object *obj) {
     if (--obj->vars[1] <= 0) {
         obj->flags &= ~4;
-        if (obj->spriteId <= 8) {
-            obj->spriteId++;
+        if (obj->frameIndex <= 8) {
+            obj->frameIndex++;
             if (obj->unk_088.a > 100) {
                 obj->unk_088.a -= 8;
             } else if (obj->unk_088.a > 4) {
@@ -120,7 +120,7 @@ void func_80028360(Object *obj) {
     if (--obj->unk_08C <= 0) {
         obj->unk_08C = obj->vars[2];
         v1 = obj->varObj[3];
-        v0 = func_8002BF1C(&v1->pos, &D_80051F50, 0xABAB);
+        v0 = create_3dsprite_with_properties(&v1->pos, &D_80051F50, 0xABAB);
         if (v0 == NULL) {
             return;
         } else {
@@ -158,9 +158,9 @@ void func_80028464(Object *obj) {
     if (v0->pos.y != 0) {
         return;
     }
-    sp20.x = v0->modInst->unk_010.wolrd_matrix.w.x;
-    sp20.y = v0->modInst->unk_010.wolrd_matrix.w.y;
-    sp20.z = v0->modInst->unk_010.wolrd_matrix.w.z;
+    sp20.x = v0->modInst->rootTransform.world_matrix.w.x;
+    sp20.y = v0->modInst->rootTransform.world_matrix.w.y;
+    sp20.z = v0->modInst->rootTransform.world_matrix.w.z;
 
     if (obj) {} // @fake
 
@@ -183,7 +183,7 @@ void func_8002856C(Object *obj) {
     Object *v0;
     s16 s0 = ((Player *) obj->varObj[0])->playerId;
 
-    v0 = func_8002BF1C(&D_8004934C, &D_80051F50, 0xABAB);
+    v0 = create_3dsprite_with_properties(&D_8004934C, &D_80051F50, 0xABAB);
     if (v0 == NULL) {
         return;
     } else {
@@ -197,7 +197,7 @@ void func_8002856C(Object *obj) {
         v0->flags |= 4;
     }
 
-    v0 = func_8002BF1C(&D_8004934C, &D_80051F50, 0xABAB);
+    v0 = create_3dsprite_with_properties(&D_8004934C, &D_80051F50, 0xABAB);
     if (v0 == NULL) {
         return;
     } else {
@@ -211,7 +211,7 @@ void func_8002856C(Object *obj) {
         v0->flags |= 4;
     }
 
-    v0 = func_8002BF1C(&D_8004934C, &D_80051F50, 0xABAB);
+    v0 = create_3dsprite_with_properties(&D_8004934C, &D_80051F50, 0xABAB);
     if (v0 == NULL) {
         return;
     } else {
@@ -225,7 +225,7 @@ void func_8002856C(Object *obj) {
         v0->flags |= 4;
     }
 
-    v0 = func_8002BF1C(&D_8004934C, &D_80051F50, 0xABAB);
+    v0 = create_3dsprite_with_properties(&D_8004934C, &D_80051F50, 0xABAB);
     if (v0 == NULL) {
         return;
     } else {
@@ -239,7 +239,7 @@ void func_8002856C(Object *obj) {
         v0->flags |= 4;
     }
 
-    v0 = func_8002BF1C(&D_8004934C, &D_80051F50, 0xABAB);
+    v0 = create_3dsprite_with_properties(&D_8004934C, &D_80051F50, 0xABAB);
     if (v0 == NULL) {
         return;
     } else {
@@ -263,7 +263,7 @@ void func_800287AC(Object *obj) {
     a = 0;
     b = -250;
     for (i = 0; i < 13; i++) {
-        v0 = func_8002BF1C(&D_8004934C, &D_80051F50, 0xABAB);
+        v0 = create_3dsprite_with_properties(&D_8004934C, &D_80051F50, 0xABAB);
         if (v0 == NULL) {
             return;
         }
@@ -282,8 +282,8 @@ void func_800287AC(Object *obj) {
 }
 
 void func_80028890(Object *obj) {
-    gPlayerInput[PLAYER_1].unk_0A = FALSE;
-    gPlayerInput[PLAYER_2].unk_0A = FALSE;
+    gPlayerInput[PLAYER_1].enabled = FALSE;
+    gPlayerInput[PLAYER_2].enabled = FALSE;
 
     if (obj->vars[0] == 0) {
         if (gPlayers[PLAYER_1].unk_7C == 0 && gPlayers[PLAYER_2].unk_7C == 0) {
@@ -293,7 +293,7 @@ void func_80028890(Object *obj) {
     } else {
         obj->vars[0]--;
         if (obj->vars[0] == 0) {
-            D_8005BFC0 |= 1;
+            D_8005BFC0 |= GAME_FLAG_MODE_DONE;
             obj->currentTask->flags |= 0x80;
         }
     }
@@ -445,12 +445,12 @@ void func_80028F38(Object *obj) {
     obj->currentTask->counter = 60;
 
     v1 = obj->varObj[0];
-    if (--v1->spriteId < 0) {
-        v1->spriteId = 9;
-        if (--obj->spriteId < 0) {
-            obj->spriteId = 0;
+    if (--v1->frameIndex < 0) {
+        v1->frameIndex = 9;
+        if (--obj->frameIndex < 0) {
+            obj->frameIndex = 0;
             D_800801F0 = TRUE;
-            v1->spriteId = 0;
+            v1->frameIndex = 0;
             obj->currentTask->flags |= 0x80;
         }
     }
@@ -514,7 +514,7 @@ void func_80029130(void) {
         if (s0 >= 100) {
             v0 = create_ui_element(D_800520D8[s3], &sp74, 0xABAB);
             D_80081438--;
-            v0->spriteId = 28 + (s0 / 100);
+            v0->frameIndex = 28 + (s0 / 100);
             D_8013C248->varObj[s2] = v0;
             s2++;
             s3++;
@@ -526,7 +526,7 @@ void func_80029130(void) {
         if (D_800B6328[PLAYER_1].unk_0A >= 10) {
             v0 = create_ui_element(D_800520D8[s3], &sp74, 0xABAB);
             D_80081438--;
-            v0->spriteId = 28 + (s0 / 10);
+            v0->frameIndex = 28 + (s0 / 10);
             D_8013C248->varObj[s2] = v0;
             s2++;
             s3++;
@@ -537,7 +537,7 @@ void func_80029130(void) {
 
         v0 = create_ui_element(D_800520D8[s3], &sp74, 0xABAB);
         D_80081438--;
-        v0->spriteId = 28 + s0;
+        v0->frameIndex = 28 + s0;
         D_8013C248->varObj[s2] = v0;
         s2++;
         D_8013C248->varObj[s2] = NULL;
@@ -563,7 +563,7 @@ void func_80029130(void) {
         if (s0 >= 100) {
             v0 = create_ui_element(D_800520D8[s3], &sp74, 0xABAB);
             D_80081438--;
-            v0->spriteId = 28 + (s0 / 100);
+            v0->frameIndex = 28 + (s0 / 100);
             D_8013C248->varObj[s2] = v0;
             s2++;
             s3++;
@@ -575,7 +575,7 @@ void func_80029130(void) {
         if (D_800B6328[PLAYER_2].unk_0A >= 10) {
             v0 = create_ui_element(D_800520D8[s3], &sp74, 0xABAB);
             D_80081438--;
-            v0->spriteId = 28 + (s0 / 10);
+            v0->frameIndex = 28 + (s0 / 10);
             D_8013C248->varObj[s2] = v0;
             s2++;
 
@@ -587,7 +587,7 @@ void func_80029130(void) {
 
         v0 = create_ui_element(D_800520D8[s3], &sp74, 0xABAB);
         D_80081438--;
-        v0->spriteId = 28 + s0;
+        v0->frameIndex = 28 + s0;
         D_8013C248->varObj[s2] = v0;
         s2++;
         D_8013C248->varObj[s2] = NULL;
@@ -632,26 +632,26 @@ void func_80029630(void) {
         case 2:
             s00 = create_ui_element(&spAC, &spF8, 0xABAB);
             v0 = create_ui_element(&spBC, &spE4, 0xABAB);
-            v0->spriteId = D_8004C1D4 * 3 + 3;
+            v0->frameIndex = D_8004C1D4 * 3 + 3;
             v0->varObj[0] = s00;
             D_8013C240 = v0;
             break;
     }
 
     v0 = create_ui_element(&sp9C, &sp120, 0xABAB);
-    v0->spriteId = 11;
+    v0->frameIndex = 11;
     task_clear(v0->taskList);
     v0->taskList = NULL;
 
     v0 = create_ui_element(&sp8C, &sp120, 0xABAB);
-    v0->spriteId = 11;
+    v0->frameIndex = 11;
     task_clear(v0->taskList);
     v0->taskList = NULL;
 
     s0 = 0;
     for (s1 = 0; s1 < D_800B6328[PLAYER_1].unk_08; s1++) {
         D_8013C258[PLAYER_1][s1] = v0 = create_ui_element(&sp7C, &sp120, 0xABAB);
-        v0->spriteId = 13;
+        v0->frameIndex = 13;
         sp7C.x -= 8;
         s0++;
         task_clear(v0->taskList);
@@ -660,7 +660,7 @@ void func_80029630(void) {
 
     for (; s0 < D_8004C1D0; s0++) {
         D_8013C258[PLAYER_1][s0] = v0 = create_ui_element(&sp7C, &sp120, 0xABAB);
-        v0->spriteId = 12;
+        v0->frameIndex = 12;
         sp7C.x -= 8;
         task_clear(v0->taskList);
         v0->taskList = NULL;
@@ -669,7 +669,7 @@ void func_80029630(void) {
     s0 = 0;
     for (s1 = 0; s1 < D_800B6328[PLAYER_2].unk_08; s1++) {
         D_8013C258[PLAYER_2][s1] = v0 = create_ui_element(&sp6C, &sp120, 0xABAB);
-        v0->spriteId = 13;
+        v0->frameIndex = 13;
         sp6C.x += 8;
         s0++;
         task_clear(v0->taskList);
@@ -678,37 +678,37 @@ void func_80029630(void) {
 
     for (; s0 < D_8004C1D0; s0++) {
         D_8013C258[PLAYER_2][s0] = v0 = create_ui_element(&sp6C, &sp120, 0xABAB);
-        v0->spriteId = 12;
+        v0->frameIndex = 12;
         sp6C.x += 8;
         task_clear(v0->taskList);
         v0->taskList = NULL;
     }
 
     v0 = create_ui_element(&sp5C, &sp120, 0xABAB);
-    v0->spriteId = 15;
+    v0->frameIndex = 15;
     D_8013C234 = v0->sprite_map->sprites[15].parts;
     D_8013C234->unk_10 = D_8013C234->unk_10 - D_8013C234->unk_04 + D_8013C234->unk_08 - 88;
     D_8013C234->unk_04 = D_8013C234->unk_08 - 88;
 
     v0 = create_ui_element(&sp4C, &sp120, 0xABAB);
-    v0->spriteId = 14;
+    v0->frameIndex = 14;
     D_8013C238 = v0->sprite_map->sprites[14].parts;
     D_8013C238->unk_08 = D_8013C238->unk_04 + 80;
 
     v0 = create_ui_element(&D_8004A5D0[D_800B6328[PLAYER_1].characterId], &sp120, 0xABAB);
     if (D_800B6328[PLAYER_1].characterId < CHARACTER_5) {
-        v0->spriteId = 16 + D_800B6328[PLAYER_1].characterId;
+        v0->frameIndex = 16 + D_800B6328[PLAYER_1].characterId;
     } else {
-        v0->spriteId = 16 + D_800B6328[PLAYER_1].characterId - 1;
+        v0->frameIndex = 16 + D_800B6328[PLAYER_1].characterId - 1;
     }
     task_clear(v0->taskList);
     v0->taskList = NULL;
 
     v0 = create_ui_element(&D_8004A680[D_800B6328[PLAYER_2].characterId], &sp120, 0xABAB);
     if (D_800B6328[PLAYER_2].characterId < CHARACTER_5) {
-        v0->spriteId = 16 + D_800B6328[PLAYER_2].characterId;
+        v0->frameIndex = 16 + D_800B6328[PLAYER_2].characterId;
     } else {
-        v0->spriteId = 16 + D_800B6328[PLAYER_2].characterId - 1;
+        v0->frameIndex = 16 + D_800B6328[PLAYER_2].characterId - 1;
     }
     task_clear(v0->taskList);
     v0->taskList = NULL;
@@ -721,14 +721,14 @@ void func_80029630(void) {
 // TODO split files, so D_80052220 (52E20) is in another file
 
 void func_80029D04(Object *obj) {
-    if (--obj->spriteId < 2) {
-        D_8005BFC0 |= 0x40;
+    if (--obj->frameIndex < 2) {
+        D_8005BFC0 |= GAME_FLAG_40;
         obj->flags |= 0x10;
     }
 
     D_8005BEFC -= 2;
     func_80002178(D_8005BEFC, NULL);
-    func_800386E8(obj);
+    model_update(obj);
 }
 
 void func_80029D84(Object *obj) {
@@ -737,25 +737,25 @@ void func_80029D84(Object *obj) {
 }
 
 void func_80029DC0(Object *obj) {
-    if (++obj->spriteId >= 130) {
-        D_8005BFC0 |= 0x41;
-        gGameMode = GAME_MODE_0;
-        D_8005BFC0 |= 0x80;
+    if (++obj->frameIndex >= 130) {
+        D_8005BFC0 |= GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
+        gGameMode = GAME_MODE_MAIN_MENU;
+        D_8005BFC0 |= GAME_FLAG_80;
         obj->flags &= ~0x2000000;
         obj->fn_render = func_80029D84;
     }
 
     func_80002178(D_8005BEFC, NULL);
-    func_800386E8(obj);
+    model_update(obj);
 }
 
 void func_80029E5C(Object *obj) {
-    if (--obj->spriteId <= 60) {
+    if (--obj->frameIndex <= 60) {
         obj->fn_render = func_8002A050;
     }
 
     func_80002178(D_8005BEFC, NULL);
-    func_800386E8(obj);
+    model_update(obj);
 }
 
 void func_80029EBC(Object *obj) {
@@ -772,12 +772,12 @@ void func_80029EBC(Object *obj) {
     if (buttons & INP_START) {
         obj->fn_render = func_80029DC0;
     } else if (buttons & INP_RIGHT) {
-        obj->spriteId = 118;
+        obj->frameIndex = 118;
         obj->fn_render = func_80029F58;
     }
 
     func_80002178(D_8005BEFC, NULL);
-    func_800386E8(obj);
+    model_update(obj);
 }
 
 void func_80029F58(Object *obj) {
@@ -794,23 +794,23 @@ void func_80029F58(Object *obj) {
     if (buttons & INP_START) {
         obj->fn_render = func_80029E5C;
     } else if (buttons & INP_LEFT) {
-        obj->spriteId = 120;
+        obj->frameIndex = 120;
         obj->fn_render = func_80029EBC;
     }
 
     func_80002178(D_8005BEFC, NULL);
-    func_800386E8(obj);
+    model_update(obj);
 }
 
 void func_80029FF4(Object *obj) {
-    if (obj->spriteId >= 118) {
+    if (obj->frameIndex >= 118) {
         obj->fn_render = func_80029F58;
     } else {
-        obj->spriteId++;
+        obj->frameIndex++;
     }
 
     func_80002178(D_8005BEFC, NULL);
-    func_800386E8(obj);
+    model_update(obj);
 }
 
 void func_8002A050(Object *obj) {
@@ -828,11 +828,11 @@ void func_8002A050(Object *obj) {
         obj->fn_render = func_80029FF4;
     } else if (buttons & INP_UP) {
         obj->fn_render = func_8002A0EC;
-        obj->spriteId = 58;
+        obj->frameIndex = 58;
     }
 
     func_80002178(D_8005BEFC, NULL);
-    func_800386E8(obj);
+    model_update(obj);
 }
 
 void func_8002A0EC(Object *obj) {
@@ -850,36 +850,36 @@ void func_8002A0EC(Object *obj) {
         obj->fn_render = func_80029D04;
     } else if (buttons & INP_DOWN) {
         obj->fn_render = func_8002A050;
-        obj->spriteId = 60;
+        obj->frameIndex = 60;
     }
 
     func_80002178(D_8005BEFC, NULL);
-    func_800386E8(obj);
+    model_update(obj);
 }
 
 void func_8002A188(Object *obj) {
-    if (obj->spriteId >= 58) {
+    if (obj->frameIndex >= 58) {
         obj->fn_render = func_8002A0EC;
     } else {
-        obj->spriteId++;
+        obj->frameIndex++;
     }
     D_8005BEFC += 2;
     func_80002178(D_8005BEFC, NULL);
-    func_800386E8(obj);
+    model_update(obj);
 }
 
 void func_8002A1F0(Object *obj) {
     obj->fn_render = func_8002A188;
     obj->flags &= ~4;
-    obj->spriteId++;
+    obj->frameIndex++;
     obj->currentTask->func = task_default_func;
-    gTasksDisabled = TRUE;
+    gIsPaused = TRUE;
     obj->flags |= 0x2000000;
     D_8005BEFC = 0;
 }
 
 void func_8002A250(Object *obj) {
-    if (obj->spriteId++ > 16) {
+    if (obj->frameIndex++ > 16) {
         obj->flags |= 0x10;
     }
     obj->currentTask->counter = 2;

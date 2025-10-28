@@ -1,7 +1,7 @@
 #include "common.h"
 
 void func_80021D40(Object *obj) {
-    if (++obj->spriteId >= obj->modInst->numAnimFrames) {
+    if (++obj->frameIndex >= obj->modInst->numAnimFrames) {
         obj->currentTask->flags |= 0x80;
         obj->flags |= 0x10;
     }

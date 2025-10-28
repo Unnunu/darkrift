@@ -130,7 +130,7 @@ void func_80003780(Object *obj) {
         func_80005EE4(gPlayers + s1->unk_06, TRUE, s1->unk_04);
         gPlayers[s3].unk_00->unk_070 = s1->unk_00[s3];
         if (s1->unk_00[s3] == 0) {
-            D_8005BFC0 |= 0x200;
+            D_8005BFC0 |= GAME_FLAG_200;
         }
 
         if (s1->unk_07 == 255) {
@@ -180,20 +180,20 @@ s32 func_80003974(void *arg0) {
 
     func_80005B70(PLAYER_1);
     func_80005B70(PLAYER_2);
-    gPlayers[PLAYER_1].unk_00->spriteId = 2;
-    gPlayers[PLAYER_2].unk_00->spriteId = 2;
-    func_80037500(gPlayers[PLAYER_1].unk_00);
-    func_80037500(gPlayers[PLAYER_2].unk_00);
+    gPlayers[PLAYER_1].unk_00->frameIndex = 2;
+    gPlayers[PLAYER_2].unk_00->frameIndex = 2;
+    model_change_animation(gPlayers[PLAYER_1].unk_00);
+    model_change_animation(gPlayers[PLAYER_2].unk_00);
 
     func_80012AF4(&gPlayers[PLAYER_1].unk_750.local_matrix);
     func_80012AF4(&gPlayers[PLAYER_1].unk_868.local_matrix);
     func_80012AF4(&gPlayers[PLAYER_2].unk_750.local_matrix);
     func_80012AF4(&gPlayers[PLAYER_2].unk_868.local_matrix);
 
-    func_8003635C(gPlayers[PLAYER_1].unk_00);
-    func_8003635C(gPlayers[PLAYER_2].unk_00);
-    gPlayers[PLAYER_1].unk_00->unk_086 = gPlayers[PLAYER_1].unk_00->spriteId;
-    gPlayers[PLAYER_2].unk_00->unk_086 = gPlayers[PLAYER_2].unk_00->spriteId;
+    model_update_animated_params(gPlayers[PLAYER_1].unk_00);
+    model_update_animated_params(gPlayers[PLAYER_2].unk_00);
+    gPlayers[PLAYER_1].unk_00->previousFrameIndex = gPlayers[PLAYER_1].unk_00->frameIndex;
+    gPlayers[PLAYER_2].unk_00->previousFrameIndex = gPlayers[PLAYER_2].unk_00->frameIndex;
     gPlayers[PLAYER_1].unk_0C->flags &= ~4;
     gPlayers[PLAYER_2].unk_0C->flags &= ~4;
 
@@ -216,7 +216,7 @@ s32 func_80003974(void *arg0) {
     v0->currentTask->flags = 1;
 
     D_8008012C |= 1;
-    D_8005BFC0 &= ~0x200;
+    D_8005BFC0 &= ~GAME_FLAG_200;
 
     if (s3 > 960) {
         s3 -= 960;
@@ -242,7 +242,7 @@ s32 func_80003BB4(void) {
     if (diff < 60) {
         return FALSE;
     } else {
-        func_800028E0(func_80003974, NULL);
+        set_post_render_hook(func_80003974, NULL);
         return TRUE;
     }
 }
@@ -261,15 +261,15 @@ void func_80003C04(Object *obj) {
 
     task_execute(obj);
 
-    if (sp20->currentAnimId != sp20->unk_A0E) {
-        func_80037500(obj);
-        sp20->unk_A0E = sp20->currentAnimId;
+    if (sp20->currentAnimId != sp20->previousAnimId) {
+        model_change_animation(obj);
+        sp20->previousAnimId = sp20->currentAnimId;
     }
 
-    if (obj->spriteId != obj->unk_086) {
-        func_800371C0(obj);
-        func_8003635C(obj);
-        obj->unk_086 = obj->spriteId;
+    if (obj->frameIndex != obj->previousFrameIndex) {
+        model_process_animation(obj);
+        model_update_animated_params(obj);
+        obj->previousFrameIndex = obj->frameIndex;
     }
 
     if (func_80030BB0(obj)) {
@@ -314,7 +314,7 @@ void func_80003DA4(Object *obj) {
         player->unk_80 &= ~8;
     }
 
-    func_800386E8(obj);
+    model_update(obj);
 
     if (func_80030BB0(obj)) {
         player->unk_80 |= 8;
@@ -322,7 +322,7 @@ void func_80003DA4(Object *obj) {
         player->unk_80 &= ~8;
     }
 
-    sp2E = (sp40->unk_20 != 0) && (obj->spriteId >= sp40->unk_24) && (obj->spriteId < sp40->unk_26);
+    sp2E = (sp40->unk_20 != 0) && (obj->frameIndex >= sp40->unk_24) && (obj->frameIndex < sp40->unk_26);
 
     func_800115A0(&player->unk_DE8, (sp40->unk_34 & 0x40) && sp2E);
     if (player->unk_5F4A) {
@@ -335,7 +335,7 @@ void func_80003DA4(Object *obj) {
         func_80037E28(obj);
     }
 
-    if (!gTasksDisabled) {
+    if (!gIsPaused) {
         if (D_80080230 == 40) {
             if (D_8013C430 == 16) {
                 func_800338D0();
@@ -369,9 +369,9 @@ void func_80003DA4(Object *obj) {
         }
 
         if (D_80080218 >= D_80080210 && !(player->unk_90->unk_34 & 0x40000) && player->unk_5F48 == 0 &&
-            sp30->spriteId >= sp3C->unk_04 && sp30->spriteId <= sp3C->unk_06) {
+            sp30->frameIndex >= sp3C->unk_04 && sp30->frameIndex <= sp3C->unk_06) {
             if (sp3C->unk_34 & 0x2040) {
-                if ((player->unk_90->unk_34 & 0x30400) && obj->modInst->unk_010.wolrd_matrix.w.y > -100.0f) {
+                if ((player->unk_90->unk_34 & 0x30400) && obj->modInst->rootTransform.world_matrix.w.y > -100.0f) {
                     func_8000FE9C(player, sp24);
                 } else {
                     func_8000F494(player, sp24);
@@ -379,7 +379,7 @@ void func_80003DA4(Object *obj) {
             }
 
             if (player->unk_5F48 == 0 && (sp3C->unk_34 & 0x1820)) {
-                if ((player->unk_90->unk_34 & 0x30400) && obj->modInst->unk_010.wolrd_matrix.w.y > -100.0f) {
+                if ((player->unk_90->unk_34 & 0x30400) && obj->modInst->rootTransform.world_matrix.w.y > -100.0f) {
                     func_80010280(player, sp24);
                 } else {
                     func_8000FB30(player, sp24);
@@ -445,7 +445,7 @@ void func_80004334(AssetDB *arg0, s16 playerId) {
     gPlayers[playerId].unk_C0 = 0;
     gPlayers[playerId].unk_C4 = 0;
 
-    gPlayerInput[playerId].unk_0A = FALSE;
+    gPlayerInput[playerId].enabled = FALSE;
 
     if (D_80080230 == 30) {
         if (playerId != PLAYER_1) {
@@ -510,10 +510,10 @@ void func_800045B4(s16 playerId, s16 characterId) {
     sp44 = &D_800B6328[playerId];
     sp50 = D_800B6328[1 - playerId].characterId;
 
-    if (sp44->unk_10) {
+    if (sp44->isDummy) {
         str_copy(sp80, "dum.db");
     } else {
-        func_80004304(sp80, D_8004B844[characterId].unk_04->unk_00, ".db");
+        func_80004304(sp80, D_8004B844[characterId].unk_04->name, ".db");
     }
 
     s3 = (AssetDB *) gAssets[asset_find(sp80, playerId)].data;
@@ -524,7 +524,7 @@ void func_800045B4(s16 playerId, s16 characterId) {
     player->unk_1C = s3->unk_10 + (u32) s3;
 
     sp74 = s3->unk_14 + (u32) s3;
-    if (sp44->unk_10) {
+    if (sp44->isDummy) {
         *sp74 = 0;
     }
     player->unk_20 = s0 = (u32) s3 + s3->unk_14 + 4;
@@ -584,10 +584,10 @@ void func_800045B4(s16 playerId, s16 characterId) {
     }
 
     if (sp44->unk_0E) {
-        if (sp44->unk_10) {
+        if (sp44->isDummy) {
             str_copy(sp80, "dum.sym");
         } else {
-            func_80004304(sp80, D_8004B844[characterId].unk_04->unk_00, ".sym");
+            func_80004304(sp80, D_8004B844[characterId].unk_04->name, ".sym");
         }
         s3 = (AssetDB *) gAssets[asset_find(sp80, playerId)].data;
         player->unk_9A8 = s3->unk_00 + (u32) s3;
@@ -623,7 +623,7 @@ void func_80004B30(Object *obj, s16 playerId, s16 arg2) {
     Transform *s1;
     Transform *sp38;
     Transform *s0;
-    StructAA8 *v1 = obj->modInst->unk_AA8;
+    NodeAttachment *v1 = obj->modInst->nodeAttachments;
 
     v1[D_8004C1D8[arg2]].x = 0;
     v1[D_8004C1D8[arg2]].y = 0;
@@ -687,10 +687,10 @@ void func_80004E14(s16 playerId) {
     char sp2C[12];
     u8 characterId = D_800B6328[playerId].characterId;
 
-    if (D_800B6328[playerId].unk_10) {
+    if (D_800B6328[playerId].isDummy) {
         str_copy(sp38, "/aaro/dummy");
     } else {
-        str_copy(sp2C, D_8004B844[characterId].unk_04->unk_00);
+        str_copy(sp2C, D_8004B844[characterId].unk_04->name);
         str_copy(sp38, "/");
         str_concat(sp38, sp2C);
         str_concat(sp38, "/");
@@ -731,7 +731,7 @@ void func_80004FC0(Object *obj) {
 
 void func_80005060(Object *obj) {
     Player *player = obj->varObj[0];
-    Matrix4f *m = &player->unk_00->modInst->transforms[5].wolrd_matrix;
+    Matrix4f *m = &player->unk_00->modInst->transforms[5].world_matrix;
 
     obj->pos.x = m->w.x;
     obj->pos.y = m->w.y;
@@ -740,7 +740,7 @@ void func_80005060(Object *obj) {
 
 void func_800050B0(Object *obj) {
     Player *player = obj->varObj[0];
-    Matrix4f *m = &player->unk_00->modInst->unk_010.wolrd_matrix;
+    Matrix4f *m = &player->unk_00->modInst->rootTransform.world_matrix;
 
     obj->pos.x = m->w.x;
     obj->pos.y = m->w.y;
@@ -799,11 +799,11 @@ void func_800052EC(s16 playerId) {
     gPlayers[playerId].unk_80 = 0;
     spD6 = gPlayers[playerId].characterId = D_800B6328[playerId].characterId;
 
-    if (D_800B6328[playerId].unk_10) {
+    if (D_800B6328[playerId].isDummy) {
         spD6 = AARON;
         str_copy(spA4, "dum.tmd");
     } else {
-        str_copy(spA4, D_8004B844[spD6].unk_04->unk_00);
+        str_copy(spA4, D_8004B844[spD6].unk_04->name);
         if (spD6 != MORPHIX) {
             if (playerId != 0) {
                 str_concat(spA4, "2.tmd");
@@ -819,17 +819,18 @@ void func_800052EC(s16 playerId) {
         }
     }
 
-    spDC = gPlayers[playerId].unk_00 = func_8002BC84(&spB4[playerId], spA4, D_8004B844[spD6].unk_04, playerId);
+    spDC = gPlayers[playerId].unk_00 =
+        create_model_instance_with_properties(&spB4[playerId], spA4, D_8004B844[spD6].unk_04, playerId);
     spDC->flags |= 0x80;
 
-    if (spD6 == MORPHIX && !D_800B6328[playerId].unk_10) {
+    if (spD6 == MORPHIX && !D_800B6328[playerId].isDummy) {
         func_8002A890(gPlayers + playerId);
     }
 
-    if (D_800B6328[playerId].unk_10) {
+    if (D_800B6328[playerId].isDummy) {
         str_copy(spA4, "dumshad.k4");
     } else {
-        str_copy(spA4, D_8004B844[spD6].unk_04->unk_00);
+        str_copy(spA4, D_8004B844[spD6].unk_04->name);
         spA4[3] = '\0';
         if (playerId != 0) {
             do {
@@ -840,7 +841,7 @@ void func_800052EC(s16 playerId) {
         }
     }
 
-    func_80036194(spDC, spA4, playerId);
+    create_shadow(spDC, spA4, playerId);
 
     spDC->rotation.y = 0xC00 - spB0[playerId];
     spDC->fn_render = func_80003DA4;
@@ -917,29 +918,29 @@ void func_800052EC(s16 playerId) {
     func_80004B30(spDC, playerId, spD6);
 
     if (playerId == 0) {
-        gPlayerInput[playerId].unk_09 = TRUE;
+        gPlayerInput[playerId].isMirrored = TRUE;
     }
 
     func_80012150(&gPlayers[playerId].unk_DE8, spDC->modInst,
-                  &spDC->modInst->transforms[D_8004B844[spD6].unk_00->unk_08].wolrd_matrix,
-                  &gPlayers[playerId].unk_198.unk_150.wolrd_matrix, &spDC->pos, &D_8004B844[spD6].unk_08[playerId]);
+                  &spDC->modInst->transforms[D_8004B844[spD6].unk_00->unk_08].world_matrix,
+                  &gPlayers[playerId].unk_198.unk_150.world_matrix, &spDC->pos, &D_8004B844[spD6].unk_08[playerId]);
 
     if (D_8004B844[spD6].unk_00->unk_1C >= 0) {
         func_80012150(&gPlayers[playerId].unk_2240, spDC->modInst,
-                      &spDC->modInst->transforms[D_8004B844[spD6].unk_00->unk_04].wolrd_matrix,
-                      &gPlayers[playerId].unk_198.unk_38.wolrd_matrix, &spDC->pos, &D_8004B844[spD6].unk_08[playerId]);
+                      &spDC->modInst->transforms[D_8004B844[spD6].unk_00->unk_04].world_matrix,
+                      &gPlayers[playerId].unk_198.unk_38.world_matrix, &spDC->pos, &D_8004B844[spD6].unk_08[playerId]);
         gPlayers[playerId].unk_5F4A = 1;
     } else {
         gPlayers[playerId].unk_5F4A = 0;
     }
 
     func_80012150(&gPlayers[playerId].unk_3698, spDC->modInst,
-                  &spDC->modInst->transforms[D_8004B844[spD6].unk_00->unk_14].wolrd_matrix,
-                  &spDC->modInst->transforms[D_8004B844[spD6].unk_00->unk_0C].wolrd_matrix, &spDC->pos,
+                  &spDC->modInst->transforms[D_8004B844[spD6].unk_00->unk_14].world_matrix,
+                  &spDC->modInst->transforms[D_8004B844[spD6].unk_00->unk_0C].world_matrix, &spDC->pos,
                   &D_8004B844[spD6].unk_08[playerId]);
     func_80012150(&gPlayers[playerId].unk_4AF0, spDC->modInst,
-                  &spDC->modInst->transforms[D_8004B844[spD6].unk_00->unk_18].wolrd_matrix,
-                  &spDC->modInst->transforms[D_8004B844[spD6].unk_00->unk_10].wolrd_matrix, &spDC->pos,
+                  &spDC->modInst->transforms[D_8004B844[spD6].unk_00->unk_18].world_matrix,
+                  &spDC->modInst->transforms[D_8004B844[spD6].unk_00->unk_10].world_matrix, &spDC->pos,
                   &D_8004B844[spD6].unk_08[playerId]);
 
     gPlayers[playerId].unk_184 = 0;
@@ -1020,7 +1021,7 @@ void func_80005B70(s16 playerId) {
     obj->unk_070 = D_800B6328[playerId].unk_0C;
 
     if (playerId == PLAYER_1) {
-        gPlayerInput[playerId].unk_09 = TRUE;
+        gPlayerInput[playerId].isMirrored = TRUE;
     }
 
     gPlayers[playerId].unk_184 = FALSE;
@@ -1072,7 +1073,7 @@ u8 func_80005EE4(Player *player, u8 arg1, u16 arg2) {
 
     for (i = 0; i < sp42; sp44++, i++) {
         if (sp44->unk_04 == sp22) {
-            if (player->unk_00->spriteId < sp44->unk_02) {
+            if (player->unk_00->frameIndex < sp44->unk_02) {
                 unk_0C->flags |= 4;
                 unk_0C->unk_86 = sp44->unk_02;
                 unk_0C->unk_90.func = func_80024764;
@@ -1124,7 +1125,7 @@ label:
         sp2C = player->unk_20 + sp22;
         if (sp2C->unk_2C >= 0 && sp2C->unk_2E == -1) {
             func_8002C340();
-            func_80038E00(gCamera, player->unk_00->modInst->animations[player->unk_20[sp2C->unk_2C].unk_08]);
+            camera_set_animation(gCamera, player->unk_00->modInst->animations[player->unk_20[sp2C->unk_2C].unk_08]);
             gCamera->currentTask->func = func_8002C490;
             gCamera->currentTask->counter = 0;
             gCamera->currentTask->flags = 1;
@@ -1156,7 +1157,7 @@ label:
         player->unk_08->counter = player->unk_88->unk_0C;
     }
     player->unk_94 = player->unk_88->unk_0E;
-    player->unk_00->unk_010.z = player->unk_88->unk_08;
+    player->unk_00->velocity.z = player->unk_88->unk_08;
     player->unk_00->flags &= ~0x800;
     player->unk_76 = player->unk_34[arg2 + 1];
 
@@ -1241,7 +1242,7 @@ u8 func_8000642C(Player *player, u8 arg1) {
         if (sp3E && (v0 & 0x10) && (v0 & 0x800) && (player->unk_80 & 8) &&
             (a2->unk_02 == 0 || (a2->unk_02 != 0 && t0 == a2->unk_02) || (a2->unk_02 == 0xFFFF && t0 != 0))) {
             if ((v0 & 4) && player->unk_90 == player->unk_20 + player->unk_7E &&
-                player->unk_90->unk_02 != player->unk_00->spriteId && !(player->unk_80 & 0x4800)) {
+                player->unk_90->unk_02 != player->unk_00->frameIndex && !(player->unk_80 & 0x4800)) {
                 unk_0C = player->unk_0C;
                 unk_0C->unk_08.unk_00_i = s0;
                 unk_0C->unk_08.unk_04_ptr = a2;
@@ -1266,8 +1267,8 @@ u8 func_8000642C(Player *player, u8 arg1) {
             gPlayerInput[player->playerId].unk_08 = FALSE;
 
             if (v0 & 0x20) {
-                if (player->unk_90->unk_02 != player->unk_00->spriteId &&
-                    (!(player->unk_80 & 0x4800) || player->unk_90->unk_00 != player->unk_00->spriteId)) {
+                if (player->unk_90->unk_02 != player->unk_00->frameIndex &&
+                    (!(player->unk_80 & 0x4800) || player->unk_90->unk_00 != player->unk_00->frameIndex)) {
                     s0 += 2;
                 } else if (func_80005EE4(player, TRUE, s0)) {
                     return TRUE;
@@ -1277,7 +1278,7 @@ u8 func_8000642C(Player *player, u8 arg1) {
                 continue;
             }
 
-            if ((v0 & 4) && player->unk_90->unk_02 != player->unk_00->spriteId && !(player->unk_80 & 0x4800)) {
+            if ((v0 & 4) && player->unk_90->unk_02 != player->unk_00->frameIndex && !(player->unk_80 & 0x4800)) {
                 unk_0C = player->unk_0C;
                 unk_0C->unk_08.unk_00_i = s0;
                 unk_0C->unk_08.unk_04_ptr = a2;

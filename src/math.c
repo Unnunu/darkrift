@@ -45,14 +45,14 @@ f32 func_80012978(s16 arg0) {
 f32 func_80012978(u16 arg0);
 #endif
 
-void func_80012A20(Transform *parent, Transform *arg1, s32 arg2, s32 arg3) {
+void func_80012A20(Transform *parent, Transform *arg1, s32 id, s32 parentId) {
     func_80012B34(&arg1->mtx[0]);
     func_80012B34(&arg1->mtx[1]);
     func_80012AA8(&arg1->local_matrix);
-    func_80012AA8(&arg1->wolrd_matrix);
+    func_80012AA8(&arg1->world_matrix);
 
-    arg1->unk_90 = arg3;
-    arg1->unk_8C = arg2;
+    arg1->parentId = parentId;
+    arg1->id = id;
 
     if (parent != NULL) {
         Transform *temp = parent->firstChild;
@@ -382,9 +382,9 @@ void func_80014974(Transform *transform) {
     Transform *ptr;
 
     if (transform->parent != NULL) {
-        func_80014718(&transform->wolrd_matrix, &transform->local_matrix, &transform->parent->wolrd_matrix);
+        func_80014718(&transform->world_matrix, &transform->local_matrix, &transform->parent->world_matrix);
     } else {
-        func_800146B4(&transform->wolrd_matrix, &transform->local_matrix);
+        func_800146B4(&transform->world_matrix, &transform->local_matrix);
     }
 
     for (ptr = transform->firstChild; ptr != NULL; ptr = ptr->nextSibling) {

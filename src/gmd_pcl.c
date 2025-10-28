@@ -33,7 +33,7 @@ s16 D_80081602;
 s16 D_80081604;
 s16 D_80081606;
 s16 D_80081608;
-UnkFrodo *D_8008160C;
+KModel *D_8008160C;
 u16 *D_80081610;
 Mtx D_80081618;
 
@@ -56,8 +56,8 @@ void func_8001AAE0(void) {
     dxAbs = ABS(dx);
     dzAbs = ABS(dz);
     dyAbs = ABS(dy);
-    sp84 = DISTANCE(dxAbs, dzAbs);
-    t1 = -DISTANCE(sp84, dyAbs);
+    sp84 = FAST_HYPOT(dxAbs, dzAbs);
+    t1 = -FAST_HYPOT(sp84, dyAbs);
     t5 = 7500 - t1;
 
     x1 = ((gScreenWidth * (D_8013C588 + 1000) / D_8013C588) >> 1);
@@ -216,15 +216,15 @@ void func_8001B5B0(char *name, s32 arg1) {
     str_copy(sp48, name);
     str_concat(sp48, ".GMD");
     D_8008160C = gAssets[asset_find(sp48, arg1)].aux_data;
-    D_80049CF0 = &D_8008160C->sam.dlist;
+    D_80049CF0 = &D_8008160C->model.dlist;
 
-    sub2 = D_8008160C->sam.unk_04->nodes;
+    sub2 = D_8008160C->model.unk_04->nodes;
     sub1 = sub2->batchAssets;
     a3 = sub1->texture;
     if (a3->format == 4) {
-        D_80081610 = D_8008160C->sam.unk_04->palettes16 + a3->palIndex * 0x20; // TODO: type
+        D_80081610 = D_8008160C->model.unk_04->palettes16 + a3->palIndex * 0x20; // TODO: type
     } else {
-        D_80081610 = D_8008160C->sam.unk_04->palettes256 + a3->palIndex * 0x200; // TODO: type
+        D_80081610 = D_8008160C->model.unk_04->palettes256 + a3->palIndex * 0x200; // TODO: type
     }
 
     D_800815E8 = sp74->unk_00;

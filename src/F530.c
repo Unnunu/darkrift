@@ -6,10 +6,10 @@ extern ColorRGBA D_800499A4;
 extern Vec4s D_80081268;
 
 void func_8000E930(Object *obj) {
-    if (obj->spriteId < obj->modInst->numAnimFrames) {
+    if (obj->frameIndex < obj->modInst->numAnimFrames) {
         D_8008012C |= 0x10;
-        obj->spriteId++;
-        if (obj->spriteId > 12) {
+        obj->frameIndex++;
+        if (obj->frameIndex > 12) {
             if (obj->unk_088.a > obj->vars[0]) {
                 obj->unk_088.a -= obj->vars[0];
             } else {
@@ -24,10 +24,10 @@ void func_8000E930(Object *obj) {
 }
 
 void func_8000E9D8(Object *obj) {
-    if (obj->spriteId < obj->modInst->numAnimFrames) {
+    if (obj->frameIndex < obj->modInst->numAnimFrames) {
         D_8008012C |= 0x10;
-        obj->spriteId++;
-        if (obj->spriteId > 2) {
+        obj->frameIndex++;
+        if (obj->frameIndex > 2) {
             if (obj->unk_088.a > obj->vars[0]) {
                 obj->unk_088.a -= obj->vars[0];
             } else {
@@ -55,7 +55,7 @@ void func_8000EA80(Vec4s *arg0, u8 arg1, Object *arg2, ColorRGBA *arg3) {
     sp24.z = arg0->z;
 
     if (arg1) {
-        v0 = func_8002BFF0(&sp24, 0x1000, func_8000E9D8, D_80081278);
+        v0 = create_model_instance(&sp24, 0x1000, func_8000E9D8, D_80081278);
         if (v0 != NULL) {
             v0->vars[0] = 255 / (v0->modInst->numAnimFrames - 2);
             v0->flags |= 0x2000;
@@ -68,7 +68,7 @@ void func_8000EA80(Vec4s *arg0, u8 arg1, Object *arg2, ColorRGBA *arg3) {
         }
         func_80023BE4(arg0, arg2, arg3);
     } else {
-        v0 = func_8002BFF0(&sp24, 0x1000, func_8000E930, D_80081274);
+        v0 = create_model_instance(&sp24, 0x1000, func_8000E930, D_80081274);
         if (v0 != NULL) {
             v0->vars[0] = 255 / (v0->modInst->numAnimFrames - 12);
             v0->flags |= 0x2000;
@@ -174,13 +174,13 @@ s16 func_8000F074(Player *arg0, Player *arg1, PlayerSub3 *arg2) {
     sub3 = arg0->unk_90;
     t0 = sub3->unk_34;
 
-    if ((t0 & 0xA) && arg0->unk_00->pos.y + arg0->unk_00->modInst->unk_010.local_matrix.w.y > -400.0f &&
+    if ((t0 & 0xA) && arg0->unk_00->pos.y + arg0->unk_00->modInst->rootTransform.local_matrix.w.y > -400.0f &&
         arg0->unk_198.unk_14->y - arg0->unk_198.unk_08->y > 200.0f) {
         t0 &= ~0xA;
         t0 |= 4;
     }
 
-    v1 = (t0 & 0x80) && (arg0->unk_00->spriteId >= 12);
+    v1 = (t0 & 0x80) && (arg0->unk_00->frameIndex >= 12);
 
     if (t0 & 0x4000) {
         if (t0 & 4) {
@@ -249,7 +249,7 @@ s16 func_8000F074(Player *arg0, Player *arg1, PlayerSub3 *arg2) {
         }
 
         if (v13 == 0) {
-            D_8005BFC0 |= 0x200;
+            D_8005BFC0 |= GAME_FLAG_200;
             if (arg0->unk_80 & 8) {
                 if (t0 & 4) {
                     a3 = 118;
@@ -321,9 +321,9 @@ void func_8000F494(Player *arg0, Player *arg1) {
     sp17C.z = arg19->unk_10->z;
 
     if (arg19->unk_01) {
-        sp194.x = arg19->unk_150.wolrd_matrix.w.x;
-        sp194.y = arg19->unk_150.wolrd_matrix.w.y;
-        sp194.z = arg19->unk_150.wolrd_matrix.w.z;
+        sp194.x = arg19->unk_150.world_matrix.w.x;
+        sp194.y = arg19->unk_150.world_matrix.w.y;
+        sp194.z = arg19->unk_150.world_matrix.w.z;
 
         sp170 = func_8000ED50(&sp184, s1, arg09->unk_2C + 55000, &sp17C, &sp194);
         if (sp170 != NULL) {
@@ -352,9 +352,9 @@ void func_8000F494(Player *arg0, Player *arg1) {
 
     if (arg19->unk_00) {
         sp54 = &arg19->unk_38;
-        sp18C.x = arg19->unk_38.wolrd_matrix.w.x;
-        sp18C.y = arg19->unk_38.wolrd_matrix.w.y;
-        sp18C.z = arg19->unk_38.wolrd_matrix.w.z;
+        sp18C.x = arg19->unk_38.world_matrix.w.x;
+        sp18C.y = arg19->unk_38.world_matrix.w.y;
+        sp18C.z = arg19->unk_38.world_matrix.w.z;
 
         sp170 = func_8000ED50(&sp184, s1, arg09->unk_2C + 55000, &sp174, &sp18C);
         if (sp170 != NULL) {
@@ -380,9 +380,9 @@ void func_8000F494(Player *arg0, Player *arg1) {
     if (arg19->unk_02) {
         if (arg19->unk_03) {
             // @bug sp54 could be uninitialized?
-            sp18C.x = sp54->wolrd_matrix.w.x;
-            sp18C.y = sp54->wolrd_matrix.w.y;
-            sp18C.z = sp54->wolrd_matrix.w.z;
+            sp18C.x = sp54->world_matrix.w.x;
+            sp18C.y = sp54->world_matrix.w.y;
+            sp18C.z = sp54->world_matrix.w.z;
         } else {
             sp18C.x = arg19->unk_24->x;
             sp18C.y = arg19->unk_24->y;
@@ -421,9 +421,9 @@ void func_8000FB30(Player *arg0, Player *arg1) {
     sp54.z = arg09->unk_08->z;
 
     if (arg19->unk_05) {
-        sp4C.x = arg19->unk_380.wolrd_matrix.w.x;
-        sp4C.y = arg19->unk_380.wolrd_matrix.w.y;
-        sp4C.z = arg19->unk_380.wolrd_matrix.w.z;
+        sp4C.x = arg19->unk_380.world_matrix.w.x;
+        sp4C.y = arg19->unk_380.world_matrix.w.y;
+        sp4C.z = arg19->unk_380.world_matrix.w.z;
     } else {
         sp4C.x = arg19->unk_18->x;
         sp4C.y = arg19->unk_18->y;
@@ -451,9 +451,9 @@ void func_8000FB30(Player *arg0, Player *arg1) {
     }
 
     if (arg19->unk_04) {
-        sp4C.x = arg19->unk_268.wolrd_matrix.w.x;
-        sp4C.y = arg19->unk_268.wolrd_matrix.w.y;
-        sp4C.z = arg19->unk_268.wolrd_matrix.w.z;
+        sp4C.x = arg19->unk_268.world_matrix.w.x;
+        sp4C.y = arg19->unk_268.world_matrix.w.y;
+        sp4C.z = arg19->unk_268.world_matrix.w.z;
     } else {
         sp4C.x = arg19->unk_14->x;
         sp4C.y = arg19->unk_14->y;
@@ -494,7 +494,7 @@ void func_8000FE9C(Player *arg0, Player *arg1) {
     arg19 = &arg1->unk_198;
 
     if (arg1->unk_00->pos.y < -20 ||
-        arg1->unk_00->modInst->unk_010.local_matrix.w.y < arg1->unk_00->modInst->unk_9E4.y) {
+        arg1->unk_00->modInst->rootTransform.local_matrix.w.y < arg1->unk_00->modInst->baseRootPos.y) {
         return;
     }
 
@@ -521,9 +521,9 @@ void func_8000FE9C(Player *arg0, Player *arg1) {
     }
 
     if (arg19->unk_01) {
-        sp40.x = arg19->unk_150.wolrd_matrix.w.x;
+        sp40.x = arg19->unk_150.world_matrix.w.x;
         sp40.y = -100;
-        sp40.z = arg19->unk_150.wolrd_matrix.w.z;
+        sp40.z = arg19->unk_150.world_matrix.w.z;
 
         sp30.x = sp40.x;
         sp30.y = 0;
@@ -551,9 +551,9 @@ void func_8000FE9C(Player *arg0, Player *arg1) {
     }
 
     if (arg19->unk_00) {
-        sp40.x = arg19->unk_38.wolrd_matrix.w.x;
+        sp40.x = arg19->unk_38.world_matrix.w.x;
         sp40.y = -100;
-        sp40.z = arg19->unk_38.wolrd_matrix.w.z;
+        sp40.z = arg19->unk_38.world_matrix.w.z;
 
         sp30.x = sp40.x;
         sp30.y = 0;
@@ -594,7 +594,7 @@ void func_80010280(Player *arg0, Player *arg1) {
     arg19 = &arg1->unk_198;
 
     if (arg1->unk_00->pos.y < -20 ||
-        arg1->unk_00->modInst->unk_010.local_matrix.w.y < arg1->unk_00->modInst->unk_9E4.y) {
+        arg1->unk_00->modInst->rootTransform.local_matrix.w.y < arg1->unk_00->modInst->baseRootPos.y) {
         return;
     }
 
@@ -621,9 +621,9 @@ void func_80010280(Player *arg0, Player *arg1) {
     }
 
     if (arg19->unk_04) {
-        sp40.x = arg19->unk_268.wolrd_matrix.w.x;
+        sp40.x = arg19->unk_268.world_matrix.w.x;
         sp40.y = -100;
-        sp40.z = arg19->unk_268.wolrd_matrix.w.z;
+        sp40.z = arg19->unk_268.world_matrix.w.z;
 
         sp30.x = sp40.x;
         sp30.y = 0;
@@ -651,9 +651,9 @@ void func_80010280(Player *arg0, Player *arg1) {
     }
 
     if (arg19->unk_05) {
-        sp40.x = arg19->unk_380.wolrd_matrix.w.x;
+        sp40.x = arg19->unk_380.world_matrix.w.x;
         sp40.y = -100;
-        sp40.z = arg19->unk_380.wolrd_matrix.w.z;
+        sp40.z = arg19->unk_380.world_matrix.w.z;
 
         sp30.x = sp40.x;
         sp30.y = 0;
@@ -682,17 +682,17 @@ void func_80010280(Player *arg0, Player *arg1) {
 }
 
 void func_80010664(Player *arg0, UnkTauSub *arg1) {
-    arg0->unk_198.unk_08 = &arg0->unk_00->modInst->transforms[arg1->unk_00].wolrd_matrix.w;
-    arg0->unk_198.unk_0C = &arg0->unk_00->modInst->transforms[arg1->unk_04].wolrd_matrix.w;
-    arg0->unk_198.unk_10 = &arg0->unk_00->modInst->transforms[arg1->unk_08].wolrd_matrix.w;
-    arg0->unk_198.unk_14 = &arg0->unk_00->modInst->transforms[arg1->unk_0C].wolrd_matrix.w;
-    arg0->unk_198.unk_18 = &arg0->unk_00->modInst->transforms[arg1->unk_10].wolrd_matrix.w;
-    arg0->unk_198.unk_1C = &arg0->unk_00->modInst->transforms[arg1->unk_14].wolrd_matrix.w;
-    arg0->unk_198.unk_20 = &arg0->unk_00->modInst->transforms[arg1->unk_18].wolrd_matrix.w;
-    arg0->unk_198.unk_28 = &arg0->unk_00->modInst->transforms[0].wolrd_matrix.w;
+    arg0->unk_198.unk_08 = &arg0->unk_00->modInst->transforms[arg1->unk_00].world_matrix.w;
+    arg0->unk_198.unk_0C = &arg0->unk_00->modInst->transforms[arg1->unk_04].world_matrix.w;
+    arg0->unk_198.unk_10 = &arg0->unk_00->modInst->transforms[arg1->unk_08].world_matrix.w;
+    arg0->unk_198.unk_14 = &arg0->unk_00->modInst->transforms[arg1->unk_0C].world_matrix.w;
+    arg0->unk_198.unk_18 = &arg0->unk_00->modInst->transforms[arg1->unk_10].world_matrix.w;
+    arg0->unk_198.unk_1C = &arg0->unk_00->modInst->transforms[arg1->unk_14].world_matrix.w;
+    arg0->unk_198.unk_20 = &arg0->unk_00->modInst->transforms[arg1->unk_18].world_matrix.w;
+    arg0->unk_198.unk_28 = &arg0->unk_00->modInst->transforms[0].world_matrix.w;
 
     if (arg1->unk_6C > 0) {
-        arg0->unk_198.unk_24 = &arg0->unk_00->modInst->transforms[arg1->unk_6C].wolrd_matrix.w;
+        arg0->unk_198.unk_24 = &arg0->unk_00->modInst->transforms[arg1->unk_6C].world_matrix.w;
         arg0->unk_198.unk_02 = TRUE;
     } else {
         arg0->unk_198.unk_02 = FALSE;

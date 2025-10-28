@@ -2,11 +2,11 @@
 #include "task.h"
 #include "string.h"
 
-Object *D_80052C50 = NULL;
+Object *gObjectList = NULL;
 s32 D_80052C54 = 0;
 
 ItemPool D_8013C2B0;
-ItemPool D_8013C2C0;
+ItemPool gModelInstancePool;
 s32 D_8013C2D0_unused;
 
 void func_8002A8C0(ItemPool *arg0, u32 count, u32 element_size) {
@@ -61,8 +61,8 @@ void func_8002ABCC(s32 count) {
 
 void func_8002AC10(void) {
     func_8002A8C0(&D_8013C2B0, 50, sizeof(Object));
-    func_8002A8C0(&D_8013C2C0, 16, sizeof(ModelInstance));
-    D_80052C50 = NULL;
+    func_8002A8C0(&gModelInstancePool, 16, sizeof(ModelInstance));
+    gObjectList = NULL;
     D_80052C54 = 0;
 }
 
@@ -76,13 +76,13 @@ Object *obj_allocate(s16 arg0) {
         return NULL;
     }
 
-    if (D_80052C50 == NULL) {
-        obj = D_80052C50 = (Object *) GET_ITEM(D_8013C2B0);
+    if (gObjectList == NULL) {
+        obj = gObjectList = (Object *) GET_ITEM(D_8013C2B0);
 
         obj->prevObject = NULL;
         obj->nextObject = NULL;
     } else {
-        obj = D_80052C50;
+        obj = gObjectList;
 
         while (obj != NULL && obj->unk_074 >= arg0) {
             prev_obj = obj;
@@ -98,9 +98,9 @@ Object *obj_allocate(s16 arg0) {
         } else if (obj->prevObject == NULL) {
             obj = (Object *) GET_ITEM(D_8013C2B0);
 
-            obj->nextObject = D_80052C50;
-            D_80052C50->prevObject = obj;
-            D_80052C50 = obj;
+            obj->nextObject = gObjectList;
+            gObjectList->prevObject = obj;
+            gObjectList = obj;
             obj->prevObject = NULL;
         } else {
             prev_obj = (Object *) GET_ITEM(D_8013C2B0);
@@ -125,7 +125,7 @@ void obj_delete(Object *obj) {
     D_80052C54--;
     if (obj->prevObject == NULL) {
         obj->nextObject->prevObject = NULL;
-        D_80052C50 = obj->nextObject;
+        gObjectList = obj->nextObject;
     } else if (obj->nextObject == NULL) {
         obj->prevObject->nextObject = NULL;
     } else {
@@ -134,9 +134,9 @@ void obj_delete(Object *obj) {
     }
 
     if (obj->flags & 1) {
-        D_8013C2C0.unk_0C++;
-        D_8013C2C0.elements[D_8013C2C0.unk_0C] = obj->modInst;
-        D_8013C2C0.count++;
+        gModelInstancePool.unk_0C++;
+        gModelInstancePool.elements[gModelInstancePool.unk_0C] = obj->modInst;
+        gModelInstancePool.count++;
 
         if (obj->modInst->transforms != NULL) {
             mem_free(obj->modInst->transforms);
@@ -168,11 +168,11 @@ void func_8002AF8C(Object *obj) {
     s32 temp2;
     Object *curr;
 
-    for (curr = D_80052C50; curr != NULL; curr = curr->nextObject) {
+    for (curr = gObjectList; curr != NULL; curr = curr->nextObject) {
         if (curr != obj && (obj->unk_07C & curr->unk_07A)) {
             dxAbs = ABS(obj->pos.x - curr->pos.x);
             dzAbs = ABS(obj->pos.z - curr->pos.z);
-            temp2 = DISTANCE(dxAbs, dzAbs) - obj->unk_1FC - curr->unk_1FC;
+            temp2 = FAST_HYPOT(dxAbs, dzAbs) - obj->unk_1FC - curr->unk_1FC;
             if (temp2 <= 0) {
                 if (obj->unk_076 & 2) {
                     obj->unk_1E8(obj, curr);
@@ -198,7 +198,7 @@ void obj_update_all(void) {
     s32 temp2;
 
     D_8013C4E8 = NULL;
-    obj = D_80052C50;
+    obj = gObjectList;
     while (obj != NULL) {
         if (obj->unk_07C != 0) {
             func_8002AF8C(obj);
@@ -258,7 +258,7 @@ void obj_update_all(void) {
 }
 
 #ifdef NON_EQUIVALENT
-void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, Transform *arg3, void (*arg4)(Object *)) {
+void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, Transform *arg3, void (*taskFunc)(Object *)) {
     s16 i;
 
     func_80012A20(arg3, &arg0->transform, -2, -3);
@@ -266,13 +266,13 @@ void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, Transform *arg3, void (*ar
     arg0->unk_076 = 0;
     arg0->unk_088.r = arg0->unk_088.g = arg0->unk_088.b = 160;
 
-    arg0->unk_000.x = 0;
-    arg0->unk_000.y = 0;
-    arg0->unk_000.z = 0;
+    arg0->acceleration.x = 0;
+    arg0->acceleration.y = 0;
+    arg0->acceleration.z = 0;
 
-    arg0->unk_010.x = 0;
-    arg0->unk_010.y = 0;
-    arg0->unk_010.z = 0;
+    arg0->velocity.x = 0;
+    arg0->velocity.y = 0;
+    arg0->velocity.z = 0;
 
     arg0->unk_08C = arg0->unk_076;
 
@@ -293,18 +293,18 @@ void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, Transform *arg3, void (*ar
     arg0->unk_060 = 0x100;
 
     arg0->unk_078 = 0;
-    arg0->spriteId = 0;
-    arg0->unk_086 = -1;
+    arg0->frameIndex = 0;
+    arg0->previousFrameIndex = -1;
     arg0->unk_088.a = 128;
     arg0->unk_1F8 = 0;
     arg0->unk_1FA = 0;
 
     arg0->taskList = (ObjectTask *) GET_ITEM(gTaskPool);
     arg0->currentTask = arg0->taskList;
-    if (arg4 != NULL) {
+    if (taskFunc != NULL) {
         arg0->currentTask->counter = 0;
         arg0->currentTask->flags = 1;
-        arg0->currentTask->func = arg4;
+        arg0->currentTask->func = taskFunc;
         arg0->currentTask->stackPos = 0;
     } else {
         arg0->currentTask->counter = 0;
@@ -332,84 +332,84 @@ void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, Transform *arg3, void (*ar
 void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, Transform *arg3, void (*arg4)(Object *));
 #endif
 
-void func_8002B850(Object *obj, UnkSam *arg1) {
-    ModelInstance *model;
-    u32 s5;
-    Transform *s7;
-    Transform *v0;
-    StructAA8 *s2;
+void init_model_node_transforms(Object *obj, Model *model) {
+    ModelInstance *modInst;
+    u32 numNodes;
+    Transform *rootTransform;
+    Transform *transforms;
+    NodeAttachment *hier;
     u32 i;
-    s32 a3;
+    s32 parentId;
 
-    model = obj->modInst;
-    s5 = arg1->unk_128;
-    s7 = &model->unk_010;
+    modInst = obj->modInst;
+    numNodes = model->numNodes;
+    rootTransform = &modInst->rootTransform;
 
-    func_80012A20(&obj->transform, s7, -1, -2);
-    model->transforms = v0 = mem_alloc(s5 * sizeof(Transform), "item.c", 453);
+    func_80012A20(&obj->transform, rootTransform, -1, -2);
+    modInst->transforms = transforms = mem_alloc(numNodes * sizeof(Transform), "item.c", 453);
 
-    s2 = arg1->unk_150;
-    model->unk_AA8 = &s2[1];
-    model->unk_9E4.x = s2->x;
-    model->unk_9E4.y = s2->y;
-    model->unk_9E4.z = s2->z;
-    math_translate(&model->unk_010.local_matrix, &model->unk_9E4);
+    hier = model->nodeHierarchy;
+    modInst->nodeAttachments = &hier[1];
+    modInst->baseRootPos.x = hier->x;
+    modInst->baseRootPos.y = hier->y;
+    modInst->baseRootPos.z = hier->z;
+    math_translate(&modInst->rootTransform.local_matrix, &modInst->baseRootPos);
 
-    for (i = 0; i < s5; i++) {
-        s2 = arg1->unk_150 + i + 1;
-        a3 = s2->unk_00;
-        if (a3 >= 0) {
-            func_80012A20(&v0[a3], &v0[i], i, a3);
+    for (i = 0; i < numNodes; i++) {
+        hier = model->nodeHierarchy + i + 1;
+        parentId = hier->parent;
+        if (parentId >= 0) {
+            func_80012A20(&transforms[parentId], &transforms[i], i, parentId);
         } else {
-            func_80012A20(s7, &v0[i], i, a3);
+            func_80012A20(rootTransform, &transforms[i], i, parentId);
         }
-        math_translate(&v0[i].local_matrix, &s2->x);
+        math_translate(&transforms[i].local_matrix, &hier->x);
     }
 }
 
-Object *func_8002B9AC(Vec4i *arg0, char *arg1, K2Def *arg2, s32 arg3) {
+Object *create_kmd_object(Vec4i *arg0, char *arg1, K2Def *properties, s32 arg3) {
     Object *obj;
     char sp78[20];
-    ModelInstance *model;
-    UnkFrodo *s5;
+    ModelInstance *modInst;
+    KModel *s5;
 
     if (arg1 == NULL) {
-        obj = obj_allocate(arg2->unk_0A);
-        str_copy(sp78, arg2->unk_00);
-        obj_init(obj, arg0, &D_80049344, NULL, arg2->unk_04);
+        obj = obj_allocate(properties->objPriority);
+        str_copy(sp78, properties->name);
+        obj_init(obj, arg0, &gZeroRotation, NULL, properties->taskFunc);
     } else {
         str_copy(sp78, arg1);
-        if (arg2 != NULL) {
-            obj = obj_allocate(arg2->unk_0A);
-            obj_init(obj, arg0, &D_80049344, NULL, arg2->unk_04);
+        if (properties != NULL) {
+            obj = obj_allocate(properties->objPriority);
+            obj_init(obj, arg0, &gZeroRotation, NULL, properties->taskFunc);
         } else {
             obj = obj_allocate(0x1000);
-            obj_init(obj, arg0, &D_80049344, NULL, NULL);
+            obj_init(obj, arg0, &gZeroRotation, NULL, NULL);
         }
     }
 
-    obj->fn_render = func_8003795C;
+    obj->fn_render = model_update_kmd;
     obj->flags = 1;
-    model = obj->modInst = mem_alloc(sizeof(ModelInstance), "item.c", 523);
+    modInst = obj->modInst = mem_alloc(sizeof(ModelInstance), "item.c", 523);
 
     str_concat(sp78, ".kmd");
-    s5 = model->unk_A24 = gAssets[asset_find(sp78, arg3)].aux_data;
-    model->unk_A28 = NULL;
-    model->numNodes = s5->sam.unk_128;
+    s5 = modInst->kmodel = gAssets[asset_find(sp78, arg3)].aux_data;
+    modInst->model = NULL;
+    modInst->numNodes = s5->model.numNodes;
 
-    if (s5->sam.unk_150 != NULL) {
-        func_8002B850(obj, &s5->sam);
+    if (s5->model.nodeHierarchy != NULL) {
+        init_model_node_transforms(obj, &s5->model);
     } else {
         obj->modInst->transforms = NULL;
     }
 
-    model->animations = s5->sam.unk_148;
-    model->unk_A2C = s5->unk_A64;
+    modInst->animations = s5->model.animations;
+    modInst->unk_A2C = s5->unk_A64;
 
-    if (arg2 != NULL && arg2->unk_0C != NULL) {
-        func_800352FC(model, arg2->unk_0C);
+    if (properties != NULL && properties->unk_0C != NULL) {
+        func_800352FC(modInst, properties->unk_0C);
     } else {
-        model->unk_604 = NULL;
+        modInst->unk_604 = NULL;
     }
 
     return obj;
@@ -419,7 +419,7 @@ Object *create_worker(void (*fn_render)(Object *), s16 arg1) {
     Object *obj;
 
     obj = obj_allocate(arg1);
-    obj_init(obj, &D_8004934C, &D_80049344, NULL, NULL);
+    obj_init(obj, &D_8004934C, &gZeroRotation, NULL, NULL);
     obj->fn_render = fn_render;
     obj->flags = 8;
     return obj;
@@ -429,90 +429,90 @@ Object *create_ui_element(Vec4i *pos, UIElement *def, s32 context) {
     Object *obj;
 
     obj = obj_allocate(def->unk_0C);
-    obj_init(obj, pos, &D_80049344, NULL, def->func);
+    obj_init(obj, pos, &gZeroRotation, NULL, def->func);
     obj->fn_render = func_80015724;
     obj->flags = def->flags;
     obj->flags |= 0x10000;
-    obj->spriteId = def->spriteID;
+    obj->frameIndex = def->spriteID;
     obj->sprite_map = gAssets[asset_find(def->map_name, context)].data;
 
     return obj;
 }
 
 #ifdef NON_MATCHING
-Object *func_8002BC84(Vec4i *arg0, char *arg1, K2Def *arg2, u32 arg3) {
+Object *create_model_instance_with_properties(Vec4i *pos, char *name, K2Def *properties, u32 context) {
     Object *obj;
-    char sp78[20];
-    ModelInstance *model;
-    UnkSam *s5;
-    u32 s6;
+    char modelName[20];
+    ModelInstance *modInst;
+    Model *model;
+    u32 numNodes;
     s32 i;
 
-    if (arg1 == NULL) {
-        obj = obj_allocate(arg2->unk_0A);
-        str_copy(sp78, arg2->unk_00);
-        obj_init(obj, arg0, &D_80049344, NULL, arg2->unk_04);
+    if (name == NULL) {
+        obj = obj_allocate(properties->objPriority);
+        str_copy(modelName, properties->name);
+        obj_init(obj, pos, &gZeroRotation, NULL, properties->taskFunc);
     } else {
-        str_copy(sp78, arg1);
-        if (arg2 != NULL) {
-            obj = obj_allocate(arg2->unk_0A);
-            obj_init(obj, arg0, &D_80049344, NULL, arg2->unk_04);
+        str_copy(modelName, name);
+        if (properties != NULL) {
+            obj = obj_allocate(properties->objPriority);
+            obj_init(obj, pos, &gZeroRotation, NULL, properties->taskFunc);
         } else {
             obj = obj_allocate(0x1000);
-            obj_init(obj, arg0, &D_80049344, NULL, NULL);
+            obj_init(obj, pos, &gZeroRotation, NULL, NULL);
         }
     }
 
-    obj->fn_render = func_800386E8;
+    obj->fn_render = model_update;
     obj->flags = 1;
-    obj->modInst = (ModelInstance *) GET_ITEM(D_8013C2C0);
+    obj->modInst = (ModelInstance *) GET_ITEM(gModelInstancePool);
 
-    model = obj->modInst;
-    s5 = model->unk_A28 = gAssets[asset_find(sp78, arg3)].aux_data;
-    model->unk_A24 = NULL;
-    s6 = model->numNodes = s5->unk_128;
+    modInst = obj->modInst;
+    model = modInst->model = gAssets[asset_find(modelName, context)].aux_data;
+    modInst->kmodel = NULL;
+    numNodes = modInst->numNodes = model->numNodes;
 
-    for (i = 0; i < s6; i++) {
-        memcpy(&model->unk_AB0[i].header, s5->batchInfos[i], sizeof(BatchHeader));
-        memcpy(&model->unk_AB0[30 + i].header, s5->batchInfos[i], sizeof(BatchHeader));
-        model->unk_1F50[i] = FALSE;
-        model->unk_1F6E[i] = FALSE;
+    for (i = 0; i < numNodes; i++) {
+        memcpy(&modInst->renderBatches[i].header, model->batchInfos[i], sizeof(BatchHeader));
+        memcpy(&modInst->renderBatches[30 + i].header, model->batchInfos[i], sizeof(BatchHeader));
+        modInst->unk_1F50[i] = FALSE;
+        modInst->unk_1F6E[i] = FALSE;
     }
 
-    if (s5->unk_150 != NULL) {
-        func_8002B850(obj, s5);
+    if (model->nodeHierarchy != NULL) {
+        init_model_node_transforms(obj, model);
     } else {
         obj->modInst->transforms = NULL;
     }
 
-    model->animations = s5->unk_148;
-    model->unk_A2C = s5->unk_234;
-    model->unk_A0E = -1;
+    modInst->animations = model->animations;
+    modInst->unk_A2C = model->unk_234;
+    modInst->previousAnimId = -1;
 
-    if (arg2 != NULL && arg2->unk_0C != NULL) {
-        func_800359E4(model, arg2->unk_0C);
+    if (properties != NULL && properties->unk_0C != NULL) {
+        func_800359E4(modInst, properties->unk_0C);
     } else {
-        model->unk_604 = NULL;
+        modInst->unk_604 = NULL;
     }
 
     obj->flags |= 0x40000;
-    model->unk_A1C = model->unk_A20 = 0;
+    modInst->unk_A1C = modInst->unk_A20 = 0;
     return obj;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/item/func_8002BC84.s")
-Object *func_8002BC84(Vec4i *arg0, char *arg1, K2Def *arg2, u32 arg3);
+#pragma GLOBAL_ASM("asm/nonmatchings/item/create_model_instance_with_properties.s")
+Object *create_model_instance_with_properties(Vec4i *arg0, char *arg1, K2Def *arg2, u32 arg3);
 #endif
 
-Object *func_8002BF1C(Vec4i *arg0, UnkK2Def *arg1, s32 arg2) {
+Object *create_3dsprite_with_properties(Vec4i *pos, UnkK2Def *properties, s32 context) {
     Object *obj;
     ModelNode *new_var;
 
-    if (D_8013C2C0.count >= 2) {
-        obj = func_8002BC84(arg0, NULL, arg1, arg2);
-        obj->fn_render = func_80037CE4;
-        obj->spriteId = arg1->unk_14;
-        obj->flags |= arg1->unk_10 | 2;
+    if (gModelInstancePool.count >= 2) {
+        obj = create_model_instance_with_properties(pos, NULL, &properties->base, context);
+        obj->fn_render = sprite3d_update;
+        obj->frameIndex = properties->startingFrame;
+        obj->flags |= properties->flags | 2;
         obj->unk_088.a = 128;
 
         new_var = &obj->modInst->unk_A50;
@@ -531,86 +531,86 @@ Object *func_8002BF1C(Vec4i *arg0, UnkK2Def *arg1, s32 arg2) {
     }
 }
 
-Object *func_8002BFF0(Vec4i *arg0, s32 arg1, void (*arg2)(Object *), UnkSam *arg3) {
-    u32 s6;
+Object *create_model_instance(Vec4i *pos, s32 objPriority, void (*taskFunc)(Object *), Model *model) {
+    u32 numNodes;
     Object *obj;
-    ModelInstance *model;
+    ModelInstance *modInst;
     u32 i;
     s32 unused[5];
 
-    obj = obj_allocate(arg1);
-    obj_init(obj, arg0, &D_80049344, NULL, arg2);
+    obj = obj_allocate(objPriority);
+    obj_init(obj, pos, &gZeroRotation, NULL, taskFunc);
 
-    obj->fn_render = func_800386E8;
+    obj->fn_render = model_update;
     obj->flags = 1;
 
-    if (D_8013C2C0.count == 0) {
+    if (gModelInstancePool.count == 0) {
         obj->fn_render = task_default_func;
         obj->flags = 0x10;
         obj->modInst = NULL;
         return NULL;
     }
 
-    obj->modInst = (ModelInstance *) GET_ITEM(D_8013C2C0);
+    obj->modInst = (ModelInstance *) GET_ITEM(gModelInstancePool);
 
-    model = obj->modInst;
-    model->unk_A28 = arg3;
-    model->unk_A24 = NULL;
-    s6 = model->numNodes = arg3->unk_128;
+    modInst = obj->modInst;
+    modInst->model = model;
+    modInst->kmodel = NULL;
+    numNodes = modInst->numNodes = model->numNodes;
 
-    for (i = 0; i < s6; i++) {
-        memcpy(&model->unk_AB0[i].header, arg3->batchInfos[i], sizeof(BatchHeader));
-        memcpy(&model->unk_AB0[30 + i].header, arg3->batchInfos[i], sizeof(BatchHeader));
-        model->unk_1F50[i] = model->unk_5E4[i] = FALSE;
-        model->unk_1F6E[i] = FALSE;
+    for (i = 0; i < numNodes; i++) {
+        memcpy(&modInst->renderBatches[i].header, model->batchInfos[i], sizeof(BatchHeader));
+        memcpy(&modInst->renderBatches[30 + i].header, model->batchInfos[i], sizeof(BatchHeader));
+        modInst->unk_1F50[i] = modInst->nodeUpdated[i] = FALSE;
+        modInst->unk_1F6E[i] = FALSE;
     }
 
-    if (arg3->unk_150 != NULL) {
-        func_8002B850(obj, arg3);
+    if (model->nodeHierarchy != NULL) {
+        init_model_node_transforms(obj, model);
     } else {
         obj->modInst->transforms = NULL;
-        func_80012A20(&obj->transform, &model->unk_010, -1, -2);
-        model->unk_9E4.x = 0;
-        model->unk_9E4.y = 0;
-        model->unk_9E4.z = 0;
-        math_translate(&model->unk_010.local_matrix, &model->unk_9E4);
+        func_80012A20(&obj->transform, &modInst->rootTransform, -1, -2);
+        modInst->baseRootPos.x = 0;
+        modInst->baseRootPos.y = 0;
+        modInst->baseRootPos.z = 0;
+        math_translate(&modInst->rootTransform.local_matrix, &modInst->baseRootPos);
     }
 
-    model->animations = arg3->unk_148;
-    model->unk_A2C = arg3->unk_234;
+    modInst->animations = model->animations;
+    modInst->unk_A2C = model->unk_234;
     obj->flags |= 0x44000;
-    model->unk_9C8 = s6;
-    model->unk_604 = arg3->unk_31C;
+    modInst->unk_9C8 = numNodes;
+    modInst->unk_604 = model->unk_31C;
 
-    for (i = 0; i < model->unk_9C8; i++) {
-        model->unk_608[i].unk_04 = &arg3->unk_31C[i];
+    for (i = 0; i < modInst->unk_9C8; i++) {
+        modInst->unk_608[i].unk_04 = &model->unk_31C[i];
     }
 
-    model->currentAnimId = 0;
-    model->unk_A1C = model->unk_A20 = 0;
+    modInst->currentAnimId = 0;
+    modInst->unk_A1C = modInst->unk_A20 = 0;
 
-    if (model->animations != NULL) {
-        func_80037500(obj);
+    if (modInst->animations != NULL) {
+        model_change_animation(obj);
     }
 
-    if (arg3->unk_3CC & 1) {
+    if (model->unk_3CC & 1) {
         obj->flags |= 0x80000000;
     }
 
     return obj;
 }
 
-Object *func_8002C27C(Vec4i *arg0, s32 arg1, void (*arg2)(Object *), UnkSam *arg3) {
+Object *create_3dsprite(Vec4i *pos, s32 objPriority, void (*taskFunc)(Object *), Model *model) {
     Object *obj;
     ModelNode *new_var;
 
-    if (D_8013C2C0.count == 0) {
+    if (gModelInstancePool.count == 0) {
         return NULL;
     }
 
-    obj = func_8002BFF0(arg0, arg1, arg2, arg3);
-    obj->fn_render = func_80037CE4;
-    obj->spriteId = 0;
+    obj = create_model_instance(pos, objPriority, taskFunc, model);
+    obj->fn_render = sprite3d_update;
+    obj->frameIndex = 0;
     obj->flags |= 0x6002;
     obj->unk_088.a = 128;
 

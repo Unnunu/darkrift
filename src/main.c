@@ -9,7 +9,7 @@
         _g->words.w1 = (dl);                        \
     }
 
-typedef s32 (*DISPCB)(s32);
+typedef s32 (*DISPCB)(void *);
 
 extern s32 D_80049CF0;
 extern GameMode gGameModes[];
@@ -82,8 +82,8 @@ extern DisplayData D_8005BFF0[];
 extern DisplayData *D_80080100;
 extern s16 D_80080116;
 extern s32 D_8008012C;
-extern DISPCB D_80080140[20];
-extern s32 D_80080190[20];
+extern DISPCB gPostRenderCallbacks[20];
+extern s32 gPostRenderArgs[20];
 
 OSTime D_8005BEE0;
 OSTime D_8005BEE8;
@@ -96,7 +96,6 @@ void func_800030E4(void);
 void func_800031FC(u16);
 void func_80006CEC(void);
 void func_80003468(u16);
-// void func_80024C98(void);
 void obj_update_all(void);
 void func_80002978(void);
 void bg_draw(void);
@@ -128,12 +127,12 @@ void func_80001120(void) {
 }
 
 void func_8000132C(void) {
-    OSTime time1;
+    OSTime frameStartTime;
     Batch *ptr;
     s32 i;
 
-    time1 = osGetTime();
-    func_80024C98();
+    frameStartTime = osGetTime();
+    input_update();
 
     D_80080100 = &D_8005BFF0[D_8005BFCE];
     gMainGfxPos = D_80080100->gfxMain;
@@ -187,12 +186,12 @@ void func_8000132C(void) {
     gSPTriBatch(gMainBatchPos, NULL, &D_8004CD30, NULL, NULL);
     gSPTriBatch(gMainBatchPos, NULL, NULL, NULL, NULL);
 
-    D_8005BEE0 += osGetTime() - time1;
+    D_8005BEE0 += osGetTime() - frameStartTime;
     func_800030E4();
 
-    for (i = 0; i < ARRAY_COUNT(D_80080140); i++) {
-        if (D_80080140[i] != NULL && D_80080140[i](D_80080190[i]) == 0) {
-            D_80080140[i] = NULL;
+    for (i = 0; i < ARRAY_COUNT(gPostRenderCallbacks); i++) {
+        if (gPostRenderCallbacks[i] != NULL && gPostRenderCallbacks[i](gPostRenderArgs[i]) == 0) {
+            gPostRenderCallbacks[i] = NULL;
         }
     }
 
@@ -215,30 +214,114 @@ Object *func_8000194C(void) {
 
     obj->fn_render = func_80015C58;
     sound_play(2, obj->vars[2]);
-    gTasksDisabled = TRUE;
+    gIsPaused = TRUE;
     D_8005BEFC = 0;
     return obj;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/main/func_800019B0.s")
-void func_800019B0(s32);
+void func_800019B0(s16 playerId) {
+    Object *v0;
+    Object *v1;
+    s16 pad;
+    u8 sp35;
+    u8 sp34;
+    u8 sp33;
+    s32 counter;
+    s32 sp28;
 
-void func_80001C6C(void) {
+    counter = 6;
+
+    sp33 = FALSE;
+    gPlayerInput[playerId].unk_08 = FALSE;
+
+    while (gTaskPool.count < 10 || gModelInstancePool.count <= 0) {
+        func_8000132C();
+    }
+
+    switch (D_80080230) {
+        case 40:
+            practice_enter_pause(playerId);
+            break;
+        case 10:
+        case 11:
+            if (D_800B6328[playerId].unk_02) {
+                v0 = func_8000194C();
+                if (v0 == NULL) {
+                    sp33 = TRUE;
+                } else {
+                    gPlayerInput[playerId].enabled = FALSE;
+                }
+                break;
+            }
+            /* fallthrough */
+        default:
+            v1 = func_80015E74(&D_8004C008[9], 0xABAB);
+            if (v1 != NULL) {
+                v1->vars[0] = playerId;
+            } else {
+                sp33 = TRUE;
+            }
+            break;
+    }
+
+    if (!sp33) {
+        sound_set_volume(0, 0);
+        sound_set_volume(1, 0);
+        music_set_volume(1800);
+        func_8000132C();
+
+        alSeqpStop(gMusicPlayer);
+
+        sp34 = gPlayerInput[PLAYER_1].isMirrored;
+        sp35 = gPlayerInput[PLAYER_2].isMirrored;
+        sp28 = D_8008012C & 0x10;
+        D_8008012C |= 0x10;
+
+        while (!(D_8005BFC0 & GAME_FLAG_40)) {
+            if (D_80080230 != 40) {
+                gPlayerInput[PLAYER_1].isMirrored = gPlayerInput[PLAYER_2].isMirrored = FALSE;
+            }
+            func_8000132C();
+        }
+
+        if (!sp28) {
+            D_8008012C &= ~0x10;
+        }
+        gPlayerInput[PLAYER_1].isMirrored = sp34;
+        gPlayerInput[PLAYER_2].isMirrored = sp35;
+
+        gPlayerInput[playerId].unk_08 = FALSE;
+        gIsPaused = FALSE;
+        D_8005BFC0 &= ~GAME_FLAG_40;
+        alSeqSetLoc(gMusicSequence, &gMusicMarkerStart);
+        alSeqpPlay(gMusicPlayer);
+        music_set_volume(gMusicVolume);
+        sound_set_volume(0, gSoundVolume);
+        sound_set_volume(1, gSoundVolume);
+    } else {
+
+        while (--counter > 0) {
+            func_8000132C();
+        }
+    }
+}
+
+void unused_func_80001C6C(void) {
     D_8005BFC0 = 0;
-    gTasksDisabled = TRUE;
+    gIsPaused = TRUE;
     gSoundVolumeFading = gMusicVolumeFading = 1800;
 
     create_worker(func_80002744, 0x1000);
-    while (!(D_8005BFC0 & 0x1)) {
+    while (!(D_8005BFC0 & GAME_FLAG_MODE_DONE)) {
         func_8000132C();
     }
-    gTasksDisabled = FALSE;
+    gIsPaused = FALSE;
 
     while (gPlayerInput[0].buttons == (INP_START | INP_ZTRIG) || gPlayerInput[1].buttons == (INP_START | INP_ZTRIG)) {
         func_8000132C();
     }
 
-    gGameMode = GAME_MODE_0;
+    gGameMode = GAME_MODE_MAIN_MENU;
 
     while (gPlayerInput[0].buttons == (INP_START | INP_ZTRIG) || gPlayerInput[1].buttons == (INP_START | INP_ZTRIG)) {
         func_8000132C();
@@ -248,42 +331,44 @@ void func_80001C6C(void) {
     sched_wait_vretrace(FALSE);
 }
 
-void func_80001D88(void) {
+void main_loop(void) {
     D_8005BFCE = D_8005BEF8 = D_8005BEF0 = D_8005BEE8 = D_8005BEE0 = 0;
 
-    while (!(D_8005BFC0 & 1) || !(D_8005BFC0 & 0x1000)) {
-        if (!(D_8005BFC0 & 0x200) && !(D_8005BFC0 & 0x4) && gPlayerInput[0].buttons == INP_START &&
-            gPlayerInput[0].unk_0A && gPlayerInput[0].unk_08) {
-            func_800019B0(0);
-        } else if (!(D_8005BFC0 & 0x200) && !(D_8005BFC0 & 0x4) && gPlayerInput[1].buttons == INP_START &&
-                   gPlayerInput[1].unk_0A && gPlayerInput[1].unk_08) {
-            func_800019B0(1);
+    while (!(D_8005BFC0 & GAME_FLAG_MODE_DONE) || !(D_8005BFC0 & GAME_FLAG_1000)) {
+        if (!(D_8005BFC0 & GAME_FLAG_200) && !(D_8005BFC0 & GAME_FLAG_4) && gPlayerInput[0].buttons == INP_START &&
+            gPlayerInput[PLAYER_1].enabled && gPlayerInput[PLAYER_1].unk_08) {
+            func_800019B0(PLAYER_1);
+        } else if (!(D_8005BFC0 & GAME_FLAG_200) && !(D_8005BFC0 & GAME_FLAG_4) &&
+                   gPlayerInput[PLAYER_2].buttons == INP_START && gPlayerInput[PLAYER_2].enabled &&
+                   gPlayerInput[PLAYER_2].unk_08) {
+            func_800019B0(PLAYER_2);
         }
 
-        if (D_8005BFC0 & 0x200) {
-            gTasksDisabled = 1 - gTasksDisabled;
+        if (D_8005BFC0 & GAME_FLAG_200) {
+            gIsPaused = 1 - gIsPaused;
         }
         func_8000132C();
     }
 
-    D_8005BFC0 &= ~0x201;
-    D_8005BFC0 |= 0x2000;
+    D_8005BFC0 &= ~(GAME_FLAG_200 | GAME_FLAG_MODE_DONE);
+    D_8005BFC0 |= GAME_FLAG_2000;
 
-    if (!(D_8005BFC0 & 0x10)) {
-        if (!(D_8005BFC0 & 0x20)) {
-            gTasksDisabled = TRUE;
+    if (!(D_8005BFC0 & GAME_FLAG_10)) {
+        if (!(D_8005BFC0 & GAME_FLAG_20)) {
+            gIsPaused = TRUE;
         }
         create_worker(func_80002744, 0x1000);
-        while (!(D_8005BFC0 & 0x1)) {
+        while (!(D_8005BFC0 & GAME_FLAG_MODE_DONE)) {
             func_8000132C();
         }
-        gTasksDisabled = FALSE;
+        gIsPaused = FALSE;
     }
 
-    D_8005BFC0 &= ~0x2000;
+    D_8005BFC0 &= ~GAME_FLAG_2000;
 
     func_80001120();
     func_80001120();
+
     func_800030E4();
     sched_wait_vretrace(FALSE);
 
@@ -379,12 +464,12 @@ void func_80002340(Object *obj) {
     if (D_8005BEFC - 8 < D_80080118) {
         D_8008012C &= ~0x10;
         obj->flags |= 0x10;
-        D_8005BFC0 |= 0x100;
+        D_8005BFC0 |= GAME_FLAG_100;
 
         if (obj->vars[4] == 0) {
-            D_8005BFC0 &= ~0x4;
+            D_8005BFC0 &= ~GAME_FLAG_4;
         }
-        D_8005BFC0 |= 0x1000;
+        D_8005BFC0 |= GAME_FLAG_1000;
     } else {
         D_8005BEFC -= 8;
         func_80002178(D_8005BEFC, NULL);
@@ -404,18 +489,18 @@ void func_800023E4(Object *obj) {
 
 void func_80002448(Object *obj) {
     func_80021918(obj, 0);
-    if (D_8005BFC0 & 0x400) {
-        D_8005BFC0 |= 0x1000;
+    if (D_8005BFC0 & GAME_FLAG_400) {
+        D_8005BFC0 |= GAME_FLAG_1000;
         return;
     }
     D_8008012C |= 0x10;
     osViBlack(TRUE);
-    D_8005BFC0 &= ~0x1000;
+    D_8005BFC0 &= ~GAME_FLAG_1000;
     func_80021918(obj, 0);
-    if (D_8005BFC0 & 4) {
+    if (D_8005BFC0 & GAME_FLAG_4) {
         obj->vars[4] = 1;
     }
-    D_8005BFC0 |= 4;
+    D_8005BFC0 |= GAME_FLAG_4;
     if (obj->flags & 0x10) {
         obj->flags &= ~0x10;
         obj->fn_render = func_800023E4;
@@ -428,7 +513,7 @@ void func_80002528(Object *obj) {
     obj->vars[0]++;
 
     if (obj->vars[0] >= 5) {
-        D_8005BFC0 |= 1;
+        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
         obj->flags |= 0x10;
     }
 }
@@ -447,7 +532,7 @@ void func_80002590(Object *obj) {
     }
 
     obj->fn_render = func_80002528;
-    if (!(D_8005BFC0 & 0x800)) {
+    if (!(D_8005BFC0 & GAME_FLAG_800)) {
         osViBlack(1);
     }
 
@@ -476,7 +561,7 @@ void func_80002648(Object *obj) {
     }
 
     obj->fn_render = func_80002528;
-    if (!(D_8005BFC0 & 0x800)) {
+    if (!(D_8005BFC0 & GAME_FLAG_800)) {
         osViBlack(1);
     }
 
@@ -485,16 +570,16 @@ void func_80002648(Object *obj) {
 }
 
 void func_80002744(Object *obj) {
-    if (!(D_8005BFC0 & 0x80)) {
+    if (!(D_8005BFC0 & GAME_FLAG_80)) {
         D_8005BEFC = 0;
     }
 
-    D_8005BFC0 &= ~0x80;
+    D_8005BFC0 &= ~GAME_FLAG_80;
     obj->fn_render = func_80002648;
     func_80002178(D_8005BEFC, NULL);
 }
 
-void func_800027A0(void) {
+void game_main(void) {
     gGameMode = GAME_MODE_LOGO;
     func_800031FC(gGameMode);
     func_80006CEC();
@@ -503,7 +588,7 @@ void func_800027A0(void) {
         D_8005BED0 = gGameMode;
         create_worker(func_80002448, 0x1100);
         gGameModes[gGameMode].fn_run();
-        if (!(D_8005BFC0 & 0x800)) {
+        if (!(D_8005BFC0 & GAME_FLAG_800)) {
             osViBlack(1);
         }
         func_800030E4();

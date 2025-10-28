@@ -278,7 +278,7 @@ void func_80015724(Object *obj) {
     AssetSP2 *sprite_map;
 
     sprite_map = obj->sprite_map;
-    v1 = &sprite_map->sprites[obj->spriteId];
+    v1 = &sprite_map->sprites[obj->frameIndex];
     texture = v1->texture;
     spE0 = v1->parts;
     spD8 = v1->numParts;
