@@ -93,8 +93,8 @@ void func_8002C340(void) {
     D_8013C336 = D_8013C828;
     D_8013C338 = D_8013C5A0;
 
-    if (D_8005BED0 <= GAME_MODE_17) {
-        D_8008012C |= 1;
+    if (gCurrentGameMode <= GAME_MODE_17) {
+        D_8008012C |= GFX_FLAG_1;
     }
 }
 
@@ -141,7 +141,7 @@ void func_8002C490(Object *obj) {
             if (!D_800801F0 || D_80080234 == 0) {
                 obj->currentTask->func = func_8002EB2C;
                 obj->currentTask->counter = 1;
-                D_8008012C &= ~1;
+                D_8008012C &= ~GFX_FLAG_1;
                 gPlayers[PLAYER_1].unk_00->flags &= ~0x200000;
                 gPlayers[PLAYER_2].unk_00->flags &= ~0x200000;
                 return;
@@ -150,7 +150,7 @@ void func_8002C490(Object *obj) {
         }
     }
 
-    D_8008012C &= ~0x20;
+    D_8008012C &= ~GFX_FLAG_20;
 
     obj->pos.x = D_8013C2E0.x;
     obj->pos.y = D_8013C2E0.y;
@@ -172,7 +172,7 @@ void func_8002C6E8(Object *obj) {
 
     if (obj->frameIndex >= obj->modInst->numAnimFrames - 1 || (gPlayerInput[PLAYER_1].buttons & INP_START) ||
         (gPlayerInput[PLAYER_2].buttons & INP_START)) {
-        if (D_80080230 != 40) {
+        if (gPlayMode != PLAY_MODE_PRACTICE) {
             func_80017CA8();
         } else {
             gPlayers[PLAYER_1].unk_80 &= ~0x100000;
@@ -189,7 +189,7 @@ void func_8002C6E8(Object *obj) {
         obj->currentTask->func = func_8002EB2C;
         obj->modInst->animations[0] = NULL;
         gPlayerInput[PLAYER_1].unk_08 = gPlayerInput[PLAYER_2].unk_08 = FALSE;
-        D_8008012C &= ~0x11;
+        D_8008012C &= ~(GFX_FLAG_1 | GFX_FLAG_10);
     }
 
     gPlayers[PLAYER_1].unk_00->flags |= 0x200000;
@@ -239,7 +239,7 @@ void func_8002C9F4(Object *obj) {
     u32 a1;
     UnkKappa *v0;
 
-    v0 = gGameModes[D_8005BED0].unk_18;
+    v0 = gGameModes[gCurrentGameMode].unk_18;
     temp1 = gPlayerInput[PLAYER_1].buttons;
     v1 = temp1 & 0xFFFF;
     a1 = temp1 >> 16;
@@ -487,9 +487,9 @@ void func_8002D278(Object *obj, u8 arg1) {
     s32 temp;
 
     if (D_8013C250 == 0) {
-        D_8008012C |= 0x20;
+        D_8008012C |= GFX_FLAG_20;
     } else {
-        D_8008012C &= ~0x20;
+        D_8008012C &= ~GFX_FLAG_20;
     }
 
     func_8002DFCC(FALSE);
@@ -618,7 +618,7 @@ void func_8002DCC8(Object *obj) {
     D_80081428 = D_8013C828;
 
     if ((gPlayerInput[PLAYER_1].buttons & INP_START) || (gPlayerInput[PLAYER_2].buttons & INP_START)) {
-        if (D_80080230 != 40) {
+        if (gPlayMode != PLAY_MODE_PRACTICE) {
             func_80017CA8();
         } else {
             gPlayers[PLAYER_1].unk_80 &= ~0x100000;
@@ -635,7 +635,7 @@ void func_8002DCC8(Object *obj) {
         obj->currentTask->func = func_8002EB2C;
         obj->modInst->animations[0] = NULL;
         gPlayerInput[PLAYER_1].unk_08 = gPlayerInput[PLAYER_2].unk_08 = FALSE;
-        D_8008012C &= ~0x11;
+        D_8008012C &= ~(GFX_FLAG_1 | GFX_FLAG_10);
     } else {
         if (--obj->vars[10] <= 0) {
             obj->currentTask->func = func_8002C6E8;
@@ -921,9 +921,9 @@ void func_8002EB2C(Object *obj) {
 
     sp6A = FALSE;
     if (D_8013C250 == 0) {
-        D_8008012C |= 0x20;
+        D_8008012C |= GFX_FLAG_20;
     } else {
-        D_8008012C &= ~0x20;
+        D_8008012C &= ~GFX_FLAG_20;
     }
 
     func_8002DFCC(FALSE);

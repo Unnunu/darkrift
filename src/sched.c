@@ -99,7 +99,7 @@ void func_80002978(void) {
     gDPPipeSync(gMainGfxPos++);
     gDPSetCycleType(gMainGfxPos++, G_CYC_FILL);
 
-    if (!(D_8008012C & 8)) {
+    if (!(D_8008012C & GFX_FLAG_8)) {
         gDPSetDepthImage(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(D_80080120));
         gDPSetColorImage(gMainGfxPos++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, VIRTUAL_TO_PHYSICAL(D_80080120));
         gDPSetFillColor(gMainGfxPos++, GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0));
@@ -202,7 +202,7 @@ void sched_execute_tasks(void) {
 
         D_8008011C += 2;
 
-        if (D_8008012C & 2) {
+        if (D_8008012C & GFX_FLAG_OVERLAY) {
             D_801389B8.t.data_ptr = D_80080100->gfxOverlay;
             D_801389B8.t.data_size = (gOverlayGfxPos - D_80080100->gfxOverlay) * sizeof(Gfx);
             osSendMesg(&gSchedSPTaskQueue, (OSMesg) &D_801389B8, OS_MESG_BLOCK);
@@ -274,7 +274,7 @@ void func_800031FC(u16 arg0) {
     D_80080130 = gGameModes[arg0].unk_10;
     D_80080132 = gGameModes[arg0].unk_11;
     D_80080134 = gGameModes[arg0].unk_12;
-    D_8008012C = 0;
+    D_8008012C = GFX_FLAG_NONE;
     memcpy(&D_801389B8, &D_8004CBC8, sizeof(OSTask));
 
     D_8013C228 = NULL;
@@ -318,7 +318,7 @@ void func_80003468(u16 arg0) {
     D_80080130 = gGameModes[arg0].unk_10;
     D_80080132 = gGameModes[arg0].unk_11;
     D_80080134 = gGameModes[arg0].unk_12;
-    D_8008012C = 0;
+    D_8008012C = GFX_FLAG_NONE;
     D_8013C228 = NULL;
     D_80080118 = 0;
     D_80080129 = TRUE;

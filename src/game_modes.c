@@ -27,7 +27,7 @@ extern s8 D_80080129;
 extern s16 D_80081250;
 extern Texture *D_80081254;
 extern s16 D_80080116;
-extern s16 D_8005BED2;
+extern s16 gPreviousGameMode;
 extern Vec4i D_8004934C;
 extern s16 D_8013C224;
 extern s16 D_8013C226;
@@ -36,7 +36,7 @@ extern s32 D_800AA480;
 extern s16 D_80080232;
 extern s16 D_800B6368[11][2];
 
-extern u32 D_80081668;
+extern u32 gTournamentOpponentId;
 extern u16 D_8013C250;
 
 void func_8001A674(Object *);
@@ -44,7 +44,6 @@ void func_8001A334(Object *);
 void func_8002EA50(Object *, s32);
 Object *create_model_instance(Vec4i *, s32, void (*)(Object *), Model *);
 void func_800199E0(Object *);
-void sound_stop_one(s32, s32);
 void func_80020670(Object *);
 void func_80019F40(Object *);
 void func_8001A158(Object *, s16);
@@ -79,7 +78,7 @@ void func_80006AE0(void) {
     D_80081278 = gAssets[asset_find("comblock.k5", 0xABAB)].aux_data;
 
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
-    if (D_80080230 == 40) {
+    if (gPlayMode == PLAY_MODE_PRACTICE) {
         gPlayerInput[1 - gPracticingPlayer].enabled = FALSE;
     } else {
         gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
@@ -93,10 +92,10 @@ void func_80006AE0(void) {
 }
 
 void func_80006C14(void) {
-    D_800B6328[PLAYER_1].unk_08 = D_800B6328[PLAYER_2].unk_08 = 0;
+    gBattleSettings[PLAYER_1].unk_08 = gBattleSettings[PLAYER_2].unk_08 = 0;
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
 
-    if (D_80080230 == 40) {
+    if (gPlayMode == PLAY_MODE_PRACTICE) {
         gPlayerInput[1 - gPracticingPlayer].enabled = FALSE;
     } else {
         gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
@@ -114,22 +113,22 @@ void func_80006CEC(void) {
 
     D_800AA480 = 0;
 
-    D_800B6328[PLAYER_1].characterId = GORE;
-    D_800B6328[PLAYER_1].unk_06 = TRUE;
-    D_800B6328[PLAYER_1].unk_02 = 0;
-    D_800B6328[PLAYER_1].unk_08 = 0;
-    D_800B6328[PLAYER_2].characterId = AARON;
-    D_800B6328[PLAYER_2].unk_06 = FALSE;
-    D_800B6328[PLAYER_2].unk_02 = 0;
-    D_800B6328[PLAYER_2].unk_08 = 0;
-    D_800B6328[PLAYER_1].unk_0E = 0;
-    D_800B6328[PLAYER_2].unk_0E = 0;
-    D_800B6328[PLAYER_1].unk_0C = 400;
-    D_800B6328[PLAYER_2].unk_0C = 400;
-    D_800B6328[PLAYER_1].unk_0F = D_800B6328[PLAYER_2].unk_0F = 1;
-    D_800B6328[PLAYER_1].isDummy = D_800B6328[PLAYER_2].isDummy = 0;
+    gBattleSettings[PLAYER_1].characterId = GORE;
+    gBattleSettings[PLAYER_1].unk_06 = TRUE;
+    gBattleSettings[PLAYER_1].isCpu = FALSE;
+    gBattleSettings[PLAYER_1].unk_08 = 0;
+    gBattleSettings[PLAYER_2].characterId = AARON;
+    gBattleSettings[PLAYER_2].unk_06 = FALSE;
+    gBattleSettings[PLAYER_2].isCpu = FALSE;
+    gBattleSettings[PLAYER_2].unk_08 = 0;
+    gBattleSettings[PLAYER_1].unk_0E = 0;
+    gBattleSettings[PLAYER_2].unk_0E = 0;
+    gBattleSettings[PLAYER_1].unk_0C = 400;
+    gBattleSettings[PLAYER_2].unk_0C = 400;
+    gBattleSettings[PLAYER_1].unk_0F = gBattleSettings[PLAYER_2].unk_0F = 1;
+    gBattleSettings[PLAYER_1].isDummy = gBattleSettings[PLAYER_2].isDummy = 0;
 
-    D_80080232 = D_80080230 = 20;
+    D_80080232 = gPlayMode = PLAY_MODE_2_PLAYERS;
     D_800801F1 = TRUE;
 
     for (i = 0; i < 2; i++) {
@@ -142,8 +141,8 @@ void func_80006CEC(void) {
         D_800B6368[j][0] = D_800B6368[j][1] = 0;
     }
 
-    D_800B6328[PLAYER_1].unk_04 = 7;
-    D_800B6328[PLAYER_2].unk_04 = 7;
+    gBattleSettings[PLAYER_1].unk_04 = 7;
+    gBattleSettings[PLAYER_2].unk_04 = 7;
     gPracticingPlayer = 0;
 }
 
@@ -173,7 +172,7 @@ void func_80006E6C(void) {
     asset_open_folder("/title/wait", 0x6000);
     sp30 = load_background("wait", 0, 0, 0, 0, 1, 0x6000);
     D_8005BFC0 |= GAME_FLAG_400 | GAME_FLAG_10;
-    D_8008012C |= 0x20;
+    D_8008012C |= GFX_FLAG_20;
 
     obj = create_worker(&func_80006E0C, 0x1000);
     obj->vars[0] = 6;
@@ -183,7 +182,7 @@ void func_80006E6C(void) {
     D_80080112 = sp2C;
     D_80080114 = sp2A;
     D_8005BFC0 &= ~(GAME_FLAG_400 | GAME_FLAG_10 | GAME_FLAG_MODE_DONE);
-    D_8008012C &= ~0x20;
+    D_8008012C &= ~GFX_FLAG_20;
     func_8002630C(0x6000);
     func_80014CB4(sp30);
 }
@@ -192,13 +191,13 @@ void func_80006FB4(void) {
     D_8013C224 = gFrameCounter % 5;
     D_8013C226 = 0;
     D_80081430 = 0;
-    D_800B6328[PLAYER_1].isDummy = D_800B6328[PLAYER_2].isDummy = 0;
+    gBattleSettings[PLAYER_1].isDummy = gBattleSettings[PLAYER_2].isDummy = 0;
 
-    if (D_8005BED2 != GAME_MODE_PLAYER_SELECTION) {
+    if (gPreviousGameMode != GAME_MODE_PLAYER_SELECTION) {
         func_80006E6C();
     }
 
-    if (D_80080230 != 40) {
+    if (gPlayMode != PLAY_MODE_PRACTICE) {
         asset_open_folder("/bars/bars", 0xABAB);
     } else {
         asset_open_folder("/bars/bars2", 0xABAB);
@@ -222,7 +221,7 @@ void func_800070C0(void) {
 }
 
 void run_battle_gore_mode(void) {
-    s32 sp2C = D_800B6328[1].unk_06;
+    s32 sp2C = gBattleSettings[1].unk_06;
     Texture *bg;
 
     func_80006FB4();
@@ -258,7 +257,7 @@ void func_800071F0(Object *obj) {
 s32 D_80049400[] = { 0x40000, task_default_func, 0x2800, 0x10000000, 0, "tc", func_800071F0, 0x1000, 0 };
 
 void run_battle_aaron_mode(void) {
-    s32 sp2C = D_800B6328[1].unk_06;
+    s32 sp2C = gBattleSettings[1].unk_06;
     Vec4i sp1C = { 0, -500, 0, 0 };
     Texture *bg;
 
@@ -282,7 +281,7 @@ void run_battle_aaron_mode(void) {
 }
 
 void run_battle_demitron_mode(void) {
-    s32 sp2C = D_800B6328[1].unk_06;
+    s32 sp2C = gBattleSettings[1].unk_06;
     Texture *bg;
 
     func_80006FB4();
@@ -305,7 +304,7 @@ void run_battle_demitron_mode(void) {
 }
 
 void run_battle_demonica_mode(void) {
-    s32 sp2C = D_800B6328[1].unk_06;
+    s32 sp2C = gBattleSettings[1].unk_06;
     Texture *bg;
 
     func_80006FB4();
@@ -328,7 +327,7 @@ void run_battle_demonica_mode(void) {
 }
 
 void run_battle_eve_mode(void) {
-    s32 sp2C = D_800B6328[1].unk_06;
+    s32 sp2C = gBattleSettings[1].unk_06;
     Texture *bg;
 
     func_80006FB4();
@@ -351,7 +350,7 @@ void run_battle_eve_mode(void) {
 }
 
 void run_battle_morphix_mode(void) {
-    s32 sp2C = D_800B6328[1].unk_06;
+    s32 sp2C = gBattleSettings[1].unk_06;
     Texture *bg;
 
     func_80006FB4();
@@ -373,7 +372,7 @@ void run_battle_morphix_mode(void) {
 }
 
 void run_battle_niiki_mode(void) {
-    s32 sp2C = D_800B6328[1].unk_06;
+    s32 sp2C = gBattleSettings[1].unk_06;
 
     func_80006FB4();
     load_background("bg2", 0, 94, 0x2000, 0x10000, 0, sp2C);
@@ -393,7 +392,7 @@ void run_battle_niiki_mode(void) {
 }
 
 void run_battle_scarlet_mode(void) {
-    s32 sp2C = D_800B6328[1].unk_06;
+    s32 sp2C = gBattleSettings[1].unk_06;
     Texture *bg;
 
     func_80006FB4();
@@ -416,7 +415,7 @@ void run_battle_scarlet_mode(void) {
 }
 
 void run_battle_sonork_mode(void) {
-    s32 sp2C = D_800B6328[1].unk_06;
+    s32 sp2C = gBattleSettings[1].unk_06;
     Texture *bg;
 
     func_80006FB4();
@@ -439,7 +438,7 @@ void run_battle_sonork_mode(void) {
 }
 
 void run_battle_zenmuron_mode(void) {
-    s32 sp2C = D_800B6328[1].unk_06;
+    s32 sp2C = gBattleSettings[1].unk_06;
     Texture *bg;
 
     func_80006FB4();
@@ -464,7 +463,7 @@ void run_battle_zenmuron_mode(void) {
 void func_80007B68(Object *obj) {
     s16 a3;
 
-    a3 = 1 - D_800B6328[PLAYER_2].unk_02;
+    a3 = 1 - gBattleSettings[PLAYER_2].isCpu; // @bug maybe
     D_80080118 = 100;
 
     if (D_8005BFC0 & GAME_FLAG_100) {
@@ -474,13 +473,13 @@ void func_80007B68(Object *obj) {
             if (D_80081250 + D_80081254->unk_1C + 40) {
                 D_80081254->unk_1C--;
             } else {
-                if (D_80080230 != 30) {
-                    D_800B6328[D_80081668].unk_06 = TRUE;
-                    D_800B6328[1 - D_80081668].unk_06 = FALSE;
-                    gGameMode = D_800B6328[D_80081668].characterId + GAME_MODE_BATTLE_AARON;
+                if (gPlayMode != PLAY_MODE_30) {
+                    gBattleSettings[gTournamentOpponentId].unk_06 = TRUE;
+                    gBattleSettings[1 - gTournamentOpponentId].unk_06 = FALSE;
+                    gNextGameMode = gBattleSettings[gTournamentOpponentId].characterId + GAME_MODE_BATTLE_AARON;
                 } else {
-                    gGameMode = D_800B6328[1 - D_80081668].characterId + GAME_MODE_BATTLE_AARON;
-                    D_800B6328[PLAYER_1].unk_02 = 1;
+                    gNextGameMode = gBattleSettings[1 - gTournamentOpponentId].characterId + GAME_MODE_BATTLE_AARON;
+                    gBattleSettings[PLAYER_1].isCpu = TRUE;
                 }
                 D_8005BFC0 |= GAME_FLAG_80 | GAME_FLAG_MODE_DONE;
                 obj->flags |= 0x10;
@@ -488,14 +487,15 @@ void func_80007B68(Object *obj) {
         }
 
         gPlayerInput[a3].unk_08 = TRUE;
-        if ((gPlayerInput[a3].buttons & INP_START) || D_80080230 == 30 && (gPlayerInput[1 - a3].buttons & INP_START)) {
+        if ((gPlayerInput[a3].buttons & INP_START) ||
+            gPlayMode == PLAY_MODE_30 && (gPlayerInput[1 - a3].buttons & INP_START)) {
             func_80014CB4(D_80081254);
-            if (D_80080230 != 30) {
-                gGameMode = D_800B6328[D_80081668].characterId + GAME_MODE_BATTLE_AARON;
-                D_800B6328[D_80081668].unk_06 = TRUE;
-                D_800B6328[1 - D_80081668].unk_06 = FALSE;
+            if (gPlayMode != PLAY_MODE_30) {
+                gNextGameMode = gBattleSettings[gTournamentOpponentId].characterId + GAME_MODE_BATTLE_AARON;
+                gBattleSettings[gTournamentOpponentId].unk_06 = TRUE;
+                gBattleSettings[1 - gTournamentOpponentId].unk_06 = FALSE;
             } else {
-                gGameMode = GAME_MODE_MAIN_MENU;
+                gNextGameMode = GAME_MODE_MAIN_MENU;
             }
             D_8005BFC0 |= GAME_FLAG_80 | GAME_FLAG_MODE_DONE;
             obj->flags |= 0x10;
@@ -534,12 +534,12 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
     Object *a1;
     Object *v1;
 
-    s0 = D_800B6328[PLAYER_2].unk_02;
+    s0 = gBattleSettings[PLAYER_2].isCpu; // @bug maybe
     func_8002630C(0xABAB);
-    D_800B6328[s0].isDummy = 1;
-    D_800B6328[1 - s0].isDummy = 0;
+    gBattleSettings[s0].isDummy = 1;
+    gBattleSettings[1 - s0].isDummy = 0;
 
-    if (D_8005BED2 != GAME_MODE_PLAYER_SELECTION && D_8005BED0 != GAME_MODE_29) {
+    if (gPreviousGameMode != GAME_MODE_PLAYER_SELECTION && gCurrentGameMode != GAME_MODE_29) {
         func_80006E6C();
     }
 
@@ -551,7 +551,7 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
     func_800052EC(0);
     func_800052EC(1);
 
-    D_800B6328[PLAYER_1].unk_0F = D_800B6328[PLAYER_2].unk_0F = 1;
+    gBattleSettings[PLAYER_1].unk_0F = gBattleSettings[PLAYER_2].unk_0F = 1;
 
     a1 = D_80080228[1 - s0];
     a1->pos.x = 0;
@@ -565,7 +565,7 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
     gPlayers[PLAYER_1].unk_80 |= 0x400000;
     gPlayers[PLAYER_2].unk_80 |= 0x400000;
 
-    if (D_800B6328[1 - s0].characterId != MORPHIX) {
+    if (gBattleSettings[1 - s0].characterId != MORPHIX) {
         a1->flags |= 0x10000000;
     }
 
@@ -585,11 +585,11 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
     func_80007DB0(gPlayers + 1 - s0, a1, arg2);
     func_8002DA08(gCamera);
     func_8000636C(gPlayers + 1 - s0, arg1, 1);
-    D_8008012C |= 4;
+    D_8008012C |= GFX_FLAG_4;
 }
 
 void run_intro_gore_mode(void) {
-    s32 temp_s0 = D_800B6328[PLAYER_2].unk_06;
+    s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
 
     asset_open_folder("/gore/goreint", 0x3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
@@ -602,13 +602,13 @@ void run_intro_gore_mode(void) {
 
     func_8002630C(0x3000);
     func_800070C0();
-    if (D_80080230 != 30) {
+    if (gPlayMode != PLAY_MODE_30) {
         func_8002630C(temp_s0);
     }
 }
 
 void run_intro_aaron_mode(void) {
-    s32 temp_s0 = D_800B6328[1].unk_06;
+    s32 temp_s0 = gBattleSettings[1].unk_06;
 
     asset_open_folder("/aaro/aaroint", 0x3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
@@ -621,13 +621,13 @@ void run_intro_aaron_mode(void) {
 
     func_8002630C(0x3000);
     func_800070C0();
-    if (D_80080230 != 30) {
+    if (gPlayMode != PLAY_MODE_30) {
         func_8002630C(temp_s0);
     }
 }
 
 void run_intro_demitron_mode(void) {
-    s32 temp_s0 = D_800B6328[1].unk_06;
+    s32 temp_s0 = gBattleSettings[1].unk_06;
 
     asset_open_folder("/demi/demiint", 0x3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
@@ -639,13 +639,13 @@ void run_intro_demitron_mode(void) {
     main_loop();
     func_8002630C(0x3000);
     func_800070C0();
-    if (D_80080230 != 30) {
+    if (gPlayMode != PLAY_MODE_30) {
         func_8002630C(temp_s0);
     }
 }
 
 void run_intro_demonica_mode(void) {
-    s32 temp_s0 = D_800B6328[1].unk_06;
+    s32 temp_s0 = gBattleSettings[1].unk_06;
 
     asset_open_folder("/demo/demoint", 0x3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
@@ -657,13 +657,13 @@ void run_intro_demonica_mode(void) {
     main_loop();
     func_8002630C(0x3000);
     func_800070C0();
-    if (D_80080230 != 30) {
+    if (gPlayMode != PLAY_MODE_30) {
         func_8002630C(temp_s0);
     }
 }
 
 void run_intro_eve_mode(void) {
-    s32 temp_s0 = D_800B6328[1].unk_06;
+    s32 temp_s0 = gBattleSettings[1].unk_06;
 
     asset_open_folder("/eve/eveint", 0x3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
@@ -675,13 +675,13 @@ void run_intro_eve_mode(void) {
     main_loop();
     func_8002630C(0x3000);
     func_800070C0();
-    if (D_80080230 != 30) {
+    if (gPlayMode != PLAY_MODE_30) {
         func_8002630C(temp_s0);
     }
 }
 
 void run_intro_morphix_mode(void) {
-    s32 temp_s0 = D_800B6328[1].unk_06;
+    s32 temp_s0 = gBattleSettings[1].unk_06;
 
     asset_open_folder("/morp/morpint", 0x3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
@@ -693,13 +693,13 @@ void run_intro_morphix_mode(void) {
     main_loop();
     func_8002630C(0x3000);
     func_800070C0();
-    if (D_80080230 != 30) {
+    if (gPlayMode != PLAY_MODE_30) {
         func_8002630C(temp_s0);
     }
 }
 
 void run_intro_niiki_mode(void) {
-    s32 temp_s0 = D_800B6328[1].unk_06;
+    s32 temp_s0 = gBattleSettings[1].unk_06;
 
     asset_open_folder("/niik/niikint", 0x3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
@@ -711,13 +711,13 @@ void run_intro_niiki_mode(void) {
     main_loop();
     func_8002630C(0x3000);
     func_800070C0();
-    if (D_80080230 != 30) {
+    if (gPlayMode != PLAY_MODE_30) {
         func_8002630C(temp_s0);
     }
 }
 
 void run_intro_scarlet_mode(void) {
-    s32 temp_s0 = D_800B6328[1].unk_06;
+    s32 temp_s0 = gBattleSettings[1].unk_06;
 
     asset_open_folder("/scar/scarint", 0x3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
@@ -729,13 +729,13 @@ void run_intro_scarlet_mode(void) {
     main_loop();
     func_8002630C(0x3000);
     func_800070C0();
-    if (D_80080230 != 30) {
+    if (gPlayMode != PLAY_MODE_30) {
         func_8002630C(temp_s0);
     }
 }
 
 void run_intro_sonork_mode(void) {
-    s32 temp_s0 = D_800B6328[1].unk_06;
+    s32 temp_s0 = gBattleSettings[1].unk_06;
 
     asset_open_folder("/sono/sonoint", 0x3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
@@ -747,13 +747,13 @@ void run_intro_sonork_mode(void) {
     main_loop();
     func_8002630C(0x3000);
     func_800070C0();
-    if (D_80080230 != 30) {
+    if (gPlayMode != PLAY_MODE_30) {
         func_8002630C(temp_s0);
     }
 }
 
 void run_intro_zenmuron_mode(void) {
-    s32 temp_s0 = D_800B6328[1].unk_06;
+    s32 temp_s0 = gBattleSettings[1].unk_06;
 
     asset_open_folder("/zenm/zenmint", 0x3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
@@ -765,7 +765,7 @@ void run_intro_zenmuron_mode(void) {
     main_loop();
     func_8002630C(0x3000);
     func_800070C0();
-    if (D_80080230 != 30) {
+    if (gPlayMode != PLAY_MODE_30) {
         func_8002630C(temp_s0);
     }
 }
@@ -774,7 +774,7 @@ void func_80008D0C(Object *obj) {
     if (gPlayers->unk_00->frameIndex + 2 == gPlayers->unk_90->unk_02) {
         D_8005BFC0 |= GAME_FLAG_MODE_DONE;
         obj->flags |= 0x10;
-        gGameMode = GAME_MODE_LOGO;
+        gNextGameMode = GAME_MODE_LOGO;
     }
 }
 
@@ -792,15 +792,15 @@ void func_80008D98(void) {
     Vec4i sp34 = { -200, 0, 0, 0 };
     Texture *sp30;
 
-    D_800B6328[PLAYER_1].characterId = SONORK;
-    D_800B6328[PLAYER_1].unk_06 = 1;
-    D_800B6328[PLAYER_2].unk_06 = 0;
-    D_800B6328[PLAYER_1].unk_02 = 0;
-    D_800B6328[PLAYER_2].unk_02 = 1;
+    gBattleSettings[PLAYER_1].characterId = SONORK;
+    gBattleSettings[PLAYER_1].unk_06 = 1;
+    gBattleSettings[PLAYER_2].unk_06 = 0;
+    gBattleSettings[PLAYER_1].isCpu = FALSE;
+    gBattleSettings[PLAYER_2].isCpu = TRUE;
 
     func_8002630C(0);
     D_8005BFC0 |= GAME_FLAG_400 | GAME_FLAG_10;
-    D_8008012C |= 0x20;
+    D_8008012C |= GFX_FLAG_20;
 
     asset_open_folder("/sono/prize", 0x3000);
     sp30 = load_background("prize", 0, 0x64, 0, 0, 2, 0x3000);
@@ -809,7 +809,7 @@ void func_80008D98(void) {
     main_loop();
 
     D_8005BFC0 &= ~(GAME_FLAG_10 | GAME_FLAG_MODE_DONE);
-    D_8008012C &= ~0x20;
+    D_8008012C &= ~GFX_FLAG_20;
     asset_open_folder("/sono/sonoboss", 0x3000);
     func_80007F4C(FALSE, 346, 0x3000);
     load_background("bg2", 0, 26, 0x2000, 0x10000, 0, 0);
@@ -827,7 +827,7 @@ void func_80008D98(void) {
     func_8002630C(0);
     func_8002630C(1);
     if (D_80051F68 == 0) {
-        gGameMode = GAME_MODE_32;
+        gNextGameMode = GAME_MODE_32;
     }
 }
 
@@ -840,8 +840,8 @@ void func_80008FDC(void) {
     void *a3;
     s32 padding;
 
-    sp44 = D_800B6328[PLAYER_2].unk_06;
-    sp42 = D_800B6328[PLAYER_2].unk_02;
+    sp44 = gBattleSettings[PLAYER_2].unk_06;
+    sp42 = gBattleSettings[PLAYER_2].isCpu;
 
     func_8002630C(0xABAB);
     asset_open_folder("/demi/demiboss", 0x3000);
@@ -875,7 +875,7 @@ void func_80008FDC(void) {
     func_80007DB0(&gPlayers[sp42], a1, 0x3000);
     func_8002DA08(gCamera);
     func_8000636C(&gPlayers[sp42], 346, 1);
-    D_8008012C |= 4;
+    D_8008012C |= GFX_FLAG_4;
     create_worker(func_8001A674, 0x1000);
     func_80006AE0();
 
@@ -890,7 +890,7 @@ void func_80008FDC(void) {
     D_800801F0 = 1;
     main_loop();
     func_8002630C(0x3000);
-    gGameMode = GAME_MODE_BATTLE_DEMITRON;
+    gNextGameMode = GAME_MODE_BATTLE_DEMITRON;
 }
 
 void func_800092B0(void) {
@@ -900,7 +900,7 @@ void func_800092B0(void) {
     char sp44[12];
     char sp38[12];
 
-    var1 = 1 - D_800B6328[PLAYER_2].unk_02;
+    var1 = 1 - gBattleSettings[PLAYER_2].isCpu;
     sp54 = gPlayers[var1].characterId;
     func_800263A8();
     asset_open_folder("/title/ending", 0x4000);
@@ -921,7 +921,7 @@ void func_800092B0(void) {
     D_80081254 = load_background(sp38, 0, 40, 0, 0, 1, 0x4000);
     D_80081254 = load_background("passwd", 0, 205, 0, 0, 1, 0x4000);
     D_8005BFC0 |= GAME_FLAG_4;
-    D_8008012C |= 0x20;
+    D_8008012C |= GFX_FLAG_20;
     main_loop();
     func_8002630C(0x4000);
 }
@@ -938,7 +938,7 @@ void func_80009480(void) {
     func_8001A158(worker, 0x4000);
     D_80080129 = FALSE;
     D_8005BFC0 |= GAME_FLAG_4;
-    D_8008012C |= 0x20;
+    D_8008012C |= GFX_FLAG_20;
     main_loop();
     func_8002630C(0x4000);
 }
@@ -957,10 +957,10 @@ void func_800095A8(void) {
     create_worker(func_80009554, 0x1000);
     D_80080129 = TRUE;
     D_8005BFC0 |= GAME_FLAG_4;
-    D_8008012C |= 0x20;
+    D_8008012C |= GFX_FLAG_20;
     main_loop();
     func_8002630C(0x4000);
-    gGameMode = GAME_MODE_36;
+    gNextGameMode = GAME_MODE_36;
 }
 
 void func_8000965C(s32 arg0) {
@@ -983,7 +983,7 @@ void func_800096D0(u8 arg0) {
     Object *s0;
     Object *a3;
 
-    s1 = D_800B6328[PLAYER_2].unk_06;
+    s1 = gBattleSettings[PLAYER_2].unk_06;
     t9 = 1 - s1;
     nv = s1;
     func_800052EC(0);
@@ -1003,9 +1003,9 @@ void func_800096D0(u8 arg0) {
     a3->pos.z = sp58[0].z;
 
     if (!arg0) {
-        if (D_800B6328[t9].characterId == SONORK) {
+        if (gBattleSettings[t9].characterId == SONORK) {
             gPlayers[t9].unk_00->pos.x -= 400;
-        } else if (D_800B6328[t9].characterId == DEMONICA) {
+        } else if (gBattleSettings[t9].characterId == DEMONICA) {
             gPlayers[t9].unk_00->pos.x += 1200;
             if (gPlayers[nv].unk_00) {} // required to match
         }
@@ -1013,14 +1013,14 @@ void func_800096D0(u8 arg0) {
 
     s0->rotation.y = 0x400;
 
-    charId = D_800B6328[t9].characterId; // required to match
+    charId = gBattleSettings[t9].characterId; // required to match
     if ((charId == SONORK || charId == DEMONICA) && !arg0) {
         a3->rotation.y = 0x400;
     } else {
         a3->rotation.y = 0xC00;
     }
 
-    if (D_800B6328[t9].characterId != MORPHIX) {
+    if (gBattleSettings[t9].characterId != MORPHIX) {
         s0->flags |= 0x10000000;
     }
     a3->flags |= 0x10000000;
@@ -1038,7 +1038,7 @@ void func_800096D0(u8 arg0) {
     func_8002DA08(gCamera);
     func_80007DB0(&gPlayers[nv], a3, 0x4000);
     func_80007DB0(&gPlayers[t9], s0, 0x4000);
-    D_8008012C |= 4;
+    D_8008012C |= GFX_FLAG_4;
     load_background("bg2", 0, -27, 0x2000, 0x10000, 0, nv);
     load_background("bg0", nv * 0, 8, 0x1000, 0x10000, 1, nv);
     func_8000965C(GAME_MODE_BATTLE_DEMITRON);
@@ -1051,13 +1051,13 @@ void func_800099F0(void) {
     u16 sp24;
     char sp2C[80];
 
-    sp7E = D_800B6328[PLAYER_2].unk_06;
+    sp7E = gBattleSettings[PLAYER_2].unk_06;
     sp24 = 1 - sp7E;
-    D_800B6328[PLAYER_1].isDummy = D_800B6328[PLAYER_2].isDummy = 0;
+    gBattleSettings[PLAYER_1].isDummy = gBattleSettings[PLAYER_2].isDummy = 0;
     D_800801F0 = 1;
     D_80080234 = 1;
 
-    switch (D_800B6328[sp24].characterId) {
+    switch (gBattleSettings[sp24].characterId) {
         case AARON:
             str_copy(sp2C, "/aaro/aarogend");
             break;
@@ -1092,12 +1092,12 @@ void func_800099F0(void) {
 
     asset_open_folder(sp2C, 0x4000);
     if (str_compare(sp2C, "/demi/demigend") != 0) {
-        if (D_800B6328[sp24].characterId != SONORK && D_800B6328[sp24].characterId != DEMONICA) {
+        if (gBattleSettings[sp24].characterId != SONORK && gBattleSettings[sp24].characterId != DEMONICA) {
             asset_open_folder("/demi/demigend", 0x4000);
         }
     }
 
-    switch (D_800B6328[sp24].characterId) {
+    switch (gBattleSettings[sp24].characterId) {
         case DEMONICA:
             asset_open_folder("/demi/demigen3", 0x4000);
             create_worker(func_8001A98C, 0x1000);
@@ -1116,7 +1116,7 @@ void func_800099F0(void) {
     main_loop();
     func_8002630C(0x4000);
     func_8002630C(0xABAB);
-    gGameMode = GAME_MODE_35;
+    gNextGameMode = GAME_MODE_35;
 }
 
 void func_80009CE0(void) {
@@ -1126,7 +1126,7 @@ void func_80009CE0(void) {
     char sp3C[12];
     Object *obj;
 
-    sp56 = 1 - D_800B6328[PLAYER_2].unk_02;
+    sp56 = 1 - gBattleSettings[PLAYER_2].isCpu;
     sp54 = gPlayers[sp56].characterId;
 
     asset_open_folder("/title/ending", 0x4000);
@@ -1165,7 +1165,7 @@ void func_80009E8C(void) {
     Player *player2;
     char sp2C[72];
 
-    sp7E = D_800B6328[PLAYER_2].unk_06;
+    sp7E = gBattleSettings[PLAYER_2].unk_06;
     sp24 = 1 - sp7E;
 
     player2 = &gPlayers[sp24];
@@ -1173,9 +1173,9 @@ void func_80009E8C(void) {
 
     D_800801F0 = 1;
     D_80080234 = 1;
-    D_800B6328[sp7E].isDummy = D_800B6328[sp24].isDummy = 0;
+    gBattleSettings[sp7E].isDummy = gBattleSettings[sp24].isDummy = 0;
 
-    switch (D_800B6328[sp24].characterId) {
+    switch (gBattleSettings[sp24].characterId) {
         case AARON:
             str_copy(sp2C, "/aaro/aaroclos");
             break;
@@ -1209,7 +1209,7 @@ void func_80009E8C(void) {
     }
     asset_open_folder(sp2C, 0x4000);
 
-    if (D_800B6328[sp24].characterId == DEMONICA) {
+    if (gBattleSettings[sp24].characterId == DEMONICA) {
         str_copy(sp2C, "/demi/demigen3");
     } else {
         str_copy(sp2C, "/demi/demigen2");
@@ -1227,7 +1227,7 @@ void func_80009E8C(void) {
     obj = create_model_instance(&sp80, 0x1000, func_80008D64, a3);
     obj->unk_088.a = 80;
 
-    if (D_800B6328[sp24].characterId == SONORK || D_800B6328[sp24].characterId == DEMONICA) {
+    if (gBattleSettings[sp24].characterId == SONORK || gBattleSettings[sp24].characterId == DEMONICA) {
         if (sp24 != 0) {
             a3 = gAssets[asset_find("dheadp2.k2", 0x4000)].aux_data;
         } else {
@@ -1247,47 +1247,47 @@ void func_8000A298(void) {
     s32 i;
 
     D_800801F1 = TRUE;
-    D_800B6328[PLAYER_1].unk_0A = D_800B6328[PLAYER_2].unk_0A = 0;
+    gBattleSettings[PLAYER_1].unk_0A = gBattleSettings[PLAYER_2].unk_0A = 0;
 
     for (i = 0; i < 11; i++) {
         D_800B6350[PLAYER_2][i] = 0;
         D_800B6350[PLAYER_1][i] = 0;
     }
 
-    D_800B6328[PLAYER_1].unk_0F = D_800B6328[PLAYER_2].unk_0F = 1;
+    gBattleSettings[PLAYER_1].unk_0F = gBattleSettings[PLAYER_2].unk_0F = 1;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
-    D_800B6328[PLAYER_1].unk_0C = D_800B6328[PLAYER_2].unk_0C = 400;
-    D_800B6328[PLAYER_1].unk_04 = D_800B6328[PLAYER_2].unk_04 = 0;
+    gBattleSettings[PLAYER_1].unk_0C = gBattleSettings[PLAYER_2].unk_0C = 400;
+    gBattleSettings[PLAYER_1].unk_04 = gBattleSettings[PLAYER_2].unk_04 = 0;
 }
 
-void run_0_mode(void) {
-    Object *v1;
+void run_main_menu_mode(void) {
+    Object *menuEntrySelector;
     UIElement sp40 = { OPTIONS_PRESS_START, func_80019A9C, 0, 0x1000, "options2.sp2" };
     Vec4i sp30 = { 164, 155, 0, 0 };
 
     func_800263A8();
-    gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
-    asset_open_folder("/title", 0x2000);
+    gPlayerInput[PLAYER_1].unk_0D = gPlayerInput[PLAYER_2].unk_0D = TRUE;
+    asset_open_folder("/title", CONTEXT_2000);
     load_background("dr_title", 0, 0, 0, 0, 1, CONTEXT_2000);
-    D_8008012C |= 0x20;
+    D_8008012C |= GFX_FLAG_20;
     D_8005BFC0 |= GAME_FLAG_4;
 
-    if (D_8005BED2 == GAME_MODE_1) {
-        Model *assetData = gAssets[asset_find("title.k2", 0x2000)].aux_data;
-        v1 = create_model_instance(&D_8004934C, 0x1000, func_800199E0, assetData);
-        v1->flags |= 0x01000000;
+    if (gPreviousGameMode == GAME_MODE_OPTIONS) {
+        Model *menuEntrySelectorModel = gAssets[asset_find("title.k2", CONTEXT_2000)].aux_data;
+        menuEntrySelector = create_model_instance(&D_8004934C, 0x1000, func_800199E0, menuEntrySelectorModel);
+        menuEntrySelector->flags |= 0x01000000;
     } else {
-        v1 = create_ui_element(&sp30, &sp40, 0x2000);
+        menuEntrySelector = create_ui_element(&sp30, &sp40, CONTEXT_2000);
     }
 
-    v1->currentTask->counter = 30;
+    menuEntrySelector->currentTask->counter = 30;
 
     create_worker(func_80020670, 0x1000);
     func_8000A298();
     main_loop();
 
     func_8002630C(0x2000);
-    if (gGameMode != GAME_MODE_PLAYER_SELECTION) {
+    if (gNextGameMode != GAME_MODE_PLAYER_SELECTION) {
         func_8002630C(0xEEFF);
     }
 }
@@ -1317,7 +1317,7 @@ void func_8000A578(Object *obj) {
         return;
     }
 
-    sound_stop_one(0x2000, 8); // @bug wrong player id
+    sound_stop_one(0x2000, 8);
     obj->fn_render = func_8000A514;
     load_background("dr_title", 0, 0, 0, 0, 1, CONTEXT_2000);
     v0 = create_ui_element(&sp34, &sp44, 0x2000);
@@ -1333,7 +1333,7 @@ void run_intro_mode(void) {
     Vec4i sp2C = { 160, 155, 0, 0 };
 
     D_80080129 = FALSE;
-    D_8008012C |= 0x20;
+    D_8008012C |= GFX_FLAG_20;
     D_8005BFC0 |= GAME_FLAG_4;
     asset_open_folder("/title/tit_int", CONTEXT_2000);
     asset_open_folder("/plyrsel/plyrsel", CONTEXT_EEFF);
@@ -1347,7 +1347,7 @@ void run_intro_mode(void) {
     func_8000A298();
     main_loop();
     func_8002630C(0x2000);
-    if (gGameMode != GAME_MODE_PLAYER_SELECTION) {
+    if (gNextGameMode != GAME_MODE_PLAYER_SELECTION) {
         func_8002630C(0xEEFF);
     }
 }
@@ -1361,8 +1361,8 @@ void func_8000A828(void) {
 void run_logo_mode(void) {
     func_800263A8();
     D_8005BFC0 |= GAME_FLAG_4;
-    D_8008012C |= 0x20;
-    D_8008012C |= 0x40;
+    D_8008012C |= GFX_FLAG_20;
+    D_8008012C |= GFX_FLAG_40;
     if (!gPlayerInput[0].connected && !gPlayerInput[1].connected) {
         func_8000A828();
     }
@@ -1404,7 +1404,7 @@ void run_1_mode(void) {
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
     asset_open_folder("/title/option", 0x2000);
     load_background("bgopt", 0, 0, 0, 0, 1, CONTEXT_2000);
-    D_8008012C |= 0x20;
+    D_8008012C |= GFX_FLAG_20;
     D_8005BFC0 |= GAME_FLAG_4;
 
     s0 = create_ui_element(&spD4, &sp1AC, 0x2000);
@@ -1524,7 +1524,7 @@ void run_2_mode(void) {
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
     asset_open_folder("/title/control", 0x2000);
     load_background("bgcont", 0, 0, 0, 0, 1, CONTEXT_2000);
-    D_8008012C |= 0x20;
+    D_8008012C |= GFX_FLAG_20;
     D_8005BFC0 |= GAME_FLAG_4;
 
     create_ui_element(&sp13C, &sp200, 0x2000);
@@ -1627,7 +1627,7 @@ void run_3_mode(void) {
     load_background("bgrank", 0, 4, 0, 0, 1, CONTEXT_2000);
     D_80081460 = create_ui_element(&sp2C, &sp3C, 0x2000);
     func_80019278();
-    D_8008012C |= 0x20;
+    D_8008012C |= GFX_FLAG_20;
     D_8005BFC0 |= GAME_FLAG_4;
     main_loop();
     func_8002630C(0x2000);
@@ -1641,7 +1641,7 @@ void run_4_mode(void) {
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
     asset_open_folder("/title/stats", 0x2000);
     load_background("aarost", 0, 13, 0, 0, 1, CONTEXT_2000);
-    D_8008012C |= 0x20;
+    D_8008012C |= GFX_FLAG_20;
     D_8005BFC0 |= GAME_FLAG_4;
     create_worker(func_80018AD0, 0x1000);
     main_loop();
@@ -1657,7 +1657,7 @@ void run_17_mode(void) {
     UnkObjDef3 sp64 = { 0xFFFFFE70, 0, 0, 0 };
     UnkObjDef3 sp54 = { 400, 0, 0, 0 };
     s32 unused2;
-    s32 sp4C = D_800B6328[1].unk_06;
+    s32 sp4C = gBattleSettings[1].unk_06;
     UnkObjDef4 sp3C = { "gore", task_default_func, 0x1000, 0 };
     UnkObjDef4 sp2C = { "arena", task_default_func, 0x1000, 0 };
 

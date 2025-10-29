@@ -29,7 +29,7 @@ s32 D_8013C3C8[2];
 u8 func_8002F9A0(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
-    return (player->unk_80 & 0x800000) || D_800B6328[player->playerId].unk_02;
+    return (player->unk_80 & 0x800000) || gBattleSettings[player->playerId].isCpu;
 }
 
 void func_8002F9E8(Object *obj) {
@@ -209,7 +209,7 @@ void func_80030074(Object *obj) {
             obj->vars[3] = -1;
         }
 
-        if (D_80080230 != 40) {
+        if (gPlayMode != PLAY_MODE_PRACTICE) {
             opponent->unk_00->unk_070 -= obj->vars[2];
         }
         if (opponent->unk_00->unk_070 < 0) {
@@ -222,7 +222,8 @@ void func_80030074(Object *obj) {
             func_80021DC4(obj);
             break;
         case DEMONICA:
-            if (D_800B6328[1 - player->playerId].characterId == NIIKI && obj->frameIndex < player->unk_90->unk_02 - 1) {
+            if (gBattleSettings[1 - player->playerId].characterId == NIIKI &&
+                obj->frameIndex < player->unk_90->unk_02 - 1) {
                 obj->pos.y = 100;
             } else {
                 obj->pos.y = 0;
@@ -249,7 +250,7 @@ void func_800301FC(Object *obj) {
             obj->vars[3] = -1;
         }
 
-        if (D_80080230 != 40) {
+        if (gPlayMode != PLAY_MODE_PRACTICE) {
             player->unk_00->unk_070 -= obj->vars[2];
         }
         if (player->unk_00->unk_070 < 0) {
@@ -325,7 +326,7 @@ void func_80030330(Object *obj) {
         (gPlayers + oppId)->unk_00->pos.z = obj->pos.z + sp34.z;
         (gPlayers + oppId)->unk_00->rotation.y = 0x400 - ((0xC00 - obj->rotation.y) & 0xFFF);
 
-        D_8008012C &= ~0x10;
+        D_8008012C &= ~GFX_FLAG_10;
         func_80016264();
 
         switch (characterId) {
@@ -771,7 +772,7 @@ void func_8003146C(Object *obj) {
 u8 func_800315FC(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
-    if (D_800B6328[player->playerId].unk_02) {
+    if (gBattleSettings[player->playerId].isCpu) {
         return TRUE;
     }
 
@@ -781,7 +782,7 @@ u8 func_800315FC(Object *obj) {
 u8 func_80031648(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
-    if (D_800B6328[player->playerId].unk_02) {
+    if (gBattleSettings[player->playerId].isCpu) {
         return TRUE;
     }
 
@@ -809,7 +810,7 @@ void func_80031724(Object *obj) {
     v0 = gPlayers + (1 - player->playerId);
     v1 = &player->unk_20[player->unk_7E];
 
-    if (!(v1->unk_34 & 0x4000) && D_800B6328[player->playerId].unk_02 && (v0->unk_90->unk_34 & 0x100000) &&
+    if (!(v1->unk_34 & 0x4000) && gBattleSettings[player->playerId].isCpu && (v0->unk_90->unk_34 & 0x100000) &&
         v0->unk_00->frameIndex < v0->unk_90->unk_04) {
         if (v0->unk_80 & 1) {
             func_800063C4(player, 0x27, 1);
@@ -1085,7 +1086,7 @@ void func_8003201C(Object *obj) {
 void func_80032044(Object *obj) {
     Player *v0 = (Player *) obj->varObj[0];
 
-    if (D_800B6328[PLAYER_1].characterId == D_800B6328[PLAYER_2].characterId && v0->playerId != 0) {
+    if (gBattleSettings[PLAYER_1].characterId == gBattleSettings[PLAYER_2].characterId && v0->playerId != 0) {
         obj->currentTask->counter = 15;
     }
 

@@ -130,7 +130,7 @@ void practice_init_hud(void) {
     D_8013C40A = 0;
     D_8013C444 = 0;
     gPlayers[1 - gPracticingPlayer].unk_80 |= 0x200000;
-    D_800B6328[1 - gPracticingPlayer].unk_02 = 0;
+    gBattleSettings[1 - gPracticingPlayer].isCpu = FALSE;
 
     temp_v0_2 = create_ui_element(&D_80052ED0, &D_80052E4C, 0xABAB);
     temp_v0_2->frameIndex = SPR_PRA_DAMAGE;
@@ -336,7 +336,7 @@ void func_800327D8(Object *obj) {
         switch (gPracticePauseMenuSelection) {
             case 118:
                 D_8005BFC0 |= GAME_FLAG_80 | GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
-                gGameMode = GAME_MODE_MAIN_MENU;
+                gNextGameMode = GAME_MODE_MAIN_MENU;
                 obj->flags |= 0x10;
                 return;
             case 112:
@@ -351,7 +351,7 @@ void func_800327D8(Object *obj) {
             case 117:
                 D_8005BFC0 |= GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
                 obj->flags |= 0x10;
-                gGameMode = GAME_MODE_PLAYER_SELECTION;
+                gNextGameMode = GAME_MODE_PLAYER_SELECTION;
                 return;
         }
 

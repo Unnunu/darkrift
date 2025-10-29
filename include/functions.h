@@ -140,5 +140,7 @@ void func_80029130(void);
 void practice_enter_pause(s32 playerId);
 void sound_set_volume(s32 arg0, s16 arg1);
 void music_set_volume(s16 arg0);
+void func_8000A578(Object *obj);
+void sound_stop_one(u32 playerId, u32 soundId);
 
 #endif

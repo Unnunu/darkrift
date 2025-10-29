@@ -1,6 +1,6 @@
 #include "common.h"
 
-void run_0_mode(void);
+void run_main_menu_mode(void);
 void run_1_mode(void);
 void run_2_mode(void);
 void run_3_mode(void);
@@ -151,7 +151,7 @@ Vec4s D_8004BAF0[] = {
 };
 
 GameMode gGameModes[] = {
-    { run_0_mode, 0x90000, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, 192, 192, 192, 0 },
+    { run_main_menu_mode, 0x90000, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, 192, 192, 192, 0 },
     { run_1_mode, 0x90000, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, 192, 192, 192, 0 },
     { run_2_mode, 0x90000, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, 192, 192, 192, 0 },
     { run_3_mode, 0x90000, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, 192, 192, 192, 0 },

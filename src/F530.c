@@ -7,7 +7,7 @@ extern Vec4s D_80081268;
 
 void func_8000E930(Object *obj) {
     if (obj->frameIndex < obj->modInst->numAnimFrames) {
-        D_8008012C |= 0x10;
+        D_8008012C |= GFX_FLAG_10;
         obj->frameIndex++;
         if (obj->frameIndex > 12) {
             if (obj->unk_088.a > obj->vars[0]) {
@@ -18,14 +18,14 @@ void func_8000E930(Object *obj) {
         }
     } else {
         obj->flags |= 0x10;
-        D_8008012C &= ~0x10;
+        D_8008012C &= ~GFX_FLAG_10;
         obj->currentTask->flags |= 0x80;
     }
 }
 
 void func_8000E9D8(Object *obj) {
     if (obj->frameIndex < obj->modInst->numAnimFrames) {
-        D_8008012C |= 0x10;
+        D_8008012C |= GFX_FLAG_10;
         obj->frameIndex++;
         if (obj->frameIndex > 2) {
             if (obj->unk_088.a > obj->vars[0]) {
@@ -35,7 +35,7 @@ void func_8000E9D8(Object *obj) {
             }
         }
     } else {
-        D_8008012C &= ~0x10;
+        D_8008012C &= ~GFX_FLAG_10;
         obj->flags |= 0x10;
         obj->currentTask->flags |= 0x80;
     }
@@ -239,7 +239,7 @@ s16 func_8000F074(Player *arg0, Player *arg1, PlayerSub3 *arg2) {
 
         if (a3 >= 236 && a3 <= 245) {
             arg0->unk_00->vars[2] = arg2->unk_20;
-        } else if (!v12 && D_80080230 != 40) {
+        } else if (!v12 && gPlayMode != 40) {
             arg0->unk_00->unk_070 -= arg2->unk_20;
         }
 

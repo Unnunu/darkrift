@@ -1093,7 +1093,7 @@ void asset_load_mov(Asset *asset) {
 }
 
 void asset_load_sym(Asset *asset) {
-    if (D_800B6328[asset->context].unk_0E != 0) {
+    if (gBattleSettings[asset->context].unk_0E != 0) {
         func_80026BE0(asset);
     }
 }

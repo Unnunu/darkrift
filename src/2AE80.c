@@ -21,7 +21,7 @@ void func_8002A288(Object *obj) {
     if (obj->frameIndex >= obj->modInst->numAnimFrames) {
         obj->currentTask->flags |= 0x80;
         obj->flags |= 0x10;
-        D_8008012C &= ~0x10;
+        D_8008012C &= ~GFX_FLAG_10;
     }
 
     if (obj->unk_088.a >= 4) {

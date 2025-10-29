@@ -311,7 +311,7 @@ s16 func_80028928(s16 playerId);
 void func_80028990(Vtx *vtx) {
     Gfx *gfx = D_8005BF58;
 
-    if (D_8008012C & 1) {
+    if (D_8008012C & GFX_FLAG_1) {
         return;
     }
 
@@ -457,7 +457,7 @@ void func_80028F38(Object *obj) {
 }
 
 void func_80028FCC(void) {
-    if (D_80080230 != 40 && D_8004C1D4 != 0) {
+    if (gPlayMode != PLAY_MODE_PRACTICE && D_8004C1D4 != 0) {
         D_8013C240->currentTask->func = func_80028F38;
         D_8013C240->currentTask->counter = 0;
         D_8013C240->currentTask->flags = 1;
@@ -498,7 +498,7 @@ void func_80029130(void) {
     Object *v0;
 
     D_8013C248 = NULL;
-    s0 = D_800B6328[PLAYER_1].unk_0A;
+    s0 = gBattleSettings[PLAYER_1].unk_0A;
     if (s0 != 0) {
         D_8013C248 = create_ui_element(&sp50, &sp60, 0xABAB);
         D_80081438--;
@@ -508,7 +508,7 @@ void func_80029130(void) {
 
         if (s0 >= 1000) {
             s0 = 1;
-            D_800B6328[PLAYER_1].unk_0A = 1;
+            gBattleSettings[PLAYER_1].unk_0A = 1;
         }
 
         if (s0 >= 100) {
@@ -523,7 +523,7 @@ void func_80029130(void) {
             v0->taskList = NULL;
         }
 
-        if (D_800B6328[PLAYER_1].unk_0A >= 10) {
+        if (gBattleSettings[PLAYER_1].unk_0A >= 10) {
             v0 = create_ui_element(D_800520D8[s3], &sp74, 0xABAB);
             D_80081438--;
             v0->frameIndex = 28 + (s0 / 10);
@@ -548,7 +548,7 @@ void func_80029130(void) {
         D_8013C248->taskList = NULL;
     }
 
-    s0 = D_800B6328[PLAYER_2].unk_0A;
+    s0 = gBattleSettings[PLAYER_2].unk_0A;
     if (s0 != 0) {
         D_8013C248 = create_ui_element(&sp40, &sp60, 0xABAB);
         D_80081438--;
@@ -557,7 +557,7 @@ void func_80029130(void) {
 
         if (s0 >= 1000) {
             s0 = 1;
-            D_800B6328[PLAYER_2].unk_0A = 1;
+            gBattleSettings[PLAYER_2].unk_0A = 1;
         }
 
         if (s0 >= 100) {
@@ -572,7 +572,7 @@ void func_80029130(void) {
             v0->taskList = NULL;
         }
 
-        if (D_800B6328[PLAYER_2].unk_0A >= 10) {
+        if (gBattleSettings[PLAYER_2].unk_0A >= 10) {
             v0 = create_ui_element(D_800520D8[s3], &sp74, 0xABAB);
             D_80081438--;
             v0->frameIndex = 28 + (s0 / 10);
@@ -619,7 +619,7 @@ void func_80029630(void) {
     Vec4i sp5C = { 74, 39, 0, 0 };
     Vec4i sp4C = { 257, 39, 0, 0 };
 
-    if (D_80080230 == 40) {
+    if (gPlayMode == PLAY_MODE_PRACTICE) {
         return;
     }
 
@@ -649,7 +649,7 @@ void func_80029630(void) {
     v0->taskList = NULL;
 
     s0 = 0;
-    for (s1 = 0; s1 < D_800B6328[PLAYER_1].unk_08; s1++) {
+    for (s1 = 0; s1 < gBattleSettings[PLAYER_1].unk_08; s1++) {
         D_8013C258[PLAYER_1][s1] = v0 = create_ui_element(&sp7C, &sp120, 0xABAB);
         v0->frameIndex = 13;
         sp7C.x -= 8;
@@ -667,7 +667,7 @@ void func_80029630(void) {
     }
 
     s0 = 0;
-    for (s1 = 0; s1 < D_800B6328[PLAYER_2].unk_08; s1++) {
+    for (s1 = 0; s1 < gBattleSettings[PLAYER_2].unk_08; s1++) {
         D_8013C258[PLAYER_2][s1] = v0 = create_ui_element(&sp6C, &sp120, 0xABAB);
         v0->frameIndex = 13;
         sp6C.x += 8;
@@ -695,20 +695,20 @@ void func_80029630(void) {
     D_8013C238 = v0->sprite_map->sprites[14].parts;
     D_8013C238->unk_08 = D_8013C238->unk_04 + 80;
 
-    v0 = create_ui_element(&D_8004A5D0[D_800B6328[PLAYER_1].characterId], &sp120, 0xABAB);
-    if (D_800B6328[PLAYER_1].characterId < CHARACTER_5) {
-        v0->frameIndex = 16 + D_800B6328[PLAYER_1].characterId;
+    v0 = create_ui_element(&D_8004A5D0[gBattleSettings[PLAYER_1].characterId], &sp120, 0xABAB);
+    if (gBattleSettings[PLAYER_1].characterId < CHARACTER_5) {
+        v0->frameIndex = 16 + gBattleSettings[PLAYER_1].characterId;
     } else {
-        v0->frameIndex = 16 + D_800B6328[PLAYER_1].characterId - 1;
+        v0->frameIndex = 16 + gBattleSettings[PLAYER_1].characterId - 1;
     }
     task_clear(v0->taskList);
     v0->taskList = NULL;
 
-    v0 = create_ui_element(&D_8004A680[D_800B6328[PLAYER_2].characterId], &sp120, 0xABAB);
-    if (D_800B6328[PLAYER_2].characterId < CHARACTER_5) {
-        v0->frameIndex = 16 + D_800B6328[PLAYER_2].characterId;
+    v0 = create_ui_element(&D_8004A680[gBattleSettings[PLAYER_2].characterId], &sp120, 0xABAB);
+    if (gBattleSettings[PLAYER_2].characterId < CHARACTER_5) {
+        v0->frameIndex = 16 + gBattleSettings[PLAYER_2].characterId;
     } else {
-        v0->frameIndex = 16 + D_800B6328[PLAYER_2].characterId - 1;
+        v0->frameIndex = 16 + gBattleSettings[PLAYER_2].characterId - 1;
     }
     task_clear(v0->taskList);
     v0->taskList = NULL;
@@ -739,7 +739,7 @@ void func_80029D84(Object *obj) {
 void func_80029DC0(Object *obj) {
     if (++obj->frameIndex >= 130) {
         D_8005BFC0 |= GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
-        gGameMode = GAME_MODE_MAIN_MENU;
+        gNextGameMode = GAME_MODE_MAIN_MENU;
         D_8005BFC0 |= GAME_FLAG_80;
         obj->flags &= ~0x2000000;
         obj->fn_render = func_80029D84;

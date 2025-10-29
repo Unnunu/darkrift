@@ -260,7 +260,7 @@ gspDarkRift3DDataStart = 0x80056060; // name_end:gspDarkRift3DDataEnd
 aspMainDataStart = 0x80056C20; // name_end:aspMainDataEnd
 
 obj_allocate = 0x8002AC5C;
-gGameMode = 0x8005BFC2;
+gNextGameMode = 0x8005BFC2;
 gPlayerInput = 0x800AA430; // size:0x1C
 D_800AA450 = 0x800AA450; // size:0x20
 sched_wait_vretrace = 0x80003150;
@@ -330,7 +330,7 @@ obj_update_all = 0x8002B0AC;
 bg_draw = 0x800153C4;
 
 gPlayers = 0x800AA488; //size:0xBEA0
-D_800B6328 = 0x800B6328; //size:0x24
+gBattleSettings = 0x800B6328; //size:0x24
 
 create_ui_element = 0x8002BBD4;
 asset_load_sp2 = 0x80027054;
@@ -393,3 +393,6 @@ gPostRenderCallbacks = 0x80080140;
 gPostRenderArgs = 0x80080190;
 reset_post_render_hooks = 0x800028B0;
 gObjectList = 0x80052C50;
+gCurrentGameMode = 0x8005BED0;
+gPreviousGameMode = 0x8005BED2;
+gPlayMode = 0x80080230;

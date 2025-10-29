@@ -428,7 +428,7 @@ Object *create_worker(void (*fn_render)(Object *), s16 arg1) {
 Object *create_ui_element(Vec4i *pos, UIElement *def, s32 context) {
     Object *obj;
 
-    obj = obj_allocate(def->unk_0C);
+    obj = obj_allocate(def->objPriority);
     obj_init(obj, pos, &gZeroRotation, NULL, def->func);
     obj->fn_render = func_80015724;
     obj->flags = def->flags;

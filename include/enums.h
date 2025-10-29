@@ -3,7 +3,7 @@
 
 enum GameModes {
     GAME_MODE_MAIN_MENU,
-    GAME_MODE_1,
+    GAME_MODE_OPTIONS,
     GAME_MODE_2,
     GAME_MODE_3,
     GAME_MODE_4,
@@ -104,6 +104,26 @@ enum GameFlags {
     GAME_FLAG_800 = 0x800,
     GAME_FLAG_1000 = 0x1000,
     GAME_FLAG_2000 = 0x2000
+};
+
+enum GfxFlags {
+    GFX_FLAG_NONE = 0,
+    GFX_FLAG_1 = 0x1,
+    GFX_FLAG_OVERLAY = 0x2,
+    GFX_FLAG_4 = 0x4,
+    GFX_FLAG_8 = 0x8,
+    GFX_FLAG_10 = 0x10,
+    GFX_FLAG_20 = 0x20,
+    GFX_FLAG_40 = 0x40
+};
+
+enum PlayModes {
+    PLAY_MODE_TOURNAMENT_P1 = 10,
+    PLAY_MODE_TOURNAMENT_P2 = 11,
+    PLAY_MODE_2_PLAYERS = 20,
+    PLAY_MODE_30 = 30,
+    PLAY_MODE_PRACTICE = 40,
+    PLAY_MODE_50 = 50
 };
 
 #endif

@@ -37,10 +37,6 @@ typedef struct ColorRGBA {
     u8 r, g, b, a;
 } ColorRGBA;
 
-typedef struct Quad {
-    Vtx v[4];
-} Quad;
-
 struct Object;
 typedef void (*ObjFunc)(struct Object *);
 
@@ -497,7 +493,7 @@ typedef struct UIElement {
     /* 0x00 */ s16 spriteID;
     /* 0x04 */ ObjFunc func;
     /* 0x08 */ s32 flags;
-    /* 0x0C */ s16 unk_0C;
+    /* 0x0C */ s16 objPriority;
     /* 0x10 */ char *map_name;
 } UIElement;
 
@@ -767,8 +763,7 @@ typedef struct Player {
 
 typedef struct Player12 {
     /* 0x00 */ s16 characterId;
-    /* 0x02 */ u8 unk_02;
-    /* 0x03 */ char unk_03;
+    /* 0x02 */ u8 isCpu; // probably wrong name
     /* 0x04 */ u16 unk_04;
     /* 0x06 */ u8 unk_06;
     /* 0x07 */ char unk_07;

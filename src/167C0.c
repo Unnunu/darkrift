@@ -15,7 +15,7 @@ extern Object *D_80081448;
 extern Object *D_8008144C;
 extern Object *D_80081450;
 extern Object *D_80081454;
-extern s32 D_80081668;
+extern s32 gTournamentOpponentId;
 
 extern s16 D_800B6368[11][2];
 
@@ -24,16 +24,16 @@ void func_800177C0(Object *);
 
 void func_80015BC0(Object *obj) {
     D_8005BFC0 |= GAME_FLAG_80 | GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
-    gGameMode = GAME_MODE_PLAYER_SELECTION;
-    func_800194E0(50);
-    if (D_800B6328[PLAYER_1].unk_02 != 0) {
-        D_80049390 = D_800B6328[PLAYER_1].characterId;
+    gNextGameMode = GAME_MODE_PLAYER_SELECTION;
+    func_800194E0(PLAY_MODE_50);
+    if (gBattleSettings[PLAYER_1].isCpu) {
+        D_80049390 = gBattleSettings[PLAYER_1].characterId;
     } else {
-        D_80049390 = D_800B6328[PLAYER_2].characterId;
+        D_80049390 = gBattleSettings[PLAYER_2].characterId;
     }
 
-    D_800B6328[PLAYER_1].unk_02 = D_800B6328[PLAYER_2].unk_02 = 0;
-    D_800B6328[PLAYER_1].unk_08 = D_800B6328[PLAYER_2].unk_08 = 0;
+    gBattleSettings[PLAYER_1].isCpu = gBattleSettings[PLAYER_2].isCpu = FALSE;
+    gBattleSettings[PLAYER_1].unk_08 = gBattleSettings[PLAYER_2].unk_08 = 0;
     obj->flags |= 0x10;
 }
 
@@ -158,7 +158,7 @@ Object *func_80016020(s32 characterId, s32 arg1, u32 playerId) {
     if (obj != NULL) {
         obj->currentTask->counter = arg1;
         obj->flags |= 4;
-        if (D_800B6328[playerId].unk_02 != 0) {
+        if (gBattleSettings[playerId].isCpu) {
             obj->vars[2] = 7;
         }
     }
@@ -173,7 +173,7 @@ u16 func_800160C8(s32 arg0) {
     Unk80015E74 *a0;
     Object *obj;
 
-    if (D_800B6328[PLAYER_1].unk_08 == D_8004C1D0 - 1 && D_800B6328[PLAYER_2].unk_08 == D_8004C1D0 - 1) {
+    if (gBattleSettings[PLAYER_1].unk_08 == D_8004C1D0 - 1 && gBattleSettings[PLAYER_2].unk_08 == D_8004C1D0 - 1) {
         a0 = &D_8004C008[5];
     } else {
         a0 = &D_8004C008[6];
@@ -290,11 +290,11 @@ void func_800162A4(Object *obj) {
         D_8013C3C0[1] = D_80052D70[0] = D_80052D70[1] = D_80052D74[0] = D_80052D74[1] = 0;
     D_80052D78[0] = D_80052D78[1] = 2;
 
-    if (!D_8013C24E && D_800B6328[D_8013C24C].unk_08 != 0) {
-        D_8013C258[D_8013C24C][D_800B6328[D_8013C24C].unk_08 - 1]->frameIndex = 13;
-    } else if (D_8013C24E && D_800B6328[PLAYER_1].unk_08 != 0 && D_800B6328[PLAYER_2].unk_08 != 0) {
-        D_8013C258[PLAYER_1][D_800B6328[PLAYER_1].unk_08 - 1]->frameIndex = 13;
-        D_8013C258[PLAYER_2][D_800B6328[PLAYER_2].unk_08 - 1]->frameIndex = 13;
+    if (!D_8013C24E && gBattleSettings[D_8013C24C].unk_08 != 0) {
+        D_8013C258[D_8013C24C][gBattleSettings[D_8013C24C].unk_08 - 1]->frameIndex = 13;
+    } else if (D_8013C24E && gBattleSettings[PLAYER_1].unk_08 != 0 && gBattleSettings[PLAYER_2].unk_08 != 0) {
+        D_8013C258[PLAYER_1][gBattleSettings[PLAYER_1].unk_08 - 1]->frameIndex = 13;
+        D_8013C258[PLAYER_2][gBattleSettings[PLAYER_2].unk_08 - 1]->frameIndex = 13;
     } else {
         for (i = 0; i < D_8004C1D0; i++) {
             D_8013C258[PLAYER_1][i]->frameIndex = D_8013C258[PLAYER_2][i]->frameIndex = 12;
@@ -339,7 +339,8 @@ u32 func_8001675C(Player *player, s32 arg1, u32 arg2) {
 
 u8 func_800167D4(void) {
 
-    if ((D_80080230 == 10 || D_80080230 == 11) && D_800B6328[D_8013C24C].unk_02) {
+    if ((gPlayMode == PLAY_MODE_TOURNAMENT_P1 || gPlayMode == PLAY_MODE_TOURNAMENT_P2) &&
+        gBattleSettings[D_8013C24C].isCpu) {
         gPlayerInput[1 - D_8013C24C].enabled = TRUE;
         return (gPlayerInput[1 - D_8013C24C].buttons & INP_START) != 0;
     } else {
@@ -378,7 +379,7 @@ void func_800168F0(Object *obj) {
 }
 
 void func_800169C4(Object *obj) {
-    gGameMode = D_8004C1E4 > 0 ? GAME_MODE_34 : GAME_MODE_37; // not real mode? @bug?
+    gNextGameMode = D_8004C1E4 > 0 ? GAME_MODE_34 : GAME_MODE_37; // not real mode? @bug?
     obj->currentTask->func = func_800168F0;
 }
 
@@ -387,20 +388,20 @@ void func_80016A00(Object *obj) {
     s16 i;
     s16 a3;
 
-    if (D_800B6328[PLAYER_1].unk_02 || D_800B6328[PLAYER_2].unk_02) {
+    if (gBattleSettings[PLAYER_1].isCpu || gBattleSettings[PLAYER_2].isCpu) {
         a2 = func_80015FB4(7);
-        gGameMode = GAME_MODE_MAIN_MENU;
-        D_800B6328[PLAYER_1].unk_0A = D_800B6328[PLAYER_2].unk_0A = 0;
+        gNextGameMode = GAME_MODE_MAIN_MENU;
+        gBattleSettings[PLAYER_1].unk_0A = gBattleSettings[PLAYER_2].unk_0A = 0;
     } else {
         a2 = func_80015FB4(7);
-        gGameMode = GAME_MODE_PLAYER_SELECTION;
+        gNextGameMode = GAME_MODE_PLAYER_SELECTION;
 
-        if (D_80080230 == 50) {
-            a3 = D_8004C1D0 == D_800B6328[PLAYER_2].unk_08;
-            func_800194E0(10 + a3);
+        if (gPlayMode == PLAY_MODE_50) {
+            a3 = D_8004C1D0 == gBattleSettings[PLAYER_2].unk_08;
+            func_800194E0(PLAY_MODE_TOURNAMENT_P1 + a3);
 
-            D_800B6328[1 - a3].unk_02 = TRUE;
-            D_80081668 = 1 - a3;
+            gBattleSettings[1 - a3].isCpu = TRUE;
+            gTournamentOpponentId = 1 - a3;
 
             for (i = 0; i < NUM_CHARACTERS; i++) {
                 D_800B6350[a3][i] = FALSE;
@@ -425,9 +426,9 @@ void func_80016B6C(Object *obj) {
     if (gPlayerInput[1 - D_8013C24C].buttons & INP_START) {
         func_80006C14();
 
-        if (D_80080230 == 10) {
+        if (gPlayMode == PLAY_MODE_TOURNAMENT_P1) {
             D_800B6350[PLAYER_2][gPlayers[PLAYER_2].characterId] = FALSE;
-        } else if (D_80080230 == 11) {
+        } else if (gPlayMode == PLAY_MODE_TOURNAMENT_P2) {
             D_800B6350[PLAYER_1][gPlayers[PLAYER_1].characterId] = FALSE;
         }
 
@@ -447,7 +448,7 @@ void func_80016C34(Object *obj) {
     D_8005BFC0 |= GAME_FLAG_4;
 
     if (--obj->vars[2] == 0 || (--obj->vars[1] < 0 && func_800167D4())) {
-        if (D_800B6328[PLAYER_1].unk_02 || D_800B6328[PLAYER_2].unk_02) {
+        if (gBattleSettings[PLAYER_1].isCpu || gBattleSettings[PLAYER_2].isCpu) {
             obj->varObj[5] = D_8008144C = func_80015FB4(2);
         } else {
             obj->varObj[5] = D_8008144C = func_80015FB4(8);
@@ -470,39 +471,39 @@ ObjFunc func_80016D90(u32 playerId, u8 arg1) {
 
     a3 = func_80016880;
 
-    D_800B6328[playerId].unk_08++;
-    if (D_8004C1D0 == D_800B6328[playerId].unk_08) {
+    gBattleSettings[playerId].unk_08++;
+    if (D_8004C1D0 == gBattleSettings[playerId].unk_08) {
         if (!arg1) {
-            D_800B6328[D_8013C24C].unk_0A++;
-            D_800B6328[1 - D_8013C24C].unk_0A = 0;
+            gBattleSettings[D_8013C24C].unk_0A++;
+            gBattleSettings[1 - D_8013C24C].unk_0A = 0;
         }
 
-        D_800B6368[D_800B6328[playerId].characterId][0]++;
-        D_800B6368[D_800B6328[1 - playerId].characterId][1]++;
+        D_800B6368[gBattleSettings[playerId].characterId][0]++;
+        D_800B6368[gBattleSettings[1 - playerId].characterId][1]++;
         D_800801F1 = TRUE;
 
-        switch (D_80080230) {
-            case 10:
-            case 11:
-                if (!D_800B6328[playerId].unk_02) {
+        switch (gPlayMode) {
+            case PLAY_MODE_TOURNAMENT_P1:
+            case PLAY_MODE_TOURNAMENT_P2:
+                if (!gBattleSettings[playerId].isCpu) {
                     D_800B6350[1 - playerId][gPlayers[1 - playerId].characterId] = TRUE;
 
                     if (func_8001E188(1 - playerId) == -1) {
                         a3 = func_800169C4;
                     } else {
-                        gGameMode = GAME_MODE_PLAYER_SELECTION;
+                        gNextGameMode = GAME_MODE_PLAYER_SELECTION;
                         a3 = func_800168F0;
                     }
                 } else {
                     a3 = func_80016C34;
                 }
                 break;
-            case 20:
-            case 50:
+            case PLAY_MODE_2_PLAYERS:
+            case PLAY_MODE_50:
                 a3 = func_80016C34;
                 break;
-            case 30:
-                gGameMode = GAME_MODE_MAIN_MENU;
+            case PLAY_MODE_30:
+                gNextGameMode = GAME_MODE_MAIN_MENU;
                 break;
         }
     }
@@ -537,7 +538,7 @@ void func_80016F6C(Object *obj) {
     gCameraTarget.x = gCameraTarget.z = 0;
     gCameraTarget.y = -400;
 
-    if (D_800B6328[D_8013C24C].characterId != MORPHIX) {
+    if (gBattleSettings[D_8013C24C].characterId != MORPHIX) {
         gPlayers[D_8013C24C].unk_00->flags |= 0x10000000;
     }
 
@@ -560,21 +561,21 @@ void func_800171EC(Object *obj) {
 
     func_8001675C(&gPlayers[PLAYER_2], 0x180, func_8001675C(&gPlayers[PLAYER_1], 0x180, 0x78));
 
-    if (D_8004C1D0 == D_800B6328[PLAYER_1].unk_08 + 1) {
+    if (D_8004C1D0 == gBattleSettings[PLAYER_1].unk_08 + 1) {
         a3 = func_80016D90(PLAYER_1, 1);
     } else {
-        D_800B6328[PLAYER_1].unk_08++;
+        gBattleSettings[PLAYER_1].unk_08++;
     }
 
-    if (D_8004C1D0 == D_800B6328[PLAYER_2].unk_08 + 1) {
+    if (D_8004C1D0 == gBattleSettings[PLAYER_2].unk_08 + 1) {
         a3 = func_80016D90(PLAYER_2, 1);
     } else {
-        D_800B6328[PLAYER_2].unk_08++;
+        gBattleSettings[PLAYER_2].unk_08++;
     }
 
-    obj->vars[0] = 0xf5;
+    obj->vars[0] = 245;
     obj->vars[1] = 10;
-    obj->vars[2] = 0xbe;
+    obj->vars[2] = 190;
     obj->varObj[4] = v0;
 
     obj->currentTask->func = a3;
@@ -706,10 +707,10 @@ void func_800177C0(Object *obj) {
     D_8005BFC0 &= ~GAME_FLAG_200;
 
     if (!D_80080234) {
-        if (gPlayers[PLAYER_1].unk_00->unk_070 == D_800B6328[PLAYER_1].unk_0C &&
+        if (gPlayers[PLAYER_1].unk_00->unk_070 == gBattleSettings[PLAYER_1].unk_0C &&
                 gPlayers[PLAYER_2].unk_00->unk_070 == 0 ||
             gPlayers[PLAYER_1].unk_00->unk_070 == 0 &&
-                gPlayers[PLAYER_2].unk_00->unk_070 == D_800B6328[PLAYER_2].unk_0C) {
+                gPlayers[PLAYER_2].unk_00->unk_070 == gBattleSettings[PLAYER_2].unk_0C) {
             obj->varObj[4] = D_80081448 = func_80015FB4(11);
             obj->vars[0] = 90;
             gPlayerInput[D_8013C24C].enabled = TRUE;
@@ -767,18 +768,18 @@ void func_80017A90(Object *obj) {
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
 
     if (++obj->vars[0] > 900) {
-        gGameMode = GAME_MODE_29;
+        gNextGameMode = GAME_MODE_29;
         D_8005BFC0 |= GAME_FLAG_MODE_DONE;
         obj->flags |= 0x10;
     } else if ((gPlayerInput[PLAYER_1].buttons & INP_START) || (gPlayerInput[PLAYER_2].buttons & INP_START)) {
         D_8005BFC0 |= GAME_FLAG_MODE_DONE;
-        gGameMode = GAME_MODE_MAIN_MENU;
+        gNextGameMode = GAME_MODE_MAIN_MENU;
         obj->flags |= 0x10;
     }
 }
 
 void func_80017B3C(Object *obj) {
-    if (D_80080230 == 30) {
+    if (gPlayMode == PLAY_MODE_30) {
         obj->currentTask->func = func_80017A90;
         obj->vars[0] = 0;
         D_8005BFC0 |= GAME_FLAG_4;
@@ -791,10 +792,10 @@ void func_80017B3C(Object *obj) {
     gPlayers[PLAYER_1].unk_80 &= ~0x100000;
     gPlayers[PLAYER_2].unk_80 &= ~0x100000;
 
-    if (D_800B6328[PLAYER_1].unk_02) {
+    if (gBattleSettings[PLAYER_1].isCpu) {
         gPlayers[PLAYER_1].unk_180 &= ~0x20000;
     }
-    if (D_800B6328[PLAYER_2].unk_02) {
+    if (gBattleSettings[PLAYER_2].isCpu) {
         gPlayers[PLAYER_2].unk_180 &= ~0x20000;
     }
 
@@ -821,16 +822,17 @@ void func_80017CA8(void) {
     D_8013C250 = FALSE;
     D_80080234 = FALSE;
 
-    if (D_800B6328[PLAYER_1].unk_02) {
+    if (gBattleSettings[PLAYER_1].isCpu) {
         gPlayers[PLAYER_1].unk_180 |= 0x20000;
     }
-    if (D_800B6328[PLAYER_2].unk_02) {
+    if (gBattleSettings[PLAYER_2].isCpu) {
         gPlayers[PLAYER_2].unk_180 |= 0x20000;
     }
 
     D_8013C23C->currentTask->func = func_80017C3C;
     D_8013C23C->currentTask->counter = 0;
     D_8013C23C->currentTask->flags = 1;
-    D_8013C23C->currentTask->counter = func_800160C8(D_800B6328[PLAYER_1].unk_08 + D_800B6328[PLAYER_2].unk_08);
+    D_8013C23C->currentTask->counter =
+        func_800160C8(gBattleSettings[PLAYER_1].unk_08 + gBattleSettings[PLAYER_2].unk_08);
     D_80081440 = D_80081448 = D_8008144C = D_80081450 = D_80081454 = D_80081444 = NULL;
 }

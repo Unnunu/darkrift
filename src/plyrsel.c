@@ -20,7 +20,7 @@ typedef struct CheatCodeState {
     /* 0x08 */ s32 current_buttons;
 } CheatCodeState;
 
-extern s16 D_80080230;
+extern s16 gPlayMode;
 
 extern u8 D_8004A428;
 extern AssetSP2Sub3 *D_8013C234;
@@ -30,7 +30,7 @@ u8 D_80049DF0 = 0;
 u8 D_80049DF4 = 0;
 
 Object *gCharacterPortrait[2];
-u32 D_80081668;
+u32 gTournamentOpponentId;
 
 #pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001DE10.s")
 
@@ -57,9 +57,9 @@ void func_8001E834(Object *, Object *, Object *);
 #pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001EA24.s")
 void func_8001EA24(Object *);
 
-#ifdef NON_MATCHING
 void func_8001EB58(Object *obj) {
     s16 s1;
+    s16 v03;
     UIElement empty_bar = { 11, NULL, 0, 0x1000, "bars.sp2" };
     UIElement two_triangles = { 39, func_8001EA24, 0, 0x1000, "bars.sp2" };
     UIElement digit_zero = { 28, NULL, 0, 0x1000, "bars.sp2" };
@@ -72,7 +72,6 @@ void func_8001EB58(Object *obj) {
     Object *s2b;
     Object *s3;
     Object *v0;
-    s16 v03;
 
     s1 = obj->vars[0];
 
@@ -116,17 +115,6 @@ void func_8001EB58(Object *obj) {
     obj->currentTask->func = func_8001E624;
     obj->currentTask->counter = 20;
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001EB58.s")
-void func_8001EB58(Object *obj);
-UIElement D_80049DF8 = { 11, NULL, 0, 0x1000, "bars.sp2" };
-UIElement D_80049E0C = { 39, func_8001EA24, 0, 0x1000, "bars.sp2" };
-UIElement D_80049E20 = { 28, NULL, 0, 0x1000, "bars.sp2" };
-Vec4i D_80049E34[] = { { 0x4E, 0xDC, 0, 0 }, { 0xF8, 0xDC, 0, 0 } };
-Vec4i D_80049E54[] = { { 0x4D, 0xDC, 0, 0 }, { 0xF8, 0xDC, 0, 0 } };
-Vec4i D_80049E74[] = { { 0x27, 0xD8, 0, 0 }, { 0x121, 0xD8, 0, 0 } };
-Vec4i D_80049E94[] = { { 0x3C, 0xCB, 0, 0 }, { 0xE5, 0xCB, 0, 0 } };
-#endif
 
 void plyrsel_portrait_update_2(Object *obj) {
     Object *unkObj;
@@ -140,7 +128,7 @@ void plyrsel_portrait_update_2(Object *obj) {
     playerId = obj->vars[0];
     unkObj = obj->varObj[5];
 
-    if (D_800B6328[1 - playerId].unk_02 == 0 && unkObj->vars[8] == 0) {
+    if (!gBattleSettings[1 - playerId].isCpu && unkObj->vars[8] == 0) {
         return;
     }
 
@@ -221,7 +209,7 @@ void plyrsel_portrait_update(Object *obj) {
     a3 = obj->vars[0];
     a1 = obj->vars[1];
 
-    if (D_80080230 == 40) {
+    if (gPlayMode == PLAY_MODE_PRACTICE) {
         Object *unkObj = obj->varObj[5];
         if (a3 != gPracticingPlayer) {
             if (unkObj->vars[8] == 0) {
@@ -245,11 +233,11 @@ void plyrsel_portrait_update(Object *obj) {
             unkObj = obj->varObj[4];
             unkObj->vars[7] = 20;
 
-            if (D_80080230 == 20) {
+            if (gPlayMode == PLAY_MODE_2_PLAYERS) {
                 func_8001EB58(obj);
             } else {
                 func_8001E540(obj, obj->varObj[5]);
-                if (D_80080230 == 10 || D_80080230 == 11) {
+                if (gPlayMode == PLAY_MODE_TOURNAMENT_P1 || gPlayMode == PLAY_MODE_TOURNAMENT_P2) {
                     gCharacterPortrait[1 - a3]->vars[6] = func_8001E188(1 - a3);
                 }
                 obj->currentTask->flags |= 0x80;
@@ -319,29 +307,29 @@ void plyrsel_image_vs_update(Object *obj) {
         return;
     }
 
-    D_800B6328[0].unk_06 = D_800B6328[1].unk_06 = 0;
-    D_800B6328[0].characterId = obj->vars[9];
-    D_800B6328[1].characterId = obj->vars[10];
-    D_800B6328[0].unk_08 = D_800B6328[1].unk_08 = 0;
-    D_800B6328[0].unk_0C &= ~3;
-    D_800B6328[1].unk_0C &= ~3;
+    gBattleSettings[0].unk_06 = gBattleSettings[1].unk_06 = 0;
+    gBattleSettings[0].characterId = obj->vars[9];
+    gBattleSettings[1].characterId = obj->vars[10];
+    gBattleSettings[0].unk_08 = gBattleSettings[1].unk_08 = 0;
+    gBattleSettings[0].unk_0C &= ~3;
+    gBattleSettings[1].unk_0C &= ~3;
     if (0) {} // required to match
     D_8005BFC0 |= GAME_FLAG_MODE_DONE;
 
-    if (D_80080230 == 10 || D_80080230 == 11) {
-        gGameMode = D_800B6328[D_80081668].characterId + GAME_MODE_BATTLE_AARON;
-        if (D_800B6328[0].unk_0A + D_800B6328[1].unk_0A == 0) {
-            gGameMode = D_800B6328[1 - D_80081668].characterId + GAME_MODE_INTRO_AARON;
-            D_800B6328[1 - D_80081668].unk_06 = 1;
+    if (gPlayMode == PLAY_MODE_TOURNAMENT_P1 || gPlayMode == PLAY_MODE_TOURNAMENT_P2) {
+        gNextGameMode = gBattleSettings[gTournamentOpponentId].characterId + GAME_MODE_BATTLE_AARON;
+        if (gBattleSettings[0].unk_0A + gBattleSettings[1].unk_0A == 0) {
+            gNextGameMode = gBattleSettings[1 - gTournamentOpponentId].characterId + GAME_MODE_INTRO_AARON;
+            gBattleSettings[1 - gTournamentOpponentId].unk_06 = 1;
         } else {
-            D_800B6328[D_80081668].unk_06 = 1;
+            gBattleSettings[gTournamentOpponentId].unk_06 = 1;
         }
-        if (D_800B6328[D_80081668].characterId == DEMITRON) {
-            gGameMode = GAME_MODE_30;
+        if (gBattleSettings[gTournamentOpponentId].characterId == DEMITRON) {
+            gNextGameMode = GAME_MODE_30;
         }
     } else {
-        gGameMode = D_800B6328[obj->vars[11]].characterId + GAME_MODE_BATTLE_AARON;
-        D_800B6328[obj->vars[11]].unk_06++;
+        gNextGameMode = gBattleSettings[obj->vars[11]].characterId + GAME_MODE_BATTLE_AARON;
+        gBattleSettings[obj->vars[11]].unk_06++;
     }
 
     obj->currentTask->flags |= 0x80;
@@ -409,8 +397,8 @@ void run_player_selection_mode(void) {
     s16 char_p1, char_p2;
     s32 unused;
 
-    char_p1 = D_800B6328[PLAYER_1].characterId;
-    char_p2 = D_800B6328[PLAYER_2].characterId;
+    char_p1 = gBattleSettings[PLAYER_1].characterId;
+    char_p2 = gBattleSettings[PLAYER_2].characterId;
 
     if (char_p1 == DEMITRON && D_80049DF4 == 0) {
         char_p1 = GORE;
@@ -433,7 +421,7 @@ void run_player_selection_mode(void) {
     }
 
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
-    D_8008012C |= 0x20;
+    D_8008012C |= GFX_FLAG_20;
     D_8005BFC0 |= GAME_FLAG_4;
 
     asset_open_folder("/plyrsel/plyrsel", CONTEXT_EEFF);
@@ -441,22 +429,22 @@ void run_player_selection_mode(void) {
 
     D_8005BFC0 |= GAME_FLAG_800;
 
-    switch (D_80080230) {
-        case 10:
+    switch (gPlayMode) {
+        case PLAY_MODE_TOURNAMENT_P1:
             obj = create_ui_element(&sp70, &label_press_start, CONTEXT_EEFF);
             obj->vars[0] = PLAYER_1;
             obj->vars[1] = 167;
             asset_open_folder("/plyrsel/select", CONTEXT_EEFF);
             break;
-        case 11:
+        case PLAY_MODE_TOURNAMENT_P2:
             obj = create_ui_element(&sp60, &label_press_start, CONTEXT_EEFF);
             obj->vars[0] = PLAYER_2;
             obj->vars[1] = 167;
             asset_open_folder("/plyrsel/select", CONTEXT_EEFF);
             break;
-        case 20:
-        case 30:
-        case 50:
+        case PLAY_MODE_2_PLAYERS:
+        case PLAY_MODE_30:
+        case PLAY_MODE_50:
             obj = create_ui_element(&sp70, &label_press_start, CONTEXT_EEFF);
             obj->vars[0] = 0;
             obj->vars[1] = 167;
@@ -465,7 +453,7 @@ void run_player_selection_mode(void) {
             obj->vars[1] = 167;
             asset_open_folder("/plyrsel/select2", CONTEXT_EEFF);
             break;
-        case 40:
+        case PLAY_MODE_PRACTICE:
             if (gPracticingPlayer == PLAYER_1) {
                 obj = create_ui_element(&sp50, &p1_user, CONTEXT_EEFF);
                 obj->vars[VAR_PLAYER_ID] = PLAYER_1;
@@ -513,23 +501,23 @@ void run_player_selection_mode(void) {
     gCharacterPortrait[1]->varObj[4] = player_labels[1];
     gCharacterPortrait[1]->varObj[5] = image_vs_obj;
 
-    switch (D_80080230) {
-        case 10:
-        case 11:
-            player1 = (D_80080230 == 11);
+    switch (gPlayMode) {
+        case PLAY_MODE_TOURNAMENT_P1:
+        case PLAY_MODE_TOURNAMENT_P2:
+            player1 = (gPlayMode == PLAY_MODE_TOURNAMENT_P2);
             gCharacterPortrait[1 - player1]->currentTask->func = plyrsel_portrait_update_2;
             gCharacterPortrait[1 - player1]->currentTask->counter = 0;
             gCharacterPortrait[1 - player1]->currentTask->flags = 1;
 
-            if (D_800B6328[player1].unk_08 != 0) {
+            if (gBattleSettings[player1].unk_08 != 0) {
                 gCharacterPortrait[1 - player1]->vars[6] = func_8001E188(1 - player1);
                 gCharacterPortrait[player1]->currentTask->flags |= 0x80;
                 player_labels[player1]->vars[7] = 20;
                 image_vs_obj->vars[8] = 1;
-                image_vs_obj->vars[9 + player1] = D_800B6328[player1].characterId;
+                image_vs_obj->vars[9 + player1] = gBattleSettings[player1].characterId;
             }
             break;
-        case 30:
+        case PLAY_MODE_30:
             gCharacterPortrait[0]->currentTask->func = plyrsel_portrait_update_2;
             gCharacterPortrait[0]->currentTask->counter = 0;
             gCharacterPortrait[0]->currentTask->flags = 1;
@@ -540,9 +528,9 @@ void run_player_selection_mode(void) {
             gCharacterPortrait[1]->currentTask->flags = 1;
             gCharacterPortrait[1]->vars[6] = func_8001E188(1);
             break;
-        case 20:
-        case 40:
-        case 50:
+        case PLAY_MODE_2_PLAYERS:
+        case PLAY_MODE_PRACTICE:
+        case PLAY_MODE_50:
             break;
     }
 
@@ -557,17 +545,17 @@ void func_800201A4(s16 playerId, u16 arg1, u16 arg2) {
 
 void func_800201C4(s16 charId, s16 playerId) {
     D_8005BFC0 |= GAME_FLAG_MODE_DONE;
-    gGameMode = GAME_MODE_34;
+    gNextGameMode = GAME_MODE_34;
 
-    D_800B6328[playerId].characterId = charId;
-    D_800B6328[playerId].unk_02 = 0;
-    D_800B6328[playerId].unk_06 = 0;
+    gBattleSettings[playerId].characterId = charId;
+    gBattleSettings[playerId].isCpu = FALSE;
+    gBattleSettings[playerId].unk_06 = 0;
 
-    D_800B6328[1 - playerId].characterId = DEMITRON;
-    D_800B6328[1 - playerId].unk_02 = 1;
-    D_800B6328[1 - playerId].unk_06 = 1;
+    gBattleSettings[1 - playerId].characterId = DEMITRON;
+    gBattleSettings[1 - playerId].isCpu = TRUE;
+    gBattleSettings[1 - playerId].unk_06 = 1;
 
-    func_800194E0(playerId + 10);
+    func_800194E0(playerId + PLAY_MODE_TOURNAMENT_P1);
 }
 
 void cheat_character_ending(s16 playerId, u16 charId, u16 arg2) {
@@ -576,20 +564,20 @@ void cheat_character_ending(s16 playerId, u16 charId, u16 arg2) {
 
 void func_80020298(s16 playerId, u16 arg1, u16 arg2) {
     func_800201C4(DEMITRON, playerId);
-    gGameMode = GAME_MODE_30;
+    gNextGameMode = GAME_MODE_30;
 }
 
 void func_800202D0(s16 playerId, u16 arg1, u16 arg2) {
-    D_800B6328[0].unk_04 = D_800B6328[1].unk_04 = arg1;
+    gBattleSettings[PLAYER_1].unk_04 = gBattleSettings[PLAYER_2].unk_04 = arg1;
 }
 
 void func_800202F0(s16 playerId, u16 arg1, u16 arg2) {
     s16 i;
 
-    D_800B6328[1 - playerId].unk_06 = 1;
-    D_800B6328[playerId].unk_06 = 0;
-    D_800B6328[playerId].unk_02 = 0;
-    D_800B6328[1 - playerId].unk_02 = 1;
+    gBattleSettings[1 - playerId].unk_06 = 1;
+    gBattleSettings[playerId].unk_06 = 0;
+    gBattleSettings[playerId].isCpu = FALSE;
+    gBattleSettings[1 - playerId].isCpu = TRUE;
     D_800801F1 = TRUE;
 
     for (i = 0; i < 11; i++) {
@@ -597,13 +585,13 @@ void func_800202F0(s16 playerId, u16 arg1, u16 arg2) {
     }
 
     D_8005BFC0 |= GAME_FLAG_MODE_DONE;
-    func_800194E0(playerId + 10);
+    func_800194E0(playerId + PLAY_MODE_TOURNAMENT_P1);
 }
 
 void func_800203A8(s16 playerId, u16 charId, u16 gameMode) {
-    D_800B6328[1 - playerId].characterId = charId;
-    D_800B6328[1 - playerId].unk_02 = 1;
-    gGameMode = gameMode;
+    gBattleSettings[1 - playerId].characterId = charId;
+    gBattleSettings[1 - playerId].isCpu = TRUE;
+    gNextGameMode = gameMode;
 }
 
 u16 cheat_code_play_as_sonork[] = { INP_L, INP_R, INP_CUP, INP_CDOWN, INP_CLEFT, INP_CRIGHT, CHEAT_END };

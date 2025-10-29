@@ -8,7 +8,7 @@ void func_80023D30(Object *obj) {
     u16 playerId = player->playerId;
     s32 v1;
 
-    if (D_800B6328[playerId].unk_02 && !D_800801F0) {
+    if (gBattleSettings[playerId].isCpu && !D_800801F0) {
         if (func_8001BB80(player) || func_8001C53C(player, TRUE)) {
             return;
         }

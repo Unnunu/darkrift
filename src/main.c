@@ -70,9 +70,9 @@ OSTask D_8004CC88 = {
 extern BatchInfo D_8004CCC8;
 extern BatchInfo D_8004CD30;
 
-extern u16 D_8005BED2;
+extern u16 gPreviousGameMode;
 extern u16 D_8005BFC0;
-extern u16 gGameMode;
+extern u16 gNextGameMode;
 extern u16 D_8005BFCE;
 extern void *gFramebuffers[];
 
@@ -147,7 +147,7 @@ void func_8000132C(void) {
     D_8004CC20.segmentTable[0] = 0;
     D_8004CC20.segmentTable[1] = VIRTUAL_TO_PHYSICAL(gFramebuffers[D_8005BFCE]);
 
-    if (D_8008012C & 2) {
+    if (D_8008012C & GFX_FLAG_OVERLAY) {
         gSPDisplayList(gOverlayGfxPos++, D_8004CA68);
     }
 
@@ -157,7 +157,7 @@ void func_8000132C(void) {
     func_80002978();
     bg_draw();
 
-    if (!(D_8008012C & 1)) {
+    if (!(D_8008012C & GFX_FLAG_1)) {
         gSPDisplayList(gMainGfxPos++, D_80080100->unk_4080);
     }
     gSPDisplayList(gMainGfxPos++, D_8004CB00);
@@ -238,13 +238,13 @@ void func_800019B0(s16 playerId) {
         func_8000132C();
     }
 
-    switch (D_80080230) {
-        case 40:
+    switch (gPlayMode) {
+        case PLAY_MODE_PRACTICE:
             practice_enter_pause(playerId);
             break;
-        case 10:
-        case 11:
-            if (D_800B6328[playerId].unk_02) {
+        case PLAY_MODE_TOURNAMENT_P1:
+        case PLAY_MODE_TOURNAMENT_P2:
+            if (gBattleSettings[playerId].isCpu) {
                 v0 = func_8000194C();
                 if (v0 == NULL) {
                     sp33 = TRUE;
@@ -274,18 +274,18 @@ void func_800019B0(s16 playerId) {
 
         sp34 = gPlayerInput[PLAYER_1].isMirrored;
         sp35 = gPlayerInput[PLAYER_2].isMirrored;
-        sp28 = D_8008012C & 0x10;
-        D_8008012C |= 0x10;
+        sp28 = D_8008012C & GFX_FLAG_10;
+        D_8008012C |= GFX_FLAG_10;
 
         while (!(D_8005BFC0 & GAME_FLAG_40)) {
-            if (D_80080230 != 40) {
+            if (gPlayMode != PLAY_MODE_PRACTICE) {
                 gPlayerInput[PLAYER_1].isMirrored = gPlayerInput[PLAYER_2].isMirrored = FALSE;
             }
             func_8000132C();
         }
 
         if (!sp28) {
-            D_8008012C &= ~0x10;
+            D_8008012C &= ~GFX_FLAG_10;
         }
         gPlayerInput[PLAYER_1].isMirrored = sp34;
         gPlayerInput[PLAYER_2].isMirrored = sp35;
@@ -321,7 +321,7 @@ void unused_func_80001C6C(void) {
         func_8000132C();
     }
 
-    gGameMode = GAME_MODE_MAIN_MENU;
+    gNextGameMode = GAME_MODE_MAIN_MENU;
 
     while (gPlayerInput[0].buttons == (INP_START | INP_ZTRIG) || gPlayerInput[1].buttons == (INP_START | INP_ZTRIG)) {
         func_8000132C();
@@ -462,7 +462,7 @@ void func_80002178(s32 arg0, Vtx *arg1);
 
 void func_80002340(Object *obj) {
     if (D_8005BEFC - 8 < D_80080118) {
-        D_8008012C &= ~0x10;
+        D_8008012C &= ~GFX_FLAG_10;
         obj->flags |= 0x10;
         D_8005BFC0 |= GAME_FLAG_100;
 
@@ -493,7 +493,7 @@ void func_80002448(Object *obj) {
         D_8005BFC0 |= GAME_FLAG_1000;
         return;
     }
-    D_8008012C |= 0x10;
+    D_8008012C |= GFX_FLAG_10;
     osViBlack(TRUE);
     D_8005BFC0 &= ~GAME_FLAG_1000;
     func_80021918(obj, 0);
@@ -541,7 +541,7 @@ void func_80002590(Object *obj) {
 }
 
 void func_80002648(Object *obj) {
-    D_8008012C |= 0x10;
+    D_8008012C |= GFX_FLAG_10;
     audio_fade_out_all(obj, 0);
 
     if (obj->fn_render != func_80002648) {
@@ -580,20 +580,20 @@ void func_80002744(Object *obj) {
 }
 
 void game_main(void) {
-    gGameMode = GAME_MODE_LOGO;
-    func_800031FC(gGameMode);
+    gNextGameMode = GAME_MODE_LOGO;
+    func_800031FC(gNextGameMode);
     func_80006CEC();
 
     while (TRUE) {
-        D_8005BED0 = gGameMode;
+        gCurrentGameMode = gNextGameMode;
         create_worker(func_80002448, 0x1100);
-        gGameModes[gGameMode].fn_run();
+        gGameModes[gNextGameMode].fn_run();
         if (!(D_8005BFC0 & GAME_FLAG_800)) {
             osViBlack(1);
         }
         func_800030E4();
         sched_wait_vretrace(FALSE);
-        D_8005BED2 = D_8005BED0;
-        func_80003468(gGameMode);
+        gPreviousGameMode = gCurrentGameMode;
+        func_80003468(gNextGameMode);
     }
 }

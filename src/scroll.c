@@ -53,7 +53,7 @@ Texture *load_background(char *name, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
         tex->palette[temp + 1] = 0;
     }
     if (flags & 2) {
-        D_8008012C |= 2;
+        D_8008012C |= GFX_FLAG_OVERLAY;
     }
 
     return tex;
@@ -238,7 +238,7 @@ void bg_draw(void) {
         tex = tex->next;
     }
 
-    if (maxY > 0 && D_80080129 && !(D_8008012C & 0x40)) {
+    if (maxY > 0 && D_80080129 && !(D_8008012C & GFX_FLAG_40)) {
         s32 t3 = MIN(64, SCREEN_HEIGHT - maxY);
 
         gDPPipeSync(gMainGfxPos++);
@@ -288,7 +288,7 @@ void func_80015724(Object *obj) {
 
     if (obj->flags & 0x4000000) {
         dlist = &gOverlayGfxPos;
-        D_8008012C |= 2;
+        D_8008012C |= GFX_FLAG_OVERLAY;
     } else {
         dlist = &D_8005BFDC;
     }

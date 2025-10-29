@@ -290,20 +290,20 @@ void func_80034AB8(Object *obj) {
     ptr2 = model->unk_1F6E;
     ptr1 = model->unk_1F50;
 
-    if (D_8008012C & 0x10) {
+    if (D_8008012C & GFX_FLAG_10) {
         if (!(obj->flags & 0x40000000)) {
             memcpy(ptr1, ptr2, a2);
             func_80034A58(obj);
             set_post_render_hook(func_80034860, obj);
             obj->flags |= 0x40000000;
-            D_8008012C |= 8;
+            D_8008012C |= GFX_FLAG_8;
         }
         return;
     }
 
-    if (!(D_8008012C & 0x10) && (obj->flags & 0x40000000)) {
+    if (!(D_8008012C & GFX_FLAG_10) && (obj->flags & 0x40000000)) {
         if (D_800801E2) {
-            D_8008012C &= ~8;
+            D_8008012C &= ~GFX_FLAG_8;
         } else {
             memcpy(ptr2, ptr1, a2);
             set_post_render_hook(func_80034860, obj);
@@ -328,7 +328,7 @@ void func_80034C18(Object *obj, u8 *arg1) {
     u8 *ptr1 = model->unk_1F50;
     u8 *ptr2 = model->unk_1F6E;
 
-    if (D_8008012C & 0x10) {
+    if (D_8008012C & GFX_FLAG_10) {
         for (i = 0; i < count; i++) {
             ptr1[i] = ptr2[i] = arg1[i];
         }
@@ -1601,7 +1601,7 @@ void func_80037E28(Object *obj) {
 
     v1 = obj->modInst;
     t6 = gFrameCounter & 7;
-    a2 = &gGameModes[D_8005BED0];
+    a2 = &gGameModes[gCurrentGameMode];
 
     t2 = v1->numNodes;
     t0 = v1->model;

@@ -186,7 +186,7 @@ void camera_update(Object *obj) {
     D_8013C668.y = -0xC00 - gCameraHeading;
     D_8013C668.x = -func_80012518(deltaY, sp3C);
 
-    if (!(D_8008012C & 0x20) || model->animations[0]) {
+    if (!(D_8008012C & GFX_FLAG_20) || model->animations[0]) {
         D_80081428 = D_8013C828;
         D_80049AE8 = D_8013C82C - (s32) (D_8013C830 * 0.2f);
     }

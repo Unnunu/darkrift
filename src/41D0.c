@@ -215,7 +215,7 @@ s32 func_80003974(void *arg0) {
     v0->currentTask->counter = 0;
     v0->currentTask->flags = 1;
 
-    D_8008012C |= 1;
+    D_8008012C |= GFX_FLAG_1;
     D_8005BFC0 &= ~GAME_FLAG_200;
 
     if (s3 > 960) {
@@ -336,7 +336,7 @@ void func_80003DA4(Object *obj) {
     }
 
     if (!gIsPaused) {
-        if (D_80080230 == 40) {
+        if (gPlayMode == PLAY_MODE_PRACTICE) {
             if (D_8013C430 == 16) {
                 func_800338D0();
             } else if (D_8013C430 == 18) {
@@ -347,7 +347,7 @@ void func_80003DA4(Object *obj) {
             }
         }
 
-        if (D_800B6328[sp4A].unk_02 && !D_800801F0 && !(player->unk_80 & 0x100000)) {
+        if (gBattleSettings[sp4A].isCpu && !D_800801F0 && !(player->unk_80 & 0x100000)) {
             if (!(player->unk_180 & 0x20000)) {
                 func_8001B810(player);
             }
@@ -447,20 +447,20 @@ void func_80004334(AssetDB *arg0, s16 playerId) {
 
     gPlayerInput[playerId].enabled = FALSE;
 
-    if (D_80080230 == 30) {
+    if (gPlayMode == PLAY_MODE_30) {
         if (playerId != PLAYER_1) {
             func_8001C114(gPlayers + playerId);
         } else {
             func_8001C1C0(gPlayers + PLAYER_1);
         }
-    } else if (D_800B6328[playerId].unk_0F) {
-        if (D_8004C1E4 == 2 && D_800B6328[playerId].unk_04 == 0) {
-            D_800B6328[playerId].unk_04 = 2;
+    } else if (gBattleSettings[playerId].unk_0F) {
+        if (D_8004C1E4 == 2 && gBattleSettings[playerId].unk_04 == 0) {
+            gBattleSettings[playerId].unk_04 = 2;
         }
-        s2 = D_800B6328[playerId].unk_04;
+        s2 = gBattleSettings[playerId].unk_04;
 
         func_8001C114(gPlayers + playerId);
-        D_800B6328[playerId].unk_0F = FALSE;
+        gBattleSettings[playerId].unk_0F = FALSE;
         for (i = 0; i < s2; i++) {
             func_8001BF40(gPlayers + playerId);
         }
@@ -507,8 +507,8 @@ void func_800045B4(s16 playerId, s16 characterId) {
 
     player = &gPlayers[playerId];
     modInst = player->unk_00->modInst;
-    sp44 = &D_800B6328[playerId];
-    sp50 = D_800B6328[1 - playerId].characterId;
+    sp44 = &gBattleSettings[playerId];
+    sp50 = gBattleSettings[1 - playerId].characterId;
 
     if (sp44->isDummy) {
         str_copy(sp80, "dum.db");
@@ -579,7 +579,7 @@ void func_800045B4(s16 playerId, s16 characterId) {
         }
     }
 
-    if (sp44->unk_02) {
+    if (sp44->isCpu) {
         func_80004334(s3, playerId);
     }
 
@@ -665,7 +665,7 @@ void func_80004D40(Asset *asset) {
     s16 v2;
     u8 sp2B;
 
-    v1 = D_800B6328[1 - asset->context].characterId;
+    v1 = gBattleSettings[1 - asset->context].characterId;
     sp2B = asset->name[6];
     asset->name[6] = '\0';
 
@@ -685,9 +685,9 @@ void func_80004D40(Asset *asset) {
 void func_80004E14(s16 playerId) {
     char sp38[40];
     char sp2C[12];
-    u8 characterId = D_800B6328[playerId].characterId;
+    u8 characterId = gBattleSettings[playerId].characterId;
 
-    if (D_800B6328[playerId].isDummy) {
+    if (gBattleSettings[playerId].isDummy) {
         str_copy(sp38, "/aaro/dummy");
     } else {
         str_copy(sp2C, D_8004B844[characterId].unk_04->name);
@@ -700,7 +700,7 @@ void func_80004E14(s16 playerId) {
         } else {
             str_concat(sp38, "1");
         }
-        if (D_800B6328[playerId].unk_06) {
+        if (gBattleSettings[playerId].unk_06) {
             str_concat(sp38, "_h");
         } else {
             str_concat(sp38, "_v");
@@ -764,14 +764,14 @@ void func_800050FC(u16 arg0, u16 arg1) {
             sp2C->varObj[0] = &gPlayers[arg0];
             break;
         case DEMITRON:
-            if (D_800B6328[arg0].unk_06) {
+            if (gBattleSettings[arg0].unk_06) {
                 sp2C = create_worker(func_80004FC0, 0x1000);
                 sp2C->varObj[0] = D_8004B774;
                 sp2C->varObj[1] = D_8004B654;
             }
             break;
         case DEMONICA:
-            if (D_800B6328[arg0].unk_06) {
+            if (gBattleSettings[arg0].unk_06) {
                 sp2C = create_worker(func_80004FC0, 0x1000);
                 sp2C->varObj[0] = D_8004B794;
                 sp2C->varObj[1] = D_8004B674;
@@ -797,9 +797,9 @@ void func_800052EC(s16 playerId) {
 
     gPlayers[playerId].playerId = playerId;
     gPlayers[playerId].unk_80 = 0;
-    spD6 = gPlayers[playerId].characterId = D_800B6328[playerId].characterId;
+    spD6 = gPlayers[playerId].characterId = gBattleSettings[playerId].characterId;
 
-    if (D_800B6328[playerId].isDummy) {
+    if (gBattleSettings[playerId].isDummy) {
         spD6 = AARON;
         str_copy(spA4, "dum.tmd");
     } else {
@@ -823,11 +823,11 @@ void func_800052EC(s16 playerId) {
         create_model_instance_with_properties(&spB4[playerId], spA4, D_8004B844[spD6].unk_04, playerId);
     spDC->flags |= 0x80;
 
-    if (spD6 == MORPHIX && !D_800B6328[playerId].isDummy) {
+    if (spD6 == MORPHIX && !gBattleSettings[playerId].isDummy) {
         func_8002A890(gPlayers + playerId);
     }
 
-    if (D_800B6328[playerId].isDummy) {
+    if (gBattleSettings[playerId].isDummy) {
         str_copy(spA4, "dumshad.k4");
     } else {
         str_copy(spA4, D_8004B844[spD6].unk_04->name);
@@ -890,8 +890,8 @@ void func_800052EC(s16 playerId) {
     gPlayers[playerId].unk_18 = task_add(spDC, func_8003184C, 1);
     gPlayers[playerId].unk_24 = D_8004C1E8;
 
-    D_80080214 = D_8004A730[D_800B6328[PLAYER_1].characterId] + D_8004A730[D_800B6328[PLAYER_2].characterId];
-    D_80080218 = D_8004A748[D_800B6328[PLAYER_1].characterId] + D_8004A748[D_800B6328[PLAYER_2].characterId];
+    D_80080214 = D_8004A730[gBattleSettings[PLAYER_1].characterId] + D_8004A730[gBattleSettings[PLAYER_2].characterId];
+    D_80080218 = D_8004A748[gBattleSettings[PLAYER_1].characterId] + D_8004A748[gBattleSettings[PLAYER_2].characterId];
     D_8008020C = 0x800;
     D_80080210 = 1600;
 
@@ -901,7 +901,7 @@ void func_800052EC(s16 playerId) {
 
     D_80080236 = 1;
 
-    if (D_800B6328[playerId].unk_02) {
+    if (gBattleSettings[playerId].isCpu) {
         func_8000636C(gPlayers + playerId, 282, 0);
     } else {
         func_8000636C(gPlayers + playerId, 68, 0);
@@ -914,7 +914,7 @@ void func_800052EC(s16 playerId) {
     gPlayers[playerId].unk_90 = gPlayers[playerId].unk_20 + gPlayers[playerId].unk_7E;
     func_80010664(&gPlayers[playerId], D_8004B844[spD6].unk_00);
 
-    spDC->unk_070 = D_800B6328[playerId].unk_0C;
+    spDC->unk_070 = gBattleSettings[playerId].unk_0C;
     func_80004B30(spDC, playerId, spD6);
 
     if (playerId == 0) {
@@ -944,7 +944,7 @@ void func_800052EC(s16 playerId) {
                   &D_8004B844[spD6].unk_08[playerId]);
 
     gPlayers[playerId].unk_184 = 0;
-    if (D_80080230 == 40) {
+    if (gPlayMode == PLAY_MODE_PRACTICE) {
         if (playerId == gPracticingPlayer) {
             practice_init_hud();
         } else {
@@ -965,7 +965,7 @@ void func_80005B70(s16 playerId) {
     gPlayers[playerId].playerId = playerId;
     gPlayers[playerId].unk_80 = 0;
     gPlayers[playerId].unk_180 = 0;
-    gPlayers[playerId].characterId = characterId = D_800B6328[playerId].characterId;
+    gPlayers[playerId].characterId = characterId = gBattleSettings[playerId].characterId;
 
     obj->rotation.y = 0xC00 - spB0[playerId];
     obj->pos.x = spB4[playerId].x;
@@ -995,8 +995,8 @@ void func_80005B70(s16 playerId) {
     gPlayers[playerId].unk_18->func = func_8003184C;
     gPlayers[playerId].unk_18->stackPos = 0;
 
-    D_80080214 = D_8004A730[D_800B6328[PLAYER_1].characterId] + D_8004A730[D_800B6328[PLAYER_2].characterId];
-    D_80080218 = D_8004A748[D_800B6328[PLAYER_1].characterId] + D_8004A748[D_800B6328[PLAYER_2].characterId];
+    D_80080214 = D_8004A730[gBattleSettings[PLAYER_1].characterId] + D_8004A730[gBattleSettings[PLAYER_2].characterId];
+    D_80080218 = D_8004A748[gBattleSettings[PLAYER_1].characterId] + D_8004A748[gBattleSettings[PLAYER_2].characterId];
     D_8008020C = 0x800;
     D_80080238.unk_1000 = D_80080238.unk_1002 = 0;
     D_80080236 = 1;
@@ -1007,7 +1007,7 @@ void func_80005B70(s16 playerId) {
     D_80080238.unk_1000 = D_80080238.unk_1002 = 0;
     D_80080236 = 1;
 
-    if (D_800B6328[playerId].unk_02) {
+    if (gBattleSettings[playerId].isCpu) {
         func_8000636C(gPlayers + playerId, 282, 0);
     } else {
         func_8000636C(gPlayers + playerId, 68, 0);
@@ -1018,7 +1018,7 @@ void func_80005B70(s16 playerId) {
     }
 
     gPlayers[playerId].unk_90 = gPlayers[playerId].unk_20 + gPlayers[playerId].unk_7E;
-    obj->unk_070 = D_800B6328[playerId].unk_0C;
+    obj->unk_070 = gBattleSettings[playerId].unk_0C;
 
     if (playerId == PLAYER_1) {
         gPlayerInput[playerId].isMirrored = TRUE;
@@ -1173,7 +1173,7 @@ u8 func_8000636C(Player *player, s16 arg1, u8 arg2) {
 }
 
 u8 func_800063C4(Player *player, s16 arg1, u8 arg2) {
-    if (D_800B6328[player->playerId].unk_02) {
+    if (gBattleSettings[player->playerId].isCpu) {
         player->unk_94 = 0;
         return func_8001B7D0(player, arg1);
     } else {
