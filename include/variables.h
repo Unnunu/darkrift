@@ -154,5 +154,6 @@ extern Unk80015E74 D_8004C008[];
 extern s32 gSoundVolume;
 extern s16 D_80081250;
 extern Texture *D_80081254;
+extern s16 D_800B6368[11][2];
 
 #endif

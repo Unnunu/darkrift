@@ -47,7 +47,7 @@ void func_800199E0(Object *);
 void func_80020670(Object *);
 void func_80019F40(Object *);
 void func_8001A158(Object *, s16);
-s32 func_80019278(void); // TODO try to match if it returns void
+// s32 func_80019278(void);
 void func_800052EC(s16 arg0);
 void func_8001B5B0(char *, s32);
 void func_80029630(void);

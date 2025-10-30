@@ -17,8 +17,6 @@ extern Object *D_80081450;
 extern Object *D_80081454;
 extern s32 gTournamentOpponentId;
 
-extern s16 D_800B6368[11][2];
-
 void func_80016A00(Object *);
 void func_800177C0(Object *);
 

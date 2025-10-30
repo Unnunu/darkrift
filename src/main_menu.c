@@ -1,4 +1,5 @@
 #include "common.h"
+#include "camera.h"
 
 extern s16 D_80051F68;
 extern s16 D_80080232;
@@ -356,22 +357,200 @@ void func_8001A294(Object *obj) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/main_menu/func_8001A2F4.s")
+void func_8001A2F4(Object *obj) {
+    if (++obj->frameIndex >= obj->modInst->numAnimFrames - 1) {
+        obj->currentTask->func = task_default_func;
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/main_menu/func_8001A334.s")
+void func_8001A334(Object *obj) {
+    Object *v0;
+    Model *m;
+    Vec4i sp20 = { 0, -40, 0, 0 };
 
+    if (--obj->vars[0] < 0) {
+        obj->fn_render = func_8001A294;
+        obj->vars[0] = 0;
+        obj->vars[1] = 0;
+        m = (Model *) gAssets[asset_find("theend.k2", 0x4000)].aux_data;
+        v0 = create_model_instance(&sp20, 0x1000, func_8001A2F4, m);
+        v0->flags |= 0x01002800;
+    }
+}
+
+#ifdef NON_MATCHING
+void func_8001A3EC(Object *obj) {
+    D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+
+    switch (gCurrentGameMode) {
+        case GAME_MODE_BATTLE_DEMITRON:
+            gNextGameMode = GAME_MODE_36;
+            break;
+        case GAME_MODE_35:
+            gNextGameMode = GAME_MODE_31;
+            break;
+        case GAME_MODE_36:
+            gNextGameMode = GAME_MODE_LOGO;
+            break;
+        default:
+            gNextGameMode = GAME_MODE_36;
+            break;
+    }
+
+    obj->flags |= 0x10;
+    func_80014CB4(D_80081254);
+}
+#else
 #pragma GLOBAL_ASM("asm/nonmatchings/main_menu/func_8001A3EC.s")
+void func_8001A3EC(Object *obj);
+#endif
 
-#pragma GLOBAL_ASM("asm/nonmatchings/main_menu/func_8001A490.s")
+void func_8001A490(Object *obj) {
+    Object *v0 = obj->varObj[0];
+    Object *v1 = obj->varObj[1];
 
-#pragma GLOBAL_ASM("asm/nonmatchings/main_menu/func_8001A4FC.s")
+    if (v0 != NULL && v0->unk_088.a >= 6) {
+        v0->unk_088.a -= 6;
+        v0->pos.z -= 150;
+        v1->pos.z += 450;
+        return;
+    }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/main_menu/func_8001A5D4.s")
+    v0->flags |= 0x10;
+    func_8001A3EC(obj);
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/main_menu/func_8001A63C.s")
+void func_8001A4FC(Object *obj) {
+    if (++obj->vars[3] == obj->vars[2]) {
+        obj->vars[3] = 0;
+        if (D_80081250 + D_80081254->unk_1C + 40) {
+            D_80081254->unk_1C--;
+        }
+    }
 
+    if (!(D_80081250 + D_80081254->unk_1C + 40)) {
+        if (gCurrentGameMode != GAME_MODE_36) {
+            func_8001A3EC(obj);
+        } else {
+            obj->fn_render = func_8001A490;
+        }
+    }
+
+    if ((gPlayerInput[PLAYER_1].buttons & INP_START) || (gPlayerInput[PLAYER_2].buttons & INP_START)) {
+        func_8001A3EC(obj);
+    }
+}
+
+void func_8001A5D4(Object *obj) {
+    if (gCamera->modInst->animations[0] == NULL) {
+        func_8002EA50(gCamera, obj->vars[1]);
+        obj->currentTask->flags |= 0x80;
+        obj->flags |= 0x10;
+    }
+}
+
+void func_8001A63C(Object *obj) {
+    if (--obj->vars[0] < 0) {
+        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+        obj->flags |= 0x10;
+    }
+}
+
+typedef struct SoundSequence {
+    /* 0x00 */ s16 unk_00;
+    /* 0x02 */ s16 unk_02;
+} SoundSequence; // size = 0x4
+
+SoundSequence D_80049C5C[] = { { 231, 17 }, { 281, 9 },  { 297, 9 },  { 313, 12 }, { 335, 11 },
+                               { 425, 10 }, { 447, 14 }, { 484, 16 }, { 0, 0 } };
+SoundSequence D_80049C80[] = { { 166, 15 }, { 194, 16 }, { 214, 9 }, { 228, 10 }, { 242, 12 },
+                               { 256, 13 }, { 270, 9 },  { 276, 8 }, { 278, 20 }, { 0, 0 } };
+s16 D_80049CA8[] = { 175, 180, 190, 200, 210, 215, 220, 225, 230, 240, 250, 260, 265, 275, 0 };
+SoundSequence D_80049CC8[] = { { 172, 10 }, { 190, 11 }, { 204, 10 }, { 220, 11 }, { 264, 14 }, { 0, 0 } };
+SoundSequence D_80049CE0[] = { { 214, 21 }, { 250, 20 }, { 208, 15 }, { 0, 0 } };
+
+#ifdef NON_MATCHING
+void func_8001A674(Object *obj) {
+    u8 s3 = gBattleSettings[PLAYER_2].isCpu;
+    Player *s2 = &gPlayers[s3];
+    s16 i = 0;
+
+    if (s2->unk_00->frameIndex == s2->unk_90->unk_02 - 2) {
+        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+        obj->flags |= 0x10;
+        gNextGameMode = GAME_MODE_BATTLE_DEMITRON;
+        func_80014CB4(D_80081254);
+    }
+
+    if (s2->unk_00->frameIndex == 260) {
+        D_80081254 = load_background("demispk", 0, 160, 0, 0, 2, 0x3000);
+    }
+
+    while (D_80049C5C[i].unk_00 != 0) {
+        if (D_80049C5C[i].unk_00 == s2->unk_00->frameIndex) {
+            sound_play(s3, D_80049C5C[i].unk_02);
+        }
+        i++;
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/nonmatchings/main_menu/func_8001A674.s")
+void func_8001A674(Object *obj);
+#endif
 
-#pragma GLOBAL_ASM("asm/nonmatchings/main_menu/func_8001A7DC.s")
+void func_8001A7DC(Object *obj) {
+    u8 s4 = gBattleSettings[PLAYER_2].isCpu;
+    Player *s = gPlayers + s4;
+    Player *s1 = gPlayers + 1 - s4;
+    s16 i = 0;
+    s16 *qwe;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/main_menu/func_8001A98C.s")
+    if (s1->unk_00->frameIndex == s1->unk_90->unk_02 - 2) {
+        obj->vars[0] = 10;
+        obj->fn_render = func_8001A63C;
+    }
+
+    if (s1->characterId != SONORK && s1->characterId != DEMONICA) {
+        while (D_80049C80[i].unk_00 != 0) {
+            if (D_80049C80[i].unk_00 == s1->unk_00->frameIndex) {
+                sound_play(s4, D_80049C5C[i].unk_02);
+            }
+            i++;
+        }
+
+        i = 0;
+        while (D_80049CA8[i] != 0) {
+            if (s1->unk_00->frameIndex == D_80049CA8[i]) {
+                func_800287AC(s->unk_00);
+            }
+            i++;
+        }
+
+        if (s1->unk_00->frameIndex == 278) {
+            func_800226E8(s->unk_00, 9);
+        }
+    }
+}
+
+void func_8001A98C(Object *obj) {
+    u8 s4 = gBattleSettings[PLAYER_2].isCpu;
+    Player *s = gPlayers + s4;
+    Player *s1 = gPlayers + 1 - s4;
+    s16 i = 0;
+
+    if (s1->characterId == SONORK) {
+        while (D_80049CE0[i].unk_00 != 0) {
+            if (D_80049CE0[i].unk_00 == s1->unk_00->frameIndex) {
+                sound_play(s1->playerId, D_80049CE0[i].unk_02);
+            }
+            i++;
+        }
+    } else {
+        while (D_80049CC8[i].unk_00 != 0) {
+            if (s1->unk_00->frameIndex == D_80049CC8[i].unk_00) {
+                sound_play(s1->playerId, D_80049CC8[i].unk_02);
+            }
+            i++;
+        }
+    }
+}

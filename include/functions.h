@@ -50,7 +50,7 @@ void func_80014718(Matrix4f *arg0, Matrix4f *arg1, Matrix4f *arg2);
 void func_80037E28(Object *);
 // void func_800194E0(s32 arg0);
 s32 abs(s32);
-void func_80014CB4(Texture *tex);
+// void func_80014CB4(Texture *tex);
 s32 str_compare(char *arg0, char *arg1);
 u16 func_80037394(ModelInstance *arg0, s16 arg1);
 void model_update(Object *);
@@ -142,5 +142,7 @@ void sound_set_volume(s32 arg0, s16 arg1);
 void music_set_volume(s16 arg0);
 void func_8000A578(Object *obj);
 void sound_stop_one(u32 playerId, u32 soundId);
+void func_8002EA50(Object *, s32);
+Object *func_800226E8(Object *, s32);
 
 #endif
