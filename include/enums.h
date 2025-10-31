@@ -63,6 +63,7 @@ enum GameModes {
 #define INP_LEFT 0x8000
 
 #define INP_DIRECTION (INP_UP | INP_RIGHT | INP_DOWN | INP_LEFT)
+#define INP_MASK_FF (INP_CUP | INP_CRIGHT | INP_CDOWN | INP_CLEFT | INP_A | INP_B | INP_L | INP_R)
 
 enum AssetContext { CONTEXT_2000 = 0x2000, CONTEXT_EEFF = 0xEEFF };
 
