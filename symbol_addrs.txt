@@ -396,3 +396,6 @@ gObjectList = 0x80052C50;
 gCurrentGameMode = 0x8005BED0;
 gPreviousGameMode = 0x8005BED2;
 gPlayMode = 0x80080230;
+gAudioStereo = 0x8004A428;
+gNumRounds = 0x8004C1D0;
+gDifficulty = 0x8004C1E4;

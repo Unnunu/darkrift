@@ -13,7 +13,7 @@ void func_8002A288(Object *obj) {
     Player *opponent = gPlayers + 1 - player->playerId;
     Vec4i sp44;
     Vec4i *playerPos = &obj->pos;
-    Vec4i *oppPos = &opponent->unk_00->pos;
+    Vec4i *oppPos = &opponent->obj->pos;
     Object *sp38;
     ColorRGBA sp30[] = { { 255, 225, 175, 0 }, { 255, 200, 0, 0 } };
 

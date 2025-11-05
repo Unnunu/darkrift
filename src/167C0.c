@@ -6,7 +6,7 @@ extern s16 D_80049390;
 extern Unk80015E74 D_8004C008[];
 extern Unk80015E74 D_8004C0C8[];
 extern u8 D_8004A42C;
-extern s16 D_8004C1D0;
+extern s16 gNumRounds;
 
 extern Object *D_8013C23C;
 extern Object *D_80081440;
@@ -171,7 +171,7 @@ u16 func_800160C8(s32 arg0) {
     Unk80015E74 *a0;
     Object *obj;
 
-    if (gBattleSettings[PLAYER_1].unk_08 == D_8004C1D0 - 1 && gBattleSettings[PLAYER_2].unk_08 == D_8004C1D0 - 1) {
+    if (gBattleSettings[PLAYER_1].unk_08 == gNumRounds - 1 && gBattleSettings[PLAYER_2].unk_08 == gNumRounds - 1) {
         a0 = &D_8004C008[5];
     } else {
         a0 = &D_8004C008[6];
@@ -270,8 +270,8 @@ void func_800162A4(Object *obj) {
     gCameraTarget.y = -400;
     D_8013C834 = FALSE;
 
-    if (D_8004C1D4 != 0) {
-        D_8013C240->frameIndex = 3 + D_8004C1D4 * 3;
+    if (gBattleDurationEnum != 0) {
+        D_8013C240->frameIndex = 3 + gBattleDurationEnum * 3;
         v1 = D_8013C240->varObj[0];
         v1->frameIndex = 0;
         D_8013C240->currentTask->func = task_default_func;
@@ -294,25 +294,25 @@ void func_800162A4(Object *obj) {
         D_8013C258[PLAYER_1][gBattleSettings[PLAYER_1].unk_08 - 1]->frameIndex = 13;
         D_8013C258[PLAYER_2][gBattleSettings[PLAYER_2].unk_08 - 1]->frameIndex = 13;
     } else {
-        for (i = 0; i < D_8004C1D0; i++) {
+        for (i = 0; i < gNumRounds; i++) {
             D_8013C258[PLAYER_1][i]->frameIndex = D_8013C258[PLAYER_2][i]->frameIndex = 12;
         }
     }
 
-    gPlayers[PLAYER_1].unk_00->frameIndex = 2;
-    gPlayers[PLAYER_2].unk_00->frameIndex = 2;
-    model_change_animation(gPlayers[PLAYER_1].unk_00);
-    model_change_animation(gPlayers[PLAYER_2].unk_00);
+    gPlayers[PLAYER_1].obj->frameIndex = 2;
+    gPlayers[PLAYER_2].obj->frameIndex = 2;
+    model_change_animation(gPlayers[PLAYER_1].obj);
+    model_change_animation(gPlayers[PLAYER_2].obj);
 
     func_80012AF4(&gPlayers[PLAYER_1].unk_750.local_matrix);
     func_80012AF4(&gPlayers[PLAYER_1].unk_868.local_matrix);
     func_80012AF4(&gPlayers[PLAYER_2].unk_750.local_matrix);
     func_80012AF4(&gPlayers[PLAYER_2].unk_868.local_matrix);
 
-    model_update_animated_params(gPlayers[PLAYER_1].unk_00);
-    model_update_animated_params(gPlayers[PLAYER_2].unk_00);
-    gPlayers[PLAYER_1].unk_00->previousFrameIndex = gPlayers[PLAYER_1].unk_00->frameIndex;
-    gPlayers[PLAYER_2].unk_00->previousFrameIndex = gPlayers[PLAYER_2].unk_00->frameIndex;
+    model_update_animated_params(gPlayers[PLAYER_1].obj);
+    model_update_animated_params(gPlayers[PLAYER_2].obj);
+    gPlayers[PLAYER_1].obj->previousFrameIndex = gPlayers[PLAYER_1].obj->frameIndex;
+    gPlayers[PLAYER_2].obj->previousFrameIndex = gPlayers[PLAYER_2].obj->frameIndex;
     gPlayers[PLAYER_1].unk_0C->flags &= ~4;
     gPlayers[PLAYER_2].unk_0C->flags &= ~4;
 
@@ -327,8 +327,8 @@ u32 func_8001675C(Player *player, s32 arg1, u32 arg2) {
     func_8000636C(player, arg1, TRUE);
 
     temp = player->unk_0C->unk_08.unk_04;
-    if (arg2 < player->unk_20[temp].unk_02 + 0x78) {
-        res = player->unk_20[temp].unk_02 + 0x78;
+    if (arg2 < player->states[temp].unk_02 + 0x78) {
+        res = player->states[temp].unk_02 + 0x78;
     } else {
         res = arg2;
     }
@@ -377,7 +377,7 @@ void func_800168F0(Object *obj) {
 }
 
 void func_800169C4(Object *obj) {
-    gNextGameMode = D_8004C1E4 > 0 ? GAME_MODE_34 : GAME_MODE_37; // not real mode? @bug?
+    gNextGameMode = gDifficulty > 0 ? GAME_MODE_34 : GAME_MODE_37; // not real mode? @bug?
     obj->currentTask->func = func_800168F0;
 }
 
@@ -395,7 +395,7 @@ void func_80016A00(Object *obj) {
         gNextGameMode = GAME_MODE_PLAYER_SELECTION;
 
         if (gPlayMode == PLAY_MODE_50) {
-            a3 = D_8004C1D0 == gBattleSettings[PLAYER_2].unk_08;
+            a3 = gNumRounds == gBattleSettings[PLAYER_2].unk_08;
             func_800194E0(PLAY_MODE_TOURNAMENT_P1 + a3);
 
             gBattleSettings[1 - a3].isCpu = TRUE;
@@ -470,7 +470,7 @@ ObjFunc func_80016D90(u32 playerId, u8 arg1) {
     a3 = func_80016880;
 
     gBattleSettings[playerId].unk_08++;
-    if (D_8004C1D0 == gBattleSettings[playerId].unk_08) {
+    if (gNumRounds == gBattleSettings[playerId].unk_08) {
         if (!arg1) {
             gBattleSettings[D_8013C24C].unk_0A++;
             gBattleSettings[1 - D_8013C24C].unk_0A = 0;
@@ -524,12 +524,11 @@ void func_80016F6C(Object *obj) {
     obj->currentTask->func = v02;
 
     D_8005BFC0 &= ~GAME_FLAG_200;
-    gPlayers[1 - D_8013C24C].unk_00->flags |= 4;
-    gPlayers[D_8013C24C].unk_00->pos.x = gPlayers[D_8013C24C].unk_00->pos.y = gPlayers[D_8013C24C].unk_00->pos.z = 0;
-    gPlayers[1 - D_8013C24C].unk_00->pos.x = gPlayers[1 - D_8013C24C].unk_00->pos.y =
-        gPlayers[1 - D_8013C24C].unk_00->pos.z = 0;
+    gPlayers[1 - D_8013C24C].obj->flags |= 4;
+    gPlayers[D_8013C24C].obj->pos.x = gPlayers[D_8013C24C].obj->pos.y = gPlayers[D_8013C24C].obj->pos.z = 0;
+    gPlayers[1 - D_8013C24C].obj->pos.x = gPlayers[1 - D_8013C24C].obj->pos.y = gPlayers[1 - D_8013C24C].obj->pos.z = 0;
 
-    gPlayers[PLAYER_1].unk_00->rotation.y = 0;
+    gPlayers[PLAYER_1].obj->rotation.y = 0;
     gPlayers[PLAYER_1].unk_80 |= 0x400000;
     gPlayers[PLAYER_2].unk_80 |= 0x400000;
 
@@ -537,10 +536,10 @@ void func_80016F6C(Object *obj) {
     gCameraTarget.y = -400;
 
     if (gBattleSettings[D_8013C24C].characterId != MORPHIX) {
-        gPlayers[D_8013C24C].unk_00->flags |= 0x10000000;
+        gPlayers[D_8013C24C].obj->flags |= 0x10000000;
     }
 
-    gPlayers[D_8013C24C].unk_00->flags &= ~0x8800000;
+    gPlayers[D_8013C24C].obj->flags &= ~0x8800000;
 }
 
 void func_800171EC(Object *obj) {
@@ -559,13 +558,13 @@ void func_800171EC(Object *obj) {
 
     func_8001675C(&gPlayers[PLAYER_2], 0x180, func_8001675C(&gPlayers[PLAYER_1], 0x180, 0x78));
 
-    if (D_8004C1D0 == gBattleSettings[PLAYER_1].unk_08 + 1) {
+    if (gNumRounds == gBattleSettings[PLAYER_1].unk_08 + 1) {
         a3 = func_80016D90(PLAYER_1, 1);
     } else {
         gBattleSettings[PLAYER_1].unk_08++;
     }
 
-    if (D_8004C1D0 == gBattleSettings[PLAYER_2].unk_08 + 1) {
+    if (gNumRounds == gBattleSettings[PLAYER_2].unk_08 + 1) {
         a3 = func_80016D90(PLAYER_2, 1);
     } else {
         gBattleSettings[PLAYER_2].unk_08++;
@@ -621,13 +620,13 @@ void func_800173DC(Object *obj) {
             func_8000642C(&gPlayers[PLAYER_2], TRUE);
         }
     } else if ((gPlayers[PLAYER_1].unk_80 & 0x40000) && (gPlayers[PLAYER_2].unk_80 & 0x40000)) {
-        if ((gPlayers[PLAYER_1].unk_90->unk_34 & 1) && gPlayers[PLAYER_1].unk_7E != 4) {
+        if ((gPlayers[PLAYER_1].currentState->flags & 1) && gPlayers[PLAYER_1].unk_7E != 4) {
             func_8000636C(&gPlayers[PLAYER_1], 320, FALSE);
         } else if (gPlayers[PLAYER_1].unk_7E != 17) {
             func_8000636C(&gPlayers[PLAYER_1], 68, FALSE);
         }
 
-        if ((gPlayers[PLAYER_2].unk_90->unk_34 & 1) && gPlayers[PLAYER_2].unk_7E != 4) {
+        if ((gPlayers[PLAYER_2].currentState->flags & 1) && gPlayers[PLAYER_2].unk_7E != 4) {
             func_8000636C(&gPlayers[PLAYER_2], 320, FALSE);
         } else if (gPlayers[PLAYER_2].unk_7E != 17) {
             func_8000636C(&gPlayers[PLAYER_2], 68, FALSE);
@@ -705,10 +704,10 @@ void func_800177C0(Object *obj) {
     D_8005BFC0 &= ~GAME_FLAG_200;
 
     if (!D_80080234) {
-        if (gPlayers[PLAYER_1].unk_00->unk_070 == gBattleSettings[PLAYER_1].unk_0C &&
-                gPlayers[PLAYER_2].unk_00->unk_070 == 0 ||
-            gPlayers[PLAYER_1].unk_00->unk_070 == 0 &&
-                gPlayers[PLAYER_2].unk_00->unk_070 == gBattleSettings[PLAYER_2].unk_0C) {
+        if (gPlayers[PLAYER_1].obj->playerHp == gBattleSettings[PLAYER_1].unk_0C &&
+                gPlayers[PLAYER_2].obj->playerHp == 0 ||
+            gPlayers[PLAYER_1].obj->playerHp == 0 &&
+                gPlayers[PLAYER_2].obj->playerHp == gBattleSettings[PLAYER_2].unk_0C) {
             obj->varObj[4] = D_80081448 = func_80015FB4(11);
             obj->vars[0] = 90;
             gPlayerInput[D_8013C24C].enabled = TRUE;
@@ -730,7 +729,7 @@ void func_800177C0(Object *obj) {
 void func_8001792C(Object *obj) {
     Object *newObj;
 
-    if (D_800801F0 || gPlayers[PLAYER_1].unk_00->unk_070 <= 0 || gPlayers[PLAYER_2].unk_00->unk_070 <= 0) {
+    if (D_800801F0 || gPlayers[PLAYER_1].obj->playerHp <= 0 || gPlayers[PLAYER_2].obj->playerHp <= 0) {
         func_80029044();
         D_800801F0 = TRUE;
         if (!(D_8005BFC0 & GAME_FLAG_4)) {
@@ -739,15 +738,15 @@ void func_8001792C(Object *obj) {
         }
 
         gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = FALSE;
-        if (gPlayers[PLAYER_1].unk_00->unk_070 > gPlayers[PLAYER_2].unk_00->unk_070) {
+        if (gPlayers[PLAYER_1].obj->playerHp > gPlayers[PLAYER_2].obj->playerHp) {
             D_8013C24C = PLAYER_1;
         } else {
             D_8013C24C = PLAYER_2;
         }
 
-        D_8013C24E = (gPlayers[PLAYER_1].unk_00->unk_070 == gPlayers[PLAYER_2].unk_00->unk_070);
+        D_8013C24E = (gPlayers[PLAYER_1].obj->playerHp == gPlayers[PLAYER_2].obj->playerHp);
 
-        if (D_800801F0 && gPlayers[PLAYER_1].unk_00->unk_070 != 0 && gPlayers[PLAYER_2].unk_00->unk_070 != 0) {
+        if (D_800801F0 && gPlayers[PLAYER_1].obj->playerHp != 0 && gPlayers[PLAYER_2].obj->playerHp != 0) {
             newObj = func_80015FB4(10);
             D_80081454 = newObj;
             obj->varObj[4] = newObj;

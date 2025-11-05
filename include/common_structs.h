@@ -405,7 +405,7 @@ typedef struct Object {
     /* 0x05C */ s32 unk_05C;
     /* 0x060 */ s32 unk_060;
     /* 0x064 */ char unk_064[0x70 - 0x64];
-    /* 0x070 */ s16 unk_070;
+    /* 0x070 */ s16 playerHp;
     /* 0x072 */ s16 unk_072;
     /* 0x074 */ s16 unk_074;
     /* 0x076 */ s16 unk_076;
@@ -449,13 +449,13 @@ typedef struct GlobalObjBSub {
 } GlobalObjBSub; // size = 0xC
 
 typedef struct PlayerSub8 {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ u16 unk_02;
-    /* 0x04 */ u16 unk_04;
+    /* 0x00 */ s16 index_in_field28;
+    /* 0x02 */ u16 buttons;
+    /* 0x04 */ u16 flags;
     /* 0x06 */ u16 unk_06;
-    /* 0x08 */ s16 unk_08;
-    /* 0x0A */ s16 unk_0A;
-    /* 0x0C */ u16 unk_0C;
+    /* 0x08 */ s16 index_in_field24;
+    /* 0x0A */ s16 index_in_field20;
+    /* 0x0C */ u16 button_mask;
     /* 0x0E */ char unk_0E[0xE];
 } PlayerSub8; // size = 0x1C
 
@@ -518,12 +518,12 @@ typedef struct Texture {
     /* 0x28 */ struct Texture *next;
 } Texture; // size = 0x2C
 
-typedef struct PlayerSub3 {
+typedef struct PlayerState {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ s16 unk_02;
     /* 0x04 */ s16 unk_04;
     /* 0x06 */ s16 unk_06;
-    /* 0x08 */ s16 unk_08;
+    /* 0x08 */ s16 animationId;
     /* 0x0A */ s16 unk_0A;
     /* 0x0C */ s16 unk_0C;
     /* 0x0E */ s16 unk_0E;
@@ -535,7 +535,7 @@ typedef struct PlayerSub3 {
     /* 0x1A */ s16 unk_1A;
     /* 0x1C */ s16 unk_1C;
     /* 0x1E */ s16 unk_1E;
-    /* 0x20 */ s16 unk_20;
+    /* 0x20 */ s16 damage;
     /* 0x22 */ s16 unk_22;
     /* 0x24 */ s16 unk_24;
     /* 0x26 */ s16 unk_26;
@@ -545,14 +545,14 @@ typedef struct PlayerSub3 {
     /* 0x2E */ s16 unk_2E;
     /* 0x30 */ s16 unk_30;
     /* 0x32 */ s16 unk_32;
-    /* 0x34 */ s32 unk_34;
-} PlayerSub3; // size = 0x38
+    /* 0x34 */ s32 flags;
+} PlayerState; // size = 0x38
 
 typedef struct PlayerSub5 {
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ ObjFunc unk_04;
     /* 0x08 */ ObjFunc unk_08;
-    /* 0x0C */ u8 (*unk_0C)(Object *);
+    /* 0x0C */ u8 (*fn_check)(Object *);
     /* 0x10 */ s32 unk_10;
 } PlayerSub5;
 
@@ -664,7 +664,7 @@ typedef struct PlayerSubF {
 } PlayerSubF; // size = 0x10
 
 typedef struct Player {
-    /* 0x0000 */ Object *unk_00;
+    /* 0x0000 */ Object *obj;
     /* 0x0004 */ s16 playerId;
     /* 0x0006 */ s16 characterId;
     /* 0x0008 */ ObjectTask *unk_08;
@@ -673,7 +673,7 @@ typedef struct Player {
     /* 0x0014 */ ObjectTask *unk_14;
     /* 0x0018 */ ObjectTask *unk_18;
     /* 0x001C */ PlayerSubE *unk_1C;
-    /* 0x0020 */ PlayerSub3 *unk_20;
+    /* 0x0020 */ PlayerState *states;
     /* 0x0024 */ PlayerSub5 *unk_24;
     /* 0x0028 */ PlayerSubF *unk_28;
     /* 0x002C */ PlayerSub8 *unk_2C;
@@ -705,7 +705,7 @@ typedef struct Player {
     /* 0x0084 */ s32 unk_84;
     /* 0x0088 */ PlayerSubF *unk_88;
     /* 0x008C */ s32 unk_8C;
-    /* 0x0090 */ PlayerSub3 *unk_90;
+    /* 0x0090 */ PlayerState *currentState;
     /* 0x0094 */ s16 unk_94;
     /* 0x0096 */ s16 unk_96;
     /* 0x0098 */ PlayerSub5 *unk_98;

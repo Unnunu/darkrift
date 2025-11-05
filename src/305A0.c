@@ -45,7 +45,7 @@ void func_8002FA2C(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
     player->unk_80 &= ~0x800000;
-    if (!(player->unk_90->unk_34 & 1)) {
+    if (!(player->currentState->flags & 1)) {
         player->unk_80 &= ~0x10;
     }
     obj->currentTask->func = task_default_func;
@@ -111,7 +111,7 @@ void func_8002FBC8(Object *obj) {
     v0 = (v0 * 0xE000) >> 16;
     player->unk_198.unk_2C = SQ(v0);
 
-    if (player->unk_90->unk_34 & 4) {
+    if (player->currentState->flags & 4) {
         obj->currentTask->func = func_8002FADC;
     } else {
         func_8002FA78(obj);
@@ -188,9 +188,9 @@ u8 func_8002FF7C(Object *obj) {
     sp34.y = 0;
     sp34.z = -temp;
     func_8001370C(&sp34, &obj->rotation);
-    (gPlayers + oppId)->unk_00->pos.x = obj->pos.x + sp34.x;
-    (gPlayers + oppId)->unk_00->pos.z = obj->pos.z + sp34.z;
-    (gPlayers + oppId)->unk_00->rotation.y = 0x400 - ((0xC00 - obj->rotation.y) & 0xFFF);
+    (gPlayers + oppId)->obj->pos.x = obj->pos.x + sp34.x;
+    (gPlayers + oppId)->obj->pos.z = obj->pos.z + sp34.z;
+    (gPlayers + oppId)->obj->rotation.y = 0x400 - ((0xC00 - obj->rotation.y) & 0xFFF);
 
     return TRUE;
 }
@@ -200,7 +200,7 @@ void func_80030074(Object *obj) {
     Player *opponent = gPlayers + 1 - player->playerId;
     s16 characterId = player->characterId;
 
-    if (obj->frameIndex == player->unk_90->unk_02 - 1) {
+    if (obj->frameIndex == player->currentState->unk_02 - 1) {
         player->damage = obj->vars[2];
         if (obj->vars[3] < 0) {
             player->total_damage += player->damage;
@@ -210,10 +210,10 @@ void func_80030074(Object *obj) {
         }
 
         if (gPlayMode != PLAY_MODE_PRACTICE) {
-            opponent->unk_00->unk_070 -= obj->vars[2];
+            opponent->obj->playerHp -= obj->vars[2];
         }
-        if (opponent->unk_00->unk_070 < 0) {
-            opponent->unk_00->unk_070 = 0;
+        if (opponent->obj->playerHp < 0) {
+            opponent->obj->playerHp = 0;
         }
     }
 
@@ -223,7 +223,7 @@ void func_80030074(Object *obj) {
             break;
         case DEMONICA:
             if (gBattleSettings[1 - player->playerId].characterId == NIIKI &&
-                obj->frameIndex < player->unk_90->unk_02 - 1) {
+                obj->frameIndex < player->currentState->unk_02 - 1) {
                 obj->pos.y = 100;
             } else {
                 obj->pos.y = 0;
@@ -241,7 +241,7 @@ void func_80030074(Object *obj) {
 void func_800301FC(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
-    if (obj->frameIndex >= player->unk_90->unk_02 - 2) {
+    if (obj->frameIndex >= player->currentState->unk_02 - 2) {
         player->damage = obj->vars[2];
         if (obj->vars[3] < 0) {
             player->total_damage += player->damage;
@@ -251,10 +251,10 @@ void func_800301FC(Object *obj) {
         }
 
         if (gPlayMode != PLAY_MODE_PRACTICE) {
-            player->unk_00->unk_070 -= obj->vars[2];
+            player->obj->playerHp -= obj->vars[2];
         }
-        if (player->unk_00->unk_070 < 0) {
-            player->unk_00->unk_070 = 0;
+        if (player->obj->playerHp < 0) {
+            player->obj->playerHp = 0;
         }
 
         player->unk_18->func = func_8003184C;
@@ -281,7 +281,7 @@ void func_80030330(Object *obj) {
     s16 oppId;
     s32 pad2;
     s16 temp;
-    PlayerSub3 *sp44;
+    PlayerState *sp44;
     Vec4i sp34;
 
     if (D_800801F0 && D_8013C250 == 0) {
@@ -289,7 +289,7 @@ void func_80030330(Object *obj) {
         return;
     }
 
-    if (obj->frameIndex != player->unk_90->unk_02 - 1) {
+    if (obj->frameIndex != player->currentState->unk_02 - 1) {
         return;
     }
 
@@ -298,11 +298,11 @@ void func_80030330(Object *obj) {
     player->unk_5F48 = 2;
 
     if (!(player->unk_80 & 0x8) && D_80080210 < D_8004C178[player->characterId] &&
-        (gPlayers[oppId].unk_90->unk_34 & 4) && !(gPlayers[oppId].unk_90->unk_34 & 0x40000)) {
+        (gPlayers[oppId].currentState->flags & 4) && !(gPlayers[oppId].currentState->flags & 0x40000)) {
         obj->currentTask->flags |= 0x80;
 
         if (gPlayers[oppId].unk_80 & 8) {
-            if (!(gPlayers[oppId].unk_90->unk_34 & 0x80)) {
+            if (!(gPlayers[oppId].currentState->flags & 0x80)) {
                 func_800063C4(&gPlayers[oppId], 116, 1);
             }
             return;
@@ -314,17 +314,17 @@ void func_80030330(Object *obj) {
         func_800063C4(&gPlayers[oppId], D_8004B8F4[characterId].unk_02, 1);
         func_800063C4(player, 84, 1);
         D_80080236 = 0;
-        sp44 = &player->unk_20[player->unk_7E];
-        player->unk_00->varObj[2] = sp44->unk_20;
+        sp44 = &player->states[player->unk_7E];
+        player->obj->varObj[2] = sp44->damage;
 
         temp = D_8004B8F4[characterId].unk_00;
         sp34.x = 0;
         sp34.y = 0;
         sp34.z = -temp;
         func_8001370C(&sp34, &obj->rotation);
-        (gPlayers + oppId)->unk_00->pos.x = obj->pos.x + sp34.x;
-        (gPlayers + oppId)->unk_00->pos.z = obj->pos.z + sp34.z;
-        (gPlayers + oppId)->unk_00->rotation.y = 0x400 - ((0xC00 - obj->rotation.y) & 0xFFF);
+        (gPlayers + oppId)->obj->pos.x = obj->pos.x + sp34.x;
+        (gPlayers + oppId)->obj->pos.z = obj->pos.z + sp34.z;
+        (gPlayers + oppId)->obj->rotation.y = 0x400 - ((0xC00 - obj->rotation.y) & 0xFFF);
 
         D_8008012C &= ~GFX_FLAG_10;
         func_80016264();
@@ -349,7 +349,7 @@ void func_800305FC(Object *obj) {
     s16 oppId;
     s32 unused[3];
 
-    if (obj->frameIndex == player->unk_90->unk_04) {
+    if (obj->frameIndex == player->currentState->unk_04) {
         characterId = player->characterId;
         oppId = 1 - player->playerId;
         func_800063C4(&gPlayers[oppId], D_8004B920[characterId].unk_02, 1);
@@ -468,7 +468,7 @@ void func_800309EC(Object *obj) {
 void func_80030A60(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
-    if (obj->frameIndex > (player->unk_90->unk_02 >> 1)) {
+    if (obj->frameIndex > (player->currentState->unk_02 >> 1)) {
         player->unk_0C->func = func_80024078;
         player->unk_0C->counter = 0;
         player->unk_0C->flags = 1;
@@ -542,11 +542,11 @@ u8 func_80030C88(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
     Player *opponent = &gPlayers[player->playerId != PLAYER_1 ? PLAYER_1 : PLAYER_2];
 
-    if (((opponent->unk_90->unk_34 & 0x30600) && !(opponent->unk_90->unk_34 & 0x40000)) > 0) {
+    if (((opponent->currentState->flags & 0x30600) && !(opponent->currentState->flags & 0x40000)) > 0) {
         if (player->playerId != PLAYER_1) {
-            player->unk_00->rotation.y = 0xC00 - D_8008020C;
+            player->obj->rotation.y = 0xC00 - D_8008020C;
         } else {
-            player->unk_00->rotation.y = 0x1400 - D_8008020C;
+            player->obj->rotation.y = 0x1400 - D_8008020C;
         }
         return TRUE;
     } else {
@@ -557,7 +557,7 @@ u8 func_80030C88(Object *obj) {
 void func_80030D60(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
-    obj->currentTask->counter = player->unk_20[player->unk_7E].unk_00 - obj->frameIndex + 2;
+    obj->currentTask->counter = player->states[player->unk_7E].unk_00 - obj->frameIndex + 2;
     obj->currentTask->func = func_80030DA8;
 }
 
@@ -566,8 +566,8 @@ void func_80030DA8(Object *obj) {
     Player *opponent = &gPlayers[player->playerId != PLAYER_1 ? PLAYER_1 : PLAYER_2];
     s16 a1 = 97;
 
-    if ((opponent->unk_80 & 0x30400) && D_80080210 < 400 && obj->frameIndex >= player->unk_90->unk_04) {
-        if (opponent->unk_90->unk_34 & 0x200) {
+    if ((opponent->unk_80 & 0x30400) && D_80080210 < 400 && obj->frameIndex >= player->currentState->unk_04) {
+        if (opponent->currentState->flags & 0x200) {
             a1 = 206;
         }
         func_800063C4(opponent, a1, 1);
@@ -605,7 +605,7 @@ void func_80030F5C(Object *obj) {
     s16 sp26;
     s16 sp1A;
 
-    sp26 = (0xC00 - opponent->unk_00->rotation.y) & 0xFFF;
+    sp26 = (0xC00 - opponent->obj->rotation.y) & 0xFFF;
     sp1A = func_8002CDFC(D_8008020C, sp26);
 
     if (sp1A < 0) {
@@ -613,7 +613,7 @@ void func_80030F5C(Object *obj) {
     } else {
         sp1A += 0x800;
     }
-    opponent->unk_00->rotation.y = 0xC00 - (sp26 + sp1A);
+    opponent->obj->rotation.y = 0xC00 - (sp26 + sp1A);
 }
 
 void func_8003102C(Object *obj) {
@@ -635,7 +635,7 @@ void func_800310C8(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
     Player *opponent = &gPlayers[player->playerId != PLAYER_1 ? PLAYER_1 : PLAYER_2];
 
-    if ((opponent->unk_90->unk_34 & 0x100) || (opponent->unk_98->unk_00 & 0x10)) {
+    if ((opponent->currentState->flags & 0x100) || (opponent->unk_98->unk_00 & 0x10)) {
         opponent->unk_80 |= 0x10;
     } else {
         opponent->unk_80 &= ~0x10;
@@ -645,7 +645,7 @@ void func_800310C8(Object *obj) {
 void func_80031164(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
-    if (obj->frameIndex == player->unk_90->unk_02 - 1) {
+    if (obj->frameIndex == player->currentState->unk_02 - 1) {
         func_800310C8(obj);
     }
 }
@@ -654,7 +654,7 @@ void func_800311A0(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
     Player *opponent = &gPlayers[player->playerId != PLAYER_1 ? PLAYER_1 : PLAYER_2];
 
-    if (opponent->unk_90->unk_34 & 0x100) {
+    if (opponent->currentState->flags & 0x100) {
         opponent->unk_80 |= 0x10;
     }
 
@@ -672,7 +672,7 @@ void func_80031234(Object *obj) {
     s16 sp1C;
     s16 sp1A;
 
-    if (opponent->unk_90->unk_20 != 0) {
+    if (opponent->currentState->damage != 0) {
         opponent->unk_80 |= 0x10;
     }
 
@@ -710,7 +710,7 @@ void func_800313EC(Object *obj) {
     Object *player1 = D_80080228[PLAYER_1];
     Object *player2 = D_80080228[PLAYER_2];
 
-    if (!(player->unk_80 & 8) && obj->frameIndex >= player->unk_90->unk_02 - 1) {
+    if (!(player->unk_80 & 8) && obj->frameIndex >= player->currentState->unk_02 - 1) {
         if (player->playerId != PLAYER_1) {
             player2->rotation.y = 0xC00 - D_8008020C;
         } else {
@@ -750,20 +750,20 @@ void func_8003146C(Object *obj) {
         v12 = TRUE;
         if (opponent->unk_80 & 0x10) {
             if (opponent->playerId != PLAYER_1) {
-                opponent->unk_00->rotation.y = 0x1400 - D_8008020C;
+                opponent->obj->rotation.y = 0x1400 - D_8008020C;
             } else {
-                opponent->unk_00->rotation.y = 0xC00 - D_8008020C;
+                opponent->obj->rotation.y = 0xC00 - D_8008020C;
             }
         } else {
             if (opponent->playerId != PLAYER_1) {
-                opponent->unk_00->rotation.y = 0xC00 - D_8008020C;
+                opponent->obj->rotation.y = 0xC00 - D_8008020C;
             } else {
-                opponent->unk_00->rotation.y = 0x1400 - D_8008020C;
+                opponent->obj->rotation.y = 0x1400 - D_8008020C;
             }
         }
     }
 
-    if (player->unk_DBC > 256 || (opponent->unk_90->unk_34 & 2) || v12) {
+    if (player->unk_DBC > 256 || (opponent->currentState->flags & 2) || v12) {
         player->unk_80 |= 0x10;
         obj->currentTask->flags |= 0x80;
     }
@@ -797,21 +797,21 @@ u8 func_800316A0(Object *obj) {
     player = (Player *) obj->varObj[0];
     v1 = gPlayers + (1 - player->playerId);
 
-    a1 = (v1->unk_90->unk_34 & 0x100000) &&
-         (v1->unk_90->unk_06 < v1->unk_00->frameIndex || v1->unk_90->unk_04 > v1->unk_00->frameIndex);
+    a1 = (v1->currentState->flags & 0x100000) &&
+         (v1->currentState->unk_06 < v1->obj->frameIndex || v1->currentState->unk_04 > v1->obj->frameIndex);
     return a1 > 0;
 }
 
 void func_80031724(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
     Player *v0;
-    PlayerSub3 *v1;
+    PlayerState *v1;
 
     v0 = gPlayers + (1 - player->playerId);
-    v1 = &player->unk_20[player->unk_7E];
+    v1 = &player->states[player->unk_7E];
 
-    if (!(v1->unk_34 & 0x4000) && gBattleSettings[player->playerId].isCpu && (v0->unk_90->unk_34 & 0x100000) &&
-        v0->unk_00->frameIndex < v0->unk_90->unk_04) {
+    if (!(v1->flags & 0x4000) && gBattleSettings[player->playerId].isCpu && (v0->currentState->flags & 0x100000) &&
+        v0->obj->frameIndex < v0->currentState->unk_04) {
         if (v0->unk_80 & 1) {
             func_800063C4(player, 0x27, 1);
             player->unk_BC = func_8001D070;
@@ -856,7 +856,7 @@ void func_8003184C(Object *arg0) {
 
     temp_v0 = temp_ra->unk_7C;
     temp_ft3 = D_80080228[temp_t8]->modInst->rootTransform.world_matrix.y.y + 360.0f;
-    if (temp_v0 == 0 || temp_v0 == 7 || (temp_ra->unk_90->unk_34 & 0x4000)) {
+    if (temp_v0 == 0 || temp_v0 == 7 || (temp_ra->currentState->flags & 0x4000)) {
         sp60.x = func_80012518(temp_ft3, D_80080210);
         var_t2 = func_8002CDFC((s16) ((0xC00 - arg0->rotation.y) & 0xFFF), (s16) (D_8008020C - (temp_t8 << 0xB)));
 
@@ -1061,7 +1061,7 @@ void func_80031F60(Object *obj) {
 void func_80031F88(Object *obj) {
     Player *v0 = (Player *) obj->varObj[0];
 
-    if (obj->frameIndex == v0->unk_90->unk_02 - 2) {
+    if (obj->frameIndex == v0->currentState->unk_02 - 2) {
         obj->currentTask->func = func_80031F60;
     }
 }
@@ -1098,7 +1098,7 @@ void func_8003208C(Object *obj) {
     Player *v0 = (Player *) obj->varObj[0];
     s32 v1 = v0->playerId;
 
-    if (obj->frameIndex == v0->unk_90->unk_02 - 1) {
+    if (obj->frameIndex == v0->currentState->unk_02 - 1) {
         sp20.x = sp20.y = 0;
         sp20.z = -D_8013C3C8[v1];
         func_8001370C(&sp20, &obj->rotation);

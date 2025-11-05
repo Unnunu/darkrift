@@ -152,7 +152,7 @@ void func_80028400(Object *obj) {
 
 void func_80028464(Object *obj) {
     s16 playerId = obj->vars[0];
-    Object *v0 = gPlayers[playerId].unk_00;
+    Object *v0 = gPlayers[playerId].obj;
     Vec4i sp20;
 
     if (v0->pos.y != 0) {
@@ -421,8 +421,8 @@ void func_80028AE4(Object *obj) {
 void func_80028E84(void) {
     s16 v0, v1;
 
-    v0 = gPlayers[PLAYER_1].unk_00->unk_070;
-    v1 = gPlayers[PLAYER_2].unk_00->unk_070;
+    v0 = gPlayers[PLAYER_1].obj->playerHp;
+    v1 = gPlayers[PLAYER_2].obj->playerHp;
     if (v0 > v1) {
         func_8000636C(&gPlayers[PLAYER_1], 132, 1);
         func_8000636C(&gPlayers[PLAYER_2], 384, 1);
@@ -457,7 +457,7 @@ void func_80028F38(Object *obj) {
 }
 
 void func_80028FCC(void) {
-    if (gPlayMode != PLAY_MODE_PRACTICE && D_8004C1D4 != 0) {
+    if (gPlayMode != PLAY_MODE_PRACTICE && gBattleDurationEnum != 0) {
         D_8013C240->currentTask->func = func_80028F38;
         D_8013C240->currentTask->counter = 0;
         D_8013C240->currentTask->flags = 1;
@@ -625,14 +625,14 @@ void func_80029630(void) {
 
     create_ui_element(&spCC, &sp10C, 0xABAB);
 
-    switch (D_8004C1D4) {
+    switch (gBattleDurationEnum) {
         case 0:
             break;
         case 1:
         case 2:
             s00 = create_ui_element(&spAC, &spF8, 0xABAB);
             v0 = create_ui_element(&spBC, &spE4, 0xABAB);
-            v0->frameIndex = D_8004C1D4 * 3 + 3;
+            v0->frameIndex = gBattleDurationEnum * 3 + 3;
             v0->varObj[0] = s00;
             D_8013C240 = v0;
             break;
@@ -658,7 +658,7 @@ void func_80029630(void) {
         v0->taskList = NULL;
     }
 
-    for (; s0 < D_8004C1D0; s0++) {
+    for (; s0 < gNumRounds; s0++) {
         D_8013C258[PLAYER_1][s0] = v0 = create_ui_element(&sp7C, &sp120, 0xABAB);
         v0->frameIndex = 12;
         sp7C.x -= 8;
@@ -676,7 +676,7 @@ void func_80029630(void) {
         v0->taskList = NULL;
     }
 
-    for (; s0 < D_8004C1D0; s0++) {
+    for (; s0 < gNumRounds; s0++) {
         D_8013C258[PLAYER_2][s0] = v0 = create_ui_element(&sp6C, &sp120, 0xABAB);
         v0->frameIndex = 12;
         sp6C.x += 8;

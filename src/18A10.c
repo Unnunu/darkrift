@@ -1,7 +1,7 @@
 #include "common.h"
 
-extern s16 D_80049B20[];
-extern s16 D_80049B30[];
+s16 D_80049B20[] = { 4, 7, 6, 5, 1, 3, 0, 2 };
+s16 D_80049B30[] = { INP_CUP, INP_CLEFT, INP_CDOWN, INP_CRIGHT, INP_B, INP_L, INP_R, INP_A };
 
 Object *D_80081460;
 char D_80081464[4];
@@ -12,23 +12,239 @@ s16 D_80081498[11];
 s16 D_800814B0[11];
 Vec4i D_800814C8;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/18A10/func_80017E10.s")
+void func_80017E10(Object *obj, s16 buttons, s16 playerId) {
+    s16 prevButtons;
+    s16 counter;
+    s32 a2;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/18A10/func_80017F00.s")
+    a2 = FALSE;
+    prevButtons = obj->vars[1];
+    obj->vars[1] = buttons;
+    counter = obj->vars[2]--;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/18A10/func_80017F60.s")
+    if (counter > 0 && buttons == prevButtons) {
+        return;
+    }
+    obj->vars[2] = 15;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/18A10/func_80017FF4.s")
+    if (buttons & INP_UP) {
+        obj->vars[5] = 0;
+        obj->vars[4] = (obj->vars[4] + 9) % 10;
+        a2 = TRUE;
+    } else if (buttons & INP_DOWN) {
+        obj->vars[5] = 0;
+        obj->vars[4] = (obj->vars[4] + 1) % 10;
+        a2 = TRUE;
+    } else if (buttons & INP_LEFT) {
+        obj->vars[5] = -1;
+        a2 = TRUE;
+    } else if (buttons & INP_RIGHT) {
+        obj->vars[5] = 1;
+        a2 = TRUE;
+    }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/18A10/func_80018088.s")
+    if (a2) {
+        sound_play(2, 1);
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/18A10/func_80018120.s")
+void func_80017F00(Object *obj) {
+    s16 buttons;
+    s16 buttons2;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/18A10/func_800181C8.s")
+    buttons = gPlayerInput[PLAYER_1].buttons;
+    buttons2 = gPlayerInput[PLAYER_2].buttons;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/18A10/func_800182E0.s")
+    if (buttons != 0) {
+        func_80017E10(obj, buttons, PLAYER_1);
+    } else if (buttons2 != 0) {
+        func_80017E10(obj, buttons2, PLAYER_2);
+    } else {
 
-#pragma GLOBAL_ASM("asm/nonmatchings/18A10/func_800183FC.s")
+        obj->vars[1] = 0;
+    }
+}
+
+void func_80017F60(Object *obj) {
+    Object *obj1;
+    s16 v1;
+
+    obj1 = obj->varObj[3];
+    if (obj1->vars[4] == 0) {
+        if (obj->frameIndex >= 199 && obj->frameIndex <= 201) {
+            obj->frameIndex += 3;
+        }
+
+        v1 = obj1->vars[5];
+        if (v1 != 0) {
+            obj->frameIndex = 202 + ((obj->frameIndex + v1 + 2) % 3);
+            obj1->vars[5] = 0;
+            gDifficulty = obj->frameIndex - 202;
+        }
+    } else {
+        if (obj->frameIndex >= 202 && obj->frameIndex <= 204) {
+            obj->frameIndex -= 3;
+        }
+    }
+}
+
+void func_80017FF4(Object *obj) {
+    Object *obj1;
+    s16 v1;
+
+    obj1 = obj->varObj[3];
+    if (obj1->vars[4] == 1) {
+        if (obj->frameIndex >= 51 && obj->frameIndex <= 53) {
+            obj->frameIndex += 3;
+        }
+
+        v1 = obj1->vars[5];
+        if (v1 != 0) {
+            obj->frameIndex = 54 + ((obj->frameIndex + v1) % 3); // + 2 ???
+            obj1->vars[5] = 0;
+            gBattleDurationEnum = obj->frameIndex - 54;
+        }
+    } else {
+        if (obj->frameIndex >= 54 && obj->frameIndex <= 56) {
+            obj->frameIndex -= 3;
+        }
+    }
+}
+
+void func_80018088(Object *obj) {
+    Object *obj1;
+    s16 v1;
+
+    obj1 = obj->varObj[3];
+    if (obj1->vars[4] == 2) {
+        if (obj->frameIndex >= 12 && obj->frameIndex <= 16) {
+            obj->frameIndex += 10;
+        }
+
+        v1 = obj1->vars[5];
+        if (v1 != 0) {
+            obj->frameIndex = 22 + ((obj->frameIndex + v1 + 3) % 5);
+            obj1->vars[5] = 0;
+            gNumRounds = obj->frameIndex - 21;
+        }
+    } else {
+        if (obj->frameIndex >= 22 && obj->frameIndex <= 26) {
+            obj->frameIndex -= 10;
+        }
+    }
+}
+
+void func_80018120(Object *obj) {
+    Object *obj1;
+    s16 v1;
+
+    obj1 = obj->varObj[3];
+    if (obj1->vars[4] == 3) {
+        if (obj->frameIndex == 7 || obj->frameIndex == 8) {
+            obj->frameIndex += 2;
+        }
+
+        v1 = obj1->vars[5];
+        if (v1 != 0) {
+            obj->frameIndex = 9 + ((obj->frameIndex + v1 + 1) % 2);
+            obj1->vars[5] = 0;
+            gAudioStereo = obj->frameIndex - 9;
+        }
+    } else {
+        if (obj->frameIndex == 9 || obj->frameIndex == 10) {
+            obj->frameIndex -= 2;
+        }
+    }
+}
+
+void func_800181C8(Object *obj) {
+    Object *obj1;
+    s16 v1;
+    s32 v0;
+
+    obj1 = obj->varObj[3];
+    if (obj1->vars[4] == 4) {
+        if (obj->frameIndex >= 11 && obj->frameIndex <= 20) {
+            obj->frameIndex += 10;
+        }
+
+        v1 = obj1->vars[5];
+        if (v1 != 0) {
+            obj->frameIndex = 21 + ((obj->frameIndex + v1 + 9) % 10);
+            obj1->vars[5] = 0;
+
+            v0 = (obj->frameIndex - 21) * (0x7FFF / 9);
+            if (v0 > 0x7FFF) {
+                v0 = 0x7FFF;
+            }
+            if (v0 == 0) {
+                v0 = 1;
+            }
+
+            if (v0 != gMusicVolume) {
+                music_set_volume(v0);
+            }
+            gMusicVolumeFading = gMusicVolume = v0;
+        }
+    } else {
+        if (obj->frameIndex >= 21 && obj->frameIndex <= 30) {
+            obj->frameIndex -= 10;
+        }
+    }
+}
+
+void func_800182E0(Object *obj) {
+    Object *obj1;
+    s16 v1;
+    s32 v0;
+
+    obj1 = obj->varObj[3];
+    if (obj1->vars[4] == 5) {
+        if (obj->frameIndex >= 11 && obj->frameIndex <= 20) {
+            obj->frameIndex += 10;
+        }
+
+        v1 = obj1->vars[5];
+        if (v1 != 0) {
+            obj->frameIndex = 21 + ((obj->frameIndex + v1 + 9) % 10);
+            obj1->vars[5] = 0;
+
+            v0 = (obj->frameIndex - 21) * (0x7FFF / 9);
+            if (v0 > 0x7FFF) {
+                v0 = 0x7FFF;
+            }
+            if (v0 == 0) {
+                v0 = 1;
+            }
+
+            if (v0 != gSoundVolume) {
+                sound_set_volume(2, v0);
+            }
+            gSoundVolumeFading = gSoundVolume = v0;
+        }
+    } else {
+        if (obj->frameIndex >= 21 && obj->frameIndex <= 30) {
+            obj->frameIndex -= 10;
+        }
+    }
+}
+
+void func_800183FC(Object *obj) {
+    Object *obj1;
+
+    obj1 = obj->varObj[3];
+    if (obj1->vars[4] == 6) {
+        obj->flags &= ~OBJ_FLAG_HIDDEN;
+        if ((gPlayerInput[PLAYER_1].buttons == INP_START) || gPlayerInput[PLAYER_2].buttons == INP_START) {
+            gNextGameMode = GAME_MODE_2;
+            D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+            obj->currentTask->flags |= 0x80;
+            sound_play(2, 0);
+        }
+    } else {
+        obj->flags |= OBJ_FLAG_HIDDEN;
+    }
+}
 
 void func_800184A8(Object *obj) {
     Object *obj1;
@@ -94,8 +310,8 @@ void func_800186AC(Object *obj, s16 buttons, s16 playerId) {
     if (counter > 0 && buttons == prevButtons) {
         return;
     }
-
     obj->vars[2] = 15;
+
     if (buttons & INP_UP) {
         obj->vars[5] = 0;
         obj->vars[4] = (obj->vars[4] + 8) % 9;

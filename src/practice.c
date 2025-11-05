@@ -705,7 +705,7 @@ void func_80033958(void) {
         tmp2 = s2->unk_34;
         new_var = &s2->unk_2C[tmp2[t3]];
         D_8013C410[D_8013C428++] = tmp2[t3];
-        func_800336E4(new_var->unk_02);
+        func_800336E4(new_var->buttons);
         s0++;
         s1 = *s0;
     }
@@ -741,7 +741,7 @@ void func_80033AB0(void) {
         tmp2 = s2->unk_34;
         new_var = &s2->unk_2C[tmp2[t3]];
         D_8013C410[D_8013C428++] = tmp2[t3];
-        func_800336E4(new_var->unk_02);
+        func_800336E4(new_var->buttons);
         s0++;
         s1 = *s0;
     }
@@ -758,7 +758,7 @@ void func_80033C38(void) {
 
         if (D_8013C42A < D_8013C428) {
             new_var = &gPlayers[a2].unk_2C[D_8013C410[D_8013C42A]];
-            gPlayerInput[a2].buttons = new_var->unk_02;
+            gPlayerInput[a2].buttons = new_var->buttons;
             gPlayerInput[a2].unk_08 = TRUE;
         } else {
             D_8013C444 = FALSE;
@@ -784,7 +784,7 @@ void func_80033D64(void) {
     }
 
     if (player->unk_74 == D_8013C410[D_8013C42A]) {
-        func_800337C8(player->unk_A0->unk_02);
+        func_800337C8(player->unk_A0->buttons);
         D_8013C42A++;
         if (D_8013C444) {
             func_80033C38();

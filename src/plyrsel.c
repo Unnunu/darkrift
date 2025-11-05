@@ -22,7 +22,7 @@ typedef struct CheatCodeState {
 
 extern s16 gPlayMode;
 
-extern u8 D_8004A428;
+extern u8 gAudioStereo;
 extern AssetSP2Sub3 *D_8013C234;
 extern AssetSP2Sub3 *D_8013C238;
 
@@ -51,11 +51,96 @@ s16 func_8001E5D8(s16 arg0);
 #pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001E624.s")
 void func_8001E624(Object *);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001E834.s")
-void func_8001E834(Object *, Object *, Object *);
+void func_8001E834(Object *obj, Object *arg1, Object *arg2) {
+    s16 v0;
+    s16 tmp;
+    u8 hundreds;
+    u8 tens;
+    u8 ones;
+    s32 tmp2;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001EA24.s")
-void func_8001EA24(Object *);
+    v0 = obj->vars[0];
+
+    if (obj->vars[2] > 0) {
+        obj->vars[2]--;
+        obj->frameIndex = 0x29 + (gBattleSettings[v0].unk_0C == 400);
+        arg2->flags |= OBJ_FLAG_HIDDEN;
+        arg1->flags |= OBJ_FLAG_HIDDEN;
+        obj->flags &= ~OBJ_FLAG_HIDDEN;
+        return;
+    }
+
+    tmp = gBattleSettings[v0].unk_0C * 100 / 400;
+    hundreds = tmp / 100;
+    tmp -= hundreds * 100;
+    tens = tmp / 10;
+    ones = tmp - tens * 10;
+
+    arg2->flags &= ~OBJ_FLAG_HIDDEN;
+    arg1->flags &= ~OBJ_FLAG_HIDDEN;
+    obj->flags &= ~OBJ_FLAG_HIDDEN;
+
+    if (!hundreds) {
+        arg2->flags |= OBJ_FLAG_HIDDEN;
+        if (tens == 0) {
+            arg1->flags |= OBJ_FLAG_HIDDEN;
+        }
+    }
+
+    if (!obj->vars[1]) {
+        arg2->flags |= OBJ_FLAG_HIDDEN;
+        arg1->flags |= OBJ_FLAG_HIDDEN;
+        obj->flags |= OBJ_FLAG_HIDDEN;
+    }
+
+    if ((gFrameCounter % 15) == 0) {
+        tmp2 = ((gFrameCounter % 30) == 0);
+        obj->vars[1] = tmp2;
+    }
+
+    obj->frameIndex = 0x1C + ones;
+    arg1->frameIndex = 0x1C + tens;
+    arg2->frameIndex = 0x1C + hundreds;
+}
+
+void func_8001EA24(Object *obj) {
+    s16 sp36;
+    Object *v0;
+    Object *sp2C;
+    Object *sp28;
+    Object *sp24;
+    s32 v02;
+
+    sp2C = obj->varObj[5];
+    sp28 = obj->varObj[6];
+    sp24 = obj->varObj[7];
+    func_8001E834(sp2C, sp28, sp24);
+
+    sp36 = obj->vars[0];
+    v02 = obj->vars[2]--; // reuse required to match
+    if (v02 < 0) {
+        obj->vars[2] = 15;
+        obj->frameIndex = 0x4f - obj->frameIndex;
+    }
+
+    if (gCharacterPortrait[sp36]->vars[1] & INP_START) {
+        v0 = obj->varObj[3];
+        v0->flags |= 0x10;
+        v0 = obj->varObj[4];
+        v0->flags |= 0x10;
+        sp2C->flags |= 0x10;
+        sp28->flags |= 0x10;
+        sp24->flags |= 0x10;
+        obj->flags |= 0x10;
+    }
+
+    v02 = func_8001E5D8(sp36);
+    if (sp36 == PLAYER_1) {
+        obj->pos.x = obj->vars[1] - v02;
+    } else {
+        obj->pos.x = obj->vars[1] + v02;
+    }
+}
 
 void func_8001EB58(Object *obj) {
     s16 s1;
@@ -149,7 +234,7 @@ void plyrsel_portrait_update_2(Object *obj) {
     }
 
     if (v1 == obj->vars[6]) {
-        sound_play(2, D_8004A428 != 0 ? 0 : playerId + 4);
+        sound_play(2, gAudioStereo != 0 ? 0 : playerId + 4);
         func_8001E540(obj, unkObj);
         unkObj = obj->varObj[4];
         unkObj->vars[7] = 20;
@@ -229,7 +314,7 @@ void plyrsel_portrait_update(Object *obj) {
         obj->vars[2] = 15;
         if (v1 & INP_START) {
             Object *unkObj;
-            sound_play(2, D_8004A428 != 0 ? 0 : a3 + 4);
+            sound_play(2, gAudioStereo != 0 ? 0 : a3 + 4);
             unkObj = obj->varObj[4];
             unkObj->vars[7] = 20;
 

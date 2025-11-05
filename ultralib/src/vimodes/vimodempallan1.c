@@ -13,7 +13,11 @@
 #include "PRinternal/viint.h"
 
 OSViMode osViModeMpalLan1 = {
+#ifdef LIBULTRA_DARK_RIFT
+    OS_VI_PAL_LAN1, // type
+#else
     OS_VI_MPAL_LAN1, // type
+#endif
     {
         // comRegs
         VI_CTRL_TYPE_16 | VI_CTRL_GAMMA_DITHER_ON | VI_CTRL_GAMMA_ON | VI_CTRL_DIVOT_ON | VI_CTRL_ANTIALIAS_MODE_1 |

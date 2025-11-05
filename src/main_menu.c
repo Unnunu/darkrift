@@ -475,19 +475,19 @@ void func_8001A674(Object *obj) {
     Player *s2 = &gPlayers[s3];
     s16 i = 0;
 
-    if (s2->unk_00->frameIndex == s2->unk_90->unk_02 - 2) {
+    if (s2->obj->frameIndex == s2->currentState->unk_02 - 2) {
         D_8005BFC0 |= GAME_FLAG_MODE_DONE;
         obj->flags |= 0x10;
         gNextGameMode = GAME_MODE_BATTLE_DEMITRON;
         func_80014CB4(D_80081254);
     }
 
-    if (s2->unk_00->frameIndex == 260) {
+    if (s2->obj->frameIndex == 260) {
         D_80081254 = load_background("demispk", 0, 160, 0, 0, 2, 0x3000);
     }
 
     while (D_80049C5C[i].unk_00 != 0) {
-        if (D_80049C5C[i].unk_00 == s2->unk_00->frameIndex) {
+        if (D_80049C5C[i].unk_00 == s2->obj->frameIndex) {
             sound_play(s3, D_80049C5C[i].unk_02);
         }
         i++;
@@ -505,14 +505,14 @@ void func_8001A7DC(Object *obj) {
     s16 i = 0;
     s16 *qwe;
 
-    if (s1->unk_00->frameIndex == s1->unk_90->unk_02 - 2) {
+    if (s1->obj->frameIndex == s1->currentState->unk_02 - 2) {
         obj->vars[0] = 10;
         obj->fn_render = func_8001A63C;
     }
 
     if (s1->characterId != SONORK && s1->characterId != DEMONICA) {
         while (D_80049C80[i].unk_00 != 0) {
-            if (D_80049C80[i].unk_00 == s1->unk_00->frameIndex) {
+            if (D_80049C80[i].unk_00 == s1->obj->frameIndex) {
                 sound_play(s4, D_80049C5C[i].unk_02);
             }
             i++;
@@ -520,14 +520,14 @@ void func_8001A7DC(Object *obj) {
 
         i = 0;
         while (D_80049CA8[i] != 0) {
-            if (s1->unk_00->frameIndex == D_80049CA8[i]) {
-                func_800287AC(s->unk_00);
+            if (s1->obj->frameIndex == D_80049CA8[i]) {
+                func_800287AC(s->obj);
             }
             i++;
         }
 
-        if (s1->unk_00->frameIndex == 278) {
-            func_800226E8(s->unk_00, 9);
+        if (s1->obj->frameIndex == 278) {
+            func_800226E8(s->obj, 9);
         }
     }
 }
@@ -540,14 +540,14 @@ void func_8001A98C(Object *obj) {
 
     if (s1->characterId == SONORK) {
         while (D_80049CE0[i].unk_00 != 0) {
-            if (D_80049CE0[i].unk_00 == s1->unk_00->frameIndex) {
+            if (D_80049CE0[i].unk_00 == s1->obj->frameIndex) {
                 sound_play(s1->playerId, D_80049CE0[i].unk_02);
             }
             i++;
         }
     } else {
         while (D_80049CC8[i].unk_00 != 0) {
-            if (s1->unk_00->frameIndex == D_80049CC8[i].unk_00) {
+            if (s1->obj->frameIndex == D_80049CC8[i].unk_00) {
                 sound_play(s1->playerId, D_80049CC8[i].unk_02);
             }
             i++;

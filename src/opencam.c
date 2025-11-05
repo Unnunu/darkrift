@@ -142,8 +142,8 @@ void func_8002C490(Object *obj) {
                 obj->currentTask->func = func_8002EB2C;
                 obj->currentTask->counter = 1;
                 D_8008012C &= ~GFX_FLAG_1;
-                gPlayers[PLAYER_1].unk_00->flags &= ~0x200000;
-                gPlayers[PLAYER_2].unk_00->flags &= ~0x200000;
+                gPlayers[PLAYER_1].obj->flags &= ~0x200000;
+                gPlayers[PLAYER_2].obj->flags &= ~0x200000;
                 return;
             }
             D_8013C834 = TRUE;
@@ -192,8 +192,8 @@ void func_8002C6E8(Object *obj) {
         D_8008012C &= ~(GFX_FLAG_1 | GFX_FLAG_10);
     }
 
-    gPlayers[PLAYER_1].unk_00->flags |= 0x200000;
-    gPlayers[PLAYER_2].unk_00->flags |= 0x200000;
+    gPlayers[PLAYER_1].obj->flags |= 0x200000;
+    gPlayers[PLAYER_2].obj->flags |= 0x200000;
 }
 
 void func_8002C854(Object *obj) {
@@ -225,11 +225,11 @@ void func_8002C854(Object *obj) {
     } else if (v0 & INP_A) {
         obj->pos.z -= 10;
     } else if (v0 & INP_R) {
-        gPlayers[PLAYER_1].unk_00->pos.x = -1600;
-        gPlayers[PLAYER_2].unk_00->pos.x = 1600;
+        gPlayers[PLAYER_1].obj->pos.x = -1600;
+        gPlayers[PLAYER_2].obj->pos.x = 1600;
     } else if (v0 & INP_L) {
-        gPlayers[PLAYER_1].unk_00->pos.x = -400;
-        gPlayers[PLAYER_2].unk_00->pos.x = 400;
+        gPlayers[PLAYER_1].obj->pos.x = -400;
+        gPlayers[PLAYER_2].obj->pos.x = 400;
     }
 }
 
@@ -598,8 +598,8 @@ void func_8002DA08(Object *obj) {
     D_8013C364 = (12 << 16) / D_8013C350;
     D_8013C36C = 291271;
     D_8013C35C = -480;
-    D_80080220 = &gPlayers[PLAYER_1].unk_00->pos;
-    D_80080224 = &gPlayers[PLAYER_2].unk_00->pos;
+    D_80080220 = &gPlayers[PLAYER_1].obj->pos;
+    D_80080224 = &gPlayers[PLAYER_2].obj->pos;
 
     obj->vars[1] = 0xC00;
     obj->vars[2] = 0;
@@ -722,7 +722,7 @@ restart:
         s0 = (gPlayers[PLAYER_1].unk_198.unk_08->y - 200.0f) < v0;
     }
 
-    if ((gPlayers[PLAYER_1].unk_90->unk_34 & 0x80000) || (gPlayers[PLAYER_2].unk_90->unk_34 & 0x80000)) {
+    if ((gPlayers[PLAYER_1].currentState->flags & 0x80000) || (gPlayers[PLAYER_2].currentState->flags & 0x80000)) {
         s0 = TRUE;
     }
 
@@ -745,7 +745,7 @@ restart:
 
     if (s1 < D_80080214 && (!(gPlayers[PLAYER_1].unk_80 & 0x8000) || (gPlayers[PLAYER_2].unk_80 & 0x8000))) { // @bug ??
         s4 = D_80080214 - s1;
-        if ((gPlayers[PLAYER_1].unk_90->unk_34 & 0x80000) || (gPlayers[PLAYER_2].unk_90->unk_34 & 0x80000) ||
+        if ((gPlayers[PLAYER_1].currentState->flags & 0x80000) || (gPlayers[PLAYER_2].currentState->flags & 0x80000) ||
             (gPlayers[PLAYER_1].unk_80 & 0x4000000) || (gPlayers[PLAYER_2].unk_80 & 0x4000000)) {
             s4 >>= 1;
         }

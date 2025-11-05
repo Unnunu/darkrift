@@ -20,7 +20,7 @@ extern s32 D_8008012C;
 extern Object *D_80081460;
 extern s16 D_80049B30[];
 
-extern u8 D_8004A428;
+extern u8 gAudioStereo;
 extern s32 gMusicVolume;
 extern s32 gSoundVolume;
 extern s8 D_80080129;
@@ -520,10 +520,10 @@ void func_80007DB0(Player *arg0, Object *arg1, s32 arg2) {
         name[4] = (i % 10) + '0';
 
         if ((v0 = asset_find(name, arg2)) >= 0) {
-            a1 = arg0->unk_20[D_80049434[i]].unk_08;
+            a1 = arg0->states[D_80049434[i]].animationId;
             arg1->modInst->animations[a1] = gAssets[v0].data;
             s4++;
-            arg0->unk_20[D_80049434[i]].unk_02 = func_80037394(arg1->modInst, a1);
+            arg0->states[D_80049434[i]].unk_02 = func_80037394(arg1->modInst, a1);
         }
     }
 }
@@ -771,7 +771,7 @@ void run_intro_zenmuron_mode(void) {
 }
 
 void func_80008D0C(Object *obj) {
-    if (gPlayers->unk_00->frameIndex + 2 == gPlayers->unk_90->unk_02) {
+    if (gPlayers->obj->frameIndex + 2 == gPlayers->currentState->unk_02) {
         D_8005BFC0 |= GAME_FLAG_MODE_DONE;
         obj->flags |= 0x10;
         gNextGameMode = GAME_MODE_LOGO;
@@ -848,7 +848,7 @@ void func_80008FDC(void) {
     func_800052EC(0);
     func_800052EC(1);
 
-    a1 = gPlayers[sp42].unk_00;
+    a1 = gPlayers[sp42].obj;
     a1->pos.x = a1->pos.z = 0;
     a1->rotation.y = 0x400;
 
@@ -989,8 +989,8 @@ void func_800096D0(u8 arg0) {
     func_800052EC(0);
     func_800052EC(1);
 
-    s0 = gPlayers[t9].unk_00;
-    a3 = gPlayers[nv].unk_00;
+    s0 = gPlayers[t9].obj;
+    a3 = gPlayers[nv].obj;
 
     gPlayers[PLAYER_1].unk_80 |= 0x400000;
     gPlayers[PLAYER_2].unk_80 |= 0x400000;
@@ -1004,10 +1004,10 @@ void func_800096D0(u8 arg0) {
 
     if (!arg0) {
         if (gBattleSettings[t9].characterId == SONORK) {
-            gPlayers[t9].unk_00->pos.x -= 400;
+            gPlayers[t9].obj->pos.x -= 400;
         } else if (gBattleSettings[t9].characterId == DEMONICA) {
-            gPlayers[t9].unk_00->pos.x += 1200;
-            if (gPlayers[nv].unk_00) {} // required to match
+            gPlayers[t9].obj->pos.x += 1200;
+            if (gPlayers[nv].obj) {} // required to match
         }
     }
 
@@ -1219,7 +1219,7 @@ void func_80009E8C(void) {
     func_800096D0(TRUE);
     func_8000636C(player1, 252, 1);
     func_8000636C(player2, 367, 1);
-    player1->unk_00->flags |= 4;
+    player1->obj->flags |= 4;
     func_80009CE0();
 
     asset_open_folder("/demi/relic", 0x4000);
@@ -1410,19 +1410,19 @@ void run_1_mode(void) {
     s0 = create_ui_element(&spD4, &sp1AC, 0x2000);
 
     v0 = create_ui_element(&spC4, &sp198, 0x2000);
-    v0->frameIndex = D_8004C1E4 + 202;
+    v0->frameIndex = gDifficulty + 202;
     v0->vars[3] = s0;
 
     v0 = create_ui_element(&spB4, &sp184, 0x2000);
-    v0->frameIndex = D_8004C1D4 + 51;
+    v0->frameIndex = gBattleDurationEnum + 51;
     v0->vars[3] = s0;
 
     v0 = create_ui_element(&spA4, &sp170, 0x2000);
-    v0->frameIndex = D_8004C1D0 + 11;
+    v0->frameIndex = gNumRounds + 11;
     v0->vars[3] = s0;
 
     v0 = create_ui_element(&sp94, &sp15C, 0x2000);
-    v0->frameIndex = D_8004A428 + 7;
+    v0->frameIndex = gAudioStereo + 7;
     v0->vars[3] = s0;
 
     v0 = create_ui_element(&sp84, &sp148, 0x2000);

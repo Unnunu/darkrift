@@ -71,7 +71,7 @@ void func_800035D0(Player *player) {
     s32 v1;
     s32 nv, nv2, nv3;
 
-    v0 = player->unk_00;
+    v0 = player->obj;
 
     if (D_80080236 || D_800801F0) {
         return;
@@ -84,8 +84,8 @@ void func_800035D0(Player *player) {
 
     a2 = player->playerId;
     t8 = 1 - player->playerId;
-    a1->unk_00[a2] = v0->unk_070;
-    a1->unk_00[t8] = gPlayers[t8].unk_00->unk_070;
+    a1->unk_00[a2] = v0->playerHp;
+    a1->unk_00[t8] = gPlayers[t8].obj->playerHp;
 
     nv = D_80080238.unk_1002;
     nv2 = (nv - 1) & 0x1FF;
@@ -110,7 +110,7 @@ void func_800036E8(Object *obj) {
 }
 
 void func_80003704(Object *obj) {
-    if (gPlayers[1 - D_8013C24C].unk_00->unk_070 <= 0 || --obj->vars[0] <= 0) {
+    if (gPlayers[1 - D_8013C24C].obj->playerHp <= 0 || --obj->vars[0] <= 0) {
         obj->currentTask->counter = 55;
         obj->currentTask->func = func_800036E8;
     }
@@ -128,7 +128,7 @@ void func_80003780(Object *obj) {
         s3 = s1->unk_06;
         gPlayers[s3].unk_80 |= 0x800000;
         func_80005EE4(gPlayers + s1->unk_06, TRUE, s1->unk_04);
-        gPlayers[s3].unk_00->unk_070 = s1->unk_00[s3];
+        gPlayers[s3].obj->playerHp = s1->unk_00[s3];
         if (s1->unk_00[s3] == 0) {
             D_8005BFC0 |= GAME_FLAG_200;
         }
@@ -180,20 +180,20 @@ s32 func_80003974(void *arg0) {
 
     func_80005B70(PLAYER_1);
     func_80005B70(PLAYER_2);
-    gPlayers[PLAYER_1].unk_00->frameIndex = 2;
-    gPlayers[PLAYER_2].unk_00->frameIndex = 2;
-    model_change_animation(gPlayers[PLAYER_1].unk_00);
-    model_change_animation(gPlayers[PLAYER_2].unk_00);
+    gPlayers[PLAYER_1].obj->frameIndex = 2;
+    gPlayers[PLAYER_2].obj->frameIndex = 2;
+    model_change_animation(gPlayers[PLAYER_1].obj);
+    model_change_animation(gPlayers[PLAYER_2].obj);
 
     func_80012AF4(&gPlayers[PLAYER_1].unk_750.local_matrix);
     func_80012AF4(&gPlayers[PLAYER_1].unk_868.local_matrix);
     func_80012AF4(&gPlayers[PLAYER_2].unk_750.local_matrix);
     func_80012AF4(&gPlayers[PLAYER_2].unk_868.local_matrix);
 
-    model_update_animated_params(gPlayers[PLAYER_1].unk_00);
-    model_update_animated_params(gPlayers[PLAYER_2].unk_00);
-    gPlayers[PLAYER_1].unk_00->previousFrameIndex = gPlayers[PLAYER_1].unk_00->frameIndex;
-    gPlayers[PLAYER_2].unk_00->previousFrameIndex = gPlayers[PLAYER_2].unk_00->frameIndex;
+    model_update_animated_params(gPlayers[PLAYER_1].obj);
+    model_update_animated_params(gPlayers[PLAYER_2].obj);
+    gPlayers[PLAYER_1].obj->previousFrameIndex = gPlayers[PLAYER_1].obj->frameIndex;
+    gPlayers[PLAYER_2].obj->previousFrameIndex = gPlayers[PLAYER_2].obj->frameIndex;
     gPlayers[PLAYER_1].unk_0C->flags &= ~4;
     gPlayers[PLAYER_2].unk_0C->flags &= ~4;
 
@@ -221,8 +221,8 @@ s32 func_80003974(void *arg0) {
     if (s3 > 960) {
         s3 -= 960;
         for (i = 0; i < s3; i++) {
-            func_80003C04(gPlayers[PLAYER_1].unk_00);
-            func_80003C04(gPlayers[PLAYER_2].unk_00);
+            func_80003C04(gPlayers[PLAYER_1].obj);
+            func_80003C04(gPlayers[PLAYER_2].obj);
             func_800038C8(v0);
         }
 
@@ -295,18 +295,18 @@ void func_80003DA4(Object *obj) {
     u16 sp4A = player->playerId;
     u16 oppId;
     Player *sp24;
-    PlayerSub3 *sp40;
-    PlayerSub3 *sp3C;
+    PlayerState *sp40;
+    PlayerState *sp3C;
     s32 pad[2];
     Object *sp30;
     u8 pad2;
     u8 sp2E;
 
-    sp40 = player->unk_90;
+    sp40 = player->currentState;
     oppId = 1 - sp4A;
     sp24 = &gPlayers[oppId];
-    sp3C = sp24->unk_90;
-    sp30 = sp24->unk_00;
+    sp3C = sp24->currentState;
+    sp30 = sp24->obj;
 
     if (func_80030BB0(obj)) {
         player->unk_80 |= 8;
@@ -322,14 +322,14 @@ void func_80003DA4(Object *obj) {
         player->unk_80 &= ~8;
     }
 
-    sp2E = (sp40->unk_20 != 0) && (obj->frameIndex >= sp40->unk_24) && (obj->frameIndex < sp40->unk_26);
+    sp2E = (sp40->damage != 0) && (obj->frameIndex >= sp40->unk_24) && (obj->frameIndex < sp40->unk_26);
 
-    func_800115A0(&player->unk_DE8, (sp40->unk_34 & 0x40) && sp2E);
+    func_800115A0(&player->unk_DE8, (sp40->flags & 0x40) && sp2E);
     if (player->unk_5F4A) {
-        func_800115A0(&player->unk_2240, (sp40->unk_34 & 0x2000) && sp2E);
+        func_800115A0(&player->unk_2240, (sp40->flags & 0x2000) && sp2E);
     }
-    func_800115A0(&player->unk_3698, (sp40->unk_34 & 0x800) && sp2E);
-    func_800115A0(&player->unk_4AF0, (sp40->unk_34 & 0x1020) && sp2E);
+    func_800115A0(&player->unk_3698, (sp40->flags & 0x800) && sp2E);
+    func_800115A0(&player->unk_4AF0, (sp40->flags & 0x1020) && sp2E);
 
     if (player->characterId != MORPHIX) {
         func_80037E28(obj);
@@ -368,18 +368,18 @@ void func_80003DA4(Object *obj) {
             player->unk_5F48--;
         }
 
-        if (D_80080218 >= D_80080210 && !(player->unk_90->unk_34 & 0x40000) && player->unk_5F48 == 0 &&
+        if (D_80080218 >= D_80080210 && !(player->currentState->flags & 0x40000) && player->unk_5F48 == 0 &&
             sp30->frameIndex >= sp3C->unk_04 && sp30->frameIndex <= sp3C->unk_06) {
-            if (sp3C->unk_34 & 0x2040) {
-                if ((player->unk_90->unk_34 & 0x30400) && obj->modInst->rootTransform.world_matrix.w.y > -100.0f) {
+            if (sp3C->flags & 0x2040) {
+                if ((player->currentState->flags & 0x30400) && obj->modInst->rootTransform.world_matrix.w.y > -100.0f) {
                     func_8000FE9C(player, sp24);
                 } else {
                     func_8000F494(player, sp24);
                 }
             }
 
-            if (player->unk_5F48 == 0 && (sp3C->unk_34 & 0x1820)) {
-                if ((player->unk_90->unk_34 & 0x30400) && obj->modInst->rootTransform.world_matrix.w.y > -100.0f) {
+            if (player->unk_5F48 == 0 && (sp3C->flags & 0x1820)) {
+                if ((player->currentState->flags & 0x30400) && obj->modInst->rootTransform.world_matrix.w.y > -100.0f) {
                     func_80010280(player, sp24);
                 } else {
                     func_8000FB30(player, sp24);
@@ -454,7 +454,7 @@ void func_80004334(AssetDB *arg0, s16 playerId) {
             func_8001C1C0(gPlayers + PLAYER_1);
         }
     } else if (gBattleSettings[playerId].unk_0F) {
-        if (D_8004C1E4 == 2 && gBattleSettings[playerId].unk_04 == 0) {
+        if (gDifficulty == 2 && gBattleSettings[playerId].unk_04 == 0) {
             gBattleSettings[playerId].unk_04 = 2;
         }
         s2 = gBattleSettings[playerId].unk_04;
@@ -465,7 +465,7 @@ void func_80004334(AssetDB *arg0, s16 playerId) {
             func_8001BF40(gPlayers + playerId);
         }
     } else {
-        switch (D_8004C1E4) {
+        switch (gDifficulty) {
             case 1:
             case 2:
                 func_8001BF40(gPlayers + playerId);
@@ -490,7 +490,7 @@ void func_80004334(AssetDB *arg0, s16 playerId) {
 void func_800045B4(s16 playerId, s16 characterId) {
     char sp94[20];
     char sp80[20];
-    PlayerSub3 *s0;
+    PlayerState *s0;
     s32 *pad3;
     s32 *sp74;
     Player *player;
@@ -506,7 +506,7 @@ void func_800045B4(s16 playerId, s16 characterId) {
     s16 sp50;
 
     player = &gPlayers[playerId];
-    modInst = player->unk_00->modInst;
+    modInst = player->obj->modInst;
     sp44 = &gBattleSettings[playerId];
     sp50 = gBattleSettings[1 - playerId].characterId;
 
@@ -527,12 +527,12 @@ void func_800045B4(s16 playerId, s16 characterId) {
     if (sp44->isDummy) {
         *sp74 = 0;
     }
-    player->unk_20 = s0 = (u32) s3 + s3->unk_14 + 4;
+    player->states = s0 = (u32) s3 + s3->unk_14 + 4;
 
     player->unk_40 = pad = s3->unk_18 + (u32) s3 + 4;
     pad3 = s3->unk_1C + (u32) s3;
     player->unk_6C = *pad3;
-    if (((!player->unk_00) && (!player->unk_00)) & 0xFFFFFFFFu) {} // @fake
+    if (((!player->obj) && (!player->obj)) & 0xFFFFFFFFu) {} // @fake
     player->unk_38 = s3->unk_20 + (u32) s3;
     player->unk_44 = s3->unk_24 + (u32) s3;
     player->unk_48 = s3->unk_28 + (u32) s3;
@@ -543,7 +543,7 @@ void func_800045B4(s16 playerId, s16 characterId) {
     str_concat(sp94, ".MOV");
     if ((v03 = asset_find(sp94, 0x5000 + playerId)) > 0) {
         q = D_8004B94C[sp50].unk_00;
-        a12 = s0[q].unk_08;
+        a12 = s0[q].animationId;
         modInst->animations[a12] = gAssets[v03].data;
         s0[q].unk_02 = func_80037394(modInst, a12) - 1;
     }
@@ -552,14 +552,14 @@ void func_800045B4(s16 playerId, s16 characterId) {
     str_concat(sp94, ".MOV");
     if ((v03 = asset_find(sp94, 0x5000 + playerId)) > 0) {
         q = D_8004B94C[11 + sp50].unk_00;
-        a12 = s0[q].unk_08;
+        a12 = s0[q].animationId;
         modInst->animations[a12] = gAssets[v03].data;
         if (sp50 != AARON) {
             s0[q].unk_02 = func_80037394(modInst, a12) - 1;
         }
 
         q = D_8004B9FC[sp50];
-        a12 = s0[q].unk_08;
+        a12 = s0[q].animationId;
         modInst->animations[a12] = gAssets[v03].data;
         s0[q].unk_02 = func_80037394(modInst, a12) - 1;
     }
@@ -568,9 +568,9 @@ void func_800045B4(s16 playerId, s16 characterId) {
 
     for (i = 0; i < *sp74; i++, s0++) {
         if (s0->unk_02 == -1) {
-            s0->unk_02 = func_80037394(modInst, s0->unk_08) - 1;
-        } else if (func_80037394(modInst, s0->unk_08) < s0->unk_02) {
-            s0->unk_02 = func_80037394(modInst, s0->unk_08) - 1;
+            s0->unk_02 = func_80037394(modInst, s0->animationId) - 1;
+        } else if (func_80037394(modInst, s0->animationId) < s0->unk_02) {
+            s0->unk_02 = func_80037394(modInst, s0->animationId) - 1;
         }
 
         if (s0->unk_24 == -1 || s0->unk_26 == -1) {
@@ -731,7 +731,7 @@ void func_80004FC0(Object *obj) {
 
 void func_80005060(Object *obj) {
     Player *player = obj->varObj[0];
-    Matrix4f *m = &player->unk_00->modInst->transforms[5].world_matrix;
+    Matrix4f *m = &player->obj->modInst->transforms[5].world_matrix;
 
     obj->pos.x = m->w.x;
     obj->pos.y = m->w.y;
@@ -740,7 +740,7 @@ void func_80005060(Object *obj) {
 
 void func_800050B0(Object *obj) {
     Player *player = obj->varObj[0];
-    Matrix4f *m = &player->unk_00->modInst->rootTransform.world_matrix;
+    Matrix4f *m = &player->obj->modInst->rootTransform.world_matrix;
 
     obj->pos.x = m->w.x;
     obj->pos.y = m->w.y;
@@ -819,7 +819,7 @@ void func_800052EC(s16 playerId) {
         }
     }
 
-    spDC = gPlayers[playerId].unk_00 =
+    spDC = gPlayers[playerId].obj =
         create_model_instance_with_properties(&spB4[playerId], spA4, D_8004B844[spD6].unk_04, playerId);
     spDC->flags |= 0x80;
 
@@ -911,10 +911,10 @@ void func_800052EC(s16 playerId) {
         D_80080236 = 0;
     }
 
-    gPlayers[playerId].unk_90 = gPlayers[playerId].unk_20 + gPlayers[playerId].unk_7E;
+    gPlayers[playerId].currentState = gPlayers[playerId].states + gPlayers[playerId].unk_7E;
     func_80010664(&gPlayers[playerId], D_8004B844[spD6].unk_00);
 
-    spDC->unk_070 = gBattleSettings[playerId].unk_0C;
+    spDC->playerHp = gBattleSettings[playerId].unk_0C;
     func_80004B30(spDC, playerId, spD6);
 
     if (playerId == 0) {
@@ -956,7 +956,7 @@ void func_800052EC(s16 playerId) {
 }
 
 void func_80005B70(s16 playerId) {
-    Object *obj = gPlayers[playerId].unk_00;
+    Object *obj = gPlayers[playerId].obj;
     s16 characterId;
     Vec4i spB4[] = { { -400, 0, 0, 0 }, { 400, 0, 0, 0 } };
     s16 spB0[] = { 0, 0x800 };
@@ -1017,8 +1017,8 @@ void func_80005B70(s16 playerId) {
         D_80080236 = FALSE;
     }
 
-    gPlayers[playerId].unk_90 = gPlayers[playerId].unk_20 + gPlayers[playerId].unk_7E;
-    obj->unk_070 = gBattleSettings[playerId].unk_0C;
+    gPlayers[playerId].currentState = gPlayers[playerId].states + gPlayers[playerId].unk_7E;
+    obj->playerHp = gBattleSettings[playerId].unk_0C;
 
     if (playerId == PLAYER_1) {
         gPlayerInput[playerId].isMirrored = TRUE;
@@ -1037,7 +1037,7 @@ u8 func_80005EE4(Player *player, u8 arg1, u16 arg2) {
     s32 pad1;
     ObjectTaskSub *pad2;
     PlayerSubD *pad3;
-    PlayerSub3 *sp2C;
+    PlayerState *sp2C;
     u16 sp2A;
     PlayerSub8 *sp24;
     s16 sp22;
@@ -1045,10 +1045,10 @@ u8 func_80005EE4(Player *player, u8 arg1, u16 arg2) {
 
     sp2A = player->unk_34[arg2];
     sp24 = &player->unk_2C[sp2A];
-    sp4C = sp24->unk_00;
-    sp4E = sp24->unk_08;
+    sp4C = sp24->index_in_field28;
+    sp4E = sp24->index_in_field24;
     // clang-format off
-    sp22 = sp24->unk_0A; \
+    sp22 = sp24->index_in_field20; \
     if (sp22 == player->unk_7E && !arg1) {
         sp22 = -1;
     }
@@ -1060,7 +1060,7 @@ u8 func_80005EE4(Player *player, u8 arg1, u16 arg2) {
     sp44 = pad3->unk_00 + player->unk_1C;
     sp42 = pad3->unk_02;
 
-    if (sp3C->unk_0C != NULL && !sp3C->unk_0C(player->unk_00)) {
+    if (sp3C->fn_check != NULL && !sp3C->fn_check(player->obj)) {
         return FALSE;
     }
 
@@ -1073,7 +1073,7 @@ u8 func_80005EE4(Player *player, u8 arg1, u16 arg2) {
 
     for (i = 0; i < sp42; sp44++, i++) {
         if (sp44->unk_04 == sp22) {
-            if (player->unk_00->frameIndex < sp44->unk_02) {
+            if (player->obj->frameIndex < sp44->unk_02) {
                 unk_0C->flags |= 4;
                 unk_0C->unk_86 = sp44->unk_02;
                 unk_0C->unk_90.func = func_80024764;
@@ -1122,10 +1122,10 @@ label:
         player->unk_188 = player->unk_7E;
         player->unk_7E = sp22;
 
-        sp2C = player->unk_20 + sp22;
+        sp2C = player->states + sp22;
         if (sp2C->unk_2C >= 0 && sp2C->unk_2E == -1) {
             func_8002C340();
-            camera_set_animation(gCamera, player->unk_00->modInst->animations[player->unk_20[sp2C->unk_2C].unk_08]);
+            camera_set_animation(gCamera, player->obj->modInst->animations[player->states[sp2C->unk_2C].animationId]);
             gCamera->currentTask->func = func_8002C490;
             gCamera->currentTask->counter = 0;
             gCamera->currentTask->flags = 1;
@@ -1157,8 +1157,8 @@ label:
         player->unk_08->counter = player->unk_88->unk_0C;
     }
     player->unk_94 = player->unk_88->unk_0E;
-    player->unk_00->velocity.z = player->unk_88->unk_08;
-    player->unk_00->flags &= ~0x800;
+    player->obj->velocity.z = player->unk_88->unk_08;
+    player->obj->flags &= ~0x800;
     player->unk_76 = player->unk_34[arg2 + 1];
 
     return TRUE;
@@ -1192,9 +1192,9 @@ u8 func_8000642C(Player *player, u8 arg1) {
     s32 pad[2];
     s32 sp4C;
     u16 v0;
-    u16 t0;
+    u16 masked_buttons;
     s32 pad2[2];
-    u16 sp3E;
+    u16 buttons;
 
     s0 = player->unk_76;
     sp68 = NULL;
@@ -1203,17 +1203,17 @@ u8 func_8000642C(Player *player, u8 arg1) {
     sp4C = gFrameCounter - player->unk_8C;
 
     if (D_800801F0) {
-        sp3E = 0;
+        buttons = 0;
     } else if (player->unk_80 & 0x1000) {
-        sp3E = gPlayerInput[player->playerId].prev_buttons;
+        buttons = gPlayerInput[player->playerId].prev_buttons;
     } else {
-        sp3E = gPlayerInput[player->playerId].buttons;
+        buttons = gPlayerInput[player->playerId].buttons;
     }
 
     while (sp58[s0] >= 0) {
         a2 = sp60 + sp58[s0];
-        v0 = a2->unk_04;
-        t0 = sp3E & a2->unk_0C;
+        v0 = a2->flags;
+        masked_buttons = buttons & a2->button_mask;
 
         if (v0 & 2) {
             if ((v0 & 0x10) && (!(v0 & 0x800) || !(player->unk_80 & 8))) {
@@ -1239,15 +1239,16 @@ u8 func_8000642C(Player *player, u8 arg1) {
             continue;
         }
 
-        if (sp3E && (v0 & 0x10) && (v0 & 0x800) && (player->unk_80 & 8) &&
-            (a2->unk_02 == 0 || (a2->unk_02 != 0 && t0 == a2->unk_02) || (a2->unk_02 == 0xFFFF && t0 != 0))) {
-            if ((v0 & 4) && player->unk_90 == player->unk_20 + player->unk_7E &&
-                player->unk_90->unk_02 != player->unk_00->frameIndex && !(player->unk_80 & 0x4800)) {
+        if (buttons && (v0 & 0x10) && (v0 & 0x800) && (player->unk_80 & 8) &&
+            (a2->buttons == 0 || (a2->buttons != 0 && masked_buttons == a2->buttons) ||
+             (a2->buttons == 0xFFFF && masked_buttons != 0))) {
+            if ((v0 & 4) && player->currentState == player->states + player->unk_7E &&
+                player->currentState->unk_02 != player->obj->frameIndex && !(player->unk_80 & 0x4800)) {
                 unk_0C = player->unk_0C;
                 unk_0C->unk_08.unk_00_i = s0;
                 unk_0C->unk_08.unk_04_ptr = a2;
                 unk_0C->flags |= 4;
-                unk_0C->unk_86 = player->unk_90->unk_02 - 1;
+                unk_0C->unk_86 = player->currentState->unk_02 - 1;
                 unk_0C->unk_90.func = func_800247CC;
                 unk_0C->unk_90.flags = 0x41;
 
@@ -1263,12 +1264,13 @@ u8 func_8000642C(Player *player, u8 arg1) {
             continue;
         }
 
-        if (a2->unk_02 == t0 && ((v0 & 1) || ((v0 & 4) && player->unk_90 == player->unk_20 + player->unk_7E))) {
+        if (a2->buttons == masked_buttons &&
+            ((v0 & 1) || ((v0 & 4) && player->currentState == player->states + player->unk_7E))) {
             gPlayerInput[player->playerId].unk_08 = FALSE;
 
             if (v0 & 0x20) {
-                if (player->unk_90->unk_02 != player->unk_00->frameIndex &&
-                    (!(player->unk_80 & 0x4800) || player->unk_90->unk_00 != player->unk_00->frameIndex)) {
+                if (player->currentState->unk_02 != player->obj->frameIndex &&
+                    (!(player->unk_80 & 0x4800) || player->currentState->unk_00 != player->obj->frameIndex)) {
                     s0 += 2;
                 } else if (func_80005EE4(player, TRUE, s0)) {
                     return TRUE;
@@ -1278,19 +1280,19 @@ u8 func_8000642C(Player *player, u8 arg1) {
                 continue;
             }
 
-            if ((v0 & 4) && player->unk_90->unk_02 != player->unk_00->frameIndex && !(player->unk_80 & 0x4800)) {
+            if ((v0 & 4) && player->currentState->unk_02 != player->obj->frameIndex && !(player->unk_80 & 0x4800)) {
                 unk_0C = player->unk_0C;
                 unk_0C->unk_08.unk_00_i = s0;
                 unk_0C->unk_08.unk_04_ptr = a2;
                 unk_0C->flags |= 4;
-                unk_0C->unk_86 = player->unk_90->unk_02 - 1;
+                unk_0C->unk_86 = player->currentState->unk_02 - 1;
                 unk_0C->unk_90.func = func_800247CC;
                 unk_0C->unk_90.flags = 0x41;
                 return TRUE;
             }
 
             if ((v0 & 0x40)) {
-                if (sp4C <= player->unk_28[a2->unk_00].unk_06) {
+                if (sp4C <= player->unk_28[a2->index_in_field28].unk_06) {
                     if (func_80005EE4(player, TRUE, s0)) {
                         return TRUE;
                     } else {
@@ -1341,7 +1343,7 @@ u8 func_800069C0(Player *player) {
 
     while (sp20[a2] >= 0) {
         a0 = unk_2C + sp20[a2];
-        v0 = a0->unk_04;
+        v0 = a0->flags;
         if (v0 & 2) {
             if (((v0 & 0x10) && (!(v0 & 0x800) || !(player->unk_80 & 8)))) {
                 a2 += 2;

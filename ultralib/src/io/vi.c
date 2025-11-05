@@ -8,17 +8,25 @@
 #ident "$Revision: 1.17 $"
 
 static __OSViContext vi[2] ALIGNED(0x8) = { 0 };
-__OSViContext* __osViCurr = &vi[0];
-__OSViContext* __osViNext = &vi[1];
+__OSViContext *__osViCurr = &vi[0];
+__OSViContext *__osViNext = &vi[1];
+#ifdef LIBULTRA_DARK_RIFT
+s32 D_80053A48 = OS_TV_TYPE_NTSC;
+s32 osViClock = VI_NTSC_CLOCK;
+#endif
 
 void __osViInit(void) {
+#ifdef LIBULTRA_DARK_RIFT
+    D_80053A48 = osTvType;
+#endif
     bzero(vi, sizeof(vi));
     __osViCurr = &vi[0];
     __osViNext = &vi[1];
     __osViNext->retraceCount = 1;
     __osViCurr->retraceCount = 1;
-    __osViNext->framep = (void*)K0BASE;
-    __osViCurr->framep = (void*)K0BASE;
+#ifndef LIBULTRA_DARK_RIFT
+    __osViNext->framep = (void *) K0BASE;
+    __osViCurr->framep = (void *) K0BASE;
 
     if (osTvType == OS_TV_TYPE_PAL) {
         __osViNext->modep = &osViModePalLan1;
@@ -27,6 +35,15 @@ void __osViInit(void) {
     } else {
         __osViNext->modep = &osViModeNtscLan1;
     }
+#else
+    if (D_80053A48 == OS_TV_TYPE_NTSC) {
+        __osViNext->modep = &osViModeNtscLan1;
+        osViClock = VI_NTSC_CLOCK;
+    } else {
+        __osViNext->modep = &osViModeMpalLan1;
+        osViClock = VI_MPAL_CLOCK;
+    }
+#endif
 
     __osViNext->state = VI_STATE_BLACK;
     __osViNext->control = __osViNext->modep->comRegs.ctrl;
