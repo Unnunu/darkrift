@@ -21,7 +21,7 @@ typedef struct CheatCodeState {
 } CheatCodeState;
 
 extern s16 gPlayMode;
-
+extern s16 D_80049390;
 extern u8 gAudioStereo;
 extern AssetSP2Sub3 *D_8013C234;
 extern AssetSP2Sub3 *D_8013C238;
@@ -32,24 +32,267 @@ u8 D_80049DF4 = 0;
 Object *gCharacterPortrait[2];
 u32 gTournamentOpponentId;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001DE10.s")
+void func_8001E540(Object *obj, Object *arg1);
 
+void func_8001DE10(Object *obj) {
+    s16 a3;
+    s16 v0;
+    s16 prev_buttons;
+    s16 buttons;
+    s16 playerId;
+
+    playerId = obj->vars[0];
+    prev_buttons = obj->vars[1];
+    obj->vars[1] = buttons = gPlayerInput[playerId].buttons;
+    a3 = obj->vars[2]--;
+
+    if (buttons & INP_START) {
+        if (a3 <= 0) {
+            obj->vars[2] = 10;
+        } else {
+            return;
+        }
+    }
+    if (buttons & INP_ZTRIG) {
+        if (a3 <= 0 || buttons != prev_buttons) {
+            obj->vars[2] = 10;
+        } else {
+            return;
+        }
+    }
+
+    v0 = obj->frameIndex;
+
+    if (buttons & (INP_LEFT | INP_RIGHT)) {
+        if (buttons & INP_LEFT) {
+            obj->pos.x--;
+        } else {
+            obj->pos.x++;
+        }
+    }
+    if (buttons & (INP_UP | INP_DOWN)) {
+        if (buttons & INP_UP) {
+            obj->pos.y--;
+        } else {
+            obj->pos.y++;
+        }
+    }
+    if (buttons & (INP_R | INP_L)) {
+        if (buttons & INP_R) {
+            obj->pos.z--;
+        } else {
+            obj->pos.z++;
+        }
+    }
+    if (buttons & (INP_B | INP_A)) {
+        if (buttons & INP_B) {
+            v0--;
+        } else {
+            v0++;
+        }
+    }
+    if (buttons & (INP_CRIGHT | INP_CLEFT)) {
+        if (buttons & INP_CRIGHT) {
+            obj->unk_058 += 0x10;
+        } else {
+            obj->unk_058 -= 0x10;
+        }
+    }
+    if (buttons & (INP_CUP | INP_CDOWN)) {
+        if (buttons & INP_CUP) {
+            obj->unk_05C += 0x10;
+        } else {
+            obj->unk_05C -= 0x10;
+        }
+    }
+
+    if (v0 < 0) {
+        v0 = obj->sprite_map->numSprites - 1;
+    }
+    if (v0 > obj->sprite_map->numSprites - 1) {
+        v0 = 0;
+    }
+    obj->frameIndex = v0;
+}
+
+#ifdef NON_EQUIVALENT
+s32 func_8001DFE4(s32 playerId) {
+    s32 v1;
+    u32 i;
+
+    v1 = 0;
+    for (i = AARON; i < NUM_CHARACTERS; i++) {
+        if (i != DEMITRON && i != CHARACTER_5 && i != SONORK && !D_800B6350[playerId][i]) {
+            v1++;
+        }
+    }
+
+    return v1;
+}
+#else
 #pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001DFE4.s")
+s32 func_8001DFE4(s32 playerId);
+#endif
 
+#ifdef NON_EQUIVALENT
+u8 func_8001E188(u8 playerId) {
+    u8 sp14[11];
+    s32 pad;
+    u8 characterId;
+    u8 v1;
+    u8 i;
+
+    v1 = 0;
+    characterId = gBattleSettings[1 - playerId].characterId;
+
+    if (D_80049390 != -1 && characterId != D_80049390 && D_80049390 != SONORK && D_80049390 != DEMITRON) {
+        characterId = D_80049390;
+        D_80049390 = -1;
+        return characterId;
+    }
+
+    while (TRUE) {
+        for (i = 0; i < 11; i++) {
+            if (characterId != i || characterId == DEMITRON || characterId == SONORK) {
+                if (i != DEMITRON && i != CHARACTER_5 && i != SONORK && !D_800B6350[playerId][i]) {
+                    sp14[v1++] = i;
+                }
+            }
+        }
+
+        if (v1 == 0) {
+            if (!D_800B6350[playerId][characterId] && characterId != DEMITRON) {
+                return characterId;
+            } else if (!D_800B6350[playerId][SONORK]) {
+                return SONORK;
+            } else if (!D_800B6350[playerId][DEMITRON] && gDifficulty >= 1) {
+                return DEMITRON;
+            } else {
+                return -1;
+            }
+        }
+
+        if (v1 != 0) {
+            return sp14[gFrameCounter % v1];
+        }
+    }
+}
+#else
 #pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001E188.s")
-u8 func_8001E188(u8 arg0);
+u8 func_8001E188(u8 playerId);
+#endif
 
-#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001E378.s")
-void func_8001E378(Object *);
+void func_8001E378(Object *obj) {
+    Object *a1;
+    Object *sp3C[2];
+    Object *sp38;
+    s16 tmp;
+    s16 sp34;
+    u8 tens;
+    u8 ones;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001E540.s")
-void func_8001E540(Object *, Object *);
+    a1 = obj->varObj[1];
 
-#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001E5D8.s")
-s16 func_8001E5D8(s16 arg0);
+    tmp = obj->vars[2]--;
+    if (tmp < 0) {
+        sp3C[PLAYER_1] = gCharacterPortrait[PLAYER_1]->varObj[4];
+        sp3C[PLAYER_2] = gCharacterPortrait[PLAYER_2]->varObj[4];
+        sp38 = gCharacterPortrait[PLAYER_1]->varObj[5];
 
-#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001E624.s")
-void func_8001E624(Object *);
+        if (gPlayMode == PLAY_MODE_TOURNAMENT_P1 || gPlayMode == PLAY_MODE_TOURNAMENT_P2) {
+            sp34 = (gPlayMode == PLAY_MODE_TOURNAMENT_P2);
+            gCharacterPortrait[sp34]->currentTask->flags |= 0x80;
+            sp3C[sp34]->vars[7] = 20;
+            func_8001E540(gCharacterPortrait[sp34], sp38);
+            gCharacterPortrait[1 - sp34]->vars[6] = func_8001E188(1 - sp34);
+        } else {
+            gCharacterPortrait[PLAYER_1]->currentTask->flags |= 0x80;
+            gCharacterPortrait[PLAYER_2]->currentTask->flags |= 0x80;
+            sp3C[PLAYER_1]->vars[7] = 20;
+            sp3C[PLAYER_2]->vars[7] = 20;
+            func_8001E540(gCharacterPortrait[PLAYER_1], sp38);
+            func_8001E540(gCharacterPortrait[PLAYER_2], sp38);
+        }
+
+        obj->currentTask->flags |= 0x80;
+        return;
+    }
+
+    tens = tmp / 10;
+    ones = tmp - tens * 10;
+    obj->frameIndex = ones;
+    a1->frameIndex = tens;
+    obj->currentTask->counter = 60;
+}
+
+void func_8001E540(Object *obj, Object *arg1) {
+    s16 playerId;
+
+    playerId = obj->vars[0];
+    arg1->vars[8]++;
+
+    if (obj->frameIndex >= 5) {
+        arg1->vars[9 + playerId] = gBattleSettings[playerId].characterId = obj->frameIndex + 1;
+    } else {
+        arg1->vars[9 + playerId] = gBattleSettings[playerId].characterId = obj->frameIndex;
+    }
+
+    if (arg1->vars[11] == -1) {
+        arg1->vars[11] = playerId;
+    }
+}
+
+s16 func_8001E5D8(s16 playerId) {
+    return (u32) (gBattleSettings[playerId].unk_0C * 80 * 0x10000) / 400 / 0x10000;
+}
+
+void func_8001E624(Object *obj) {
+    s16 playerId;
+    s16 buttons;
+    Object *a0;
+    s16 v03;
+
+    playerId = obj->vars[0];
+    obj->vars[1] = buttons = gPlayerInput[playerId].buttons;
+
+    if (buttons & INP_START) {
+        sound_play(2, gAudioStereo != 0 ? 0 : playerId + 4);
+        func_8001E540(obj, obj->varObj[5]);
+        obj->currentTask->flags |= 0x80;
+    } else if (buttons & (INP_LEFT | INP_RIGHT)) {
+        a0 = obj->varObj[9];
+        if (playerId == PLAYER_1 && (buttons & INP_LEFT) || playerId == PLAYER_2 && (buttons & INP_RIGHT)) {
+            gBattleSettings[playerId].unk_0C += obj->vars[7];
+            if (gBattleSettings[playerId].unk_0C > 400) {
+                gBattleSettings[playerId].unk_0C = 400;
+                a0->vars[2] = 15;
+            }
+        } else {
+            gBattleSettings[playerId].unk_0C -= obj->vars[7];
+            if (gBattleSettings[playerId].unk_0C < 40) {
+                gBattleSettings[playerId].unk_0C = 40;
+                a0->vars[2] = 15;
+            }
+        }
+
+        v03 = func_8001E5D8(playerId);
+        if (playerId == PLAYER_1) {
+            D_8013C234->unk_10 = D_8013C234->unk_10 - D_8013C234->unk_04 + D_8013C234->unk_08 - v03 - 8;
+            D_8013C234->unk_04 = D_8013C234->unk_08 - v03 - 8;
+        } else {
+            D_8013C238->unk_08 = D_8013C238->unk_04 + v03;
+        }
+
+        if (obj->vars[8]-- < 1) {
+            obj->vars[8] = 1;
+            if (++obj->vars[7] > 28) {
+                obj->vars[7] = 28;
+            }
+        }
+    } else {
+        obj->vars[7] = 1;
+    }
+}
 
 void func_8001E834(Object *obj, Object *arg1, Object *arg2) {
     s16 v0;

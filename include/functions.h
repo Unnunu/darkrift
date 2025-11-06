@@ -144,5 +144,8 @@ void func_8000A578(Object *obj);
 void sound_stop_one(u32 playerId, u32 soundId);
 void func_8002EA50(Object *, s32);
 Object *func_800226E8(Object *, s32);
+void func_8002A870(Object *obj);
+void func_80028120(Object *, PlayerSubG *, Vec4i *);
+Object *create_3dsprite(Vec4i *pos, s32 objPriority, void (*taskFunc)(Object *), Model *model);
 
 #endif

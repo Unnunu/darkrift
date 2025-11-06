@@ -336,7 +336,7 @@ void func_80030330(Object *obj) {
             case AARON:
                 if (sp44->unk_28 >= 0) {
                     player->unk_9C = &player->unk_4C[sp44->unk_28];
-                    player->unk_194 = 0;
+                    player->unk_194 = NULL;
                 }
                 break;
         }
