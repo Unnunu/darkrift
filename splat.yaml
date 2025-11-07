@@ -248,7 +248,7 @@ segments:
       - [0x4A910, data]
       - [0x4A9F0, .data, plyrsel]
       - [0x4B020, .data, audio]
-      - [0x4B0C0, data]
+      - [0x4B0C0, .data, 22940]
       - [0x4B0D0, .data, 23D00]
       - [0x4B0F0, .data, input]
       - [0x4B1C0, data]

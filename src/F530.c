@@ -160,7 +160,7 @@ Vec4s *func_8000ED50(Vec4s *arg0, Vec4i *arg1, u32 arg2, Vec4s *arg3, Vec4s *arg
 }
 
 #ifdef NON_MATCHING
-s16 func_8000F074(Player *player1, Player *player2, PlayerState *arg2) {
+s32 func_8000F074(Player *player1, Player *player2, PlayerState *arg2) {
     PlayerState *sub3;
     s32 hp;
     s32 pad;
@@ -271,12 +271,12 @@ s16 func_8000F074(Player *player1, Player *player2, PlayerState *arg2) {
     return a3;
 }
 #else
-s16 func_8000F074(Player *arg0, Player *arg1, PlayerState *arg2);
+s32 func_8000F074(Player *arg0, Player *arg1, PlayerState *arg2);
 #pragma GLOBAL_ASM("asm/nonmatchings/F530/func_8000F074.s")
 #endif
 
 void func_8000F3FC(Player *arg0, Player *arg1, Vec4s *arg2) {
-    s16 v0;
+    s32 v0;
     s16 isBlock;
     PlayerState *q;
 

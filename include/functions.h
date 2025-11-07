@@ -95,7 +95,7 @@ void func_80012450(Mtx *);
 void func_800343F8(Object *obj, u8 arg1);
 Object *func_80030908(void);
 void func_80021D40(Object *obj);
-u8 func_80022B44(Player *arg0, Player *arg1, void *arg2);
+u8 func_80022B44(Player *arg0, Player *arg1, Object *arg2);
 void cont_read(void);
 u8 func_80005EE4(Player *, u8, u16);
 void func_80034C18(Object *obj, u8 *arg1);
@@ -147,5 +147,7 @@ Object *func_800226E8(Object *, s32);
 void func_8002A870(Object *obj);
 void func_80028120(Object *, PlayerSubG *, Vec4i *);
 Object *create_3dsprite(Vec4i *pos, s32 objPriority, void (*taskFunc)(Object *), Model *model);
+s32 func_8000F074(Player *player1, Player *player2, PlayerState *arg2);
+u8 func_8000EC70(Vec4s *arg0, Vec4i *arg1, u32 arg2, Vec4s *arg3);
 
 #endif

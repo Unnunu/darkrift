@@ -683,12 +683,14 @@ typedef struct PlayerSubG {
     /* 0x1E */ s16 unk_1E;
     /* 0x20 */ s16 unk_20;
     /* 0x22 */ s16 unk_22;
-    /* 0x24 */ char unk_24[0x8];
+    /* 0x24 */ s32 unk_24;
+    /* 0x28 */ s32 unk_28;
     /* 0x2C */ s16 unk_2C;
     /* 0x2E */ s16 unk_2E;
     /* 0x30 */ s16 unk_30;
     /* 0x32 */ s16 unk_32;
-    /* 0x34 */ s32 unk_34;
+    /* 0x34 */ s16 unk_34;
+    /* 0x36 */ s16 unk_36;
     /* 0x38 */ s16 unk_38;
     /* 0x3A */ s16 unk_3A;
     /* 0x3C */ s32 unk_3C;
