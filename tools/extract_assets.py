@@ -3,9 +3,10 @@ from pathlib import Path
 from struct import unpack_from, calcsize, pack
 import subprocess
 from n64img.image import CI8
+import pprint
 
 ROMFILE = "darkrift.z64"
-ASSETS_PATH = "game_assets"
+RAW_ASSETS_PATH = "game_assets/raw"
 ASSETS_OFFSET = 0x57AE0
 
 class BinaryReader:
@@ -92,8 +93,13 @@ class BinaryReader:
 def trim_name(name):
     return name.split(b'\x00', 1)[0].decode()
 
+def replace_path(p):
+    parts = list(p.parts)
+    parts[1] = "extracted"
+    return Path(*parts)
+
 def process_tex():
-    for g in Path(ASSETS_PATH).glob('**/*.TEX'):
+    for g in Path(RAW_ASSETS_PATH).glob('**/*.TEX'):
         content = g.read_bytes()
         width, height = unpack_from(">II", content)
         
@@ -105,16 +111,17 @@ def process_tex():
             continue
         img.set_palette(palette)
 
-        outpath = g.with_suffix(".png")
+        outpath = replace_path(g).with_suffix(".png")
+        outpath.parent.mkdir(parents=True, exist_ok=True)
         img.write(outpath)
 
 def process_sp2():
-    for g in Path(ASSETS_PATH).glob('**/*.SP2'):
+    for g in Path(RAW_ASSETS_PATH).glob('**/*.SP2'):
         content = g.read_bytes()
         size, numSprites, tex1, tex2, tex3, tex4, offset = unpack_from(">II16s16s16s16sI", content)
         textures = [tex1, tex2, tex3, tex4]
         textures = [trim_name(t).upper() for t in textures]
-        print(g, size, numSprites, textures, offset)
+        #print(g, size, numSprites, textures, offset)
 
         #load textures
         tex_data = []
@@ -131,19 +138,19 @@ def process_sp2():
             numParts, partsOffset, texIndex, junk = unpack_from(">IIII", content, offset)
             offset += 16
             
-            print(i, partsOffset, texIndex)
+            #print(i, partsOffset, texIndex)
             parts = []
             for j in range(numParts):
                 t1, s1, s2, t2, x, y = unpack_from(">iiiiii", content, partsOffset)
                 partsOffset += 24
-                print("\t", s1, s2, t1, t2, x, y)
+                #print("\t", s1, s2, t1, t2, x, y)
                 parts.append([s1, s2, t1, t2, x, y])
 
             minx = min(p[4] for p in parts)
             maxx = max(p[4] + p[1] - p[0] for p in parts)
             miny = min(p[5] for p in parts)
             maxy = max(p[5] + p[3] - p[2] for p in parts)
-            print(minx, miny, maxx, maxy)
+            #print(minx, miny, maxx, maxy)
             
             #create image
             dest_width = maxx - minx
@@ -160,12 +167,12 @@ def process_sp2():
             
             img = CI8(imgdata, dest_width, dest_height)
             img.set_palette(tex_palette)
-            outpath = g.with_suffix("")/ f"{i}.png"
+            outpath = replace_path(g).with_suffix("")/ f"{i}.png"
             outpath.parent.mkdir(parents=True, exist_ok=True)
             img.write(outpath)
 
 def process_sym():
-    for g in Path(ASSETS_PATH).glob('**/*.SYM'):
+    for g in Path(RAW_ASSETS_PATH).glob('**/*.SYM'):
         content = g.read_bytes()
         off1, off2, off3, off4 = unpack_from(">IIII", content)
         off5 = len(content)
@@ -181,7 +188,9 @@ def process_sym():
             list3.append(content[off:off+32].decode('ascii').rstrip('\x00'))
         for off in range(off4, off5, 32):
             list4.append(content[off:off+32].decode('ascii').rstrip('\x00'))
-        with open(g.with_name(f"{g.name}.txt"), "w") as outf:
+        outpath = replace_path(g).with_name(f"{g.name}.txt")
+        outpath.parent.mkdir(parents=True, exist_ok=True)
+        with open(outpath, "w") as outf:
             print("===== LIST 1 =====", file=outf)
             for l in list1:
                 print(f"\t{l}", file=outf)
@@ -195,14 +204,48 @@ def process_sym():
             for l in list3:
                 print(f"\t{l}", file=outf)
 
+def get_buttons(x):
+    names = ['L','A','R','B', 'CUP','CRIGHT','CDOWN','CLEFT','ZTRIG','','','START','UP','RIGHT','DOWN','LEFT']
+    return '+'.join(names[i] for i in range(16) if (x & 2**i))
+
+def process_db():
+    for g in Path(RAW_ASSETS_PATH).glob('**/*.DB'):
+        content = g.read_bytes()
+        dbdata = {}
+        offs = unpack_from(">IIIIIIIIIIIIIIIII", content)
+        
+        l = []
+        for off in range(offs[0], offs[1], 16):
+            e = unpack_from(">hhhhhhhh", content, off)
+            l.append({"unk00":e[0], "unk02":e[1], "unk04":e[2], "unk06":e[3],
+                      "unk08":e[4], "unk0A":e[5], "unk0C":e[6], "unk0E":e[7]})
+        dbdata["player_28"] = l
+
+        l = []
+        for off in range(offs[1] + 4, offs[2], 28):
+            e = unpack_from(">hHHHhhH14IIIH", content, off)
+            l.append({"index_in_field28":e[0], "buttons":get_buttons(e[1]), "flags":e[2], "unk06":e[3],
+                      "index_in_field24":e[4], "index_in_field20":e[5], "button_mask":e[6], "unk0E":[e[7],e[8],e[9],e[10]]})
+        dbdata["player_2C"] = l
+
+        outpath = replace_path(g).with_name(f"{g.name}.txt")
+        outpath.parent.mkdir(parents=True, exist_ok=True)
+        with open(outpath, 'w') as outfile:
+            for k,v in dbdata.items():
+                print(f"{k}:", file=outfile)
+                for l in v:
+                    print(f"\t{l}", file=outfile)
+            
+
 def analyze():
     process_tex()
     process_sp2()
     process_sym()
+    process_db()
         
 def main():
     assets = Path(ROMFILE).read_bytes()[ASSETS_OFFSET:]
-    reader = BinaryReader(assets, ASSETS_PATH)
+    reader = BinaryReader(assets, RAW_ASSETS_PATH)
     reader.read_wad()
     analyze()
 
