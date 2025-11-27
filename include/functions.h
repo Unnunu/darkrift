@@ -77,8 +77,8 @@ void func_80021E34(Object *);
 void func_8003453C(Object *obj, ColorRGBA *arg1);
 void func_80026BE0(Asset *arg0);
 // void func_8000EA80(Vec3s *, u16, Object *, ColorRGBA *);
-void func_8001D070(Object *);
-void func_8001CE18(Object *);
+s16 func_8001D070(Player *);
+s16 func_8001CE18(Player *);
 s16 func_8002CDFC(s16 arg0, s16 arg1);
 void func_8002856C(Object *);
 void func_80023ED0(Object *);
@@ -107,7 +107,7 @@ u8 func_8001BB80(Player *);
 void func_8001BB2C(Player *);
 u8 func_8001C53C(Player *, u8);
 u8 func_8000642C(Player *, u8);
-u8 func_800069C0(Player *);
+//u8 func_800069C0(Player *);
 u8 func_8000636C(Player *arg0, s16 arg1, u8 arg2);
 void func_8002EB2C(Object *obj);
 void func_8002D278(Object *obj, u8 arg1);
@@ -149,5 +149,6 @@ void func_80028120(Object *, PlayerSubG *, Vec4i *);
 Object *create_3dsprite(Vec4i *pos, s32 objPriority, void (*taskFunc)(Object *), Model *model);
 s32 func_8000F074(Player *player1, Player *player2, PlayerState *arg2);
 u8 func_8000EC70(Vec4s *arg0, Vec4i *arg1, u32 arg2, Vec4s *arg3);
+void func_80012BBC(Matrix4f*, Matrix4f*);
 
 #endif

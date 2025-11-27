@@ -814,11 +814,11 @@ void func_80031724(Object *obj) {
         v0->obj->frameIndex < v0->currentState->unk_04) {
         if (v0->unk_80 & 1) {
             func_800063C4(player, 0x27, 1);
-            player->unk_BC = func_8001D070;
+            player->unk_A8.unk_BC = func_8001D070;
             player->unk_C0 = 60;
         } else {
             func_800063C4(player, 0x3B, 1);
-            player->unk_BC = func_8001CE18;
+            player->unk_A8.unk_BC = func_8001CE18;
             player->unk_C0 = 60;
         }
     }

@@ -438,10 +438,10 @@ void func_80004334(AssetDB *arg0, s16 playerId) {
     gPlayers[playerId].unk_60 = (((a2->unk_00 & 1) + a2->unk_00) & 0xFFFFFFFF) + a2->unk_04; // required to match
 
     gPlayers[playerId].unk_180 = 0x20000;
-    gPlayers[playerId].unk_A8 = 0;
-    gPlayers[playerId].unk_B4 = &D_80049394;
-    gPlayers[playerId].unk_B8 = &D_80049394;
-    gPlayers[playerId].unk_BC = 0;
+    gPlayers[playerId].unk_A8.unk_A8 = 0;
+    gPlayers[playerId].unk_A8.unk_B4 = &D_80049394;
+    gPlayers[playerId].unk_A8.unk_B8 = &D_80049394;
+    gPlayers[playerId].unk_A8.unk_BC = 0;
     gPlayers[playerId].unk_C0 = 0;
     gPlayers[playerId].unk_C4 = 0;
 

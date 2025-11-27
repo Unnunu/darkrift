@@ -38,6 +38,7 @@ typedef struct ColorRGBA {
 } ColorRGBA;
 
 struct Object;
+struct Player;
 typedef void (*ObjFunc)(struct Object *);
 
 typedef struct RenderContext {
@@ -457,7 +458,9 @@ typedef struct PlayerSub8 {
     /* 0x08 */ s16 index_in_field24;
     /* 0x0A */ s16 index_in_field20;
     /* 0x0C */ u16 button_mask;
-    /* 0x0E */ char unk_0E[0xE];
+    /* 0x0E */ char unk_0E[0x19 - 0xE];
+    /* 0x19 */ u8 unk_19;
+    /* 0x1A */ char unk_1C[2];
 } PlayerSub8; // size = 0x1C
 
 typedef struct ObjectTaskSub {
@@ -699,6 +702,15 @@ typedef struct PlayerSubG {
     /* 0x44 */ ColorRGBA unk_44[2];
 } PlayerSubG; // size = 0x4C
 
+typedef struct PlayerSubH {
+    /* 0x00A8 */ s32 unk_A8;
+    /* 0x00AC */ s32 unk_AC;
+    /* 0x00B0 */ s32 unk_B0;
+    /* 0x00B4 */ s16 *unk_B4;
+    /* 0x00B8 */ s16 *unk_B8;
+    /* 0x00BC */ s16 (*unk_BC)(struct Player*);
+} PlayerSubH;
+
 typedef struct Player {
     /* 0x0000 */ Object *obj;
     /* 0x0004 */ s16 playerId;
@@ -748,16 +760,13 @@ typedef struct Player {
     /* 0x009C */ PlayerSubB *unk_9C;
     /* 0x00A0 */ PlayerSub8 *unk_A0;
     /* 0x00A4 */ PlayerSub8 *unk_A4;
-    /* 0x00A8 */ s32 unk_A8;
-    /* 0x00AC */ s32 unk_AC;
-    /* 0x00B0 */ s32 unk_B0;
-    /* 0x00B4 */ s16 *unk_B4;
-    /* 0x00B8 */ s16 *unk_B8;
-    /* 0x00BC */ ObjFunc unk_BC;
+    /* 0x00A8 */ PlayerSubH unk_A8;
     /* 0x00C0 */ s16 unk_C0;
     /* 0x00C2 */ s16 unk_C2;
     /* 0x00C4 */ s32 unk_C4;
-    /* 0x00C8 */ char unk_C8[0x180 - 0xC8];
+    /* 0x00C8 */ char unk_C8[0x14];
+    /* 0x00DC */ s16 unk_DC;
+    /* 0x00DE */ char unk_DE[0x180 - 0xDE];
     /* 0x0180 */ s32 unk_180;
     /* 0x0184 */ u8 unk_184;
     /* 0x0186 */ s16 unk_186;

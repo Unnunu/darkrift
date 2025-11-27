@@ -93,7 +93,22 @@ void func_80028090(Object *obj) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_80028120.s")
+void func_80028120(Object *obj, PlayerSubG *arg1, Vec4i *arg2) {
+    Vec4i sp20;
+
+    sp20.x = arg1->unk_04;
+    sp20.y = arg1->unk_08;
+    sp20.z = arg1->unk_0C;
+
+    func_80012AF4(&D_800813E0);
+    math_translate(&D_800813E0, &sp20);
+    func_80012BBC(&D_800813E0, &obj->modInst->transforms[arg1->unk_02].world_matrix);
+
+    arg2->x = D_800813E0.w.x;
+    arg2->y = D_800813E0.w.y;
+    arg2->z = D_800813E0.w.z;
+
+}
 
 void func_800281F8(s16 arg0, Vec4i *arg1, Vec4i *arg2) {
     s32 sp2C;

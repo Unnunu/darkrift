@@ -1,6 +1,8 @@
 #include "common.h"
 #include "camera.h"
 
+u8 func_800069C0(Player *);
+
 void func_80023F54(Object *);
 
 void func_80023D30(Object *obj) {
