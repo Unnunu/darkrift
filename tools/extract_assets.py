@@ -225,8 +225,38 @@ def process_db():
         for off in range(offs[1] + 4, offs[2], 28):
             e = unpack_from(">hHHHhhH14IIIH", content, off)
             l.append({"index_in_field28":e[0], "buttons":get_buttons(e[1]), "flags":e[2], "unk06":e[3],
-                      "index_in_field24":e[4], "index_in_field20":e[5], "button_mask":e[6], "unk0E":[e[7],e[8],e[9],e[10]]})
+                      "index_in_field24":e[4], "stateId":e[5], "button_mask":e[6], "unk0E":[e[7],e[8],e[9],e[10]]})
         dbdata["player_2C"] = l
+
+        l = []
+        for off in range(offs[2], offs[3], 4):
+            e = unpack_from(">hh", content, off)
+            l.append({"index_in_field2C":e[0], "next_move_maybe":e[1]})
+        dbdata["player_34"] = l
+
+        l = []
+        for off in range(offs[3], offs[4], 4):
+            e = unpack_from(">hH", content, off)
+            l.append({"index_in_field1C":e[0], "count":e[1]})
+        dbdata["player_30"] = l
+
+        l = []
+        for off in range(offs[4], offs[5], 8):
+            e = unpack_from(">hhhh", content, off)
+            l.append({"unk_00":e[0], "unk_02":e[1], "unk_04":e[2], "unk_06":e[3]})
+        dbdata["player_1C"] = l
+
+        l = []
+        for off in range(offs[5] + 4, offs[6], 56):
+            e = unpack_from(">26hI", content, off)
+            l.append({"unk_00":e[0], "unk_02":e[1], "unk_04":e[2], "unk_06":e[3],
+                      "animationId":e[4], "unk_0A":e[5], "unk_0C":e[6], "unk_0E":e[7],
+                      "unk_10":e[8], "unk_12":e[9], "unk_14":e[10], "unk_16":e[11],
+                      "unk_18":e[12], "unk_1A":e[13], "unk_1C":e[14], "unk_1E":e[15],
+                      "damage":e[16], "unk_22":e[17], "unk_24":e[18], "unk_26":e[19],
+                      "unk_28":e[20], "unk_2A":e[21], "unk_2C":e[22], "unk_2E":e[23],
+                      "unk_30":e[24], "unk_32":e[25], "flags":e[26]})
+        dbdata["states"] = l
 
         outpath = replace_path(g).with_name(f"{g.name}.txt")
         outpath.parent.mkdir(parents=True, exist_ok=True)

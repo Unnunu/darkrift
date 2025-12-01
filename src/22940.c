@@ -34,7 +34,7 @@ void func_80021E34(Object *obj) {
     Player *player = (Player *) obj->vars[0];
     PlayerState *state;
 
-    state = &player->states[player->unk_7E];
+    state = &player->states[player->stateId];
     if (state->unk_28 >= 0) {
         player->unk_9C = &player->unk_4C[state->unk_28];
         player->unk_194 = NULL;

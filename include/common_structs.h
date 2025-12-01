@@ -748,7 +748,7 @@ typedef struct Player {
     /* 0x0078 */ s16 unk_78;
     /* 0x007A */ s16 unk_7A;
     /* 0x007C */ s16 unk_7C;
-    /* 0x007E */ s16 unk_7E;
+    /* 0x007E */ s16 stateId;
     /* 0x0080 */ s32 unk_80;
     /* 0x0084 */ s32 unk_84;
     /* 0x0088 */ PlayerSubF *unk_88;

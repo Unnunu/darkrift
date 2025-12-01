@@ -314,7 +314,7 @@ void func_80030330(Object *obj) {
         func_800063C4(&gPlayers[oppId], D_8004B8F4[characterId].unk_02, 1);
         func_800063C4(player, 84, 1);
         D_80080236 = 0;
-        sp44 = &player->states[player->unk_7E];
+        sp44 = &player->states[player->stateId];
         player->obj->varObj[2] = sp44->damage;
 
         temp = D_8004B8F4[characterId].unk_00;
@@ -557,7 +557,7 @@ u8 func_80030C88(Object *obj) {
 void func_80030D60(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
-    obj->currentTask->counter = player->states[player->unk_7E].unk_00 - obj->frameIndex + 2;
+    obj->currentTask->counter = player->states[player->stateId].unk_00 - obj->frameIndex + 2;
     obj->currentTask->func = func_80030DA8;
 }
 
@@ -578,7 +578,7 @@ void func_80030DA8(Object *obj) {
 void func_80030E88(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
-    if (D_80080210 < D_8004C1A4[player->characterId] && player->unk_7E != 17) {
+    if (D_80080210 < D_8004C1A4[player->characterId] && player->stateId != 17) {
         func_800063C4(player, 110, 1);
         obj->currentTask->flags |= 0x80;
     }
@@ -676,7 +676,7 @@ void func_80031234(Object *obj) {
         opponent->unk_80 |= 0x10;
     }
 
-    if (!(player->unk_80 & 0x10) && (player->unk_80 & 0x8) && (player->unk_7E == 39 || player->unk_7E == 84)) {
+    if (!(player->unk_80 & 0x10) && (player->unk_80 & 0x8) && (player->stateId == 39 || player->stateId == 84)) {
         if (player->playerId != PLAYER_1) {
             sp1C = (0xC00 - sp20->rotation.y) & 0xFFF;
             sp1A = func_8002CDFC(D_8008020C - 0x800, sp1C);
@@ -726,7 +726,7 @@ void func_8003146C(Object *obj) {
     s16 a3;
 
     opponent = &gPlayers[player->playerId != PLAYER_1 ? PLAYER_1 : PLAYER_2];
-    a3 = opponent->unk_7E;
+    a3 = opponent->stateId;
     switch (a3) {
         case 36:
         case 48:
@@ -808,7 +808,7 @@ void func_80031724(Object *obj) {
     PlayerState *v1;
 
     v0 = gPlayers + (1 - player->playerId);
-    v1 = &player->states[player->unk_7E];
+    v1 = &player->states[player->stateId];
 
     if (!(v1->flags & 0x4000) && gBattleSettings[player->playerId].isCpu && (v0->currentState->flags & 0x100000) &&
         v0->obj->frameIndex < v0->currentState->unk_04) {

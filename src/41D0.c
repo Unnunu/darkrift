@@ -175,8 +175,8 @@ s32 func_80003974(void *arg0) {
 
     D_80080238.unk_1000 = 0;
     D_8013C250 = 1;
-    gPlayers[PLAYER_1].unk_7E = 0;
-    gPlayers[PLAYER_2].unk_7E = 0;
+    gPlayers[PLAYER_1].stateId = 0;
+    gPlayers[PLAYER_2].stateId = 0;
 
     func_80005B70(PLAYER_1);
     func_80005B70(PLAYER_2);
@@ -564,7 +564,7 @@ void func_800045B4(s16 playerId, s16 characterId) {
         s0[q].unk_02 = func_80037394(modInst, a12) - 1;
     }
 
-    player->unk_7E = 0;
+    player->stateId = 0;
 
     for (i = 0; i < *sp74; i++, s0++) {
         if (s0->unk_02 == -1) {
@@ -911,7 +911,7 @@ void func_800052EC(s16 playerId) {
         D_80080236 = 0;
     }
 
-    gPlayers[playerId].currentState = gPlayers[playerId].states + gPlayers[playerId].unk_7E;
+    gPlayers[playerId].currentState = gPlayers[playerId].states + gPlayers[playerId].stateId;
     func_80010664(&gPlayers[playerId], D_8004B844[spD6].unk_00);
 
     spDC->playerHp = gBattleSettings[playerId].unk_0C;
@@ -1017,7 +1017,7 @@ void func_80005B70(s16 playerId) {
         D_80080236 = FALSE;
     }
 
-    gPlayers[playerId].currentState = gPlayers[playerId].states + gPlayers[playerId].unk_7E;
+    gPlayers[playerId].currentState = gPlayers[playerId].states + gPlayers[playerId].stateId;
     obj->playerHp = gBattleSettings[playerId].unk_0C;
 
     if (playerId == PLAYER_1) {
@@ -1049,13 +1049,13 @@ u8 func_80005EE4(Player *player, u8 arg1, u16 arg2) {
     sp4E = sp24->index_in_field24;
     // clang-format off
     sp22 = sp24->index_in_field20; \
-    if (sp22 == player->unk_7E && !arg1) {
+    if (sp22 == player->stateId && !arg1) {
         sp22 = -1;
     }
     // clang-format on
 
     sp3C = player->unk_24 + sp4E;
-    pad3 = player->unk_30 + player->unk_7E;
+    pad3 = player->unk_30 + player->stateId;
 
     sp44 = pad3->unk_00 + player->unk_1C;
     sp42 = pad3->unk_02;
@@ -1119,8 +1119,8 @@ label:
     if (sp22 >= 0) {
         pad2->unk_04 = sp22;
         pad2->unk_00_f = sp3C->unk_04;
-        player->unk_188 = player->unk_7E;
-        player->unk_7E = sp22;
+        player->unk_188 = player->stateId;
+        player->stateId = sp22;
 
         sp2C = player->states + sp22;
         if (sp2C->unk_2C >= 0 && sp2C->unk_2E == -1) {
@@ -1242,7 +1242,7 @@ u8 func_8000642C(Player *player, u8 arg1) {
         if (buttons && (v0 & 0x10) && (v0 & 0x800) && (player->unk_80 & 8) &&
             (a2->buttons == 0 || (a2->buttons != 0 && masked_buttons == a2->buttons) ||
              (a2->buttons == 0xFFFF && masked_buttons != 0))) {
-            if ((v0 & 4) && player->currentState == player->states + player->unk_7E &&
+            if ((v0 & 4) && player->currentState == player->states + player->stateId &&
                 player->currentState->unk_02 != player->obj->frameIndex && !(player->unk_80 & 0x4800)) {
                 unk_0C = player->unk_0C;
                 unk_0C->unk_08.unk_00_i = s0;
@@ -1265,7 +1265,7 @@ u8 func_8000642C(Player *player, u8 arg1) {
         }
 
         if (a2->buttons == masked_buttons &&
-            ((v0 & 1) || ((v0 & 4) && player->currentState == player->states + player->unk_7E))) {
+            ((v0 & 1) || ((v0 & 4) && player->currentState == player->states + player->stateId))) {
             gPlayerInput[player->playerId].unk_08 = FALSE;
 
             if (v0 & 0x20) {

@@ -227,8 +227,8 @@ void func_800162A4(Object *obj) {
     Object *v1;
     u32 i;
 
-    gPlayers[PLAYER_1].unk_7E = 0;
-    gPlayers[PLAYER_2].unk_7E = 0;
+    gPlayers[PLAYER_1].stateId = 0;
+    gPlayers[PLAYER_2].stateId = 0;
 
     func_80005B70(PLAYER_1);
     func_80005B70(PLAYER_2);
@@ -620,15 +620,15 @@ void func_800173DC(Object *obj) {
             func_8000642C(&gPlayers[PLAYER_2], TRUE);
         }
     } else if ((gPlayers[PLAYER_1].unk_80 & 0x40000) && (gPlayers[PLAYER_2].unk_80 & 0x40000)) {
-        if ((gPlayers[PLAYER_1].currentState->flags & 1) && gPlayers[PLAYER_1].unk_7E != 4) {
+        if ((gPlayers[PLAYER_1].currentState->flags & 1) && gPlayers[PLAYER_1].stateId != 4) {
             func_8000636C(&gPlayers[PLAYER_1], 320, FALSE);
-        } else if (gPlayers[PLAYER_1].unk_7E != 17) {
+        } else if (gPlayers[PLAYER_1].stateId != 17) {
             func_8000636C(&gPlayers[PLAYER_1], 68, FALSE);
         }
 
-        if ((gPlayers[PLAYER_2].currentState->flags & 1) && gPlayers[PLAYER_2].unk_7E != 4) {
+        if ((gPlayers[PLAYER_2].currentState->flags & 1) && gPlayers[PLAYER_2].stateId != 4) {
             func_8000636C(&gPlayers[PLAYER_2], 320, FALSE);
-        } else if (gPlayers[PLAYER_2].unk_7E != 17) {
+        } else if (gPlayers[PLAYER_2].stateId != 17) {
             func_8000636C(&gPlayers[PLAYER_2], 68, FALSE);
         }
 

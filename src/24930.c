@@ -142,7 +142,7 @@ void func_80024214(Object *obj) {
     s32 unused[2];
     PlayerState *v1;
 
-    v1 = player->states + player->unk_7E;
+    v1 = player->states + player->stateId;
     player->currentState = v1;
 
     if (v1->unk_2C >= 0 && v1->unk_2E != -1) {
@@ -186,8 +186,8 @@ void func_80024390(Object *obj) {
     sp1C = player->currentState;
     sp24 = &obj->currentTask->unk_08;
 
-    if (player->unk_7E >= 0) {
-        sp1C = player->states + player->unk_7E;
+    if (player->stateId >= 0) {
+        sp1C = player->states + player->stateId;
         if (sp1C->animationId == obj->modInst->currentAnimId && obj->frameIndex + 1 < sp1C->unk_00) {
             obj->frameIndex++;
             player->unk_0C->flags |= 4;
