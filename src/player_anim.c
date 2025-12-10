@@ -17,36 +17,37 @@ void func_80023D30(Object *obj) {
 
         func_8001BB2C(player);
 
-        if (player->unk_76 >= 0 && (player->unk_80 & 0x1000) && func_800069C0(player)) {
+        if (player->currentMoveId >= 0 && (player->flags & PLAYER_FLAG_1000) && func_800069C0(player)) {
             player->unk_180 |= 0x8000;
             return;
         }
-    } else if (!(player->unk_80 & 0x400) && (gPlayerInput[playerId].unk_08 || (player->unk_80 & 0x1000)) &&
-               player->unk_76 >= 0 && !(player->unk_0C->flags & 4) && func_8000642C(player, TRUE)) {
+    } else if (!(player->flags & PLAYER_FLAG_400) &&
+               (gPlayerInput[playerId].accumulated || (player->flags & PLAYER_FLAG_1000)) &&
+               player->currentMoveId >= 0 && !(player->unk_0C->flags & 4) && player_handle_input(player, TRUE)) {
         return;
     }
 
-    D_80080236 = 1;
+    D_80080236 = TRUE;
     v1 = player->currentState->flags;
-    if (player->unk_80 & 0x08000000) {
-        player->unk_80 &= ~0x08000000;
+    if (player->flags & PLAYER_FLAG_8000000) {
+        player->flags &= ~PLAYER_FLAG_8000000;
         v1 ^= 5;
     }
 
     if (v1 & 1) {
-        func_8000636C(player, 320, 0);
+        func_8000636C(player, 320, FALSE);
     } else {
-        func_8000636C(player, 68, 0);
+        func_8000636C(player, 68, FALSE);
     }
 
-    D_80080236 = 0;
-    player->unk_80 |= 0x400;
+    D_80080236 = FALSE;
+    player->flags |= PLAYER_FLAG_400;
 }
 
 void func_80023ED0(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
-    if (obj->frameIndex > player->currentState->unk_00 + 1) {
+    if (obj->frameIndex > player->currentState->duration + 1) {
         obj->frameIndex--;
     } else {
         obj->frameIndex--;
@@ -188,17 +189,17 @@ void func_80024390(Object *obj) {
 
     if (player->stateId >= 0) {
         sp1C = player->states + player->stateId;
-        if (sp1C->animationId == obj->modInst->currentAnimId && obj->frameIndex + 1 < sp1C->unk_00) {
+        if (sp1C->animationId == obj->modInst->currentAnimId && obj->frameIndex + 1 < sp1C->duration) {
             obj->frameIndex++;
             player->unk_0C->flags |= 4;
-            player->unk_0C->unk_86 = sp1C->unk_00 - 2;
+            player->unk_0C->unk_86 = sp1C->duration - 2;
             player->unk_0C->unk_90.flags = 1;
             player->unk_0C->unk_90.func = func_80024214;
             obj->currentTask->func = func_80024078;
             return;
         }
 
-        if (sp1C->animationId == obj->modInst->currentAnimId && obj->frameIndex == sp1C->unk_00 - 1) {
+        if (sp1C->animationId == obj->modInst->currentAnimId && obj->frameIndex == sp1C->duration - 1) {
             func_80024214(obj);
             return;
         }
@@ -217,10 +218,10 @@ void func_80024390(Object *obj) {
 
         player->currentState = sp1C;
 
-        if (player->unk_80 & 0x800) {
+        if (player->flags & PLAYER_FLAG_800) {
             obj->frameIndex = sp1C->unk_02;
         } else {
-            obj->frameIndex = MAX(sp1C->unk_00, sp24->unk_08);
+            obj->frameIndex = MAX(sp1C->duration, sp24->unk_08);
         }
 
         obj->modInst->currentAnimId = sp1C->animationId;
@@ -260,7 +261,7 @@ void func_80024640(Object *obj) {
         return;
     }
 
-    player->unk_80 &= ~0x400;
+    player->flags &= ~PLAYER_FLAG_400;
     v0 = &obj->currentTask->unk_08;
     player->unk_08->func = v0->unk_10;
     player->unk_08->counter = 0;
@@ -291,10 +292,10 @@ void func_80024764(Object *obj) {
 
     obj->currentTask->func = func_80024640;
     obj->frameIndex = 1;
-    temp = obj->currentTask->unk_08.unk_0C + player->states; // required to match
+    temp = obj->currentTask->unk_08.stateId + player->states; // required to match
     player->currentState = temp;
     obj->modInst->currentAnimId = temp->animationId;
-    player->unk_80 |= 0x400;
+    player->flags |= PLAYER_FLAG_400;
     player->unk_180 |= 0x20000;
 }
 
@@ -309,12 +310,12 @@ void func_800247CC(Object *obj) {
 
     v0 = player->unk_0C;
     sp2A = v0->unk_08.unk_00_i;
-    sp24 = player->unk_34;
+    sp24 = player->transitionTable;
     sp1C = obj->currentTask;
     obj->frameIndex++;
 
-    if (func_80005EE4(player, TRUE, sp2A)) {
-        player->unk_76 = sp24[sp2A + 1];
+    if (player_test_move(player, TRUE, sp2A)) {
+        player->currentMoveId = sp24[sp2A + 1];
         player->unk_184 = 0;
         sp1C->stackPos--;
     } else {
@@ -331,26 +332,26 @@ void func_800247CC(Object *obj) {
     }
 }
 
-void func_800248C4(Object *obj) {
+void player_play_sounds(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
-    s16 v1 = player->currentState->unk_22;
-    PlayerSubC *s0 = player->unk_40;
+    s16 soundTableIndex = player->currentState->soundTableIndex;
+    AnimationSoundTriggers *soundTable = player->soundTable;
     s16 playerId = player->playerId;
 
-    if (v1 != -1) {
-        s0 += v1;
+    if (soundTableIndex != -1) {
+        soundTable += soundTableIndex;
         if (obj->frameIndex != 0) {
-            if (obj->frameIndex == s0->unk_01) {
-                sound_play(playerId, s0->unk_00);
+            if (obj->frameIndex == soundTable->frame1) {
+                sound_play(playerId, soundTable->soundId1);
             }
-            if (obj->frameIndex == s0->unk_03) {
-                sound_play(playerId, s0->unk_02);
+            if (obj->frameIndex == soundTable->frame2) {
+                sound_play(playerId, soundTable->soundId2);
             }
-            if (obj->frameIndex == s0->unk_05) {
-                sound_play(playerId, s0->unk_04);
+            if (obj->frameIndex == soundTable->frame3) {
+                sound_play(playerId, soundTable->soundId3);
             }
-            if (obj->frameIndex == s0->unk_07) {
-                sound_play(playerId, s0->unk_06);
+            if (obj->frameIndex == soundTable->frame4) {
+                sound_play(playerId, soundTable->soundId4);
             }
         }
     }

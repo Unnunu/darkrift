@@ -84,9 +84,9 @@ void func_80006AE0(void) {
         gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
     }
 
-    D_800801F0 = 0;
-    gPlayers[PLAYER_1].unk_80 |= 0x100000;
-    gPlayers[PLAYER_2].unk_80 |= 0x100000;
+    D_800801F0 = FALSE;
+    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
+    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
     D_80051F6C = D_80051F70 = D_8013C2A8 = D_8013C2AA = 0;
     D_8013C250 = 0;
 }
@@ -101,9 +101,9 @@ void func_80006C14(void) {
         gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
     }
 
-    D_800801F0 = 0;
-    gPlayers[PLAYER_1].unk_80 |= 0x100000;
-    gPlayers[PLAYER_2].unk_80 |= 0x100000;
+    D_800801F0 = FALSE;
+    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
+    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
     D_800801F1 = FALSE;
     D_80051F6C = D_80051F70 = D_8013C2A8 = D_8013C2AA = 0;
 }
@@ -486,7 +486,7 @@ void func_80007B68(Object *obj) {
             }
         }
 
-        gPlayerInput[a3].unk_08 = TRUE;
+        gPlayerInput[a3].accumulated = TRUE;
         if ((gPlayerInput[a3].buttons & INP_START) ||
             gPlayMode == PLAY_MODE_30 && (gPlayerInput[1 - a3].buttons & INP_START)) {
             func_80014CB4(D_80081254);
@@ -562,8 +562,8 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
     D_80080228[s0]->pos.z = -5000;
     D_80080228[s0]->flags |= 4;
 
-    gPlayers[PLAYER_1].unk_80 |= 0x400000;
-    gPlayers[PLAYER_2].unk_80 |= 0x400000;
+    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_400000;
+    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_400000;
 
     if (gBattleSettings[1 - s0].characterId != MORPHIX) {
         a1->flags |= 0x10000000;
@@ -574,10 +574,10 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
 
-    D_800801F0 = 0;
+    D_800801F0 = FALSE;
 
-    gPlayers[PLAYER_1].unk_80 |= 0x100000;
-    gPlayers[PLAYER_2].unk_80 |= 0x100000;
+    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
+    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
 
     gPlayers[PLAYER_1].unk_18->flags |= 0x80;
     gPlayers[PLAYER_2].unk_18->flags |= 0x80;
@@ -793,8 +793,8 @@ void func_80008D98(void) {
     Texture *sp30;
 
     gBattleSettings[PLAYER_1].characterId = SONORK;
-    gBattleSettings[PLAYER_1].unk_06 = 1;
-    gBattleSettings[PLAYER_2].unk_06 = 0;
+    gBattleSettings[PLAYER_1].unk_06 = TRUE;
+    gBattleSettings[PLAYER_2].unk_06 = FALSE;
     gBattleSettings[PLAYER_1].isCpu = FALSE;
     gBattleSettings[PLAYER_2].isCpu = TRUE;
 
@@ -856,8 +856,8 @@ void func_80008FDC(void) {
     D_80080228[1 - sp42]->pos.z = -5000;
     D_80080228[1 - sp42]->flags |= 4;
 
-    gPlayers[PLAYER_1].unk_80 |= 0x400000;
-    gPlayers[PLAYER_2].unk_80 |= 0x400000;
+    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_400000;
+    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_400000;
 
     a1->flags |= 0x10000000;
     D_8005BFC0 |= GAME_FLAG_4;
@@ -865,10 +865,10 @@ void func_80008FDC(void) {
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
 
-    D_800801F0 = 0;
+    D_800801F0 = FALSE;
 
-    gPlayers[PLAYER_1].unk_80 |= 0x100000;
-    gPlayers[PLAYER_2].unk_80 |= 0x100000;
+    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
+    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
     gPlayers[PLAYER_1].unk_18->flags |= 0x80;
     gPlayers[PLAYER_2].unk_18->flags |= 0x80;
 
@@ -887,7 +887,7 @@ void func_80008FDC(void) {
     load_background("bg2", 0, -32, 0x2000, 0x10000, 0, sp44);
     load_background("bg0", 0, 8, 0x1000, 0x10000, 1, sp44);
     func_8001B5B0("arena", sp44);
-    D_800801F0 = 1;
+    D_800801F0 = TRUE;
     main_loop();
     func_8002630C(0x3000);
     gNextGameMode = GAME_MODE_BATTLE_DEMITRON;
@@ -992,8 +992,8 @@ void func_800096D0(u8 arg0) {
     s0 = gPlayers[t9].obj;
     a3 = gPlayers[nv].obj;
 
-    gPlayers[PLAYER_1].unk_80 |= 0x400000;
-    gPlayers[PLAYER_2].unk_80 |= 0x400000;
+    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_400000;
+    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_400000;
 
     s0->pos.x = sp58[1].x;
     s0->pos.y = sp58[1].y;
@@ -1028,10 +1028,10 @@ void func_800096D0(u8 arg0) {
     D_8005BFC0 |= GAME_FLAG_4;
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
-    D_800801F0 = 0;
+    D_800801F0 = FALSE;
 
-    gPlayers[PLAYER_1].unk_80 |= 0x100000;
-    gPlayers[PLAYER_2].unk_80 |= 0x100000;
+    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
+    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
     gPlayers[PLAYER_1].unk_18->flags |= 0x80;
     gPlayers[PLAYER_2].unk_18->flags |= 0x80;
 
@@ -1043,7 +1043,7 @@ void func_800096D0(u8 arg0) {
     load_background("bg0", nv * 0, 8, 0x1000, 0x10000, 1, nv);
     func_8000965C(GAME_MODE_BATTLE_DEMITRON);
     func_8001B5B0("arena", nv);
-    D_800801F0 = 1;
+    D_800801F0 = TRUE;
 }
 
 void func_800099F0(void) {
@@ -1054,7 +1054,7 @@ void func_800099F0(void) {
     sp7E = gBattleSettings[PLAYER_2].unk_06;
     sp24 = 1 - sp7E;
     gBattleSettings[PLAYER_1].isDummy = gBattleSettings[PLAYER_2].isDummy = 0;
-    D_800801F0 = 1;
+    D_800801F0 = TRUE;
     D_80080234 = 1;
 
     switch (gBattleSettings[sp24].characterId) {
@@ -1171,7 +1171,7 @@ void func_80009E8C(void) {
     player2 = &gPlayers[sp24];
     player1 = &gPlayers[sp7E];
 
-    D_800801F0 = 1;
+    D_800801F0 = TRUE;
     D_80080234 = 1;
     gBattleSettings[sp7E].isDummy = gBattleSettings[sp24].isDummy = 0;
 

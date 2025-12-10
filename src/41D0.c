@@ -38,7 +38,7 @@ extern s32 D_80081240;
 void func_80012150(PlayerSub6 *arg0, ModelInstance *arg1, Matrix4f *arg2, Matrix4f *arg3, Vec4i *arg4, ColorRGBA *arg5);
 
 void func_80005B70(s16 playerId);
-void func_80003C04(Object *obj);
+void player_update(Object *obj);
 
 typedef struct AssetDB {
     /* 0x00 */ s32 unk_00;
@@ -126,8 +126,8 @@ void func_80003780(Object *obj) {
         s0 = D_80080238.unk_1000;
         s1 = &D_80080238.unk_00[s0];
         s3 = s1->unk_06;
-        gPlayers[s3].unk_80 |= 0x800000;
-        func_80005EE4(gPlayers + s1->unk_06, TRUE, s1->unk_04);
+        gPlayers[s3].flags |= PLAYER_FLAG_800000;
+        player_test_move(gPlayers + s1->unk_06, TRUE, s1->unk_04);
         gPlayers[s3].obj->playerHp = s1->unk_00[s3];
         if (s1->unk_00[s3] == 0) {
             D_8005BFC0 |= GAME_FLAG_200;
@@ -160,7 +160,7 @@ void func_800038C8(Object *obj) {
         D_80080234 = 1;
         D_8013C23C->currentTask->counter = 0;
         D_8013C23C->currentTask->func = func_800177C0;
-        gPlayerInput[D_8013C24C].unk_08 = FALSE;
+        gPlayerInput[D_8013C24C].accumulated = FALSE;
     }
 }
 
@@ -221,8 +221,8 @@ s32 func_80003974(void *arg0) {
     if (s3 > 960) {
         s3 -= 960;
         for (i = 0; i < s3; i++) {
-            func_80003C04(gPlayers[PLAYER_1].obj);
-            func_80003C04(gPlayers[PLAYER_2].obj);
+            player_update(gPlayers[PLAYER_1].obj);
+            player_update(gPlayers[PLAYER_2].obj);
             func_800038C8(v0);
         }
 
@@ -247,23 +247,23 @@ s32 func_80003BB4(void) {
     }
 }
 
-void func_80003C04(Object *obj) {
+void player_update(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
     u16 playerId = player->playerId;
     s32 unused[7];
-    ModelInstance *sp20 = obj->modInst;
+    ModelInstance *mosInst = obj->modInst;
 
     if (func_80030BB0(obj)) {
-        player->unk_80 |= 8;
+        player->flags |= PLAYER_FLAG_NOT_FACING_OPP;
     } else {
-        player->unk_80 &= ~8;
+        player->flags &= ~PLAYER_FLAG_NOT_FACING_OPP;
     }
 
     task_execute(obj);
 
-    if (sp20->currentAnimId != sp20->previousAnimId) {
+    if (mosInst->currentAnimId != mosInst->previousAnimId) {
         model_change_animation(obj);
-        sp20->previousAnimId = sp20->currentAnimId;
+        mosInst->previousAnimId = mosInst->currentAnimId;
     }
 
     if (obj->frameIndex != obj->previousFrameIndex) {
@@ -273,17 +273,17 @@ void func_80003C04(Object *obj) {
     }
 
     if (func_80030BB0(obj)) {
-        player->unk_80 |= 8;
+        player->flags |= PLAYER_FLAG_NOT_FACING_OPP;
     } else {
-        player->unk_80 &= ~8;
+        player->flags &= ~PLAYER_FLAG_NOT_FACING_OPP;
     }
 
     if (player->unk_184) {
-        if (player->unk_94 != 0 && --player->unk_94 == 0) {
-            func_8000642C(player, TRUE);
-        } else if (!(player->unk_80 & 0x100400) && gPlayerInput[playerId].unk_08 && player->unk_76 >= 0 &&
-                   !(player->unk_0C->flags & 4)) {
-            func_8000642C(player, FALSE);
+        if (player->moveTimeout != 0 && --player->moveTimeout == 0) {
+            player_handle_input(player, TRUE);
+        } else if (!(player->flags & (PLAYER_FLAG_400 | PLAYER_FLAG_100000)) && gPlayerInput[playerId].accumulated &&
+                   player->currentMoveId >= 0 && !(player->unk_0C->flags & 4)) {
+            player_handle_input(player, FALSE);
         }
     }
 
@@ -309,17 +309,17 @@ void func_80003DA4(Object *obj) {
     sp30 = sp24->obj;
 
     if (func_80030BB0(obj)) {
-        player->unk_80 |= 8;
+        player->flags |= PLAYER_FLAG_NOT_FACING_OPP;
     } else {
-        player->unk_80 &= ~8;
+        player->flags &= ~PLAYER_FLAG_NOT_FACING_OPP;
     }
 
     model_update(obj);
 
     if (func_80030BB0(obj)) {
-        player->unk_80 |= 8;
+        player->flags |= PLAYER_FLAG_NOT_FACING_OPP;
     } else {
-        player->unk_80 &= ~8;
+        player->flags &= ~PLAYER_FLAG_NOT_FACING_OPP;
     }
 
     sp2E = (sp40->damage != 0) && (obj->frameIndex >= sp40->unk_24) && (obj->frameIndex < sp40->unk_26);
@@ -347,20 +347,20 @@ void func_80003DA4(Object *obj) {
             }
         }
 
-        if (gBattleSettings[sp4A].isCpu && !D_800801F0 && !(player->unk_80 & 0x100000)) {
+        if (gBattleSettings[sp4A].isCpu && !D_800801F0 && !(player->flags & PLAYER_FLAG_100000)) {
             if (!(player->unk_180 & 0x20000)) {
                 func_8001B810(player);
             }
-            if (D_8013C444 && gPlayerInput[sp4A].unk_08 && player->unk_76 >= 0 && !(player->unk_0C->flags & 4) &&
-                !(player->unk_80 & 0x2000)) {
-                func_8000642C(player, FALSE);
+            if (D_8013C444 && gPlayerInput[sp4A].accumulated && player->currentMoveId >= 0 &&
+                !(player->unk_0C->flags & 4) && !(player->flags & PLAYER_FLAG_2000)) {
+                player_handle_input(player, FALSE);
             }
         } else if (player->unk_184 && !D_800801F0) {
-            if (player->unk_94 != 0 && --player->unk_94 == 0) {
-                func_8000642C(player, TRUE);
-            } else if (!(player->unk_80 & 0x100400) && gPlayerInput[sp4A].unk_08 && player->unk_76 >= 0 &&
-                       !(player->unk_0C->flags & 4)) {
-                func_8000642C(player, FALSE);
+            if (player->moveTimeout != 0 && --player->moveTimeout == 0) {
+                player_handle_input(player, TRUE);
+            } else if (!(player->flags & (PLAYER_FLAG_400 | PLAYER_FLAG_100000)) && gPlayerInput[sp4A].accumulated &&
+                       player->currentMoveId >= 0 && !(player->unk_0C->flags & 4)) {
+                player_handle_input(player, FALSE);
             }
         }
 
@@ -518,8 +518,8 @@ void func_800045B4(s16 playerId, s16 characterId) {
 
     s3 = (AssetDB *) gAssets[asset_find(sp80, playerId)].data;
     player->unk_28 = s3->unk_00 + (u32) s3;
-    player->unk_2C = pad = s3->unk_04 + 4 + (u32) s3;
-    player->unk_34 = s3->unk_08 + (u32) s3;
+    player->moveDataTable = pad = s3->unk_04 + 4 + (u32) s3;
+    player->transitionTable = s3->unk_08 + (u32) s3;
     player->unk_30 = s3->unk_0C + (u32) s3;
     player->unk_1C = s3->unk_10 + (u32) s3;
 
@@ -529,7 +529,7 @@ void func_800045B4(s16 playerId, s16 characterId) {
     }
     player->states = s0 = (u32) s3 + s3->unk_14 + 4;
 
-    player->unk_40 = pad = s3->unk_18 + (u32) s3 + 4;
+    player->soundTable = pad = s3->unk_18 + (u32) s3 + 4;
     pad3 = s3->unk_1C + (u32) s3;
     player->unk_6C = *pad3;
     if (((!player->obj) && (!player->obj)) & 0xFFFFFFFFu) {} // @fake
@@ -796,7 +796,7 @@ void func_800052EC(s16 playerId) {
     func_80004E14(playerId);
 
     gPlayers[playerId].playerId = playerId;
-    gPlayers[playerId].unk_80 = 0;
+    gPlayers[playerId].flags = 0;
     spD6 = gPlayers[playerId].characterId = gBattleSettings[playerId].characterId;
 
     if (gBattleSettings[playerId].isDummy) {
@@ -885,10 +885,10 @@ void func_800052EC(s16 playerId) {
 
     gPlayers[playerId].unk_08 = spDC->currentTask;
     gPlayers[playerId].unk_0C = task_add(spDC, task_default_func, 1);
-    gPlayers[playerId].unk_10 = task_add(spDC, func_800248C4, 1);
+    gPlayers[playerId].audioTask = task_add(spDC, player_play_sounds, 1);
     gPlayers[playerId].unk_14 = task_add(spDC, task_default_func, 1);
     gPlayers[playerId].unk_18 = task_add(spDC, func_8003184C, 1);
-    gPlayers[playerId].unk_24 = D_8004C1E8;
+    gPlayers[playerId].table_24 = D_8004C1E8;
 
     D_80080214 = D_8004A730[gBattleSettings[PLAYER_1].characterId] + D_8004A730[gBattleSettings[PLAYER_2].characterId];
     D_80080218 = D_8004A748[gBattleSettings[PLAYER_1].characterId] + D_8004A748[gBattleSettings[PLAYER_2].characterId];
@@ -899,7 +899,7 @@ void func_800052EC(s16 playerId) {
     D_80080238.unk_1000 = D_80080238.unk_1002 = 0;
     D_80080238.unk_1008 = gFrameCounter;
 
-    D_80080236 = 1;
+    D_80080236 = TRUE;
 
     if (gBattleSettings[playerId].isCpu) {
         func_8000636C(gPlayers + playerId, 282, 0);
@@ -908,7 +908,7 @@ void func_800052EC(s16 playerId) {
     }
 
     if (playerId != 0) {
-        D_80080236 = 0;
+        D_80080236 = FALSE;
     }
 
     gPlayers[playerId].currentState = gPlayers[playerId].states + gPlayers[playerId].stateId;
@@ -917,8 +917,8 @@ void func_800052EC(s16 playerId) {
     spDC->playerHp = gBattleSettings[playerId].unk_0C;
     func_80004B30(spDC, playerId, spD6);
 
-    if (playerId == 0) {
-        gPlayerInput[playerId].isMirrored = TRUE;
+    if (playerId == PLAYER_1) {
+        gPlayerInput[playerId].mirrored = TRUE;
     }
 
     func_80012150(&gPlayers[playerId].unk_DE8, spDC->modInst,
@@ -948,7 +948,7 @@ void func_800052EC(s16 playerId) {
         if (playerId == gPracticingPlayer) {
             practice_init_hud();
         } else {
-            gPlayers[playerId].unk_80 |= 0x200000;
+            gPlayers[playerId].flags |= PLAYER_FLAG_200000;
         }
     }
 
@@ -963,7 +963,7 @@ void func_80005B70(s16 playerId) {
     s32 zero = 0;
 
     gPlayers[playerId].playerId = playerId;
-    gPlayers[playerId].unk_80 = 0;
+    gPlayers[playerId].flags = 0;
     gPlayers[playerId].unk_180 = 0;
     gPlayers[playerId].characterId = characterId = gBattleSettings[playerId].characterId;
 
@@ -982,10 +982,10 @@ void func_80005B70(s16 playerId) {
     gPlayers[playerId].unk_0C->flags = 1;
     gPlayers[playerId].unk_0C->func = task_default_func;
     gPlayers[playerId].unk_0C->stackPos = 0;
-    gPlayers[playerId].unk_10->counter = 0;
-    gPlayers[playerId].unk_10->flags = 1;
-    gPlayers[playerId].unk_10->func = func_800248C4;
-    gPlayers[playerId].unk_10->stackPos = 0;
+    gPlayers[playerId].audioTask->counter = 0;
+    gPlayers[playerId].audioTask->flags = 1;
+    gPlayers[playerId].audioTask->func = player_play_sounds;
+    gPlayers[playerId].audioTask->stackPos = 0;
     gPlayers[playerId].unk_14->counter = 0;
     gPlayers[playerId].unk_14->flags = 1;
     gPlayers[playerId].unk_14->func = task_default_func;
@@ -999,13 +999,13 @@ void func_80005B70(s16 playerId) {
     D_80080218 = D_8004A748[gBattleSettings[PLAYER_1].characterId] + D_8004A748[gBattleSettings[PLAYER_2].characterId];
     D_8008020C = 0x800;
     D_80080238.unk_1000 = D_80080238.unk_1002 = 0;
-    D_80080236 = 1;
+    D_80080236 = TRUE;
     D_80080238.unk_1008 = gFrameCounter;
     obj->rotation.y = 0xC00 - spB0[playerId];
     D_80080210 = 1600;
     obj->flags = (obj->flags & 0x2000) | 1;
     D_80080238.unk_1000 = D_80080238.unk_1002 = 0;
-    D_80080236 = 1;
+    D_80080236 = TRUE;
 
     if (gBattleSettings[playerId].isCpu) {
         func_8000636C(gPlayers + playerId, 282, 0);
@@ -1021,13 +1021,13 @@ void func_80005B70(s16 playerId) {
     obj->playerHp = gBattleSettings[playerId].unk_0C;
 
     if (playerId == PLAYER_1) {
-        gPlayerInput[playerId].isMirrored = TRUE;
+        gPlayerInput[playerId].mirrored = TRUE;
     }
 
     gPlayers[playerId].unk_184 = FALSE;
 }
 
-u8 func_80005EE4(Player *player, u8 arg1, u16 arg2) {
+u8 player_test_move(Player *player, u8 arg1, u16 moveId) {
     u16 sp4E;
     u16 sp4C;
     ObjectTask *unk_0C;
@@ -1038,23 +1038,23 @@ u8 func_80005EE4(Player *player, u8 arg1, u16 arg2) {
     ObjectTaskSub *pad2;
     PlayerSubD *pad3;
     PlayerState *sp2C;
-    u16 sp2A;
-    PlayerSub8 *sp24;
-    s16 sp22;
+    u16 charMoveIndex;
+    PlayerSub8 *moveData;
+    s16 stateId;
     u16 i;
 
-    sp2A = player->unk_34[arg2];
-    sp24 = &player->unk_2C[sp2A];
-    sp4C = sp24->index_in_field28;
-    sp4E = sp24->index_in_field24;
+    charMoveIndex = player->transitionTable[moveId];
+    moveData = &player->moveDataTable[charMoveIndex];
+    sp4C = moveData->index_in_field28;
+    sp4E = moveData->index_in_field24;
     // clang-format off
-    sp22 = sp24->index_in_field20; \
-    if (sp22 == player->stateId && !arg1) {
-        sp22 = -1;
+    stateId = moveData->stateId; \
+    if (stateId == player->stateId && !arg1) {
+        stateId = -1;
     }
     // clang-format on
 
-    sp3C = player->unk_24 + sp4E;
+    sp3C = player->table_24 + sp4E;
     pad3 = player->unk_30 + player->stateId;
 
     sp44 = pad3->unk_00 + player->unk_1C;
@@ -1065,17 +1065,17 @@ u8 func_80005EE4(Player *player, u8 arg1, u16 arg2) {
     }
 
     player->unk_A4 = player->unk_A0;
-    player->unk_A0 = sp24;
+    player->unk_A0 = moveData;
 
     unk_0C = player->unk_0C;
     pad2 = &unk_0C->unk_08;
     pad2->unk_08 = 0;
 
     for (i = 0; i < sp42; sp44++, i++) {
-        if (sp44->unk_04 == sp22) {
-            if (player->obj->frameIndex < sp44->unk_02) {
+        if (sp44->stateId == stateId) {
+            if (player->obj->frameIndex < sp44->frameIndex) {
                 unk_0C->flags |= 4;
-                unk_0C->unk_86 = sp44->unk_02;
+                unk_0C->unk_86 = sp44->frameIndex;
                 unk_0C->unk_90.func = func_80024764;
                 unk_0C->unk_90.flags = 1;
 
@@ -1084,7 +1084,7 @@ u8 func_80005EE4(Player *player, u8 arg1, u16 arg2) {
                 player->unk_08->flags = 1;
 
                 pad2->unk_08 = sp44->unk_06;
-                pad2->unk_0C = sp44->unk_00;
+                pad2->stateId = sp44->unk_00;
                 pad2->unk_10 = sp3C->unk_08;
             } else {
                 unk_0C->func = func_80024764;
@@ -1096,7 +1096,7 @@ u8 func_80005EE4(Player *player, u8 arg1, u16 arg2) {
                 player->unk_08->flags = 1;
 
                 pad2->unk_08 = sp44->unk_06;
-                pad2->unk_0C = sp44->unk_00;
+                pad2->stateId = sp44->unk_00;
                 pad2->unk_10 = sp3C->unk_08;
 
                 player->unk_180 |= 0x20000;
@@ -1108,7 +1108,7 @@ u8 func_80005EE4(Player *player, u8 arg1, u16 arg2) {
     player->unk_08->func = sp3C->unk_08;
     player->unk_08->counter = 0;
     player->unk_08->flags = 1;
-    if (sp22 >= 0) {
+    if (stateId >= 0) {
         unk_0C->func = func_80024390;
         unk_0C->counter = 0;
         unk_0C->flags = 1;
@@ -1116,13 +1116,13 @@ u8 func_80005EE4(Player *player, u8 arg1, u16 arg2) {
 
 label:
 
-    if (sp22 >= 0) {
-        pad2->unk_04 = sp22;
-        pad2->unk_00_f = sp3C->unk_04;
-        player->unk_188 = player->stateId;
-        player->stateId = sp22;
+    if (stateId >= 0) {
+        pad2->unk_04 = stateId;
+        pad2->unk_00_f = sp3C->func_04;
+        player->prevStateId = player->stateId;
+        player->stateId = stateId;
 
-        sp2C = player->states + sp22;
+        sp2C = player->states + stateId;
         if (sp2C->unk_2C >= 0 && sp2C->unk_2E == -1) {
             func_8002C340();
             camera_set_animation(gCamera, player->obj->modInst->animations[player->states[sp2C->unk_2C].animationId]);
@@ -1131,20 +1131,20 @@ label:
             gCamera->currentTask->flags = 1;
         }
     } else {
-        unk_0C->func = sp3C->unk_04;
+        unk_0C->func = sp3C->func_04;
         unk_0C->flags = 1;
         unk_0C->counter = 0;
     }
 
     player->unk_186 = player->unk_7C;
-    player->unk_18C = player->unk_80;
+    player->unk_18C = player->flags;
     player->unk_7C = sp4E;
     player->unk_88 = player->unk_28 + sp4C;
 
-    player->unk_80 = sp3C->unk_00 | (player->unk_80 & sp3C->unk_10);
+    player->flags = sp3C->unk_00 | (player->flags & sp3C->unk_10);
     player->unk_98 = sp3C;
-    player->unk_74 = sp2A;
-    player->unk_78 = arg2;
+    player->unk_74 = charMoveIndex;
+    player->unk_78 = moveId;
 
     func_800035D0(player);
 
@@ -1156,10 +1156,10 @@ label:
     if (player->unk_88->unk_0C != 0) {
         player->unk_08->counter = player->unk_88->unk_0C;
     }
-    player->unk_94 = player->unk_88->unk_0E;
+    player->moveTimeout = player->unk_88->moveTimeout;
     player->obj->velocity.z = player->unk_88->unk_08;
     player->obj->flags &= ~0x800;
-    player->unk_76 = player->unk_34[arg2 + 1];
+    player->currentMoveId = player->transitionTable[moveId + 1];
 
     return TRUE;
 }
@@ -1169,121 +1169,131 @@ u8 func_8000636C(Player *player, s16 arg1, u8 arg2) {
 
     v1 = player->unk_38[arg1];
     player->unk_0C->flags &= ~4;
-    return func_80005EE4(player, arg2, v1);
+    return player_test_move(player, arg2, v1);
 }
 
 u8 func_800063C4(Player *player, s16 arg1, u8 arg2) {
     if (gBattleSettings[player->playerId].isCpu) {
-        player->unk_94 = 0;
+        player->moveTimeout = 0;
         return func_8001B7D0(player, arg1);
     } else {
         return func_8000636C(player, arg1, arg2);
     }
 }
 
-u8 func_8000642C(Player *player, u8 arg1) {
+u8 player_handle_input(Player *player, u8 arg1) {
     ObjectTask *unk_0C;
     void *sp68;
-    PlayerSub8 *a2;
-    PlayerSub8 *sp60;
+    PlayerSub8 *possibleMove;
+    PlayerSub8 *moveDataTable;
     s16 sp5E;
-    s16 s0;
-    s16 *sp58;
+    s16 moveId;
+    s16 *transitionTable;
     s32 pad[2];
     s32 sp4C;
-    u16 v0;
+    u16 moveFlags;
     u16 masked_buttons;
     s32 pad2[2];
     u16 buttons;
 
-    s0 = player->unk_76;
+    moveId = player->currentMoveId;
     sp68 = NULL;
-    sp60 = player->unk_2C;
-    sp58 = player->unk_34;
+    moveDataTable = player->moveDataTable;
+    transitionTable = player->transitionTable;
     sp4C = gFrameCounter - player->unk_8C;
 
     if (D_800801F0) {
         buttons = 0;
-    } else if (player->unk_80 & 0x1000) {
+    } else if (player->flags & PLAYER_FLAG_1000) {
         buttons = gPlayerInput[player->playerId].prev_buttons;
     } else {
         buttons = gPlayerInput[player->playerId].buttons;
     }
 
-    while (sp58[s0] >= 0) {
-        a2 = sp60 + sp58[s0];
-        v0 = a2->flags;
-        masked_buttons = buttons & a2->button_mask;
-
-        if (v0 & 2) {
-            if ((v0 & 0x10) && (!(v0 & 0x800) || !(player->unk_80 & 8))) {
-                s0 += 2;
+    while (transitionTable[moveId] >= 0) {
+        possibleMove = moveDataTable + transitionTable[moveId];
+        moveFlags = possibleMove->flags;
+        masked_buttons = buttons & possibleMove->button_mask;
+        
+        // make this move only when no condition for other moves
+        if (moveFlags & MOVE_FLAG_FALLBACK) {
+            if ((moveFlags & MOVE_FLAG_10) && (!(moveFlags & MOVE_FLAG_800) || !(player->flags & PLAYER_FLAG_NOT_FACING_OPP))) {
+                moveId += 2;
+                continue;
             } else {
-                sp5E = s0;
-                sp68 = a2;
-                s0 += 2;
-            }
-            continue;
+                sp5E = moveId;
+                sp68 = possibleMove;
+                moveId += 2;
+                continue;
+            }            
         }
 
-        if ((v0 & 8) && player->unk_94 <= 0) {
-            gPlayerInput[player->playerId].unk_08 = FALSE;
+        // triggers only on timeout, no input check
+        if ((moveFlags & MOVE_FLAG_TIMEOUT_TRIGGER) && player->moveTimeout <= 0) {
+            gPlayerInput[player->playerId].accumulated = FALSE;
             D_80080236 = TRUE;
-            if (func_80005EE4(player, TRUE, s0)) {
+            if (player_test_move(player, TRUE, moveId)) {
                 D_80080236 = FALSE;
                 return TRUE;
             }
 
             D_80080236 = FALSE;
-            s0 += 2;
+            moveId += 2;
             continue;
         }
 
-        if (buttons && (v0 & 0x10) && (v0 & 0x800) && (player->unk_80 & 8) &&
-            (a2->buttons == 0 || (a2->buttons != 0 && masked_buttons == a2->buttons) ||
-             (a2->buttons == 0xFFFF && masked_buttons != 0))) {
-            if ((v0 & 4) && player->currentState == player->states + player->stateId &&
-                player->currentState->unk_02 != player->obj->frameIndex && !(player->unk_80 & 0x4800)) {
-                unk_0C = player->unk_0C;
-                unk_0C->unk_08.unk_00_i = s0;
-                unk_0C->unk_08.unk_04_ptr = a2;
-                unk_0C->flags |= 4;
-                unk_0C->unk_86 = player->currentState->unk_02 - 1;
-                unk_0C->unk_90.func = func_800247CC;
-                unk_0C->unk_90.flags = 0x41;
+        // move to turn around
+        if (buttons && (moveFlags & MOVE_FLAG_10) && (moveFlags & MOVE_FLAG_800) && (player->flags & PLAYER_FLAG_NOT_FACING_OPP)) {
+            if (possibleMove->buttons == 0 || (possibleMove->buttons != 0 && masked_buttons == possibleMove->buttons) ||
+                (possibleMove->buttons == 0xFFFF && masked_buttons != 0)) {
+                if ((moveFlags & MOVE_FLAG_4) && player->currentState == player->states + player->stateId &&
+                    player->currentState->unk_02 != player->obj->frameIndex &&
+                    !(player->flags & (PLAYER_FLAG_800 | PLAYER_FLAG_4000))) {
+                    unk_0C = player->unk_0C;
+                    unk_0C->unk_08.unk_00_i = moveId;
+                    unk_0C->unk_08.unk_04 = possibleMove;
+                    unk_0C->flags |= 4;
+                    unk_0C->unk_86 = player->currentState->unk_02 - 1;
+                    unk_0C->unk_90.func = func_800247CC;
+                    unk_0C->unk_90.flags = 0x41;
 
-                return TRUE;
-            }
-
-            if (func_80005EE4(player, TRUE, s0)) {
-                gPlayerInput[player->playerId].unk_08 = TRUE;
-                return TRUE;
-            }
-
-            s0 += 2;
-            continue;
-        }
-
-        if (a2->buttons == masked_buttons &&
-            ((v0 & 1) || ((v0 & 4) && player->currentState == player->states + player->stateId))) {
-            gPlayerInput[player->playerId].unk_08 = FALSE;
-
-            if (v0 & 0x20) {
-                if (player->currentState->unk_02 != player->obj->frameIndex &&
-                    (!(player->unk_80 & 0x4800) || player->currentState->unk_00 != player->obj->frameIndex)) {
-                    s0 += 2;
-                } else if (func_80005EE4(player, TRUE, s0)) {
                     return TRUE;
-                } else {
-                    s0 += 2;
                 }
+
+                if (player_test_move(player, TRUE, moveId)) {
+                    gPlayerInput[player->playerId].accumulated = TRUE;
+                    return TRUE;
+                }
+
+                moveId += 2;
                 continue;
             }
+        }
 
-            if ((v0 & 4) && player->currentState->unk_02 != player->obj->frameIndex && !(player->unk_80 & 0x4800)) {
+        if (possibleMove->buttons == masked_buttons &&
+            ((moveFlags & MOVE_FLAG_1) || ((moveFlags & MOVE_FLAG_4) && player->currentState == player->states + player->stateId))) {
+
+            gPlayerInput[player->playerId].accumulated = FALSE;
+
+            if (moveFlags & MOVE_FLAG_20) {
+                if (player->currentState->unk_02 != player->obj->frameIndex &&
+                    (!(player->flags & (PLAYER_FLAG_800 | PLAYER_FLAG_4000)) ||
+                     player->currentState->duration != player->obj->frameIndex)) {
+                    moveId += 2;
+                    continue;
+                } else if (player_test_move(player, TRUE, moveId)) {
+                    return TRUE;
+                } else {
+                    moveId += 2;
+                    continue;
+                }                
+            }
+
+            if ((moveFlags & MOVE_FLAG_4) && player->currentState->unk_02 != player->obj->frameIndex &&
+                !(player->flags & (PLAYER_FLAG_800 | PLAYER_FLAG_4000))) {
                 unk_0C = player->unk_0C;
-                unk_0C->unk_08.unk_00_i = s0;
-                unk_0C->unk_08.unk_04_ptr = a2;
+                unk_0C->unk_08.unk_00_i = moveId;
+                unk_0C->unk_08.unk_04_ptr = possibleMove;
                 unk_0C->flags |= 4;
                 unk_0C->unk_86 = player->currentState->unk_02 - 1;
                 unk_0C->unk_90.func = func_800247CC;
@@ -1291,33 +1301,33 @@ u8 func_8000642C(Player *player, u8 arg1) {
                 return TRUE;
             }
 
-            if ((v0 & 0x40)) {
-                if (sp4C <= player->unk_28[a2->index_in_field28].unk_06) {
-                    if (func_80005EE4(player, TRUE, s0)) {
+            if ((moveFlags & MOVE_FLAG_40)) {
+                if (sp4C <= player->unk_28[possibleMove->index_in_field28].unk_06) {
+                    if (player_test_move(player, TRUE, moveId)) {
                         return TRUE;
                     } else {
-                        s0 += 2;
+                        moveId += 2;
                         continue;
                     }
                 } else {
-                    s0 += 2;
+                    moveId += 2;
                     continue;
                 }
             }
 
-            if (func_80005EE4(player, TRUE, s0)) {
+            if (player_test_move(player, TRUE, moveId)) {
                 return TRUE;
             }
         }
 
-        s0 += 2;
+        moveId += 2;
     }
 
     if (sp68 != NULL && arg1) {
-        gPlayerInput[player->playerId].unk_08 = FALSE;
+        gPlayerInput[player->playerId].accumulated = FALSE;
         D_80080236 = TRUE;
-        if (func_80005EE4(player, TRUE, sp5E)) {
-            player->unk_76 = sp58[sp5E + 1];
+        if (player_test_move(player, TRUE, sp5E)) {
+            player->currentMoveId = transitionTable[sp5E + 1];
             D_80080236 = FALSE;
             return TRUE;
         }
@@ -1328,38 +1338,38 @@ u8 func_8000642C(Player *player, u8 arg1) {
 }
 
 u8 func_800069C0(Player *player) {
-    s16 a2;
-    u16 v0;
+    s16 moveId;
+    u16 moveFlags;
     PlayerSub8 *t2;
-    PlayerSub8 *unk_2C;
-    PlayerSub8 *a0;
+    PlayerSub8 *moveData;
+    PlayerSub8 *possibleMove;
     s16 sp26;
-    s16 *sp20;
+    s16 *transitionTable;
 
-    a2 = player->unk_76;
-    unk_2C = player->unk_2C;
-    sp20 = player->unk_34;
+    moveId = player->currentMoveId;
+    moveData = player->moveDataTable;
+    transitionTable = player->transitionTable;
     t2 = NULL;
 
-    while (sp20[a2] >= 0) {
-        a0 = unk_2C + sp20[a2];
-        v0 = a0->flags;
-        if (v0 & 2) {
-            if (((v0 & 0x10) && (!(v0 & 0x800) || !(player->unk_80 & 8)))) {
-                a2 += 2;
+    while (transitionTable[moveId] >= 0) {
+        possibleMove = moveData + transitionTable[moveId];
+        moveFlags = possibleMove->flags;
+        if (moveFlags & MOVE_FLAG_FALLBACK) {
+            if (((moveFlags & MOVE_FLAG_10) && (!(moveFlags & MOVE_FLAG_800) || !(player->flags & PLAYER_FLAG_NOT_FACING_OPP)))) {
+                moveId += 2;
                 continue;
             }
-            t2 = a0;
-            sp26 = a2;
+            t2 = possibleMove;
+            sp26 = moveId;
             break;
         }
-        a2 += 2;
+        moveId += 2;
     }
 
     if (t2 != NULL) {
         D_80080236 = TRUE;
-        if (func_80005EE4(player, TRUE, sp26)) {
-            player->unk_76 = sp20[sp26 + 1];
+        if (player_test_move(player, TRUE, sp26)) {
+            player->currentMoveId = transitionTable[sp26 + 1];
             D_80080236 = FALSE;
             return TRUE;
         }

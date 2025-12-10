@@ -79,7 +79,7 @@ segments:
       - [0x212B0, c, audio]
       - [0x22940, c]
       - [0x23D00, c]
-      - [0x24930, c]
+      - [0x24930, c, player_anim]
       - [0x255B0, c, input]
       - [0x25980, c, tables]
       - [0x25980, c, cont]

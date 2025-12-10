@@ -175,8 +175,8 @@ void func_8002C6E8(Object *obj) {
         if (gPlayMode != PLAY_MODE_PRACTICE) {
             func_80017CA8();
         } else {
-            gPlayers[PLAYER_1].unk_80 &= ~0x100000;
-            gPlayers[PLAYER_2].unk_80 &= ~0x100000;
+            gPlayers[PLAYER_1].flags &= ~PLAYER_FLAG_100000;
+            gPlayers[PLAYER_2].flags &= ~PLAYER_FLAG_100000;
             D_8005BFC0 &= ~GAME_FLAG_4;
         }
 
@@ -188,7 +188,7 @@ void func_8002C6E8(Object *obj) {
 
         obj->currentTask->func = func_8002EB2C;
         obj->modInst->animations[0] = NULL;
-        gPlayerInput[PLAYER_1].unk_08 = gPlayerInput[PLAYER_2].unk_08 = FALSE;
+        gPlayerInput[PLAYER_1].accumulated = gPlayerInput[PLAYER_2].accumulated = FALSE;
         D_8008012C &= ~(GFX_FLAG_1 | GFX_FLAG_10);
     }
 
@@ -201,8 +201,8 @@ void func_8002C854(Object *obj) {
 
     v0 = gPlayerInput[PLAYER_1].buttons;
 
-    gPlayers[PLAYER_1].unk_80 |= 0x100000;
-    gPlayers[PLAYER_2].unk_80 |= 0x100000;
+    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
+    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
 
     if (v0 & INP_R) {
         D_8013C588 -= 10;
@@ -307,8 +307,8 @@ void func_8002CB28(void) {
     D_8013C33E = (0xC00 - player2->rotation.y) & 0xFFF;
 
     if (abs(func_8002CDFC(D_8008020E, D_8013C33C)) < 0x400) {
-        ((Player *) player1->varObj[0])->unk_80 |= 8;
-        ((Player *) player1->varObj[0])->unk_80 &= ~0x200;
+        ((Player *) player1->varObj[0])->flags |= PLAYER_FLAG_NOT_FACING_OPP;
+        ((Player *) player1->varObj[0])->flags &= ~PLAYER_FLAG_200;
     } else {
         sp26 = func_8002CDFC(D_8008020C - 0x800, D_8013C33C);
         if (abs(sp26) > 140) {
@@ -319,19 +319,19 @@ void func_8002CB28(void) {
             }
         }
 
-        if (!(((Player *) player1->varObj[0])->unk_80 & 0x420010)) {
+        if (!(((Player *) player1->varObj[0])->flags & (PLAYER_FLAG_10 | PLAYER_FLAG_20000 | PLAYER_FLAG_400000))) {
             player1->rotation.y = 0xC00 - D_8013C33C - sp26;
         }
 
         if ((gPlayers[PLAYER_1].unk_DBC = abs(sp26)) < 8) {
-            ((Player *) player1->varObj[0])->unk_80 |= 0x200;
+            ((Player *) player1->varObj[0])->flags |= PLAYER_FLAG_200;
         } else {
-            ((Player *) player1->varObj[0])->unk_80 &= ~0x200;
+            ((Player *) player1->varObj[0])->flags &= ~PLAYER_FLAG_200;
         }
-        ((Player *) player1->varObj[0])->unk_80 &= ~0x8;
+        ((Player *) player1->varObj[0])->flags &= ~PLAYER_FLAG_NOT_FACING_OPP;
     }
 
-    if (abs(func_8002CDFC(D_8008020E, D_8013C33E)) < 0x400) {
+    if (abs(func_8002CDFC(D_8008020E, D_8013C33E)) < PLAYER_FLAG_400) {
         sp26 = func_8002CDFC(D_8008020E, D_8013C33E);
         if (abs(sp26) > 140) {
             if (sp26 < 0) {
@@ -341,19 +341,19 @@ void func_8002CB28(void) {
             }
         }
 
-        if (!(((Player *) player2->varObj[0])->unk_80 & 0x420010)) {
+        if (!(((Player *) player2->varObj[0])->flags & (PLAYER_FLAG_10 | PLAYER_FLAG_20000 | PLAYER_FLAG_400000))) {
             player2->rotation.y = 0xC00 - D_8013C33E - sp26;
         }
 
         if ((gPlayers[PLAYER_2].unk_DBC = abs(sp26)) < 8) {
-            ((Player *) player2->varObj[0])->unk_80 |= 0x200;
+            ((Player *) player2->varObj[0])->flags |= PLAYER_FLAG_200;
         } else {
-            ((Player *) player2->varObj[0])->unk_80 &= ~0x200;
+            ((Player *) player2->varObj[0])->flags &= ~PLAYER_FLAG_200;
         }
-        ((Player *) player2->varObj[0])->unk_80 &= ~0x8;
+        ((Player *) player2->varObj[0])->flags &= ~PLAYER_FLAG_NOT_FACING_OPP;
     } else {
-        ((Player *) player2->varObj[0])->unk_80 |= 8;
-        ((Player *) player2->varObj[0])->unk_80 &= ~0x200;
+        ((Player *) player2->varObj[0])->flags |= PLAYER_FLAG_NOT_FACING_OPP;
+        ((Player *) player2->varObj[0])->flags &= ~PLAYER_FLAG_200;
     }
 }
 
@@ -517,14 +517,14 @@ void func_8002D278(Object *obj, u8 arg1) {
     func_8002CB28();
     if (func_8002CDFC(D_8008020E, spD8) > 0) {
         D_80080228[PLAYER_1]->flags &= ~0x200;
-        gPlayerInput[PLAYER_1].isMirrored = FALSE;
+        gPlayerInput[PLAYER_1].mirrored = FALSE;
         D_80080228[PLAYER_2]->flags |= 0x200;
-        gPlayerInput[PLAYER_2].isMirrored = TRUE;
+        gPlayerInput[PLAYER_2].mirrored = TRUE;
     } else {
         D_80080228[PLAYER_1]->flags |= 0x200;
-        gPlayerInput[PLAYER_1].isMirrored = TRUE;
+        gPlayerInput[PLAYER_1].mirrored = TRUE;
         D_80080228[PLAYER_2]->flags &= ~0x200;
-        gPlayerInput[PLAYER_2].isMirrored = FALSE;
+        gPlayerInput[PLAYER_2].mirrored = FALSE;
     }
 
     gCameraTarget.y = ((D_8013C360 * spC0) >> 0x10) + D_80052CBC - 480;
@@ -621,8 +621,8 @@ void func_8002DCC8(Object *obj) {
         if (gPlayMode != PLAY_MODE_PRACTICE) {
             func_80017CA8();
         } else {
-            gPlayers[PLAYER_1].unk_80 &= ~0x100000;
-            gPlayers[PLAYER_2].unk_80 &= ~0x100000;
+            gPlayers[PLAYER_1].flags &= ~PLAYER_FLAG_100000;
+            gPlayers[PLAYER_2].flags &= ~PLAYER_FLAG_100000;
             D_8005BFC0 &= ~GAME_FLAG_4;
         }
 
@@ -634,7 +634,7 @@ void func_8002DCC8(Object *obj) {
 
         obj->currentTask->func = func_8002EB2C;
         obj->modInst->animations[0] = NULL;
-        gPlayerInput[PLAYER_1].unk_08 = gPlayerInput[PLAYER_2].unk_08 = FALSE;
+        gPlayerInput[PLAYER_1].accumulated = gPlayerInput[PLAYER_2].accumulated = FALSE;
         D_8008012C &= ~(GFX_FLAG_1 | GFX_FLAG_10);
     } else {
         if (--obj->vars[10] <= 0) {
@@ -659,7 +659,7 @@ void func_8002DE20(Object *obj) {
     gCamera->currentTask->flags = 1;
     gCamera->currentTask->counter = 1;
     gCamera->vars[10] = 60;
-    gPlayerInput[PLAYER_1].unk_08 = assetId = gPlayerInput[PLAYER_2].unk_08 = FALSE; // required to match
+    gPlayerInput[PLAYER_1].accumulated = assetId = gPlayerInput[PLAYER_2].accumulated = FALSE; // required to match
 }
 
 void func_8002DEFC(Object *obj) {
@@ -677,7 +677,7 @@ void func_8002DEFC(Object *obj) {
     gCamera->currentTask->counter = 0;
     gCamera->currentTask->flags = 1;
     gCamera->currentTask->counter = 1;
-    gPlayerInput[PLAYER_1].unk_08 = assetId = gPlayerInput[PLAYER_2].unk_08 = FALSE; // required to match
+    gPlayerInput[PLAYER_1].accumulated = assetId = gPlayerInput[PLAYER_2].accumulated = FALSE; // required to match
 }
 
 #ifdef NON_EQUIVALENT
@@ -705,8 +705,9 @@ restart:
         s1 = 0;
     }
 
-    if ((gPlayers[PLAYER_1].unk_80 & 0x400000) || (gPlayers[PLAYER_2].unk_80 & 0x400000) ||
-        (gPlayers[PLAYER_1].unk_80 & 0x01000000) || (gPlayers[PLAYER_2].unk_80 & 0x01000000) && s1 < 3200) { // @bug?
+    if ((gPlayers[PLAYER_1].flags & PLAYER_FLAG_400000) || (gPlayers[PLAYER_2].flags & PLAYER_FLAG_400000) ||
+        (gPlayers[PLAYER_1].flags & PLAYER_FLAG_1000000) ||
+        (gPlayers[PLAYER_2].flags & PLAYER_FLAG_1000000) && s1 < 3200) { // @bug?
         D_8008021C = D_8008020C;
         D_8008020C = s6;
         D_80080210 = s1;
@@ -743,10 +744,11 @@ restart:
         goto restart;
     }
 
-    if (s1 < D_80080214 && (!(gPlayers[PLAYER_1].unk_80 & 0x8000) || (gPlayers[PLAYER_2].unk_80 & 0x8000))) { // @bug ??
+    if (s1 < D_80080214 &&
+        (!(gPlayers[PLAYER_1].flags & PLAYER_FLAG_8000) || (gPlayers[PLAYER_2].flags & PLAYER_FLAG_8000))) { // @bug ??
         s4 = D_80080214 - s1;
         if ((gPlayers[PLAYER_1].currentState->flags & 0x80000) || (gPlayers[PLAYER_2].currentState->flags & 0x80000) ||
-            (gPlayers[PLAYER_1].unk_80 & 0x4000000) || (gPlayers[PLAYER_2].unk_80 & 0x4000000)) {
+            (gPlayers[PLAYER_1].flags & PLAYER_FLAG_4000000) || (gPlayers[PLAYER_2].flags & PLAYER_FLAG_4000000)) {
             s4 >>= 1;
         }
     } else {
@@ -952,14 +954,14 @@ void func_8002EB2C(Object *obj) {
 
     if (func_8002CDFC(D_8008020E, sp104) > 0) {
         D_80080228[PLAYER_1]->flags &= ~0x200;
-        gPlayerInput[PLAYER_1].isMirrored = FALSE;
+        gPlayerInput[PLAYER_1].mirrored = FALSE;
         D_80080228[PLAYER_2]->flags |= 0x200;
-        gPlayerInput[PLAYER_2].isMirrored = TRUE;
+        gPlayerInput[PLAYER_2].mirrored = TRUE;
     } else {
         D_80080228[PLAYER_1]->flags |= 0x200;
-        gPlayerInput[PLAYER_1].isMirrored = TRUE;
+        gPlayerInput[PLAYER_1].mirrored = TRUE;
         D_80080228[PLAYER_2]->flags &= ~0x200;
-        gPlayerInput[PLAYER_2].isMirrored = FALSE;
+        gPlayerInput[PLAYER_2].mirrored = FALSE;
     }
 
     if (func_8002C328(sp108) < 450 && D_8013C380 < 0x20000) {
@@ -1150,8 +1152,8 @@ void func_8002EB2C(Object *obj) {
 
     D_80081428 = D_8013C828;
 
-    if (*gCamera->modInst->animations == 0 && !(gPlayers[PLAYER_1].unk_80 & 0x400000) &&
-            !(gPlayers[PLAYER_2].unk_80 & 0x400000) ||
+    if (*gCamera->modInst->animations == 0 && !(gPlayers[PLAYER_1].flags & PLAYER_FLAG_400000) &&
+            !(gPlayers[PLAYER_2].flags & PLAYER_FLAG_400000) ||
         D_8013C250 != 0) {
         func_8002D1A8(obj);
     }

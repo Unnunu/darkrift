@@ -239,7 +239,7 @@ s32 func_8000F074(Player *player1, Player *player2, PlayerState *arg2) {
 
         if (a3 >= 236 && a3 <= 245) {
             player1->obj->vars[2] = arg2->damage;
-        } else if (!v12 && gPlayMode != 40) {
+        } else if (!v12 && gPlayMode != PLAY_MODE_PRACTICE) {
             player1->obj->playerHp -= arg2->damage;
         }
 
@@ -250,7 +250,7 @@ s32 func_8000F074(Player *player1, Player *player2, PlayerState *arg2) {
 
         if (hp == 0) {
             D_8005BFC0 |= GAME_FLAG_200;
-            if (player1->unk_80 & 8) {
+            if (player1->flags & PLAYER_FLAG_NOT_FACING_OPP) {
                 if (t0 & 4) {
                     a3 = 118;
                 } else if (t0 & 1) {

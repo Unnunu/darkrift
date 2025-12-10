@@ -443,8 +443,8 @@ void sound_play(u32 playerID, u32 soundId) {
 
     if (soundId < gSfxNumSounds[playerID] && gSfxPlayerOn[playerID]) {
         if (playerID < 2) {
-            if (D_800A4524[playerID] != gPlayerInput[playerID].isMirrored) {
-                D_800A4524[playerID] = gPlayerInput[playerID].isMirrored;
+            if (D_800A4524[playerID] != gPlayerInput[playerID].mirrored) {
+                D_800A4524[playerID] = gPlayerInput[playerID].mirrored;
 
                 if (D_800A4524[playerID]) {
                     pan = 20;

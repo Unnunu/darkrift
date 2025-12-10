@@ -347,7 +347,7 @@ u8 func_800167D4(void) {
 }
 
 void func_80016880(Object *obj) {
-    gPlayers[PLAYER_1].unk_94 = gPlayers[PLAYER_2].unk_94 = 0;
+    gPlayers[PLAYER_1].moveTimeout = gPlayers[PLAYER_2].moveTimeout = 0;
 
     if (--obj->vars[1] < 0 && func_800167D4()) {
         func_800162A4(obj);
@@ -359,7 +359,7 @@ void func_80016880(Object *obj) {
 }
 
 void func_800168F0(Object *obj) {
-    gPlayers[PLAYER_1].unk_94 = gPlayers[PLAYER_2].unk_94 = 0;
+    gPlayers[PLAYER_1].moveTimeout = gPlayers[PLAYER_2].moveTimeout = 0;
 
     if (--obj->vars[1] < 0 && func_800167D4()) {
         D_8005BFC0 |= GAME_FLAG_MODE_DONE;
@@ -459,7 +459,7 @@ void func_80016C34(Object *obj) {
         if (a1 != NULL) {
             a1->flags |= 0x10;
         }
-        gPlayerInput[D_8013C24C].unk_08 = FALSE;
+        gPlayerInput[D_8013C24C].accumulated = FALSE;
         obj->varObj[4] = obj->varObj[5];
     }
 }
@@ -529,8 +529,8 @@ void func_80016F6C(Object *obj) {
     gPlayers[1 - D_8013C24C].obj->pos.x = gPlayers[1 - D_8013C24C].obj->pos.y = gPlayers[1 - D_8013C24C].obj->pos.z = 0;
 
     gPlayers[PLAYER_1].obj->rotation.y = 0;
-    gPlayers[PLAYER_1].unk_80 |= 0x400000;
-    gPlayers[PLAYER_2].unk_80 |= 0x400000;
+    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_400000;
+    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_400000;
 
     gCameraTarget.x = gCameraTarget.z = 0;
     gCameraTarget.y = -400;
@@ -587,10 +587,10 @@ void func_80017304(Object *obj) {
             a0->flags |= 0x10;
 
             if (gPlayerInput[PLAYER_1].buttons & INP_START) {
-                gPlayerInput[PLAYER_1].unk_08 = FALSE;
+                gPlayerInput[PLAYER_1].accumulated = FALSE;
             }
             if (gPlayerInput[PLAYER_2].buttons & INP_START) {
-                gPlayerInput[PLAYER_2].unk_08 = FALSE;
+                gPlayerInput[PLAYER_2].accumulated = FALSE;
             }
         } else {
             return;
@@ -607,19 +607,19 @@ void func_80017304(Object *obj) {
 }
 
 void func_800173DC(Object *obj) {
-    if (gPlayers[PLAYER_1].unk_80 & 0x80) {
-        if (--gPlayers[PLAYER_1].unk_94 > 20) {
-            gPlayers[PLAYER_1].unk_94 = 20;
+    if (gPlayers[PLAYER_1].flags & PLAYER_FLAG_80) {
+        if (--gPlayers[PLAYER_1].moveTimeout > 20) {
+            gPlayers[PLAYER_1].moveTimeout = 20;
         } else {
-            func_8000642C(&gPlayers[PLAYER_1], TRUE);
+            player_handle_input(&gPlayers[PLAYER_1], TRUE);
         }
-    } else if (gPlayers[PLAYER_2].unk_80 & 0x80) {
-        if (--gPlayers[PLAYER_2].unk_94 > 20) {
-            gPlayers[PLAYER_2].unk_94 = 20;
+    } else if (gPlayers[PLAYER_2].flags & PLAYER_FLAG_80) {
+        if (--gPlayers[PLAYER_2].moveTimeout > 20) {
+            gPlayers[PLAYER_2].moveTimeout = 20;
         } else {
-            func_8000642C(&gPlayers[PLAYER_2], TRUE);
+            player_handle_input(&gPlayers[PLAYER_2], TRUE);
         }
-    } else if ((gPlayers[PLAYER_1].unk_80 & 0x40000) && (gPlayers[PLAYER_2].unk_80 & 0x40000)) {
+    } else if ((gPlayers[PLAYER_1].flags & PLAYER_FLAG_40000) && (gPlayers[PLAYER_2].flags & PLAYER_FLAG_40000)) {
         if ((gPlayers[PLAYER_1].currentState->flags & 1) && gPlayers[PLAYER_1].stateId != 4) {
             func_8000636C(&gPlayers[PLAYER_1], 320, FALSE);
         } else if (gPlayers[PLAYER_1].stateId != 17) {
@@ -687,10 +687,10 @@ void func_80017728(Object *obj) {
             }
 
             if (gPlayerInput[PLAYER_1].buttons & INP_START) {
-                gPlayerInput[PLAYER_1].unk_08 = FALSE;
+                gPlayerInput[PLAYER_1].accumulated = FALSE;
             }
             if (gPlayerInput[PLAYER_2].buttons & INP_START) {
-                gPlayerInput[PLAYER_2].unk_08 = FALSE;
+                gPlayerInput[PLAYER_2].accumulated = FALSE;
             }
         } else {
             return;
@@ -786,8 +786,8 @@ void func_80017B3C(Object *obj) {
     }
 
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
-    gPlayers[PLAYER_1].unk_80 &= ~0x100000;
-    gPlayers[PLAYER_2].unk_80 &= ~0x100000;
+    gPlayers[PLAYER_1].flags &= ~PLAYER_FLAG_100000;
+    gPlayers[PLAYER_2].flags &= ~PLAYER_FLAG_100000;
 
     if (gBattleSettings[PLAYER_1].isCpu) {
         gPlayers[PLAYER_1].unk_180 &= ~0x20000;
@@ -814,8 +814,8 @@ void func_80017CA8(void) {
     D_8013C834 = 0;
 
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = FALSE;
-    gPlayers[PLAYER_1].unk_80 |= 0x100000;
-    gPlayers[PLAYER_2].unk_80 |= 0x100000;
+    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
+    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
     D_8013C250 = FALSE;
     D_80080234 = FALSE;
 

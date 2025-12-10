@@ -107,7 +107,6 @@ void func_80028120(Object *obj, PlayerSubG *arg1, Vec4i *arg2) {
     arg2->x = D_800813E0.w.x;
     arg2->y = D_800813E0.w.y;
     arg2->z = D_800813E0.w.z;
-
 }
 
 void func_800281F8(s16 arg0, Vec4i *arg1, Vec4i *arg2) {
@@ -780,7 +779,7 @@ void func_80029EBC(Object *obj) {
     buttons = 0;
     playerId = obj->vars[0];
 
-    if (gPlayerInput[playerId].unk_08) {
+    if (gPlayerInput[playerId].accumulated) {
         buttons = gPlayerInput[playerId].buttons;
     }
 
@@ -802,7 +801,7 @@ void func_80029F58(Object *obj) {
     buttons = 0;
     playerId = obj->vars[0];
 
-    if (gPlayerInput[playerId].unk_08) {
+    if (gPlayerInput[playerId].accumulated) {
         buttons = gPlayerInput[playerId].buttons;
     }
 
@@ -835,7 +834,7 @@ void func_8002A050(Object *obj) {
     buttons = 0;
     playerId = obj->vars[0];
 
-    if (gPlayerInput[playerId].unk_08) {
+    if (gPlayerInput[playerId].accumulated) {
         buttons = gPlayerInput[playerId].buttons;
     }
 
@@ -857,7 +856,7 @@ void func_8002A0EC(Object *obj) {
     buttons = 0;
     playerId = obj->vars[0];
 
-    if (gPlayerInput[playerId].unk_08) {
+    if (gPlayerInput[playerId].accumulated) {
         buttons = gPlayerInput[playerId].buttons;
     }
 

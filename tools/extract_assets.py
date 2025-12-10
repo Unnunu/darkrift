@@ -3,7 +3,7 @@ from pathlib import Path
 from struct import unpack_from, calcsize, pack
 import subprocess
 from n64img.image import CI8
-import pprint
+from collections import OrderedDict
 
 ROMFILE = "darkrift.z64"
 RAW_ASSETS_PATH = "game_assets/raw"
@@ -205,11 +205,45 @@ def process_sym():
                 print(f"\t{l}", file=outf)
 
 def get_buttons(x):
+    if x == 0xFFFF:
+        return "ANY"
+    if x == 0x5FFF:
+        return "NO_LEFT_RIGHT"
+    if x == 0xAFFF:
+        return "NO_UP_DOWN"
+    if x == 0xBFFF:
+        return "NO_DOWN"
     names = ['L','A','R','B', 'CUP','CRIGHT','CDOWN','CLEFT','ZTRIG','','','START','UP','RIGHT','DOWN','LEFT']
     return '+'.join(names[i] for i in range(16) if (x & 2**i))
 
+
+def get_move_flags(x):
+    return ' | '.join(f"MF_{1<<i:x}" for i in range(16) if (x & 2**i))
+
+def read_sym(f):
+    content = f.read_bytes()
+    off1, off2, off3, off4 = unpack_from(">IIII", content)
+    off5 = len(content)
+    list1 = []
+    list2 = []
+    list3 = []
+    list4 = []
+    for off in range(off1, off2, 16):
+        list1.append(content[off:off+16].decode('ascii').rstrip('\x00'))
+    for off in range(off2, off3, 32):
+        list2.append(content[off:off+32].decode('ascii').rstrip('\x00'))
+    for off in range(off3, off4, 32):
+        list3.append(content[off:off+32].decode('ascii').rstrip('\x00'))
+    for off in range(off4, off5, 32):
+        list4.append(content[off:off+32].decode('ascii').rstrip('\x00'))
+    
+    return (list1, list2, list3, list4)
+
 def process_db():
     for g in Path(RAW_ASSETS_PATH).glob('**/*.DB'):
+
+        symbols = read_sym(g.with_suffix(".SYM"))
+
         content = g.read_bytes()
         dbdata = {}
         offs = unpack_from(">IIIIIIIIIIIIIIIII", content)
@@ -222,17 +256,38 @@ def process_db():
         dbdata["player_28"] = l
 
         l = []
+        i = 0
         for off in range(offs[1] + 4, offs[2], 28):
             e = unpack_from(">hHHHhhH14IIIH", content, off)
-            l.append({"index_in_field28":e[0], "buttons":get_buttons(e[1]), "flags":e[2], "unk06":e[3],
-                      "index_in_field24":e[4], "stateId":e[5], "button_mask":e[6], "unk0E":[e[7],e[8],e[9],e[10]]})
-        dbdata["player_2C"] = l
+            l.append({"name":symbols[0][i], "index":i, "index_in_field28":e[0], "buttons":get_buttons(e[1]), "flags":get_move_flags(e[2]), "unk06":e[3],
+                      "index_in_field24":f"f24_{e[4]}_", "stateId":e[5], "button_mask":get_buttons(e[6]), "unk0E":[e[7],e[8],e[9],e[10]]})
+            i += 1
+        dbdata["moveTable"] = l
 
-        l = []
+        # transition table
+        transGroups = {0:'ROOT'}
+        l = OrderedDict()
+        i = 0
+        newGroup = True
+        groupName = ''
         for off in range(offs[2], offs[3], 4):
             e = unpack_from(">hh", content, off)
-            l.append({"index_in_field2C":e[0], "next_move_maybe":e[1]})
-        dbdata["player_34"] = l
+            if e[0] == 0:
+                break
+
+            if newGroup:
+                groupName = transGroups[i]
+                l[groupName] = []
+                newGroup = False
+
+            if e[0] == -1:
+                newGroup = True
+            else:
+                if e[1] != -1:
+                    transGroups[e[1]] = dbdata["moveTable"][e[0]]["name"]
+                l[groupName].append({ "index": i, "moveId":e[0], "moveName": dbdata["moveTable"][e[0]]["name"], "next": e[1] })
+            i += 2
+        dbdata["transitionTable"] = l
 
         l = []
         for off in range(offs[3], offs[4], 4):
@@ -258,13 +313,49 @@ def process_db():
                       "unk_30":e[24], "unk_32":e[25], "flags":e[26]})
         dbdata["states"] = l
 
+        l = []
+        for off in range(offs[6] + 4, offs[7], 8):
+            e = unpack_from(">BBBBBBBB", content, off)
+            l.append({"sound1":e[0], "frame1":e[1], "sound2":e[2], "frame2":e[3],
+                      "sound3":e[4], "frame3":e[5], "sound4":e[6], "frame4":e[7]})
+        dbdata["sounds"] = l
+
+        l = []
+        e = unpack_from(">I", content, offs[7])
+        l.append({"unk_num": e[0]})
+        dbdata["player_6C"] = l
+
+        l = []
+        for off in range(offs[8], offs[9], 2):
+            e = unpack_from(">h", content, off)
+            l.append({"moveIndex":e[0]})
+        dbdata["player_38"] = l
+
+        l = []
+        for off in range(offs[9], offs[10], 1):
+            e = unpack_from(">B", content, off)
+            l.append({"frame":e[0]})
+        dbdata["player_44"] = l
+
+        l = []
+        for off in range(offs[10], offs[11], 76):
+            e = unpack_from(">B", content, off)
+            l.append({"frame":e[0]})
+        dbdata["player_48"] = l
+
         outpath = replace_path(g).with_name(f"{g.name}.txt")
         outpath.parent.mkdir(parents=True, exist_ok=True)
         with open(outpath, 'w') as outfile:
             for k,v in dbdata.items():
                 print(f"{k}:", file=outfile)
-                for l in v:
-                    print(f"\t{l}", file=outfile)
+                if isinstance(v, list):
+                    for l in v:
+                        print(f"\t{l}", file=outfile)
+                else:
+                    for l, m in v.items():
+                        print(f"\t{l}", file=outfile)
+                        for m1 in m:
+                            print(f"\t\t{m1}", file=outfile)
             
 
 def analyze():

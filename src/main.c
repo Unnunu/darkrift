@@ -232,7 +232,7 @@ void func_800019B0(s16 playerId) {
     counter = 6;
 
     sp33 = FALSE;
-    gPlayerInput[playerId].unk_08 = FALSE;
+    gPlayerInput[playerId].accumulated = FALSE;
 
     while (gTaskPool.count < 10 || gModelInstancePool.count <= 0) {
         func_8000132C();
@@ -272,14 +272,14 @@ void func_800019B0(s16 playerId) {
 
         alSeqpStop(gMusicPlayer);
 
-        sp34 = gPlayerInput[PLAYER_1].isMirrored;
-        sp35 = gPlayerInput[PLAYER_2].isMirrored;
+        sp34 = gPlayerInput[PLAYER_1].mirrored;
+        sp35 = gPlayerInput[PLAYER_2].mirrored;
         sp28 = D_8008012C & GFX_FLAG_10;
         D_8008012C |= GFX_FLAG_10;
 
         while (!(D_8005BFC0 & GAME_FLAG_40)) {
             if (gPlayMode != PLAY_MODE_PRACTICE) {
-                gPlayerInput[PLAYER_1].isMirrored = gPlayerInput[PLAYER_2].isMirrored = FALSE;
+                gPlayerInput[PLAYER_1].mirrored = gPlayerInput[PLAYER_2].mirrored = FALSE;
             }
             func_8000132C();
         }
@@ -287,10 +287,10 @@ void func_800019B0(s16 playerId) {
         if (!sp28) {
             D_8008012C &= ~GFX_FLAG_10;
         }
-        gPlayerInput[PLAYER_1].isMirrored = sp34;
-        gPlayerInput[PLAYER_2].isMirrored = sp35;
+        gPlayerInput[PLAYER_1].mirrored = sp34;
+        gPlayerInput[PLAYER_2].mirrored = sp35;
 
-        gPlayerInput[playerId].unk_08 = FALSE;
+        gPlayerInput[playerId].accumulated = FALSE;
         gIsPaused = FALSE;
         D_8005BFC0 &= ~GAME_FLAG_40;
         alSeqSetLoc(gMusicSequence, &gMusicMarkerStart);
@@ -336,11 +336,11 @@ void main_loop(void) {
 
     while (!(D_8005BFC0 & GAME_FLAG_MODE_DONE) || !(D_8005BFC0 & GAME_FLAG_1000)) {
         if (!(D_8005BFC0 & GAME_FLAG_200) && !(D_8005BFC0 & GAME_FLAG_4) && gPlayerInput[0].buttons == INP_START &&
-            gPlayerInput[PLAYER_1].enabled && gPlayerInput[PLAYER_1].unk_08) {
+            gPlayerInput[PLAYER_1].enabled && gPlayerInput[PLAYER_1].accumulated) {
             func_800019B0(PLAYER_1);
         } else if (!(D_8005BFC0 & GAME_FLAG_200) && !(D_8005BFC0 & GAME_FLAG_4) &&
                    gPlayerInput[PLAYER_2].buttons == INP_START && gPlayerInput[PLAYER_2].enabled &&
-                   gPlayerInput[PLAYER_2].unk_08) {
+                   gPlayerInput[PLAYER_2].accumulated) {
             func_800019B0(PLAYER_2);
         }
 

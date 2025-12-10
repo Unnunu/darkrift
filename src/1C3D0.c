@@ -13,11 +13,10 @@ u8 func_8001B7D0(Player *player, s16 arg1) {
 
 void func_8001B810(Player *player) {
     s32 v04;
-    s16* sp30;    
-    PlayerSubH* v1;
+    s16 *sp30;
+    PlayerSubH *v1;
     u16 sp2A;
-    s16 v02;    
-    
+    s16 v02;
 
     sp2A = gBattleSettings[player->playerId].unk_04;
     if (player->obj->playerHp == 0) {
@@ -30,9 +29,9 @@ void func_8001B810(Player *player) {
 
     if (player->unk_180 & 0x8000) {
         v1 = &player->unk_A8;
-        if (player->unk_94 != 0 && --player->unk_94 == 0) {
+        if (player->moveTimeout != 0 && --player->moveTimeout == 0) {
             func_8001BB2C(player);
-            if (player->unk_76 >= 0 && (player->unk_80 & 0x1000) && func_800069C0(player)) {
+            if (player->currentMoveId >= 0 && (player->flags & PLAYER_FLAG_1000) && func_800069C0(player)) {
                 player->unk_180 |= 0x8000;
             }
         } else if (v1->unk_BC != NULL) {
@@ -48,10 +47,10 @@ void func_8001B810(Player *player) {
             } else {
                 func_8001BB80(player);
             }
-        } else if (player->unk_94 == 0 && player->obj->frameIndex >= player->currentState->unk_02 - 1) {
-            player->unk_94 = 0x200;
+        } else if (player->moveTimeout == 0 && player->obj->frameIndex >= player->currentState->unk_02 - 1) {
+            player->moveTimeout = 512;
         }
-    } else if (!(player->unk_0C->flags & 4) && !(player->unk_80 & 0x400)) {
+    } else if (!(player->unk_0C->flags & 4) && !(player->flags & PLAYER_FLAG_400)) {
         if (func_80030BB0(player->obj) && !(player->currentState->flags & 0x80) && !(player->obj->flags & 0x800000)) {
             if (player->currentState->flags & 1) {
                 func_8001B7D0(player, 0x62);
@@ -64,42 +63,45 @@ void func_8001B810(Player *player) {
         }
 
         v04 = func_8001C404(player, &sp30);
-        if ((player->obj->flags & 0x800000) || (player->unk_80 & 0x2000)) {
+        if ((player->obj->flags & 0x800000) || (player->flags & PLAYER_FLAG_2000)) {
             return;
         }
 
-        if ((--player->unk_DBE <= 0 || (v04 & 0xFF) && !(*sp30 & 2)) && (player->currentState->flags & 5) || player->unk_A0->unk_19 != 0xFF) {
+        if ((--player->unk_DBE <= 0 || (v04 & 0xFF) && !(*sp30 & 2)) && (player->currentState->flags & 5) ||
+            player->unk_A0->unk_19 != 0xFF) {
             player->unk_DBE = D_80049D10[sp2A];
             player->unk_DBE += guRandom() & D_80049D24[sp2A];
 
-            if (!func_8001C53C(player, (player->unk_80 & 0x200000) != 0)) {
+            if (!func_8001C53C(player, (player->flags & PLAYER_FLAG_200000) != 0)) {
                 player->unk_DBE = 0;
             }
         }
     }
 }
 
+#ifdef NON_EQUIVALENT
 void func_8001BB2C(Player *player) {
     s32 temp;
     s32 temp2;
-    
+
     temp = player->unk_A8.unk_A8;
     temp2 = player->unk_A8.unk_AC;
     player->unk_A8.unk_A8 = 0;
     player->unk_A8.unk_B0 = temp2;
     player->unk_A8.unk_AC = temp;
-    
-    player->unk_A8.unk_BC = NULL;
-    player->unk_A8.unk_B4 = player->unk_A8.unk_B8 = NULL;    
-    player->unk_180 &= ~0x3C000;
-    player->unk_94 = 0;
-    
-    
 
-    if (player->unk_80 & 0x2000) {
+    player->unk_A8.unk_BC = NULL;
+    player->unk_A8.unk_B4 = player->unk_A8.unk_B8 = NULL;
+    player->unk_180 &= ~0x3C000;
+    player->moveTimeout = 0;
+
+    if (player->flags & PLAYER_FLAG_2000) {
         player->unk_180 |= 0x4000;
     }
 }
+#else
+#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001BB2C.s")
+#endif
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001BB80.s")
 

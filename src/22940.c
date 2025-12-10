@@ -58,7 +58,7 @@ void func_80021EA8(Object *obj, Object *obj2) {
 void func_80021EE8(Object *obj, PlayerSubG *arg1) {
     Player *player = (Player *) obj->vars[0];
 
-    player->unk_80 &= ~0x2000000;
+    player->flags &= ~PLAYER_FLAG_2000000;
 
     switch (player->characterId) {
         case AARON:
@@ -360,7 +360,7 @@ Object *func_800226E8(Object *obj, s32 arg1) {
             a2->unk_076 |= 2;
             a2->unk_076 |= 8;
             a2->unk_1E8 = func_80021EA8;
-            player->unk_80 |= 0x2000000;
+            player->flags |= PLAYER_FLAG_2000000;
         }
 
         if (s0->unk_2C & 0x40) {
@@ -544,7 +544,7 @@ void func_80022EC0(Object *obj) {
     sp38.z = obj->pos.z;
 
     if (func_8000EC70(&sp40, &s0->obj->pos, s0->unk_198.unk_2C + 80000, &sp38)) {
-        if (!(sp2C->unk_2C & 0x20) && !(player->unk_80 & 0x2000)) {
+        if (!(sp2C->unk_2C & 0x20) && !(player->flags & PLAYER_FLAG_2000)) {
             sp30 = player->unk_48 + sp2C->unk_42;
             if (func_80022B44(s0, player, obj)) {
                 sp30->unk_00 = 0x10;

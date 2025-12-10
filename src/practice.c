@@ -129,7 +129,7 @@ void practice_init_hud(void) {
 
     D_8013C40A = 0;
     D_8013C444 = 0;
-    gPlayers[1 - gPracticingPlayer].unk_80 |= 0x200000;
+    gPlayers[1 - gPracticingPlayer].flags |= PLAYER_FLAG_200000;
     gBattleSettings[1 - gPracticingPlayer].isCpu = FALSE;
 
     temp_v0_2 = create_ui_element(&D_80052ED0, &D_80052E4C, 0xABAB);
@@ -237,9 +237,9 @@ void func_800327D8(Object *obj) {
 
     func_80002178(160, NULL);
 
-    if (gPlayerInput[playerId].unk_08) {
+    if (gPlayerInput[playerId].accumulated) {
         buttons = gPlayerInput[playerId].raw_buttons;
-        gPlayerInput[playerId].unk_08 = FALSE;
+        gPlayerInput[playerId].accumulated = FALSE;
     }
 
     if (!buttons) {
@@ -427,7 +427,7 @@ void func_80032EDC(Object *obj) {
         case 64:
             obj->frameIndex = SPR_PRA_BLUE_ON;
             gPlayers[1 - gPracticingPlayer].unk_DBE = 50;
-            gPlayers[1 - gPracticingPlayer].unk_80 &= ~0x200000;
+            gPlayers[1 - gPracticingPlayer].flags &= ~PLAYER_FLAG_200000;
             break;
         case 66:
             if (D_8013C430 == 18) {
@@ -435,11 +435,11 @@ void func_80032EDC(Object *obj) {
             }
             obj->frameIndex = SPR_PRA_BLUE_COMBOS;
             func_80033AB0();
-            gPlayers[1 - gPracticingPlayer].unk_80 |= 0x200000;
+            gPlayers[1 - gPracticingPlayer].flags |= PLAYER_FLAG_200000;
             break;
         case 65:
             obj->frameIndex = SPR_PRA_BLUE_OFF;
-            gPlayers[1 - gPracticingPlayer].unk_80 |= 0x200000;
+            gPlayers[1 - gPracticingPlayer].flags |= PLAYER_FLAG_200000;
             break;
     }
 
@@ -702,8 +702,8 @@ void func_80033958(void) {
     s1 = *s0;
     while (s1 != 0) {
         t3 = s2->unk_38[s1];
-        tmp2 = s2->unk_34;
-        new_var = &s2->unk_2C[tmp2[t3]];
+        tmp2 = s2->transitionTable;
+        new_var = &s2->moveDataTable[tmp2[t3]];
         D_8013C410[D_8013C428++] = tmp2[t3];
         func_800336E4(new_var->buttons);
         s0++;
@@ -738,8 +738,8 @@ void func_80033AB0(void) {
     s1 = *s0;
     while (s1 != 0) {
         t3 = s2->unk_38[s1];
-        tmp2 = s2->unk_34;
-        new_var = &s2->unk_2C[tmp2[t3]];
+        tmp2 = s2->transitionTable;
+        new_var = &s2->moveDataTable[tmp2[t3]];
         D_8013C410[D_8013C428++] = tmp2[t3];
         func_800336E4(new_var->buttons);
         s0++;
@@ -757,9 +757,9 @@ void func_80033C38(void) {
         a2 = (D_8013C430 == 18) ? gPracticingPlayer : 1 - gPracticingPlayer;
 
         if (D_8013C42A < D_8013C428) {
-            new_var = &gPlayers[a2].unk_2C[D_8013C410[D_8013C42A]];
+            new_var = &gPlayers[a2].moveDataTable[D_8013C410[D_8013C42A]];
             gPlayerInput[a2].buttons = new_var->buttons;
-            gPlayerInput[a2].unk_08 = TRUE;
+            gPlayerInput[a2].accumulated = TRUE;
         } else {
             D_8013C444 = FALSE;
             gPlayerInput[gPracticingPlayer].enabled = TRUE;
@@ -828,7 +828,7 @@ void func_80033FB0(Object *obj) {
         return;
     }
 
-    if (gPlayerInput[gPracticingPlayer].isMirrored) {
+    if (gPlayerInput[gPracticingPlayer].mirrored) {
         if (obj->vars[2] != SPR_PRA_ARROW_LEFT) {
             if (obj->vars[2] == SPR_PRA_ARROW_RIGHT) {
                 obj->frameIndex = (q = (obj->frameIndex & 1) == 0) + SPR_PRA_ARROW_LEFT;

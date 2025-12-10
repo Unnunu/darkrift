@@ -125,8 +125,8 @@ typedef struct PlayerInput {
     /* 0x02 */ u16 prev_buttons;
     /* 0x04 */ u16 held_buttons;
     /* 0x06 */ u16 raw_buttons;
-    /* 0x08 */ u8 unk_08;
-    /* 0x09 */ u8 isMirrored;
+    /* 0x08 */ u8 accumulated;
+    /* 0x09 */ u8 mirrored;
     /* 0x0A */ u8 enabled;
     /* 0x0B */ u8 connected;
     /* 0x0C */ u8 unk_0C;
@@ -456,7 +456,7 @@ typedef struct PlayerSub8 {
     /* 0x04 */ u16 flags;
     /* 0x06 */ u16 unk_06;
     /* 0x08 */ s16 index_in_field24;
-    /* 0x0A */ s16 index_in_field20;
+    /* 0x0A */ s16 stateId;
     /* 0x0C */ u16 button_mask;
     /* 0x0E */ char unk_0E[0x19 - 0xE];
     /* 0x19 */ u8 unk_19;
@@ -473,7 +473,7 @@ typedef struct ObjectTaskSub {
         PlayerSub8 *unk_04_ptr;
     };
     /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
+    /* 0x0C */ s32 stateId;
     /* 0x10 */ ObjFunc unk_10;
     /* 0x14 */ char unk_14[4];
 } ObjectTaskSub; // size >= 0xC
@@ -523,7 +523,7 @@ typedef struct Texture {
 } Texture; // size = 0x2C
 
 typedef struct PlayerState {
-    /* 0x00 */ s16 unk_00;
+    /* 0x00 */ s16 duration;
     /* 0x02 */ s16 unk_02;
     /* 0x04 */ s16 unk_04;
     /* 0x06 */ s16 unk_06;
@@ -540,7 +540,7 @@ typedef struct PlayerState {
     /* 0x1C */ s16 unk_1C;
     /* 0x1E */ s16 unk_1E;
     /* 0x20 */ s16 damage;
-    /* 0x22 */ s16 unk_22;
+    /* 0x22 */ s16 soundTableIndex;
     /* 0x24 */ s16 unk_24;
     /* 0x26 */ s16 unk_26;
     /* 0x28 */ s16 unk_28;
@@ -554,7 +554,7 @@ typedef struct PlayerState {
 
 typedef struct PlayerSub5 {
     /* 0x00 */ s32 unk_00;
-    /* 0x04 */ ObjFunc unk_04;
+    /* 0x04 */ ObjFunc func_04;
     /* 0x08 */ ObjFunc unk_08;
     /* 0x0C */ u8 (*fn_check)(Object *);
     /* 0x10 */ s32 unk_10;
@@ -639,16 +639,16 @@ typedef struct PlayerSubB {
     /* 0x00 */ Struct9C unk_00[8];
 } PlayerSubB; // size = 0x18
 
-typedef struct PlayerSubC {
-    /* 0x00 */ u8 unk_00;
-    /* 0x01 */ u8 unk_01;
-    /* 0x02 */ u8 unk_02;
-    /* 0x03 */ u8 unk_03;
-    /* 0x04 */ u8 unk_04;
-    /* 0x05 */ u8 unk_05;
-    /* 0x06 */ u8 unk_06;
-    /* 0x07 */ u8 unk_07;
-} PlayerSubC; // size = 0x8
+typedef struct AnimationSoundTriggers {
+    /* 0x00 */ u8 soundId1;
+    /* 0x01 */ u8 frame1;
+    /* 0x02 */ u8 soundId2;
+    /* 0x03 */ u8 frame2;
+    /* 0x04 */ u8 soundId3;
+    /* 0x05 */ u8 frame3;
+    /* 0x06 */ u8 soundId4;
+    /* 0x07 */ u8 frame4;
+} AnimationSoundTriggers; // size = 0x8
 
 typedef struct PlayerSubD {
     /* 0x00 */ s16 unk_00;
@@ -657,8 +657,8 @@ typedef struct PlayerSubD {
 
 typedef struct PlayerSubE {
     /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
-    /* 0x04 */ s16 unk_04;
+    /* 0x02 */ s16 frameIndex;
+    /* 0x04 */ s16 stateId;
     /* 0x06 */ s16 unk_06;
 } PlayerSubE; // size = 0x8
 
@@ -670,7 +670,7 @@ typedef struct PlayerSubF {
     /* 0x08 */ s16 unk_08;
     /* 0x0A */ s16 unk_0A;
     /* 0x0C */ s16 unk_0C;
-    /* 0x0E */ s16 unk_0E;
+    /* 0x0E */ s16 moveTimeout;
 } PlayerSubF; // size = 0x10
 
 typedef struct PlayerSubG {
@@ -708,7 +708,7 @@ typedef struct PlayerSubH {
     /* 0x00B0 */ s32 unk_B0;
     /* 0x00B4 */ s16 *unk_B4;
     /* 0x00B8 */ s16 *unk_B8;
-    /* 0x00BC */ s16 (*unk_BC)(struct Player*);
+    /* 0x00BC */ s16 (*unk_BC)(struct Player *);
 } PlayerSubH;
 
 typedef struct Player {
@@ -717,19 +717,19 @@ typedef struct Player {
     /* 0x0006 */ s16 characterId;
     /* 0x0008 */ ObjectTask *unk_08;
     /* 0x000C */ ObjectTask *unk_0C;
-    /* 0x0010 */ ObjectTask *unk_10;
+    /* 0x0010 */ ObjectTask *audioTask;
     /* 0x0014 */ ObjectTask *unk_14;
     /* 0x0018 */ ObjectTask *unk_18;
     /* 0x001C */ PlayerSubE *unk_1C;
     /* 0x0020 */ PlayerState *states;
-    /* 0x0024 */ PlayerSub5 *unk_24;
+    /* 0x0024 */ PlayerSub5 *table_24;
     /* 0x0028 */ PlayerSubF *unk_28;
-    /* 0x002C */ PlayerSub8 *unk_2C;
+    /* 0x002C */ PlayerSub8 *moveDataTable;
     /* 0x0030 */ PlayerSubD *unk_30;
-    /* 0x0034 */ s16 *unk_34;
+    /* 0x0034 */ s16 *transitionTable;
     /* 0x0038 */ s16 *unk_38;
     /* 0x003C */ s32 unk_3C;
-    /* 0x0040 */ PlayerSubC *unk_40;
+    /* 0x0040 */ AnimationSoundTriggers *soundTable;
     /* 0x0044 */ u8 *unk_44;
     /* 0x0048 */ PlayerSubG *unk_48;
     /* 0x004C */ PlayerSubB *unk_4C;
@@ -744,17 +744,17 @@ typedef struct Player {
     /* 0x0070 */ s16 unk_70;
     /* 0x0072 */ s16 unk_72;
     /* 0x0074 */ s16 unk_74;
-    /* 0x0076 */ s16 unk_76;
+    /* 0x0076 */ s16 currentMoveId;
     /* 0x0078 */ s16 unk_78;
     /* 0x007A */ s16 unk_7A;
     /* 0x007C */ s16 unk_7C;
     /* 0x007E */ s16 stateId;
-    /* 0x0080 */ s32 unk_80;
+    /* 0x0080 */ s32 flags;
     /* 0x0084 */ s32 unk_84;
     /* 0x0088 */ PlayerSubF *unk_88;
     /* 0x008C */ s32 unk_8C;
     /* 0x0090 */ PlayerState *currentState;
-    /* 0x0094 */ s16 unk_94;
+    /* 0x0094 */ s16 moveTimeout;
     /* 0x0096 */ s16 unk_96;
     /* 0x0098 */ PlayerSub5 *unk_98;
     /* 0x009C */ PlayerSubB *unk_9C;
@@ -770,7 +770,7 @@ typedef struct Player {
     /* 0x0180 */ s32 unk_180;
     /* 0x0184 */ u8 unk_184;
     /* 0x0186 */ s16 unk_186;
-    /* 0x0188 */ s16 unk_188;
+    /* 0x0188 */ s16 prevStateId;
     /* 0x018A */ s16 unk_18A;
     /* 0x018C */ s32 unk_18C;
     /* 0x0190 */ s32 unk_190;
