@@ -210,7 +210,7 @@ void practice_enter_pause(s32 playerId) {
     D_8013C458 = D_8013C458;
     D_8013C45C = D_8013C45D = D_8013C45E = D_8013C45F = FALSE;
     gIsPaused = TRUE;
-    D_8013C460->flags |= 4;
+    D_8013C460->flags |= OBJ_FLAG_HIDDEN;
 }
 
 void func_80032750(Object *obj) {
@@ -337,11 +337,11 @@ void func_800327D8(Object *obj) {
             case 118:
                 D_8005BFC0 |= GAME_FLAG_80 | GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
                 gNextGameMode = GAME_MODE_MAIN_MENU;
-                obj->flags |= 0x10;
+                obj->flags |= OBJ_FLAG_DELETE;
                 return;
             case 112:
                 D_8005BFC0 |= GAME_FLAG_40;
-                obj->flags |= 0x10;
+                obj->flags |= OBJ_FLAG_DELETE;
                 gPracticePauseMenuSelection = D_8013C450;
                 D_8013C430 = D_8013C448;
                 D_8013C434 = D_8013C44C;
@@ -350,19 +350,19 @@ void func_800327D8(Object *obj) {
                 return;
             case 117:
                 D_8005BFC0 |= GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
-                obj->flags |= 0x10;
+                obj->flags |= OBJ_FLAG_DELETE;
                 gNextGameMode = GAME_MODE_PLAYER_SELECTION;
                 return;
         }
 
         D_8005BFC0 |= GAME_FLAG_40;
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
     }
 }
 
 void func_80032CEC(Object *obj) {
     if (D_8005BFC0 & GAME_FLAG_40) {
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
     }
     func_80015724(obj);
 }
@@ -458,9 +458,9 @@ void func_8003307C(Object *obj) {
             characterId--;
         }
         obj->frameIndex = characterId + SPR_PRA_AARON;
-        obj->flags &= ~4;
+        obj->flags &= ~OBJ_FLAG_HIDDEN;
     } else {
-        obj->flags |= 4;
+        obj->flags |= OBJ_FLAG_HIDDEN;
     }
 
     func_80032CEC(obj);
@@ -475,9 +475,9 @@ void func_80033124(Object *obj) {
             characterId--;
         }
         obj->frameIndex = characterId + SPR_PRA_AARON;
-        obj->flags &= ~4;
+        obj->flags &= ~OBJ_FLAG_HIDDEN;
     } else {
-        obj->flags |= 4;
+        obj->flags |= OBJ_FLAG_HIDDEN;
     }
 
     func_80032CEC(obj);
@@ -485,10 +485,10 @@ void func_80033124(Object *obj) {
 
 void func_800331D0(Object *obj) {
     if (D_8013C430 == 18) {
-        obj->flags &= ~4;
+        obj->flags &= ~OBJ_FLAG_HIDDEN;
         obj->frameIndex = D_8013C43C + SPR_PRA_RED_DIGIT_1;
     } else {
-        obj->flags |= 4;
+        obj->flags |= OBJ_FLAG_HIDDEN;
     }
 
     if (D_8013C45E) {
@@ -499,10 +499,10 @@ void func_800331D0(Object *obj) {
 
 void func_80033250(Object *obj) {
     if (D_8013C434 == 66) {
-        obj->flags &= ~4;
+        obj->flags &= ~OBJ_FLAG_HIDDEN;
         obj->frameIndex = D_8013C440 + SPR_PRA_RED_DIGIT_1;
     } else {
-        obj->flags |= 4;
+        obj->flags |= OBJ_FLAG_HIDDEN;
     }
 
     if (D_8013C45F) {
@@ -550,7 +550,7 @@ void func_800333F4(void) {
 
     for (i = 0; i < 12; i++) {
         D_8013C3D8[i] = create_ui_element(&sp4C, &D_80052E38, 0xABAB);
-        D_8013C3D8[i]->flags |= 4;
+        D_8013C3D8[i]->flags |= OBJ_FLAG_HIDDEN;
         task_clear(D_8013C3D8[i]->taskList);
         D_8013C3D8[i]->taskList = NULL;
         sp4C.x += 20;
@@ -569,7 +569,7 @@ void func_8003355C(void) {
     s32 i;
 
     for (i = 0; i < 12; i++) {
-        D_8013C3D8[i]->flags |= 0x10;
+        D_8013C3D8[i]->flags |= OBJ_FLAG_DELETE;
     }
 }
 
@@ -577,7 +577,7 @@ void func_800335BC(void) {
     s16 i;
 
     for (i = 0; i < 12; i++) {
-        D_8013C3D8[i]->flags |= 4;
+        D_8013C3D8[i]->flags |= OBJ_FLAG_HIDDEN;
     }
 
     D_8013C408 = D_8013C40A = 0;
@@ -604,7 +604,7 @@ void func_8003360C(u16 arg0) {
         }
 
         v0->frameIndex = arg0;
-        v0->flags &= ~4;
+        v0->flags &= ~OBJ_FLAG_HIDDEN;
         v0->vars[2] = arg0;
     }
 }
@@ -682,7 +682,7 @@ void func_80033958(void) {
     Player *s2;
     s16 *s0;
     s16 s1;
-    PlayerSub8 *new_var;
+    TransitionDef *new_var;
     s16 **q;
     s16 *tmp2;
     s16 t3;
@@ -702,8 +702,8 @@ void func_80033958(void) {
     s1 = *s0;
     while (s1 != 0) {
         t3 = s2->unk_38[s1];
-        tmp2 = s2->transitionTable;
-        new_var = &s2->moveDataTable[tmp2[t3]];
+        tmp2 = s2->logicStates;
+        new_var = &s2->transitionTable[tmp2[t3]];
         D_8013C410[D_8013C428++] = tmp2[t3];
         func_800336E4(new_var->buttons);
         s0++;
@@ -718,7 +718,7 @@ void func_80033AB0(void) {
     Player *s2;
     s16 *s0;
     s16 s1;
-    PlayerSub8 *new_var;
+    TransitionDef *new_var;
     s16 **q;
     s16 *tmp2;
     s16 t3;
@@ -738,8 +738,8 @@ void func_80033AB0(void) {
     s1 = *s0;
     while (s1 != 0) {
         t3 = s2->unk_38[s1];
-        tmp2 = s2->transitionTable;
-        new_var = &s2->moveDataTable[tmp2[t3]];
+        tmp2 = s2->logicStates;
+        new_var = &s2->transitionTable[tmp2[t3]];
         D_8013C410[D_8013C428++] = tmp2[t3];
         func_800336E4(new_var->buttons);
         s0++;
@@ -751,13 +751,13 @@ void func_80033AB0(void) {
 
 void func_80033C38(void) {
     u16 a2;
-    PlayerSub8 *new_var;
+    TransitionDef *new_var;
 
     if (--D_8013C42C <= 0) {
         a2 = (D_8013C430 == 18) ? gPracticingPlayer : 1 - gPracticingPlayer;
 
         if (D_8013C42A < D_8013C428) {
-            new_var = &gPlayers[a2].moveDataTable[D_8013C410[D_8013C42A]];
+            new_var = &gPlayers[a2].transitionTable[D_8013C410[D_8013C42A]];
             gPlayerInput[a2].buttons = new_var->buttons;
             gPlayerInput[a2].accumulated = TRUE;
         } else {
@@ -784,7 +784,7 @@ void func_80033D64(void) {
     }
 
     if (player->unk_74 == D_8013C410[D_8013C42A]) {
-        func_800337C8(player->unk_A0->buttons);
+        func_800337C8(player->currentTransition->buttons);
         D_8013C42A++;
         if (D_8013C444) {
             func_80033C38();
@@ -798,15 +798,15 @@ void func_80033D64(void) {
 
 void func_80033E94(Object *obj) {
     if (D_8013C430 != 18 && D_8013C434 != 66) {
-        obj->flags |= 4;
+        obj->flags |= OBJ_FLAG_HIDDEN;
         return;
     }
 
     if (--obj->vars[0] < 0 && D_8013C444 == 0) {
-        obj->flags ^= 4;
+        obj->flags ^= OBJ_FLAG_HIDDEN;
         obj->vars[0] = 12;
     } else if (D_8013C444 != 0) {
-        obj->flags &= ~4;
+        obj->flags &= ~OBJ_FLAG_HIDDEN;
     }
 
     if (gPlayerInput[gPracticingPlayer].buttons == INP_A) {
@@ -823,7 +823,7 @@ void func_80033E94(Object *obj) {
 
 void func_80033FB0(Object *obj) {
     s32 q;
-    if (D_8013C430 != 18 || (obj->flags & 4)) {
+    if (D_8013C430 != 18 || (obj->flags & OBJ_FLAG_HIDDEN)) {
         func_80015724(obj);
         return;
     }

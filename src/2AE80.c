@@ -1,4 +1,5 @@
 #include "common.h"
+#include "task.h"
 
 s32 D_80052310 = 0x10000000;
 s32 D_80052314 = 0;
@@ -19,8 +20,8 @@ void func_8002A288(Object *obj) {
 
     obj->frameIndex++;
     if (obj->frameIndex >= obj->modInst->numAnimFrames) {
-        obj->currentTask->flags |= 0x80;
-        obj->flags |= 0x10;
+        TASK_END(obj->currentTask);
+        obj->flags |= OBJ_FLAG_DELETE;
         D_8008012C &= ~GFX_FLAG_10;
     }
 
@@ -45,10 +46,10 @@ void func_8002A288(Object *obj) {
             } else {
                 sp38->vars[0] = 160 / sp38->modInst->numAnimFrames;
             }
-            sp38->flags |= 0x2000;
+            sp38->flags |= OBJ_FLAG_2000;
         }
-        obj->currentTask->flags |= 0x80;
-        obj->flags |= 0x10;
+        TASK_END(obj->currentTask);
+        obj->flags |= OBJ_FLAG_DELETE;
     }
 
     obj->unk_1FC += 16;
@@ -68,7 +69,7 @@ void func_8002A4E0(Object *obj) {
         if (v0 != NULL) {
             v0->unk_088.a = 160;
             v0->vars[1] = 160 / v0->modInst->numAnimFrames;
-            v0->flags |= 0x2000;
+            v0->flags |= OBJ_FLAG_2000;
             v0->varObj[0] = player;
             v0->vars[6] = obj->vars[6];
             func_8003453C(v0, &sp28[player->playerId]);
@@ -86,7 +87,7 @@ void func_8002A4E0(Object *obj) {
         if (v0 != NULL) {
             v0->unk_088.a = 160;
             v0->vars[1] = 160 / v0->modInst->numAnimFrames;
-            v0->flags |= 0x2000;
+            v0->flags |= OBJ_FLAG_2000;
             v0->varObj[0] = player;
             v0->vars[6] = obj->vars[6];
             func_8003453C(v0, &sp28[player->playerId]);
@@ -100,14 +101,14 @@ void func_8002A4E0(Object *obj) {
         if (v0 != NULL) {
             v0->unk_088.a = 160;
             v0->vars[1] = 160 / v0->modInst->numAnimFrames;
-            v0->flags |= 0x2000;
+            v0->flags |= OBJ_FLAG_2000;
             v0->varObj[0] = player;
             v0->vars[6] = obj->vars[6];
             func_8003453C(v0, &sp28[player->playerId]);
             sound_play(player->playerId, 10);
         }
     } else if (obj->vars[1] == 24) {
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
     }
 
     obj->vars[1]++;

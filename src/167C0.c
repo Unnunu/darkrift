@@ -32,7 +32,7 @@ void func_80015BC0(Object *obj) {
 
     gBattleSettings[PLAYER_1].isCpu = gBattleSettings[PLAYER_2].isCpu = FALSE;
     gBattleSettings[PLAYER_1].unk_08 = gBattleSettings[PLAYER_2].unk_08 = 0;
-    obj->flags |= 0x10;
+    obj->flags |= OBJ_FLAG_DELETE;
 }
 
 void func_80015C58(Object *obj) {
@@ -54,7 +54,7 @@ void func_80015C58(Object *obj) {
 
 void func_80015CD8(Object *obj) {
     if (--obj->vars[1] <= 0) {
-        obj->flags &= ~4;
+        obj->flags &= ~OBJ_FLAG_HIDDEN;
         if (obj->frameIndex == 0 && obj->vars[2] != -1) {
             sound_play(2, obj->vars[2]);
         }
@@ -66,7 +66,7 @@ void func_80015CD8(Object *obj) {
 }
 
 void func_80015D60(Object *obj) {
-    obj->flags &= ~4;
+    obj->flags &= ~OBJ_FLAG_HIDDEN;
     if (obj->frameIndex == 0 && obj->vars[2] != -1) {
         sound_play(2, obj->vars[2]);
     }
@@ -77,8 +77,8 @@ void func_80015D60(Object *obj) {
                 obj->unk_088.a -= obj->vars[0];
             } else {
                 obj->unk_088.a = 0;
-                obj->currentTask->flags |= 0x80;
-                obj->flags |= 0x10;
+                TASK_END(obj->currentTask);
+                obj->flags |= OBJ_FLAG_DELETE;
             }
         }
     } else {
@@ -91,8 +91,8 @@ void func_80015E24(Object *obj) {
         if (obj->vars[0] < obj->unk_088.a) {
             obj->unk_088.a -= obj->vars[0];
         } else {
-            obj->currentTask->flags |= 0x80;
-            obj->flags |= 0x10;
+            TASK_END(obj->currentTask);
+            obj->flags |= OBJ_FLAG_DELETE;
         }
     }
 }
@@ -112,17 +112,17 @@ Object *func_80015E74(Unk80015E74 *arg0, s32 arg1) {
     obj = create_model_instance(&sp7C, 0x1000, arg0->unk_08, a3);
 
     if (obj != NULL) {
-        obj->flags |= 0x1000000;
+        obj->flags |= OBJ_FLAG_1000000;
 
         obj->vars[1] = arg0->unk_04;
-        obj->flags |= 0x800;
+        obj->flags |= OBJ_FLAG_800;
         if (arg0->unk_06 != 0) {
             obj->unk_088.a = 128;
             obj->vars[0] = arg0->unk_06;
-            obj->flags |= 0x2000;
+            obj->flags |= OBJ_FLAG_2000;
         }
         obj->vars[2] = arg0->unk_0C;
-        obj->currentTask->counter = 2;
+        obj->currentTask->start_delay = 2;
     }
 
     return obj;
@@ -130,9 +130,9 @@ Object *func_80015E74(Unk80015E74 *arg0, s32 arg1) {
 
 void func_80015F60(Object *arg0, Object *arg1) {
     D_8013C23C->currentTask->func = func_80016A00;
-    D_8013C23C->currentTask->counter = 0;
-    D_8013C23C->currentTask->flags = 1;
-    D_8013C23C->currentTask->counter = 30;
+    D_8013C23C->currentTask->start_delay = 0;
+    D_8013C23C->currentTask->flags = TASK_FLAG_ENABLED;
+    D_8013C23C->currentTask->start_delay = 30;
 }
 
 Object *func_80015FB4(s16 arg0) {
@@ -154,8 +154,8 @@ Object *func_80016020(s32 characterId, s32 arg1, u32 playerId) {
     obj = func_80015E74(D_8004C0C8 + characterId, playerId);
 
     if (obj != NULL) {
-        obj->currentTask->counter = arg1;
-        obj->flags |= 4;
+        obj->currentTask->start_delay = arg1;
+        obj->flags |= OBJ_FLAG_HIDDEN;
         if (gBattleSettings[playerId].isCpu) {
             obj->vars[2] = 7;
         }
@@ -186,7 +186,7 @@ u16 func_800160C8(s32 arg0) {
 void func_80016144(Object *obj) {
     Object *unkObj;
 
-    obj->flags &= ~4;
+    obj->flags &= ~OBJ_FLAG_HIDDEN;
     if ((gPlayerInput[1 - D_8013C24C].buttons & INP_DIRECTION) && obj->vars[1] == 0) {
         if (obj->frameIndex < obj->modInst->numAnimFrames) {
             obj->frameIndex += 30;
@@ -203,8 +203,8 @@ void func_80016144(Object *obj) {
                 obj->unk_088.a -= obj->vars[0];
             } else {
                 obj->unk_088.a = 0;
-                obj->currentTask->flags |= 0x80;
-                obj->flags |= 0x10;
+                TASK_END(obj->currentTask);
+                obj->flags |= OBJ_FLAG_DELETE;
             }
         }
     } else {
@@ -216,8 +216,8 @@ void func_80016264(void) {
     Object *obj;
 
     for (obj = gObjectList; obj != NULL; obj = obj->nextObject) {
-        if ((obj->flags & 0x4000) || (obj->flags & 2)) {
-            obj->flags |= 0x10;
+        if ((obj->flags & OBJ_FLAG_4000) || (obj->flags & OBJ_FLAG_3DSPRITE)) {
+            obj->flags |= OBJ_FLAG_DELETE;
         }
     }
 }
@@ -233,7 +233,7 @@ void func_800162A4(Object *obj) {
     func_80005B70(PLAYER_1);
     func_80005B70(PLAYER_2);
 
-    obj->flags |= 0x10;
+    obj->flags |= OBJ_FLAG_DELETE;
     D_8013C224 = gFrameCounter % 5;
     D_8013C226 = 0;
 
@@ -243,29 +243,29 @@ void func_800162A4(Object *obj) {
 
     v0 = obj->varObj[4];
     if (v0 != NULL) {
-        v0->flags |= 0x10;
+        v0->flags |= OBJ_FLAG_DELETE;
     }
     if (D_80081440 != NULL) {
-        D_80081440->flags |= 0x10;
+        D_80081440->flags |= OBJ_FLAG_DELETE;
     }
     if (D_80081448 != NULL) {
-        D_80081448->flags |= 0x10;
+        D_80081448->flags |= OBJ_FLAG_DELETE;
     }
     if (D_8008144C != NULL) {
-        D_8008144C->flags |= 0x10;
+        D_8008144C->flags |= OBJ_FLAG_DELETE;
     }
     if (D_80081450 != NULL) {
-        D_80081450->flags |= 0x10;
+        D_80081450->flags |= OBJ_FLAG_DELETE;
     }
     if (D_80081444 != NULL) {
-        D_80081444->flags |= 0x10;
+        D_80081444->flags |= OBJ_FLAG_DELETE;
     }
     if (D_80081454 != NULL) {
-        D_80081454->flags |= 0x10;
+        D_80081454->flags |= OBJ_FLAG_DELETE;
     }
 
     gCamera->currentTask->func = func_8002DEFC;
-    gCamera->currentTask->counter = 0;
+    gCamera->currentTask->start_delay = 0;
     gCameraTarget.x = gCameraTarget.z = 0;
     gCameraTarget.y = -400;
     D_8013C834 = FALSE;
@@ -313,8 +313,8 @@ void func_800162A4(Object *obj) {
     model_update_animated_params(gPlayers[PLAYER_2].obj);
     gPlayers[PLAYER_1].obj->previousFrameIndex = gPlayers[PLAYER_1].obj->frameIndex;
     gPlayers[PLAYER_2].obj->previousFrameIndex = gPlayers[PLAYER_2].obj->frameIndex;
-    gPlayers[PLAYER_1].unk_0C->flags &= ~4;
-    gPlayers[PLAYER_2].unk_0C->flags &= ~4;
+    gPlayers[PLAYER_1].animTask->flags &= ~TASK_FLAG_FRAME_TRIGGER;
+    gPlayers[PLAYER_2].animTask->flags &= ~TASK_FLAG_FRAME_TRIGGER;
 
     D_8008020C = 0x800;
     func_80029130();
@@ -326,9 +326,9 @@ u32 func_8001675C(Player *player, s32 arg1, u32 arg2) {
 
     func_8000636C(player, arg1, TRUE);
 
-    temp = player->unk_0C->unk_08.unk_04;
-    if (arg2 < player->states[temp].unk_02 + 0x78) {
-        res = player->states[temp].unk_02 + 0x78;
+    temp = player->animTask->params.unk_04;
+    if (arg2 < player->stateTable[temp].unk_02 + 0x78) {
+        res = player->stateTable[temp].unk_02 + 0x78;
     } else {
         res = arg2;
     }
@@ -363,16 +363,16 @@ void func_800168F0(Object *obj) {
 
     if (--obj->vars[1] < 0 && func_800167D4()) {
         D_8005BFC0 |= GAME_FLAG_MODE_DONE;
-        obj->currentTask->flags |= 0x80;
+        TASK_END(obj->currentTask);
         D_8005BFC0 |= GAME_FLAG_20;
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
     }
 
     if (--obj->vars[0] < 0) {
         D_8005BFC0 |= GAME_FLAG_MODE_DONE;
-        obj->currentTask->flags |= 0x80;
+        TASK_END(obj->currentTask);
         D_8005BFC0 |= GAME_FLAG_20;
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
     }
 }
 
@@ -432,7 +432,7 @@ void func_80016B6C(Object *obj) {
 
         v0 = obj->varObj[3];
         if (v0 != NULL) {
-            v0->flags |= 4;
+            v0->flags |= OBJ_FLAG_HIDDEN;
             v0->currentTask->func = task_default_func;
         }
 
@@ -457,7 +457,7 @@ void func_80016C34(Object *obj) {
         obj->currentTask->func = func_80016B6C;
         a1 = obj->varObj[4];
         if (a1 != NULL) {
-            a1->flags |= 0x10;
+            a1->flags |= OBJ_FLAG_DELETE;
         }
         gPlayerInput[D_8013C24C].accumulated = FALSE;
         obj->varObj[4] = obj->varObj[5];
@@ -524,7 +524,7 @@ void func_80016F6C(Object *obj) {
     obj->currentTask->func = v02;
 
     D_8005BFC0 &= ~GAME_FLAG_200;
-    gPlayers[1 - D_8013C24C].obj->flags |= 4;
+    gPlayers[1 - D_8013C24C].obj->flags |= OBJ_FLAG_HIDDEN;
     gPlayers[D_8013C24C].obj->pos.x = gPlayers[D_8013C24C].obj->pos.y = gPlayers[D_8013C24C].obj->pos.z = 0;
     gPlayers[1 - D_8013C24C].obj->pos.x = gPlayers[1 - D_8013C24C].obj->pos.y = gPlayers[1 - D_8013C24C].obj->pos.z = 0;
 
@@ -536,10 +536,10 @@ void func_80016F6C(Object *obj) {
     gCameraTarget.y = -400;
 
     if (gBattleSettings[D_8013C24C].characterId != MORPHIX) {
-        gPlayers[D_8013C24C].obj->flags |= 0x10000000;
+        gPlayers[D_8013C24C].obj->flags |= OBJ_FLAG_10000000;
     }
 
-    gPlayers[D_8013C24C].obj->flags &= ~0x8800000;
+    gPlayers[D_8013C24C].obj->flags &= ~(OBJ_FLAG_8000000 | OBJ_FLAG_800000);
 }
 
 void func_800171EC(Object *obj) {
@@ -551,7 +551,7 @@ void func_800171EC(Object *obj) {
     a3 = func_80016880;
 
     if (v0 != NULL) {
-        v0->currentTask->counter = 5;
+        v0->currentTask->start_delay = 5;
     }
 
     D_80081444 = v0;
@@ -584,7 +584,7 @@ void func_80017304(Object *obj) {
     if (--obj->vars[0] > 0) {
         if ((gPlayerInput[PLAYER_1].buttons & INP_START) || (gPlayerInput[PLAYER_2].buttons & INP_START)) {
             a0 = obj->varObj[4];
-            a0->flags |= 0x10;
+            a0->flags |= OBJ_FLAG_DELETE;
 
             if (gPlayerInput[PLAYER_1].buttons & INP_START) {
                 gPlayerInput[PLAYER_1].accumulated = FALSE;
@@ -611,22 +611,22 @@ void func_800173DC(Object *obj) {
         if (--gPlayers[PLAYER_1].moveTimeout > 20) {
             gPlayers[PLAYER_1].moveTimeout = 20;
         } else {
-            player_handle_input(&gPlayers[PLAYER_1], TRUE);
+            player_select_transition(&gPlayers[PLAYER_1], TRUE);
         }
     } else if (gPlayers[PLAYER_2].flags & PLAYER_FLAG_80) {
         if (--gPlayers[PLAYER_2].moveTimeout > 20) {
             gPlayers[PLAYER_2].moveTimeout = 20;
         } else {
-            player_handle_input(&gPlayers[PLAYER_2], TRUE);
+            player_select_transition(&gPlayers[PLAYER_2], TRUE);
         }
     } else if ((gPlayers[PLAYER_1].flags & PLAYER_FLAG_40000) && (gPlayers[PLAYER_2].flags & PLAYER_FLAG_40000)) {
-        if ((gPlayers[PLAYER_1].currentState->flags & 1) && gPlayers[PLAYER_1].stateId != 4) {
+        if ((gPlayers[PLAYER_1].currentState->flags & STATE_FLAG_1) && gPlayers[PLAYER_1].stateId != 4) {
             func_8000636C(&gPlayers[PLAYER_1], 320, FALSE);
         } else if (gPlayers[PLAYER_1].stateId != 17) {
             func_8000636C(&gPlayers[PLAYER_1], 68, FALSE);
         }
 
-        if ((gPlayers[PLAYER_2].currentState->flags & 1) && gPlayers[PLAYER_2].stateId != 4) {
+        if ((gPlayers[PLAYER_2].currentState->flags & STATE_FLAG_1) && gPlayers[PLAYER_2].stateId != 4) {
             func_8000636C(&gPlayers[PLAYER_2], 320, FALSE);
         } else if (gPlayers[PLAYER_2].stateId != 17) {
             func_8000636C(&gPlayers[PLAYER_2], 68, FALSE);
@@ -635,7 +635,7 @@ void func_800173DC(Object *obj) {
         gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
 
         obj->currentTask->func = func_80017304;
-        obj->currentTask->counter = 10;
+        obj->currentTask->start_delay = 10;
         obj->vars[0] = 80;
         D_80080234 = TRUE;
     }
@@ -649,15 +649,15 @@ void func_800175B0(Object *obj) {
 
 void func_800175D8(Object *obj) {
     if (++obj->vars[0] & 8) {
-        obj->flags &= ~4;
+        obj->flags &= ~OBJ_FLAG_HIDDEN;
     } else {
-        obj->flags |= 4;
+        obj->flags |= OBJ_FLAG_HIDDEN;
     }
 }
 
 void func_80017614(Object *obj) {
     if (D_80080234) {
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
     }
     func_800175D8(obj);
 }
@@ -672,7 +672,7 @@ void func_80017650(Object *obj) {
         D_80080234 = TRUE;
     }
     obj->currentTask->func = func_800177C0;
-    obj->currentTask->counter = 45;
+    obj->currentTask->start_delay = 45;
     func_80016264();
 }
 
@@ -683,7 +683,7 @@ void func_80017728(Object *obj) {
         if (gPlayerInput[D_8013C24C].buttons & INP_START) {
             a0 = obj->varObj[4];
             if (a0 != NULL) {
-                a0->flags |= 0x10;
+                a0->flags |= OBJ_FLAG_DELETE;
             }
 
             if (gPlayerInput[PLAYER_1].buttons & INP_START) {
@@ -756,7 +756,7 @@ void func_8001792C(Object *obj) {
         }
 
         D_80080234 = FALSE;
-        obj->currentTask->counter = 45;
+        obj->currentTask->start_delay = 45;
     }
 }
 
@@ -767,11 +767,11 @@ void func_80017A90(Object *obj) {
     if (++obj->vars[0] > 900) {
         gNextGameMode = GAME_MODE_29;
         D_8005BFC0 |= GAME_FLAG_MODE_DONE;
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
     } else if ((gPlayerInput[PLAYER_1].buttons & INP_START) || (gPlayerInput[PLAYER_2].buttons & INP_START)) {
         D_8005BFC0 |= GAME_FLAG_MODE_DONE;
         gNextGameMode = GAME_MODE_MAIN_MENU;
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
     }
 }
 
@@ -801,7 +801,7 @@ void func_80017B3C(Object *obj) {
 
 void func_80017C3C(Object *obj) {
     obj->currentTask->func = func_80017B3C;
-    obj->currentTask->counter = func_80015FB4(0)->modInst->numAnimFrames + 20;
+    obj->currentTask->start_delay = func_80015FB4(0)->modInst->numAnimFrames + 20;
 }
 
 void func_80017C88(Object *obj) {
@@ -827,9 +827,9 @@ void func_80017CA8(void) {
     }
 
     D_8013C23C->currentTask->func = func_80017C3C;
-    D_8013C23C->currentTask->counter = 0;
-    D_8013C23C->currentTask->flags = 1;
-    D_8013C23C->currentTask->counter =
+    D_8013C23C->currentTask->start_delay = 0;
+    D_8013C23C->currentTask->flags = TASK_FLAG_ENABLED;
+    D_8013C23C->currentTask->start_delay =
         func_800160C8(gBattleSettings[PLAYER_1].unk_08 + gBattleSettings[PLAYER_2].unk_08);
     D_80081440 = D_80081448 = D_8008144C = D_80081450 = D_80081454 = D_80081444 = NULL;
 }

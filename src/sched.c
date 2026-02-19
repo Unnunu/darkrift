@@ -99,14 +99,14 @@ void func_80002978(void) {
     gDPPipeSync(gMainGfxPos++);
     gDPSetCycleType(gMainGfxPos++, G_CYC_FILL);
 
-    if (!(D_8008012C & GFX_FLAG_8)) {
+    if (!(D_8008012C & GFX_FLAG_ZBUFFER)) {
         gDPSetDepthImage(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(D_80080120));
         gDPSetColorImage(gMainGfxPos++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, VIRTUAL_TO_PHYSICAL(D_80080120));
         gDPSetFillColor(gMainGfxPos++, GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0));
         gDPFillRectangle(gMainGfxPos++, 0, 0, gScreenWidth - 1, gScreenHeight - 1);
-        D_800801E2 = 0;
+        D_800801E2 = FALSE;
     } else {
-        D_800801E2 = 1;
+        D_800801E2 = TRUE;
     }
 
     gDPSetColorImage(gMainGfxPos++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, 0x01000000);

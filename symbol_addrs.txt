@@ -400,5 +400,5 @@ gAudioStereo = 0x8004A428;
 gNumRounds = 0x8004C1D0;
 gDifficulty = 0x8004C1E4;
 
-player_update = 0x80003C04;
-player_test_move = 0x80005EE4;
+player_make_transition = 0x80005EE4;
+player_update = 0x80003DA4;

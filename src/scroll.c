@@ -286,7 +286,7 @@ void func_80015724(Object *obj) {
     raster = texture->data;
     palette = texture->data + texture->width * texture->height;
 
-    if (obj->flags & 0x4000000) {
+    if (obj->flags & OBJ_FLAG_4000000) {
         dlist = &gOverlayGfxPos;
         D_8008012C |= GFX_FLAG_OVERLAY;
     } else {
@@ -297,7 +297,7 @@ void func_80015724(Object *obj) {
 
     task_execute(obj);
 
-    if (obj->flags & 4) {
+    if (obj->flags & OBJ_FLAG_HIDDEN) {
         return;
     }
 

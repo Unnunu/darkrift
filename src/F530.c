@@ -1,4 +1,5 @@
 #include "common.h"
+#include "task.h"
 
 extern ColorRGBA D_800499A0;
 extern ColorRGBA D_800499A4;
@@ -17,9 +18,9 @@ void func_8000E930(Object *obj) {
             }
         }
     } else {
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
         D_8008012C &= ~GFX_FLAG_10;
-        obj->currentTask->flags |= 0x80;
+        TASK_END(obj->currentTask);
     }
 }
 
@@ -36,8 +37,8 @@ void func_8000E9D8(Object *obj) {
         }
     } else {
         D_8008012C &= ~GFX_FLAG_10;
-        obj->flags |= 0x10;
-        obj->currentTask->flags |= 0x80;
+        obj->flags |= OBJ_FLAG_DELETE;
+        TASK_END(obj->currentTask);
     }
 }
 
@@ -58,7 +59,7 @@ void func_8000EA80(Vec4s *pos, u8 isBlocked, Object *arg2, ColorRGBA *arg3) {
         v0 = create_model_instance(&sp24, 0x1000, func_8000E9D8, D_80081278);
         if (v0 != NULL) {
             v0->vars[0] = 255 / (v0->modInst->numAnimFrames - 2);
-            v0->flags |= 0x2000;
+            v0->flags |= OBJ_FLAG_2000;
             func_8003453C(v0, &D_800499A4);
             v0->unk_088.a = 255;
         }
@@ -71,7 +72,7 @@ void func_8000EA80(Vec4s *pos, u8 isBlocked, Object *arg2, ColorRGBA *arg3) {
         v0 = create_model_instance(&sp24, 0x1000, func_8000E930, D_80081274);
         if (v0 != NULL) {
             v0->vars[0] = 255 / (v0->modInst->numAnimFrames - 12);
-            v0->flags |= 0x2000;
+            v0->flags |= OBJ_FLAG_2000;
             func_8003453C(v0, &D_800499A0);
             v0->unk_088.a = 255;
         }
@@ -160,8 +161,8 @@ Vec4s *func_8000ED50(Vec4s *arg0, Vec4i *arg1, u32 arg2, Vec4s *arg3, Vec4s *arg
 }
 
 #ifdef NON_MATCHING
-s32 func_8000F074(Player *player1, Player *player2, PlayerState *arg2) {
-    PlayerState *sub3;
+s32 func_8000F074(Player *player1, Player *player2, ActionState *arg2) {
+    ActionState *sub3;
     s32 hp;
     s32 pad;
     s16 pad2;
@@ -174,52 +175,53 @@ s32 func_8000F074(Player *player1, Player *player2, PlayerState *arg2) {
     sub3 = player1->currentState;
     t0 = sub3->flags;
 
-    if ((t0 & 0xA) && player1->obj->pos.y + player1->obj->modInst->rootTransform.local_matrix.w.y > -400.0f &&
+    if ((t0 & (STATE_FLAG_2 | STATE_FLAG_8)) &&
+        player1->obj->pos.y + player1->obj->modInst->rootTransform.local_matrix.w.y > -400.0f &&
         player1->unk_198.unk_14->y - player1->unk_198.unk_08->y > 200.0f) {
-        t0 &= ~0xA;
-        t0 |= 4;
+        t0 &= ~(STATE_FLAG_2 | STATE_FLAG_8);
+        t0 |= STATE_FLAG_4;
     }
 
-    v1 = (t0 & 0x80) && (player1->obj->frameIndex >= 12);
+    v1 = (t0 & STATE_FLAG_80) && (player1->obj->frameIndex >= 12);
 
-    if (t0 & 0x4000) {
-        if (t0 & 4) {
+    if (t0 & STATE_FLAG_4000) {
+        if (t0 & STATE_FLAG_4) {
             a3 = arg2->unk_0E;
         } else {
             a3 = arg2->unk_10;
         }
-    } else if (t0 & 0x10000) {
+    } else if (t0 & STATE_FLAG_10000) {
         a3 = arg2->unk_1C;
-    } else if (t0 & 0x20000) {
+    } else if (t0 & STATE_FLAG_20000) {
         a3 = arg2->unk_14;
-    } else if ((t0 & 0x400) && arg2->unk_1E != 0) {
-        if (t0 & 0x200) {
+    } else if ((t0 & STATE_FLAG_400) && arg2->unk_1E != 0) {
+        if (t0 & STATE_FLAG_200) {
             a3 = 206;
         } else {
             a3 = 97;
         }
     } else if (func_80030BB0(player1->obj) && !v1) {
-        if (t0 & 0xE) {
+        if (t0 & (STATE_FLAG_2 | STATE_FLAG_4 | STATE_FLAG_8)) {
             a3 = arg2->unk_16;
-        } else if (t0 & 1) {
+        } else if (t0 & STATE_FLAG_1) {
             a3 = arg2->unk_18;
         }
 
-        if (t0 & 0xA) {
+        if (t0 & (STATE_FLAG_2 | STATE_FLAG_8)) {
             a3 = arg2->unk_1A;
         } else {
             player1->obj->pos.y = 0;
         }
 
-        player1->obj->flags &= ~0x800000;
+        player1->obj->flags &= ~OBJ_FLAG_800000;
     } else {
-        if (t0 & 0xE) {
+        if (t0 & (STATE_FLAG_2 | STATE_FLAG_4 | STATE_FLAG_8)) {
             a3 = arg2->unk_0A;
-        } else if (t0 & 1) {
+        } else if (t0 & STATE_FLAG_1) {
             a3 = arg2->unk_0C;
         }
 
-        if (t0 & 0xA) {
+        if (t0 & (STATE_FLAG_2 | STATE_FLAG_8)) {
             a3 = arg2->unk_12;
         } else {
             player1->obj->pos.y = 0;
@@ -251,15 +253,15 @@ s32 func_8000F074(Player *player1, Player *player2, PlayerState *arg2) {
         if (hp == 0) {
             D_8005BFC0 |= GAME_FLAG_200;
             if (player1->flags & PLAYER_FLAG_NOT_FACING_OPP) {
-                if (t0 & 4) {
+                if (t0 & STATE_FLAG_4) {
                     a3 = 118;
-                } else if (t0 & 1) {
+                } else if (t0 & STATE_FLAG_1) {
                     a3 = 81;
                 }
             } else {
-                if (t0 & 4) {
+                if (t0 & STATE_FLAG_4) {
                     a3 = 70;
-                } else if (t0 & 1) {
+                } else if (t0 & STATE_FLAG_1) {
                     a3 = 73;
                 }
             }
@@ -271,19 +273,19 @@ s32 func_8000F074(Player *player1, Player *player2, PlayerState *arg2) {
     return a3;
 }
 #else
-s32 func_8000F074(Player *arg0, Player *arg1, PlayerState *arg2);
+s32 func_8000F074(Player *arg0, Player *arg1, ActionState *arg2);
 #pragma GLOBAL_ASM("asm/nonmatchings/F530/func_8000F074.s")
 #endif
 
 void func_8000F3FC(Player *arg0, Player *arg1, Vec4s *arg2) {
     s32 v0;
     s16 isBlock;
-    PlayerState *q;
+    ActionState *state;
 
-    q = arg1->currentState;
+    state = arg1->currentState;
 
     if (!D_800801F0 || D_8013C250) {
-        v0 = func_8000F074(arg0, arg1, q);
+        v0 = func_8000F074(arg0, arg1, state);
         isBlock = v0 == 270 || v0 == 271;
         if (v0 != 0) {
             func_8000EA80(arg2, isBlock, arg0->obj, NULL);
@@ -434,7 +436,7 @@ void func_8000FB30(Player *arg0, Player *arg1) {
     sp44.y = arg19->unk_20->y;
     sp44.z = arg19->unk_20->z;
 
-    v0 = (arg1->currentState->flags & 0x1000) || (sp4C.y < -200);
+    v0 = (arg1->currentState->flags & STATE_FLAG_1000) || (sp4C.y < -200);
 
     if (sp4C.y < arg09->unk_20->y) {
         a2 = arg09->unk_2C;
@@ -470,7 +472,7 @@ void func_8000FB30(Player *arg0, Player *arg1) {
         a2 = arg09->unk_30;
     }
 
-    v0 = (arg1->currentState->flags & 0x800) || (sp4C.y < -200);
+    v0 = (arg1->currentState->flags & STATE_FLAG_800) || (sp4C.y < -200);
 
     if (v0) {
         v02 = func_8000ED50(&sp54, sp5C, a2, &sp44, &sp4C);

@@ -210,13 +210,13 @@ Object *camera_create(void) {
     obj->velocity.x = obj->velocity.y = obj->velocity.z = 0;
     obj->rotation.x = obj->rotation.y = obj->rotation.z = 0;
 
-    obj->flags = 0x20;
+    obj->flags = OBJ_FLAG_CAMERA;
     obj->previousFrameIndex = -1;
 
     obj->taskList = (ObjectTask *) GET_ITEM(gTaskPool);
     obj->currentTask = obj->taskList;
-    obj->currentTask->counter = 0;
-    obj->currentTask->flags = 1;
+    obj->currentTask->start_delay = 0;
+    obj->currentTask->flags = TASK_FLAG_ENABLED;
     obj->currentTask->func = task_default_func;
     obj->currentTask->stackPos = 0;
     obj->currentTask->next = NULL;
@@ -253,14 +253,14 @@ Object *camera_create(void) {
     D_80053030[0] = NULL;
     obj->modInst->unk_A20 = obj->modInst->unk_A1C = obj->modInst->anotherVel.z = 0;
 
-    obj->flags |= 0x20400;
-    obj->flags &= ~0x8000;
+    obj->flags |= OBJ_FLAG_20000 | OBJ_FLAG_400;
+    obj->flags &= ~OBJ_FLAG_8000;
 
     obj->modInst->currentAnimId = obj->modInst->previousAnimId = -3;
 
     camera_default_view();
 
-    obj->flags |= 0x20;
+    obj->flags |= OBJ_FLAG_CAMERA;
     D_8013C59C = D_8013C5A0 = 0.0f;
     D_8013C834 = FALSE;
 

@@ -1,20 +1,21 @@
 #include "common.h"
+#include "task.h"
 
 void func_80022428(Object *obj, Object *obj2);
 void func_80022EC0(Object *);
 
 void func_80021D40(Object *obj) {
     if (++obj->frameIndex >= obj->modInst->numAnimFrames) {
-        obj->currentTask->flags |= 0x80;
-        obj->flags |= 0x10;
+        TASK_END(obj->currentTask);
+        obj->flags |= OBJ_FLAG_DELETE;
     }
 
     if (obj->unk_088.a >= obj->vars[0]) {
         obj->unk_088.a -= obj->vars[0];
     } else {
         obj->unk_088.a = 0;
-        obj->currentTask->flags |= 0x80;
-        obj->flags |= 0x10;
+        TASK_END(obj->currentTask);
+        obj->flags |= OBJ_FLAG_DELETE;
     }
 }
 
@@ -32,15 +33,15 @@ void func_80021DC4(Object *obj) {
 
 void func_80021E34(Object *obj) {
     Player *player = (Player *) obj->vars[0];
-    PlayerState *state;
+    ActionState *state;
 
-    state = &player->states[player->stateId];
+    state = &player->stateTable[player->stateId];
     if (state->unk_28 >= 0) {
         player->unk_9C = &player->unk_4C[state->unk_28];
         player->unk_194 = NULL;
         obj->currentTask->func = func_80021DC4;
     } else {
-        obj->currentTask->flags |= 0x80;
+        TASK_END(obj->currentTask);
     }
 }
 
@@ -66,21 +67,21 @@ void func_80021EE8(Object *obj, PlayerSubG *arg1) {
             if (obj->vars[3] == 1) {
                 obj->currentTask->func = func_8002A870;
             } else {
-                obj->currentTask->flags |= 0x80;
-                obj->flags |= OBJ_FLAG_10;
+                TASK_END(obj->currentTask);
+                obj->flags |= OBJ_FLAG_DELETE;
                 D_8008012C &= ~GFX_FLAG_10;
             }
             return;
         case GORE:
-            obj->currentTask->flags |= 0x80;
-            obj->flags |= OBJ_FLAG_10;
+            TASK_END(obj->currentTask);
+            obj->flags |= OBJ_FLAG_DELETE;
             D_8008012C &= ~GFX_FLAG_10;
             return;
     }
 
     D_8008012C &= ~GFX_FLAG_10;
-    obj->currentTask->flags |= 0x80;
-    obj->flags |= OBJ_FLAG_10;
+    TASK_END(obj->currentTask);
+    obj->flags |= OBJ_FLAG_DELETE;
 }
 
 void func_80021FEC(Object *obj) {
@@ -124,8 +125,8 @@ void func_80021FEC(Object *obj) {
                 obj->unk_088.a -= obj->vars[9];
             } else {
                 obj->unk_088.a = 0;
-                obj->currentTask->flags |= 0x80;
-                obj->flags |= 0x10;
+                TASK_END(obj->currentTask);
+                obj->flags |= OBJ_FLAG_DELETE;
             }
         }
     }
@@ -228,8 +229,8 @@ void func_80022428(Object *obj, Object *obj2) {
     v2 = player->unk_48 + v1->unk_42;
 
     obj->unk_07C = obj->unk_07A = 0;
-    obj->flags |= OBJ_FLAG_10;
-    obj->currentTask->flags |= 0x80;
+    obj->flags |= OBJ_FLAG_DELETE;
+    TASK_END(obj->currentTask);
 
     v2->unk_00 = 0x10;
     v2->unk_2C |= 0x10;
@@ -262,8 +263,8 @@ void func_8002250C(Object *obj, Object *arg1) {
     }
 
     obj->unk_07C = obj->unk_07A = 0;
-    obj->flags |= OBJ_FLAG_10;
-    obj->currentTask->flags |= 0x80;
+    obj->flags |= OBJ_FLAG_DELETE;
+    TASK_END(obj->currentTask);
 
     sp30.x = 0;
     sp30.y = 0;
@@ -341,7 +342,7 @@ Object *func_800226E8(Object *obj, s32 arg1) {
         }
 
         a2->flags |= OBJ_FLAG_HIDDEN;
-        a2->currentTask->counter = s0->unk_1E;
+        a2->currentTask->start_delay = s0->unk_1E;
         player->unk_194 = a2;
     }
 
@@ -414,10 +415,10 @@ Object *func_800226E8(Object *obj, s32 arg1) {
 
 u8 func_80022B44(Player *arg0, Player *arg1, Object *arg2) {
     s16 v0;
-    PlayerState *a2;
+    ActionState *a2;
     u8 isBlock;
 
-    a2 = (PlayerState *) arg2->vars[6];
+    a2 = (ActionState *) arg2->vars[6];
 
     if (D_800801F0 && !D_8013C250) {
         return FALSE;
@@ -487,7 +488,8 @@ u8 func_80022CD0(Object *obj) {
 
             // a2->unk_40 += 22;
             // obj->unk_1FC = a2->unk_40;
-            if (FAST_HYPOT(dx, dz) < (obj->unk_1FC = a2->unk_40 += 22) && !(sp20->currentState->flags & 0xA)) {
+            if (FAST_HYPOT(dx, dz) < (obj->unk_1FC = a2->unk_40 += 22) &&
+                !(sp20->currentState->flags & (STATE_FLAG_2 | STATE_FLAG_8))) {
                 func_80022BB0(obj, sp20, a2, FALSE);
 
                 sp44.x = playerPos->x;
@@ -528,7 +530,7 @@ void func_80022EC0(Object *obj) {
     player = (Player *) obj->vars[0];
     s0 = gPlayers + (player->playerId != PLAYER_1 ? PLAYER_1 : PLAYER_2);
 
-    if (s0->currentState->flags & 0x40000) {
+    if (s0->currentState->flags & STATE_FLAG_40000) {
         return;
     }
     if (func_80022CD0(obj)) {

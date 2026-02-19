@@ -1,5 +1,6 @@
 #include "common.h"
 #include "sprite_ids.h"
+#include "task.h"
 
 #define VAR_PLAYER_ID 0
 #define VAR_SPRITE_ID_SUM 1
@@ -201,20 +202,20 @@ void func_8001E378(Object *obj) {
 
         if (gPlayMode == PLAY_MODE_TOURNAMENT_P1 || gPlayMode == PLAY_MODE_TOURNAMENT_P2) {
             sp34 = (gPlayMode == PLAY_MODE_TOURNAMENT_P2);
-            gCharacterPortrait[sp34]->currentTask->flags |= 0x80;
+            TASK_END(gCharacterPortrait[sp34]->currentTask);
             sp3C[sp34]->vars[7] = 20;
             func_8001E540(gCharacterPortrait[sp34], sp38);
             gCharacterPortrait[1 - sp34]->vars[6] = func_8001E188(1 - sp34);
         } else {
-            gCharacterPortrait[PLAYER_1]->currentTask->flags |= 0x80;
-            gCharacterPortrait[PLAYER_2]->currentTask->flags |= 0x80;
+            TASK_END(gCharacterPortrait[PLAYER_1]->currentTask);
+            TASK_END(gCharacterPortrait[PLAYER_2]->currentTask);
             sp3C[PLAYER_1]->vars[7] = 20;
             sp3C[PLAYER_2]->vars[7] = 20;
             func_8001E540(gCharacterPortrait[PLAYER_1], sp38);
             func_8001E540(gCharacterPortrait[PLAYER_2], sp38);
         }
 
-        obj->currentTask->flags |= 0x80;
+        TASK_END(obj->currentTask);
         return;
     }
 
@@ -222,7 +223,7 @@ void func_8001E378(Object *obj) {
     ones = tmp - tens * 10;
     obj->frameIndex = ones;
     a1->frameIndex = tens;
-    obj->currentTask->counter = 60;
+    obj->currentTask->start_delay = 60;
 }
 
 void func_8001E540(Object *obj, Object *arg1) {
@@ -258,7 +259,7 @@ void func_8001E624(Object *obj) {
     if (buttons & INP_START) {
         sound_play(2, gAudioStereo != 0 ? 0 : playerId + 4);
         func_8001E540(obj, obj->varObj[5]);
-        obj->currentTask->flags |= 0x80;
+        TASK_END(obj->currentTask);
     } else if (buttons & (INP_LEFT | INP_RIGHT)) {
         a0 = obj->varObj[9];
         if (playerId == PLAYER_1 && (buttons & INP_LEFT) || playerId == PLAYER_2 && (buttons & INP_RIGHT)) {
@@ -368,13 +369,13 @@ void func_8001EA24(Object *obj) {
 
     if (gCharacterPortrait[sp36]->vars[1] & INP_START) {
         v0 = obj->varObj[3];
-        v0->flags |= 0x10;
+        v0->flags |= OBJ_FLAG_DELETE;
         v0 = obj->varObj[4];
-        v0->flags |= 0x10;
-        sp2C->flags |= 0x10;
-        sp28->flags |= 0x10;
-        sp24->flags |= 0x10;
-        obj->flags |= 0x10;
+        v0->flags |= OBJ_FLAG_DELETE;
+        sp2C->flags |= OBJ_FLAG_DELETE;
+        sp28->flags |= OBJ_FLAG_DELETE;
+        sp24->flags |= OBJ_FLAG_DELETE;
+        obj->flags |= OBJ_FLAG_DELETE;
     }
 
     v02 = func_8001E5D8(sp36);
@@ -441,7 +442,7 @@ void func_8001EB58(Object *obj) {
     obj->vars[1] = 0;
     obj->vars[9] = s2b;
     obj->currentTask->func = func_8001E624;
-    obj->currentTask->counter = 20;
+    obj->currentTask->start_delay = 20;
 }
 
 void plyrsel_portrait_update_2(Object *obj) {
@@ -481,7 +482,7 @@ void plyrsel_portrait_update_2(Object *obj) {
         func_8001E540(obj, unkObj);
         unkObj = obj->varObj[4];
         unkObj->vars[7] = 20;
-        obj->currentTask->flags |= 0x80;
+        TASK_END(obj->currentTask);
         return;
     }
 
@@ -568,7 +569,7 @@ void plyrsel_portrait_update(Object *obj) {
                 if (gPlayMode == PLAY_MODE_TOURNAMENT_P1 || gPlayMode == PLAY_MODE_TOURNAMENT_P2) {
                     gCharacterPortrait[1 - a3]->vars[6] = func_8001E188(1 - a3);
                 }
-                obj->currentTask->flags |= 0x80;
+                TASK_END(obj->currentTask);
             }
         } else if (v1 & (INP_LEFT | INP_RIGHT)) {
             sound_play(2, 6 + a3);
@@ -608,7 +609,7 @@ void plyrsel_player_label_update(Object *obj) {
 
         if (--obj->vars[7] == 0) {
             obj->frameIndex = obj->vars[0] * 2 + 86;
-            obj->currentTask->flags |= 0x80;
+            TASK_END(obj->currentTask);
         }
     }
 }
@@ -620,7 +621,7 @@ void plyrsel_image_vs_update(Object *obj) {
 
     if (obj->vars[8] == 2) {
         obj->vars[8] = 3;
-        obj->currentTask->counter = 10;
+        obj->currentTask->start_delay = 10;
         gCharacterPortrait[0]->flags |= OBJ_FLAG_4000000;
         gCharacterPortrait[1]->flags |= OBJ_FLAG_4000000;
         return;
@@ -630,8 +631,8 @@ void plyrsel_image_vs_update(Object *obj) {
         obj->vars[8] = 4;
         gCharacterPortrait[0]->flags |= OBJ_FLAG_4000000;
         gCharacterPortrait[1]->flags |= OBJ_FLAG_4000000;
-        obj->flags &= ~4;
-        obj->currentTask->counter = 20;
+        obj->flags &= ~OBJ_FLAG_HIDDEN;
+        obj->currentTask->start_delay = 20;
         return;
     }
 
@@ -660,7 +661,7 @@ void plyrsel_image_vs_update(Object *obj) {
         gBattleSettings[obj->vars[11]].unk_06++;
     }
 
-    obj->currentTask->flags |= 0x80;
+    TASK_END(obj->currentTask);
 }
 
 void plyrsel_practice_cpu_update(Object *obj) {
@@ -675,7 +676,7 @@ void plyrsel_practice_cpu_update(Object *obj) {
     playerId = obj->vars[0];
     playerLabel = gCharacterPortrait[playerId]->varObj[4];
     if (playerLabel->vars[7]) {
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
     }
 }
 
@@ -800,12 +801,12 @@ void run_player_selection_mode(void) {
     gCharacterPortrait[0] = create_ui_element(&portrait_p1_pos, &portrait_p1, CONTEXT_EEFF);
     gCharacterPortrait[0]->vars[0] = PLAYER_1;
     gCharacterPortrait[0]->frameIndex = char_p1;
-    gCharacterPortrait[0]->currentTask->counter = 20;
+    gCharacterPortrait[0]->currentTask->start_delay = 20;
 
     gCharacterPortrait[1] = create_ui_element(&portrait_p2_pos, &portrait_p2, CONTEXT_EEFF);
     gCharacterPortrait[1]->vars[0] = PLAYER_2;
     gCharacterPortrait[1]->frameIndex = char_p2;
-    gCharacterPortrait[1]->currentTask->counter = 20;
+    gCharacterPortrait[1]->currentTask->start_delay = 20;
 
     player_labels[0] = create_ui_element(&label_player1_pos, &label_player1, CONTEXT_EEFF);
     player_labels[0]->vars[0] = PLAYER_1;
@@ -814,9 +815,9 @@ void run_player_selection_mode(void) {
     player_labels[1]->vars[0] = PLAYER_2;
 
     image_vs_obj = create_ui_element(&image_vs_pos, &image_vs, CONTEXT_EEFF);
-    image_vs_obj->flags |= 4;
+    image_vs_obj->flags |= OBJ_FLAG_HIDDEN;
     image_vs_obj->vars[11] = -1;
-    image_vs_obj->flags |= 0x4000000;
+    image_vs_obj->flags |= OBJ_FLAG_4000000;
 
     tens_obj = create_ui_element(&counter_tens_pos, &counter_tens, CONTEXT_EEFF);
     obj = create_ui_element(&counter_ones_pos, &counter_ones, CONTEXT_EEFF);
@@ -834,12 +835,12 @@ void run_player_selection_mode(void) {
         case PLAY_MODE_TOURNAMENT_P2:
             player1 = (gPlayMode == PLAY_MODE_TOURNAMENT_P2);
             gCharacterPortrait[1 - player1]->currentTask->func = plyrsel_portrait_update_2;
-            gCharacterPortrait[1 - player1]->currentTask->counter = 0;
-            gCharacterPortrait[1 - player1]->currentTask->flags = 1;
+            gCharacterPortrait[1 - player1]->currentTask->start_delay = 0;
+            gCharacterPortrait[1 - player1]->currentTask->flags = TASK_FLAG_ENABLED;
 
             if (gBattleSettings[player1].unk_08 != 0) {
                 gCharacterPortrait[1 - player1]->vars[6] = func_8001E188(1 - player1);
-                gCharacterPortrait[player1]->currentTask->flags |= 0x80;
+                TASK_END(gCharacterPortrait[player1]->currentTask);
                 player_labels[player1]->vars[7] = 20;
                 image_vs_obj->vars[8] = 1;
                 image_vs_obj->vars[9 + player1] = gBattleSettings[player1].characterId;
@@ -847,13 +848,13 @@ void run_player_selection_mode(void) {
             break;
         case PLAY_MODE_30:
             gCharacterPortrait[0]->currentTask->func = plyrsel_portrait_update_2;
-            gCharacterPortrait[0]->currentTask->counter = 0;
-            gCharacterPortrait[0]->currentTask->flags = 1;
+            gCharacterPortrait[0]->currentTask->start_delay = 0;
+            gCharacterPortrait[0]->currentTask->flags = TASK_FLAG_ENABLED;
             gCharacterPortrait[0]->vars[6] = func_8001E188(0);
 
             gCharacterPortrait[1]->currentTask->func = plyrsel_portrait_update_2;
-            gCharacterPortrait[1]->currentTask->counter = 0;
-            gCharacterPortrait[1]->currentTask->flags = 1;
+            gCharacterPortrait[1]->currentTask->start_delay = 0;
+            gCharacterPortrait[1]->currentTask->flags = TASK_FLAG_ENABLED;
             gCharacterPortrait[1]->vars[6] = func_8001E188(1);
             break;
         case PLAY_MODE_2_PLAYERS:

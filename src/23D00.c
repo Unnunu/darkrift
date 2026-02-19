@@ -41,11 +41,11 @@ BatchInfo D_800AA3B8;
 Gfx D_800AA410[4];
 
 void func_80023100(BatchInfo *batch, Gfx *gfx) {
-    batch->header.unk_00 = 0;
+    batch->header.triMask = 0;
     batch->header.unk_0B = 1;
     batch->header.unk_04 = 0;
-    batch->header.numVertices = 15;
-    batch->header.unk_09 = 0;
+    batch->header.vtxNum = 15;
+    batch->header.vtxOffset = 0;
     batch->header.numTriangles = 5;
     batch->header.texGfx = gfx;
 
@@ -113,7 +113,7 @@ void func_80023200(void) {
 
     func_80023100(&D_800AA3B8, D_800AA410);
 
-    D_800AA3B8.header.numTriangles = D_800AA3B8.header.numVertices = 0;
+    D_800AA3B8.header.numTriangles = D_800AA3B8.header.vtxNum = 0;
     gDPSetPrimColor(&D_800AA410[0], 0, 0, 255, 255, 255, 255);
 }
 
@@ -131,10 +131,10 @@ void func_800234E4(UnkTheta *arg0) {
         s2 -= 5;
         s00 = &arg0->unk_00[arg0->unk_1328];
         if (s2 < 0) {
-            s00->header.numVertices = (s2 + 5) * 3;
+            s00->header.vtxNum = (s2 + 5) * 3;
             s00->header.numTriangles = s2 + 5;
         } else {
-            s00->header.numVertices = 15;
+            s00->header.vtxNum = 15;
             s00->header.numTriangles = 5;
         }
 
@@ -181,7 +181,7 @@ void func_80023628(Object *obj) {
 
     if (D_8005BFC0 & GAME_FLAG_2000) {
         D_800AA3B0[s2->unk_1680] = FALSE;
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
         return;
     }
 
@@ -246,7 +246,7 @@ void func_80023628(Object *obj) {
 
     if (t0) {
         D_800AA3B0[s2->unk_1680] = FALSE;
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
         return;
     }
 
@@ -321,10 +321,10 @@ void func_80023628(Object *obj) {
         v1 -= 5;
         s00 = &s2->unk_00[s2->unk_1328];
         if (v1 < 0) {
-            s00->header.numVertices = (v1 + 5) * 3;
+            s00->header.vtxNum = (v1 + 5) * 3;
             s00->header.numTriangles = v1 + 5;
         } else {
-            s00->header.numVertices = 15;
+            s00->header.vtxNum = 15;
             s00->header.numTriangles = 5;
         }
 

@@ -382,10 +382,10 @@ void func_80001FB0(s32 arg0, Vtx *arg1) {
         arg1 = &D_800492B0[D_8005BFCE * 4];
     }
 
-    D_8005BF00.header.unk_00 = 0;
+    D_8005BF00.header.triMask = 0;
     D_8005BF00.header.unk_04 = 0;
-    D_8005BF00.header.numVertices = 4;
-    D_8005BF00.header.unk_09 = 0;
+    D_8005BF00.header.vtxNum = 4;
+    D_8005BF00.header.vtxOffset = 0;
     D_8005BF00.header.numTriangles = 2;
     D_8005BF00.header.unk_0B = 2;
     D_8005BF00.header.texGfx = &D_8005BF58;
@@ -425,10 +425,10 @@ void func_80002178(s32 arg0, Vtx *vertices) {
         vertices = &D_800492B0[D_8005BFCE << 2];
     }
 
-    D_8005BF00.header.unk_00 = 0;
+    D_8005BF00.header.triMask = 0;
     D_8005BF00.header.unk_04 = 0;
-    D_8005BF00.header.numVertices = 4;
-    D_8005BF00.header.unk_09 = 0;
+    D_8005BF00.header.vtxNum = 4;
+    D_8005BF00.header.vtxOffset = 0;
     D_8005BF00.header.numTriangles = 2;
     D_8005BF00.header.unk_0B = 2;
     D_8005BF00.header.texGfx = D_8005BF58;
@@ -463,7 +463,7 @@ void func_80002178(s32 arg0, Vtx *arg1);
 void func_80002340(Object *obj) {
     if (D_8005BEFC - 8 < D_80080118) {
         D_8008012C &= ~GFX_FLAG_10;
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
         D_8005BFC0 |= GAME_FLAG_100;
 
         if (obj->vars[4] == 0) {
@@ -501,8 +501,8 @@ void func_80002448(Object *obj) {
         obj->vars[4] = 1;
     }
     D_8005BFC0 |= GAME_FLAG_4;
-    if (obj->flags & 0x10) {
-        obj->flags &= ~0x10;
+    if (obj->flags & OBJ_FLAG_DELETE) {
+        obj->flags &= ~OBJ_FLAG_DELETE;
         obj->fn_render = func_800023E4;
     }
     func_80002178(255, NULL);
@@ -514,7 +514,7 @@ void func_80002528(Object *obj) {
 
     if (obj->vars[0] >= 5) {
         D_8005BFC0 |= GAME_FLAG_MODE_DONE;
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
     }
 }
 

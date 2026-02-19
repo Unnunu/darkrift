@@ -1,6 +1,7 @@
 #include "common.h"
 #include "camera.h"
 #include "sprite_ids.h"
+#include "task.h"
 
 typedef struct UnkObjDef2 {
     /* 0x00 */ s32 unk_00;
@@ -148,9 +149,9 @@ void func_80006CEC(void) {
 
 void func_80006E0C(Object *obj) {
     if (--obj->vars[0] < 0) {
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
         D_8005BFC0 |= GAME_FLAG_MODE_DONE;
-        obj->currentTask->flags |= 0x80;
+        TASK_END(obj->currentTask);
         osViBlack(0);
     }
 }
@@ -233,8 +234,8 @@ void run_battle_gore_mode(void) {
     func_8001B5B0("arena", sp2C);
     func_80029630();
 
-    gCamera->currentTask->counter = 0;
-    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = func_8002DE20;
     gCamera->currentTask->stackPos = 0;
 
@@ -270,8 +271,8 @@ void run_battle_aaron_mode(void) {
     func_8001B5B0("arena", sp2C);
     func_80029630();
 
-    gCamera->currentTask->counter = 0;
-    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = func_8002DE20;
     gCamera->currentTask->stackPos = 0;
 
@@ -293,8 +294,8 @@ void run_battle_demitron_mode(void) {
     func_8001B5B0("arena", sp2C);
     func_80029630();
 
-    gCamera->currentTask->counter = 0;
-    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = func_8002DE20;
     gCamera->currentTask->stackPos = 0;
 
@@ -316,8 +317,8 @@ void run_battle_demonica_mode(void) {
     func_8001B5B0("arena", sp2C);
     func_80029630();
 
-    gCamera->currentTask->counter = 0;
-    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = func_8002DE20;
     gCamera->currentTask->stackPos = 0;
 
@@ -339,8 +340,8 @@ void run_battle_eve_mode(void) {
     func_8001B5B0("arena", sp2C);
     func_80029630();
 
-    gCamera->currentTask->counter = 0;
-    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = func_8002DE20;
     gCamera->currentTask->stackPos = 0;
 
@@ -361,8 +362,8 @@ void run_battle_morphix_mode(void) {
     func_8001B5B0("arena", sp2C);
     func_80029630();
 
-    gCamera->currentTask->counter = 0;
-    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = func_8002DE20;
     gCamera->currentTask->stackPos = 0;
 
@@ -381,8 +382,8 @@ void run_battle_niiki_mode(void) {
     func_8001B5B0("arena", sp2C);
     func_80029630();
 
-    gCamera->currentTask->counter = 0;
-    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = func_8002DE20;
     gCamera->currentTask->stackPos = 0;
 
@@ -404,8 +405,8 @@ void run_battle_scarlet_mode(void) {
     func_8001B5B0("arena", sp2C);
     func_80029630();
 
-    gCamera->currentTask->counter = 0;
-    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = func_8002DE20;
     gCamera->currentTask->stackPos = 0;
 
@@ -427,8 +428,8 @@ void run_battle_sonork_mode(void) {
     func_8001B5B0("arena", sp2C);
     func_80029630();
 
-    gCamera->currentTask->counter = 0;
-    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = func_8002DE20;
     gCamera->currentTask->stackPos = 0;
 
@@ -450,8 +451,8 @@ void run_battle_zenmuron_mode(void) {
     func_8001B5B0("arena", sp2C);
     func_80029630();
 
-    gCamera->currentTask->counter = 0;
-    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = func_8002DE20;
     gCamera->currentTask->stackPos = 0;
 
@@ -482,7 +483,7 @@ void func_80007B68(Object *obj) {
                     gBattleSettings[PLAYER_1].isCpu = TRUE;
                 }
                 D_8005BFC0 |= GAME_FLAG_80 | GAME_FLAG_MODE_DONE;
-                obj->flags |= 0x10;
+                obj->flags |= OBJ_FLAG_DELETE;
             }
         }
 
@@ -498,7 +499,7 @@ void func_80007B68(Object *obj) {
                 gNextGameMode = GAME_MODE_MAIN_MENU;
             }
             D_8005BFC0 |= GAME_FLAG_80 | GAME_FLAG_MODE_DONE;
-            obj->flags |= 0x10;
+            obj->flags |= OBJ_FLAG_DELETE;
             D_80081254->flags &= ~2;
         }
     }
@@ -520,10 +521,10 @@ void func_80007DB0(Player *arg0, Object *arg1, s32 arg2) {
         name[4] = (i % 10) + '0';
 
         if ((v0 = asset_find(name, arg2)) >= 0) {
-            a1 = arg0->states[D_80049434[i]].animationId;
+            a1 = arg0->stateTable[D_80049434[i]].animationId;
             arg1->modInst->animations[a1] = gAssets[v0].data;
             s4++;
-            arg0->states[D_80049434[i]].unk_02 = func_80037394(arg1->modInst, a1);
+            arg0->stateTable[D_80049434[i]].unk_02 = func_80037394(arg1->modInst, a1);
         }
     }
 }
@@ -560,13 +561,13 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
 
     D_80080228[s0]->pos.x = -5000;
     D_80080228[s0]->pos.z = -5000;
-    D_80080228[s0]->flags |= 4;
+    D_80080228[s0]->flags |= OBJ_FLAG_HIDDEN;
 
     gPlayers[PLAYER_1].flags |= PLAYER_FLAG_400000;
     gPlayers[PLAYER_2].flags |= PLAYER_FLAG_400000;
 
     if (gBattleSettings[1 - s0].characterId != MORPHIX) {
-        a1->flags |= 0x10000000;
+        a1->flags |= OBJ_FLAG_10000000;
     }
 
     D_8005BFC0 |= GAME_FLAG_4;
@@ -579,8 +580,8 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
     gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
     gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
 
-    gPlayers[PLAYER_1].unk_18->flags |= 0x80;
-    gPlayers[PLAYER_2].unk_18->flags |= 0x80;
+    TASK_END(gPlayers[PLAYER_1].unk_18);
+    TASK_END(gPlayers[PLAYER_2].unk_18);
 
     func_80007DB0(gPlayers + 1 - s0, a1, arg2);
     func_8002DA08(gCamera);
@@ -773,7 +774,7 @@ void run_intro_zenmuron_mode(void) {
 void func_80008D0C(Object *obj) {
     if (gPlayers->obj->frameIndex + 2 == gPlayers->currentState->unk_02) {
         D_8005BFC0 |= GAME_FLAG_MODE_DONE;
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
         gNextGameMode = GAME_MODE_LOGO;
     }
 }
@@ -854,12 +855,12 @@ void func_80008FDC(void) {
 
     D_80080228[1 - sp42]->pos.x = -5000;
     D_80080228[1 - sp42]->pos.z = -5000;
-    D_80080228[1 - sp42]->flags |= 4;
+    D_80080228[1 - sp42]->flags |= OBJ_FLAG_HIDDEN;
 
     gPlayers[PLAYER_1].flags |= PLAYER_FLAG_400000;
     gPlayers[PLAYER_2].flags |= PLAYER_FLAG_400000;
 
-    a1->flags |= 0x10000000;
+    a1->flags |= OBJ_FLAG_10000000;
     D_8005BFC0 |= GAME_FLAG_4;
 
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
@@ -869,8 +870,8 @@ void func_80008FDC(void) {
 
     gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
     gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
-    gPlayers[PLAYER_1].unk_18->flags |= 0x80;
-    gPlayers[PLAYER_2].unk_18->flags |= 0x80;
+    TASK_END(gPlayers[PLAYER_1].unk_18);
+    TASK_END(gPlayers[PLAYER_2].unk_18);
 
     func_80007DB0(&gPlayers[sp42], a1, 0x3000);
     func_8002DA08(gCamera);
@@ -946,7 +947,7 @@ void func_80009480(void) {
 void func_80009554(Object *obj) {
     if (gPlayerInput[D_8013C24C].buttons & INP_START) {
         D_8005BFC0 |= GAME_FLAG_MODE_DONE;
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
     }
 }
 
@@ -1021,9 +1022,9 @@ void func_800096D0(u8 arg0) {
     }
 
     if (gBattleSettings[t9].characterId != MORPHIX) {
-        s0->flags |= 0x10000000;
+        s0->flags |= OBJ_FLAG_10000000;
     }
-    a3->flags |= 0x10000000;
+    a3->flags |= OBJ_FLAG_10000000;
 
     D_8005BFC0 |= GAME_FLAG_4;
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
@@ -1032,8 +1033,8 @@ void func_800096D0(u8 arg0) {
 
     gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
     gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
-    gPlayers[PLAYER_1].unk_18->flags |= 0x80;
-    gPlayers[PLAYER_2].unk_18->flags |= 0x80;
+    TASK_END(gPlayers[PLAYER_1].unk_18);
+    TASK_END(gPlayers[PLAYER_2].unk_18);
 
     func_8002DA08(gCamera);
     func_80007DB0(&gPlayers[nv], a3, 0x4000);
@@ -1219,7 +1220,7 @@ void func_80009E8C(void) {
     func_800096D0(TRUE);
     func_8000636C(player1, 252, 1);
     func_8000636C(player2, 367, 1);
-    player1->obj->flags |= 4;
+    player1->obj->flags |= OBJ_FLAG_HIDDEN;
     func_80009CE0();
 
     asset_open_folder("/demi/relic", 0x4000);
@@ -1236,7 +1237,7 @@ void func_80009E8C(void) {
         obj = create_model_instance(&sp80, 0x1000, NULL, a3);
         obj->rotation.y = -1179;
         obj->unk_088.a = 255;
-        obj->flags |= 0x10000000;
+        obj->flags |= OBJ_FLAG_10000000;
     }
 
     main_loop();
@@ -1275,12 +1276,12 @@ void run_main_menu_mode(void) {
     if (gPreviousGameMode == GAME_MODE_OPTIONS) {
         Model *menuEntrySelectorModel = gAssets[asset_find("title.k2", CONTEXT_2000)].aux_data;
         menuEntrySelector = create_model_instance(&D_8004934C, 0x1000, func_800199E0, menuEntrySelectorModel);
-        menuEntrySelector->flags |= 0x01000000;
+        menuEntrySelector->flags |= OBJ_FLAG_1000000;
     } else {
         menuEntrySelector = create_ui_element(&sp30, &sp40, CONTEXT_2000);
     }
 
-    menuEntrySelector->currentTask->counter = 30;
+    menuEntrySelector->currentTask->start_delay = 30;
 
     create_worker(func_80020670, 0x1000);
     func_8000A298();
@@ -1300,7 +1301,7 @@ void func_8000A514(Object *obj) {
         return;
     }
 
-    obj->flags |= 0x10;
+    obj->flags |= OBJ_FLAG_DELETE;
     D_80080116 = 0;
 }
 
@@ -1321,7 +1322,7 @@ void func_8000A578(Object *obj) {
     obj->fn_render = func_8000A514;
     load_background("dr_title", 0, 0, 0, 0, 1, CONTEXT_2000);
     v0 = create_ui_element(&sp34, &sp44, 0x2000);
-    v0->currentTask->counter = 60;
+    v0->currentTask->start_delay = 60;
     gCamera->pos.z = -2200;
     create_worker(func_80020670, 0x1000);
 }
@@ -1669,8 +1670,8 @@ void run_17_mode(void) {
     func_8001B5B0("arena", sp4C);
     func_80029630();
 
-    gCamera->currentTask->counter = 0;
-    gCamera->currentTask->flags = 1;
+    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = func_8002DE20;
     gCamera->currentTask->stackPos = 0;
 

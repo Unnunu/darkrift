@@ -16,7 +16,7 @@ void task_clear(ObjectTask *list) {
 
 void task_execute(Object *obj) {
     ObjectTask *task;
-    GlobalObjBSub *stack;
+    TaskContext *stack;
     s16 flags;
 
     task = obj->taskList;
@@ -29,48 +29,49 @@ void task_execute(Object *obj) {
         obj->currentTask = task;
         flags = task->flags;
 
-        if (((flags & 4) && obj->frameIndex >= task->unk_86) ||
-            ((flags & 8) && task->unk_86 < (gFrameCounter & 0xFFFF)) || ((flags & 0x10) && (flags & 0x20))) {
-            GlobalObjBSub *unk_90 = &task->unk_90;
+        if (((flags & TASK_FLAG_FRAME_TRIGGER) && obj->frameIndex >= task->unk_86) ||
+            ((flags & TASK_FLAG_TIME_TRIGGER) && task->unk_86 < (gFrameCounter & 0xFFFF)) ||
+            ((flags & TASK_FLAG_10) && (flags & TASK_FLAG_20))) {
+            TaskContext *conditional_context = &task->conditional_context;
 
-            if (unk_90->flags & 0x40) {
+            if (conditional_context->flags & TASK_FLAG_CALL) {
                 // push active task on stack
                 task->stack[task->stackPos].func = task->func;
-                task->stack[task->stackPos].counter = task->counter;
+                task->stack[task->stackPos].start_delay = task->start_delay;
                 task->stack[task->stackPos].flags = task->flags;
                 task->stackPos++;
             } else {
                 task->stackPos = 0;
             }
-            task->func = unk_90->func;
-            task->flags = unk_90->flags;
-            task->counter = unk_90->counter;
+            task->func = conditional_context->func;
+            task->flags = conditional_context->flags;
+            task->start_delay = conditional_context->start_delay;
         }
 
-        if (flags & 0x80) {
+        if (flags & TASK_FLAG_END) {
             // pop task from stack
             stack = task->stack;
             if (task->stackPos != 0) {
                 task->stackPos--;
                 task->func = (stack + task->stackPos)->func;
                 task->flags = (stack + task->stackPos)->flags;
-                task->counter = (stack + task->stackPos)->counter;
+                task->start_delay = (stack + task->stackPos)->start_delay;
             } else {
-                task->flags &= ~0x80;
-                task->counter = -1;
+                task->flags &= ~TASK_FLAG_END;
+                task->start_delay = -1;
                 continue;
             }
         }
 
-        if (task->counter != 0) {
-            if (task->counter < 0) {
+        if (task->start_delay != 0) {
+            if (task->start_delay < 0) {
                 task = task->next;
             } else {
-                task->counter--;
+                task->start_delay--;
                 task = task->next;
             }
         } else {
-            if (task->flags & 1) {
+            if (task->flags & TASK_FLAG_ENABLED) {
                 task->func(obj);
             }
             task = task->next;
@@ -107,11 +108,11 @@ ObjectTask *task_add(Object *obj, void (*func)(Object *), s16 flags) {
     newTask->stackPos = 0;
     newTask->func = func;
     newTask->flags = flags;
-    newTask->counter = 0;
+    newTask->start_delay = 0;
 
     return newTask;
 }
 
 void task_default_func(Object *obj) {
-    obj->currentTask->flags |= 0x80;
+    TASK_END(obj->currentTask);
 }

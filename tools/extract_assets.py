@@ -3,7 +3,6 @@ from pathlib import Path
 from struct import unpack_from, calcsize, pack
 import subprocess
 from n64img.image import CI8
-from collections import OrderedDict
 
 ROMFILE = "darkrift.z64"
 RAW_ASSETS_PATH = "game_assets/raw"
@@ -218,7 +217,7 @@ def get_buttons(x):
 
 
 def get_move_flags(x):
-    return ' | '.join(f"MF_{1<<i:x}" for i in range(16) if (x & 2**i))
+    return ' | '.join(f"TF_{1<<i:x}" for i in range(16) if (x & 2**i))
 
 def read_sym(f):
     content = f.read_bytes()
@@ -260,13 +259,13 @@ def process_db():
         for off in range(offs[1] + 4, offs[2], 28):
             e = unpack_from(">hHHHhhH14IIIH", content, off)
             l.append({"name":symbols[0][i], "index":i, "index_in_field28":e[0], "buttons":get_buttons(e[1]), "flags":get_move_flags(e[2]), "unk06":e[3],
-                      "index_in_field24":f"f24_{e[4]}_", "stateId":e[5], "button_mask":get_buttons(e[6]), "unk0E":[e[7],e[8],e[9],e[10]]})
+                      "index_in_field24":f"f24_{e[4]}_", "actionState":e[5], "button_mask":get_buttons(e[6]), "unk0E":[e[7],e[8],e[9],e[10]]})
             i += 1
-        dbdata["moveTable"] = l
+        dbdata["transitionTable"] = l
 
         # transition table
         transGroups = {0:'ROOT'}
-        l = OrderedDict()
+        l = []
         i = 0
         newGroup = True
         groupName = ''
@@ -277,17 +276,17 @@ def process_db():
 
             if newGroup:
                 groupName = transGroups[i]
-                l[groupName] = []
+                l.append({groupName: []})
                 newGroup = False
 
             if e[0] == -1:
                 newGroup = True
             else:
                 if e[1] != -1:
-                    transGroups[e[1]] = dbdata["moveTable"][e[0]]["name"]
-                l[groupName].append({ "index": i, "moveId":e[0], "moveName": dbdata["moveTable"][e[0]]["name"], "next": e[1] })
+                    transGroups[e[1]] = dbdata["transitionTable"][e[0]]["name"]
+                l[-1][groupName].append({ "index": i, "transitionId":e[0], "transitionName": dbdata["transitionTable"][e[0]]["name"], "nextLogicState": e[1] })
             i += 2
-        dbdata["transitionTable"] = l
+        dbdata["logicStates"] = l
 
         l = []
         for off in range(offs[3], offs[4], 4):
@@ -311,7 +310,7 @@ def process_db():
                       "damage":e[16], "unk_22":e[17], "unk_24":e[18], "unk_26":e[19],
                       "unk_28":e[20], "unk_2A":e[21], "unk_2C":e[22], "unk_2E":e[23],
                       "unk_30":e[24], "unk_32":e[25], "flags":e[26]})
-        dbdata["states"] = l
+        dbdata["actionStates"] = l
 
         l = []
         for off in range(offs[6] + 4, offs[7], 8):
@@ -328,7 +327,7 @@ def process_db():
         l = []
         for off in range(offs[8], offs[9], 2):
             e = unpack_from(">h", content, off)
-            l.append({"moveIndex":e[0]})
+            l.append({"logicState":e[0]})
         dbdata["player_38"] = l
 
         l = []
@@ -348,14 +347,15 @@ def process_db():
         with open(outpath, 'w') as outfile:
             for k,v in dbdata.items():
                 print(f"{k}:", file=outfile)
-                if isinstance(v, list):
+                if k == "logicStates":
+                    for l in v:
+                        for k1, v1 in l.items():
+                            print(f"\t{k1}:", file=outfile)
+                            for m in v1:
+                                print(f"\t\t{m}", file=outfile)
+                else:
                     for l in v:
                         print(f"\t{l}", file=outfile)
-                else:
-                    for l, m in v.items():
-                        print(f"\t{l}", file=outfile)
-                        for m1 in m:
-                            print(f"\t\t{m1}", file=outfile)
             
 
 def analyze():

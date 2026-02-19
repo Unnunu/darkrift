@@ -133,7 +133,7 @@ void obj_delete(Object *obj) {
         obj->nextObject->prevObject = obj->prevObject;
     }
 
-    if (obj->flags & 1) {
+    if (obj->flags & OBJ_FLAG_MODEL) {
         gModelInstancePool.unk_0C++;
         gModelInstancePool.elements[gModelInstancePool.unk_0C] = obj->modInst;
         gModelInstancePool.count++;
@@ -159,7 +159,7 @@ void func_8002AF28(Batch *arg0) {
 
     func_8002AF08(arg0->info);
 
-    for (i = 0; i < arg0->info->header.numVertices; i++) {}
+    for (i = 0; i < arg0->info->header.vtxNum; i++) {}
     for (i = 0; i < arg0->info->header.numTriangles; i++) {}
 }
 
@@ -204,14 +204,14 @@ void obj_update_all(void) {
             func_8002AF8C(obj);
         }
 
-        if ((obj->flags & 0x10) && !(obj->flags & 4)) {
-            obj->flags |= 4;
-        } else if (obj->flags & 0x10) {
+        if ((obj->flags & OBJ_FLAG_DELETE) && !(obj->flags & OBJ_FLAG_HIDDEN)) {
+            obj->flags |= OBJ_FLAG_HIDDEN;
+        } else if (obj->flags & OBJ_FLAG_DELETE) {
             if (obj->unk_076 & 8) {
                 obj->unk_078 |= 8;
                 obj->unk_1E8(obj, NULL);
             }
-            if (obj->flags & 0x20000000) {
+            if (obj->flags & OBJ_FLAG_20000000) {
                 func_800345D8(obj->unk_208);
             }
             task_clear(obj->taskList);
@@ -302,13 +302,13 @@ void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, Transform *arg3, void (*ta
     arg0->taskList = (ObjectTask *) GET_ITEM(gTaskPool);
     arg0->currentTask = arg0->taskList;
     if (taskFunc != NULL) {
-        arg0->currentTask->counter = 0;
-        arg0->currentTask->flags = 1;
+        arg0->currentTask->start_delay = 0;
+        arg0->currentTask->flags = TASK_FLAG_ENABLED;
         arg0->currentTask->func = taskFunc;
         arg0->currentTask->stackPos = 0;
     } else {
-        arg0->currentTask->counter = 0;
-        arg0->currentTask->flags = 1;
+        arg0->currentTask->start_delay = 0;
+        arg0->currentTask->flags = TASK_FLAG_ENABLED;
         arg0->currentTask->func = task_default_func;
         arg0->currentTask->stackPos = 0;
     }
@@ -389,7 +389,7 @@ Object *create_kmd_object(Vec4i *arg0, char *arg1, K2Def *properties, s32 arg3) 
     }
 
     obj->fn_render = model_update_kmd;
-    obj->flags = 1;
+    obj->flags = OBJ_FLAG_MODEL;
     modInst = obj->modInst = mem_alloc(sizeof(ModelInstance), "item.c", 523);
 
     str_concat(sp78, ".kmd");
@@ -421,7 +421,7 @@ Object *create_worker(void (*fn_render)(Object *), s16 arg1) {
     obj = obj_allocate(arg1);
     obj_init(obj, &D_8004934C, &gZeroRotation, NULL, NULL);
     obj->fn_render = fn_render;
-    obj->flags = 8;
+    obj->flags = OBJ_FLAG_WORKER;
     return obj;
 }
 
@@ -432,7 +432,7 @@ Object *create_ui_element(Vec4i *pos, UIElement *def, s32 context) {
     obj_init(obj, pos, &gZeroRotation, NULL, def->func);
     obj->fn_render = func_80015724;
     obj->flags = def->flags;
-    obj->flags |= 0x10000;
+    obj->flags |= OBJ_FLAG_UIELEMENT;
     obj->frameIndex = def->spriteID;
     obj->sprite_map = gAssets[asset_find(def->map_name, context)].data;
 
@@ -464,7 +464,7 @@ Object *create_model_instance_with_properties(Vec4i *pos, char *name, K2Def *pro
     }
 
     obj->fn_render = model_update;
-    obj->flags = 1;
+    obj->flags = OBJ_FLAG_MODEL;
     obj->modInst = (ModelInstance *) GET_ITEM(gModelInstancePool);
 
     modInst = obj->modInst;
@@ -495,7 +495,7 @@ Object *create_model_instance_with_properties(Vec4i *pos, char *name, K2Def *pro
         modInst->unk_604 = NULL;
     }
 
-    obj->flags |= 0x40000;
+    obj->flags |= OBJ_FLAG_40000;
     modInst->unk_A1C = modInst->unk_A20 = 0;
     return obj;
 }
@@ -512,14 +512,14 @@ Object *create_3dsprite_with_properties(Vec4i *pos, UnkK2Def *properties, s32 co
         obj = create_model_instance_with_properties(pos, NULL, &properties->base, context);
         obj->fn_render = sprite3d_update;
         obj->frameIndex = properties->startingFrame;
-        obj->flags |= properties->flags | 2;
+        obj->flags |= properties->flags | OBJ_FLAG_3DSPRITE;
         obj->unk_088.a = 128;
 
         new_var = &obj->modInst->unk_A50;
         new_var->unk_00 = 1;
         new_var->unk_24 = 1;
         obj->modInst->unk_A30.unk_04 = new_var;
-        if (obj->flags & 0x800) {
+        if (obj->flags & OBJ_FLAG_800) {
             obj->modInst->unk_A30.zOrder = -0x80000000;
         } else {
             obj->modInst->unk_A30.zOrder = 0x7FFFFFFF;
@@ -542,11 +542,11 @@ Object *create_model_instance(Vec4i *pos, s32 objPriority, void (*taskFunc)(Obje
     obj_init(obj, pos, &gZeroRotation, NULL, taskFunc);
 
     obj->fn_render = model_update;
-    obj->flags = 1;
+    obj->flags = OBJ_FLAG_MODEL;
 
     if (gModelInstancePool.count == 0) {
         obj->fn_render = task_default_func;
-        obj->flags = 0x10;
+        obj->flags = OBJ_FLAG_DELETE;
         obj->modInst = NULL;
         return NULL;
     }
@@ -578,7 +578,7 @@ Object *create_model_instance(Vec4i *pos, s32 objPriority, void (*taskFunc)(Obje
 
     modInst->animations = model->animations;
     modInst->unk_A2C = model->unk_234;
-    obj->flags |= 0x44000;
+    obj->flags |= OBJ_FLAG_40000 | OBJ_FLAG_4000;
     modInst->unk_9C8 = numNodes;
     modInst->unk_604 = model->unk_31C;
 
@@ -594,7 +594,7 @@ Object *create_model_instance(Vec4i *pos, s32 objPriority, void (*taskFunc)(Obje
     }
 
     if (model->unk_3CC & 1) {
-        obj->flags |= 0x80000000;
+        obj->flags |= OBJ_FLAG_80000000;
     }
 
     return obj;
@@ -611,7 +611,7 @@ Object *create_3dsprite(Vec4i *pos, s32 objPriority, void (*taskFunc)(Object *),
     obj = create_model_instance(pos, objPriority, taskFunc, model);
     obj->fn_render = sprite3d_update;
     obj->frameIndex = 0;
-    obj->flags |= 0x6002;
+    obj->flags |= OBJ_FLAG_4000 | OBJ_FLAG_2000 | OBJ_FLAG_3DSPRITE;
     obj->unk_088.a = 128;
 
     new_var = &obj->modInst->unk_A50;

@@ -331,10 +331,10 @@ void func_8000C3CC(Model *arg0, s32 nodeId, u8 arg2, Unk8000C3CCArg3 *arg3) {
         batchArray[i].info = batchInfos + i;
 
         mem_fill(batchInfos + i, 0, sizeof(BatchInfo));
-        (batchInfos + i)->header.unk_00 = arg3->unk_0C;
+        (batchInfos + i)->header.triMask = arg3->triMask;
         (batchInfos + i)->header.unk_04 = 0;
-        (batchInfos + i)->header.numVertices = numVertBuffer[i];
-        (batchInfos + i)->header.unk_09 = 0;
+        (batchInfos + i)->header.vtxNum = numVertBuffer[i];
+        (batchInfos + i)->header.vtxOffset = 0;
         (batchInfos + i)->header.numTriangles = numTriBuffer[i];
         (batchInfos + i)->header.unk_0B = (i != 0) ? 1 : 0;
         (batchInfos + i)->header.texGfx = NULL;
@@ -376,7 +376,7 @@ void func_8000C3CC(Model *arg0, s32 nodeId, u8 arg2, Unk8000C3CCArg3 *arg3) {
 
         if (sp932) {
             for (i = partFirstBatch; i < partLastBatch; i++) {
-                batchArray[i].info->header.unk_00 |= 2;
+                batchArray[i].info->header.triMask |= G_RDP_TRI_TXTR_MASK;
             }
 
             numVerts = nodeBatch->numVertices;

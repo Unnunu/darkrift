@@ -60,7 +60,7 @@ void func_80029F58(Object *obj);
 void func_80028E84(void);
 
 void func_80028010(Object *obj) {
-    obj->flags &= ~4;
+    obj->flags &= ~OBJ_FLAG_HIDDEN;
     if (obj->frameIndex <= 12) {
         obj->frameIndex++;
         if (obj->unk_088.a > 100) {
@@ -68,16 +68,16 @@ void func_80028010(Object *obj) {
         } else if (obj->unk_088.a > 3) {
             obj->unk_088.a -= 3;
         }
-        obj->currentTask->counter = 2;
+        obj->currentTask->start_delay = 2;
     } else {
-        obj->flags |= 0x14;
-        obj->currentTask->flags |= 0x80;
+        obj->flags |= OBJ_FLAG_HIDDEN | OBJ_FLAG_DELETE;
+        TASK_END(obj->currentTask);
     }
 }
 
 void func_80028090(Object *obj) {
     if (--obj->vars[1] <= 0) {
-        obj->flags &= ~4;
+        obj->flags &= ~OBJ_FLAG_HIDDEN;
         if (obj->frameIndex <= 8) {
             obj->frameIndex++;
             if (obj->unk_088.a > 100) {
@@ -85,10 +85,10 @@ void func_80028090(Object *obj) {
             } else if (obj->unk_088.a > 4) {
                 obj->unk_088.a -= 2;
             }
-            obj->currentTask->counter = 2;
+            obj->currentTask->start_delay = 2;
         } else {
-            obj->flags |= 0x14;
-            obj->currentTask->flags |= 0x80;
+            obj->flags |= OBJ_FLAG_HIDDEN | OBJ_FLAG_DELETE;
+            TASK_END(obj->currentTask);
         }
     }
 }
@@ -141,7 +141,7 @@ void func_80028360(Object *obj) {
             v0->currentTask->func = func_80028010;
             v0->unk_058 = v0->unk_05C = v0->unk_060 = 0x64000;
             if (--obj->vars[1] < 0) {
-                obj->flags |= 0x10;
+                obj->flags |= OBJ_FLAG_DELETE;
             }
         }
     }
@@ -202,13 +202,13 @@ void func_8002856C(Object *obj) {
         return;
     } else {
         v0->unk_058 = v0->unk_05C = v0->unk_060 = 0x64000;
-        v0->currentTask->counter = 10;
+        v0->currentTask->start_delay = 10;
         v0->unk_08C = 1;
         v0->vars[0] = s0;
         v0->vars[1] = 0;
         v0->vars[2] = 150;
         v0->unk_088.a = 60;
-        v0->flags |= 4;
+        v0->flags |= OBJ_FLAG_HIDDEN;
     }
 
     v0 = create_3dsprite_with_properties(&D_8004934C, &D_80051F50, 0xABAB);
@@ -216,13 +216,13 @@ void func_8002856C(Object *obj) {
         return;
     } else {
         v0->unk_058 = v0->unk_05C = v0->unk_060 = 0x64000;
-        v0->currentTask->counter = 10;
+        v0->currentTask->start_delay = 10;
         v0->unk_08C = 1;
         v0->vars[0] = s0;
         v0->vars[1] = 3;
         v0->vars[2] = 50;
         v0->unk_088.a = 60;
-        v0->flags |= 4;
+        v0->flags |= OBJ_FLAG_HIDDEN;
     }
 
     v0 = create_3dsprite_with_properties(&D_8004934C, &D_80051F50, 0xABAB);
@@ -230,13 +230,13 @@ void func_8002856C(Object *obj) {
         return;
     } else {
         v0->unk_058 = v0->unk_05C = v0->unk_060 = 0x64000;
-        v0->currentTask->counter = 10;
+        v0->currentTask->start_delay = 10;
         v0->unk_08C = 1;
         v0->vars[0] = s0;
         v0->vars[1] = 5;
         v0->vars[2] = -200;
         v0->unk_088.a = 40;
-        v0->flags |= 4;
+        v0->flags |= OBJ_FLAG_HIDDEN;
     }
 
     v0 = create_3dsprite_with_properties(&D_8004934C, &D_80051F50, 0xABAB);
@@ -244,27 +244,27 @@ void func_8002856C(Object *obj) {
         return;
     } else {
         v0->unk_058 = v0->unk_05C = v0->unk_060 = 0x64000;
-        v0->currentTask->counter = 10;
+        v0->currentTask->start_delay = 10;
         v0->unk_08C = 1;
         v0->vars[0] = s0;
         v0->vars[1] = 7;
         v0->vars[2] = 100;
         v0->unk_088.a = 40;
-        v0->flags |= 4;
+        v0->flags |= OBJ_FLAG_HIDDEN;
     }
 
     v0 = create_3dsprite_with_properties(&D_8004934C, &D_80051F50, 0xABAB);
     if (v0 == NULL) {
         return;
     } else {
-        v0->currentTask->counter = 10;
+        v0->currentTask->start_delay = 10;
         v0->unk_058 = v0->unk_05C = v0->unk_060 = 0x64000;
         v0->unk_08C = 1;
         v0->vars[0] = s0;
         v0->vars[1] = 9;
         v0->vars[2] = -250;
         v0->unk_088.a = 30;
-        v0->flags |= 4;
+        v0->flags |= OBJ_FLAG_HIDDEN;
     }
 }
 
@@ -288,7 +288,7 @@ void func_800287AC(Object *obj) {
         v0->unk_08C = 1;
         v0->vars[0] = s4;
         v0->unk_088.a = 40;
-        v0->flags |= 4;
+        v0->flags |= OBJ_FLAG_HIDDEN;
 
         b += 50;
         a += 3;
@@ -308,7 +308,7 @@ void func_80028890(Object *obj) {
         obj->vars[0]--;
         if (obj->vars[0] == 0) {
             D_8005BFC0 |= GAME_FLAG_MODE_DONE;
-            obj->currentTask->flags |= 0x80;
+            TASK_END(obj->currentTask);
         }
     }
 }
@@ -329,10 +329,10 @@ void func_80028990(Vtx *vtx) {
         return;
     }
 
-    D_8005BF00.header.unk_00 = 0;
+    D_8005BF00.header.triMask = 0;
     D_8005BF00.header.unk_04 = 0;
-    D_8005BF00.header.numVertices = 4;
-    D_8005BF00.header.unk_09 = 0;
+    D_8005BF00.header.vtxNum = 4;
+    D_8005BF00.header.vtxOffset = 0;
     D_8005BF00.header.numTriangles = 2;
     D_8005BF00.header.unk_0B = 2;
     D_8005BF00.header.texGfx = D_8005BF58;
@@ -453,10 +453,10 @@ void func_80028F38(Object *obj) {
     Object *v1;
 
     if (D_800801F0) {
-        obj->currentTask->flags |= 0x80;
+        TASK_END(obj->currentTask);
     }
 
-    obj->currentTask->counter = 60;
+    obj->currentTask->start_delay = 60;
 
     v1 = obj->varObj[0];
     if (--v1->frameIndex < 0) {
@@ -465,7 +465,7 @@ void func_80028F38(Object *obj) {
             obj->frameIndex = 0;
             D_800801F0 = TRUE;
             v1->frameIndex = 0;
-            obj->currentTask->flags |= 0x80;
+            TASK_END(obj->currentTask);
         }
     }
 }
@@ -473,9 +473,9 @@ void func_80028F38(Object *obj) {
 void func_80028FCC(void) {
     if (gPlayMode != PLAY_MODE_PRACTICE && gBattleDurationEnum != 0) {
         D_8013C240->currentTask->func = func_80028F38;
-        D_8013C240->currentTask->counter = 0;
-        D_8013C240->currentTask->flags = 1;
-        D_8013C23C->currentTask->counter = 120;
+        D_8013C240->currentTask->start_delay = 0;
+        D_8013C240->currentTask->flags = TASK_FLAG_ENABLED;
+        D_8013C23C->currentTask->start_delay = 120;
     }
 }
 
@@ -484,16 +484,16 @@ void func_80029044(void) {
     Object *a0;
 
     if (D_8013C248 != NULL) {
-        D_8013C248->flags |= 0x10;
-        D_8013C248->flags &= ~0x4000000;
+        D_8013C248->flags |= OBJ_FLAG_DELETE;
+        D_8013C248->flags &= ~OBJ_FLAG_4000000;
         D_80081438++;
         D_80081434++;
 
         while (D_8013C248->varObj[i] != NULL) {
             D_80081438++;
             D_80081434++;
-            D_8013C248->varObj[i]->flags |= 0x10;
-            D_8013C248->varObj[i]->flags &= ~0x4000000;
+            D_8013C248->varObj[i]->flags |= OBJ_FLAG_DELETE;
+            D_8013C248->varObj[i]->flags &= ~OBJ_FLAG_4000000;
             i++;
         }
 
@@ -502,8 +502,8 @@ void func_80029044(void) {
 }
 
 void func_80029130(void) {
-    UIElement sp74 = { 28, NULL, 0x4000000, 0x1001, "bars.sp2" };
-    UIElement sp60 = { 27, NULL, 0x4000000, 0x1001, "bars.sp2" };
+    UIElement sp74 = { 28, NULL, OBJ_FLAG_4000000, 0x1001, "bars.sp2" };
+    UIElement sp60 = { 27, NULL, OBJ_FLAG_4000000, 0x1001, "bars.sp2" };
     Vec4i sp50 = { 32, 220, 0, 0 };
     Vec4i sp40 = { 236, 220, 0, 0 };
     s16 s0;
@@ -737,7 +737,7 @@ void func_80029630(void) {
 void func_80029D04(Object *obj) {
     if (--obj->frameIndex < 2) {
         D_8005BFC0 |= GAME_FLAG_40;
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
     }
 
     D_8005BEFC -= 2;
@@ -747,7 +747,7 @@ void func_80029D04(Object *obj) {
 
 void func_80029D84(Object *obj) {
     func_80002178(D_8005BEFC, NULL);
-    obj->flags |= 0x10;
+    obj->flags |= OBJ_FLAG_DELETE;
 }
 
 void func_80029DC0(Object *obj) {
@@ -755,7 +755,7 @@ void func_80029DC0(Object *obj) {
         D_8005BFC0 |= GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
         gNextGameMode = GAME_MODE_MAIN_MENU;
         D_8005BFC0 |= GAME_FLAG_80;
-        obj->flags &= ~0x2000000;
+        obj->flags &= ~OBJ_FLAG_2000000;
         obj->fn_render = func_80029D84;
     }
 
@@ -884,17 +884,17 @@ void func_8002A188(Object *obj) {
 
 void func_8002A1F0(Object *obj) {
     obj->fn_render = func_8002A188;
-    obj->flags &= ~4;
+    obj->flags &= ~OBJ_FLAG_HIDDEN;
     obj->frameIndex++;
     obj->currentTask->func = task_default_func;
     gIsPaused = TRUE;
-    obj->flags |= 0x2000000;
+    obj->flags |= OBJ_FLAG_2000000;
     D_8005BEFC = 0;
 }
 
 void func_8002A250(Object *obj) {
     if (obj->frameIndex++ > 16) {
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
     }
-    obj->currentTask->counter = 2;
+    obj->currentTask->start_delay = 2;
 }

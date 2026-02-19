@@ -1,5 +1,6 @@
 #include "common.h"
 #include "camera.h"
+#include "task.h"
 
 s32 D_80052C60 = 170;
 s32 D_80052C64 = 500;
@@ -140,10 +141,10 @@ void func_8002C490(Object *obj) {
             obj->modInst->animations[0] = NULL;
             if (!D_800801F0 || D_80080234 == 0) {
                 obj->currentTask->func = func_8002EB2C;
-                obj->currentTask->counter = 1;
+                obj->currentTask->start_delay = 1;
                 D_8008012C &= ~GFX_FLAG_1;
-                gPlayers[PLAYER_1].obj->flags &= ~0x200000;
-                gPlayers[PLAYER_2].obj->flags &= ~0x200000;
+                gPlayers[PLAYER_1].obj->flags &= ~OBJ_FLAG_200000;
+                gPlayers[PLAYER_2].obj->flags &= ~OBJ_FLAG_200000;
                 return;
             }
             D_8013C834 = TRUE;
@@ -192,8 +193,8 @@ void func_8002C6E8(Object *obj) {
         D_8008012C &= ~(GFX_FLAG_1 | GFX_FLAG_10);
     }
 
-    gPlayers[PLAYER_1].obj->flags |= 0x200000;
-    gPlayers[PLAYER_2].obj->flags |= 0x200000;
+    gPlayers[PLAYER_1].obj->flags |= OBJ_FLAG_200000;
+    gPlayers[PLAYER_2].obj->flags |= OBJ_FLAG_200000;
 }
 
 void func_8002C854(Object *obj) {
@@ -331,7 +332,7 @@ void func_8002CB28(void) {
         ((Player *) player1->varObj[0])->flags &= ~PLAYER_FLAG_NOT_FACING_OPP;
     }
 
-    if (abs(func_8002CDFC(D_8008020E, D_8013C33E)) < PLAYER_FLAG_400) {
+    if (abs(func_8002CDFC(D_8008020E, D_8013C33E)) < 0x400) {
         sp26 = func_8002CDFC(D_8008020E, D_8013C33E);
         if (abs(sp26) > 140) {
             if (sp26 < 0) {
@@ -380,7 +381,7 @@ void func_8002CE58(s32 arg0, s32 arg1) {
     Object *obj;
 
     for (obj = gObjectList; obj != NULL; obj = obj->nextObject) {
-        if (!(obj->flags & 0x10000)) {
+        if (!(obj->flags & OBJ_FLAG_UIELEMENT)) {
             obj->pos.x += arg0;
             obj->pos.z += arg1;
             func_80014974(&obj->transform);
@@ -516,14 +517,14 @@ void func_8002D278(Object *obj, u8 arg1) {
 
     func_8002CB28();
     if (func_8002CDFC(D_8008020E, spD8) > 0) {
-        D_80080228[PLAYER_1]->flags &= ~0x200;
+        D_80080228[PLAYER_1]->flags &= ~OBJ_FLAG_200;
         gPlayerInput[PLAYER_1].mirrored = FALSE;
-        D_80080228[PLAYER_2]->flags |= 0x200;
+        D_80080228[PLAYER_2]->flags |= OBJ_FLAG_200;
         gPlayerInput[PLAYER_2].mirrored = TRUE;
     } else {
-        D_80080228[PLAYER_1]->flags |= 0x200;
+        D_80080228[PLAYER_1]->flags |= OBJ_FLAG_200;
         gPlayerInput[PLAYER_1].mirrored = TRUE;
-        D_80080228[PLAYER_2]->flags &= ~0x200;
+        D_80080228[PLAYER_2]->flags &= ~OBJ_FLAG_200;
         gPlayerInput[PLAYER_2].mirrored = FALSE;
     }
 
@@ -655,9 +656,9 @@ void func_8002DE20(Object *obj) {
     assetId = asset_find(sp18, 0xABAB);
     camera_set_animation(gCamera, (AnimHeader *) gAssets[assetId].data);
     gCamera->currentTask->func = func_8002DCC8;
-    gCamera->currentTask->counter = 0;
-    gCamera->currentTask->flags = 1;
-    gCamera->currentTask->counter = 1;
+    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->flags = TASK_FLAG_ENABLED;
+    gCamera->currentTask->start_delay = 1;
     gCamera->vars[10] = 60;
     gPlayerInput[PLAYER_1].accumulated = assetId = gPlayerInput[PLAYER_2].accumulated = FALSE; // required to match
 }
@@ -674,9 +675,9 @@ void func_8002DEFC(Object *obj) {
     assetId = asset_find(sp18, 0xABAB);
     camera_set_animation(gCamera, (AnimHeader *) gAssets[assetId].data);
     gCamera->currentTask->func = func_8002C6E8;
-    gCamera->currentTask->counter = 0;
-    gCamera->currentTask->flags = 1;
-    gCamera->currentTask->counter = 1;
+    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->flags = TASK_FLAG_ENABLED;
+    gCamera->currentTask->start_delay = 1;
     gPlayerInput[PLAYER_1].accumulated = assetId = gPlayerInput[PLAYER_2].accumulated = FALSE; // required to match
 }
 
@@ -723,7 +724,8 @@ restart:
         s0 = (gPlayers[PLAYER_1].unk_198.unk_08->y - 200.0f) < v0;
     }
 
-    if ((gPlayers[PLAYER_1].currentState->flags & 0x80000) || (gPlayers[PLAYER_2].currentState->flags & 0x80000)) {
+    if ((gPlayers[PLAYER_1].currentState->flags & STATE_FLAG_80000) ||
+        (gPlayers[PLAYER_2].currentState->flags & STATE_FLAG_80000)) {
         s0 = TRUE;
     }
 
@@ -747,7 +749,8 @@ restart:
     if (s1 < D_80080214 &&
         (!(gPlayers[PLAYER_1].flags & PLAYER_FLAG_8000) || (gPlayers[PLAYER_2].flags & PLAYER_FLAG_8000))) { // @bug ??
         s4 = D_80080214 - s1;
-        if ((gPlayers[PLAYER_1].currentState->flags & 0x80000) || (gPlayers[PLAYER_2].currentState->flags & 0x80000) ||
+        if ((gPlayers[PLAYER_1].currentState->flags & STATE_FLAG_80000) ||
+            (gPlayers[PLAYER_2].currentState->flags & STATE_FLAG_80000) ||
             (gPlayers[PLAYER_1].flags & PLAYER_FLAG_4000000) || (gPlayers[PLAYER_2].flags & PLAYER_FLAG_4000000)) {
             s4 >>= 1;
         }
@@ -878,7 +881,7 @@ void func_8002EA50(Object *obj, s32 arg1) {
     D_8013C38C = -1;
     D_8013C38E = (guRandom() % 2) + 1;
     obj->currentTask->func = func_8002E750;
-    obj->currentTask->counter = 0;
+    obj->currentTask->start_delay = 0;
     obj->vars[3] = arg1;
     obj->vars[1] = func_80012518(sp20, sp24);
     func_8002E750(obj);
@@ -953,14 +956,14 @@ void func_8002EB2C(Object *obj) {
     func_8002CB28();
 
     if (func_8002CDFC(D_8008020E, sp104) > 0) {
-        D_80080228[PLAYER_1]->flags &= ~0x200;
+        D_80080228[PLAYER_1]->flags &= ~OBJ_FLAG_200;
         gPlayerInput[PLAYER_1].mirrored = FALSE;
-        D_80080228[PLAYER_2]->flags |= 0x200;
+        D_80080228[PLAYER_2]->flags |= OBJ_FLAG_200;
         gPlayerInput[PLAYER_2].mirrored = TRUE;
     } else {
-        D_80080228[PLAYER_1]->flags |= 0x200;
+        D_80080228[PLAYER_1]->flags |= OBJ_FLAG_200;
         gPlayerInput[PLAYER_1].mirrored = TRUE;
-        D_80080228[PLAYER_2]->flags &= ~0x200;
+        D_80080228[PLAYER_2]->flags &= ~OBJ_FLAG_200;
         gPlayerInput[PLAYER_2].mirrored = FALSE;
     }
 

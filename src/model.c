@@ -125,7 +125,7 @@ void func_800343F8(Object *obj, u8 arg1) {
         }
     }
 
-    obj->flags |= 0x2000;
+    obj->flags |= OBJ_FLAG_2000;
 }
 
 void func_80034508(void) {
@@ -141,7 +141,7 @@ void func_8003453C(Object *obj, ColorRGBA *arg1) {
     }
 
     objD = (GlobalObjD *) GET_ITEM(D_8013C4F0);
-    obj->flags |= 0x20000000;
+    obj->flags |= OBJ_FLAG_20000000;
 
     objD->unk_2C = D_8013C4EC;
     objD->unk_30 = NULL;
@@ -170,7 +170,7 @@ void func_800345D8(GlobalObjD *arg0) {
     RELEASE_ITEM(D_8013C4F0, arg0);
 }
 
-void func_80034648(BatchInfo *arg0, s32 transparent) {
+void batch_set_zb_on(BatchInfo *arg0, s32 transparent) {
     Gfx *gfx = &arg0->header.otherMode;
 
     mem_fill(gfx, 0, sizeof(Gfx));
@@ -183,10 +183,10 @@ void func_80034648(BatchInfo *arg0, s32 transparent) {
     gtStateSetOthermode(gfx, GT_TEXTLUT, G_TT_RGBA16);
     gtStateSetOthermode(gfx, GT_PIPELINE, G_PM_NPRIMITIVE);
 
-    arg0->header.unk_00 |= 1;
+    arg0->header.triMask |= G_RDP_TRI_ZBUFF_MASK;
 }
 
-void func_80034708(BatchInfo *arg0, s32 noAntiAliasing, s32 transparent) {
+void batch_set_zb_off(BatchInfo *arg0, s32 noAntiAliasing, s32 transparent) {
     Gfx *gfx = &arg0->header.otherMode;
 
     mem_fill(gfx, 0, sizeof(Gfx));
@@ -207,7 +207,7 @@ void func_80034708(BatchInfo *arg0, s32 noAntiAliasing, s32 transparent) {
     gtStateSetOthermode(gfx, GT_TEXTLUT, G_TT_RGBA16);
     gtStateSetOthermode(gfx, GT_PIPELINE, G_PM_NPRIMITIVE);
 
-    arg0->header.unk_00 &= ~1;
+    arg0->header.triMask &= ~G_RDP_TRI_ZBUFF_MASK;
 }
 
 s32 func_80034860(Object *obj) {
@@ -230,27 +230,27 @@ s32 func_80034860(Object *obj) {
     count = modInst->numNodes;
     batches1 = modInst->renderBatches;
     batches2 = modInst->renderBatches + 30;
-    noAA = obj->flags & 0x40000000;
-    transparent = flags & 0x2000;
+    noAA = obj->flags & OBJ_FLAG_40000000;
+    transparent = flags & OBJ_FLAG_2000;
     ptr = modInst->unk_1F6E;
 
     for (i = 0; i < count; batches1++, batches2++, i++) {
         s32 s3 = ptr[i];
 
         if (s3 && !D_800801E2) {
-            func_80034648(batches1, transparent);
-            func_80034648(batches2, transparent);
+            batch_set_zb_on(batches1, transparent);
+            batch_set_zb_on(batches2, transparent);
         } else {
-            func_80034708(batches1, noAA, transparent);
-            func_80034708(batches2, noAA, transparent);
+            batch_set_zb_off(batches1, noAA, transparent);
+            batch_set_zb_off(batches2, noAA, transparent);
         }
 
         array = model->batchInfos[i];
         for (j = 1; j < model->batchCounts[i]; j++) {
             if (s3 && !D_800801E2) {
-                func_80034648(&array[j], transparent);
+                batch_set_zb_on(&array[j], transparent);
             } else {
-                func_80034708(&array[j], noAA, transparent);
+                batch_set_zb_off(&array[j], noAA, transparent);
             }
         }
     }
@@ -261,29 +261,29 @@ s32 func_80034860(Object *obj) {
 void func_800349F0(Object *obj) {
     u32 i;
     ModelInstance *model = obj->modInst;
-    s32 count = model->numNodes;
+    s32 numNodes = model->numNodes;
     u8 *buffer = model->unk_1F6E;
 
-    for (i = 0; i < count; i++) {
-        buffer[i] = 1;
+    for (i = 0; i < numNodes; i++) {
+        buffer[i] = TRUE;
     }
 }
 
 void func_80034A58(Object *obj) {
     ModelInstance *model = obj->modInst;
     u32 i;
-    s32 a2 = model->numNodes;
+    s32 numNodes = model->numNodes;
     u8 *ptr2 = model->unk_1F6E;
 
-    for (i = 0; i < a2; i++) {
-        ptr2[i] = 0;
+    for (i = 0; i < numNodes; i++) {
+        ptr2[i] = FALSE;
     }
 }
 
 void func_80034AB8(Object *obj) {
     ModelInstance *model = obj->modInst;
     u32 i;
-    s32 a2 = model->numNodes;
+    s32 numNodes = model->numNodes;
     u8 *ptr1;
     u8 *ptr2;
 
@@ -291,30 +291,30 @@ void func_80034AB8(Object *obj) {
     ptr1 = model->unk_1F50;
 
     if (D_8008012C & GFX_FLAG_10) {
-        if (!(obj->flags & 0x40000000)) {
-            memcpy(ptr1, ptr2, a2);
+        if (!(obj->flags & OBJ_FLAG_40000000)) {
+            memcpy(ptr1, ptr2, numNodes);
             func_80034A58(obj);
             set_post_render_hook(func_80034860, obj);
-            obj->flags |= 0x40000000;
-            D_8008012C |= GFX_FLAG_8;
+            obj->flags |= OBJ_FLAG_40000000;
+            D_8008012C |= GFX_FLAG_ZBUFFER;
         }
         return;
     }
 
-    if (!(D_8008012C & GFX_FLAG_10) && (obj->flags & 0x40000000)) {
+    if (!(D_8008012C & GFX_FLAG_10) && (obj->flags & OBJ_FLAG_40000000)) {
         if (D_800801E2) {
-            D_8008012C &= ~GFX_FLAG_8;
+            D_8008012C &= ~GFX_FLAG_ZBUFFER;
         } else {
-            memcpy(ptr2, ptr1, a2);
+            memcpy(ptr2, ptr1, numNodes);
             set_post_render_hook(func_80034860, obj);
-            obj->flags &= ~0x40000000;
+            obj->flags &= ~OBJ_FLAG_40000000;
         }
         return;
     }
 
-    for (i = 0; i < a2; i++) {
+    for (i = 0; i < numNodes; i++) {
         if (ptr1[i] != ptr2[i]) {
-            memcpy(ptr1, ptr2, a2);
+            memcpy(ptr1, ptr2, numNodes);
             set_post_render_hook(func_80034860, obj);
             break;
         }
@@ -525,7 +525,7 @@ void func_8003561C(Object *obj, s32 arg1) {
     sp74 = model->unk_9C8;
     transforms = model->transforms;
 
-    if (obj->flags & 0x01000000) {
+    if (obj->flags & OBJ_FLAG_1000000) {
         projMatrix = &D_8013C6B0;
     } else {
         projMatrix = &gCameraProjectionMatrix;
@@ -557,7 +557,7 @@ void func_8003561C(Object *obj, s32 arg1) {
             x = y = z = 2.0f;
         }
 
-        if (!(obj->flags & 0x200000)) {
+        if (!(obj->flags & OBJ_FLAG_200000)) {
             s6[i].flags = (x > 1.2 || x < -1.2 || y > 1.2 || y < -1.2);
         } else {
             s6[i].flags &= ~1;
@@ -847,11 +847,11 @@ void model_update_animated_params(Object *obj) {
         model->rootUpdated = FALSE;
     }
 
-    if (obj->flags & 0x400) {
+    if (obj->flags & OBJ_FLAG_400) {
         model->rootTransform.local_matrix.w.y = model->currentRootPos.y;
         velocity.y = 0;
 
-        if (obj->flags & 0x20000) {
+        if (obj->flags & OBJ_FLAG_20000) {
             velocity.x = model->currentRootPos.x - model->baseRootPos.x - model->unk_A1C;
             v1 = velocity.x - model->velocity.x;
             model->velocity.x = velocity.x;
@@ -862,10 +862,11 @@ void model_update_animated_params(Object *obj) {
         }
 
         velocity.z = model->currentRootPos.z - model->baseRootPos.z;
+
         if (velocity.z != 0 || velocity.x != 0) {
             v1 = 0;
-            if (obj->flags & 0x100000) {
-                obj->flags &= ~0x100000;
+            if (obj->flags & OBJ_FLAG_100000) {
+                obj->flags &= ~OBJ_FLAG_100000;
             } else {
                 v1 = velocity.z - model->velocity.z;
             }
@@ -874,7 +875,7 @@ void model_update_animated_params(Object *obj) {
 
             model->rootTransform.local_matrix.w.z = model->baseRootPos.z;
             func_8001370C(&velocity, &obj->rotation);
-            if (!(obj->flags & 0x8000)) {
+            if (!(obj->flags & OBJ_FLAG_8000)) {
                 obj->pos.x += velocity.x;
                 obj->pos.z += velocity.z;
             }
@@ -893,13 +894,13 @@ void model_update_animated_params(Object *obj) {
             obj->pos.z += velocity.z;
         }
 
-        if (obj->flags & 0x8000000) {
-            if (obj->flags & 0x800000) {
+        if (obj->flags & OBJ_FLAG_8000000) {
+            if (obj->flags & OBJ_FLAG_800000) {
                 obj->rotation.y = 0x400 - ((0xC00 - obj->rotation.y) & 0xFFF);
-                obj->flags &= ~0x800000;
+                obj->flags &= ~OBJ_FLAG_800000;
             }
 
-            obj->flags &= ~0x8000000;
+            obj->flags &= ~OBJ_FLAG_8000000;
 
             velocity.y = 0;
             velocity.x = model->currentRootPos.x;
@@ -1343,22 +1344,22 @@ void model_change_animation(Object *obj) {
     model->currentRootPos.y = model->baseRootPos.y;
     model->currentRootPos.z = model->baseRootPos.z;
 
-    if (obj->flags & 0x400) {
-        if (obj->flags & 0x800000) {
+    if (obj->flags & OBJ_FLAG_400) {
+        if (obj->flags & OBJ_FLAG_800000) {
             obj->rotation.y = 0x400 - ((0xC00 - obj->rotation.y) & 0xFFF);
-            obj->flags &= ~0x800000;
+            obj->flags &= ~OBJ_FLAG_800000;
         }
-        obj->flags |= 0x08000000;
+        obj->flags |= OBJ_FLAG_8000000;
     }
 
-    if (obj->flags & 0x400000) {
-        obj->flags &= ~0x400000;
-        obj->flags |= 0x800000;
+    if (obj->flags & OBJ_FLAG_400000) {
+        obj->flags &= ~OBJ_FLAG_400000;
+        obj->flags |= OBJ_FLAG_800000;
     }
 
     model->rootRotation.x = model->rootRotation.y = model->rootRotation.z = 0;
     model->rootScale.x = model->rootScale.y = model->rootScale.z = 0x100;
-    obj->flags &= ~0x8000;
+    obj->flags &= ~OBJ_FLAG_8000;
 
     if (obj->frameIndex != 0) {
         v12 = obj->frameIndex;
@@ -1501,7 +1502,7 @@ void sprite3d_update(Object *obj) {
     BatchInfo *renderBatches;
     int temp;
 
-    temp = obj->flags & 4; // required to match
+    temp = obj->flags & OBJ_FLAG_HIDDEN; // required to match
 
     index = obj->frameIndex;
     modInst = obj->modInst;
@@ -1511,18 +1512,18 @@ void sprite3d_update(Object *obj) {
 
     task_execute(obj);
 
-    if (obj->flags & 4) {
+    if (obj->flags & OBJ_FLAG_HIDDEN) {
         return;
     }
 
     mu = &obj->transform;
     renderBatches = modInst->renderBatches;
 
-    if (obj->flags & 0x2000) {
+    if (obj->flags & OBJ_FLAG_2000) {
         func_80034F34(obj);
     }
 
-    if (!(obj->flags & 0x80000)) {
+    if (!(obj->flags & OBJ_FLAG_80000)) {
         obj->rotation.x = D_8013C668.x;
         obj->rotation.y = D_8013C668.y;
     }
@@ -1785,13 +1786,13 @@ void model_update(Object *obj) {
         func_800349F0(obj);
     }
 
-    if ((!(obj->flags & 0x4000)) || (obj->flags & 0x10000000)) {
+    if ((!(obj->flags & OBJ_FLAG_4000)) || (obj->flags & OBJ_FLAG_10000000)) {
         func_80034AB8(obj);
     }
 
     func_80034F34(obj);
 
-    if (obj->flags & 0x80000000) {
+    if (obj->flags & OBJ_FLAG_80000000) {
         obj->rotation.y = D_8013C668.y;
         obj->rotation.x = D_8013C668.x;
     }
@@ -1813,7 +1814,7 @@ void model_update(Object *obj) {
         func_80014974(objTransform);
 
         if (modInst->unk_604 != NULL) {
-            if (obj->flags & 0x800) {
+            if (obj->flags & OBJ_FLAG_800) {
                 func_8003561C(obj, -10000);
             } else {
                 func_8003561C(obj, 0);
@@ -1822,7 +1823,7 @@ void model_update(Object *obj) {
             renderInfo = modInst->unk_608;
             for (i = 0; i < modInst->unk_9C8; i++) {
                 new_var = renderInfo[i].unk_04;
-                if (obj->flags & 0x02000000) {
+                if (obj->flags & OBJ_FLAG_2000000) {
                     renderInfo[i].flags |= 2;
                 }
 
@@ -1832,7 +1833,7 @@ void model_update(Object *obj) {
                 for (j = 0; j < s6; j++) {
                     s32 s1 = new_var->unk_04[j];
 
-                    if (obj->flags & 0x01000000) {
+                    if (obj->flags & OBJ_FLAG_1000000) {
                         a1 = &D_8013C6B0;
                     } else {
                         a1 = &gCameraProjectionMatrix;

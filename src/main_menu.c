@@ -1,5 +1,6 @@
 #include "common.h"
 #include "camera.h"
+#include "task.h"
 
 extern s16 D_80051F68;
 extern s16 D_80080232;
@@ -73,7 +74,7 @@ void func_8001954C(Object *obj, s16 buttons, s16 playerId) {
 
             sound_play(2, 0);
             D_8005BFC0 |= GAME_FLAG_MODE_DONE;
-            obj->currentTask->flags |= 0x80;
+            TASK_END(obj->currentTask);
         } else if (buttons & INP_LEFT) {
             obj->vars[4] = obj->vars[6] * 20 + 20;
             obj->vars[6] = (obj->vars[6] + 3) % 4;
@@ -169,10 +170,10 @@ void func_80019A9C(Object *obj) {
         sound_play(2, 0);
         assetData = gAssets[asset_find("title.k2", 0x2000)].aux_data;
         obj1 = create_model_instance(&D_8004934C, 0x1000, func_800199E0, assetData);
-        obj1->currentTask->counter = 30;
+        obj1->currentTask->start_delay = 30;
         obj1->frameIndex = 0;
-        obj1->flags |= 0x01000000;
-        obj->flags |= 0x10;
+        obj1->flags |= OBJ_FLAG_1000000;
+        obj->flags |= OBJ_FLAG_DELETE;
     }
 
     if (++obj->vars[7] > 900) {
@@ -185,8 +186,8 @@ void func_80019BD0(Object *obj) {
         ((gPlayerInput[PLAYER_1].buttons & INP_START) || (gPlayerInput[PLAYER_2].buttons & INP_START))) {
         D_8005BFC0 |= GAME_FLAG_MODE_DONE;
         gNextGameMode = GAME_MODE_MAIN_MENU;
-        obj->flags |= 0x10;
-        obj->currentTask->flags |= 0x80;
+        obj->flags |= OBJ_FLAG_DELETE;
+        TASK_END(obj->currentTask);
     }
 }
 
@@ -196,8 +197,8 @@ void func_80019C48(Object *obj) {
         D_8005BEFC = 0;
         D_8005BFC0 |= GAME_FLAG_MODE_DONE;
         gNextGameMode = GAME_MODE_32;
-        obj->flags |= 0x10;
-        obj->currentTask->flags |= 0x80;
+        obj->flags |= OBJ_FLAG_DELETE;
+        TASK_END(obj->currentTask);
     }
     func_80019BD0(obj);
 }
@@ -255,7 +256,7 @@ void func_80019E28(Object *obj) {
     }
 
     if (++obj->frameIndex >= obj->modInst->numAnimFrames - 4) {
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
         create_worker(func_8000A578, 0x1000);
         D_8005BEFC = 0;
         sound_play(0x2000, 3);
@@ -264,7 +265,7 @@ void func_80019E28(Object *obj) {
 
 void func_80019F08(Object *obj) {
     sound_play(0x2000, 8);
-    obj->flags |= 0x10;
+    obj->flags |= OBJ_FLAG_DELETE;
 }
 
 void func_80019F40(Object *obj) {
@@ -277,9 +278,9 @@ void func_80019F40(Object *obj) {
         obj->fn_render = func_8000A578;
 
         v1 = obj->varObj[0];
-        v1->flags |= 0x10;
+        v1->flags |= OBJ_FLAG_DELETE;
         v1 = obj->varObj[1];
-        v1->flags |= 0x10;
+        v1->flags |= OBJ_FLAG_DELETE;
 
         sound_stop_one(0x2000, 8);
         sound_play(0x2000, 3);
@@ -302,15 +303,15 @@ void func_80019F40(Object *obj) {
             v1 = obj->varObj[1];
             v1->pos.z += 450;
         } else {
-            v1->flags |= 0x10;
-            obj->flags |= 0x10;
+            v1->flags |= OBJ_FLAG_DELETE;
+            obj->flags |= OBJ_FLAG_DELETE;
 
             v1 = obj->varObj[1];
-            v1->flags |= 0x10;
+            v1->flags |= OBJ_FLAG_DELETE;
 
             m = (Model *) gAssets[asset_find("titopen.k2", CONTEXT_2000)].aux_data;
             v1 = create_model_instance(&D_8004934C, 0x1000, func_80019E28, m);
-            v1->flags |= 0x01002800;
+            v1->flags |= OBJ_FLAG_1000000 | OBJ_FLAG_2000 | OBJ_FLAG_800;
             v1->unk_088.a = 128;
             obj->vars[2] = 3;
             sound_stop_one(0x2000, 8);
@@ -331,7 +332,7 @@ void func_8001A158(Object *obj, s16 arg1) {
 
     m = (Model *) gAssets[asset_find("haze.k2", arg1)].aux_data;
     v0 = create_model_instance(&D_8004934C, 0x1000, func_8001A130, m);
-    v0->flags |= 0x01002800;
+    v0->flags |= OBJ_FLAG_1000000 | OBJ_FLAG_2000 | OBJ_FLAG_800;
     v0->unk_088.a = 75;
     if (obj != NULL) {
         obj->varObj[0] = v0;
@@ -339,7 +340,7 @@ void func_8001A158(Object *obj, s16 arg1) {
 
     m = (Model *) gAssets[asset_find("haze1.k2", arg1)].aux_data;
     v0 = create_model_instance(&sp24, 0x1000, NULL, m);
-    v0->flags |= 0x01002800;
+    v0->flags |= OBJ_FLAG_1000000 | OBJ_FLAG_2000 | OBJ_FLAG_800;
     v0->unk_088.a = 75;
     if (obj != NULL) {
         obj->varObj[1] = v0;
@@ -353,7 +354,7 @@ void func_8001A294(Object *obj) {
     if (gPlayerInput[D_8013C24C].buttons & INP_START) {
         D_8005BFC0 |= GAME_FLAG_MODE_DONE;
         gNextGameMode = GAME_MODE_36;
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
     }
 }
 
@@ -374,7 +375,7 @@ void func_8001A334(Object *obj) {
         obj->vars[1] = 0;
         m = (Model *) gAssets[asset_find("theend.k2", 0x4000)].aux_data;
         v0 = create_model_instance(&sp20, 0x1000, func_8001A2F4, m);
-        v0->flags |= 0x01002800;
+        v0->flags |= OBJ_FLAG_1000000 | OBJ_FLAG_2000 | OBJ_FLAG_800;
     }
 }
 
@@ -397,7 +398,7 @@ void func_8001A3EC(Object *obj) {
             break;
     }
 
-    obj->flags |= 0x10;
+    obj->flags |= OBJ_FLAG_DELETE;
     func_80014CB4(D_80081254);
 }
 #else
@@ -416,7 +417,7 @@ void func_8001A490(Object *obj) {
         return;
     }
 
-    v0->flags |= 0x10;
+    v0->flags |= OBJ_FLAG_DELETE;
     func_8001A3EC(obj);
 }
 
@@ -444,15 +445,15 @@ void func_8001A4FC(Object *obj) {
 void func_8001A5D4(Object *obj) {
     if (gCamera->modInst->animations[0] == NULL) {
         func_8002EA50(gCamera, obj->vars[1]);
-        obj->currentTask->flags |= 0x80;
-        obj->flags |= 0x10;
+        TASK_END(obj->currentTask);
+        obj->flags |= OBJ_FLAG_DELETE;
     }
 }
 
 void func_8001A63C(Object *obj) {
     if (--obj->vars[0] < 0) {
         D_8005BFC0 |= GAME_FLAG_MODE_DONE;
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
     }
 }
 
@@ -477,7 +478,7 @@ void func_8001A674(Object *obj) {
 
     if (s2->obj->frameIndex == s2->currentState->unk_02 - 2) {
         D_8005BFC0 |= GAME_FLAG_MODE_DONE;
-        obj->flags |= 0x10;
+        obj->flags |= OBJ_FLAG_DELETE;
         gNextGameMode = GAME_MODE_BATTLE_DEMITRON;
         func_80014CB4(D_80081254);
     }

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "task.h"
 
 extern s16 D_80049D10[];
 extern s16 D_80049D24[];
@@ -23,7 +24,7 @@ void func_8001B810(Player *player) {
         return;
     }
 
-    if (!(player->currentState->flags & 0x4000)) {
+    if (!(player->currentState->flags & STATE_FLAG_4000)) {
         player->unk_DC = 0;
     }
 
@@ -31,8 +32,10 @@ void func_8001B810(Player *player) {
         v1 = &player->unk_A8;
         if (player->moveTimeout != 0 && --player->moveTimeout == 0) {
             func_8001BB2C(player);
-            if (player->currentMoveId >= 0 && (player->flags & PLAYER_FLAG_1000) && func_800069C0(player)) {
-                player->unk_180 |= 0x8000;
+            if (player->nextLogicState >= 0 && (player->flags & PLAYER_FLAG_1000)) {
+                if (ai_select_transition(player)) {
+                    player->unk_180 |= 0x8000;
+                }
             }
         } else if (v1->unk_BC != NULL) {
             v02 = v1->unk_BC(player);
@@ -50,25 +53,28 @@ void func_8001B810(Player *player) {
         } else if (player->moveTimeout == 0 && player->obj->frameIndex >= player->currentState->unk_02 - 1) {
             player->moveTimeout = 512;
         }
-    } else if (!(player->unk_0C->flags & 4) && !(player->flags & PLAYER_FLAG_400)) {
-        if (func_80030BB0(player->obj) && !(player->currentState->flags & 0x80) && !(player->obj->flags & 0x800000)) {
-            if (player->currentState->flags & 1) {
+    } else if (!(player->animTask->flags & TASK_FLAG_FRAME_TRIGGER) &&
+               !(player->flags & PLAYER_FLAG_TRANSITION_LOCKED)) {
+        if (func_80030BB0(player->obj) && !(player->currentState->flags & STATE_FLAG_80) &&
+            !(player->obj->flags & OBJ_FLAG_800000)) {
+            if (player->currentState->flags & STATE_FLAG_1) {
                 func_8001B7D0(player, 0x62);
                 return;
             }
-            if (player->currentState->flags & 4) {
+            if (player->currentState->flags & STATE_FLAG_4) {
                 func_8001B7D0(player, 0x5F);
                 return;
             }
         }
 
         v04 = func_8001C404(player, &sp30);
-        if ((player->obj->flags & 0x800000) || (player->flags & PLAYER_FLAG_2000)) {
+        if ((player->obj->flags & OBJ_FLAG_800000) || (player->flags & PLAYER_FLAG_2000)) {
             return;
         }
 
-        if ((--player->unk_DBE <= 0 || (v04 & 0xFF) && !(*sp30 & 2)) && (player->currentState->flags & 5) ||
-            player->unk_A0->unk_19 != 0xFF) {
+        if ((--player->unk_DBE <= 0 || (v04 & 0xFF) && !(*sp30 & 2)) &&
+                (player->currentState->flags & (STATE_FLAG_1 | STATE_FLAG_4)) ||
+            player->currentTransition->unk_19 != 0xFF) {
             player->unk_DBE = D_80049D10[sp2A];
             player->unk_DBE += guRandom() & D_80049D24[sp2A];
 

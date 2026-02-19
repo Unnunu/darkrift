@@ -1,4 +1,5 @@
 #include "common.h"
+#include "task.h"
 
 #define CONST_80 0x80
 
@@ -523,7 +524,7 @@ void music_stop(void) {
 
 void func_80021778(Object *obj) {
     if (obj->vars[0]-- < 0) {
-        obj->currentTask->flags |= 0x80;
+        TASK_END(obj->currentTask);
     }
 }
 
@@ -581,8 +582,8 @@ void func_80021918(Object *obj, s32 arg1) {
     }
 
     if (v1) {
-        obj->flags |= 0x10;
-        obj->currentTask->flags |= 0x80;
+        obj->flags |= OBJ_FLAG_DELETE;
+        TASK_END(obj->currentTask);
     }
 }
 

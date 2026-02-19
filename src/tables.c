@@ -52,10 +52,10 @@ void func_80030330(Object *);
 void func_800309EC(Object *);
 void func_8002FEA0(Object *);
 void func_80031724(Object *);
-void func_80023F9C(Object *);
-void func_80023F54(Object *);
+void player_anim_step_once(Object *);
+void player_anim_pingpong_forward(Object *);
 void func_80030B74(Object *);
-void func_80023D30(Object *);
+void player_anim_next_transition(Object *);
 u8 func_80030C88(Object *);
 void func_800311A0(Object *);
 u8 func_800315FC(Object *);
@@ -141,13 +141,31 @@ Unk_8004BA6C *D_8004BA6C[] = {
 };
 
 Vec4s D_8004BA98[] = {
-    { 0, 0, 27 }, { 0, 0, 58 },  { 0, 0, 100 }, { 0, 0, 50 }, { 0, 0, 18 },  { 0, 0, -1 },
-    { 0, 0, 0 },  { 26, 0, 44 }, { 0, 0, 0 },   { 0, 0, 0 },  { -3, 0, -3 },
+    { 0, 0, 27 },  // Aaron
+    { 0, 0, 58 },  // Demitron
+    { 0, 0, 100 }, // Demonica
+    { 0, 0, 50 },  // Eve
+    { 0, 0, 18 },  // Gore
+    { 0, 0, -1 },  // Character 5
+    { 0, 0, 0 },   // Morphix
+    { 26, 0, 44 }, // Niiki
+    { 0, 0, 0 },   // Scarlet
+    { 0, 0, 0 },   // Sonork
+    { -3, 0, -3 }, // Zenmuron
 };
 
 Vec4s D_8004BAF0[] = {
-    { 0, 0, 0 },    { 0, 0, 21 },  { 31, 0, 140 }, { -38, 0, 4 }, { 26, 0, 85 }, { 0, 0, -1 },
-    { -7, 0, -22 }, { 26, 0, 16 }, { 0, 0, -1 },   { 13, 0, 4 },  { -3, 0, -3 },
+    { 0, 0, 0 },    // Aaron
+    { 0, 0, 21 },   // Demitron
+    { 31, 0, 140 }, // Demonica
+    { -38, 0, 4 },  // Eve
+    { 26, 0, 85 },  // Gore
+    { 0, 0, -1 },   // Character 5
+    { -7, 0, -22 }, // Morphix
+    { 26, 0, 16 },  // Niiki
+    { 0, 0, -1 },   // Scarlet
+    { 13, 0, 4 },   // Sonork
+    { -3, 0, -3 },  // Zenmuron
 };
 
 GameMode gGameModes[] = {
@@ -220,63 +238,63 @@ u8 D_8004C1D8[] = { 6, 7, 9, 6, 5, 5, 6, 8, 5, 8, 5 };
 s16 gDifficulty = 1;
 
 PlayerSub5 D_8004C1E8[] = {
-    { 0x0040010, func_80023FDC, func_8002FD78, NULL, 0x2700208 },
-    { 0x0041010, task_default_func, func_80030A60, NULL, 0x2700208 },
-    { 0x0001010, func_80024078, func_8002F9E8, NULL, 0x2700208 },
-    { 0x0040010, func_80023FDC, func_8002FA78, NULL, 0x2F00208 },
-    { 0x0040000, func_80023FDC, task_default_func, NULL, 0x2700208 },
-    { 0x0040000, func_80023FDC, func_80030F00, NULL, 0x2700208 },
-    { 0x0001010, func_80024078, func_80031088, NULL, 0x2700208 },
-    { 0x0040010, func_80023FDC, func_8002FE10, NULL, 0x2F00208 },
-    { 0x0001810, func_80023ED0, task_default_func, NULL, 0x2F00208 },
-    { 0x0001010, func_80024214, task_default_func, NULL, 0x2700208 },
-    { 0x0801010, func_80024078, task_default_func, NULL, 0x2700208 },
-    { 0x0005000, func_80023ED0, task_default_func, NULL, 0x2F00208 },
-    { 0x0000000, func_80024214, task_default_func, NULL, 0x2700208 },
-    { 0x0000010, func_80024078, func_80030330, NULL, 0x2700208 },
-    { 0x1003090, func_80024078, func_800309EC, NULL, 0x2700208 },
-    { 0x0000000, func_80024078, task_default_func, NULL, 0x2700208 },
-    { 0x0040000, func_80023FDC, task_default_func, NULL, 0x2700208 },
-    { 0x0040000, func_80023FDC, task_default_func, NULL, 0x2700208 },
-    { 0x0000000, func_80024078, func_8002FEA0, NULL, 0x2700208 },
-    { 0x0003010, func_80024078, func_80031724, NULL, 0x2700208 },
-    { 0x0041000, func_80023F9C, task_default_func, NULL, 0x2700208 },
-    { 0x0040090, func_80023FDC, task_default_func, NULL, 0x2700208 },
-    { 0x0040000, func_80023F54, task_default_func, NULL, 0x2700208 },
-    { 0x0003000, func_80023F9C, func_80030B74, NULL, 0x2700208 },
-    { 0x0000000, task_default_func, func_80023D30, NULL, 0x2700208 },
-    { 0x0001000, func_80024078, task_default_func, func_80030C88, 0x2700208 },
+    /* idle */ { 0x0040010, func_80023FDC, func_8002FD78, NULL, 0x2700208 },
+    /* unknown step */ { 0x0041010, task_default_func, func_80030A60, NULL, 0x2700208 },
+    /* dash */ { 0x0001010, func_80024078, func_8002F9E8, NULL, 0x2700208 },
+    /* step */ { 0x0040010, func_80023FDC, func_8002FA78, NULL, 0x2F00208 },
+    /* ----- */ { 0x0040000, func_80023FDC, task_default_func, NULL, 0x2700208 },
+    /* run */ { 0x0040000, func_80023FDC, func_80030F00, NULL, 0x2700208 },
+    /* jump */ { 0x0001010, func_80024078, func_80031088, NULL, 0x2700208 },
+    /* crouch */ { 0x0040010, func_80023FDC, func_8002FE10, NULL, 0x2F00208 },
+    /* crouch exit*/ { 0x0001810, func_80023ED0, task_default_func, NULL, 0x2F00208 },
+    /* crouch restart */ { 0x0001010, func_80024214, task_default_func, NULL, 0x2700208 },
+    /* stand block */ { 0x0801010, func_80024078, task_default_func, NULL, 0x2700208 },
+    /* crouch abort */ { 0x0005000, func_80023ED0, task_default_func, NULL, 0x2F00208 },
+    /* SB reabort */ { 0x0000000, func_80024214, task_default_func, NULL, 0x2700208 },
+    /* grab */ { 0x0000010, func_80024078, func_80030330, NULL, 0x2700208 },
+    /* grabbed */ { 0x1003090, func_80024078, func_800309EC, NULL, 0x2700208 },
+    /* co-grabbed */ { 0x0000000, func_80024078, task_default_func, NULL, 0x2700208 },
+    /* intro */ { 0x0040000, func_80023FDC, task_default_func, NULL, 0x2700208 },
+    /* key up */ { 0x0040000, func_80023FDC, task_default_func, NULL, 0x2700208 },
+    /* various SP */ { 0x0000000, func_80024078, func_8002FEA0, NULL, 0x2700208 },
+    /* damaged */ { 0x0003010, func_80024078, func_80031724, NULL, 0x2700208 },
+    /* end */ { 0x0041000, player_anim_step_once, task_default_func, NULL, 0x2700208 },
+    /* lying down */ { 0x0040090, func_80023FDC, task_default_func, NULL, 0x2700208 },
+    { 0x0040000, player_anim_pingpong_forward, task_default_func, NULL, 0x2700208 },
+    /* dmg jump */ { 0x0003000, player_anim_step_once, func_80030B74, NULL, 0x2700208 },
+    /* timeout to idle */ { 0x0000000, task_default_func, player_anim_next_transition, NULL, 0x2700208 },
+    /* body slam */ { 0x0001000, func_80024078, task_default_func, func_80030C88, 0x2700208 },
     { 0x0003000, func_80024078, task_default_func, NULL, 0x2700208 },
-    { 0x0001018, func_80024078, task_default_func, func_80030BB0, 0x2700208 },
+    /* turn to opponent */ { 0x0001018, func_80024078, task_default_func, func_80030BB0, 0x2700208 },
     { 0x0000010, func_80024078, func_80021E34, NULL, 0x2700208 },
-    { 0x0001000, func_80024078, task_default_func, NULL, 0x2700208 },
-    { 0x0001010, func_80024078, func_800311A0, func_800315FC, 0x2700208 },
-    { 0x0001010, func_80024078, func_800311A0, func_80031648, 0x2700208 },
-    { 0x0000010, func_80024078, func_800311A0, func_800315FC, 0x2700208 },
-    { 0x0000010, func_80024078, func_800311A0, func_80031648, 0x2700208 },
-    { 0x0000010, func_80024078, func_8002FEC8, func_80030BB0, 0x2700208 },
-    { 0x0008010, func_80024078, func_8002FEA0, NULL, 0x2700208 },
+    /* intro projecti */ { 0x0001000, func_80024078, task_default_func, NULL, 0x2700208 },
+    /* various */ { 0x0001010, func_80024078, func_800311A0, func_800315FC, 0x2700208 },
+    /* roll */ { 0x0001010, func_80024078, func_800311A0, func_80031648, 0x2700208 },
+    /* roll 2*/ { 0x0000010, func_80024078, func_800311A0, func_800315FC, 0x2700208 },
+    /* side step */ { 0x0000010, func_80024078, func_800311A0, func_80031648, 0x2700208 },
+    /* side step 2 */ { 0x0000010, func_80024078, func_8002FEC8, func_80030BB0, 0x2700208 },
+    /* turn around */ { 0x0008010, func_80024078, func_8002FEA0, NULL, 0x2700208 },
     { 0x0000010, func_80024078, task_default_func, NULL, 0x2700208 },
-    { 0x0040010, func_80023F54, task_default_func, NULL, 0x2700208 },
+    { 0x0040010, player_anim_pingpong_forward, task_default_func, NULL, 0x2700208 },
     { 0x0040010, func_80023FDC, task_default_func, NULL, 0x2700208 },
     { 0x0008010, func_80024078, func_800305FC, func_80030764, 0x2700208 },
-    { 0x1013090, func_80024078, func_800302A4, func_8002FF7C, 0x2700208 },
+    /* Aaron specific */ { 0x1013090, func_80024078, func_800302A4, func_8002FF7C, 0x2700208 },
     { 0x0000010, func_80024078, func_800306FC, func_80030764, 0x2700208 },
     { 0x0000080, func_80024078, task_default_func, NULL, 0x2700208 },
     { 0x0003000, func_80024078, task_default_func, NULL, 0x2700208 },
-    { 0x0040090, func_80023F9C, task_default_func, NULL, 0x2700208 },
+    { 0x0040090, player_anim_step_once, task_default_func, NULL, 0x2700208 },
     { 0x0008000, func_80024078, task_default_func, NULL, 0x2700208 },
     { 0x0029010, func_80024078, task_default_func, NULL, 0x2700208 },
     { 0x0068010, func_80023FDC, task_default_func, NULL, 0x2700208 },
     { 0x0029010, func_80024078, func_80031F24, NULL, 0x2700208 },
     { 0x0003090, func_80024078, func_800309EC, NULL, 0x2700208 },
-    { 0x0041000, func_80023F9C, task_default_func, NULL, 0x2700208 },
+    { 0x0041000, player_anim_step_once, task_default_func, NULL, 0x2700208 },
     { 0x0000010, func_80024078, func_800311A0, NULL, 0x2700208 },
     { 0x0041010, func_80024078, task_default_func, func_800316A0, 0x2700208 },
     { 0x0001000, func_80024078, func_80021E34, func_8002F9A0, 0x2F00208 },
     { 0x1000010, func_80024078, func_80030074, NULL, 0x2700208 },
     { 0x1021000, func_80024078, func_80032130, NULL, 0x2700208 },
-    { 0x0000010, func_80023F9C, func_80021E34, NULL, 0x2700208 },
+    { 0x0000010, player_anim_step_once, func_80021E34, NULL, 0x2700208 },
     { 0x0001000, func_80024078, func_80031234, func_800315FC, 0x2700208 },
     { 0x0001000, func_80024078, func_80031234, func_80031648, 0x2700208 },
     { 0x1003090, func_80024078, func_800302A4, NULL, 0x2700208 },
@@ -285,7 +303,7 @@ PlayerSub5 D_8004C1E8[] = {
     { 0x0000000, func_80024078, func_8003146C, NULL, 0x2700208 },
     { 0x0061010, func_80024078, func_80031164, NULL, 0x2700208 },
     { 0x0008000, func_80023FDC, func_80031FBC, NULL, 0x2700208 },
-    { 0x0000000, func_80023F9C, func_80031F88, NULL, 0x2700208 },
+    { 0x0000000, player_anim_step_once, func_80031F88, NULL, 0x2700208 },
     { 0x0000000, func_80023FDC, func_80032044, NULL, 0x2700208 },
     { 0x0001000, func_80024078, func_800313EC, NULL, 0x2700208 },
     { 0x8005000, func_80023ED0, task_default_func, NULL, 0x2F00208 },
