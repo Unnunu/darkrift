@@ -419,7 +419,7 @@ typedef struct AssetDB3 {
 
 s16 D_80049390 = -1;
 s16 D_80049394 = -1;
-s32 func_8001C114(Player *); // @fake signature
+
 void func_8001C1C0(Player *);
 void func_8001BF40(Player *);
 s32 func_8001DFE4(s32 arg0);
@@ -449,8 +449,8 @@ void func_80004334(AssetDB *arg0, s16 playerId) {
     gPlayers[playerId].unk_A8.unk_B4 = &D_80049394;
     gPlayers[playerId].unk_A8.unk_B8 = &D_80049394;
     gPlayers[playerId].unk_A8.unk_BC = 0;
-    gPlayers[playerId].unk_C0 = 0;
-    gPlayers[playerId].unk_C4 = 0;
+    gPlayers[playerId].unk_A8.unk_C0 = 0;
+    gPlayers[playerId].unk_A8.unk_C4 = 0;
 
     gPlayerInput[playerId].enabled = FALSE;
 

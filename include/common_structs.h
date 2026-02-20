@@ -460,7 +460,7 @@ typedef struct TransitionDef {
     /* 0x08 */ s16 index_in_field24;
     /* 0x0A */ s16 stateId;
     /* 0x0C */ u16 button_mask;
-    /* 0x0E */ char unk_0E[0x19 - 0xE];
+    /* 0x0E */ u8 unk_0E[11];
     /* 0x19 */ u8 unk_19;
     /* 0x1A */ char unk_1C[2];
 } TransitionDef; // size = 0x1C
@@ -711,6 +711,12 @@ typedef struct PlayerSubH {
     /* 0x00B4 */ s16 *unk_B4;
     /* 0x00B8 */ s16 *unk_B8;
     /* 0x00BC */ s16 (*unk_BC)(struct Player *);
+    /* 0x00C0 */ s16 unk_C0;
+    /* 0x00C2 */ s16 unk_C2;
+    /* 0x00C4 */ s32 unk_C4;
+    /* 0x00C8 */ s32 unk_C8;
+    /* 0x00CC */ s16 unk_CC;
+    /* 0x00CE */ s16 unk_CE;
 } PlayerSubH;
 
 typedef struct Player {
@@ -735,12 +741,12 @@ typedef struct Player {
     /* 0x0044 */ u8 *unk_44;
     /* 0x0048 */ PlayerSubG *unk_48;
     /* 0x004C */ PlayerSubB *unk_4C;
-    /* 0x0050 */ s32 unk_50;
-    /* 0x0054 */ s32 unk_54;
+    /* 0x0050 */ u16 *unk_50;
+    /* 0x0054 */ s16 *unk_54;
     /* 0x0058 */ s32 unk_58;
     /* 0x005C */ s32 unk_5C;
-    /* 0x0060 */ s32 unk_60;
-    /* 0x0064 */ s32 unk_64;
+    /* 0x0060 */ s16 *unk_60;
+    /* 0x0064 */ s16 *unk_64;
     /* 0x0068 */ u8 *unk_68;
     /* 0x006C */ s32 unk_6C;
     /* 0x0070 */ s16 unk_70;
@@ -763,10 +769,8 @@ typedef struct Player {
     /* 0x00A0 */ TransitionDef *currentTransition;
     /* 0x00A4 */ TransitionDef *previousTransition;
     /* 0x00A8 */ PlayerSubH unk_A8;
-    /* 0x00C0 */ s16 unk_C0;
-    /* 0x00C2 */ s16 unk_C2;
-    /* 0x00C4 */ s32 unk_C4;
-    /* 0x00C8 */ char unk_C8[0x14];
+    /* 0x00D0 */ s32 unk_D0;
+    /* 0x00D4 */ char unk_D4[0x8];
     /* 0x00DC */ s16 unk_DC;
     /* 0x00DE */ char unk_DE[0x180 - 0xDE];
     /* 0x0180 */ s32 unk_180;
