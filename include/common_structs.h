@@ -772,7 +772,8 @@ typedef struct Player {
     /* 0x00D0 */ s32 unk_D0;
     /* 0x00D4 */ char unk_D4[0x8];
     /* 0x00DC */ s16 unk_DC;
-    /* 0x00DE */ char unk_DE[0x180 - 0xDE];
+    /* 0x00DE */ s16 unk_DE;
+    /* 0x00E0 */ char unk_E0[0xA0];
     /* 0x0180 */ s32 unk_180;
     /* 0x0184 */ u8 unk_184;
     /* 0x0186 */ s16 unk_186;

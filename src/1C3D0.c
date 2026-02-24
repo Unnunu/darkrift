@@ -3,7 +3,13 @@
 
 extern s16 D_80049D10[];
 extern s16 D_80049D24[];
+extern s16 D_80049D34[];
+extern s16 D_80049D44[];
+extern s16 D_80049D54[];
+extern s16 D_80049D64[];
 extern s16 (*D_80049D74[])(struct Player *);
+extern s16 D_80049DB4[];
+extern s16 D_80049DCC[];
 
 u8 func_8001C404(Player *, s16 **);
 u8 func_8001BC7C(Player *);
@@ -368,45 +374,311 @@ s16 func_8001CB74(Player *player) {
     return (player->unk_A8.unk_C0 < D_80080210) && !(player->flags & 8) && (!v0 || (*sp24 & 2));
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001CC18.s")
+s16 func_8001CC18(Player *player) {
+    s16 *sp24;
+    u8 v0;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001CC8C.s")
+    v0 = func_8001C404(player, &sp24);
+    return (player->unk_A8.unk_C0 < D_80080210) && !(player->flags & 8) && (!v0 || (*sp24 & 2));
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001CD28.s")
+s16 func_8001CC8C(Player *player) {
+    s16 *sp24;
+    u8 v0;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001CD34.s")
+    v0 = func_8001C404(player, &sp24);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001CDAC.s")
+    if (player->obj->frameIndex < (player->currentState->unk_02 >> 1)) {
+        return TRUE;
+    }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001CDE0.s")
+    return (player->unk_A8.unk_C0 > D_80080210) && !(player->flags & 8) && (!v0 || (*sp24 & 2));
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001CE0C.s")
+s16 func_8001CD28(Player *player) {
+    return FALSE;
+}
+
+s16 func_8001CD34(Player *player) {
+    s16 *sp24;
+    u8 v0;
+
+    v0 = func_8001C404(player, &sp24);
+
+    if (player->unk_A8.unk_C0) {
+        player->unk_A8.unk_C0--;
+    }
+
+    return (player->unk_A8.unk_C0) && !(player->flags & 8) && (!v0 || (*sp24 & 2));
+}
+
+s16 func_8001CDAC(Player *player) {
+    if (player->obj->frameIndex < (player->currentState->unk_02 >> 1)) {
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
+s16 func_8001CDE0(Player *player) {
+    player->unk_A8.unk_C0--;
+
+    if (player->unk_A8.unk_C0 > 0) {
+        return TRUE;
+    } else {
+        return -1;
+    }
+}
+
+s16 func_8001CE0C(Player *player) {
+    return -1;
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001CE18.s")
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001D070.s")
+s16 func_8001D070(Player *player) {
+    s16 oppId = 1 - player->playerId;
+    s32 pad;
+    s16 *sp24;
+    u8 v0;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001D1F8.s")
+    if (player->flags & 0x2000) {
+        return TRUE;
+    }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001D3A8.s")
+    if (player->unk_DC >= D_80049D34[gBattleSettings[player->playerId].unk_04] &&
+        !(gPlayers[1 - player->playerId].flags & 0x02000000)) {
+        return FALSE;
+    }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001D44C.s")
+    player->unk_A8.unk_C0--;
+    v0 = func_8001C404(player, &sp24);
+    if (v0 && !(*sp24 & 2)) {
+        if (!(*sp24 & 4)) {
+            func_800063C4(player, 56, TRUE);
+        }
+        return TRUE;
+    }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001D660.s")
+    if (gPlayers[oppId].flags & 8) {
+        player->stateId = 0x2a;
+        return -1;
+    }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001D6C0.s")
+    return (player->unk_A8.unk_C0 > 0) || !(*sp24 & 2);
+}
+
+u8 func_8001D1F8(Player *player) {
+    switch (gDifficulty) {
+        case 0:
+            switch (gBattleSettings[player->playerId].unk_04) {
+                case 0:
+                    return (guRandom() % 100) < 20;
+                case 1:
+                case 2:
+                    return (guRandom() % 100) < 40;
+                case 3:
+                case 4:
+                    return (guRandom() % 100) < 60;
+                case 5:
+                    return (guRandom() % 100) < 80;
+                default:
+                    return TRUE;
+            }
+            break;
+        case 1:
+        case 2:
+            switch (gBattleSettings[player->playerId].unk_04) {
+                case 0:
+                    return (guRandom() % 100) < 20;
+                case 1:
+                    return (guRandom() % 100) < 40;
+                case 2:
+                case 3:
+                    return (guRandom() % 100) < 80;
+                default:
+                    return TRUE;
+            }
+            break;
+    }
+
+    return TRUE;
+}
+
+s16 func_8001D3A8(Player *player) {
+    s16 *sp24;
+    s32 pad[2];
+    u8 v0;
+    s16 playerId = player->playerId;
+
+    player->unk_A8.unk_C0--;
+
+    if (player->unk_DC < D_80049D34[gBattleSettings[playerId].unk_04]) {
+        v0 = func_8001C404(player, &sp24);
+        if (v0 && !(*sp24 & 2) && !(*sp24 & 4)) {
+            func_800063C4(player, 56, TRUE);
+            return TRUE;
+        }
+    }
+
+    return TRUE;
+}
+
+s32 func_8001D44C(Player *player) {
+    s16 *sp34;
+    s16 oppId;
+    s16 sp30;
+    s16 sp2E;
+    s16 sp2C;
+    Player *opponent;
+
+    oppId = 1 - player->playerId;
+    sp30 = gPlayers[oppId].obj->frameIndex;
+    sp2E = gPlayers[oppId].currentState->unk_06;
+    sp2C = gPlayers[oppId].currentState->unk_04;
+
+    player->unk_A8.unk_C0--;
+
+    if (player->unk_DC < D_80049D34[gBattleSettings[player->playerId].unk_04]) {
+        if (func_8001C404(player, &sp34)) {
+            if (!(*sp34 & 2) && !(*sp34 & 4)) {
+                func_800063C4(player, 56, TRUE);
+                return 1;
+            }
+        }
+    }
+
+    opponent = gPlayers + oppId;
+    if (!(opponent->flags & PLAYER_FLAG_2000000)) {
+        if ((sp30 < sp2C && D_80049DB4[opponent->characterId] < sp2C - sp30) ||
+            (sp2E < sp30 && D_80049DCC[opponent->characterId] < gPlayers[oppId].currentState->unk_02 - sp2E) ||
+            ((gPlayers[1 - player->playerId].flags & PLAYER_FLAG_TRANSITION_LOCKED) &&
+             gPlayers[1 - player->playerId].obj->frameIndex < 6)) {
+            player->flags &= ~0x2000;
+            return -1;
+        }
+    }
+
+    return 1;
+}
+
+void func_8001D660(Player *player) {
+    player->unk_DE = 0;
+    player->unk_DC++;
+
+    if (func_8001D1F8(player)) {
+        player->unk_A8.unk_BC = func_8001D44C;
+        func_8001D44C(player);
+    } else {
+        player->unk_A8.unk_BC = func_8001D3A8;
+        func_8001D3A8(player);
+    }
+}
+
+s16 func_8001D6C0(Player *player) {
+    s32 pad[2];
+    s16 *sp24;
+    u8 v0;
+    s16 playerId = player->playerId;
+
+    player->unk_A8.unk_C0--;
+
+    if (player->unk_DC < D_80049D34[gBattleSettings[playerId].unk_04]) {
+        v0 = func_8001C404(player, &sp24);
+        if (v0 && !(*sp24 & 2) && (*sp24 & 4)) {
+            func_800063C4(player, 57, TRUE);
+            return TRUE;
+        }
+    }
+
+    return TRUE;
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001D764.s")
+void func_8001D764(Player *player);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001D9B0.s")
+void func_8001D9B0(Player *player) {
+    player->unk_DE = 0;
+    player->unk_DC++;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001DA10.s")
+    if (func_8001D1F8(player)) {
+        player->unk_A8.unk_BC = func_8001D764;
+        func_8001D764(player);
+    } else {
+        player->unk_A8.unk_BC = func_8001D6C0;
+        func_8001D6C0(player);
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001DA90.s")
+u8 func_8001DA10(Player *player) {
+    s16 sp1E;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001DB2C.s")
+    sp1E = gBattleSettings[player->playerId].unk_04;
+    player->unk_A8.unk_C0 = D_80049D44[sp1E] + (guRandom() & D_80049D24[sp1E]); // @BUG ??
+    player->unk_A8.unk_BC = func_8001CDE0;
+    return TRUE;
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001DC68.s")
+u8 func_8001DA90(Player *player) {
+    s16 *sp24;
+    s32 v0;
+
+    v0 = func_8001C404(player, &sp24);
+
+    if (player->obj->frameIndex < (player->currentState->unk_02 >> 1) && !(player->flags & 8)) {
+        return TRUE;
+    }
+
+    if (player->obj->frameIndex < player->currentState->unk_02 - 1 && !(player->flags & 8) && (!v0 || (*sp24 & 2))) {
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
+s32 func_8001DB2C(Player *player) {
+    s16 sp24;
+    s32 pad;
+    s16 pad2;
+    s16 sp2C;
+
+    sp24 = gBattleSettings[player->playerId].unk_04;
+    sp2C = D_80049D54[sp24];
+    sp2C += guRandom() % D_80049D64[sp24];
+    player->unk_DE++;
+
+    if (sp2C < player->unk_DE || (gPlayers[1 - player->playerId].flags & PLAYER_FLAG_100000)) {
+        player->unk_A8.unk_B4++;
+        func_8001BD5C(player, &player->unk_A8);
+        func_8001BC7C(player);
+        player->unk_A8.unk_C0 = 90;
+        return 1;
+    } else {
+        return -1;
+    }
+}
+
+s32 func_8001DC68(Player *player) {
+    s16 sp24;
+    s32 pad;
+    s16 pad2;
+    s16 sp2C;
+
+    sp24 = gBattleSettings[player->playerId].unk_04;
+    sp2C = D_80049D54[sp24];
+    sp2C += guRandom() % D_80049D64[sp24];
+    player->unk_DE++;
+
+    if (sp2C < player->unk_DE || (gPlayers[1 - player->playerId].flags & PLAYER_FLAG_100000)) {
+        player->unk_A8.unk_B4++;
+        func_8001BD5C(player, &player->unk_A8);
+        func_8001BC7C(player);
+        player->unk_A8.unk_C0 = 90;
+        return 1;
+    } else {
+        return -1;
+    }
+}
 
 s32 func_8001DDA4(Player *player) {
     s16 *sp1C;
