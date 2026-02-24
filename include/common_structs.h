@@ -704,10 +704,19 @@ typedef struct PlayerSubG {
     /* 0x44 */ ColorRGBA unk_44[2];
 } PlayerSubG; // size = 0x4C
 
+typedef struct PlayerSubJ {
+    /* 0x00 */ s16 unk_00;
+    /* 0x02 */ s16 unk_02;
+    /* 0x04 */ s16 unk_04;
+    /* 0x06 */ s16 unk_06;
+    /* 0x08 */ u16 unk_08;
+    /* 0x0A */ s16 unk_0A;
+} PlayerSubJ; // size = 0xC
+
 typedef struct PlayerSubH {
-    /* 0x00A8 */ s32 unk_A8;
-    /* 0x00AC */ s32 unk_AC;
-    /* 0x00B0 */ s32 unk_B0;
+    /* 0x00A8 */ PlayerSubJ *unk_A8;
+    /* 0x00AC */ PlayerSubJ *unk_AC;
+    /* 0x00B0 */ PlayerSubJ *unk_B0;
     /* 0x00B4 */ s16 *unk_B4;
     /* 0x00B8 */ s16 *unk_B8;
     /* 0x00BC */ s16 (*unk_BC)(struct Player *);
@@ -717,6 +726,8 @@ typedef struct PlayerSubH {
     /* 0x00C8 */ s32 unk_C8;
     /* 0x00CC */ s16 unk_CC;
     /* 0x00CE */ s16 unk_CE;
+    /* 0x00D0 */ s32 unk_D0;
+    /* 0x00D4 */ s16 *unk_D4;
 } PlayerSubH;
 
 typedef struct Player {
@@ -743,8 +754,8 @@ typedef struct Player {
     /* 0x004C */ PlayerSubB *unk_4C;
     /* 0x0050 */ u16 *unk_50;
     /* 0x0054 */ s16 *unk_54;
-    /* 0x0058 */ s32 unk_58;
-    /* 0x005C */ s32 unk_5C;
+    /* 0x0058 */ PlayerSubJ *unk_58;
+    /* 0x005C */ s16 *unk_5C;
     /* 0x0060 */ s16 *unk_60;
     /* 0x0064 */ s16 *unk_64;
     /* 0x0068 */ u8 *unk_68;
@@ -769,11 +780,10 @@ typedef struct Player {
     /* 0x00A0 */ TransitionDef *currentTransition;
     /* 0x00A4 */ TransitionDef *previousTransition;
     /* 0x00A8 */ PlayerSubH unk_A8;
-    /* 0x00D0 */ s32 unk_D0;
-    /* 0x00D4 */ char unk_D4[0x8];
+    /* 0x00D8 */ s32 unk_D8;
     /* 0x00DC */ s16 unk_DC;
     /* 0x00DE */ s16 unk_DE;
-    /* 0x00E0 */ char unk_E0[0xA0];
+    /* 0x00E0 */ char unk_E0[160];
     /* 0x0180 */ s32 unk_180;
     /* 0x0184 */ u8 unk_184;
     /* 0x0186 */ s16 unk_186;

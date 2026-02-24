@@ -1,6 +1,11 @@
 #include "common.h"
 #include "task.h"
 
+typedef struct Struct8001C53C {
+    /* 0x00 */ s16 unk_00;
+    /* 0x04 */ PlayerSubJ *unk_04;
+} Struct8001C53C; // size = 0x8
+
 extern s16 D_80049D10[];
 extern s16 D_80049D24[];
 extern s16 D_80049D34[];
@@ -14,6 +19,7 @@ extern s16 D_80049DCC[];
 u8 func_8001C404(Player *, s16 **);
 u8 func_8001BC7C(Player *);
 u8 func_8001BD5C(Player *, PlayerSubH *);
+u8 func_8001DA90(Player *);
 
 u8 func_8001B7D0(Player *player, s16 arg1) {
     func_8001BB2C(player);
@@ -22,7 +28,7 @@ u8 func_8001B7D0(Player *player, s16 arg1) {
 }
 
 void func_8001B810(Player *player) {
-    s32 v04;
+    u8 v04;
     s16 *sp30;
     PlayerSubH *v1;
     u16 sp2A;
@@ -81,7 +87,7 @@ void func_8001B810(Player *player) {
             return;
         }
 
-        if ((--player->unk_DBE <= 0 || (v04 & 0xFF) && !(*sp30 & 2)) &&
+        if ((--player->unk_DBE <= 0 || v04 && !(*sp30 & 2)) &&
                 (player->currentState->flags & (STATE_FLAG_1 | STATE_FLAG_4)) ||
             player->currentTransition->unk_19 != 0xFF) {
             player->unk_DBE = D_80049D10[sp2A];
@@ -97,7 +103,7 @@ void func_8001B810(Player *player) {
 void func_8001BB2C(Player *player) {
     player->unk_A8.unk_B0 = player->unk_A8.unk_AC;
     player->unk_A8.unk_AC = player->unk_A8.unk_A8;
-    player->unk_A8.unk_A8 = 0;
+    player->unk_A8.unk_A8 = NULL;
 
     player->unk_A8.unk_BC = NULL;
     player->unk_A8.unk_B4 = player->unk_A8.unk_B8 = NULL;
@@ -360,7 +366,155 @@ u8 func_8001C48C(Player *player, s16 **arg1) {
     return TRUE;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001C53C.s")
+u8 func_8001C53C(Player *player, u8 arg1) {
+    s16 *sp38C;
+    s32 s0;
+    s16 a3;
+    PlayerSubH *subH;
+    s16 *ptr;
+    Struct8001C53C sp5C[100];
+    u8 s2;
+    PlayerSubJ *v1;
+    s32 pad;
+    s16 pad2;
+    u16 sp4C;
+    s32 sp48;
+    s32 sp44;
+    s16 v2;
+
+    s0 = (player->playerId != PLAYER_1) ? PLAYER_1 : PLAYER_2;
+
+    if (!(player->flags & 0x2000) && (player->stateId == 216 || player->stateId == 42) &&
+        func_8001C2B4(player, &sp38C, TRUE)) {
+        s2 = FALSE;
+    } else if (func_8001C48C(player, &sp38C)) {
+        s2 = TRUE;
+    } else if (func_8001C2B4(player, &sp38C, FALSE)) {
+        s2 = FALSE;
+    } else {
+        func_8001BB2C(player);
+        return FALSE;
+    }
+
+    if (s2 && (*sp38C & 2) && (gPlayers[s0].currentState->flags & 0x600) && !gBattleSettings[s0].isCpu &&
+        !(gPlayers[s0].flags & 0x10000)) {
+        return FALSE;
+    }
+
+    if (!s2 && arg1) {
+        return FALSE;
+    }
+
+    if (s2 & arg1) { // typo ??
+        s2 = FALSE;
+    }
+
+    a3 = 0;
+
+    sp4C = 1 << gBattleSettings[player->playerId].unk_04;
+    sp48 = player->currentState->flags;
+    sp44 = player->flags;
+
+    do {
+        ptr = sp38C + 4;
+        while (*ptr != -1) {
+            v1 = &player->unk_58[*ptr & 0xFF];
+            ptr++;
+
+            if (v1->unk_04 <= D_80080210 + 200 && v1->unk_06 >= D_80080210 - 200) {
+                subH = &player->unk_A8;
+                if (v1->unk_02 & sp4C) {
+                    if (v1 != subH->unk_AC && v1 != subH->unk_B0 || !(v1->unk_08 & 0x800)) {
+                        if ((v1->unk_08 & 0x1000) || ((v1->unk_08 & sp48) & 0x600) ||
+                            (sp44 & 8) == (v1->unk_08 & 8) && ((u8) (v1->unk_08 & sp48) & 5)) {
+                            // clang-format off
+                            sp5C[a3].unk_00 = ptr[-1];\
+                            sp5C[a3].unk_04 = v1;\
+                            a3++;
+                            // clang-format on
+                        }
+                    }
+                }
+            }
+        }
+
+        if (a3 == 0) {
+            if (!s2) {
+                if (arg1) {
+                    return FALSE;
+                }
+
+                player->unk_A8.unk_A8 = NULL;
+
+                if (D_80080210 > 800 && !(player->unk_180 & 0x40000)) {
+                    if (gBattleSettings[player->playerId].unk_04 < 4) {
+                        func_8000636C(player, 45, TRUE);
+                        str_copy(gPlayers[PLAYER_2].unk_E0, "Default ss fwd");
+                        player->unk_A8.unk_BC = func_8001DA90;
+                    } else {
+                        func_8000636C(player, 33, TRUE);
+                        str_copy(gPlayers[PLAYER_2].unk_E0, "Default dash fwd");
+                    }
+
+                    player->unk_180 &= ~0x180000;
+                    player->unk_180 |= 0x40000;
+                } else if (D_80080210 < 800 && !(player->unk_180 << 19)) { // ???
+                    if (gBattleSettings[player->playerId].unk_04 < 4) {
+                        func_8000636C(player, 300, TRUE);
+                        str_copy(gPlayers[PLAYER_2].unk_E0, "Default ss bak");
+                        player->unk_A8.unk_BC = func_8001DA90;
+                    } else {
+                        func_8000636C(player, 32, TRUE);
+                        str_copy(gPlayers[PLAYER_2].unk_E0, "Default dash bak");
+                    }
+
+                    player->unk_180 &= ~0x140000;
+                    player->unk_180 |= 0x80000;
+                } else {
+                    if (guRandom() & 1 & gFrameCounter) {
+                        str_copy(gPlayers[PLAYER_2].unk_E0, "Default ss in");
+                        if (!func_8000636C(player, 293, TRUE)) {
+                            return FALSE;
+                        }
+                        player->unk_A8.unk_BC = NULL;
+                    } else {
+                        str_copy(gPlayers[PLAYER_2].unk_E0, "Default ss out");
+                        if (!func_8000636C(player, 292, TRUE)) {
+                            return FALSE;
+                        }
+                        player->unk_A8.unk_BC = NULL;
+                    }
+
+                    player->unk_180 &= ~0xC0000;
+                    player->unk_180 |= 0x100000;
+                }
+
+                player->unk_A8.unk_B8 = NULL;
+                player->unk_180 |= 0x8000;
+                return TRUE;
+            }
+
+            if (func_8001C2B4(player, &sp38C, FALSE)) {
+                s2 = FALSE;
+            } else {
+                player->unk_A8.unk_A8 = NULL;
+                return FALSE;
+            }
+        }
+    } while (a3 == 0);
+
+    subH = &player->unk_A8;
+
+    v2 = guRandom() % a3;
+    subH->unk_A8 = sp5C[v2].unk_04;
+    pad2 = subH->unk_A8->unk_00;
+    subH->unk_B4 = player->unk_5C + pad2;
+    subH->unk_C8 = subH->unk_A8->unk_08;
+    subH->unk_D4 = sp38C;
+
+    return func_8001BD5C(player, subH) && func_8001BC7C(player);
+}
+// #pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001C53C.s")
 
 s16 func_8001CB74(Player *player) {
     s16 *sp24;
@@ -434,7 +588,51 @@ s16 func_8001CE0C(Player *player) {
     return -1;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001CE18.s")
+s16 func_8001CE18(Player *player) {
+    s16 *sp34;
+    s16 oppId;
+    s16 sp30;
+    s16 sp2E;
+    s16 sp2C;
+    Player *opponent;
+
+    oppId = 1 - player->playerId;
+    sp30 = gPlayers[oppId].obj->frameIndex;
+    sp2E = gPlayers[oppId].currentState->unk_06;
+    sp2C = gPlayers[oppId].currentState->unk_04;
+
+    if (player->flags & 0x2000) {
+        return 1;
+    }
+    if (player->unk_DC >= D_80049D34[gBattleSettings[player->playerId].unk_04] &&
+        !(gPlayers[1 - player->playerId].flags & PLAYER_FLAG_2000000)) {
+        return 0;
+    }
+
+    player->unk_A8.unk_C0--;
+
+    if (func_8001C404(player, &sp34)) {
+        if (!(*sp34 & 2)) {
+            if (*sp34 & 4) {
+                func_800063C4(player, 57, TRUE);
+            }
+            return 1;
+        }
+    }
+
+    opponent = gPlayers + oppId;
+    if ((gPlayers[oppId].flags & 8) ||
+        !(opponent->flags & PLAYER_FLAG_2000000) && player->unk_A8.unk_C0 < 20 &&
+            ((sp30 < sp2C && D_80049DB4[opponent->characterId] < sp2C - sp30) ||
+             (sp2E < sp30 && D_80049DCC[opponent->characterId] < gPlayers[oppId].currentState->unk_02 - sp2E) ||
+             ((gPlayers[1 - player->playerId].flags & PLAYER_FLAG_TRANSITION_LOCKED) &&
+              gPlayers[1 - player->playerId].obj->frameIndex < 6))) {
+        player->stateId = 216;
+        return -1;
+    }
+
+    return player->unk_A8.unk_C0 > 0 || !(*sp34 & 2);
+}
 
 s16 func_8001D070(Player *player) {
     s16 oppId = 1 - player->playerId;
@@ -594,8 +792,43 @@ s16 func_8001D6C0(Player *player) {
     return TRUE;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001D764.s")
-void func_8001D764(Player *player);
+s32 func_8001D764(Player *player) {
+    s16 oppId;
+    s16 sp30;
+    s16 sp2E;
+    s16 sp2C;
+    s16 *sp34;
+    Player *opponent;
+
+    oppId = 1 - player->playerId;
+    sp30 = gPlayers[oppId].obj->frameIndex;
+    sp2E = gPlayers[oppId].currentState->unk_06;
+    sp2C = gPlayers[oppId].currentState->unk_04;
+
+    player->unk_A8.unk_C0--;
+
+    if (player->unk_DC < D_80049D34[gBattleSettings[player->playerId].unk_04]) {
+        if (func_8001C404(player, &sp34)) {
+            if (!(*sp34 & 2) && (*sp34 & 4)) {
+                func_800063C4(player, 57, TRUE);
+                return 1;
+            }
+        }
+    }
+
+    opponent = gPlayers + oppId;
+    if (!(opponent->flags & PLAYER_FLAG_2000000) && func_8001D1F8(player)) {
+        if ((sp30 < sp2C && D_80049DB4[opponent->characterId] < sp2C - sp30) ||
+            (sp2E < sp30 && D_80049DCC[opponent->characterId] < gPlayers[oppId].currentState->unk_02 - sp2E) ||
+            ((gPlayers[1 - player->playerId].flags & PLAYER_FLAG_TRANSITION_LOCKED) &&
+             gPlayers[1 - player->playerId].obj->frameIndex < 6)) {
+            player->flags &= ~0x2000;
+            return -1;
+        }
+    }
+
+    return 1;
+}
 
 void func_8001D9B0(Player *player) {
     player->unk_DE = 0;
