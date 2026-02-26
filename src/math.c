@@ -1,18 +1,73 @@
 #include "common.h"
 
 extern f32 D_80050F14[]; // sin table
+extern Matrix4f D_800812A0;
+extern Matrix4f D_800812E0;
+extern Matrix4f D_80081320;
+extern Matrix4f D_80081360;
+extern Mtx D_8005BF80;
+extern Mtx D_8013C4A0;
 
 void func_80012B34(Mtx *m);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012450.s")
+void func_80012450(Mtx *m) {
+    s32 i, j;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012470.s")
+    for (i = 0; i < 8; i++) {
+        for (j = 0; j < 4; j++) {}
+    }
+}
 
-#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012490.s")
+void func_80012470(Matrix4f *m) {
+    s32 i, j;
+
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 4; j++) {}
+    }
+}
+
+void func_80012490(void) {
+    func_80012AA8(&D_800813E0);
+    func_80012AA8(&D_800812A0);
+    func_80012AA8(&D_800812E0);
+    func_80012AA8(&D_80081320);
+    func_80012AA8(&D_80081360);
+    func_80012470(&D_800812A0);
+    func_80012B34(&D_8005BF80);
+    guMtxIdent(&D_8013C4A0);
+    osWritebackDCache(&D_8013C4A0, sizeof(Mtx));
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012518.s")
 
+#ifdef NON_EQUIVALENT
+s32 func_80012854(s32 arg0) {
+    s32 v0;
+
+    v0 = (arg0 & 0xFFF);
+
+    if (v0 < 0x400) {
+        return D_80050F14[v0] * 4096.0;
+    }
+    if (v0 < 0x800) {
+        return (-D_80050F14[0x800 - v0]) * 4096.0;
+    }
+
+    arg0 = v0 - 0x800;
+    v0 = (arg0 & 0xFFFF);
+    if (v0 < 0x400) {
+        return -D_80050F14[v0] * 4096.0;
+    }
+    if (v0 < 0x1000) {
+        return D_80050F14[0x800 - v0] * 4096.0;
+    }
+    v0 = arg0 & 0xFFFF;
+    return 0;
+}
+#else
 #pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012854.s")
+s32 func_80012854(s32 arg0);
+#endif
 
 #ifdef NON_MATCHING
 f32 func_80012978(s16 arg0) {
@@ -115,7 +170,21 @@ void func_80012B34(Mtx *m) {
     m->m[1][3] = FTOFIX32(1) >> 16;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012B80.s")
+void func_80012B80(Mtx *m) {
+    m->m[0][1] = 0;
+    m->m[0][3] = 0;
+    m->m[1][0] = 0;
+    m->m[2][0] = 0;
+    m->m[2][1] = 0;
+    m->m[2][2] = 0;
+    m->m[2][3] = 0;
+    m->m[3][0] = 0;
+    m->m[3][1] = 0;
+
+    m->m[0][0] = FTOFIX32(1);
+    m->m[0][2] = FTOFIX32(1) >> 16;
+    m->m[1][1] = FTOFIX32(1);
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012BBC.s")
 

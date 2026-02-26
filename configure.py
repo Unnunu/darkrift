@@ -232,8 +232,13 @@ def create_build_script(linker_entries: List[LinkerEntry]):
             c_path = entry.src_paths[0]
 
             if "ultralib" not in str(c_path):
+                opt_level = "-O2"
+
+                if "kdebugserver" in str(c_path):
+                    opt_level = "-O1"
+
                 build(
-                    entry.object_path, entry.src_paths, "cc", variables={"flags": "-O2"}
+                    entry.object_path, entry.src_paths, "cc", variables={"flags": f"{opt_level}"}
                 )
             else:
                 opt_level = "-O2"

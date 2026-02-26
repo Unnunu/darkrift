@@ -148,7 +148,7 @@ u8 func_8001BC7C(Player *player) {
     PlayerSubH *subH = &player->unk_A8;
     s16 sp22 = (player->playerId != PLAYER_1) ? PLAYER_1 : PLAYER_2;
 
-    if (subH->unk_B8 != NULL && *subH->unk_B8 != -1) {
+    if (subH->unk_B8 != NULL && (s16) *subH->unk_B8 != -1) {
         if (func_8000636C(player, *subH->unk_B8, 1)) {
             subH->unk_CE = gPlayers[sp22].obj->playerHp;
             player->unk_180 |= 0x8000;
@@ -167,12 +167,13 @@ u8 func_8001BD5C(Player *player, PlayerSubH *subH) {
     s32 a2;
     s32 pf;
     u8 a3;
+    s32 temp;
 
-    while (TRUE) {
+    do {
         a2 = player->currentState->flags;
         pf = player->flags;
         subH->unk_B8 = player->unk_50 + player->unk_54[*subH->unk_B4];
-        subH->unk_BC = ((s16) (*subH->unk_B8) == -1) ? NULL : D_80049D74[*subH->unk_B8];
+        subH->unk_BC = ((s16) *subH->unk_B8 == -1) ? NULL : D_80049D74[*subH->unk_B8];
         subH->unk_B8++;
 
         subH->unk_C0 = *subH->unk_B8++;
@@ -194,13 +195,11 @@ u8 func_8001BD5C(Player *player, PlayerSubH *subH) {
             }
             return TRUE;
         }
+        subH->unk_B4++;
+    } while (*subH->unk_B4 >= 0);
 
-        // subH->unk_B4++;
-        if (++*subH->unk_B4 < 0) {
-            func_8001BB2C(player);
-            return FALSE;
-        }
-    }
+    func_8001BB2C(player);
+    return FALSE;
 }
 #else
 #pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001BD5C.s")

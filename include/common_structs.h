@@ -718,7 +718,7 @@ typedef struct PlayerSubH {
     /* 0x00AC */ PlayerSubJ *unk_AC;
     /* 0x00B0 */ PlayerSubJ *unk_B0;
     /* 0x00B4 */ s16 *unk_B4;
-    /* 0x00B8 */ s16 *unk_B8;
+    /* 0x00B8 */ u16 *unk_B8;
     /* 0x00BC */ s16 (*unk_BC)(struct Player *);
     /* 0x00C0 */ s16 unk_C0;
     /* 0x00C2 */ s16 unk_C2;

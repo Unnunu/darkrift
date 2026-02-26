@@ -219,7 +219,7 @@ segments:
       - [0x45950, c, ../ultralib/src/gu/cosf]
       - [0x45AC0, c, ../ultralib/src/gu/sinf]
       - [0x45C80, c, ../ultralib/src/io/si]
-      - [0x45CB0, c] # kdebugserver maybe?
+      - [0x45CB0, c, kdebugserver] # kdebugserver maybe?
       - [0x46130, c, ../ultralib/src/os/syncputchars]
       - [0x46260, c, ../ultralib/src/os/destroythread]
       - [0x46360, hasm,  ../ultralib/src/os/setcompare]

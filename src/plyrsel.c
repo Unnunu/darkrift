@@ -116,14 +116,20 @@ void func_8001DE10(Object *obj) {
     obj->frameIndex = v0;
 }
 
-#ifdef NON_EQUIVALENT
+#ifdef NON_MATCHING
 s32 func_8001DFE4(s32 playerId) {
     s32 v1;
     u32 i;
+    u32 j;
 
     v1 = 0;
     for (i = AARON; i < NUM_CHARACTERS; i++) {
-        if (i != DEMITRON && i != CHARACTER_5 && i != SONORK && !D_800B6350[playerId][i]) {
+        j = i;
+        if (j == DEMITRON || j == CHARACTER_5 || j == SONORK) {
+            continue;
+        }
+        if (FALSE) {}
+        if (!D_800B6350[playerId][i]) {
             v1++;
         }
     }
@@ -137,7 +143,7 @@ s32 func_8001DFE4(s32 playerId);
 
 #ifdef NON_EQUIVALENT
 u8 func_8001E188(u8 playerId) {
-    u8 sp14[11];
+    u8 sp14[NUM_CHARACTERS];
     s32 pad;
     u8 characterId;
     u8 v1;
@@ -153,9 +159,13 @@ u8 func_8001E188(u8 playerId) {
     }
 
     while (TRUE) {
-        for (i = 0; i < 11; i++) {
+        for (i = 0; i < NUM_CHARACTERS; i++) {
             if (characterId != i || characterId == DEMITRON || characterId == SONORK) {
-                if (i != DEMITRON && i != CHARACTER_5 && i != SONORK && !D_800B6350[playerId][i]) {
+                if (i == DEMITRON || i == CHARACTER_5 || i == SONORK) {
+                    continue;
+                }
+                if (FALSE) {}
+                if (!D_800B6350[playerId][i]) {
                     sp14[v1++] = i;
                 }
             }

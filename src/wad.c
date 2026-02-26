@@ -624,25 +624,21 @@ void func_80026EEC(Asset *asset) {
     }
 }
 
-#ifdef NON_MATCHING
-void func_80027004(AssetSP2 *arg0, AssetSP2 *arg1, s32 arg2) {
+void func_80027004(void *arg0, void *arg1, s32 arg2) {
     s32 addr_diff;
-    u32 i;
+    s32 i;
     AssetSP2Sub2 *a2;
-    AssetSP2 *v1;
+    AssetSP2 *v2;
 
     addr_diff = ((u32) arg0 - (u32) arg1);
-    v1 = arg0;
-    a2 = arg0->sprites = (AssetSP2Sub2 *) ((u32) arg0->sprites + addr_diff);
 
-    for (i = 0; i < v1->numSprites; i++) {
-        a2[i].parts = (AssetSP2Sub3 *) ((u32) a2[i].parts + addr_diff);
+    v2 = arg0;
+    v2->sprites = (AssetSP2Sub2 *) ((u32) v2->sprites + addr_diff);
+
+    for (a2 = v2->sprites, i = 0; i < v2->numSprites; i++, a2++) {
+        a2->parts = (AssetSP2Sub3 *) ((u32) a2->parts + addr_diff);
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/func_80027004.s")
-void func_80027004(AssetSP2 *arg0, AssetSP2 *arg1, s32 arg2);
-#endif
 
 #ifdef NON_MATCHING
 void asset_load_sp2(Asset *asset) {
