@@ -388,7 +388,7 @@ void func_80001FB0(s32 arg0, Vtx *arg1) {
     D_8005BF00.header.vtxOffset = 0;
     D_8005BF00.header.numTriangles = 2;
     D_8005BF00.header.unk_0B = 2;
-    D_8005BF00.header.texGfx = &D_8005BF58;
+    D_8005BF00.header.texGfx = D_8005BF58;
 
     gDPPipeSync(&D_8005BF58[0]);
     gDPSetCombineMode(&D_8005BF58[1], G_CC_SHADE, G_CC_SHADE);

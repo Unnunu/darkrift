@@ -288,10 +288,10 @@ void func_8001E624(Object *obj) {
 
         v03 = func_8001E5D8(playerId);
         if (playerId == PLAYER_1) {
-            D_8013C234->unk_10 = D_8013C234->unk_10 - D_8013C234->unk_04 + D_8013C234->unk_08 - v03 - 8;
-            D_8013C234->unk_04 = D_8013C234->unk_08 - v03 - 8;
+            D_8013C234->offsetX = D_8013C234->offsetX - D_8013C234->uls + D_8013C234->lrs - v03 - 8;
+            D_8013C234->uls = D_8013C234->lrs - v03 - 8;
         } else {
-            D_8013C238->unk_08 = D_8013C238->unk_04 + v03;
+            D_8013C238->lrs = D_8013C238->uls + v03;
         }
 
         if (obj->vars[8]-- < 1) {
@@ -425,13 +425,13 @@ void func_8001EB58(Object *obj) {
     v03 = func_8001E5D8(s1);
     if (s1 == 0) {
         D_8013C234 = s3->sprite_map->sprites[15].parts;
-        D_8013C234->unk_10 = D_8013C234->unk_10 - D_8013C234->unk_04 + D_8013C234->unk_08 - v03 - 8;
-        D_8013C234->unk_04 = D_8013C234->unk_08 - v03 - 8;
+        D_8013C234->offsetX = D_8013C234->offsetX - D_8013C234->uls + D_8013C234->lrs - v03 - 8;
+        D_8013C234->uls = D_8013C234->lrs - v03 - 8;
         v0->vars[1] = 119;
         v0->pos.x = 119 - v03;
     } else {
         D_8013C238 = s3->sprite_map->sprites[14].parts;
-        D_8013C238->unk_08 = D_8013C238->unk_04 + v03;
+        D_8013C238->lrs = D_8013C238->uls + v03;
         v0->vars[1] = 0xD1;
         v0->pos.x = 0xD1 + v03;
     }

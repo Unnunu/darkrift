@@ -376,12 +376,12 @@ typedef struct ModelInstance {
 } ModelInstance; // size = 0x1F90
 
 typedef struct AssetSP2Sub3 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ u32 unk_04;
-    /* 0x08 */ u32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ s32 unk_10;
-    /* 0x14 */ s32 unk_14;
+    /* 0x00 */ s32 ult;
+    /* 0x04 */ u32 uls;
+    /* 0x08 */ u32 lrs;
+    /* 0x0C */ s32 lrt;
+    /* 0x10 */ s32 offsetX;
+    /* 0x14 */ s32 offsetY;
 } AssetSP2Sub3; // size ?
 
 typedef struct AssetSP2Sub2 {

@@ -277,9 +277,9 @@ void func_800162A4(Object *obj) {
         D_8013C240->currentTask->func = task_default_func;
     }
 
-    D_8013C234->unk_10 = D_8013C234->unk_10 - D_8013C234->unk_04 + D_8013C234->unk_08 - 88;
-    D_8013C234->unk_04 = D_8013C234->unk_08 - 88;
-    D_8013C238->unk_08 = D_8013C238->unk_04 + 80;
+    D_8013C234->offsetX = D_8013C234->offsetX - D_8013C234->uls + D_8013C234->lrs - 88;
+    D_8013C234->uls = D_8013C234->lrs - 88;
+    D_8013C238->lrs = D_8013C238->uls + 80;
 
     D_80051F6C = D_80051F70 = D_8013C2A8 = D_8013C2AA = 0;
     D_8013C232 = D_8013C230 = 80;

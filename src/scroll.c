@@ -251,40 +251,53 @@ void bg_draw(void) {
     }
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/scroll/func_800156B0.s")
+void func_800156B0(AssetSP2 *arg0) {
+    u32 i, j;
+    s32 pad[2];
+    u32 sp1C;
+    AssetSP2Sub2 *sprite;
+    s32 numSprites;
 
-#ifdef NON_EQUIVALENT
+    func_80025B40();
+    sprite = arg0->sprites;
+    numSprites = arg0->numSprites;
+    for (i = 0; i < numSprites; i++, sprite++) {
+        for (j = 0; j < sp1C; j++) {}
+    }
+    if (sprite) {}
+}
+
+#ifdef NON_MATCHING
 void func_80015724(Object *obj) {
     AssetSP2Sub2 *v1;
-    TextureAsset *texture;
-    s32 s1;
-    AssetSP2Sub3 *spE0;
-    AssetSP2Sub3 *newvar;
-    u32 lo;
-    s32 i;
-    s32 spD8;
-    s32 a3;
-    s32 t1;
-    s32 t5;
-    s32 v0;
-    s32 ra;
-    s32 t0;
-    s32 t4;
-    s32 var1;
-    Gfx **dlist; // sp9C
+    u8 *pad;
+    s32 width;
+    AssetSP2Sub3 *part;
+    u32 i;
+    s32 numParts;
+    s32 pad2;
+    u32 maxHeight;
+    u32 uls;
+    s32 lrs;
+    s32 ult;
+    s32 x;
+    s32 y;
+    s32 tileWidth;
+    s32 tileHeight;
+    s32 lrt;
     u8 *raster;
     u16 *palette;
     u32 strip_height;
     AssetSP2 *sprite_map;
+    Gfx **dlist;
 
     sprite_map = obj->sprite_map;
     v1 = &sprite_map->sprites[obj->frameIndex];
-    texture = v1->texture;
-    spE0 = v1->parts;
-    spD8 = v1->numParts;
-    s1 = texture->width;
-    raster = texture->data;
-    palette = texture->data + texture->width * texture->height;
+    raster = v1->texture->data;
+    part = v1->parts;
+    numParts = v1->numParts;
+    width = v1->texture->width;
+    palette = (u16 *) (v1->texture->data + width * v1->texture->height * 2);
 
     if (obj->flags & OBJ_FLAG_4000000) {
         dlist = &gOverlayGfxPos;
@@ -301,45 +314,46 @@ void func_80015724(Object *obj) {
         return;
     }
 
-    for (i = 0; i != spD8; i++) {
-        t5 = spE0->unk_00;
-        a3 = spE0->unk_04;
-        t1 = spE0->unk_08;
-        var1 = spE0->unk_0C;
-        v0 = obj->pos.x + spE0->unk_10;
-        ra = obj->pos.y + spE0->unk_14;
-        t0 = t1 - a3 + 1;
-        t4 = var1 - t5;
+    for (i = 0; i < numParts; i++) {
+        ult = part->ult;
+        uls = part->uls;
+        lrs = part->lrs;
+        lrt = part->lrt;
+        x = obj->pos.x + part->offsetX;
+        y = obj->pos.y + part->offsetY;
 
-        spE0++;
+        tileWidth = lrs - uls + 1;
+        tileHeight = lrt - ult;
 
-        if (v0 < 0) {
-            v0 = 0;
+        if (x < 0) {
+            x = 0;
         }
-        if (ra < 0) {
-            ra = 0;
+        if (y < 0) {
+            y = 0;
         }
-        if (v0 + t0 > gScreenWidth) {
-            t0 = gScreenWidth - v0;
+        if (x + tileWidth > gScreenWidth) {
+            tileWidth = gScreenWidth - x;
         }
-        if (t4 + ra > gScreenHeight) {
-            t4 = gScreenHeight - ra;
+        if (y + tileHeight > gScreenHeight) {
+            tileHeight = gScreenHeight - y;
         }
 
-        lo = 0x800 / (u32) ((t0 + 7) & ~7);
+        part++;
+
+        maxHeight = 0x800 / (u32) ((tileWidth + 7) & ~7);
 
         do {
-            strip_height = MIN(t4, lo);
+            strip_height = MIN(tileHeight, maxHeight);
             gDPLoadTextureTile((*dlist)++,                  // pkt
                                VIRTUAL_TO_PHYSICAL(raster), // timg
                                G_IM_FMT_CI,                 // fmt
                                G_IM_SIZ_8b,                 // siz
-                               s1,                          // width
+                               width,                       // width
                                0,                           // height
-                               a3,                          // uls
-                               t5,                          // ult
-                               t1,                          // lrs
-                               t5 + strip_height - 1,       // lrt
+                               uls,                         // uls
+                               ult,                         // ult
+                               lrs,                         // lrs
+                               ult + strip_height - 1,      // lrt
                                0,                           // pal
                                G_TX_NOMIRROR | G_TX_CLAMP,  // cms
                                G_TX_NOMIRROR | G_TX_CLAMP,  // cmt
@@ -349,22 +363,22 @@ void func_80015724(Object *obj) {
                                G_TX_NOLOD                   // shiftt
             );
 
-            gSPTextureRectangle((*dlist)++,                   // pkt
-                                v0 << 2,                      // xl
-                                ra << 2,                      // yl
-                                (v0 + t0 - 2) << 2,           // xh
-                                (ra + strip_height - 1) << 2, // yh
-                                G_TX_RENDERTILE,              // tile
-                                a3 << 5,                      // s
-                                t5 << 5,                      // t
-                                4 << 10,                      // dsdx
-                                1 << 10                       // dtdy
+            gSPTextureRectangle((*dlist)++,                  // pkt
+                                x << 2,                      // xl
+                                y << 2,                      // yl
+                                (x + tileWidth - 2) << 2,    // xh
+                                (y + strip_height - 1) << 2, // yh
+                                G_TX_RENDERTILE,             // tile
+                                uls << 5,                    // s
+                                ult << 5,                    // t
+                                4 << 10,                     // dsdx
+                                1 << 10                      // dtdy
             );
 
-            t5 += strip_height;
-            ra += strip_height;
-            t4 -= strip_height;
-        } while (t4 != 0);
+            ult += strip_height;
+            y += strip_height;
+            tileHeight -= strip_height;
+        } while (tileHeight != 0);
     }
 }
 #else

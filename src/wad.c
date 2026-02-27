@@ -652,10 +652,9 @@ void asset_load_sp2(Asset *asset) {
     s32 unused[2];
 
     func_80026BE0(asset);
-    entry = tmp = (AssetSP2Sub2 *) ((s32) header->sprites + (u8 *) header);
     header = asset->data;
-    entry = tmp = (AssetSP2Sub2 *) ((s32) header->sprites + (u8 *) header);
-    header->sprites = tmp;
+    entry = (AssetSP2Sub2 *) ((u32) header->sprites + (u32) header);
+    header->sprites = entry;
     for (i = 0; i < 4 && (header->texture_name[i][0]) != '\0'; i++) {
         textures[i] = gAssets[asset_find(header->texture_name[i], asset->context)].data;
 

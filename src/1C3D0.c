@@ -513,7 +513,6 @@ u8 func_8001C53C(Player *player, u8 arg1) {
 
     return func_8001BD5C(player, subH) && func_8001BC7C(player);
 }
-// #pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001C53C.s")
 
 s16 func_8001CB74(Player *player) {
     s16 *sp24;

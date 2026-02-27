@@ -324,7 +324,11 @@ void func_800134B4(Vec3s *arg0, Mtx *arg1) {
     arg1->m[3][1] = ((zz & 0xFFFF) << 16) | (zw & 0xFFFF);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/math/func_800136B0.s")
+void func_800136B0(s16 *arg0, Vec4i *arg1) {
+    arg0[12] = arg1->x;
+    arg0[13] = arg1->y;
+    arg0[14] = arg1->z;
+}
 
 void math_translate(Matrix4f *arg0, Vec4i *arg1) {
     arg0->w.x = arg1->x;
@@ -359,7 +363,14 @@ void func_8001386C(Vec4i *arg0, Vec4i *arg1, Matrix4f *arg2) {
     arg1->z = temp = z >= 0.0 ? z + 0.5 : z - 0.5;
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/math/func_800139A0.s")
+void func_800139A0(Matrix4f *arg0, Vec4i *arg1) {
+    if (arg1->x != 0x100 || arg1->y != 0x100 || arg1->z != 0x100) {
+        D_80081360.x.x = (f32) arg1->x * (1.0 / 256);
+        D_80081360.y.y = (f32) arg1->y * (1.0 / 256);
+        D_80081360.z.z = (f32) arg1->z * (1.0 / 256);
+        func_80012BBC(arg0, &D_80081360);
+    }
+}
 
 void math_mtxf2mtx(Mtx *arg1, Matrix4f *arg0) {
     s32 unused;
@@ -461,4 +472,12 @@ void func_80014974(Transform *transform) {
     }
 }
 
+/*void math_mtxf_mul(Matrix4f *m1, Matrix4f *m2, Matrix4f *m3) {
+    float temp[4][4];
+    s32 i, j, k;
+
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 4; j++) {}
+    }
+}*/
 #pragma GLOBAL_ASM("asm/nonmatchings/math/math_mtxf_mul.s")

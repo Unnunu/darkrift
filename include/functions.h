@@ -62,6 +62,7 @@ Object *create_model_instance(Vec4i *, s32, void (*)(Object *), Model *);
 Object *func_80015FB4(s16);
 void func_8001386C(Vec4i *arg0, Vec4i *arg1, Matrix4f *arg2);
 s32 func_80012854(s32 arg0);
+void func_80025B40(void);
 void func_80012AF4(Matrix4f *);
 Object *create_model_instance_with_properties(Vec4i *, char *, K2Def *, u32);
 void func_8002A890(Player *);
