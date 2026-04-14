@@ -52,13 +52,13 @@ void func_8001B810(Player *player) {
                     player->unk_180 |= 0x8000;
                 }
             }
-        } else if (v1->unk_BC != NULL) {
-            v02 = v1->unk_BC(player);
+        } else if (v1->unk_14 != NULL) {
+            v02 = v1->unk_14(player);
             if (v02 > 0) {
                 return;
             }
 
-            v1->unk_BC = NULL;
+            v1->unk_14 = NULL;
             player->unk_180 &= ~0x8000;
             if (v02 < 0) {
                 func_8001BB2C(player);
@@ -101,12 +101,12 @@ void func_8001B810(Player *player) {
 }
 
 void func_8001BB2C(Player *player) {
-    player->unk_A8.unk_B0 = player->unk_A8.unk_AC;
-    player->unk_A8.unk_AC = player->unk_A8.unk_A8;
-    player->unk_A8.unk_A8 = NULL;
+    player->unk_A8.unk_08 = player->unk_A8.unk_04;
+    player->unk_A8.unk_04 = player->unk_A8.unk_00;
+    player->unk_A8.unk_00 = NULL;
 
-    player->unk_A8.unk_BC = NULL;
-    player->unk_A8.unk_B4 = player->unk_A8.unk_B8 = NULL;
+    player->unk_A8.unk_14 = NULL;
+    player->unk_A8.unk_0C = player->unk_A8.unk_10 = NULL;
     player->unk_180 &= ~0x3C000;
     player->moveTimeout = 0;
 
@@ -118,7 +118,7 @@ void func_8001BB2C(Player *player) {
 u8 func_8001BB80(Player *player) {
     PlayerSubH *subH = &player->unk_A8;
 
-    if (player->flags & PLAYER_FLAG_2000 || (player->unk_DBC > 0x100 && !(subH->unk_C8 & 0x1000)) ||
+    if (player->flags & PLAYER_FLAG_2000 || (player->unk_DBC > 0x100 && !(subH->unk_20 & 0x1000)) ||
         player->currentTransition->stateId != player->stateId) {
         func_8001BB2C(player);
         return FALSE;
@@ -128,14 +128,14 @@ u8 func_8001BB80(Player *player) {
         return TRUE;
     }
 
-    if (subH->unk_B4 == NULL || *subH->unk_B4 == -1 || (player->unk_180 & 0x10000)) {
+    if (subH->unk_0C == NULL || *subH->unk_0C == -1 || (player->unk_180 & 0x10000)) {
         func_8001BB2C(player);
         return FALSE;
     }
 
-    subH->unk_B4++;
+    subH->unk_0C++;
 
-    if (subH->unk_B4 == NULL || *subH->unk_B4 == -1) {
+    if (subH->unk_0C == NULL || *subH->unk_0C == -1) {
         func_8001BB2C(player);
         return FALSE;
     }
@@ -148,11 +148,11 @@ u8 func_8001BC7C(Player *player) {
     PlayerSubH *subH = &player->unk_A8;
     s16 sp22 = (player->playerId != PLAYER_1) ? PLAYER_1 : PLAYER_2;
 
-    if (subH->unk_B8 != NULL && (s16) *subH->unk_B8 != -1) {
-        if (func_8000636C(player, *subH->unk_B8, 1)) {
-            subH->unk_CE = gPlayers[sp22].obj->playerHp;
+    if (subH->unk_10 != NULL && (s16) *subH->unk_10 != -1) {
+        if (func_8000636C(player, *subH->unk_10, 1)) {
+            subH->unk_26 = gPlayers[sp22].obj->playerHp;
             player->unk_180 |= 0x8000;
-            subH->unk_B8++;
+            subH->unk_10++;
             return TRUE;
         }
 
@@ -162,41 +162,43 @@ u8 func_8001BC7C(Player *player) {
     return FALSE;
 }
 
-#ifdef NON_EQUIVALENT
+#ifdef NON_MATCHING
 u8 func_8001BD5C(Player *player, PlayerSubH *subH) {
     s32 a2;
     s32 pf;
     u8 a3;
-    s32 temp;
 
     do {
-        a2 = player->currentState->flags;
+        subH++; // @fake
+        subH--; // @fake
         pf = player->flags;
-        subH->unk_B8 = player->unk_50 + player->unk_54[*subH->unk_B4];
-        subH->unk_BC = ((s16) *subH->unk_B8 == -1) ? NULL : D_80049D74[*subH->unk_B8];
-        subH->unk_B8++;
+        a2 = player->currentState->flags;
 
-        subH->unk_C0 = *subH->unk_B8++;
-        subH->unk_C4 = *subH->unk_B8++;
+        subH->unk_10 = player->unk_50 + player->unk_54[*subH->unk_0C];
+        subH->unk_14 = ((s16) *subH->unk_10 == -1) ? NULL : D_80049D74[*subH->unk_10];
+        subH->unk_10++;
+        subH->unk_18 = *subH->unk_10++;
+        subH->unk_1C = *subH->unk_10++;
 
-        a3 = (subH->unk_C4 & a2 & 0x400) && ((a2 & 0x200) == (subH->unk_C4 & 0x200));
-        if (a3 && (subH->unk_C4 & 8) && (pf & 8) != (subH->unk_C4 & 8)) {
+        a3 = (subH->unk_1C & a2 & 0x400) && !((subH->unk_1C & 0x200) ^ (a2 & 0x200));
+        if (a3 && (subH->unk_1C & 8) && ((subH->unk_1C & 8) ^ (pf & 8))) {
             a3 = FALSE;
         }
 
-        if ((subH->unk_C4 & 0x1000) || a3 ||
-            (!(subH->unk_C4 & 0x4000) || (a2 & 0x4000) != (subH->unk_C4 & 0x4000)) && (pf & 8) == (subH->unk_C4 & 8) &&
-                (subH->unk_C4 & a2 & 5)) {
-            subH->unk_CE = gPlayers[1 - player->playerId].obj->playerHp;
+        if ((subH->unk_1C & 0x1000) || a3 ||
+            ((!(subH->unk_1C & 0x4000)) || ((subH->unk_1C & 0x4000) ^ (a2 & 0x4000))) &&
+                !((subH->unk_1C & 8) ^ (pf & 8)) && (subH->unk_1C & a2 & 5)) {
+            subH->unk_26 = gPlayers[1 - player->playerId].obj->playerHp;
             player->unk_180 &= ~0x3C000;
             player->unk_180 |= 0x8000;
-            if (subH->unk_C4 & 0x8000) {
+            if (subH->unk_1C & 0x8000) {
                 player->unk_180 |= 0x10000;
             }
             return TRUE;
         }
-        subH->unk_B4++;
-    } while (*subH->unk_B4 >= 0);
+
+        subH->unk_0C++;
+    } while (*subH->unk_0C >= 0);
 
     func_8001BB2C(player);
     return FALSE;
@@ -423,7 +425,7 @@ u8 func_8001C53C(Player *player, u8 arg1) {
             if (v1->unk_04 <= D_80080210 + 200 && v1->unk_06 >= D_80080210 - 200) {
                 subH = &player->unk_A8;
                 if (v1->unk_02 & sp4C) {
-                    if (v1 != subH->unk_AC && v1 != subH->unk_B0 || !(v1->unk_08 & 0x800)) {
+                    if (v1 != subH->unk_04 && v1 != subH->unk_08 || !(v1->unk_08 & 0x800)) {
                         if ((v1->unk_08 & 0x1000) || ((v1->unk_08 & sp48) & 0x600) ||
                             (sp44 & 8) == (v1->unk_08 & 8) && ((u8) (v1->unk_08 & sp48) & 5)) {
                             // clang-format off
@@ -443,13 +445,13 @@ u8 func_8001C53C(Player *player, u8 arg1) {
                     return FALSE;
                 }
 
-                player->unk_A8.unk_A8 = NULL;
+                player->unk_A8.unk_00 = NULL;
 
                 if (D_80080210 > 800 && !(player->unk_180 & 0x40000)) {
                     if (gBattleSettings[player->playerId].unk_04 < 4) {
                         func_8000636C(player, 45, TRUE);
                         str_copy(gPlayers[PLAYER_2].unk_E0, "Default ss fwd");
-                        player->unk_A8.unk_BC = func_8001DA90;
+                        player->unk_A8.unk_14 = func_8001DA90;
                     } else {
                         func_8000636C(player, 33, TRUE);
                         str_copy(gPlayers[PLAYER_2].unk_E0, "Default dash fwd");
@@ -461,7 +463,7 @@ u8 func_8001C53C(Player *player, u8 arg1) {
                     if (gBattleSettings[player->playerId].unk_04 < 4) {
                         func_8000636C(player, 300, TRUE);
                         str_copy(gPlayers[PLAYER_2].unk_E0, "Default ss bak");
-                        player->unk_A8.unk_BC = func_8001DA90;
+                        player->unk_A8.unk_14 = func_8001DA90;
                     } else {
                         func_8000636C(player, 32, TRUE);
                         str_copy(gPlayers[PLAYER_2].unk_E0, "Default dash bak");
@@ -475,20 +477,20 @@ u8 func_8001C53C(Player *player, u8 arg1) {
                         if (!func_8000636C(player, 293, TRUE)) {
                             return FALSE;
                         }
-                        player->unk_A8.unk_BC = NULL;
+                        player->unk_A8.unk_14 = NULL;
                     } else {
                         str_copy(gPlayers[PLAYER_2].unk_E0, "Default ss out");
                         if (!func_8000636C(player, 292, TRUE)) {
                             return FALSE;
                         }
-                        player->unk_A8.unk_BC = NULL;
+                        player->unk_A8.unk_14 = NULL;
                     }
 
                     player->unk_180 &= ~0xC0000;
                     player->unk_180 |= 0x100000;
                 }
 
-                player->unk_A8.unk_B8 = NULL;
+                player->unk_A8.unk_10 = NULL;
                 player->unk_180 |= 0x8000;
                 return TRUE;
             }
@@ -496,7 +498,7 @@ u8 func_8001C53C(Player *player, u8 arg1) {
             if (func_8001C2B4(player, &sp38C, FALSE)) {
                 s2 = FALSE;
             } else {
-                player->unk_A8.unk_A8 = NULL;
+                player->unk_A8.unk_00 = NULL;
                 return FALSE;
             }
         }
@@ -505,11 +507,11 @@ u8 func_8001C53C(Player *player, u8 arg1) {
     subH = &player->unk_A8;
 
     v2 = guRandom() % a3;
-    subH->unk_A8 = sp5C[v2].unk_04;
-    pad2 = subH->unk_A8->unk_00;
-    subH->unk_B4 = player->unk_5C + pad2;
-    subH->unk_C8 = subH->unk_A8->unk_08;
-    subH->unk_D4 = sp38C;
+    subH->unk_00 = sp5C[v2].unk_04;
+    pad2 = subH->unk_00->unk_00;
+    subH->unk_0C = player->unk_5C + pad2;
+    subH->unk_20 = subH->unk_00->unk_08;
+    subH->unk_2C = sp38C;
 
     return func_8001BD5C(player, subH) && func_8001BC7C(player);
 }
@@ -523,7 +525,7 @@ s16 func_8001CB74(Player *player) {
     }
 
     v0 = func_8001C404(player, &sp24);
-    return (player->unk_A8.unk_C0 < D_80080210) && !(player->flags & 8) && (!v0 || (*sp24 & 2));
+    return (player->unk_A8.unk_18 < D_80080210) && !(player->flags & 8) && (!v0 || (*sp24 & 2));
 }
 
 s16 func_8001CC18(Player *player) {
@@ -531,7 +533,7 @@ s16 func_8001CC18(Player *player) {
     u8 v0;
 
     v0 = func_8001C404(player, &sp24);
-    return (player->unk_A8.unk_C0 < D_80080210) && !(player->flags & 8) && (!v0 || (*sp24 & 2));
+    return (player->unk_A8.unk_18 < D_80080210) && !(player->flags & 8) && (!v0 || (*sp24 & 2));
 }
 
 s16 func_8001CC8C(Player *player) {
@@ -544,7 +546,7 @@ s16 func_8001CC8C(Player *player) {
         return TRUE;
     }
 
-    return (player->unk_A8.unk_C0 > D_80080210) && !(player->flags & 8) && (!v0 || (*sp24 & 2));
+    return (player->unk_A8.unk_18 > D_80080210) && !(player->flags & 8) && (!v0 || (*sp24 & 2));
 }
 
 s16 func_8001CD28(Player *player) {
@@ -557,11 +559,11 @@ s16 func_8001CD34(Player *player) {
 
     v0 = func_8001C404(player, &sp24);
 
-    if (player->unk_A8.unk_C0) {
-        player->unk_A8.unk_C0--;
+    if (player->unk_A8.unk_18) {
+        player->unk_A8.unk_18--;
     }
 
-    return (player->unk_A8.unk_C0) && !(player->flags & 8) && (!v0 || (*sp24 & 2));
+    return (player->unk_A8.unk_18) && !(player->flags & 8) && (!v0 || (*sp24 & 2));
 }
 
 s16 func_8001CDAC(Player *player) {
@@ -573,9 +575,9 @@ s16 func_8001CDAC(Player *player) {
 }
 
 s16 func_8001CDE0(Player *player) {
-    player->unk_A8.unk_C0--;
+    player->unk_A8.unk_18--;
 
-    if (player->unk_A8.unk_C0 > 0) {
+    if (player->unk_A8.unk_18 > 0) {
         return TRUE;
     } else {
         return -1;
@@ -607,7 +609,7 @@ s16 func_8001CE18(Player *player) {
         return 0;
     }
 
-    player->unk_A8.unk_C0--;
+    player->unk_A8.unk_18--;
 
     if (func_8001C404(player, &sp34)) {
         if (!(*sp34 & 2)) {
@@ -620,7 +622,7 @@ s16 func_8001CE18(Player *player) {
 
     opponent = gPlayers + oppId;
     if ((gPlayers[oppId].flags & 8) ||
-        !(opponent->flags & PLAYER_FLAG_2000000) && player->unk_A8.unk_C0 < 20 &&
+        !(opponent->flags & PLAYER_FLAG_2000000) && player->unk_A8.unk_18 < 20 &&
             ((sp30 < sp2C && D_80049DB4[opponent->characterId] < sp2C - sp30) ||
              (sp2E < sp30 && D_80049DCC[opponent->characterId] < gPlayers[oppId].currentState->unk_02 - sp2E) ||
              ((gPlayers[1 - player->playerId].flags & PLAYER_FLAG_TRANSITION_LOCKED) &&
@@ -629,7 +631,7 @@ s16 func_8001CE18(Player *player) {
         return -1;
     }
 
-    return player->unk_A8.unk_C0 > 0 || !(*sp34 & 2);
+    return player->unk_A8.unk_18 > 0 || !(*sp34 & 2);
 }
 
 s16 func_8001D070(Player *player) {
@@ -647,7 +649,7 @@ s16 func_8001D070(Player *player) {
         return FALSE;
     }
 
-    player->unk_A8.unk_C0--;
+    player->unk_A8.unk_18--;
     v0 = func_8001C404(player, &sp24);
     if (v0 && !(*sp24 & 2)) {
         if (!(*sp24 & 4)) {
@@ -661,7 +663,7 @@ s16 func_8001D070(Player *player) {
         return -1;
     }
 
-    return (player->unk_A8.unk_C0 > 0) || !(*sp24 & 2);
+    return (player->unk_A8.unk_18 > 0) || !(*sp24 & 2);
 }
 
 u8 func_8001D1F8(Player *player) {
@@ -707,7 +709,7 @@ s16 func_8001D3A8(Player *player) {
     u8 v0;
     s16 playerId = player->playerId;
 
-    player->unk_A8.unk_C0--;
+    player->unk_A8.unk_18--;
 
     if (player->unk_DC < D_80049D34[gBattleSettings[playerId].unk_04]) {
         v0 = func_8001C404(player, &sp24);
@@ -733,7 +735,7 @@ s32 func_8001D44C(Player *player) {
     sp2E = gPlayers[oppId].currentState->unk_06;
     sp2C = gPlayers[oppId].currentState->unk_04;
 
-    player->unk_A8.unk_C0--;
+    player->unk_A8.unk_18--;
 
     if (player->unk_DC < D_80049D34[gBattleSettings[player->playerId].unk_04]) {
         if (func_8001C404(player, &sp34)) {
@@ -763,10 +765,10 @@ void func_8001D660(Player *player) {
     player->unk_DC++;
 
     if (func_8001D1F8(player)) {
-        player->unk_A8.unk_BC = func_8001D44C;
+        player->unk_A8.unk_14 = func_8001D44C;
         func_8001D44C(player);
     } else {
-        player->unk_A8.unk_BC = func_8001D3A8;
+        player->unk_A8.unk_14 = func_8001D3A8;
         func_8001D3A8(player);
     }
 }
@@ -777,7 +779,7 @@ s16 func_8001D6C0(Player *player) {
     u8 v0;
     s16 playerId = player->playerId;
 
-    player->unk_A8.unk_C0--;
+    player->unk_A8.unk_18--;
 
     if (player->unk_DC < D_80049D34[gBattleSettings[playerId].unk_04]) {
         v0 = func_8001C404(player, &sp24);
@@ -803,7 +805,7 @@ s32 func_8001D764(Player *player) {
     sp2E = gPlayers[oppId].currentState->unk_06;
     sp2C = gPlayers[oppId].currentState->unk_04;
 
-    player->unk_A8.unk_C0--;
+    player->unk_A8.unk_18--;
 
     if (player->unk_DC < D_80049D34[gBattleSettings[player->playerId].unk_04]) {
         if (func_8001C404(player, &sp34)) {
@@ -833,10 +835,10 @@ void func_8001D9B0(Player *player) {
     player->unk_DC++;
 
     if (func_8001D1F8(player)) {
-        player->unk_A8.unk_BC = func_8001D764;
+        player->unk_A8.unk_14 = func_8001D764;
         func_8001D764(player);
     } else {
-        player->unk_A8.unk_BC = func_8001D6C0;
+        player->unk_A8.unk_14 = func_8001D6C0;
         func_8001D6C0(player);
     }
 }
@@ -845,8 +847,8 @@ u8 func_8001DA10(Player *player) {
     s16 sp1E;
 
     sp1E = gBattleSettings[player->playerId].unk_04;
-    player->unk_A8.unk_C0 = D_80049D44[sp1E] + (guRandom() & D_80049D24[sp1E]); // @BUG ??
-    player->unk_A8.unk_BC = func_8001CDE0;
+    player->unk_A8.unk_18 = D_80049D44[sp1E] + (guRandom() & D_80049D24[sp1E]); // @BUG ??
+    player->unk_A8.unk_14 = func_8001CDE0;
     return TRUE;
 }
 
@@ -879,10 +881,10 @@ s32 func_8001DB2C(Player *player) {
     player->unk_DE++;
 
     if (sp2C < player->unk_DE || (gPlayers[1 - player->playerId].flags & PLAYER_FLAG_100000)) {
-        player->unk_A8.unk_B4++;
+        player->unk_A8.unk_0C++;
         func_8001BD5C(player, &player->unk_A8);
         func_8001BC7C(player);
-        player->unk_A8.unk_C0 = 90;
+        player->unk_A8.unk_18 = 90;
         return 1;
     } else {
         return -1;
@@ -901,10 +903,10 @@ s32 func_8001DC68(Player *player) {
     player->unk_DE++;
 
     if (sp2C < player->unk_DE || (gPlayers[1 - player->playerId].flags & PLAYER_FLAG_100000)) {
-        player->unk_A8.unk_B4++;
+        player->unk_A8.unk_0C++;
         func_8001BD5C(player, &player->unk_A8);
         func_8001BC7C(player);
-        player->unk_A8.unk_C0 = 90;
+        player->unk_A8.unk_18 = 90;
         return 1;
     } else {
         return -1;

@@ -714,20 +714,20 @@ typedef struct PlayerSubJ {
 } PlayerSubJ; // size = 0xC
 
 typedef struct PlayerSubH {
-    /* 0x00A8 */ PlayerSubJ *unk_A8;
-    /* 0x00AC */ PlayerSubJ *unk_AC;
-    /* 0x00B0 */ PlayerSubJ *unk_B0;
-    /* 0x00B4 */ s16 *unk_B4;
-    /* 0x00B8 */ u16 *unk_B8;
-    /* 0x00BC */ s16 (*unk_BC)(struct Player *);
-    /* 0x00C0 */ s16 unk_C0;
-    /* 0x00C2 */ s16 unk_C2;
-    /* 0x00C4 */ s32 unk_C4;
-    /* 0x00C8 */ s32 unk_C8;
-    /* 0x00CC */ s16 unk_CC;
-    /* 0x00CE */ s16 unk_CE;
-    /* 0x00D0 */ s32 unk_D0;
-    /* 0x00D4 */ s16 *unk_D4;
+    /* 0x0000 */ PlayerSubJ *unk_00;
+    /* 0x0004 */ PlayerSubJ *unk_04;
+    /* 0x0008 */ PlayerSubJ *unk_08;
+    /* 0x000C */ s16 *unk_0C;
+    /* 0x0010 */ u16 *unk_10;
+    /* 0x0014 */ s16 (*unk_14)(struct Player *);
+    /* 0x0018 */ s16 unk_18;
+    /* 0x001A */ s16 unk_1A;
+    /* 0x001C */ s32 unk_1C;
+    /* 0x0020 */ s32 unk_20;
+    /* 0x0024 */ s16 unk_24;
+    /* 0x0026 */ s16 unk_26;
+    /* 0x0028 */ s32 unk_28;
+    /* 0x002C */ s16 *unk_2C;
 } PlayerSubH;
 
 typedef struct Player {

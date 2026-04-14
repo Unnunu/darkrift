@@ -313,14 +313,9 @@ void func_80028890(Object *obj) {
     }
 }
 
-#ifdef NON_EQUIVALENT
 s16 func_80028928(s16 playerId) {
-    return (u32) (gPlayers[playerId].unk_70 * 80 * 0x10000) / 400 / 0x10000;
+    return (u32) (gPlayers[playerId].obj->playerHp * 80 * 0x10000) / 400 / 0x10000;
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/28C10/func_80028928.s")
-s16 func_80028928(s16 playerId);
-#endif
 
 void func_80028990(Vtx *vtx) {
     Gfx *gfx = D_8005BF58;
