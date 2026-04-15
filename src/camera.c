@@ -1,6 +1,8 @@
 #include "camera.h"
 #include "task.h"
 
+// void model_update_animated_params(Object *);
+
 AnimHeader *D_80053030[] = { NULL };
 
 Object *gCamera;
@@ -144,8 +146,7 @@ void camera_update(Object *obj) {
             model_update_animated_params(obj);
             obj->previousFrameIndex = obj->frameIndex;
 
-            unused = model->nodePosition[0].x; // required to match
-            if (unused != 0 || model->nodePosition[0].y != 0 || model->nodePosition[0].z != 0) {
+            if (model->nodePosition[0].x != 0 || model->nodePosition[0].y != 0 || model->nodePosition[0].z != 0) {
                 sp48.x = model->nodePosition[0].x;
                 sp48.y = model->nodePosition[0].y;
                 sp48.z = model->nodePosition[0].z;

@@ -87,6 +87,7 @@ segments:
       - [0x25980, c, tables]
       - [0x25980, c, cont]
       - [0x25B50, c, lzhuf]
+      - [0x26380, c, lzhuf2] # splitting these files is required to match
       - [0x26740, c, wad]
       - [0x28C10, c]
       - [0x2AE80, c]

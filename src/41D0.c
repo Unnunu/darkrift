@@ -69,7 +69,8 @@ void func_800035D0(Player *player) {
     u16 a2;
     Object *v0;
     s32 v1;
-    s32 nv, nv2, nv3;
+    s32 nv;
+    s32 temp;
 
     v0 = player->obj;
 
@@ -82,19 +83,19 @@ void func_800035D0(Player *player) {
     a1->unk_06 = player->playerId;
     a1->unk_07 = 255;
 
-    a2 = player->playerId;
     t8 = 1 - player->playerId;
+    a2 = player->playerId;
     a1->unk_00[a2] = v0->playerHp;
     a1->unk_00[t8] = gPlayers[t8].obj->playerHp;
 
     nv = D_80080238.unk_1002;
-    nv2 = (nv - 1) & 0x1FF;
-    D_80080238.unk_00[nv2].unk_07 = gFrameCounter - D_80080238.unk_1004;
+    D_80080238.unk_00[((nv - 1) & 0x1FF)].unk_07 = gFrameCounter - D_80080238.unk_1004;
+
     nv = (nv + 1) & 0x1FF;
     D_80080238.unk_1002 = nv;
     D_80080238.unk_1004 = gFrameCounter;
 
-    if (D_80080238.unk_1000 == nv) {
+    if (nv == D_80080238.unk_1000) {
         D_80080234 = 1;
         D_80080238.unk_1000 = (D_80080238.unk_1000 + 1) & 0x1FF;
     }
@@ -116,20 +117,25 @@ void func_80003704(Object *obj) {
     }
 }
 
-#ifdef NON_EQUIVALENT
+#ifdef NON_MATCHING
 void func_80003780(Object *obj) {
     s32 s0;
     UnkOmicronSub *s1;
     s32 s3;
+    s16 v0;
+    s32 temp;
+    Player *s2;
 
     while (TRUE) {
         s0 = D_80080238.unk_1000;
-        s1 = &D_80080238.unk_00[s0];
+        s1 = D_80080238.unk_00 + s0;
         s3 = s1->unk_06;
+
         gPlayers[s3].flags |= PLAYER_FLAG_800000;
-        player_make_transition(gPlayers + s1->unk_06, TRUE, s1->unk_04);
-        gPlayers[s3].obj->playerHp = s1->unk_00[s3];
-        if (s1->unk_00[s3] == 0) {
+        player_make_transition(gPlayers + s3, TRUE, s1->unk_04);
+        v0 = s1->unk_00[s3];
+        gPlayers[s3].obj->playerHp = v0;
+        if (v0 == 0) {
             D_8005BFC0 |= GAME_FLAG_200;
         }
 
@@ -137,13 +143,20 @@ void func_80003780(Object *obj) {
             break;
         }
 
-        D_80080238.unk_1000 = (s0 + 1) & 0xFDFF; // ???
-        if (s1->unk_07 != 0) {
-            obj->currentTask->start_delay = s1->unk_07 - 1;
+        s0++;
+        D_80080238.unk_1000 = s0 & ~0x200;
+
+        temp = s1->unk_07;
+
+        if (obj && obj && obj) {} // @fake
+
+        if (temp != 0) {
+            obj->currentTask->start_delay = temp - 1;
             return;
         }
     }
 
+    if (s1) {} // @fake
     obj->currentTask->func = func_80003704;
     obj->vars[0] = 260;
 }
@@ -164,7 +177,6 @@ void func_800038C8(Object *obj) {
     }
 }
 
-#ifdef NON_MATCHING
 s32 func_80003974(void *arg0) {
     s32 s3;
     Object *v0;
@@ -201,8 +213,7 @@ s32 func_80003974(void *arg0) {
     func_8002DA08(gCamera);
     gCamera->currentTask->func = func_8002EB2C;
     gCamera->currentTask->start_delay = 0;
-    gCameraTarget.x = 0;
-    gCameraTarget.z = 0;
+    gCameraTarget.x = gCameraTarget.z = 0;
     gCameraTarget.y = -400;
     D_8013C834 = FALSE;
 
@@ -231,10 +242,6 @@ s32 func_80003974(void *arg0) {
 
     return 0;
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_80003974.s")
-s32 func_80003974(void *arg0);
-#endif
 
 s32 func_80003BB4(void) {
     s32 diff = gFrameCounter - D_80081240;
