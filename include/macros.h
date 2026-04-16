@@ -13,7 +13,7 @@
 
 #define GET_ITEM(array)             \
     array.elements[array.unk_0C--]; \
-    array.count--;
+    array.count--
 
 #define RELEASE_ITEM(array, item)                 \
     array.elements[++array.unk_0C] = (u8 *) item; \

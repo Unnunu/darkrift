@@ -123,32 +123,30 @@ void func_80012A20(Transform *parent, Transform *arg1, s32 id, s32 parentId) {
     arg1->parent = parent;
 }
 
-#ifdef NON_MATCHING
 void func_80012AA8(Matrix4f *mf) {
-    mf->x.y = 0;
-    mf->x.z = 0;
-    mf->x.w = 0;
+    *(s32 *) &mf->x.y = 0;
+    *(s32 *) &mf->x.z = 0;
+    *(s32 *) &mf->x.w = 0;
 
-    mf->y.x = 0;
-    mf->y.z = 0;
-    mf->z.w = 0;
+    *(s32 *) &mf->y.x = 0;
+    *(s32 *) &mf->y.z = 0;
+    *(s32 *) &mf->y.w = 0;
 
-    mf->z.x = 0;
-    mf->z.y = 0;
-    mf->z.w = 0;
+    *(s32 *) &mf->z.x = 0;
+    *(s32 *) &mf->z.y = 0;
+    *(s32 *) &mf->z.w = 0;
 
-    mf->w.x = 0;
-    mf->w.y = 0;
-    mf->w.z = 0;
+    *(s32 *) &mf->w.x = 0;
+    *(s32 *) &mf->w.y = 0;
+    *(s32 *) &mf->w.z = 0;
 
     mf->x.x = mf->y.y = mf->z.z = mf->w.w = 1.0f;
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012AA8.s")
-void func_80012AA8(Matrix4f *mf);
-#endif
 
-#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012AF4.s")
+void func_80012AF4(Matrix4f *mf) {
+    mem_fill(mf, 0, 0x30);
+    mf->x.x = mf->y.y = mf->z.z = 1.0f;
+}
 
 void func_80012B34(Mtx *m) {
     m->m[0][1] = 0;
@@ -412,7 +410,8 @@ void math_mtxf2mtx(Mtx *arg1, Matrix4f *arg0) {
     arg1->m[3][3] = ((wz & 0xFFFF) << 16) | (ww & 0xFFFF);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80013D08.s")
+void func_80013D08(s32 arg0, s32 arg1) {
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/math/func_80013D14.s")
 

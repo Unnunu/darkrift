@@ -562,10 +562,18 @@ typedef struct PlayerSub5 {
     /* 0x10 */ s32 preserveFlags;
 } PlayerSub5;
 
+typedef struct PlayerSub6Sub4 {
+    /* 0x00 */ Vec4i unk_00[4];
+    /* 0x40 */ s32 unk_40;
+    /* 0x44 */ s32 unk_44;
+    /* 0x48 */ s32 unk_48;
+    /* 0x4C */ s32 unk_4C;
+} PlayerSub6Sub4; // size = 0x50
+
 typedef struct PlayerSub6Sub1 {
-    /* 0x00 */ char unk_00[0x50];
-    /* 0x50 */ char unk_50[0x50];
-    /* 0x50 */ char unk_A0[0x40];
+    /* 0x00 */ PlayerSub6Sub4 unk_00;
+    /* 0x50 */ PlayerSub6Sub4 unk_50;
+    /* 0x50 */ Matrix4f unk_A0;
 } PlayerSub6Sub1; // size = 0xE0
 
 typedef struct PlayerSub6Sub3 {

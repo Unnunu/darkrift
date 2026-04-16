@@ -66,7 +66,6 @@ void func_8002AC10(void) {
     D_80052C54 = 0;
 }
 
-#ifdef NON_MATCHING
 Object *obj_allocate(s16 arg0) {
     Object *obj;
     Object *prev_obj;
@@ -103,6 +102,7 @@ Object *obj_allocate(s16 arg0) {
             gObjectList = obj;
             obj->prevObject = NULL;
         } else {
+            if ((!obj->nextObject) != 0) {} // required to match
             prev_obj = (Object *) GET_ITEM(D_8013C2B0);
 
             obj->prevObject->nextObject = prev_obj;
@@ -116,10 +116,6 @@ Object *obj_allocate(s16 arg0) {
     obj->unk_074 = arg0;
     return obj;
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/item/obj_allocate.s")
-Object *obj_allocate(s16 arg0);
-#endif
 
 void obj_delete(Object *obj) {
     D_80052C54--;

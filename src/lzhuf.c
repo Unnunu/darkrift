@@ -171,7 +171,9 @@ void func_80025344(void) {
 
 #ifdef NON_EQUIVALENT
 void func_8002541C(void) {
-    s16 i, j, k;
+    s16 i; // v0
+    s16 j;
+    s16 k;
     u16 f;
     u16 l;
     u16 m;

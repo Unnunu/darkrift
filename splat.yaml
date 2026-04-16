@@ -71,6 +71,7 @@ segments:
       - [0x76E0, c, game_modes]
       - [0xC8F0, c, kmd]
       - [0xF530, c]
+      - [0x11700, c]
       - [0x13050, c, math]
       - [0x15760, c, scroll]
       - [0x167C0, c]
