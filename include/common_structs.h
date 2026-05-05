@@ -576,18 +576,15 @@ typedef struct PlayerSub6Sub1 {
     /* 0x50 */ Matrix4f unk_A0;
 } PlayerSub6Sub1; // size = 0xE0
 
-typedef struct PlayerSub6Sub3 {
-    /* 0x00 */ ColorRGBA unk_00;
-    /* 0x04 */ ColorRGBA unk_04;
-    /* 0x08 */ char unk_08[0x18];
-} PlayerSub6Sub3; // size = 0x20
-
 typedef struct PlayerSub6Sub2 {
-    /* 0x00 */ BatchInfo unk_00;
-    /* 0x58 */ PlayerSub6Sub3 unk_58[4];
-    /* 0xD8 */ char unk_D8[0x20];
-    /* 0xF8 */ s32 unk_F8;
-    /* 0xFC */ char unk_FC[0x14];
+    /* 0x000 */ BatchInfo unk_00;
+    /* 0x058 */ Vtx unk_58[10];
+    /* 0x0F8 */ s32 unk_F8;
+    /* 0x0FC */ s32 unk_FC;
+    /* 0x100 */ s32 unk_100;
+    /* 0x104 */ u16 *unk_104;
+    /* 0x108 */ u8 unk_108;
+    /* 0x10C */ s32 unk_10C;
 } PlayerSub6Sub2; // size = 0x110
 
 typedef struct PlayerSub6 {

@@ -34,7 +34,6 @@ extern Player12 gBattleSettings[2];
 extern u8 D_800801F1;
 extern u8 D_800B6350[2][11];
 extern s16 gPlayMode;
-extern Batch *gMainBatchPos;
 extern Batch *gOverlayBatchPos;
 extern Gfx *gMainGfxPos;
 extern u8 D_800801E2;
