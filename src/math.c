@@ -6,6 +6,7 @@ extern Matrix4f D_800812A0;
 extern Matrix4f D_800812E0;
 extern Matrix4f D_80081320;
 extern Matrix4f D_80081360;
+extern Matrix4f D_800813A0;
 extern Mtx D_8005BF80;
 extern Mtx D_8013C4A0;
 
@@ -231,12 +232,59 @@ void func_80012B80(Mtx *m) {
     m->m[1][1] = FTOFIX32(1);
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012BBC.s")
+void func_80012BBC(Matrix4f *arg0, Matrix4f *arg1) {
+    Matrix4f m;
 
-#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012E58.s")
-void func_80012E58(Matrix4f *arg0, Matrix4f *arg1);
+    m.x.x = arg0->x.x * arg1->x.x + arg0->x.y * arg1->y.x + arg0->x.z * arg1->z.x;
+    m.x.y = arg0->x.x * arg1->x.y + arg0->x.y * arg1->y.y + arg0->x.z * arg1->z.y;
+    m.x.z = arg0->x.x * arg1->x.z + arg0->x.y * arg1->y.z + arg0->x.z * arg1->z.z;
+    m.y.x = arg0->y.x * arg1->x.x + arg0->y.y * arg1->y.x + arg0->y.z * arg1->z.x;
+    m.y.y = arg0->y.x * arg1->x.y + arg0->y.y * arg1->y.y + arg0->y.z * arg1->z.y;
+    m.y.z = arg0->y.x * arg1->x.z + arg0->y.y * arg1->y.z + arg0->y.z * arg1->z.z;
+    m.z.x = arg0->z.x * arg1->x.x + arg0->z.y * arg1->y.x + arg0->z.z * arg1->z.x;
+    m.z.y = arg0->z.x * arg1->x.y + arg0->z.y * arg1->y.y + arg0->z.z * arg1->z.y;
+    m.z.z = arg0->z.x * arg1->x.z + arg0->z.y * arg1->y.z + arg0->z.z * arg1->z.z;
+    m.w.x = arg0->w.x * arg1->x.x + arg0->w.y * arg1->y.x + arg0->w.z * arg1->z.x + arg1->w.x;
+    m.w.y = arg0->w.x * arg1->x.y + arg0->w.y * arg1->y.y + arg0->w.z * arg1->z.y + arg1->w.y;
+    m.w.z = arg0->w.x * arg1->x.z + arg0->w.y * arg1->y.z + arg0->w.z * arg1->z.z + arg1->w.z;
 
-void math_rotate(Matrix4f *arg0, Vec3s *arg1) {
+    arg0->x.x = m.x.x;
+    arg0->x.y = m.x.y;
+    arg0->x.z = m.x.z;
+    arg0->y.x = m.y.x;
+    arg0->y.y = m.y.y;
+    arg0->y.z = m.y.z;
+    arg0->z.x = m.z.x;
+    arg0->z.y = m.z.y;
+    arg0->z.z = m.z.z;
+    arg0->w.x = m.w.x;
+    arg0->w.y = m.w.y;
+    arg0->w.z = m.w.z;
+}
+
+void func_80012E58(Matrix4f *arg0, Matrix4f *arg1) {
+    D_800813A0.x.x = arg0->x.x * arg1->x.x + arg0->x.y * arg1->y.x + arg0->x.z * arg1->z.x;
+    D_800813A0.x.y = arg0->x.x * arg1->x.y + arg0->x.y * arg1->y.y + arg0->x.z * arg1->z.y;
+    D_800813A0.x.z = arg0->x.x * arg1->x.z + arg0->x.y * arg1->y.z + arg0->x.z * arg1->z.z;
+    D_800813A0.y.x = arg0->y.x * arg1->x.x + arg0->y.y * arg1->y.x + arg0->y.z * arg1->z.x;
+    D_800813A0.y.y = arg0->y.x * arg1->x.y + arg0->y.y * arg1->y.y + arg0->y.z * arg1->z.y;
+    D_800813A0.y.z = arg0->y.x * arg1->x.z + arg0->y.y * arg1->y.z + arg0->y.z * arg1->z.z;
+    D_800813A0.z.x = arg0->z.x * arg1->x.x + arg0->z.y * arg1->y.x + arg0->z.z * arg1->z.x;
+    D_800813A0.z.y = arg0->z.x * arg1->x.y + arg0->z.y * arg1->y.y + arg0->z.z * arg1->z.y;
+    D_800813A0.z.z = arg0->z.x * arg1->x.z + arg0->z.y * arg1->y.z + arg0->z.z * arg1->z.z;
+
+    arg0->x.x = D_800813A0.x.x;
+    arg0->x.y = D_800813A0.x.y;
+    arg0->x.z = D_800813A0.x.z;
+    arg0->y.x = D_800813A0.y.x;
+    arg0->y.y = D_800813A0.y.y;
+    arg0->y.z = D_800813A0.y.z;
+    arg0->z.x = D_800813A0.z.x;
+    arg0->z.y = D_800813A0.z.y;
+    arg0->z.z = D_800813A0.z.z;
+}
+
+void math_rotate(Matrix4f *arg0, Vec4s *arg1) {
     f32 cosY;
     s32 v0;
     f32 sinY;
@@ -495,15 +543,110 @@ void math_mtxf2mtx(Mtx *arg1, Matrix4f *arg0) {
 void func_80013D08(s32 arg0, s32 arg1) {
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80013D14.s")
+void func_80013D14(Vec3i *arg0, Mtx *m) {
+    int i, j;
+    unsigned int e1, e2;
+    unsigned int *ai, *af;
+    int q1, q2;
+    float mf[4][4];
 
-#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80013E64.s")
+    ai = (unsigned int *) &m->m[0][0];
+    af = (unsigned int *) &m->m[2][0];
 
-#pragma GLOBAL_ASM("asm/nonmatchings/math/func_800140A4.s")
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 2; j++) {
+            e1 = (*ai & 0xffff0000) | ((*af >> 16) & 0xffff);
+            e2 = ((*(ai++) << 16) & 0xffff0000) | (*(af++) & 0xffff);
+            q1 = *((int *) &e1);
+            q2 = *((int *) &e2);
 
-#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80014110.s")
+            mf[i][j * 2] = FIX32TOF(q1);
+            mf[i][j * 2 + 1] = FIX32TOF(q2);
+        }
+    }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/math/func_8001417C.s")
+    D_80081360.x.x = (f32) arg0->x * (1.0 / 4096.0);
+    D_80081360.y.y = (f32) arg0->y * (1.0 / 4096.0);
+    D_80081360.z.z = (f32) arg0->x * (1.0 / 4096.0); // @BUG should be arg0->z
+    func_80012BBC(mf, &D_80081360);                  // TODO: type Matrix4f or float[4][4]
+    math_mtxf2mtx(m, mf);
+}
+
+void func_80013E64(Vec4s *arg0, Vec4i *arg1, Mtx *arg2) {
+    s32 unused;
+    s32 xx, xy, xz, xw, yx, yy, yz, yw, zx, zy, zz, zw;
+
+    math_rotate(&D_800813E0, arg0);
+
+    if (arg1->x != 0x1000 || arg1->y != 0x1000 || arg1->z != 0x1000) {
+        func_800139A0(&D_800813E0, arg1);
+    }
+
+    xx = FTOFIX32(D_800813E0.x.x);
+    xy = FTOFIX32(D_800813E0.x.y);
+    xz = FTOFIX32(D_800813E0.x.z);
+    xw = FTOFIX32(D_800813E0.x.w);
+    yx = FTOFIX32(D_800813E0.y.x);
+    yy = FTOFIX32(D_800813E0.y.y);
+    yz = FTOFIX32(D_800813E0.y.z);
+    yw = FTOFIX32(D_800813E0.y.w);
+    zx = FTOFIX32(D_800813E0.z.x);
+    zy = FTOFIX32(D_800813E0.z.y);
+    zz = FTOFIX32(D_800813E0.z.z);
+    zw = FTOFIX32(D_800813E0.z.w);
+
+    arg2->m[0][0] = (xx & 0xFFFF0000) | ((xy >> 16) & 0xFFFF);
+    arg2->m[0][1] = (xz & 0xFFFF0000) | ((xw >> 16) & 0xFFFF);
+    arg2->m[0][2] = (yx & 0xFFFF0000) | ((yy >> 16) & 0xFFFF);
+    arg2->m[0][3] = (yz & 0xFFFF0000) | ((yw >> 16) & 0xFFFF);
+    arg2->m[1][0] = (zx & 0xFFFF0000) | ((zy >> 16) & 0xFFFF);
+    arg2->m[1][1] = (zz & 0xFFFF0000) | ((zw >> 16) & 0xFFFF);
+
+    arg2->m[2][0] = ((xx & 0xFFFF) << 16) | (xy & 0xFFFF);
+    arg2->m[2][1] = ((xz & 0xFFFF) << 16) | (xw & 0xFFFF);
+    arg2->m[2][2] = ((yx & 0xFFFF) << 16) | (yy & 0xFFFF);
+    arg2->m[2][3] = ((yz & 0xFFFF) << 16) | (yw & 0xFFFF);
+    arg2->m[3][0] = ((zx & 0xFFFF) << 16) | (zy & 0xFFFF);
+    arg2->m[3][1] = ((zz & 0xFFFF) << 16) | (zw & 0xFFFF);
+}
+
+void func_800140A4(Matrix4f *arg0, s16 angle) {
+    f32 cosAngle, sinAngle;
+
+    cosAngle = func_80012978(angle);
+    sinAngle = -func_80012978(angle + 0x400);
+    D_800812E0.z.x = sinAngle;
+    D_800812E0.x.z = -sinAngle;
+    D_800812E0.x.x = cosAngle;
+    D_800812E0.z.z = cosAngle;
+    func_80012E58(arg0, &D_800812E0);
+}
+
+void func_80014110(Matrix4f *arg0, s16 angle) {
+    f32 cosAngle, sinAngle;
+
+    cosAngle = func_80012978(angle);
+    sinAngle = -func_80012978(angle + 0x400);
+    D_80081320.x.y = sinAngle;
+    D_80081320.y.x = -sinAngle;
+    D_80081320.x.x = cosAngle;
+    D_80081320.y.y = cosAngle;
+    func_80012E58(arg0, &D_80081320);
+}
+
+void func_8001417C(Matrix4f *arg0, s16 angle) {
+    f32 cosAngle, sinAngle;
+
+    cosAngle = func_80012978(angle);
+    sinAngle = -func_80012978(angle + 0x400);
+    func_80012470(&D_800812A0);
+    D_800812A0.y.z = sinAngle;
+    D_800812A0.z.y = -sinAngle;
+    D_800812A0.y.y = cosAngle;
+    D_800812A0.z.z = cosAngle;
+    func_80012E58(arg0, &D_800812A0);
+    func_80012470(arg0);
+}
 
 #pragma GLOBAL_ASM("asm/nonmatchings/math/func_80014204.s")
 

@@ -17,7 +17,7 @@ void sound_play(u32, u32);
 void func_80021918(Object *arg0, s32 arg1);
 void audio_fade_out_all(Object *, s32);
 void func_80012A20(Transform *arg0, Transform *arg1, s32 arg2, s32 arg3);
-void math_rotate(Matrix4f *, Vec3s *);
+void math_rotate(Matrix4f *, Vec4s *);
 void math_translate(Matrix4f *, Vec4i *);
 void func_80015724(Object *);
 void func_800263A8(void);
