@@ -176,7 +176,6 @@ void func_800114DC(BatchInfo *batch) {
     gtStateSetOthermode(&batch->header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
 }
 
-// #pragma GLOBAL_ASM("asm/nonmatchings/11700/func_800115A0.s")
 void func_800115A0(PlayerSub6 *arg0, u8 arg1) {
     Vec4i spF8;
     Vec4i *spF4;
@@ -191,7 +190,7 @@ void func_800115A0(PlayerSub6 *arg0, u8 arg1) {
     s32 s3;
     Vtx *s2;
     s32 _a2, _a1, _a0, _t4, _t3, _t1, _t0, _a3;
-    Vec4i *spAC; // ok
+    Vec4i *spAC;
     u32 v1;
     s32 lo1, lo2, lo3, lo4, lo5, lo6, lo7, lo8;
     u32 i;

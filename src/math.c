@@ -1,5 +1,6 @@
 #include "common.h"
 
+extern s16 D_8004CD90[]; // arctan table
 extern f32 D_80050F14[]; // sin table
 extern Matrix4f D_800812A0;
 extern Matrix4f D_800812E0;
@@ -38,61 +39,107 @@ void func_80012490(void) {
     osWritebackDCache(&D_8013C4A0, sizeof(Mtx));
 }
 
-#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012518.s")
+s32 func_80012518(s32 arg0, s32 arg1) {
+    u32 v0;
+    s32 sp38, sp34;
+    s16 t5;
+    s32 pad;
+    s16 tt;
+    s32 i;
+    s32 a0;
+    s32 v1;
+    s32 t4, t6;
 
-#ifdef NON_EQUIVALENT
-s32 func_80012854(s32 arg0) {
-    s32 v0;
+    v1 = 0;
 
-    v0 = (arg0 & 0xFFF);
-
-    if (v0 < 0x400) {
-        return D_80050F14[v0] * 4096.0;
-    }
-    if (v0 < 0x800) {
-        return (-D_80050F14[0x800 - v0]) * 4096.0;
+    if (arg0 == 0 && arg1 == 0) {
+        return 0;
     }
 
-    arg0 = v0 - 0x800;
-    v0 = (arg0 & 0xFFFF);
-    if (v0 < 0x400) {
-        return -D_80050F14[v0] * 4096.0;
+    sp38 = ABS(arg1);
+    sp34 = ABS(arg0);
+
+    v0 = sqrtf(SQ(arg1) + SQ(arg0)) + 0.5;
+    t4 = ((sp38 << 16) / (s32) v0) >> 9;
+    t6 = ((sp34 << 16) / (s32) v0) >> 9;
+
+    if (t4 < t6) {
+        for (i = 1; i <= t4; i++) {
+            v1 += i;
+        }
+        a0 = 0x400 - D_8004CD90[129 * t4 + t6 - v1];
+    } else {
+        for (i = 1; i <= t6; i++) {
+            v1 += i;
+        }
+        a0 = D_8004CD90[129 * t6 + t4 - v1];
     }
-    if (v0 < 0x1000) {
-        return D_80050F14[0x800 - v0] * 4096.0;
+
+    t5 = arg1 < 0;
+    tt = arg0 < 0;
+    if (t5 && tt) {
+        return -0x800 - -a0;
     }
-    v0 = arg0 & 0xFFFF;
+    if (t5 + tt == 0) {
+        return a0;
+    }
+    if (t5) {
+        return 0x800 - a0;
+    }
+    return -a0;
+}
+
+#ifdef NON_MATCHING
+s32 func_80012854(s16 arg0) {
+    u16 index;
+
+    index = (arg0 & 0xFFF);
+
+    if (index < 0x400) {
+        return D_80050F14[index] * 4096.0;
+    }
+    if (index < 0x800) {
+        return (-D_80050F14[0x800 - index]) * 4096.0;
+    }
+
+    index -= 0x800;
+
+    if (index < 0x400) {
+        return -D_80050F14[index] * 4096.0;
+    }
+    if (index < 0x1000) {
+        return D_80050F14[0x800 - index] * 4096.0;
+    }
     return 0;
 }
 #else
 #pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012854.s")
-s32 func_80012854(s32 arg0);
+s32 func_80012854(s16 arg0);
 #endif
 
 #ifdef NON_MATCHING
-f32 func_80012978(s16 arg0) {
-    s32 v0;
+f32 func_80012978(u16 arg0) {
+    u16 index;
 
-    v0 = arg0 & 0xFFF;
+    index = arg0 & 0xFFF;
 
-    if (v0 < 0x400) {
-        return D_80050F14[v0];
+    if (index < 0x400) {
+        return D_80050F14[index];
     }
-    if (v0 < 0x800) {
-        return -D_80050F14[0x800 - v0];
-    }
-
-    arg0 = v0 - 0x800;
-
-    v0 = arg0 & 0xFFFF;
-    if (v0 < 0x400) {
-        return -D_80050F14[v0];
-    }
-    if (v0 < 0x1000) {
-        return D_80050F14[0x800 - v0];
+    if (index < 0x800) {
+        return -D_80050F14[0x800 - index];
     }
 
-    v0 = arg0 & 0xFFFF; // @fake
+    index = index - 0x800;
+    do {
+    } while (0);
+    if (index < 0x400) {
+        return -D_80050F14[index];
+    }
+    if (index < 0x1000) {
+        return D_80050F14[0x800 - index];
+    }
+
     return 0.0f;
 }
 #else
@@ -187,19 +234,20 @@ void func_80012B80(Mtx *m) {
 #pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012BBC.s")
 
 #pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012E58.s")
+void func_80012E58(Matrix4f *arg0, Matrix4f *arg1);
 
-#ifdef NON_EQUIVALENT
 void math_rotate(Matrix4f *arg0, Vec3s *arg1) {
-    s32 v0;
-    f32 cosZ;
-    f32 sinZ;
     f32 cosY;
+    s32 v0;
     f32 sinY;
+    f32 sinZ;
     f32 cosX;
     f32 sinX;
+    f32 cosZ;
 
     if (arg1->x == 0 && arg1->y == 0 && arg1->z == 0) {
         func_80012AF4(arg0);
+        return;
     }
     v0 = 0;
     if (arg1->x != 0) {
@@ -218,26 +266,26 @@ void math_rotate(Matrix4f *arg0, Vec3s *arg1) {
             sinZ = -func_80012978(arg1->z + 0x400);
             arg0->x.x = cosZ;
             arg0->x.y = sinZ;
-            arg0->x.z = 0.0f;
             arg0->y.x = -sinZ;
             arg0->y.y = cosZ;
-            arg0->y.z = 0.0f;
-            arg0->z.x = 0.0f;
-            arg0->z.y = 0.0f;
+            *(s32 *) &arg0->x.z = 0;
+            *(s32 *) &arg0->y.z = 0;
+            *(s32 *) &arg0->z.x = 0;
+            *(s32 *) &arg0->z.y = 0;
             arg0->z.z = 1.0f;
             break;
         case 2:
             cosY = func_80012978(arg1->y);
             sinY = -func_80012978(arg1->y + 0x400);
             arg0->x.x = cosY;
-            arg0->x.y = 0.0f;
             arg0->x.z = -sinY;
-            arg0->y.x = 0.0f;
-            arg0->y.y = 1.0f;
-            arg0->y.z = 0.0f;
             arg0->z.x = sinY;
-            arg0->z.y = 0.0f;
             arg0->z.z = cosY;
+            *(s32 *) &arg0->x.y = 0;
+            *(s32 *) &arg0->y.x = 0;
+            *(s32 *) &arg0->y.z = 0;
+            *(s32 *) &arg0->z.y = 0;
+            arg0->y.y = 1.0f;
             break;
         case 3:
             cosY = func_80012978(arg1->y);
@@ -249,44 +297,78 @@ void math_rotate(Matrix4f *arg0, Vec3s *arg1) {
             arg0->x.z = -sinY;
             arg0->y.x = -sinZ;
             arg0->y.y = cosZ;
-            arg0->y.z = 0.0f;
             arg0->z.x = sinY * cosZ;
             arg0->z.y = sinY * sinZ;
             arg0->z.z = cosY;
+            *(s32 *) &arg0->y.z = 0;
             break;
         case 4:
             cosX = func_80012978(arg1->x);
             sinX = -func_80012978(arg1->x + 0x400);
-            arg0->x.x = 1.0f;
-            arg0->x.y = 0.0f;
-            arg0->x.z = 0.0f;
-            arg0->y.x = 0.0f;
             arg0->y.y = cosX;
             arg0->y.z = sinX;
-            arg0->z.x = 0.0f;
             arg0->z.y = -sinX;
             arg0->z.z = cosX;
+            *(s32 *) &arg0->x.y = 0;
+            *(s32 *) &arg0->x.z = 0;
+            *(s32 *) &arg0->y.x = 0;
+            *(s32 *) &arg0->z.x = 0;
+            arg0->x.x = 1.0f;
             break;
         case 5:
+            cosZ = func_80012978(arg1->z);
+            sinZ = -func_80012978(arg1->z + 0x400);
+            cosX = func_80012978(arg1->x);
+            sinX = -func_80012978(arg1->x + 0x400);
+            arg0->x.x = cosZ;
+            arg0->x.y = sinZ;
+            arg0->y.z = sinX;
+            arg0->z.z = cosX;
+            arg0->y.x = -cosX * sinZ;
+            arg0->y.y = cosX * cosZ;
+            arg0->z.x = sinX * sinZ;
+            arg0->z.y = -sinX * cosZ;
+            *(s32 *) &arg0->x.z = 0;
+            break;
+        case 6:
             cosY = func_80012978(arg1->y);
             sinY = -func_80012978(arg1->y + 0x400);
             cosX = func_80012978(arg1->x);
             sinX = -func_80012978(arg1->x + 0x400);
             arg0->x.x = cosY;
-            arg0->x.y = sinY;
-            arg0->x.z = 0.0f;
-            arg0->y.x = -cosX * sinY;
-            arg0->y.y = cosX * cosY;
-            arg0->y.z = 0.0f;
-            arg0->z.x = 0.0f;
-            arg0->z.y = 0.0f;
-            arg0->z.z = 0.0f;
+            arg0->x.z = -sinY;
+            arg0->y.x = sinX * sinY;
+            arg0->y.y = cosX;
+            arg0->y.z = sinX * cosY;
+            arg0->z.x = cosX * sinY;
+            arg0->z.y = -sinX;
+            arg0->z.z = cosX * cosY;
+            *(s32 *) &arg0->x.y = 0;
+            break;
+        case 7:
+            cosY = func_80012978(arg1->y);
+            sinY = -func_80012978(arg1->y + 0x400);
+            cosX = func_80012978(arg1->x);
+            sinX = -func_80012978(arg1->x + 0x400);
+            arg0->x.x = cosY;
+            arg0->x.z = -sinY;
+            arg0->y.x = sinX * sinY;
+            arg0->y.y = cosX;
+            arg0->y.z = sinX * cosY;
+            arg0->z.x = cosX * sinY;
+            arg0->z.y = -sinX;
+            arg0->z.z = cosX * cosY;
+            *(s32 *) &arg0->x.y = 0;
+            cosZ = func_80012978(arg1->z);
+            sinZ = -func_80012978(arg1->z + 0x400);
+            D_80081320.x.y = sinZ;
+            D_80081320.y.x = -sinZ;
+            D_80081320.x.x = cosZ;
+            D_80081320.y.y = cosZ;
+            func_80012E58(arg0, &D_80081320);
             break;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/math/math_rotate.s")
-#endif
 
 void func_800134B4(Vec3s *arg0, Mtx *arg1) {
     s32 unused;
