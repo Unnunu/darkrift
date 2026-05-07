@@ -4,7 +4,12 @@
 ColorRGBA D_800499A0 = { 255, 0, 0, 0 };
 ColorRGBA D_800499A4 = { 0, 0, 255, 0 };
 
-extern Vec4s D_80081268;
+/* .bss */
+s32 D_80081260[2];
+Vec4s D_80081268;
+s32 D_80081270;
+Model *D_80081274;
+Model *D_80081278;
 
 void func_8000E930(Object *obj) {
     if (obj->frameIndex < obj->modInst->numAnimFrames) {

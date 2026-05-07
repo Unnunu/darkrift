@@ -942,4 +942,6 @@ typedef struct UnkStruct800031FC {
     /* 0x06 */ s16 unk_06;
 } UnkStruct800031FC; // size = 0x08
 
+typedef s32 (*DISPCB)(void *);
+
 #endif

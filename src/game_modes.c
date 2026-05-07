@@ -24,7 +24,7 @@ extern s16 D_80049B30[];
 extern u8 gAudioStereo;
 extern s32 gMusicVolume;
 extern s32 gSoundVolume;
-extern s8 D_80080129;
+extern u8 D_80080129;
 extern s16 D_80081250;
 extern Texture *D_80081254;
 extern s16 D_80080116;
@@ -74,6 +74,24 @@ void func_8001A98C(Object *);
 void func_8001A7DC(Object *);
 
 s32 D_800493F0[] = { 0, -783, -2453, 0 };
+
+/* .bss */
+u8 D_800801F0;
+u8 D_800801F1;
+s32 D_800801F4;
+s32 D_800801F8;
+s32 D_800801FC;
+s32 D_80080200;
+s32 D_80080204;
+s32 D_80080208;
+s32 D_8008020C;
+s32 D_80080210;
+s32 D_80080214;
+s32 D_80080218;
+s32 D_8008021C;
+Vec4i *D_80080220;
+Vec4i *D_80080224;
+Object *D_80080228[2];
 
 void func_80006AE0(void) {
     D_80081274 = gAssets[asset_find("comhit.k5", 0xABAB)].aux_data;

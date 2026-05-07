@@ -307,7 +307,7 @@ void func_8002CB28(void) {
     D_8013C33C = (0xC00 - player1->rotation.y) & 0xFFF;
     D_8013C33E = (0xC00 - player2->rotation.y) & 0xFFF;
 
-    if (abs(func_8002CDFC(D_8008020E, D_8013C33C)) < 0x400) {
+    if (abs(func_8002CDFC(D_8008020C, D_8013C33C)) < 0x400) {
         ((Player *) player1->varObj[0])->flags |= PLAYER_FLAG_NOT_FACING_OPP;
         ((Player *) player1->varObj[0])->flags &= ~PLAYER_FLAG_200;
     } else {
@@ -332,8 +332,8 @@ void func_8002CB28(void) {
         ((Player *) player1->varObj[0])->flags &= ~PLAYER_FLAG_NOT_FACING_OPP;
     }
 
-    if (abs(func_8002CDFC(D_8008020E, D_8013C33E)) < 0x400) {
-        sp26 = func_8002CDFC(D_8008020E, D_8013C33E);
+    if (abs(func_8002CDFC(D_8008020C, D_8013C33E)) < 0x400) {
+        sp26 = func_8002CDFC(D_8008020C, D_8013C33E);
         if (abs(sp26) > 140) {
             if (sp26 < 0) {
                 sp26 = -140;
@@ -507,7 +507,7 @@ void func_8002D278(Object *obj, u8 arg1) {
     obj->vars[2] = spC0 = ((spC0 - obj->vars[2]) ^ 0) + obj->vars[2]; // @fake ^ 0
     spD8 = obj->vars[1];
 
-    v02 = func_8002CDFC(D_8008020E, spD8);
+    v02 = func_8002CDFC(D_8008020C, spD8);
     if (v02 < 0) {
         a0 = v02 + D_80052CAC;
     } else {
@@ -516,7 +516,7 @@ void func_8002D278(Object *obj, u8 arg1) {
     obj->vars[1] = temp = spD8 + a0;
 
     func_8002CB28();
-    if (func_8002CDFC(D_8008020E, spD8) > 0) {
+    if (func_8002CDFC(D_8008020C, spD8) > 0) {
         D_80080228[PLAYER_1]->flags &= ~OBJ_FLAG_200;
         gPlayerInput[PLAYER_1].mirrored = FALSE;
         D_80080228[PLAYER_2]->flags |= OBJ_FLAG_200;
@@ -729,7 +729,7 @@ restart:
         s0 = TRUE;
     }
 
-    if (!arg0 && s0 && abs(func_8002CDFC(s6, D_8008020E)) > 0x200) {
+    if (!arg0 && s0 && abs(func_8002CDFC(s6, D_8008020C)) > 0x200) {
         s4 = (s1 + 280) >> 1;
 
         s3 = (func_80012854(s6) * s4) >> 12;
@@ -946,7 +946,7 @@ void func_8002EB2C(Object *obj) {
     spD8 = spEC - spE0;
     sp104 = obj->vars[1];
 
-    v02 = func_8002CDFC(D_8008020E, sp104);
+    v02 = func_8002CDFC(D_8008020C, sp104);
     if (v02 < 0) {
         sp108 = v02 + D_80052CAC;
     } else {
@@ -955,7 +955,7 @@ void func_8002EB2C(Object *obj) {
 
     func_8002CB28();
 
-    if (func_8002CDFC(D_8008020E, sp104) > 0) {
+    if (func_8002CDFC(D_8008020C, sp104) > 0) {
         D_80080228[PLAYER_1]->flags &= ~OBJ_FLAG_200;
         gPlayerInput[PLAYER_1].mirrored = FALSE;
         D_80080228[PLAYER_2]->flags |= OBJ_FLAG_200;

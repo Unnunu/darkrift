@@ -335,13 +335,13 @@ void func_80028990(Vtx *vtx) {
     gDPPipeSync(gfx++);
     gDPSetCombineMode(gfx++, G_CC_SHADE, G_CC_SHADE);
 
-    gtStateSetOthermode(&D_8005BF10, GT_RENDERMODE, G_RM_XLU_SURF | G_RM_XLU_SURF2);
-    gtStateSetOthermode(&D_8005BF10, GT_CYCLETYPE, G_CYC_1CYCLE);
-    gtStateSetOthermode(&D_8005BF10, GT_TEXTFILT, G_TF_BILERP);
-    gtStateSetOthermode(&D_8005BF10, GT_TEXTCONV, G_TC_FILT);
-    gtStateSetOthermode(&D_8005BF10, GT_TEXTPERSP, G_TP_PERSP);
-    gtStateSetOthermode(&D_8005BF10, GT_TEXTLUT, G_TT_RGBA16);
-    gtStateSetOthermode(&D_8005BF10, GT_PIPELINE, G_PM_NPRIMITIVE);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_RENDERMODE, G_RM_XLU_SURF | G_RM_XLU_SURF2);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_CYCLETYPE, G_CYC_1CYCLE);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTFILT, G_TF_BILERP);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTCONV, G_TC_FILT);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTPERSP, G_TP_PERSP);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTLUT, G_TT_RGBA16);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
 
     gSPTriBatch(gOverlayBatchPos, NULL, &D_8005BF00, vtx, D_80049330);
 }

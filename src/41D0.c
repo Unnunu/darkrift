@@ -15,7 +15,7 @@ typedef struct UnkOmicron {
     /* 0x1002 */ u16 unk_1002;
     /* 0x1004 */ s32 unk_1004;
     /* 0x1008 */ s32 unk_1008;
-} UnkOmicron;
+} UnkOmicron; // size = 0x100C
 
 extern s16 D_8004A730[];
 extern s16 D_8004A748[];
@@ -28,7 +28,13 @@ extern PlayerSub5 D_8004C1E8[];
 
 extern s32 D_80080218;
 extern UnkOmicron D_80080238;
-extern s32 D_80081240;
+
+/* .bss */
+s16 gPlayMode;
+s16 D_80080232;
+u16 D_80080234;
+u16 D_80080236;
+UnkOmicron D_80080238;
 
 void func_80012150(PlayerSub6 *arg0, ModelInstance *arg1, Matrix4f *arg2, Matrix4f *arg3, Vec4i *arg4, ColorRGBA *arg5);
 
@@ -239,7 +245,7 @@ s32 func_80003974(void *arg0) {
 }
 
 s32 func_80003BB4(void) {
-    s32 diff = gFrameCounter - D_80081240;
+    s32 diff = gFrameCounter - D_80080238.unk_1008;
 
     if (diff < 60) {
         return FALSE;

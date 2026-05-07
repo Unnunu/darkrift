@@ -51,7 +51,8 @@ Matrix4f D_80049A94 = {
     { 0, 1, 0, 0 },
 };
 
-extern Gfx D_80081280[];
+/* .bss */
+Gfx D_80081280[4];
 
 void func_80010B00(PlayerSub6Sub4 *arg0, s32 arg1) {
     arg0->unk_40 = 0;

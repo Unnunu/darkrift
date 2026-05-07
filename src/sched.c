@@ -18,14 +18,6 @@ extern OSMesgQueue gSchedVRetraceQueue;
 extern OSTime D_8005BEE8;
 extern OSTime D_8005BEF0;
 
-extern s32 D_8008011C;
-extern u8 D_80080128;
-extern s8 D_800801E4;
-extern s8 D_800801E5;
-extern s32 D_800801E8;
-extern u16 *D_80080120;
-extern u16 *D_80080124;
-
 extern OSTask D_8004CBC8;
 extern OSTask D_8004CC88;
 extern OSTask D_801389B8;
@@ -36,10 +28,8 @@ extern Batch *gMainBatchPos;
 extern u8 *gFramebuffers[];
 extern u16 D_8005BFCE;
 extern u16 gScreenHeight;
-extern u8 D_80080129;
-extern s32 gPostRenderCallbacks[20];
-extern s32 gPostRenderArgs[20];
 extern s32 D_8013F0B0;
+extern DisplayData D_8005BFF0[2];
 
 extern UnkStruct800031FC D_8004937C;
 extern UnkStruct800031FC D_80049384;
@@ -53,9 +43,6 @@ void func_80034508(void);
 void func_80024A38(s32);
 void func_800343EC(void);
 void func_80023200(void);
-extern s32 D_8008012C;
-extern s16 D_80080116;
-extern s16 D_8006E072;
 extern s16 D_800800FA;
 
 extern s32 D_80049AE4;
@@ -69,6 +56,32 @@ void audio_reset(void);
 void func_8002AC10(void);
 
 s32 func_80021338(void);
+
+/* .bss */
+s16 D_80080110;
+s16 D_80080112;
+s16 D_80080114;
+s16 D_80080116;
+s16 D_80080118;
+s32 D_8008011C;
+u16 *D_80080120;
+u16 *D_80080124;
+u8 D_80080128;
+u8 D_80080129;
+s32 D_8008012C;
+s16 D_80080130;
+s16 D_80080132;
+s16 D_80080134;
+s16 D_80080136;
+s16 D_80080138;
+DISPCB gPostRenderCallbacks[20];
+s32 gPostRenderArgs[20];
+s16 D_800801E0;
+u8 D_800801E2;
+u8 D_800801E3;
+s8 D_800801E4;
+s8 D_800801E5;
+s32 D_800801E8;
 
 void reset_post_render_hooks(void) {
     s32 i;
@@ -280,8 +293,8 @@ void func_800031FC(u16 arg0) {
     D_8005BFC0 = GAME_FLAG_4;
     func_80024A38(0);
     func_80024A38(1);
-    D_8006E072 = 0;
-    D_800800FA = 1;
+    D_8005BFF0[0].perspNorm = 0;
+    D_8005BFF0[1].perspNorm = 1;
     D_8005BFCE = 0;
     func_800343EC();
     func_80023200();

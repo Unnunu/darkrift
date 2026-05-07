@@ -9,13 +9,17 @@ extern u8 D_8004A42C;
 extern s16 gNumRounds;
 
 extern Object *D_8013C23C;
-extern Object *D_80081440;
-extern Object *D_80081444;
-extern Object *D_80081448;
-extern Object *D_8008144C;
-extern Object *D_80081450;
-extern Object *D_80081454;
+
 extern s32 gTournamentOpponentId;
+
+/* .bss */
+
+Object *D_80081440;
+Object *D_80081444;
+Object *D_80081448;
+Object *D_8008144C;
+Object *D_80081450;
+Object *D_80081454;
 
 void func_80016A00(Object *);
 void func_800177C0(Object *);

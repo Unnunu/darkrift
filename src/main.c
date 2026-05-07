@@ -9,14 +9,11 @@
         _g->words.w1 = (dl);                        \
     }
 
-typedef s32 (*DISPCB)(void *);
-
 extern s32 D_80049CF0;
 extern GameMode gGameModes[];
 extern Gfx D_8004CA68[];
 extern Gfx D_8004CB00[];
 
-extern Gfx D_8005BF60;
 extern s32 gMusicVolumeFading;
 extern s32 gSoundVolumeFading;
 
@@ -24,16 +21,11 @@ extern RenderContext D_8004CC20;
 extern BatchInfo D_8004CCC8;
 extern BatchInfo D_8004CD30;
 
-extern u16 gPreviousGameMode;
 extern u16 D_8005BFC0;
 extern u16 gNextGameMode;
 extern u16 D_8005BFCE;
-extern void *gFramebuffers[];
 
 extern Gfx *D_8005BFDC;
-extern Gfx *gOverlayGfxPos;
-extern DisplayData D_8005BFF0[];
-extern DisplayData *D_80080100;
 extern s16 D_80080116;
 extern s32 D_8008012C;
 extern DISPCB gPostRenderCallbacks[20];
@@ -60,12 +52,32 @@ UnkStruct800031FC D_8004937C = { 0, 90, 0, 0 };
 UnkStruct800031FC D_80049384 = { 0, 233, 500, 0 };
 
 /* .bss */
-
+s16 gCurrentGameMode;
+s16 gPreviousGameMode;
+OSTime unused;
 OSTime D_8005BEE0;
 OSTime D_8005BEE8;
 OSTime D_8005BEF0;
 s32 D_8005BEF8;
 s32 D_8005BEFC;
+BatchInfo D_8005BF00;
+Gfx D_8005BF58[5];
+Mtx D_8005BF80;
+u16 D_8005BFC0;
+u16 gNextGameMode;
+s32 D_8005BFC4;
+u16 gScreenWidth;
+u16 gScreenHeight;
+u16 D_8005BFCC;
+u16 D_8005BFCE;
+void *gFramebuffers[2];
+Gfx *gMainGfxPos;
+Gfx *D_8005BFDC;
+Gfx *gOverlayGfxPos;
+Batch *gMainBatchPos;
+Batch *gOverlayBatchPos;
+DisplayData D_8005BFF0[2];
+DisplayData *D_80080100;
 
 void func_800030E4(void);
 // void sched_execute_tasks(void);
@@ -369,13 +381,13 @@ void func_80001FB0(s32 arg0, Vtx *arg1) {
     gDPPipeSync(&D_8005BF58[0]);
     gDPSetCombineMode(&D_8005BF58[1], G_CC_SHADE, G_CC_SHADE);
 
-    gtStateSetOthermode(&D_8005BF10, GT_RENDERMODE, G_RM_OPA_SURF | G_RM_OPA_SURF2);
-    gtStateSetOthermode(&D_8005BF10, GT_CYCLETYPE, G_CYC_1CYCLE);
-    gtStateSetOthermode(&D_8005BF10, GT_TEXTFILT, G_TF_BILERP);
-    gtStateSetOthermode(&D_8005BF10, GT_TEXTCONV, G_TC_FILT);
-    gtStateSetOthermode(&D_8005BF10, GT_TEXTPERSP, G_TP_PERSP);
-    gtStateSetOthermode(&D_8005BF10, GT_TEXTLUT, G_TT_RGBA16);
-    gtStateSetOthermode(&D_8005BF10, GT_PIPELINE, G_PM_NPRIMITIVE);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_RENDERMODE, G_RM_OPA_SURF | G_RM_OPA_SURF2);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_CYCLETYPE, G_CYC_1CYCLE);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTFILT, G_TF_BILERP);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTCONV, G_TC_FILT);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTPERSP, G_TP_PERSP);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTLUT, G_TT_RGBA16);
+    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
 
     arg1[0].v.cn[3] = arg0;
     arg1[0].v.cn[0] = arg1[0].v.cn[1] = arg1[0].v.cn[2] = D_80080116;

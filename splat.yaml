@@ -360,18 +360,23 @@ segments:
 
       - { type: .bss, vram: 0x80056EE0, name: thread }
       - { type: .bss, vram: 0x8005AE90, name: heap }
-      - { type: bss, vram: 0x8005BED0, name: bss1 }
-      - { type: .bss, vram: 0x8005BEE0, name: main }
-      - { type: bss, vram: 0x8005BF00, name: bss2 }
+      - { type: .bss, vram: 0x8005BED0, name: main }
+      - { type: .bss, vram: 0x80080110, name: sched }
+      - { type: .bss, vram: 0x800801F0, name: game_modes }
+      - { type: .bss, vram: 0x80080230, name: 41D0 }
+      - { type: .bss, vram: 0x80081250, name: main_menu }
+      - { type: .bss, vram: 0x80081260, name: F530 }
+      - { type: .bss, vram: 0x80081280, name: 11700 }
       - { type: .bss, vram: 0x800812A0, name: math }
-      - { type: bss, vram: 0x800813E0, name: bss2a }
+      - { type: .bss, vram: 0x80081420, name: scroll }
+      - { type: .bss, vram: 0x80081440, name: 167C0 }
       - { type: .bss, vram: 0x80081460, name: 18A10 }
       - { type: .bss, vram: 0x800814E0, name: gmd_pcl }
       - { type: .bss, vram: 0x80081660, name: plyrsel }
       - { type: .bss, vram: 0x80081670, name: audio }
       - { type: .bss, vram: 0x800A4930, name: 23D00 }
       - { type: .bss, vram: 0x800AA430, name: input }
-      - { type: bss, vram: 0x800AA450, name: bss3 }
+      - { type: .bss, vram: 0x800AA470, name: tables }
       - { type: .bss, vram: 0x800B63A0, name: cont }
       - { type: .bss, vram: 0x800B6400, name: lzhuf }
       - { type: .bss, vram: 0x800B85B0, name: rsp }

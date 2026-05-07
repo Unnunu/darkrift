@@ -438,3 +438,11 @@ PlayerSub5 D_8004C1E8[] = {
     { 0x0001000, func_80024078, func_800313EC, NULL, 0x2700208 },
     { 0x8005000, func_80023ED0, task_default_func, NULL, 0x2F00208 },
 };
+
+/* .bss */
+s32 D_800AA470[4];
+s32 D_800AA480;
+Player gPlayers[2];
+Player12 gBattleSettings[2];
+u8 D_800B6350[2][11];
+s16 D_800B6368[11][2];

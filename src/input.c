@@ -66,6 +66,7 @@ s32 D_8004A580[] = {
 };
 
 PlayerInput gPlayerInput[2];
+u16 D_800AA450[2][8];
 
 u16 func_800249B0(u16 contId, u16 buttons) {
     u16 i;

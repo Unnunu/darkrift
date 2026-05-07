@@ -14,6 +14,10 @@ s16 D_80049B70[8][2] = {
 };
 s16 D_80049B90 = 0;
 
+/* .bss */
+s16 D_80081250;
+Texture *D_80081254;
+
 void func_800194E0(u16 arg0) {
     D_80080232 = gPlayMode;
     gPlayMode = arg0;

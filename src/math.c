@@ -470,6 +470,7 @@ Matrix4f D_800812E0;
 Matrix4f D_80081320;
 Matrix4f D_80081360;
 Matrix4f D_800813A0;
+Matrix4f D_800813E0;
 
 void func_80012B34(Mtx *m);
 
