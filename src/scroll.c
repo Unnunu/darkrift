@@ -2,7 +2,6 @@
 #include "task.h"
 
 extern s32 D_8008012C;
-extern s32 D_80049AE4;
 extern s32 D_80049AE8;
 extern s32 D_80081428;
 extern u8 D_80080129;
@@ -12,6 +11,10 @@ extern Gfx *gOverlayGfxPos;
 extern s16 D_80080130;
 extern s16 D_80080132;
 extern s16 D_80080134;
+
+Texture *D_80049AE0 = NULL;
+s32 D_80049AE4 = 0;
+s32 D_80049AE8 = 0;
 
 Texture *load_background(char *name, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 flags, s32 context) {
     Texture *head;

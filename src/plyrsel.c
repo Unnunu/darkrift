@@ -23,7 +23,6 @@ typedef struct CheatCodeState {
 
 extern s16 gPlayMode;
 extern s16 D_80049390;
-extern u8 gAudioStereo;
 extern AssetSP2Sub3 *D_8013C234;
 extern AssetSP2Sub3 *D_8013C238;
 

@@ -29,7 +29,6 @@ extern s16 D_80081250;
 extern Texture *D_80081254;
 extern s16 D_80080116;
 extern s16 gPreviousGameMode;
-extern Vec4i D_8004934C;
 extern s16 D_8013C224;
 extern s16 D_8013C226;
 extern s8 D_80081430;
@@ -73,6 +72,8 @@ void func_80019A9C(Object *);
 void func_8001A4FC(Object *);
 void func_8001A98C(Object *);
 void func_8001A7DC(Object *);
+
+s32 D_800493F0[] = { 0, -783, -2453, 0 };
 
 void func_80006AE0(void) {
     D_80081274 = gAssets[asset_find("comhit.k5", 0xABAB)].aux_data;

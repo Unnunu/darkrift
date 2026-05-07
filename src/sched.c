@@ -37,14 +37,9 @@ extern u8 *gFramebuffers[];
 extern u16 D_8005BFCE;
 extern u16 gScreenHeight;
 extern u8 D_80080129;
-extern s32 D_80049AE8;
 extern s32 gPostRenderCallbacks[20];
 extern s32 gPostRenderArgs[20];
 extern s32 D_8013F0B0;
-
-typedef struct UnkStruct800031FC {
-    /* 0x00 */ char unk_00[8];
-} UnkStruct800031FC;
 
 extern UnkStruct800031FC D_8004937C;
 extern UnkStruct800031FC D_80049384;

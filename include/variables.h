@@ -99,7 +99,7 @@ extern s16 D_80051F6C;
 extern BatchInfo D_8005BF00;
 extern Gfx D_8005BF58[2];
 extern Gfx D_8005BF10;
-extern u16 D_80049330[];
+extern BatchTriangle D_80049330[];
 extern Unk8000C3CCArg3 D_80049920;
 extern Unk8000C3CCArg3 D_80049938;
 extern Unk8000C3CCArg3 D_80049950;
@@ -117,7 +117,6 @@ extern ALSeqMarker gMusicMarkerEnd;
 extern ALBankFile *gAudioBankFiles[3];
 extern u8 gSfxPlayerOn[];
 extern s32 gMusicVolumeFading;
-extern s8 D_8004A472;
 extern Addr D_7DE880;
 extern OSMesgQueue gSchedDMAQueue;
 extern s32 D_8013C208;
@@ -158,5 +157,7 @@ extern s16 D_800B6368[11][2];
 extern u8 D_80049DF0;
 extern u8 D_80049DF4;
 extern u8 gAudioStereo;
+extern Mtx D_8013C4A0;
+extern Mtx D_8005BF80;
 
 #endif

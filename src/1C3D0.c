@@ -6,20 +6,41 @@ typedef struct Struct8001C53C {
     /* 0x04 */ PlayerSubJ *unk_04;
 } Struct8001C53C; // size = 0x8
 
-extern s16 D_80049D10[];
-extern s16 D_80049D24[];
-extern s16 D_80049D34[];
-extern s16 D_80049D44[];
-extern s16 D_80049D54[];
-extern s16 D_80049D64[];
-extern s16 (*D_80049D74[])(struct Player *);
-extern s16 D_80049DB4[];
-extern s16 D_80049DCC[];
-
 u8 func_8001C404(Player *, s16 **);
 u8 func_8001BC7C(Player *);
 u8 func_8001BD5C(Player *, PlayerSubH *);
-u8 func_8001DA90(Player *);
+s16 func_8001DA90(Player *);
+
+s16 func_8001CB74(Player *);
+s16 func_8001CC8C(Player *);
+s16 func_8001CD28(Player *);
+s16 func_8001CD34(Player *);
+s16 func_8001CDAC(Player *);
+s16 func_8001CE18(Player *);
+s16 func_8001CE0C(Player *);
+s16 func_8001D070(Player *);
+s16 func_8001D9B0(Player *);
+s16 func_8001D660(Player *);
+s16 func_8001DA10(Player *);
+s16 func_8001CC18(Player *);
+s16 func_8001DB2C(Player *);
+s16 func_8001DC68(Player *);
+s16 func_8001DDA4(Player *);
+s16 func_8001DDEC(Player *);
+
+s16 D_80049D10[] = { 30, 20, 20, 10, 10, 10, 0, 0, 0, 0 };
+s16 D_80049D24[] = { 30, 30, 10, 6, 5, 2, 2, 0 };
+s16 D_80049D34[] = { 1, 2, 3, 4, 8, 10, 20, 1000 };
+s16 D_80049D44[] = { 70, 60, 60, 55, 50, 45, 40, 40 };
+s16 D_80049D54[] = { 8, 6, 4, 2, 0, 0, 0, 0 };
+s16 D_80049D64[] = { 2, 2, 2, 1, 1, 1, 1, 1 };
+s16 (*D_80049D74[])(struct Player *) = {
+    func_8001CB74, func_8001CC8C, func_8001CD28, func_8001CD34, func_8001CDAC, func_8001CE18,
+    func_8001CE0C, func_8001D070, func_8001D9B0, func_8001D660, func_8001DA10, func_8001CC18,
+    func_8001DB2C, func_8001DC68, func_8001DDA4, func_8001DDEC,
+};
+s16 D_80049DB4[] = { 13, 13, 13, 10, 19, 19, 10, 10, 19, 10, 10, 0 };
+s16 D_80049DCC[] = { 10, 10, 10, 7, 12, 12, 10, 10, 12, 10, 10, 0, 0, 0, 0, 0, 0, 0 };
 
 u8 func_8001B7D0(Player *player, s16 arg1) {
     func_8001BB2C(player);
@@ -543,14 +564,14 @@ s16 func_8001CC8C(Player *player) {
     v0 = func_8001C404(player, &sp24);
 
     if (player->obj->frameIndex < (player->currentState->unk_02 >> 1)) {
-        return TRUE;
+        return 1;
     }
 
     return (player->unk_A8.unk_18 > D_80080210) && !(player->flags & 8) && (!v0 || (*sp24 & 2));
 }
 
 s16 func_8001CD28(Player *player) {
-    return FALSE;
+    return 0;
 }
 
 s16 func_8001CD34(Player *player) {
@@ -568,17 +589,17 @@ s16 func_8001CD34(Player *player) {
 
 s16 func_8001CDAC(Player *player) {
     if (player->obj->frameIndex < (player->currentState->unk_02 >> 1)) {
-        return TRUE;
+        return 1;
     }
 
-    return FALSE;
+    return 0;
 }
 
 s16 func_8001CDE0(Player *player) {
     player->unk_A8.unk_18--;
 
     if (player->unk_A8.unk_18 > 0) {
-        return TRUE;
+        return 1;
     } else {
         return -1;
     }
@@ -715,14 +736,14 @@ s16 func_8001D3A8(Player *player) {
         v0 = func_8001C404(player, &sp24);
         if (v0 && !(*sp24 & 2) && !(*sp24 & 4)) {
             func_800063C4(player, 56, TRUE);
-            return TRUE;
+            return 1;
         }
     }
 
-    return TRUE;
+    return 1;
 }
 
-s32 func_8001D44C(Player *player) {
+s16 func_8001D44C(Player *player) {
     s16 *sp34;
     s16 oppId;
     s16 sp30;
@@ -760,16 +781,16 @@ s32 func_8001D44C(Player *player) {
     return 1;
 }
 
-void func_8001D660(Player *player) {
+s16 func_8001D660(Player *player) {
     player->unk_DE = 0;
     player->unk_DC++;
 
     if (func_8001D1F8(player)) {
         player->unk_A8.unk_14 = func_8001D44C;
-        func_8001D44C(player);
+        return func_8001D44C(player);
     } else {
         player->unk_A8.unk_14 = func_8001D3A8;
-        func_8001D3A8(player);
+        return func_8001D3A8(player);
     }
 }
 
@@ -785,14 +806,14 @@ s16 func_8001D6C0(Player *player) {
         v0 = func_8001C404(player, &sp24);
         if (v0 && !(*sp24 & 2) && (*sp24 & 4)) {
             func_800063C4(player, 57, TRUE);
-            return TRUE;
+            return 1;
         }
     }
 
-    return TRUE;
+    return 1;
 }
 
-s32 func_8001D764(Player *player) {
+s16 func_8001D764(Player *player) {
     s16 oppId;
     s16 sp30;
     s16 sp2E;
@@ -830,46 +851,46 @@ s32 func_8001D764(Player *player) {
     return 1;
 }
 
-void func_8001D9B0(Player *player) {
+s16 func_8001D9B0(Player *player) {
     player->unk_DE = 0;
     player->unk_DC++;
 
     if (func_8001D1F8(player)) {
         player->unk_A8.unk_14 = func_8001D764;
-        func_8001D764(player);
+        return func_8001D764(player);
     } else {
         player->unk_A8.unk_14 = func_8001D6C0;
-        func_8001D6C0(player);
+        return func_8001D6C0(player);
     }
 }
 
-u8 func_8001DA10(Player *player) {
+s16 func_8001DA10(Player *player) {
     s16 sp1E;
 
     sp1E = gBattleSettings[player->playerId].unk_04;
     player->unk_A8.unk_18 = D_80049D44[sp1E] + (guRandom() & D_80049D24[sp1E]); // @BUG ??
     player->unk_A8.unk_14 = func_8001CDE0;
-    return TRUE;
+    return 1;
 }
 
-u8 func_8001DA90(Player *player) {
+s16 func_8001DA90(Player *player) {
     s16 *sp24;
     s32 v0;
 
     v0 = func_8001C404(player, &sp24);
 
     if (player->obj->frameIndex < (player->currentState->unk_02 >> 1) && !(player->flags & 8)) {
-        return TRUE;
+        return 1;
     }
 
     if (player->obj->frameIndex < player->currentState->unk_02 - 1 && !(player->flags & 8) && (!v0 || (*sp24 & 2))) {
-        return TRUE;
+        return 1;
     }
 
-    return FALSE;
+    return 0;
 }
 
-s32 func_8001DB2C(Player *player) {
+s16 func_8001DB2C(Player *player) {
     s16 sp24;
     s32 pad;
     s16 pad2;
@@ -891,7 +912,7 @@ s32 func_8001DB2C(Player *player) {
     }
 }
 
-s32 func_8001DC68(Player *player) {
+s16 func_8001DC68(Player *player) {
     s16 sp24;
     s32 pad;
     s16 pad2;
@@ -913,7 +934,7 @@ s32 func_8001DC68(Player *player) {
     }
 }
 
-s32 func_8001DDA4(Player *player) {
+s16 func_8001DDA4(Player *player) {
     s16 *sp1C;
 
     if (func_8001C404(player, &sp1C) != 0) {
@@ -927,8 +948,8 @@ s32 func_8001DDA4(Player *player) {
     }
 }
 
-s32 func_8001DDEC(Object *obj) {
-    obj->vars[11] = 0;
-    obj->vars[9] -= 4;
+s16 func_8001DDEC(Player *player) {
+    player->unk_A8.unk_14 = NULL;
+    player->unk_A8.unk_0C -= 2;
     return 1;
 }

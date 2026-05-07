@@ -4,12 +4,11 @@
 #include "string.h"
 #include "PR/gt.h"
 
-extern Vec4i D_8004934C;
-
 // .data
 K2Def gShadowProps = { "xxxxxxxxx", NULL, 0, 0xF9C, NULL };
 
 // .bss
+Mtx D_8013C4A0;
 Gfx **D_8013C4E0;
 s32 D_8013C4E4_unused;
 ModelNodeRenderInfo *D_8013C4E8;
@@ -1609,15 +1608,15 @@ void func_80037E28(Object *obj) {
     ra = &a2->unk_1C; // TODO make ColorRGBA
 
     v0 = a2->unk_18;
-    sp6C = v0->unk_0;
-    sp68 = v0->unk_1;
-    sp64 = v0->unk_2;
+    sp6C = v0->unk_0.r;
+    sp68 = v0->unk_0.g;
+    sp64 = v0->unk_0.b;
     sp54 = v0->unk_4;
     sp50 = v0->unk_8;
     sp4C = v0->unk_C;
-    sp60 = v0->unk_10;
-    sp5C = v0->unk_11;
-    sp58 = v0->unk_12;
+    sp60 = v0->unk_10.r;
+    sp5C = v0->unk_10.g;
+    sp58 = v0->unk_10.b;
     sp48 = v0->unk_14;
     sp44 = v0->unk_18;
     sp40 = v0->unk_1C;

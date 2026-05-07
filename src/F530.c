@@ -1,8 +1,8 @@
 #include "common.h"
 #include "task.h"
 
-extern ColorRGBA D_800499A0;
-extern ColorRGBA D_800499A4;
+ColorRGBA D_800499A0 = { 255, 0, 0, 0 };
+ColorRGBA D_800499A4 = { 0, 0, 255, 0 };
 
 extern Vec4s D_80081268;
 

@@ -2,12 +2,41 @@
 #include "string.h"
 #include "PR/gt.h"
 
-typedef struct BatchTriangle {
-    /* 0x00 */ s8 vi0;
-    /* 0x01 */ s8 vi1;
-    /* 0x02 */ s8 vi2;
-    /* 0x03 */ s8 d;
-} BatchTriangle; // size = 4
+Unk8000C3CCArg3 D_80049920 = {
+    gsDPSetCombineMode(G_CC_MODULATEIA, G_CC_MODULATEIA),
+    G_RM_AA_OPA_SURF | G_RM_AA_OPA_SURF2,
+    0x2200,
+    { 192, 192, 192, 255 },
+    1,
+};
+Unk8000C3CCArg3 D_80049938 = {
+    gsDPSetCombineMode(G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM),
+    G_RM_OPA_SURF | G_RM_OPA_SURF2,
+    0x2000,
+    { 255, 255, 255, 255 },
+    1,
+};
+Unk8000C3CCArg3 D_80049950 = {
+    gsDPSetCombineMode(G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM),
+    G_RM_XLU_SURF | G_RM_XLU_SURF2,
+    0,
+    { 255, 255, 255, 128 },
+    0,
+};
+Unk8000C3CCArg3 D_80049968 = {
+    gsDPSetCombineMode(G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM),
+    G_RM_AA_XLU_SURF | G_RM_AA_XLU_SURF2,
+    0x2000,
+    { 192, 192, 192, 255 },
+    0,
+};
+Unk8000C3CCArg3 D_80049988 = {
+    gsDPSetCombineMode(G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM),
+    G_RM_XLU_SURF | G_RM_XLU_SURF2,
+    0x2000,
+    { 255, 255, 255, 255 },
+    0,
+};
 
 void func_8000C158(AssetGmd *, u8);
 

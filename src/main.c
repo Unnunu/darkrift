@@ -17,56 +17,10 @@ extern Gfx D_8004CA68[];
 extern Gfx D_8004CB00[];
 
 extern Gfx D_8005BF60;
-extern Vtx D_800492B0[];
 extern s32 gMusicVolumeFading;
 extern s32 gSoundVolumeFading;
 
-/*
-OSTask D_8004CBC8 = {
-    {
-        M_GFXTASK,
-        OS_TASK_DP_WAIT,
-        NULL,
-        0,
-        NULL,
-        0x1000,
-        NULL,
-        0x800,
-        0x800B85B0,
-        0x400,
-        0x800B89B0,
-        0x801389B0,
-        NULL,
-        0,
-        NULL,
-        0
-    }
-};
-*/
-
 extern RenderContext D_8004CC20;
-/*
-OSTask D_8004CC88 = {
-    {
-        M_GFXTASK,
-        OS_TASK_DP_WAIT,
-        NULL,
-        0,
-        NULL,
-        0x1000,
-        NULL,
-        0x800,
-        NULL,
-        0x400,
-        NULL,
-        NULL,
-        NULL,
-        0,
-        NULL,
-        0
-    }
-};
-*/
 extern BatchInfo D_8004CCC8;
 extern BatchInfo D_8004CD30;
 
@@ -84,6 +38,28 @@ extern s16 D_80080116;
 extern s32 D_8008012C;
 extern DISPCB gPostRenderCallbacks[20];
 extern s32 gPostRenderArgs[20];
+
+/* .data */
+
+s16 D_80049290[] = { 0, 0, 0, 0, 0, 0, 0, 1000, 0, 0, 0, 0, 1000, 0 };
+s32 gFrameCounter = 0;
+Vtx D_800492B0[2][4] = { { { { { 0, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
+                           { { { SCREEN_WIDTH << 2, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
+                           { { { 0, SCREEN_HEIGHT << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
+                           { { { SCREEN_WIDTH << 2, SCREEN_HEIGHT << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } } },
+                         { { { { 0, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
+                           { { { SCREEN_WIDTH << 2, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
+                           { { { 0, SCREEN_HEIGHT << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
+                           { { { SCREEN_WIDTH << 2, SCREEN_HEIGHT << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } } } };
+BatchTriangle D_80049330[] = { { 0, 1, 2, 0 }, { 2, 1, 3, 0 } };
+s32 D_80049338[] = { 0, 0, 0 };
+Vec3s gZeroRotation = { 0, 0, 0 };
+Vec4i D_8004934C = { 0, 0, 0, 0 };
+UnkKappa D_8004935C = { { 255, 255, 255, 255 }, 0, 0, -127, { 0, 0, 0, 255 }, 73, -73, -73 };
+UnkStruct800031FC D_8004937C = { 0, 90, 0, 0 };
+UnkStruct800031FC D_80049384 = { 0, 233, 500, 0 };
+
+/* .bss */
 
 OSTime D_8005BEE0;
 OSTime D_8005BEE8;
@@ -379,7 +355,7 @@ void main_loop(void) {
 #ifdef NON_MATCHING
 void func_80001FB0(s32 arg0, Vtx *arg1) {
     if (arg1 == NULL) {
-        arg1 = &D_800492B0[D_8005BFCE * 4];
+        arg1 = &D_800492B0[D_8005BFCE];
     }
 
     D_8005BF00.header.triMask = 0;
@@ -422,7 +398,7 @@ void func_80002178(s32 arg0, Vtx *vertices) {
     Gfx *gfx = D_8005BF58;
 
     if (vertices == NULL) {
-        vertices = &D_800492B0[D_8005BFCE << 2];
+        vertices = D_800492B0[D_8005BFCE];
     }
 
     D_8005BF00.header.triMask = 0;

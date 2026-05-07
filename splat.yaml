@@ -89,10 +89,21 @@ segments:
       - [0x25980, c, cont]
       - [0x25B50, c, lzhuf]
       - [0x26380, c, lzhuf2] # splitting these files is required to match
+      - [0x26740, c, rsp]
       - [0x26740, c, wad]
       - [0x28C10, c]
+      - [0x2AE80, c, data_aaron]
       - [0x2AE80, c]
       - [0x2B490, c]
+      - [0x2B4C0, c, data_demitron]
+      - [0x2B4C0, c, data_demonica]
+      - [0x2B4C0, c, data_eve]
+      - [0x2B4C0, c, data_gore]
+      - [0x2B4C0, c, data_morphix]
+      - [0x2B4C0, c, data_niiki]
+      - [0x2B4C0, c, data_scarlet]
+      - [0x2B4C0, c, data_sonork]
+      - [0x2B4C0, c, data_zenmuron]
       - [0x2B4C0, c, item]
       - [0x2CF10, c, opencam]
       - [0x305A0, c]
@@ -221,7 +232,7 @@ segments:
       - [0x45950, c, ../ultralib/src/gu/cosf]
       - [0x45AC0, c, ../ultralib/src/gu/sinf]
       - [0x45C80, c, ../ultralib/src/io/si]
-      - [0x45CB0, c, kdebugserver] # kdebugserver maybe?
+      - [0x45CB0, c, kdebugserver]
       - [0x46130, c, ../ultralib/src/os/syncputchars]
       - [0x46260, c, ../ultralib/src/os/destroythread]
       - [0x46360, hasm,  ../ultralib/src/os/setcompare]
@@ -241,31 +252,41 @@ segments:
 
       - [0x49E70, .data, thread]
       - [0x49E80, .data, heap]
-      - [0x49E90, data]
+      - [0x49E90, .data, main]
       - [0x49F90, .data, 41D0]
-      - [0x49FF0, data]
-      - [0x4A000, .data, game_modes]
-      - [0x4A520, data]
+      - [0x49FF0, .data, game_modes]
+      - [0x4A520, .data, kmd]
+      - [0x4A5A0, .data, F530]
+      - [0x4A5B0, .data, 11700]
+      - [0x4A6E0, .data, scroll]
       - [0x4A6F0, .data, 167C0]
       - [0x4A740, .data, 18A10]
       - [0x4A770, .data, main_menu]
       - [0x4A8F0, .data, gmd_pcl]
-      - [0x4A910, data]
+      - [0x4A910, .data, 1C3D0]
       - [0x4A9F0, .data, plyrsel]
       - [0x4B020, .data, audio]
       - [0x4B0C0, .data, 22940]
       - [0x4B0D0, .data, 23D00]
       - [0x4B0F0, .data, input]
-      - [0x4B1C0, data]
-      - [0x4C660, .data, tables]
+      - [0x4B1C0, .data, tables]
       - [0x4D350, .data, cont]
       - [0x4D360, .data, lzhuf]
-      - [0x4D5B0, data]
+      - [0x4D5B0, .data, rsp]
+      - [0x4D990, .data, math]
       - [0x52B40, .data, wad]
       - [0x52B50, .data, 28C10]
-      - [0x52E20, data]
+      - [0x52E20, .data, data_aaron]
       - [0x52F10, .data, 2AE80]
-      - [0x52F30, data]
+      - [0x52F30, .data, data_demitron]
+      - [0x53020, .data, data_demonica]
+      - [0x53180, .data, data_eve]
+      - [0x532B0, .data, data_gore]
+      - [0x533A0, .data, data_morphix]
+      - [0x534B0, .data, data_niiki]
+      - [0x53590, .data, data_scarlet]
+      - [0x53660, .data, data_sonork]
+      - [0x53730, .data, data_zenmuron]
       - [0x53850, .data, item]
       - [0x53860, .data, opencam]
       - [0x538F0, .data, 305A0]
@@ -290,7 +311,7 @@ segments:
       - [0x54660, .data, ../ultralib/src/audio/drvrnew]
       - [0x547F0, .data, ../ultralib/src/audio/env]
       - [0x54930, .data, ../ultralib/src/io/siacs]
-      - [0x54940, data] # zeroes
+      - [0x54940, .data, kdebugserver]
       - [0x54950, .data, ../ultralib/src/os/syncputchars]
       - [0x54960, .data, ../ultralib/src/vimodes/vimodentsclan1]
       - [0x549B0, .data, ../ultralib/src/vimodes/vimodempallan1]
@@ -342,6 +363,8 @@ segments:
       - { type: bss, vram: 0x8005BED0, name: bss1 }
       - { type: .bss, vram: 0x8005BEE0, name: main }
       - { type: bss, vram: 0x8005BF00, name: bss2 }
+      - { type: .bss, vram: 0x800812A0, name: math }
+      - { type: bss, vram: 0x800813E0, name: bss2a }
       - { type: .bss, vram: 0x80081460, name: 18A10 }
       - { type: .bss, vram: 0x800814E0, name: gmd_pcl }
       - { type: .bss, vram: 0x80081660, name: plyrsel }
@@ -351,27 +374,26 @@ segments:
       - { type: bss, vram: 0x800AA450, name: bss3 }
       - { type: .bss, vram: 0x800B63A0, name: cont }
       - { type: .bss, vram: 0x800B6400, name: lzhuf }
-      - { type: bss, vram: 0x800B85B0, name: bss4 }
+      - { type: .bss, vram: 0x800B85B0, name: rsp }
       - { type: .bss, vram: 0x80138A00, name: wad }
       - { type: .bss, vram: 0x8013C230, name: 28C10 }
       - { type: .bss, vram: 0x8013C2B0, name: item }
       - { type: .bss, vram: 0x8013C2E0, name: opencam }
       - { type: .bss, vram: 0x8013C3A0, name: 305A0 }
       - { type: .bss, vram: 0x8013C3D0, name: practice }
-      - { type: bss, vram: 0x8013C4A0, name: bss5 }
-      - { type: .bss, vram: 0x8013C4E0, name: model }
+      - { type: .bss, vram: 0x8013C4A0, name: model }
       - { type: .bss, vram: 0x8013C550, name: task }
       - { type: .bss, vram: 0x8013C560, name: camera }
       - { type: .bss, vram: 0x8013C840, name: ../ultralib/src/os/initialize }
-      - { type: .bss, vram: 0x8013C850, name: ../ultralib/src/io/vimgr,  }
-      - { type: .bss, vram: 0x8013DA60, name: ../ultralib/src/io/pimgr,  }
-      - { type: .bss, vram: 0x8013EC30, name: ../ultralib/src/os/seteventmesg,  }
-      - { type: .bss, vram: 0x8013ECB0, name: ../ultralib/src/io/sptask,  }
-      - { type: .bss, vram: 0x8013ECF0, name: ../ultralib/src/io/controller,  }
-      - { type: .bss, vram: 0x8013ED80, name: ../ultralib/src/os/timerintr,  }
+      - { type: .bss, vram: 0x8013C850, name: ../ultralib/src/io/vimgr }
+      - { type: .bss, vram: 0x8013DA60, name: ../ultralib/src/io/pimgr }
+      - { type: .bss, vram: 0x8013EC30, name: ../ultralib/src/os/seteventmesg }
+      - { type: .bss, vram: 0x8013ECB0, name: ../ultralib/src/io/sptask }
+      - { type: .bss, vram: 0x8013ECF0, name: ../ultralib/src/io/controller }
+      - { type: .bss, vram: 0x8013ED80, name: ../ultralib/src/os/timerintr }
       - { type: .bss, vram: 0x8013EDC0, name: ../ultralib/src/io/piacs }
       - { type: .bss, vram: 0x8013EDE0, name: ../ultralib/src/io/siacs }
-      - { type: bss, vram: 0x8013EE00, name: bss6 }
+      - { type: .bss, vram: 0x8013EE00, name: kdebugserver }
       
 
   - type: bin

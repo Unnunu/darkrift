@@ -46,7 +46,7 @@ typedef struct RenderContext {
     /* 0x02 */ char pad_02[6];
     /* 0x08 */ Gfx unk_08;
     /* 0x10 */ s32 segmentTable[16];
-    /* 0x50 */ char unk_50[0x10];
+    /* 0x50 */ Vp unk_50;
     /* 0x60 */ Gfx *unk_60;
 } RenderContext; // size = 0x64
 
@@ -66,11 +66,18 @@ typedef struct BatchInfo {
     /* 0x18 */ Mtx transform;
 } BatchInfo; // size = 0x58
 
+typedef struct BatchTriangle {
+    /* 0x00 */ s8 vi0;
+    /* 0x01 */ s8 vi1;
+    /* 0x02 */ s8 vi2;
+    /* 0x03 */ s8 d;
+} BatchTriangle; // size = 4
+
 typedef struct Batch {
     /* 0x00 */ RenderContext *context;
     /* 0x04 */ BatchInfo *info;
     /* 0x08 */ Vtx *vertices;
-    /* 0x0C */ u16 *triangles;
+    /* 0x0C */ BatchTriangle *triangles;
 } Batch; // size = 0x10
 
 typedef struct DisplayData {
@@ -86,16 +93,11 @@ typedef struct DisplayData {
 } DisplayData; // size = 0x12088
 
 typedef struct UnkKappa {
-    /* 0x00 */ u8 unk_0;
-    /* 0x01 */ u8 unk_1;
-    /* 0x02 */ u8 unk_2;
-    /* 0x03 */ u8 unk_3;
+    /* 0x00 */ ColorRGBA unk_0;
     /* 0x04 */ s32 unk_4;
     /* 0x08 */ s32 unk_8;
     /* 0x0C */ s32 unk_C;
-    /* 0x10 */ u8 unk_10;
-    /* 0x11 */ u8 unk_11;
-    /* 0x12 */ u8 unk_12;
+    /* 0x10 */ ColorRGBA unk_10;
     /* 0x14 */ s32 unk_14;
     /* 0x18 */ s32 unk_18;
     /* 0x1C */ s32 unk_1C;
@@ -103,8 +105,8 @@ typedef struct UnkKappa {
 
 typedef struct GameMode {
     /* 0x00 */ void (*fn_run)(void);
-    /* 0x04 */ s32 unk_04;
-    /* 0x04 */ s32 unk_08;
+    /* 0x04 */ s16 unk_04;
+    /* 0x08 */ s32 unk_08;
     /* 0x0C */ u8 unk_0C;
     /* 0x0D */ u8 unk_0D;
     /* 0x0E */ u8 unk_0E;
@@ -116,10 +118,7 @@ typedef struct GameMode {
     /* 0x14 */ u16 unk_14;
     /* 0x16 */ u16 unk_16;
     /* 0x18 */ UnkKappa *unk_18;
-    /* 0x1C */ u8 unk_1C;
-    /* 0x1D */ u8 unk_1D;
-    /* 0x1E */ u8 unk_1E;
-    /* 0x1F */ u8 unk_1F;
+    /* 0x1C */ ColorRGBA unk_1C;
 } GameMode; // size = 0x20
 
 typedef struct PlayerInput {
@@ -582,7 +581,7 @@ typedef struct PlayerSub6Sub2 {
     /* 0x0F8 */ s32 unk_F8;
     /* 0x0FC */ s32 unk_FC;
     /* 0x100 */ s32 unk_100;
-    /* 0x104 */ u16 *unk_104;
+    /* 0x104 */ BatchTriangle *unk_104;
     /* 0x108 */ u8 unk_108;
     /* 0x10C */ s32 unk_10C;
 } PlayerSub6Sub2; // size = 0x110
@@ -874,8 +873,8 @@ typedef struct Unk8000C3CCArg3 {
     /* 0x00 */ Gfx combineMode;
     /* 0x08 */ s32 renderMode;
     /* 0x0C */ s32 triMask;
-    /* 0x0C */ ColorRGBA primColor;
-    /* 0x0C */ s32 flags;
+    /* 0x10 */ ColorRGBA primColor;
+    /* 0x14 */ s32 flags;
 } Unk8000C3CCArg3;
 
 typedef struct UnkTauSub {
@@ -930,5 +929,17 @@ typedef struct GlobalObjD {
     /* 0x2C */ struct GlobalObjD *unk_2C;
     /* 0x30 */ struct GlobalObjD *unk_30;
 } GlobalObjD; // size = 0x34
+
+typedef struct UnkQwe {
+    /* 0x00 */ s16 unk_00;
+    /* 0x04 */ char *unk_04;
+} UnkQwe; // size = 8
+
+typedef struct UnkStruct800031FC {
+    /* 0x00 */ s16 unk_00;
+    /* 0x02 */ s16 unk_02;
+    /* 0x04 */ s16 unk_04;
+    /* 0x06 */ s16 unk_06;
+} UnkStruct800031FC; // size = 0x08
 
 #endif

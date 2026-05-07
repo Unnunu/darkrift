@@ -2,11 +2,12 @@
 #include "PR/rcp.h"
 #include "PR/rdb.h"
 
-extern OSThread __osThreadSave;
-extern s32 D_80053D40;
-extern s32 D_80053D44;
-extern s32 D_80053D48;
-extern u8 D_8013EE00[];
+s32 D_80053D40 = 0;
+s32 D_80053D44 = 0;
+s32 D_80053D48 = 0;
+
+u8 D_8013EE00[256];
+OSThread __osThreadSave;
 
 void u32_to_string(u32 i, u8 *str) {
     str[0] = (i >> 24) & 0xFF;
