@@ -383,21 +383,21 @@ void func_8001A334(Object *obj) {
     }
 }
 
-#ifdef NON_MATCHING
 void func_8001A3EC(Object *obj) {
     D_8005BFC0 |= GAME_FLAG_MODE_DONE;
 
     switch (gCurrentGameMode) {
+        case GAME_MODE_36:
+            gNextGameMode = GAME_MODE_LOGO;
+            break;
         case GAME_MODE_BATTLE_DEMITRON:
             gNextGameMode = GAME_MODE_36;
             break;
         case GAME_MODE_35:
             gNextGameMode = GAME_MODE_31;
             break;
-        case GAME_MODE_36:
-            gNextGameMode = GAME_MODE_LOGO;
-            break;
         default:
+            if (1) {}
             gNextGameMode = GAME_MODE_36;
             break;
     }
@@ -405,10 +405,6 @@ void func_8001A3EC(Object *obj) {
     obj->flags |= OBJ_FLAG_DELETE;
     func_80014CB4(D_80081254);
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/main_menu/func_8001A3EC.s")
-void func_8001A3EC(Object *obj);
-#endif
 
 void func_8001A490(Object *obj) {
     Object *v0 = obj->varObj[0];
