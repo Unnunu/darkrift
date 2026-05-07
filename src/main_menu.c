@@ -474,7 +474,6 @@ s16 D_80049CA8[] = { 175, 180, 190, 200, 210, 215, 220, 225, 230, 240, 250, 260,
 SoundSequence D_80049CC8[] = { { 172, 10 }, { 190, 11 }, { 204, 10 }, { 220, 11 }, { 264, 14 }, { 0, 0 } };
 SoundSequence D_80049CE0[] = { { 214, 21 }, { 250, 20 }, { 208, 15 }, { 0, 0 } };
 
-#ifdef NON_MATCHING
 void func_8001A674(Object *obj) {
     u8 s3 = gBattleSettings[PLAYER_2].isCpu;
     Player *s2 = &gPlayers[s3];
@@ -498,10 +497,6 @@ void func_8001A674(Object *obj) {
         i++;
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/main_menu/func_8001A674.s")
-void func_8001A674(Object *obj);
-#endif
 
 void func_8001A7DC(Object *obj) {
     u8 s4 = gBattleSettings[PLAYER_2].isCpu;
