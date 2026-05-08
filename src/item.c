@@ -435,7 +435,6 @@ Object *create_ui_element(Vec4i *pos, UIElement *def, s32 context) {
     return obj;
 }
 
-#ifdef NON_MATCHING
 Object *create_model_instance_with_properties(Vec4i *pos, char *name, K2Def *properties, u32 context) {
     Object *obj;
     char modelName[20];
@@ -471,8 +470,7 @@ Object *create_model_instance_with_properties(Vec4i *pos, char *name, K2Def *pro
     for (i = 0; i < numNodes; i++) {
         memcpy(&modInst->renderBatches[i].header, model->batchInfos[i], sizeof(BatchHeader));
         memcpy(&modInst->renderBatches[30 + i].header, model->batchInfos[i], sizeof(BatchHeader));
-        modInst->unk_1F50[i] = FALSE;
-        modInst->unk_1F6E[i] = FALSE;
+        modInst->unk_1F6E[i] = modInst->unk_1F50[i] = FALSE;
     }
 
     if (model->nodeHierarchy != NULL) {
@@ -495,10 +493,6 @@ Object *create_model_instance_with_properties(Vec4i *pos, char *name, K2Def *pro
     modInst->unk_A1C = modInst->unk_A20 = 0;
     return obj;
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/item/create_model_instance_with_properties.s")
-Object *create_model_instance_with_properties(Vec4i *arg0, char *arg1, K2Def *arg2, u32 arg3);
-#endif
 
 Object *create_3dsprite_with_properties(Vec4i *pos, UnkK2Def *properties, s32 context) {
     Object *obj;
