@@ -112,6 +112,14 @@ __osPreviousThread:
 #endif
 #endif
 
+#ifdef LIBULTRA_DARK_RIFT
+D_800539A4:
+    .word 0
+
+D_800539A8:
+    .word 0
+#endif
+
 .text
 
 /**
@@ -218,7 +226,7 @@ LEAF(__osException)
     beqz    t2, notIP7
 
     li      t1, 1
-    sw      t1, UNK_SYMBOL_EXCEPTASM_1
+    sw      t1, D_800539A4
     b       3f
 #endif
 
@@ -232,7 +240,7 @@ LEAF(__osException)
     andi    t2, t1, CAUSE_IP7
     beqz    t2, notIP7
     li      t1, 1
-    sw      t1, UNK_SYMBOL_EXCEPTASM_1
+    sw      t1, D_800539A4
     b       3f
     /* clear rdb write interrupt */
     la      t1, RDB_WRITE_INTR_REG
@@ -375,7 +383,7 @@ notIP7:
     beqz    t2, savecontext
 
     li      t1, 1
-    sw      t1, UNK_SYMBOL_EXCEPTASM_2
+    sw      t1, D_800539A8
     b       3f
 #endif
 #ifndef _FINALROM
@@ -430,8 +438,8 @@ skip_kmc_mode:
 
 savecontext:
 #ifdef LIBULTRA_DARK_RIFT
-    sw      zero, UNK_SYMBOL_EXCEPTASM_1
-    sw      zero, UNK_SYMBOL_EXCEPTASM_2
+    sw      zero, D_800539A4
+    sw      zero, D_800539A8
 #endif
     /* Save the context of the previously running thread to be restored when it resumes */
     move    t0, k0
@@ -566,7 +574,7 @@ endrcp:
 .set reorder
 
 #ifdef LIBULTRA_DARK_RIFT
-    lw      t1, UNK_SYMBOL_EXCEPTASM_1
+    lw      t1, D_800539A4
     beqz    t1, 7f
 
     la      t2, RDB_WRITE_INTR_REG
@@ -576,20 +584,20 @@ endrcp:
     jal     kdebugserver
     b       __osDispatchThreadSave
 7:
-    lw      t1, UNK_SYMBOL_EXCEPTASM_2
+    lw      t1, D_800539A8
     beqz    t1, no_rdb_mesg
 
     la      t2, RDB_READ_INTR_REG
     sw      zero, (t2)
-    lw      t1, UNK_SYMBOL_EXCEPTASM_3
+    lw      t1, __osRdbSendMessage
     beqz    t1, 8f
 
     li      a0, 0x78
     jal     send_mesg
 8:
-    lw      t1, UNK_SYMBOL_EXCEPTASM_4
+    lw      t1, __osRdbWriteOK
     addi    t1, t1, 1
-    sw      t1, UNK_SYMBOL_EXCEPTASM_4
+    sw      t1, __osRdbWriteOK
     b		__osDispatchThreadSave    
 #endif
 

@@ -36,16 +36,9 @@ options:
 
   symbol_addrs_path:
     - symbol_addrs.txt
-  reloc_addrs_path:
-    - reloc_addrs.txt
-
-  # undefined_funcs_auto_path: undefined_funcs_auto.txt
-  # undefined_syms_auto_path: undefined_syms_auto.txt
 
   extensions_path: tools/splat_ext
 
-  # string_encoding: ASCII
-  # data_string_encoding: ASCII
   rodata_string_guesser_level: 2
   data_string_guesser_level: 2
   # libultra_symbols: True
@@ -118,7 +111,7 @@ segments:
       - [0x3A7F0, c, ../ultralib/src/os/startthread]
       - [0x3A940, c, ../ultralib/src/io/vimgr]
       - [0x3ACA0, c, ../ultralib/src/io/vitbl]
-      - [0x3ACA0, pad]
+      - [0x3ACA0, hasm, ../ultralib/src/os/parameters]
       - [0x3ACE0, c, ../ultralib/src/io/visetmode]
       - [0x3AD50, c, ../ultralib/src/io/visetspecial]
       - [0x3AF10, c, ../ultralib/src/io/viblack]

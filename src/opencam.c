@@ -1155,7 +1155,7 @@ void func_8002EB2C(Object *obj) {
 
     D_80081428 = D_8013C828;
 
-    if (*gCamera->modInst->animations == 0 && !(gPlayers[PLAYER_1].flags & PLAYER_FLAG_400000) &&
+    if (*gCamera->modInst->animations == NULL && !(gPlayers[PLAYER_1].flags & PLAYER_FLAG_400000) &&
             !(gPlayers[PLAYER_2].flags & PLAYER_FLAG_400000) ||
         D_8013C250 != 0) {
         func_8002D1A8(obj);
