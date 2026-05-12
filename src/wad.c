@@ -310,11 +310,11 @@ void asset_open_folder(char *path, s32 context) {
     assets_clear_unused();
 }
 
-void func_8002630C(s32 arg0) {
+void func_8002630C(s32 context) {
     u32 i;
 
     for (i = 0; i < gNumAssets; i++) {
-        if (arg0 == gAssets[i].context) {
+        if (context == gAssets[i].context) {
             asset_free(gAssets + i);
         }
     }
@@ -640,7 +640,6 @@ void func_80027004(void *arg0, void *arg1, s32 arg2) {
     }
 }
 
-#ifdef NON_MATCHING
 void asset_load_sp2(Asset *asset) {
     AssetSP2 *header;
     s32 i;
@@ -648,31 +647,29 @@ void asset_load_sp2(Asset *asset) {
     u8 *raster;
     u16 *palette;
     TextureAsset *textures[4];
-    AssetSP2Sub2 *tmp;
+    TextureAsset **new_var;
     s32 unused[2];
 
     asset_read(asset);
+    new_var = textures; // required to match
     header = asset->data;
-    entry = (AssetSP2Sub2 *) ((u32) header->sprites + (u32) header);
-    header->sprites = entry;
+    entry = header->sprites = (AssetSP2Sub2 *) ((u32) header->sprites + (u32) header);
+    if ((asset->data && asset->data) != 0) {} // required to match
     for (i = 0; i < 4 && (header->texture_name[i][0]) != '\0'; i++) {
         textures[i] = gAssets[asset_find(header->texture_name[i], asset->context)].data;
 
+        palette = (u16 *) &textures[i]->data[new_var[i]->height * new_var[i]->width];
         raster = textures[i]->data;
-        palette = (u16 *) &textures[i]->data[textures[i]->height * textures[i]->width];
         palette[raster[0]] = 0;
     }
 
     for (i = 0; i < header->numSprites; i++, entry++) {
-        entry->parts = entry->parts + (s32) header;
-        entry->texture = textures[entry->tex_index];
+        entry->parts = (AssetSP2Sub3 *) ((s32) entry->parts + (s32) header);
+        entry->texture = new_var[entry->tex_index];
     }
 
     heap_set_move_callback(asset->memory_slot, func_80027004, 0);
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/wad/asset_load_sp2.s")
-#endif
 
 void func_800271C0(Asset *asset) {
     AssetUnkHeader *unkHeader;

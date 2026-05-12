@@ -130,7 +130,7 @@ typedef struct PlayerInput {
     /* 0x09 */ u8 mirrored;
     /* 0x0A */ u8 enabled;
     /* 0x0B */ u8 connected;
-    /* 0x0C */ u8 unk_0C;
+    /* 0x0C */ u8 remapped;
     /* 0x0D */ u8 unk_0D;
 } PlayerInput;
 
@@ -374,10 +374,10 @@ typedef struct ModelInstance {
 } ModelInstance; // size = 0x1F90
 
 typedef struct AssetSP2Sub3 {
-    /* 0x00 */ s32 ult;
-    /* 0x04 */ u32 uls;
-    /* 0x08 */ u32 lrs;
-    /* 0x0C */ s32 lrt;
+    /* 0x00 */ s32 topT;
+    /* 0x04 */ u32 leftS;
+    /* 0x08 */ u32 rightS;
+    /* 0x0C */ s32 bottomT;
     /* 0x10 */ s32 offsetX;
     /* 0x14 */ s32 offsetY;
 } AssetSP2Sub3; // size ?

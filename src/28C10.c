@@ -377,14 +377,14 @@ void func_80028AE4(Object *obj) {
         }
 
         D_80051F6C += a2;
-        D_8013C234->uls += a2;
+        D_8013C234->leftS += a2;
         D_8013C234->offsetX += a2;
-        if (D_8013C234->uls >= D_8013C234->lrs) {
-            D_8013C234->uls = D_8013C234->lrs;
+        if (D_8013C234->leftS >= D_8013C234->rightS) {
+            D_8013C234->leftS = D_8013C234->rightS;
         }
 
         D_80051F78[0][1].v.ob[0] = D_80051F78[1][1].v.ob[0] = D_80051F78[0][3].v.ob[0] = D_80051F78[1][3].v.ob[0] =
-            (35 + D_8013C234->uls) << 2;
+            (35 + D_8013C234->leftS) << 2;
         D_80051F78[0][0].v.ob[0] = D_80051F78[1][0].v.ob[0] = D_80051F78[0][2].v.ob[0] = D_80051F78[1][2].v.ob[0] =
             D_80051F78[0][1].v.ob[0] - 4 * D_80051F6C;
 
@@ -412,13 +412,13 @@ void func_80028AE4(Object *obj) {
         // clang-format on
 
         D_80051F70 += a2;
-        D_8013C238->lrs -= a2;
-        if (D_8013C238->uls >= D_8013C238->lrs) {
-            D_8013C238->uls = D_8013C238->lrs;
+        D_8013C238->rightS -= a2;
+        if (D_8013C238->leftS >= D_8013C238->rightS) {
+            D_8013C238->leftS = D_8013C238->rightS;
         }
 
         D_80051FF8[0][0].v.ob[0] = D_80051FF8[1][0].v.ob[0] = D_80051FF8[0][2].v.ob[0] = D_80051FF8[1][2].v.ob[0] =
-            (217 + D_8013C238->lrs) << 2;
+            (217 + D_8013C238->rightS) << 2;
         D_80051FF8[0][1].v.ob[0] = D_80051FF8[1][1].v.ob[0] = D_80051FF8[0][3].v.ob[0] = D_80051FF8[1][3].v.ob[0] =
             D_80051FF8[0][0].v.ob[0] + 4 * D_80051F70;
 
@@ -696,13 +696,13 @@ void func_80029630(void) {
     v0 = create_ui_element(&sp5C, &sp120, CONTEXT_ABAB);
     v0->frameIndex = 15;
     D_8013C234 = v0->sprite_map->sprites[15].parts;
-    D_8013C234->offsetX = D_8013C234->offsetX - D_8013C234->uls + D_8013C234->lrs - 88;
-    D_8013C234->uls = D_8013C234->lrs - 88;
+    D_8013C234->offsetX = D_8013C234->offsetX - D_8013C234->leftS + D_8013C234->rightS - 88;
+    D_8013C234->leftS = D_8013C234->rightS - 88;
 
     v0 = create_ui_element(&sp4C, &sp120, CONTEXT_ABAB);
     v0->frameIndex = 14;
     D_8013C238 = v0->sprite_map->sprites[14].parts;
-    D_8013C238->lrs = D_8013C238->uls + 80;
+    D_8013C238->rightS = D_8013C238->leftS + 80;
 
     v0 = create_ui_element(&D_8004A5D0[gBattleSettings[PLAYER_1].characterId], &sp120, CONTEXT_ABAB);
     if (gBattleSettings[PLAYER_1].characterId < CHARACTER_5) {

@@ -30,7 +30,7 @@ s32 cont_init(s32 maxControllers) {
         gContData[i] = &gDefaultContData;
     }
 
-    gPlayerInput[0].connected = gPlayerInput[1].connected = FALSE;
+    gPlayerInput[PLAYER_1].connected = gPlayerInput[PLAYER_2].connected = FALSE;
 
     for (i = 0; i < 2; i++, gNumControllers++) {
         if ((bitpattern & (1 << i)) && !(gContStatus[i].errno & CONT_NO_RESPONSE_ERROR)) {

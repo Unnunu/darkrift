@@ -43,24 +43,25 @@ enum GameModes {
 };
 
 // TODO: make enum
+enum Buttons {
+    INP_L = 0x0001,
+    INP_A = 0x0002,
+    INP_R = 0x0004,
+    INP_B = 0x0008,
 
-#define INP_L 0x0001
-#define INP_A 0x0002
-#define INP_R 0x0004
-#define INP_B 0x0008
+    INP_CUP = 0x0010,
+    INP_CRIGHT = 0x0020,
+    INP_CDOWN = 0x0040,
+    INP_CLEFT = 0x0080,
 
-#define INP_CUP 0x0010
-#define INP_CRIGHT 0x0020
-#define INP_CDOWN 0x0040
-#define INP_CLEFT 0x0080
+    INP_ZTRIG = 0x0100,
+    INP_START = 0x0800,
 
-#define INP_ZTRIG 0x0100
-#define INP_START 0x0800
-
-#define INP_UP 0x1000
-#define INP_RIGHT 0x2000
-#define INP_DOWN 0x4000
-#define INP_LEFT 0x8000
+    INP_UP = 0x1000,
+    INP_RIGHT = 0x2000,
+    INP_DOWN = 0x4000,
+    INP_LEFT = 0x8000
+};
 
 #define INP_DIRECTION (INP_UP | INP_RIGHT | INP_DOWN | INP_LEFT)
 #define INP_MASK_FF (INP_CUP | INP_CRIGHT | INP_CDOWN | INP_CLEFT | INP_A | INP_B | INP_L | INP_R)

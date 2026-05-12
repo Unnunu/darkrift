@@ -326,10 +326,10 @@ void func_80015724(Object *obj) {
     }
 
     for (i = 0; i < numParts; i++) {
-        ult = part->ult;
-        uls = part->uls;
-        lrs = part->lrs;
-        lrt = part->lrt;
+        ult = part->topT;
+        uls = part->leftS;
+        lrs = part->rightS;
+        lrt = part->bottomT;
         x = obj->pos.x + part->offsetX;
         y = obj->pos.y + part->offsetY;
 

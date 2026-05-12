@@ -305,13 +305,15 @@ void unused_func_80001C6C(void) {
     }
     gIsPaused = FALSE;
 
-    while (gPlayerInput[0].buttons == (INP_START | INP_ZTRIG) || gPlayerInput[1].buttons == (INP_START | INP_ZTRIG)) {
+    while (gPlayerInput[PLAYER_1].buttons == (INP_START | INP_ZTRIG) ||
+           gPlayerInput[PLAYER_2].buttons == (INP_START | INP_ZTRIG)) {
         render_frame();
     }
 
     gNextGameMode = GAME_MODE_MAIN_MENU;
 
-    while (gPlayerInput[0].buttons == (INP_START | INP_ZTRIG) || gPlayerInput[1].buttons == (INP_START | INP_ZTRIG)) {
+    while (gPlayerInput[PLAYER_1].buttons == (INP_START | INP_ZTRIG) ||
+           gPlayerInput[PLAYER_2].buttons == (INP_START | INP_ZTRIG)) {
         render_frame();
     }
 
@@ -324,7 +326,7 @@ void main_loop(void) {
 
     while (!(gGlobalFlags & GAME_FLAG_MODE_DONE) || !(gGlobalFlags & GAME_FLAG_1000)) {
         if (!(gGlobalFlags & GAME_FLAG_BATTLE_FINISHED) && !(gGlobalFlags & GAME_FLAG_4) &&
-            gPlayerInput[0].buttons == INP_START && gPlayerInput[PLAYER_1].enabled &&
+            gPlayerInput[PLAYER_1].buttons == INP_START && gPlayerInput[PLAYER_1].enabled &&
             gPlayerInput[PLAYER_1].accumulated) {
             handle_start_button(PLAYER_1);
         } else if (!(gGlobalFlags & GAME_FLAG_BATTLE_FINISHED) && !(gGlobalFlags & GAME_FLAG_4) &&

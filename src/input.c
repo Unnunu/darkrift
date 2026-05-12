@@ -3,21 +3,21 @@
 // R_CBUTTONS, L_CBUTTONS, D_CBUTTONS, U_CBUTTONS
 s32 D_8004A4F0[] = {
     0,
-    0x20, // R_CBUTTONS
-    0x80, // L_CBUTTONS
-    0xA0, // R_CBUTTONS + L_CBUTTONS
-    0x40, // D_CBUTTONS
-    0x60, // D_CBUTTONS + R_CBUTTONS
-    0xC0, // D_CBUTTONS + L_CBUTTONS
-    0xE0, // D_CBUTTONS + L_CBUTTONS + R_CBUTTONS
-    0x10, // U_CBUTTONS
-    0x30, // U_CBUTTONS + R_CBUTTONS
-    0x90, // U_CBUTTONS + L_CBUTTONS
-    0xB0, // U_CBUTTONS + L_CBUTTONS + R_CBUTTONS
-    0x50, // U_CBUTTONS + D_CBUTTONS
-    0x70, // U_CBUTTONS + D_CBUTTONS + R_CBUTTONS
-    0xD0, // U_CBUTTONS + D_CBUTTONS + L_CBUTTONS
-    0xF0  // U_CBUTTONS + D_CBUTTONS + L_CBUTTONS + R_CBUTTONS
+    INP_CRIGHT,                                  // R_CBUTTONS
+    INP_CLEFT,                                   // L_CBUTTONS
+    INP_CRIGHT | INP_CLEFT,                      // R_CBUTTONS + L_CBUTTONS
+    INP_CDOWN,                                   // D_CBUTTONS
+    INP_CDOWN | INP_CRIGHT,                      // D_CBUTTONS + R_CBUTTONS
+    INP_CDOWN | INP_CLEFT,                       // D_CBUTTONS + L_CBUTTONS
+    INP_CDOWN | INP_CLEFT | INP_CRIGHT,          // D_CBUTTONS + L_CBUTTONS + R_CBUTTONS
+    INP_CUP,                                     // U_CBUTTONS
+    INP_CUP | INP_CRIGHT,                        // U_CBUTTONS + R_CBUTTONS
+    INP_CUP | INP_CLEFT,                         // U_CBUTTONS + L_CBUTTONS
+    INP_CUP | INP_CRIGHT | INP_CLEFT,            // U_CBUTTONS + L_CBUTTONS + R_CBUTTONS
+    INP_CUP | INP_CDOWN,                         // U_CBUTTONS + D_CBUTTONS
+    INP_CUP | INP_CDOWN | INP_CRIGHT,            // U_CBUTTONS + D_CBUTTONS + R_CBUTTONS
+    INP_CUP | INP_CDOWN | INP_CLEFT,             // U_CBUTTONS + D_CBUTTONS + L_CBUTTONS
+    INP_CUP | INP_CDOWN | INP_CRIGHT | INP_CLEFT // U_CBUTTONS + D_CBUTTONS + L_CBUTTONS + R_CBUTTONS
 };
 
 // R_TRIG, L_TRIG
@@ -99,43 +99,43 @@ void func_80024A38(u16 contId) {
     }
 }
 
-#ifdef NON_EQUIVALENT
+#ifdef NON_MATCHING
 void func_80024A90(s16 contId) {
-    OSContPad *contData;
+    s32 temp;
     u16 v1;
     u16 buttons;
     u16 v0;
-    PlayerInput *ua;
 
-    contData = gContData[contId];
-    v1 = contData->button;
-
+    v1 = gContData[contId]->button;
     buttons = D_8004A4F0[v1 & 0xF];
-    buttons |= D_8004A530[(v1 >> 4) & 0xF] | D_8004A554[(v1 >> 8) & 0xF] | D_8004A580[(v1 >> 12) & 0xF];
+    buttons |= D_8004A530[(v1 >> 4) & 0xF];
+    buttons |= D_8004A554[(v1 >> 8) & 0xF];
+    buttons |= D_8004A580[(v1 >> 12) & 0xF];
 
-    if (!gPlayerInput[contId].unk_0D && !(buttons & 0xF000)) {
-        if (contData->stick_x > 40) {
+    if (!(gPlayerInput + contId)->unk_0D && !(buttons & INP_DIRECTION)) {
+        if (gContData[contId]->stick_x > 40) {
             buttons |= INP_RIGHT;
-        } else if (contData->stick_x < -40) {
+        } else if (gContData[contId]->stick_x < -40) {
             buttons |= INP_LEFT;
         }
 
-        if (contData->stick_y > 40) {
+        if (gContData[contId]->stick_y > 40) {
             buttons |= INP_UP;
-        } else if (contData->stick_y < -40) {
+        } else if (gContData[contId]->stick_y < -40) {
             buttons |= INP_DOWN;
         }
     }
 
-    gPlayerInput[contId].raw_buttons = buttons;
+    (gPlayerInput + contId)->raw_buttons = buttons;
 
-    if (gPlayerInput[contId].unk_0C) {
+    if ((gPlayerInput + contId)->remapped) {
         buttons = func_800249B0(contId, buttons);
     }
 
     if (gPlayerInput[contId].mirrored) {
         v0 = buttons;
-        buttons &= 0x5FFF;
+        buttons = buttons & 0x5FFF;
+        if (buttons) {}
         if (v0 & INP_LEFT) {
             buttons |= INP_RIGHT;
         }
@@ -147,18 +147,22 @@ void func_80024A90(s16 contId) {
     if (!gPlayerInput[contId].accumulated) {
         gPlayerInput[contId].held_buttons = gPlayerInput[contId].prev_buttons;
     } else {
-        gPlayerInput[contId].held_buttons &= gPlayerInput[contId].prev_buttons;
+        gPlayerInput[contId].held_buttons = gPlayerInput[contId].held_buttons & gPlayerInput[contId].prev_buttons;
     }
 
-    gPlayerInput[contId].buttons =
-        buttons & (~gPlayerInput[contId].prev_buttons | ~0x9FF | ~gPlayerInput[contId].held_buttons);
+    temp = ~(INP_START | INP_ZTRIG | INP_CLEFT | INP_CDOWN | INP_CUP | INP_B | INP_R | INP_L);
+    temp |= (u16) ~gPlayerInput[contId].prev_buttons;
+    temp |= (u16) ~gPlayerInput[contId].held_buttons;
 
-    if (buttons != gPlayerInput[contId].prev_buttons || (buttons & 0xE020) && !(buttons & 0xD0)) {
+    gPlayerInput[contId].buttons = temp & buttons;
+    v0 = gPlayerInput[contId].prev_buttons;
+    if (buttons != v0 ||
+        (buttons & (INP_CRIGHT | INP_LEFT | INP_DOWN | INP_RIGHT)) && !(buttons & (INP_CLEFT | INP_CDOWN | INP_CUP))) {
         gPlayerInput[contId].accumulated = TRUE;
     }
 
     gPlayerInput[contId].prev_buttons = buttons;
-}
+    do { } while (0); }
 #else
 #pragma GLOBAL_ASM("asm/nonmatchings/input/func_80024A90.s")
 void func_80024A90(s16 arg0);
@@ -182,11 +186,11 @@ void input_update(void) {
 }
 
 void func_80024D2C(void) {
-    gPlayerInput[0].accumulated = gPlayerInput[1].accumulated = FALSE;
-    gPlayerInput[0].buttons = gPlayerInput[1].buttons = 0;
-    gPlayerInput[0].mirrored = gPlayerInput[1].mirrored = FALSE;
-    gPlayerInput[1].enabled = gPlayerInput[0].enabled = TRUE;
-    gPlayerInput[1].prev_buttons = gPlayerInput[0].prev_buttons = 0;
-    gPlayerInput[1].unk_0C = gPlayerInput[0].unk_0C = TRUE;
-    gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = FALSE;
+    gPlayerInput[PLAYER_1].accumulated = gPlayerInput[PLAYER_2].accumulated = FALSE;
+    gPlayerInput[PLAYER_1].buttons = gPlayerInput[PLAYER_2].buttons = 0;
+    gPlayerInput[PLAYER_1].mirrored = gPlayerInput[PLAYER_2].mirrored = FALSE;
+    gPlayerInput[PLAYER_2].enabled = gPlayerInput[PLAYER_1].enabled = TRUE;
+    gPlayerInput[PLAYER_2].prev_buttons = gPlayerInput[PLAYER_1].prev_buttons = 0;
+    gPlayerInput[PLAYER_2].remapped = gPlayerInput[PLAYER_1].remapped = TRUE;
+    gPlayerInput[PLAYER_1].unk_0D = gPlayerInput[PLAYER_2].unk_0D = FALSE;
 }

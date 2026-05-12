@@ -265,9 +265,9 @@ void run_battle_gore_mode(void) {
 }
 
 void func_800071F0(Object *obj) {
-    if (gPlayerInput[1].prev_buttons & INP_CLEFT) {
+    if (gPlayerInput[PLAYER_2].prev_buttons & INP_CLEFT) {
         obj->rotation.y -= 10;
-    } else if (gPlayerInput[1].prev_buttons & INP_CRIGHT) {
+    } else if (gPlayerInput[PLAYER_2].prev_buttons & INP_CRIGHT) {
         obj->rotation.y += 10;
     }
     func_80037E28(obj);
@@ -1358,7 +1358,7 @@ void run_intro_mode(void) {
     asset_open_folder("/title/tit_int", CONTEXT_2000);
     asset_open_folder("/plyrsel/plyrsel", CONTEXT_EEFF);
     v0 = create_worker(func_80019F40, 0x1000);
-    gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
+    gPlayerInput[PLAYER_1].unk_0D = gPlayerInput[PLAYER_2].unk_0D = TRUE;
     func_8001A158(v0, 0x2000);
 
     D_80081254 = bg_layer_create("oplog", 0, 250, 0, 0x10000, BG_FLAG_OVERLAY, CONTEXT_2000);
@@ -1383,7 +1383,7 @@ void run_logo_mode(void) {
     gGlobalFlags |= GAME_FLAG_4;
     D_8008012C |= GFX_FLAG_20;
     D_8008012C |= GFX_FLAG_40;
-    if (!gPlayerInput[0].connected && !gPlayerInput[1].connected) {
+    if (!gPlayerInput[PLAYER_1].connected && !gPlayerInput[PLAYER_2].connected) {
         func_8000A828();
     }
 
@@ -1395,7 +1395,7 @@ void run_logo_mode(void) {
     func_8002630C(0x2000);
 }
 
-void run_1_mode(void) {
+void run_options_mode(void) {
     Object *s0;
     Object *v0;
     UIElement sp1AC = { 89, func_80017F00, 0, 0x1000, "options2.sp2" };
@@ -1421,7 +1421,7 @@ void run_1_mode(void) {
     Vec4i sp44 = { 135, 198, 0, 0 };
     Vec4i sp34 = { 146, 228, 0, 0 };
 
-    gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
+    gPlayerInput[PLAYER_1].unk_0D = gPlayerInput[PLAYER_2].unk_0D = TRUE;
     asset_open_folder("/title/option", CONTEXT_2000);
     bg_layer_create("bgopt", 0, 0, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     D_8008012C |= GFX_FLAG_20;
@@ -1508,7 +1508,7 @@ void func_8000AFA4(Object *obj, s16 arg1) {
     }
 }
 
-void run_2_mode(void) {
+void run_menu_control_mode(void) {
     Object *sp21C;
     Object *sp218;
     Object *v0;
@@ -1541,7 +1541,7 @@ void run_2_mode(void) {
     Vec4i sp3C = { 179, 180, 0, 0 };
     Vec4i sp2C = { 149, 224, 0, 0 };
 
-    gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
+    gPlayerInput[PLAYER_1].unk_0D = gPlayerInput[PLAYER_2].unk_0D = TRUE;
     asset_open_folder("/title/control", CONTEXT_2000);
     bg_layer_create("bgcont", 0, 0, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     D_8008012C |= GFX_FLAG_20;
@@ -1638,11 +1638,11 @@ void run_2_mode(void) {
     func_8002630C(0x2000);
 }
 
-void run_3_mode(void) {
+void run_menu_rank_mode(void) {
     UIElement sp3C = { 198, func_8001905C, 0, 0x1000, "options2.sp2" };
     Vec4i sp2C = { 133, 126, 0, 0 };
 
-    gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
+    gPlayerInput[PLAYER_1].unk_0D = gPlayerInput[PLAYER_2].unk_0D = TRUE;
     asset_open_folder("/title/rank", CONTEXT_2000);
     bg_layer_create("bgrank", 0, 4, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     D_80081460 = create_ui_element(&sp2C, &sp3C, 0x2000);
@@ -1653,12 +1653,12 @@ void run_3_mode(void) {
     func_8002630C(0x2000);
 }
 
-void run_4_mode(void) {
+void run_menu_stats_mode(void) {
     func_8002630C(0);
     func_8002630C(1);
     func_8002630C(CONTEXT_ABAB);
 
-    gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
+    gPlayerInput[PLAYER_1].unk_0D = gPlayerInput[PLAYER_2].unk_0D = TRUE;
     asset_open_folder("/title/stats", CONTEXT_2000);
     bg_layer_create("aarost", 0, 13, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     D_8008012C |= GFX_FLAG_20;

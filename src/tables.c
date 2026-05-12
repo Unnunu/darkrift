@@ -1,10 +1,10 @@
 #include "common.h"
 
 void run_main_menu_mode(void);
-void run_1_mode(void);
-void run_2_mode(void);
-void run_3_mode(void);
-void run_4_mode(void);
+void run_options_mode(void);
+void run_menu_control_mode(void);
+void run_menu_rank_mode(void);
+void run_menu_stats_mode(void);
 void run_player_selection_mode(void);
 void run_battle_aaron_mode(void);
 void run_battle_demitron_mode(void);
@@ -300,10 +300,10 @@ Vec4s D_8004BAF0[] = {
 
 GameMode gGameModes[] = {
     { run_main_menu_mode, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
-    { run_1_mode, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
-    { run_2_mode, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
-    { run_3_mode, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
-    { run_4_mode, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
+    { run_options_mode, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
+    { run_menu_control_mode, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
+    { run_menu_rank_mode, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
+    { run_menu_stats_mode, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
     { run_player_selection_mode, 2, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
     { run_battle_aaron_mode, 11, 0, 0, 0, 0, 0, 113, 108, 97, 0, 945, 1000, &D_8004B624, { 69, 55, 88, 0 } },
     { run_battle_demitron_mode, 11, 0, 113, 65, 59, 0, 234, 89, 69, 0, 850, 1000, &D_8004B644, { 84, 26, 25, 0 } },

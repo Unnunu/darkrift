@@ -152,7 +152,7 @@ void practice_init_hud(void) {
     task_clear(D_8013C490->taskList);
     D_8013C490->taskList = NULL;
 
-    gPlayerInput[gPracticingPlayer].unk_0C = FALSE;
+    gPlayerInput[gPracticingPlayer].remapped = FALSE;
     gPlayers[gPracticingPlayer].damage = gPlayers[gPracticingPlayer].total_damage = 0;
 }
 

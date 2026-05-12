@@ -287,10 +287,10 @@ void func_8001E624(Object *obj) {
 
         v03 = func_8001E5D8(playerId);
         if (playerId == PLAYER_1) {
-            D_8013C234->offsetX = D_8013C234->offsetX - D_8013C234->uls + D_8013C234->lrs - v03 - 8;
-            D_8013C234->uls = D_8013C234->lrs - v03 - 8;
+            D_8013C234->offsetX = D_8013C234->offsetX - D_8013C234->leftS + D_8013C234->rightS - v03 - 8;
+            D_8013C234->leftS = D_8013C234->rightS - v03 - 8;
         } else {
-            D_8013C238->lrs = D_8013C238->uls + v03;
+            D_8013C238->rightS = D_8013C238->leftS + v03;
         }
 
         if (obj->vars[8]-- < 1) {
@@ -424,13 +424,13 @@ void func_8001EB58(Object *obj) {
     v03 = func_8001E5D8(s1);
     if (s1 == 0) {
         D_8013C234 = s3->sprite_map->sprites[15].parts;
-        D_8013C234->offsetX = D_8013C234->offsetX - D_8013C234->uls + D_8013C234->lrs - v03 - 8;
-        D_8013C234->uls = D_8013C234->lrs - v03 - 8;
+        D_8013C234->offsetX = D_8013C234->offsetX - D_8013C234->leftS + D_8013C234->rightS - v03 - 8;
+        D_8013C234->leftS = D_8013C234->rightS - v03 - 8;
         v0->vars[1] = 119;
         v0->pos.x = 119 - v03;
     } else {
         D_8013C238 = s3->sprite_map->sprites[14].parts;
-        D_8013C238->lrs = D_8013C238->uls + v03;
+        D_8013C238->rightS = D_8013C238->leftS + v03;
         v0->vars[1] = 0xD1;
         v0->pos.x = 0xD1 + v03;
     }
@@ -758,7 +758,7 @@ void run_player_selection_mode(void) {
         char_p2--;
     }
 
-    gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
+    gPlayerInput[PLAYER_1].unk_0D = gPlayerInput[PLAYER_2].unk_0D = TRUE;
     D_8008012C |= GFX_FLAG_20;
     gGlobalFlags |= GAME_FLAG_4;
 
