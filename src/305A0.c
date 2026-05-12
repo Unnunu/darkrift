@@ -78,7 +78,7 @@ void func_8002FADC(Object *obj) {
         sp28.x = obj->pos.x;
         sp28.z = obj->pos.z;
         sp28.y = 0;
-        v0 = create_3dsprite_with_properties(&sp28, &D_80052CF0, 0xABAB);
+        v0 = create_3dsprite_with_properties(&sp28, &D_80052CF0, CONTEXT_ABAB);
         if (v0 != NULL) {
             v0->unk_088.a = 60;
         }

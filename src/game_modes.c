@@ -26,14 +26,14 @@ extern s32 gMusicVolume;
 extern s32 gSoundVolume;
 extern u8 D_80080129;
 extern s16 D_80081250;
-extern Texture *D_80081254;
+extern BackgroundLayer *D_80081254;
 extern s16 D_80080116;
 extern s16 gPreviousGameMode;
 extern s16 D_8013C224;
 extern s16 D_8013C226;
 extern s8 D_80081430;
 extern s32 D_800AA480;
-extern s16 D_80080232;
+extern s16 gPreviousPlayMode;
 extern s16 D_800B6368[11][2];
 
 extern u32 gTournamentOpponentId;
@@ -94,8 +94,8 @@ Vec4i *D_80080224;
 Object *D_80080228[2];
 
 void func_80006AE0(void) {
-    D_80081274 = gAssets[asset_find("comhit.k5", 0xABAB)].aux_data;
-    D_80081278 = gAssets[asset_find("comblock.k5", 0xABAB)].aux_data;
+    D_80081274 = gAssets[asset_find("comhit.k5", CONTEXT_ABAB)].aux_data;
+    D_80081278 = gAssets[asset_find("comblock.k5", CONTEXT_ABAB)].aux_data;
 
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
     if (gPlayMode == PLAY_MODE_PRACTICE) {
@@ -112,7 +112,7 @@ void func_80006AE0(void) {
 }
 
 void func_80006C14(void) {
-    gBattleSettings[PLAYER_1].unk_08 = gBattleSettings[PLAYER_2].unk_08 = 0;
+    gBattleSettings[PLAYER_1].roundsWon = gBattleSettings[PLAYER_2].roundsWon = 0;
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
 
     if (gPlayMode == PLAY_MODE_PRACTICE) {
@@ -136,19 +136,19 @@ void func_80006CEC(void) {
     gBattleSettings[PLAYER_1].characterId = GORE;
     gBattleSettings[PLAYER_1].unk_06 = TRUE;
     gBattleSettings[PLAYER_1].isCpu = FALSE;
-    gBattleSettings[PLAYER_1].unk_08 = 0;
+    gBattleSettings[PLAYER_1].roundsWon = 0;
     gBattleSettings[PLAYER_2].characterId = AARON;
     gBattleSettings[PLAYER_2].unk_06 = FALSE;
     gBattleSettings[PLAYER_2].isCpu = FALSE;
-    gBattleSettings[PLAYER_2].unk_08 = 0;
-    gBattleSettings[PLAYER_1].unk_0E = 0;
-    gBattleSettings[PLAYER_2].unk_0E = 0;
-    gBattleSettings[PLAYER_1].unk_0C = 400;
-    gBattleSettings[PLAYER_2].unk_0C = 400;
-    gBattleSettings[PLAYER_1].unk_0F = gBattleSettings[PLAYER_2].unk_0F = 1;
+    gBattleSettings[PLAYER_2].roundsWon = 0;
+    gBattleSettings[PLAYER_1].isDebug = FALSE;
+    gBattleSettings[PLAYER_2].isDebug = FALSE;
+    gBattleSettings[PLAYER_1].initialHp = 400;
+    gBattleSettings[PLAYER_2].initialHp = 400;
+    gBattleSettings[PLAYER_1].unk_0F = gBattleSettings[PLAYER_2].unk_0F = TRUE;
     gBattleSettings[PLAYER_1].isDummy = gBattleSettings[PLAYER_2].isDummy = 0;
 
-    D_80080232 = gPlayMode = PLAY_MODE_2_PLAYERS;
+    gPreviousPlayMode = gPlayMode = PLAY_MODE_2_PLAYERS;
     D_800801F1 = TRUE;
 
     for (i = 0; i < 2; i++) {
@@ -169,7 +169,7 @@ void func_80006CEC(void) {
 void func_80006E0C(Object *obj) {
     if (--obj->vars[0] < 0) {
         obj->flags |= OBJ_FLAG_DELETE;
-        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+        gGlobalFlags |= GAME_FLAG_MODE_DONE;
         TASK_END(obj->currentTask);
         osViBlack(0);
     }
@@ -177,7 +177,7 @@ void func_80006E0C(Object *obj) {
 
 void func_80006E6C(void) {
     Object *obj;
-    Texture *sp30;
+    BackgroundLayer *sp30;
     u16 sp2E;
     u16 sp2C;
     u16 sp2A;
@@ -187,11 +187,11 @@ void func_80006E6C(void) {
     sp2C = D_80080112;
 
     D_80080110 = D_80080112 = D_80080114 = 0;
-    D_80049AE8 = 0;
+    gBgScrollY = 0;
 
-    asset_open_folder("/title/wait", 0x6000);
-    sp30 = load_background("wait", 0, 0, 0, 0, 1, 0x6000);
-    D_8005BFC0 |= GAME_FLAG_400 | GAME_FLAG_10;
+    asset_open_folder("/title/wait", CONTEXT_6000);
+    sp30 = bg_layer_create("wait", 0, 0, 0, 0, TEX_FLAG_1, 0x6000);
+    gGlobalFlags |= GAME_FLAG_400 | GAME_FLAG_10;
     D_8008012C |= GFX_FLAG_20;
 
     obj = create_worker(&func_80006E0C, 0x1000);
@@ -201,7 +201,7 @@ void func_80006E6C(void) {
     D_80080110 = sp2E;
     D_80080112 = sp2C;
     D_80080114 = sp2A;
-    D_8005BFC0 &= ~(GAME_FLAG_400 | GAME_FLAG_10 | GAME_FLAG_MODE_DONE);
+    gGlobalFlags &= ~(GAME_FLAG_400 | GAME_FLAG_10 | GAME_FLAG_MODE_DONE);
     D_8008012C &= ~GFX_FLAG_20;
     func_8002630C(0x6000);
     func_80014CB4(sp30);
@@ -218,9 +218,9 @@ void func_80006FB4(void) {
     }
 
     if (gPlayMode != PLAY_MODE_PRACTICE) {
-        asset_open_folder("/bars/bars", 0xABAB);
+        asset_open_folder("/bars/bars", CONTEXT_ABAB);
     } else {
-        asset_open_folder("/bars/bars2", 0xABAB);
+        asset_open_folder("/bars/bars2", CONTEXT_ABAB);
     }
 
     func_800052EC(0);
@@ -235,20 +235,20 @@ void func_80006FB4(void) {
 }
 
 void func_800070C0(void) {
-    func_8002630C(0xABAB);
+    func_8002630C(CONTEXT_ABAB);
     func_8002630C(0x5000);
     func_8002630C(0x5001);
 }
 
 void run_battle_gore_mode(void) {
-    s32 sp2C = gBattleSettings[1].unk_06;
-    Texture *bg;
+    s32 sp2C = gBattleSettings[PLAYER_2].unk_06;
+    BackgroundLayer *bg;
 
     func_80006FB4();
-    bg = load_background("bg3", 0, 74, 0x2000, 0x10000, 0, sp2C);
+    bg = bg_layer_create("bg3", 0, 74, 0x2000, 0x10000, 0, sp2C);
     bg->height -= 16;
 
-    load_background("bg0", 0, 15, 0x1000, 0x10000, 1, sp2C);
+    bg_layer_create("bg0", 0, 15, 0x1000, 0x10000, TEX_FLAG_1, sp2C);
 
     func_8001B5B0("arena", sp2C);
     func_80029630();
@@ -277,15 +277,15 @@ void func_800071F0(Object *obj) {
 s32 D_80049400[] = { 0x40000, task_default_func, 0x2800, 0x10000000, 0, "tc", func_800071F0, 0x1000, 0 };
 
 void run_battle_aaron_mode(void) {
-    s32 sp2C = gBattleSettings[1].unk_06;
+    s32 sp2C = gBattleSettings[PLAYER_2].unk_06;
     Vec4i sp1C = { 0, -500, 0, 0 };
-    Texture *bg;
+    BackgroundLayer *bg;
 
     func_80006FB4();
-    bg = load_background("bg2", 0, 74, 0x2000, 0x10000, 0, sp2C);
+    bg = bg_layer_create("bg2", 0, 74, 0x2000, 0x10000, 0, sp2C);
     bg->height -= 16;
 
-    load_background("bg0", 0, 15, 0x1000, 0x10000, 1, sp2C);
+    bg_layer_create("bg0", 0, 15, 0x1000, 0x10000, TEX_FLAG_1, sp2C);
 
     func_8001B5B0("arena", sp2C);
     func_80029630();
@@ -301,14 +301,14 @@ void run_battle_aaron_mode(void) {
 }
 
 void run_battle_demitron_mode(void) {
-    s32 sp2C = gBattleSettings[1].unk_06;
-    Texture *bg;
+    s32 sp2C = gBattleSettings[PLAYER_2].unk_06;
+    BackgroundLayer *bg;
 
     func_80006FB4();
-    bg = load_background("bg2", 0, -20, 0x2000, 0x10000, 0, sp2C);
+    bg = bg_layer_create("bg2", 0, -20, 0x2000, 0x10000, 0, sp2C);
     bg->height -= 16;
 
-    load_background("bg0", 0, 8, 0x1000, 0x10000, 1, sp2C);
+    bg_layer_create("bg0", 0, 8, 0x1000, 0x10000, TEX_FLAG_1, sp2C);
 
     func_8001B5B0("arena", sp2C);
     func_80029630();
@@ -324,14 +324,14 @@ void run_battle_demitron_mode(void) {
 }
 
 void run_battle_demonica_mode(void) {
-    s32 sp2C = gBattleSettings[1].unk_06;
-    Texture *bg;
+    s32 sp2C = gBattleSettings[PLAYER_2].unk_06;
+    BackgroundLayer *bg;
 
     func_80006FB4();
-    bg = load_background("bg2", 0, 40, 0x2000, 0x10000, 0, sp2C);
+    bg = bg_layer_create("bg2", 0, 40, 0x2000, 0x10000, 0, sp2C);
     bg->height -= 16;
 
-    load_background("bg0", 0, -24, 0x1000, 0x10000, 1, sp2C);
+    bg_layer_create("bg0", 0, -24, 0x1000, 0x10000, TEX_FLAG_1, sp2C);
 
     func_8001B5B0("arena", sp2C);
     func_80029630();
@@ -347,14 +347,14 @@ void run_battle_demonica_mode(void) {
 }
 
 void run_battle_eve_mode(void) {
-    s32 sp2C = gBattleSettings[1].unk_06;
-    Texture *bg;
+    s32 sp2C = gBattleSettings[PLAYER_2].unk_06;
+    BackgroundLayer *bg;
 
     func_80006FB4();
-    bg = load_background("bg2", 0, 52, 0x2000, 0x10000, 0, sp2C);
+    bg = bg_layer_create("bg2", 0, 52, 0x2000, 0x10000, 0, sp2C);
     bg->height -= 16;
 
-    load_background("bg0", 0, 0, 0x1000, 0x10000, 1, sp2C);
+    bg_layer_create("bg0", 0, 0, 0x1000, 0x10000, TEX_FLAG_1, sp2C);
 
     func_8001B5B0("arena", sp2C);
     func_80029630();
@@ -370,13 +370,13 @@ void run_battle_eve_mode(void) {
 }
 
 void run_battle_morphix_mode(void) {
-    s32 sp2C = gBattleSettings[1].unk_06;
-    Texture *bg;
+    s32 sp2C = gBattleSettings[PLAYER_2].unk_06;
+    BackgroundLayer *bg;
 
     func_80006FB4();
-    bg = load_background("bg2", 0, 96, 0x2000, 0x10000, 0, sp2C);
+    bg = bg_layer_create("bg2", 0, 96, 0x2000, 0x10000, 0, sp2C);
     bg->height -= 16;
-    load_background("bg0", 0, 8, 0x1000, 0x10000, 1, sp2C);
+    bg_layer_create("bg0", 0, 8, 0x1000, 0x10000, TEX_FLAG_1, sp2C);
 
     func_8001B5B0("arena", sp2C);
     func_80029630();
@@ -392,11 +392,11 @@ void run_battle_morphix_mode(void) {
 }
 
 void run_battle_niiki_mode(void) {
-    s32 sp2C = gBattleSettings[1].unk_06;
+    s32 sp2C = gBattleSettings[PLAYER_2].unk_06;
 
     func_80006FB4();
-    load_background("bg2", 0, 94, 0x2000, 0x10000, 0, sp2C);
-    load_background("bg0", 0, -8, 0x1000, 0x10000, 1, sp2C);
+    bg_layer_create("bg2", 0, 94, 0x2000, 0x10000, 0, sp2C);
+    bg_layer_create("bg0", 0, -8, 0x1000, 0x10000, TEX_FLAG_1, sp2C);
 
     func_8001B5B0("arena", sp2C);
     func_80029630();
@@ -412,14 +412,14 @@ void run_battle_niiki_mode(void) {
 }
 
 void run_battle_scarlet_mode(void) {
-    s32 sp2C = gBattleSettings[1].unk_06;
-    Texture *bg;
+    s32 sp2C = gBattleSettings[PLAYER_2].unk_06;
+    BackgroundLayer *bg;
 
     func_80006FB4();
-    bg = load_background("bg2", 0, -7, 0x2000, 0x10000, 0, sp2C);
+    bg = bg_layer_create("bg2", 0, -7, 0x2000, 0x10000, 0, sp2C);
     bg->height -= 16;
 
-    load_background("bg0", 0, -64, 0x1000, 0x10000, 1, sp2C);
+    bg_layer_create("bg0", 0, -64, 0x1000, 0x10000, TEX_FLAG_1, sp2C);
 
     func_8001B5B0("arena", sp2C);
     func_80029630();
@@ -435,14 +435,14 @@ void run_battle_scarlet_mode(void) {
 }
 
 void run_battle_sonork_mode(void) {
-    s32 sp2C = gBattleSettings[1].unk_06;
-    Texture *bg;
+    s32 sp2C = gBattleSettings[PLAYER_2].unk_06;
+    BackgroundLayer *bg;
 
     func_80006FB4();
-    bg = load_background("bg2", 0, 20, 0x2000, 0x10000, 0, sp2C);
+    bg = bg_layer_create("bg2", 0, 20, 0x2000, 0x10000, 0, sp2C);
     bg->height -= 16;
 
-    load_background("bg0", 0, -24, 0x1000, 0x10000, 1, sp2C);
+    bg_layer_create("bg0", 0, -24, 0x1000, 0x10000, TEX_FLAG_1, sp2C);
 
     func_8001B5B0("arena", sp2C);
     func_80029630();
@@ -458,14 +458,14 @@ void run_battle_sonork_mode(void) {
 }
 
 void run_battle_zenmuron_mode(void) {
-    s32 sp2C = gBattleSettings[1].unk_06;
-    Texture *bg;
+    s32 sp2C = gBattleSettings[PLAYER_2].unk_06;
+    BackgroundLayer *bg;
 
     func_80006FB4();
-    bg = load_background("bg2", 0, -6, 0x2000, 0x10000, 0, sp2C);
+    bg = bg_layer_create("bg2", 0, -6, 0x2000, 0x10000, 0, sp2C);
     bg->height -= 16;
 
-    load_background("bg0", 0, 4, 0x1000, 0x10000, 1, sp2C);
+    bg_layer_create("bg0", 0, 4, 0x1000, 0x10000, TEX_FLAG_1, sp2C);
 
     func_8001B5B0("arena", sp2C);
     func_80029630();
@@ -486,12 +486,12 @@ void func_80007B68(Object *obj) {
     a3 = 1 - gBattleSettings[PLAYER_2].isCpu; // @bug maybe
     D_80080118 = 100;
 
-    if (D_8005BFC0 & GAME_FLAG_100) {
+    if (gGlobalFlags & GAME_FLAG_100) {
         obj->vars[1]++;
         if (obj->vars[1] == 4) {
             obj->vars[1] = 0;
-            if (D_80081250 + D_80081254->unk_1C + 40) {
-                D_80081254->unk_1C--;
+            if (D_80081250 + D_80081254->posY + 40) {
+                D_80081254->posY--;
             } else {
                 if (gPlayMode != PLAY_MODE_30) {
                     gBattleSettings[gTournamentOpponentId].unk_06 = TRUE;
@@ -501,7 +501,7 @@ void func_80007B68(Object *obj) {
                     gNextGameMode = gBattleSettings[1 - gTournamentOpponentId].characterId + GAME_MODE_BATTLE_AARON;
                     gBattleSettings[PLAYER_1].isCpu = TRUE;
                 }
-                D_8005BFC0 |= GAME_FLAG_80 | GAME_FLAG_MODE_DONE;
+                gGlobalFlags |= GAME_FLAG_80 | GAME_FLAG_MODE_DONE;
                 obj->flags |= OBJ_FLAG_DELETE;
             }
         }
@@ -517,9 +517,9 @@ void func_80007B68(Object *obj) {
             } else {
                 gNextGameMode = GAME_MODE_MAIN_MENU;
             }
-            D_8005BFC0 |= GAME_FLAG_80 | GAME_FLAG_MODE_DONE;
+            gGlobalFlags |= GAME_FLAG_80 | GAME_FLAG_MODE_DONE;
             obj->flags |= OBJ_FLAG_DELETE;
-            D_80081254->flags &= ~2;
+            D_80081254->flags &= ~BG_FLAG_OVERLAY;
         }
     }
 }
@@ -555,7 +555,7 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
     Object *v1;
 
     s0 = gBattleSettings[PLAYER_2].isCpu; // @bug maybe
-    func_8002630C(0xABAB);
+    func_8002630C(CONTEXT_ABAB);
     gBattleSettings[s0].isDummy = 1;
     gBattleSettings[1 - s0].isDummy = 0;
 
@@ -571,7 +571,7 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
     func_800052EC(0);
     func_800052EC(1);
 
-    gBattleSettings[PLAYER_1].unk_0F = gBattleSettings[PLAYER_2].unk_0F = 1;
+    gBattleSettings[PLAYER_1].unk_0F = gBattleSettings[PLAYER_2].unk_0F = TRUE;
 
     a1 = D_80080228[1 - s0];
     a1->pos.x = 0;
@@ -589,7 +589,7 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
         a1->flags |= OBJ_FLAG_10000000;
     }
 
-    D_8005BFC0 |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_4;
 
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
@@ -611,12 +611,12 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
 void run_intro_gore_mode(void) {
     s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
 
-    asset_open_folder("/gore/goreint", 0x3000);
+    asset_open_folder("/gore/goreint", CONTEXT_3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
-    D_80081254 = load_background("goreint", 0, 250, 0, 0, 2, 0x3000);
+    D_80081254 = bg_layer_create("goreint", 0, 250, 0, 0, BG_FLAG_OVERLAY, 0x3000);
     D_80081250 = D_80081254->height;
-    load_background("bg3", 0, 74, 0x2000, 0x10000, 0, temp_s0);
-    load_background("bg0", 0, 15, 0x1000, 0x10000, 1, temp_s0);
+    bg_layer_create("bg3", 0, 74, 0x2000, 0x10000, 0, temp_s0);
+    bg_layer_create("bg0", 0, 15, 0x1000, 0x10000, TEX_FLAG_1, temp_s0);
     func_8001B5B0("arena", temp_s0);
     main_loop();
 
@@ -628,14 +628,14 @@ void run_intro_gore_mode(void) {
 }
 
 void run_intro_aaron_mode(void) {
-    s32 temp_s0 = gBattleSettings[1].unk_06;
+    s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
 
-    asset_open_folder("/aaro/aaroint", 0x3000);
+    asset_open_folder("/aaro/aaroint", CONTEXT_3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
-    D_80081254 = load_background("aaroint", 0, 250, 0, 0, 2, 0x3000);
+    D_80081254 = bg_layer_create("aaroint", 0, 250, 0, 0, BG_FLAG_OVERLAY, 0x3000);
     D_80081250 = D_80081254->height;
-    load_background("bg2", 0, 74, 0x10000, 0x10000, 0, temp_s0);
-    load_background("bg0", 0, 15, 0x8000, 0x10000, 1, temp_s0);
+    bg_layer_create("bg2", 0, 74, 0x10000, 0x10000, 0, temp_s0);
+    bg_layer_create("bg0", 0, 15, 0x8000, 0x10000, TEX_FLAG_1, temp_s0);
     func_8001B5B0("arena", temp_s0);
     main_loop();
 
@@ -647,14 +647,14 @@ void run_intro_aaron_mode(void) {
 }
 
 void run_intro_demitron_mode(void) {
-    s32 temp_s0 = gBattleSettings[1].unk_06;
+    s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
 
-    asset_open_folder("/demi/demiint", 0x3000);
+    asset_open_folder("/demi/demiint", CONTEXT_3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
-    D_80081254 = load_background("demiint", 0, 250, 0, 0, 2, 0x3000);
+    D_80081254 = bg_layer_create("demiint", 0, 250, 0, 0, BG_FLAG_OVERLAY, 0x3000);
     D_80081250 = D_80081254->height;
-    load_background("bg2", 0, -8, 0x2000, 0x10000, 0, temp_s0);
-    load_background("bg0", 0, 8, 0x1000, 0x10000, 1, temp_s0);
+    bg_layer_create("bg2", 0, -8, 0x2000, 0x10000, 0, temp_s0);
+    bg_layer_create("bg0", 0, 8, 0x1000, 0x10000, TEX_FLAG_1, temp_s0);
     func_8001B5B0("arena", temp_s0);
     main_loop();
     func_8002630C(0x3000);
@@ -665,14 +665,14 @@ void run_intro_demitron_mode(void) {
 }
 
 void run_intro_demonica_mode(void) {
-    s32 temp_s0 = gBattleSettings[1].unk_06;
+    s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
 
-    asset_open_folder("/demo/demoint", 0x3000);
+    asset_open_folder("/demo/demoint", CONTEXT_3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
-    D_80081254 = load_background("demoint", 0, 250, 0, 0, 2, 0x3000);
+    D_80081254 = bg_layer_create("demoint", 0, 250, 0, 0, BG_FLAG_OVERLAY, 0x3000);
     D_80081250 = D_80081254->height;
-    load_background("bg2", 0, 32, 0x2000, 0x10000, 0, temp_s0);
-    load_background("bg0", 0, -24, 0x1000, 0x10000, 1, temp_s0);
+    bg_layer_create("bg2", 0, 32, 0x2000, 0x10000, 0, temp_s0);
+    bg_layer_create("bg0", 0, -24, 0x1000, 0x10000, TEX_FLAG_1, temp_s0);
     func_8001B5B0("arena", temp_s0);
     main_loop();
     func_8002630C(0x3000);
@@ -683,14 +683,14 @@ void run_intro_demonica_mode(void) {
 }
 
 void run_intro_eve_mode(void) {
-    s32 temp_s0 = gBattleSettings[1].unk_06;
+    s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
 
-    asset_open_folder("/eve/eveint", 0x3000);
+    asset_open_folder("/eve/eveint", CONTEXT_3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
-    D_80081254 = load_background("eveint", 0, 250, 0, 0, 2, 0x3000);
+    D_80081254 = bg_layer_create("eveint", 0, 250, 0, 0, BG_FLAG_OVERLAY, 0x3000);
     D_80081250 = D_80081254->height;
-    load_background("bg2", 0, 52, 0x2000, 0x10000, 0, temp_s0);
-    load_background("bg0", 0, 0, 0x1000, 0x10000, 1, temp_s0);
+    bg_layer_create("bg2", 0, 52, 0x2000, 0x10000, 0, temp_s0);
+    bg_layer_create("bg0", 0, 0, 0x1000, 0x10000, TEX_FLAG_1, temp_s0);
     func_8001B5B0("arena", temp_s0);
     main_loop();
     func_8002630C(0x3000);
@@ -701,14 +701,14 @@ void run_intro_eve_mode(void) {
 }
 
 void run_intro_morphix_mode(void) {
-    s32 temp_s0 = gBattleSettings[1].unk_06;
+    s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
 
-    asset_open_folder("/morp/morpint", 0x3000);
+    asset_open_folder("/morp/morpint", CONTEXT_3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
-    D_80081254 = load_background("morpint", 0, 250, 0, 0, 2, 0x3000);
+    D_80081254 = bg_layer_create("morpint", 0, 250, 0, 0, BG_FLAG_OVERLAY, 0x3000);
     D_80081250 = D_80081254->height;
-    load_background("bg2", 0, 96, 0x2000, 0x10000, 0, temp_s0);
-    load_background("bg0", 0, 8, 0x1000, 0x10000, 1, temp_s0);
+    bg_layer_create("bg2", 0, 96, 0x2000, 0x10000, 0, temp_s0);
+    bg_layer_create("bg0", 0, 8, 0x1000, 0x10000, TEX_FLAG_1, temp_s0);
     func_8001B5B0("arena", temp_s0);
     main_loop();
     func_8002630C(0x3000);
@@ -719,14 +719,14 @@ void run_intro_morphix_mode(void) {
 }
 
 void run_intro_niiki_mode(void) {
-    s32 temp_s0 = gBattleSettings[1].unk_06;
+    s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
 
-    asset_open_folder("/niik/niikint", 0x3000);
+    asset_open_folder("/niik/niikint", CONTEXT_3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
-    D_80081254 = load_background("niikint", 0, 250, 0, 0, 2, 0x3000);
+    D_80081254 = bg_layer_create("niikint", 0, 250, 0, 0, BG_FLAG_OVERLAY, 0x3000);
     D_80081250 = D_80081254->height;
-    load_background("bg2", 0, 94, 0x2000, 0x10000, 0, temp_s0);
-    load_background("bg0", 0, -8, 0x1000, 0x10000, 1, temp_s0);
+    bg_layer_create("bg2", 0, 94, 0x2000, 0x10000, 0, temp_s0);
+    bg_layer_create("bg0", 0, -8, 0x1000, 0x10000, TEX_FLAG_1, temp_s0);
     func_8001B5B0("arena", temp_s0);
     main_loop();
     func_8002630C(0x3000);
@@ -737,14 +737,14 @@ void run_intro_niiki_mode(void) {
 }
 
 void run_intro_scarlet_mode(void) {
-    s32 temp_s0 = gBattleSettings[1].unk_06;
+    s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
 
-    asset_open_folder("/scar/scarint", 0x3000);
+    asset_open_folder("/scar/scarint", CONTEXT_3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
-    D_80081254 = load_background("scarint", 0, 250, 0, 0, 2, 0x3000);
+    D_80081254 = bg_layer_create("scarint", 0, 250, 0, 0, BG_FLAG_OVERLAY, 0x3000);
     D_80081250 = D_80081254->height;
-    load_background("bg2", 0, 0, 0x2000, 0x10000, 0, temp_s0);
-    load_background("bg0", 0, -64, 0x1000, 0x10000, 1, temp_s0);
+    bg_layer_create("bg2", 0, 0, 0x2000, 0x10000, 0, temp_s0);
+    bg_layer_create("bg0", 0, -64, 0x1000, 0x10000, TEX_FLAG_1, temp_s0);
     func_8001B5B0("arena", temp_s0);
     main_loop();
     func_8002630C(0x3000);
@@ -755,14 +755,14 @@ void run_intro_scarlet_mode(void) {
 }
 
 void run_intro_sonork_mode(void) {
-    s32 temp_s0 = gBattleSettings[1].unk_06;
+    s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
 
-    asset_open_folder("/sono/sonoint", 0x3000);
+    asset_open_folder("/sono/sonoint", CONTEXT_3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
-    D_80081254 = load_background("sonoint", 0, 250, 0, 0, 2, 0x3000);
+    D_80081254 = bg_layer_create("sonoint", 0, 250, 0, 0, BG_FLAG_OVERLAY, 0x3000);
     D_80081250 = D_80081254->height;
-    load_background("bg2", 0, 26, 0x2000, 0x10000, 0, temp_s0);
-    load_background("bg0", 0, -24, 0x1000, 0x10000, 1, temp_s0);
+    bg_layer_create("bg2", 0, 26, 0x2000, 0x10000, 0, temp_s0);
+    bg_layer_create("bg0", 0, -24, 0x1000, 0x10000, TEX_FLAG_1, temp_s0);
     func_8001B5B0("arena", temp_s0);
     main_loop();
     func_8002630C(0x3000);
@@ -773,14 +773,14 @@ void run_intro_sonork_mode(void) {
 }
 
 void run_intro_zenmuron_mode(void) {
-    s32 temp_s0 = gBattleSettings[1].unk_06;
+    s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
 
-    asset_open_folder("/zenm/zenmint", 0x3000);
+    asset_open_folder("/zenm/zenmint", CONTEXT_3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
-    D_80081254 = load_background("zenmint", 0, 250, 0, 0, 2, 0x3000);
+    D_80081254 = bg_layer_create("zenmint", 0, 250, 0, 0, BG_FLAG_OVERLAY, 0x3000);
     D_80081250 = D_80081254->height;
-    load_background("bg2", 0, -6, 0x2000, 0x10000, 0, temp_s0);
-    load_background("bg0", 0, 4, 0x1000, 0x10000, 1, temp_s0);
+    bg_layer_create("bg2", 0, -6, 0x2000, 0x10000, 0, temp_s0);
+    bg_layer_create("bg0", 0, 4, 0x1000, 0x10000, TEX_FLAG_1, temp_s0);
     func_8001B5B0("arena", temp_s0);
     main_loop();
     func_8002630C(0x3000);
@@ -792,7 +792,7 @@ void run_intro_zenmuron_mode(void) {
 
 void func_80008D0C(Object *obj) {
     if (gPlayers->obj->frameIndex + 2 == gPlayers->currentState->unk_02) {
-        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+        gGlobalFlags |= GAME_FLAG_MODE_DONE;
         obj->flags |= OBJ_FLAG_DELETE;
         gNextGameMode = GAME_MODE_LOGO;
     }
@@ -810,7 +810,7 @@ void func_80008D98(void) {
     Object *obj2;
     void *a3;
     Vec4i sp34 = { -200, 0, 0, 0 };
-    Texture *sp30;
+    BackgroundLayer *sp30;
 
     gBattleSettings[PLAYER_1].characterId = SONORK;
     gBattleSettings[PLAYER_1].unk_06 = TRUE;
@@ -819,21 +819,21 @@ void func_80008D98(void) {
     gBattleSettings[PLAYER_2].isCpu = TRUE;
 
     func_8002630C(0);
-    D_8005BFC0 |= GAME_FLAG_400 | GAME_FLAG_10;
+    gGlobalFlags |= GAME_FLAG_400 | GAME_FLAG_10;
     D_8008012C |= GFX_FLAG_20;
 
-    asset_open_folder("/sono/prize", 0x3000);
-    sp30 = load_background("prize", 0, 0x64, 0, 0, 2, 0x3000);
+    asset_open_folder("/sono/prize", CONTEXT_3000);
+    sp30 = bg_layer_create("prize", 0, 0x64, 0, 0, BG_FLAG_OVERLAY, 0x3000);
     obj = create_worker(func_80006E0C, 0x1000);
     obj->vars[0] = 6;
     main_loop();
 
-    D_8005BFC0 &= ~(GAME_FLAG_10 | GAME_FLAG_MODE_DONE);
+    gGlobalFlags &= ~(GAME_FLAG_10 | GAME_FLAG_MODE_DONE);
     D_8008012C &= ~GFX_FLAG_20;
-    asset_open_folder("/sono/sonoboss", 0x3000);
+    asset_open_folder("/sono/sonoboss", CONTEXT_3000);
     func_80007F4C(FALSE, 346, 0x3000);
-    load_background("bg2", 0, 26, 0x2000, 0x10000, 0, 0);
-    load_background("bg0", 0, -24, 0x1000, 0x10000, 1, 0);
+    bg_layer_create("bg2", 0, 26, 0x2000, 0x10000, 0, 0);
+    bg_layer_create("bg0", 0, -24, 0x1000, 0x10000, TEX_FLAG_1, 0);
     func_8001B5B0("arena", 0);
     a3 = gAssets[asset_find("relic.k2", 0x3000)].aux_data;
     obj2 = create_model_instance(&sp34, 0x1000, func_80008D64, a3);
@@ -863,8 +863,8 @@ void func_80008FDC(void) {
     sp44 = gBattleSettings[PLAYER_2].unk_06;
     sp42 = gBattleSettings[PLAYER_2].isCpu;
 
-    func_8002630C(0xABAB);
-    asset_open_folder("/demi/demiboss", 0x3000);
+    func_8002630C(CONTEXT_ABAB);
+    asset_open_folder("/demi/demiboss", CONTEXT_3000);
     func_800052EC(0);
     func_800052EC(1);
 
@@ -880,7 +880,7 @@ void func_80008FDC(void) {
     gPlayers[PLAYER_2].flags |= PLAYER_FLAG_400000;
 
     a1->flags |= OBJ_FLAG_10000000;
-    D_8005BFC0 |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_4;
 
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
@@ -904,8 +904,8 @@ void func_80008FDC(void) {
     obj->rotation.y = 0x400;
     obj->unk_088.a = 80;
 
-    load_background("bg2", 0, -32, 0x2000, 0x10000, 0, sp44);
-    load_background("bg0", 0, 8, 0x1000, 0x10000, 1, sp44);
+    bg_layer_create("bg2", 0, -32, 0x2000, 0x10000, 0, sp44);
+    bg_layer_create("bg0", 0, 8, 0x1000, 0x10000, TEX_FLAG_1, sp44);
     func_8001B5B0("arena", sp44);
     D_800801F0 = TRUE;
     main_loop();
@@ -923,14 +923,14 @@ void func_800092B0(void) {
     var1 = 1 - gBattleSettings[PLAYER_2].isCpu;
     sp54 = gPlayers[var1].characterId;
     func_800263A8();
-    asset_open_folder("/title/ending", 0x4000);
+    asset_open_folder("/title/ending", CONTEXT_4000);
 
     str_copy(sp44, "/");
     str_concat(sp44, D_8004B844[sp54].unk_04->name);
     str_concat(sp44, "/");
     str_concat(sp44, D_8004B844[sp54].unk_04->name);
     str_concat(sp44, "end");
-    asset_open_folder(sp44, 0x4000);
+    asset_open_folder(sp44, CONTEXT_4000);
 
     obj = create_worker(func_8001A334, 0x1000);
     obj->vars[0] = 60;
@@ -938,9 +938,9 @@ void func_800092B0(void) {
     str_copy(sp38, D_8004B844[sp54].unk_04->name);
     str_concat(sp38, "end1");
 
-    D_80081254 = load_background(sp38, 0, 40, 0, 0, 1, 0x4000);
-    D_80081254 = load_background("passwd", 0, 205, 0, 0, 1, 0x4000);
-    D_8005BFC0 |= GAME_FLAG_4;
+    D_80081254 = bg_layer_create(sp38, 0, 40, 0, 0, TEX_FLAG_1, 0x4000);
+    D_80081254 = bg_layer_create("passwd", 0, 205, 0, 0, TEX_FLAG_1, 0x4000);
+    gGlobalFlags |= GAME_FLAG_4;
     D_8008012C |= GFX_FLAG_20;
     main_loop();
     func_8002630C(0x4000);
@@ -950,14 +950,14 @@ void func_80009480(void) {
     Object *worker;
 
     func_800263A8();
-    asset_open_folder("/title/credit", 0x4000);
-    D_80081254 = load_background("credit", 0, 250, 0, 0, 2, 0x4000);
+    asset_open_folder("/title/credit", CONTEXT_4000);
+    D_80081254 = bg_layer_create("credit", 0, 250, 0, 0, BG_FLAG_OVERLAY, 0x4000);
     D_80081250 = D_80081254->height;
     worker = create_worker(func_8001A4FC, 0x1000);
     worker->vars[2] = 4;
     func_8001A158(worker, 0x4000);
     D_80080129 = FALSE;
-    D_8005BFC0 |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_4;
     D_8008012C |= GFX_FLAG_20;
     main_loop();
     func_8002630C(0x4000);
@@ -965,18 +965,18 @@ void func_80009480(void) {
 
 void func_80009554(Object *obj) {
     if (gPlayerInput[D_8013C24C].buttons & INP_START) {
-        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+        gGlobalFlags |= GAME_FLAG_MODE_DONE;
         obj->flags |= OBJ_FLAG_DELETE;
     }
 }
 
 void func_800095A8(void) {
     func_800263A8();
-    asset_open_folder("/title/easywin", 0x4000);
-    load_background("easyimg", 0, 0, 0, 0, 1, 0x4000);
+    asset_open_folder("/title/easywin", CONTEXT_4000);
+    bg_layer_create("easyimg", 0, 0, 0, 0, TEX_FLAG_1, 0x4000);
     create_worker(func_80009554, 0x1000);
     D_80080129 = TRUE;
-    D_8005BFC0 |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_4;
     D_8008012C |= GFX_FLAG_20;
     main_loop();
     func_8002630C(0x4000);
@@ -1045,7 +1045,7 @@ void func_800096D0(u8 arg0) {
     }
     a3->flags |= OBJ_FLAG_10000000;
 
-    D_8005BFC0 |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_4;
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
     D_800801F0 = FALSE;
@@ -1059,8 +1059,8 @@ void func_800096D0(u8 arg0) {
     func_80007DB0(&gPlayers[nv], a3, 0x4000);
     func_80007DB0(&gPlayers[t9], s0, 0x4000);
     D_8008012C |= GFX_FLAG_4;
-    load_background("bg2", 0, -27, 0x2000, 0x10000, 0, nv);
-    load_background("bg0", nv * 0, 8, 0x1000, 0x10000, 1, nv);
+    bg_layer_create("bg2", 0, -27, 0x2000, 0x10000, 0, nv);
+    bg_layer_create("bg0", nv * 0, 8, 0x1000, 0x10000, TEX_FLAG_1, nv);
     func_8000965C(GAME_MODE_BATTLE_DEMITRON);
     func_8001B5B0("arena", nv);
     D_800801F0 = TRUE;
@@ -1110,32 +1110,32 @@ void func_800099F0(void) {
             break;
     }
 
-    asset_open_folder(sp2C, 0x4000);
+    asset_open_folder(sp2C, CONTEXT_4000);
     if (str_compare(sp2C, "/demi/demigend") != 0) {
         if (gBattleSettings[sp24].characterId != SONORK && gBattleSettings[sp24].characterId != DEMONICA) {
-            asset_open_folder("/demi/demigend", 0x4000);
+            asset_open_folder("/demi/demigend", CONTEXT_4000);
         }
     }
 
     switch (gBattleSettings[sp24].characterId) {
         case DEMONICA:
-            asset_open_folder("/demi/demigen3", 0x4000);
+            asset_open_folder("/demi/demigen3", CONTEXT_4000);
             create_worker(func_8001A98C, 0x1000);
             break;
         case SONORK:
-            asset_open_folder("/demi/demigen2", 0x4000);
+            asset_open_folder("/demi/demigen2", CONTEXT_4000);
             create_worker(func_8001A98C, 0x1000);
             break;
     }
 
     func_800096D0(FALSE);
-    asset_open_folder("/demi/demidust", 0xABAB);
+    asset_open_folder("/demi/demidust", CONTEXT_ABAB);
     func_8000636C(&gPlayers[sp7E], 365, 1);
     func_8000636C(&gPlayers[sp24], 366, 1);
     create_worker(func_8001A7DC, 0x1000);
     main_loop();
     func_8002630C(0x4000);
-    func_8002630C(0xABAB);
+    func_8002630C(CONTEXT_ABAB);
     gNextGameMode = GAME_MODE_35;
 }
 
@@ -1149,18 +1149,18 @@ void func_80009CE0(void) {
     sp56 = 1 - gBattleSettings[PLAYER_2].isCpu;
     sp54 = gPlayers[sp56].characterId;
 
-    asset_open_folder("/title/ending", 0x4000);
+    asset_open_folder("/title/ending", CONTEXT_4000);
 
     str_copy(sp48, "/");
     str_concat(sp48, D_8004B844[sp54].unk_04->name);
     str_concat(sp48, "/");
     str_concat(sp48, D_8004B844[sp54].unk_04->name);
     str_concat(sp48, "end");
-    asset_open_folder(sp48, 0x4000);
+    asset_open_folder(sp48, CONTEXT_4000);
 
     str_copy(sp3C, D_8004B844[sp54].unk_04->name);
     str_concat(sp3C, "end");
-    D_80081254 = load_background(sp3C, 0, 250, 0, 0, 2, 0x4000);
+    D_80081254 = bg_layer_create(sp3C, 0, 250, 0, 0, BG_FLAG_OVERLAY, 0x4000);
     D_80081250 = D_80081254->height;
 
     obj = create_worker(func_8001A4FC, 0x1000);
@@ -1169,7 +1169,7 @@ void func_80009CE0(void) {
     obj->vars[0] = 0;
 
     D_80080129 = FALSE;
-    D_8005BFC0 |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_4;
     func_8002EA50(gCamera, sp56);
 }
 
@@ -1227,14 +1227,14 @@ void func_80009E8C(void) {
             str_copy(sp2C, "/zenm/zenmclos");
             break;
     }
-    asset_open_folder(sp2C, 0x4000);
+    asset_open_folder(sp2C, CONTEXT_4000);
 
     if (gBattleSettings[sp24].characterId == DEMONICA) {
         str_copy(sp2C, "/demi/demigen3");
     } else {
         str_copy(sp2C, "/demi/demigen2");
     }
-    asset_open_folder(sp2C, 0x4000);
+    asset_open_folder(sp2C, CONTEXT_4000);
 
     func_800096D0(TRUE);
     func_8000636C(player1, 252, 1);
@@ -1242,7 +1242,7 @@ void func_80009E8C(void) {
     player1->obj->flags |= OBJ_FLAG_HIDDEN;
     func_80009CE0();
 
-    asset_open_folder("/demi/relic", 0x4000);
+    asset_open_folder("/demi/relic", CONTEXT_4000);
     a3 = gAssets[asset_find("relic.k5", 0x4000)].aux_data;
     obj = create_model_instance(&sp80, 0x1000, func_80008D64, a3);
     obj->unk_088.a = 80;
@@ -1267,16 +1267,16 @@ void func_8000A298(void) {
     s32 i;
 
     D_800801F1 = TRUE;
-    gBattleSettings[PLAYER_1].unk_0A = gBattleSettings[PLAYER_2].unk_0A = 0;
+    gBattleSettings[PLAYER_1].consecutiveWins = gBattleSettings[PLAYER_2].consecutiveWins = 0;
 
     for (i = 0; i < 11; i++) {
         D_800B6350[PLAYER_2][i] = 0;
         D_800B6350[PLAYER_1][i] = 0;
     }
 
-    gBattleSettings[PLAYER_1].unk_0F = gBattleSettings[PLAYER_2].unk_0F = 1;
+    gBattleSettings[PLAYER_1].unk_0F = gBattleSettings[PLAYER_2].unk_0F = TRUE;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
-    gBattleSettings[PLAYER_1].unk_0C = gBattleSettings[PLAYER_2].unk_0C = 400;
+    gBattleSettings[PLAYER_1].initialHp = gBattleSettings[PLAYER_2].initialHp = 400;
     gBattleSettings[PLAYER_1].unk_04 = gBattleSettings[PLAYER_2].unk_04 = 0;
 }
 
@@ -1288,13 +1288,13 @@ void run_main_menu_mode(void) {
     func_800263A8();
     gPlayerInput[PLAYER_1].unk_0D = gPlayerInput[PLAYER_2].unk_0D = TRUE;
     asset_open_folder("/title", CONTEXT_2000);
-    load_background("dr_title", 0, 0, 0, 0, 1, CONTEXT_2000);
+    bg_layer_create("dr_title", 0, 0, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     D_8008012C |= GFX_FLAG_20;
-    D_8005BFC0 |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_4;
 
     if (gPreviousGameMode == GAME_MODE_OPTIONS) {
         Model *menuEntrySelectorModel = gAssets[asset_find("title.k2", CONTEXT_2000)].aux_data;
-        menuEntrySelector = create_model_instance(&D_8004934C, 0x1000, func_800199E0, menuEntrySelectorModel);
+        menuEntrySelector = create_model_instance(&gZeroPosition, 0x1000, func_800199E0, menuEntrySelectorModel);
         menuEntrySelector->flags |= OBJ_FLAG_1000000;
     } else {
         menuEntrySelector = create_ui_element(&sp30, &sp40, CONTEXT_2000);
@@ -1308,7 +1308,7 @@ void run_main_menu_mode(void) {
 
     func_8002630C(0x2000);
     if (gNextGameMode != GAME_MODE_PLAYER_SELECTION) {
-        func_8002630C(0xEEFF);
+        func_8002630C(CONTEXT_EEFF);
     }
 }
 
@@ -1339,7 +1339,7 @@ void func_8000A578(Object *obj) {
 
     sound_stop_one(0x2000, 8);
     obj->fn_render = func_8000A514;
-    load_background("dr_title", 0, 0, 0, 0, 1, CONTEXT_2000);
+    bg_layer_create("dr_title", 0, 0, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     v0 = create_ui_element(&sp34, &sp44, 0x2000);
     v0->currentTask->start_delay = 60;
     gCamera->pos.z = -2200;
@@ -1354,42 +1354,42 @@ void run_intro_mode(void) {
 
     D_80080129 = FALSE;
     D_8008012C |= GFX_FLAG_20;
-    D_8005BFC0 |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_4;
     asset_open_folder("/title/tit_int", CONTEXT_2000);
     asset_open_folder("/plyrsel/plyrsel", CONTEXT_EEFF);
     v0 = create_worker(func_80019F40, 0x1000);
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
     func_8001A158(v0, 0x2000);
 
-    D_80081254 = load_background("oplog", 0, 250, 0, 0x10000, 2, CONTEXT_2000);
+    D_80081254 = bg_layer_create("oplog", 0, 250, 0, 0x10000, BG_FLAG_OVERLAY, CONTEXT_2000);
     D_80081250 = D_80081254->height;
 
     func_8000A298();
     main_loop();
     func_8002630C(0x2000);
     if (gNextGameMode != GAME_MODE_PLAYER_SELECTION) {
-        func_8002630C(0xEEFF);
+        func_8002630C(CONTEXT_EEFF);
     }
 }
 
 void func_8000A828(void) {
-    asset_open_folder("/title/error", 0x2000);
-    load_background("messpg", 0, 90, 0, 180, 1, CONTEXT_2000);
+    asset_open_folder("/title/error", CONTEXT_2000);
+    bg_layer_create("messpg", 0, 90, 0, 180, TEX_FLAG_1, CONTEXT_2000);
     main_loop();
 }
 
 void run_logo_mode(void) {
     func_800263A8();
-    D_8005BFC0 |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_4;
     D_8008012C |= GFX_FLAG_20;
     D_8008012C |= GFX_FLAG_40;
     if (!gPlayerInput[0].connected && !gPlayerInput[1].connected) {
         func_8000A828();
     }
 
-    asset_open_folder("/title/logo", 0x2000);
-    load_background("vic", 0, 30, 0, 180, 1, CONTEXT_2000);
-    load_background("n64lic", 0, 190, 0, 240, 1, CONTEXT_2000);
+    asset_open_folder("/title/logo", CONTEXT_2000);
+    bg_layer_create("vic", 0, 30, 0, 180, TEX_FLAG_1, CONTEXT_2000);
+    bg_layer_create("n64lic", 0, 190, 0, 240, TEX_FLAG_1, CONTEXT_2000);
     create_worker(func_80019DE4, 0x1000);
     main_loop();
     func_8002630C(0x2000);
@@ -1422,10 +1422,10 @@ void run_1_mode(void) {
     Vec4i sp34 = { 146, 228, 0, 0 };
 
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
-    asset_open_folder("/title/option", 0x2000);
-    load_background("bgopt", 0, 0, 0, 0, 1, CONTEXT_2000);
+    asset_open_folder("/title/option", CONTEXT_2000);
+    bg_layer_create("bgopt", 0, 0, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     D_8008012C |= GFX_FLAG_20;
-    D_8005BFC0 |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_4;
 
     s0 = create_ui_element(&spD4, &sp1AC, 0x2000);
 
@@ -1438,7 +1438,7 @@ void run_1_mode(void) {
     v0->vars[3] = s0;
 
     v0 = create_ui_element(&spA4, &sp170, 0x2000);
-    v0->frameIndex = gNumRounds + 11;
+    v0->frameIndex = gMaxRounds + 11;
     v0->vars[3] = s0;
 
     v0 = create_ui_element(&sp94, &sp15C, 0x2000);
@@ -1542,10 +1542,10 @@ void run_2_mode(void) {
     Vec4i sp2C = { 149, 224, 0, 0 };
 
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
-    asset_open_folder("/title/control", 0x2000);
-    load_background("bgcont", 0, 0, 0, 0, 1, CONTEXT_2000);
+    asset_open_folder("/title/control", CONTEXT_2000);
+    bg_layer_create("bgcont", 0, 0, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     D_8008012C |= GFX_FLAG_20;
-    D_8005BFC0 |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_4;
 
     create_ui_element(&sp13C, &sp200, 0x2000);
 
@@ -1643,12 +1643,12 @@ void run_3_mode(void) {
     Vec4i sp2C = { 133, 126, 0, 0 };
 
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
-    asset_open_folder("/title/rank", 0x2000);
-    load_background("bgrank", 0, 4, 0, 0, 1, CONTEXT_2000);
+    asset_open_folder("/title/rank", CONTEXT_2000);
+    bg_layer_create("bgrank", 0, 4, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     D_80081460 = create_ui_element(&sp2C, &sp3C, 0x2000);
     func_80019278();
     D_8008012C |= GFX_FLAG_20;
-    D_8005BFC0 |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_4;
     main_loop();
     func_8002630C(0x2000);
 }
@@ -1656,13 +1656,13 @@ void run_3_mode(void) {
 void run_4_mode(void) {
     func_8002630C(0);
     func_8002630C(1);
-    func_8002630C(0xABAB);
+    func_8002630C(CONTEXT_ABAB);
 
     gPlayerInput[0].unk_0D = gPlayerInput[1].unk_0D = TRUE;
-    asset_open_folder("/title/stats", 0x2000);
-    load_background("aarost", 0, 13, 0, 0, 1, CONTEXT_2000);
+    asset_open_folder("/title/stats", CONTEXT_2000);
+    bg_layer_create("aarost", 0, 13, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     D_8008012C |= GFX_FLAG_20;
-    D_8005BFC0 |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_4;
     create_worker(func_80018AD0, 0x1000);
     main_loop();
     func_8002630C(0x2000);
@@ -1677,15 +1677,15 @@ void run_17_mode(void) {
     UnkObjDef3 sp64 = { 0xFFFFFE70, 0, 0, 0 };
     UnkObjDef3 sp54 = { 400, 0, 0, 0 };
     s32 unused2;
-    s32 sp4C = gBattleSettings[1].unk_06;
+    s32 sp4C = gBattleSettings[PLAYER_2].unk_06;
     UnkObjDef4 sp3C = { "gore", task_default_func, 0x1000, 0 };
     UnkObjDef4 sp2C = { "arena", task_default_func, 0x1000, 0 };
 
-    asset_open_folder("/bars", 0xABAB);
+    asset_open_folder("/bars", CONTEXT_ABAB);
     func_800052EC(0);
     func_800052EC(1);
-    load_background("bg2", 0, 74, 0x2000, 0x10000, 0, sp4C);
-    load_background("bg0", 0, 15, 0x1000, 0x10000, 1, sp4C);
+    bg_layer_create("bg2", 0, 74, 0x2000, 0x10000, 0, sp4C);
+    bg_layer_create("bg0", 0, 15, 0x1000, 0x10000, TEX_FLAG_1, sp4C);
     func_8001B5B0("arena", sp4C);
     func_80029630();
 

@@ -21,7 +21,7 @@ extern RenderContext D_8004CC20;
 extern BatchInfo D_8004CCC8;
 extern BatchInfo D_8004CD30;
 
-extern u16 D_8005BFC0;
+extern u16 gGlobalFlags;
 extern u16 gNextGameMode;
 extern u16 D_8005BFCE;
 
@@ -46,7 +46,7 @@ Vtx D_800492B0[2][4] = { { { { { 0, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
 BatchTriangle D_80049330[] = { { 0, 1, 2, 0 }, { 2, 1, 3, 0 } };
 s32 D_80049338[] = { 0, 0, 0 };
 Vec3s gZeroRotation = { 0, 0, 0 };
-Vec4i D_8004934C = { 0, 0, 0, 0 };
+Vec4i gZeroPosition = { 0, 0, 0, 0 };
 UnkKappa D_8004935C = { { 255, 255, 255, 255 }, 0, 0, -127, { 0, 0, 0, 255 }, 73, -73, -73 };
 UnkStruct800031FC D_8004937C = { 0, 90, 0, 0 };
 UnkStruct800031FC D_80049384 = { 0, 233, 500, 0 };
@@ -63,7 +63,7 @@ s32 D_8005BEFC;
 BatchInfo D_8005BF00;
 Gfx D_8005BF58[5];
 Mtx D_8005BF80;
-u16 D_8005BFC0;
+u16 gGlobalFlags;
 u16 gNextGameMode;
 s32 D_8005BFC4;
 u16 gScreenWidth;
@@ -86,7 +86,7 @@ void func_80006CEC(void);
 void func_80003468(u16);
 void obj_update_all(void);
 void func_80002978(void);
-void bg_draw(void);
+void bg_draw_all(void);
 void func_8001B26C(void);
 void func_800212C8(void);
 void func_80002744(Object *obj);
@@ -114,7 +114,7 @@ void func_80001120(void) {
     D_80080100 = &D_8005BFF0[D_8005BFCE];
 }
 
-void func_8000132C(void) {
+void render_frame(void) {
     OSTime frameStartTime;
     Batch *ptr;
     s32 i;
@@ -143,7 +143,7 @@ void func_8000132C(void) {
     obj_update_all();
     gSPDisplayList(gMainGfxPos++, D_8004CA68);
     func_80002978();
-    bg_draw();
+    bg_draw_all();
 
     if (!(D_8008012C & GFX_FLAG_1)) {
         gSPDisplayList(gMainGfxPos++, D_80080100->unk_4080);
@@ -195,7 +195,7 @@ void func_8000132C(void) {
 Object *func_8000194C(void) {
     Object *obj;
 
-    obj = func_80015FB4(1);
+    obj = func_80015FB4(MESSAGE_ID_CHAL);
     if (obj == NULL) {
         return NULL;
     }
@@ -207,7 +207,7 @@ Object *func_8000194C(void) {
     return obj;
 }
 
-void func_800019B0(s16 playerId) {
+void handle_start_button(s16 whoPressed) {
     Object *v0;
     Object *v1;
     s16 pad;
@@ -220,32 +220,32 @@ void func_800019B0(s16 playerId) {
     counter = 6;
 
     sp33 = FALSE;
-    gPlayerInput[playerId].accumulated = FALSE;
+    gPlayerInput[whoPressed].accumulated = FALSE;
 
     while (gTaskPool.count < 10 || gModelInstancePool.count <= 0) {
-        func_8000132C();
+        render_frame();
     }
 
     switch (gPlayMode) {
         case PLAY_MODE_PRACTICE:
-            practice_enter_pause(playerId);
+            practice_enter_pause(whoPressed);
             break;
         case PLAY_MODE_TOURNAMENT_P1:
         case PLAY_MODE_TOURNAMENT_P2:
-            if (gBattleSettings[playerId].isCpu) {
+            if (gBattleSettings[whoPressed].isCpu) {
                 v0 = func_8000194C();
                 if (v0 == NULL) {
                     sp33 = TRUE;
                 } else {
-                    gPlayerInput[playerId].enabled = FALSE;
+                    gPlayerInput[whoPressed].enabled = FALSE;
                 }
                 break;
             }
             /* fallthrough */
         default:
-            v1 = func_80015E74(&D_8004C008[9], 0xABAB);
+            v1 = create_hud_message(&gGeneralMessages[MESSAGE_ID_PAUSE], CONTEXT_ABAB);
             if (v1 != NULL) {
-                v1->vars[0] = playerId;
+                v1->vars[0] = whoPressed;
             } else {
                 sp33 = TRUE;
             }
@@ -256,7 +256,7 @@ void func_800019B0(s16 playerId) {
         sound_set_volume(0, 0);
         sound_set_volume(1, 0);
         music_set_volume(1800);
-        func_8000132C();
+        render_frame();
 
         alSeqpStop(gMusicPlayer);
 
@@ -265,11 +265,11 @@ void func_800019B0(s16 playerId) {
         sp28 = D_8008012C & GFX_FLAG_10;
         D_8008012C |= GFX_FLAG_10;
 
-        while (!(D_8005BFC0 & GAME_FLAG_40)) {
+        while (!(gGlobalFlags & GAME_FLAG_40)) {
             if (gPlayMode != PLAY_MODE_PRACTICE) {
                 gPlayerInput[PLAYER_1].mirrored = gPlayerInput[PLAYER_2].mirrored = FALSE;
             }
-            func_8000132C();
+            render_frame();
         }
 
         if (!sp28) {
@@ -278,9 +278,9 @@ void func_800019B0(s16 playerId) {
         gPlayerInput[PLAYER_1].mirrored = sp34;
         gPlayerInput[PLAYER_2].mirrored = sp35;
 
-        gPlayerInput[playerId].accumulated = FALSE;
+        gPlayerInput[whoPressed].accumulated = FALSE;
         gIsPaused = FALSE;
-        D_8005BFC0 &= ~GAME_FLAG_40;
+        gGlobalFlags &= ~GAME_FLAG_40;
         alSeqSetLoc(gMusicSequence, &gMusicMarkerStart);
         alSeqpPlay(gMusicPlayer);
         music_set_volume(gMusicVolume);
@@ -289,30 +289,30 @@ void func_800019B0(s16 playerId) {
     } else {
 
         while (--counter > 0) {
-            func_8000132C();
+            render_frame();
         }
     }
 }
 
 void unused_func_80001C6C(void) {
-    D_8005BFC0 = 0;
+    gGlobalFlags = 0;
     gIsPaused = TRUE;
     gSoundVolumeFading = gMusicVolumeFading = 1800;
 
     create_worker(func_80002744, 0x1000);
-    while (!(D_8005BFC0 & GAME_FLAG_MODE_DONE)) {
-        func_8000132C();
+    while (!(gGlobalFlags & GAME_FLAG_MODE_DONE)) {
+        render_frame();
     }
     gIsPaused = FALSE;
 
     while (gPlayerInput[0].buttons == (INP_START | INP_ZTRIG) || gPlayerInput[1].buttons == (INP_START | INP_ZTRIG)) {
-        func_8000132C();
+        render_frame();
     }
 
     gNextGameMode = GAME_MODE_MAIN_MENU;
 
     while (gPlayerInput[0].buttons == (INP_START | INP_ZTRIG) || gPlayerInput[1].buttons == (INP_START | INP_ZTRIG)) {
-        func_8000132C();
+        render_frame();
     }
 
     func_800030E4();
@@ -322,37 +322,38 @@ void unused_func_80001C6C(void) {
 void main_loop(void) {
     D_8005BFCE = D_8005BEF8 = D_8005BEF0 = D_8005BEE8 = D_8005BEE0 = 0;
 
-    while (!(D_8005BFC0 & GAME_FLAG_MODE_DONE) || !(D_8005BFC0 & GAME_FLAG_1000)) {
-        if (!(D_8005BFC0 & GAME_FLAG_200) && !(D_8005BFC0 & GAME_FLAG_4) && gPlayerInput[0].buttons == INP_START &&
-            gPlayerInput[PLAYER_1].enabled && gPlayerInput[PLAYER_1].accumulated) {
-            func_800019B0(PLAYER_1);
-        } else if (!(D_8005BFC0 & GAME_FLAG_200) && !(D_8005BFC0 & GAME_FLAG_4) &&
+    while (!(gGlobalFlags & GAME_FLAG_MODE_DONE) || !(gGlobalFlags & GAME_FLAG_1000)) {
+        if (!(gGlobalFlags & GAME_FLAG_BATTLE_FINISHED) && !(gGlobalFlags & GAME_FLAG_4) &&
+            gPlayerInput[0].buttons == INP_START && gPlayerInput[PLAYER_1].enabled &&
+            gPlayerInput[PLAYER_1].accumulated) {
+            handle_start_button(PLAYER_1);
+        } else if (!(gGlobalFlags & GAME_FLAG_BATTLE_FINISHED) && !(gGlobalFlags & GAME_FLAG_4) &&
                    gPlayerInput[PLAYER_2].buttons == INP_START && gPlayerInput[PLAYER_2].enabled &&
                    gPlayerInput[PLAYER_2].accumulated) {
-            func_800019B0(PLAYER_2);
+            handle_start_button(PLAYER_2);
         }
 
-        if (D_8005BFC0 & GAME_FLAG_200) {
+        if (gGlobalFlags & GAME_FLAG_BATTLE_FINISHED) {
             gIsPaused = 1 - gIsPaused;
         }
-        func_8000132C();
+        render_frame();
     }
 
-    D_8005BFC0 &= ~(GAME_FLAG_200 | GAME_FLAG_MODE_DONE);
-    D_8005BFC0 |= GAME_FLAG_2000;
+    gGlobalFlags &= ~(GAME_FLAG_BATTLE_FINISHED | GAME_FLAG_MODE_DONE);
+    gGlobalFlags |= GAME_FLAG_2000;
 
-    if (!(D_8005BFC0 & GAME_FLAG_10)) {
-        if (!(D_8005BFC0 & GAME_FLAG_20)) {
+    if (!(gGlobalFlags & GAME_FLAG_10)) {
+        if (!(gGlobalFlags & GAME_FLAG_20)) {
             gIsPaused = TRUE;
         }
         create_worker(func_80002744, 0x1000);
-        while (!(D_8005BFC0 & GAME_FLAG_MODE_DONE)) {
-            func_8000132C();
+        while (!(gGlobalFlags & GAME_FLAG_MODE_DONE)) {
+            render_frame();
         }
         gIsPaused = FALSE;
     }
 
-    D_8005BFC0 &= ~GAME_FLAG_2000;
+    gGlobalFlags &= ~GAME_FLAG_2000;
 
     func_80001120();
     func_80001120();
@@ -452,12 +453,12 @@ void func_80002340(Object *obj) {
     if (D_8005BEFC - 8 < D_80080118) {
         D_8008012C &= ~GFX_FLAG_10;
         obj->flags |= OBJ_FLAG_DELETE;
-        D_8005BFC0 |= GAME_FLAG_100;
+        gGlobalFlags |= GAME_FLAG_100;
 
         if (obj->vars[4] == 0) {
-            D_8005BFC0 &= ~GAME_FLAG_4;
+            gGlobalFlags &= ~GAME_FLAG_4;
         }
-        D_8005BFC0 |= GAME_FLAG_1000;
+        gGlobalFlags |= GAME_FLAG_1000;
     } else {
         D_8005BEFC -= 8;
         func_80002178(D_8005BEFC, NULL);
@@ -475,20 +476,21 @@ void func_800023E4(Object *obj) {
     func_80002178(255, NULL);
 }
 
-void func_80002448(Object *obj) {
-    func_80021918(obj, 0);
-    if (D_8005BFC0 & GAME_FLAG_400) {
-        D_8005BFC0 |= GAME_FLAG_1000;
+void update_transition(Object *obj) {
+    music_play(obj, 0);
+    if (gGlobalFlags & GAME_FLAG_400) {
+        gGlobalFlags |= GAME_FLAG_1000;
         return;
     }
+
     D_8008012C |= GFX_FLAG_10;
     osViBlack(TRUE);
-    D_8005BFC0 &= ~GAME_FLAG_1000;
-    func_80021918(obj, 0);
-    if (D_8005BFC0 & GAME_FLAG_4) {
+    gGlobalFlags &= ~GAME_FLAG_1000;
+    music_play(obj, 0);
+    if (gGlobalFlags & GAME_FLAG_4) {
         obj->vars[4] = 1;
     }
-    D_8005BFC0 |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_4;
     if (obj->flags & OBJ_FLAG_DELETE) {
         obj->flags &= ~OBJ_FLAG_DELETE;
         obj->fn_render = func_800023E4;
@@ -501,7 +503,7 @@ void func_80002528(Object *obj) {
     obj->vars[0]++;
 
     if (obj->vars[0] >= 5) {
-        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+        gGlobalFlags |= GAME_FLAG_MODE_DONE;
         obj->flags |= OBJ_FLAG_DELETE;
     }
 }
@@ -520,7 +522,7 @@ void func_80002590(Object *obj) {
     }
 
     obj->fn_render = func_80002528;
-    if (!(D_8005BFC0 & GAME_FLAG_800)) {
+    if (!(gGlobalFlags & GAME_FLAG_800)) {
         osViBlack(1);
     }
 
@@ -549,7 +551,7 @@ void func_80002648(Object *obj) {
     }
 
     obj->fn_render = func_80002528;
-    if (!(D_8005BFC0 & GAME_FLAG_800)) {
+    if (!(gGlobalFlags & GAME_FLAG_800)) {
         osViBlack(1);
     }
 
@@ -558,11 +560,11 @@ void func_80002648(Object *obj) {
 }
 
 void func_80002744(Object *obj) {
-    if (!(D_8005BFC0 & GAME_FLAG_80)) {
+    if (!(gGlobalFlags & GAME_FLAG_80)) {
         D_8005BEFC = 0;
     }
 
-    D_8005BFC0 &= ~GAME_FLAG_80;
+    gGlobalFlags &= ~GAME_FLAG_80;
     obj->fn_render = func_80002648;
     func_80002178(D_8005BEFC, NULL);
 }
@@ -574,9 +576,9 @@ void game_main(void) {
 
     while (TRUE) {
         gCurrentGameMode = gNextGameMode;
-        create_worker(func_80002448, 0x1100);
+        create_worker(update_transition, 0x1100);
         gGameModes[gNextGameMode].fn_run();
-        if (!(D_8005BFC0 & GAME_FLAG_800)) {
+        if (!(gGlobalFlags & GAME_FLAG_800)) {
             osViBlack(1);
         }
         func_800030E4();

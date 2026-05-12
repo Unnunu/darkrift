@@ -767,7 +767,7 @@ void create_shadow(Object *baseObject, char *asset_name, u32 context) {
     Object *shadow;
 
     str_copy(gShadowProps.name, asset_name);
-    shadow = create_model_instance_with_properties(&D_8004934C, NULL, &gShadowProps, context);
+    shadow = create_model_instance_with_properties(&gZeroPosition, NULL, &gShadowProps, context);
 
     shadow->vars[0] = shadow->modInst->transforms;
     shadow->vars[1] = baseObject;

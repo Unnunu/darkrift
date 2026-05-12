@@ -169,7 +169,6 @@ typedef struct Asset {
     /* 0x2C */ u16 type;
     /* 0x2E */ s16 flags;
     /* 0x30 */ u16 context;
-    /* 0x32 */ char pad_32[2];
     /* 0x34 */ u8 *romAddr;
 } Asset; // size = 0x38
 
@@ -410,7 +409,7 @@ typedef struct Object {
     /* 0x064 */ char unk_064[0x70 - 0x64];
     /* 0x070 */ s16 playerHp;
     /* 0x072 */ s16 unk_072;
-    /* 0x074 */ s16 unk_074;
+    /* 0x074 */ s16 priority;
     /* 0x076 */ s16 unk_076;
     /* 0x078 */ s16 unk_078;
     /* 0x07A */ s16 unk_07A;
@@ -509,7 +508,7 @@ typedef struct UnkObjDef3 {
     /* 0x0C */ s32 unk_0C;
 } UnkObjDef3; // size = 0x10
 
-typedef struct Texture {
+typedef struct BackgroundLayer {
     /* 0x00 */ u32 width;
     /* 0x04 */ u32 height;
     /* 0x08 */ s32 colorIndexed;
@@ -517,11 +516,11 @@ typedef struct Texture {
     /* 0x10 */ u8 *raster;
     /* 0x14 */ u8 *palette;
     /* 0x18 */ s32 unk_18;
-    /* 0x1C */ s32 unk_1C;
-    /* 0x20 */ s32 unk_20;
-    /* 0x24 */ s32 unk_24;
-    /* 0x28 */ struct Texture *next;
-} Texture; // size = 0x2C
+    /* 0x1C */ s32 posY;
+    /* 0x20 */ s32 parallaxX;
+    /* 0x24 */ s32 parallaxY;
+    /* 0x28 */ struct BackgroundLayer *next;
+} BackgroundLayer; // size = 0x2C
 
 typedef struct ActionState {
     /* 0x00 */ s16 duration;
@@ -832,11 +831,10 @@ typedef struct Player12 {
     /* 0x02 */ u8 isCpu; // probably wrong name
     /* 0x04 */ u16 unk_04;
     /* 0x06 */ u8 unk_06;
-    /* 0x07 */ char unk_07;
-    /* 0x08 */ s16 unk_08;
-    /* 0x0A */ s16 unk_0A;
-    /* 0x0C */ s16 unk_0C;
-    /* 0x0E */ u8 unk_0E;
+    /* 0x08 */ s16 roundsWon;
+    /* 0x0A */ s16 consecutiveWins;
+    /* 0x0C */ s16 initialHp;
+    /* 0x0E */ u8 isDebug;
     /* 0x0F */ u8 unk_0F;
     /* 0x0F */ u8 isDummy;
     /* 0x0F */ u8 unk_11;
@@ -861,13 +859,13 @@ typedef struct UnkK2Def {
     /* 0x14 */ s32 startingFrame;
 } UnkK2Def;
 
-typedef struct Unk80015E74 {
-    /* 0x00 */ char *unk_00;
-    /* 0x04 */ u16 unk_04;
-    /* 0x06 */ u16 unk_06;
-    /* 0x08 */ ObjFunc unk_08;
-    /* 0x0C */ s32 unk_0C;
-} Unk80015E74;
+typedef struct HudMessage {
+    /* 0x00 */ char *name;
+    /* 0x04 */ u16 duration;
+    /* 0x06 */ u16 fadeRate;
+    /* 0x08 */ ObjFunc fn_update;
+    /* 0x0C */ s32 soundId;
+} HudMessage;
 
 typedef struct Unk8000C3CCArg3 {
     /* 0x00 */ Gfx combineMode;

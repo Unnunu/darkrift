@@ -339,7 +339,7 @@ GameMode gGameModes[] = {
     { func_800095A8, 11, 0, 0, 0, 0, 0, 0, 4, 10, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } }
 };
 
-Unk80015E74 D_8004C008[] = {
+HudMessage gGeneralMessages[] = {
     { "battle", 10, 20, func_80015D60, 0 },   { "chal", 60, 20, func_80015D60, 3 },
     { "cont", 240, 20, func_80015D60, 1 },    { "ctdown", 0, 255, func_80016144, -1 },
     { "draw", 0, 20, func_80015CD8, 4 },      { "finalrd", 30, 20, func_80015D60, -1 },
@@ -348,7 +348,7 @@ Unk80015E74 D_8004C008[] = {
     { "timeover", 0, 20, func_80015D60, -1 }, { "perfect", 0, 80, func_80015D60, 6 },
 };
 
-Unk80015E74 D_8004C0C8[] = {
+HudMessage gWinMessages[] = {
     { "aarowin", 110, 20, func_80015CD8, 5 }, { "demiwin", 110, 20, func_80015CD8, 5 },
     { "demowin", 110, 20, func_80015CD8, 5 }, { "evewin", 110, 20, func_80015CD8, 5 },
     { "gorewin", 110, 20, func_80015CD8, 5 }, { "gorewin", 110, 20, func_80015CD8, 5 },
@@ -360,7 +360,7 @@ Unk80015E74 D_8004C0C8[] = {
 u32 D_8004C178[] = { 430, 430, 430, 430, 430, 430, 430, 530, 470, 430, 430 };
 u32 D_8004C1A4[] = { 500, 450, 450, 450, 450, 450, 450, 370, 370, 450, 450 };
 
-s16 gNumRounds = 3;
+s16 gMaxRounds = 3;
 s16 gBattleDurationEnum = 2;
 
 u8 D_8004C1D8[] = { 6, 7, 9, 6, 5, 5, 6, 8, 5, 8, 5 };

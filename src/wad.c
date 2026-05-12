@@ -83,7 +83,7 @@ void func_8000E73C(Model *, AssetGmd *, char *, s32, Unk8000C3CCArg3 *, u16);
 void func_80035CCC(Model *);
 void func_8000E0D8(Model *);
 
-void func_80026B74(Asset *);
+void asset_free(Asset *);
 void func_80027680(Asset *);
 void func_8000BE18(AssetGmd *);
 
@@ -315,7 +315,7 @@ void func_8002630C(s32 arg0) {
 
     for (i = 0; i < gNumAssets; i++) {
         if (arg0 == gAssets[i].context) {
-            func_80026B74(gAssets + i);
+            asset_free(gAssets + i);
         }
     }
 
@@ -326,7 +326,7 @@ void func_800263A8(void) {
     u32 i;
 
     for (i = 0; i < gNumAssets; i++) {
-        func_80026B74(gAssets + i);
+        asset_free(gAssets + i);
     }
 
     assets_clear_unused();
@@ -337,7 +337,7 @@ void func_80026418(s32 arg0) {
 
     for (i = 0; i < gNumAssets; i++) {
         if (arg0 == gAssets[i].type) {
-            func_80026B74(gAssets + i);
+            asset_free(gAssets + i);
         }
     }
 
@@ -435,11 +435,11 @@ void asset_read_all_files_in_folder(s32 context) {
                     asset_load_ctl(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_SEQ:
-                    func_80026BE0(gAssets + gNumAssets - 1);
+                    asset_read(gAssets + gNumAssets - 1);
                     asset_load_seq(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_TBL:
-                    func_80026BE0(gAssets + gNumAssets - 1);
+                    asset_read(gAssets + gNumAssets - 1);
                     asset_load_tbl(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_SP3:
@@ -449,7 +449,7 @@ void asset_read_all_files_in_folder(s32 context) {
                     asset_load_sfb(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_SFX:
-                    func_80026BE0(gAssets + gNumAssets - 1);
+                    asset_read(gAssets + gNumAssets - 1);
                     asset_load_sfx(gAssets + gNumAssets - 1);
                     break;
                 case WAD_FILE_K2:
@@ -477,7 +477,7 @@ void asset_read_all_files_in_folder(s32 context) {
                     asset_load_k5(gAssets + gNumAssets - 1);
                     break;
                 default:
-                    func_80026BE0(gAssets + gNumAssets - 1);
+                    asset_read(gAssets + gNumAssets - 1);
                     break;
             }
         }
@@ -508,24 +508,24 @@ void func_80026B34(Asset *arg0, s32 arg1) {
     arg0->aux_data = D_8005AEB8[index].data;
 }
 
-void func_80026B74(Asset *arg0) {
-    arg0->flags = 1;
+void asset_free(Asset *asset) {
+    asset->flags = 1;
 
-    if (arg0->memory_slot >= 0) {
-        mem_free_slot(arg0->memory_slot);
+    if (asset->memory_slot >= 0) {
+        mem_free_slot(asset->memory_slot);
     }
 
-    if (arg0->aux_memory_slot >= 0) {
-        mem_free_slot(arg0->aux_memory_slot);
+    if (asset->aux_memory_slot >= 0) {
+        mem_free_slot(asset->aux_memory_slot);
     }
 
-    arg0->memory_slot = -1;
-    arg0->aux_memory_slot = -1;
-    arg0->name[0] = '\0';
-    arg0->data = arg0->aux_data = NULL;
+    asset->memory_slot = -1;
+    asset->aux_memory_slot = -1;
+    asset->name[0] = '\0';
+    asset->data = asset->aux_data = NULL;
 }
 
-void func_80026BE0(Asset *asset) {
+void asset_read(Asset *asset) {
     func_80026A94(asset, asset->unpacked_size);
     if (asset->flags & 2) {
         func_80025A0C(asset);
@@ -588,7 +588,7 @@ void func_80026DF0(Asset *asset) {
     AnimHeader **v0;
     u32 a0;
 
-    func_80026BE0(asset);
+    asset_read(asset);
     animAsset = (AnimHeader **) asset->data;
     a3 = animAsset->unk_00;
 
@@ -604,7 +604,7 @@ void func_80026DF0(Asset *asset) {
 }
 
 void asset_load_tex(Asset *asset) {
-    func_80026BE0(asset);
+    asset_read(asset);
 }
 
 void func_80026EEC(Asset *asset) {
@@ -651,7 +651,7 @@ void asset_load_sp2(Asset *asset) {
     AssetSP2Sub2 *tmp;
     s32 unused[2];
 
-    func_80026BE0(asset);
+    asset_read(asset);
     header = asset->data;
     entry = (AssetSP2Sub2 *) ((u32) header->sprites + (u32) header);
     header->sprites = entry;
@@ -681,7 +681,7 @@ void func_800271C0(Asset *asset) {
     s32 sp30;
     AssetGmd *sp2C;
 
-    func_80026BE0(asset);
+    asset_read(asset);
     unkHeader = asset->data;
     sp34 = asset->memory_slot;
     sp30 = unkHeader->numEntries;
@@ -705,7 +705,7 @@ void asset_load_gmd(Asset *asset) {
     s32 sp30;
     AssetGmd *sp2C;
 
-    func_80026BE0(asset);
+    asset_read(asset);
     unkHeader = asset->data;
     sp34 = asset->memory_slot;
     sp30 = unkHeader->numEntries;
@@ -729,7 +729,7 @@ void asset_load_k3(Asset *asset) {
     s32 sp28;
     AssetGmd *s1;
 
-    func_80026BE0(asset);
+    asset_read(asset);
     unkHeader = asset->data;
     sp2C = asset->memory_slot;
     sp28 = unkHeader->numEntries;
@@ -756,7 +756,7 @@ void asset_load_k4(Asset *asset) {
     s32 sp28;
     AssetGmd *s1;
 
-    func_80026BE0(asset);
+    asset_read(asset);
     unkHeader = asset->data;
     sp2C = asset->memory_slot;
     sp28 = unkHeader->numEntries;
@@ -783,7 +783,7 @@ void asset_load_k5(Asset *asset) {
     s32 sp28;
     AssetGmd *s1;
 
-    func_80026BE0(asset);
+    asset_read(asset);
     unkHeader = asset->data;
     sp2C = asset->memory_slot;
     sp28 = unkHeader->numEntries;
@@ -811,7 +811,7 @@ void asset_load_tmd(Asset *asset) {
     s32 sp28;
     AssetGmd *s1;
 
-    func_80026BE0(asset);
+    asset_read(asset);
     unkHeader = asset->data;
     sp2C = asset->memory_slot;
     sp28 = unkHeader->numEntries;
@@ -911,11 +911,11 @@ void asset_reload_gmd(Asset *asset) {
 }
 
 void asset_load_ctl(Asset *asset) {
-    func_80026BE0(asset);
+    asset_read(asset);
     if (asset->data != NULL) {
         gMusicBankFileSize = asset->unpacked_size;
         mem_move(gMusicBankFile, asset->data, gMusicBankFileSize);
-        func_80026B74(asset);
+        asset_free(asset);
     }
 }
 
@@ -943,11 +943,11 @@ void asset_load_seq(Asset *asset) {
 }
 
 void asset_load_vox(Asset *asset) {
-    func_80026BE0(asset);
+    asset_read(asset);
     if (asset->data != NULL) {
         mem_move(gAudioBankFiles[2], asset->data, asset->unpacked_size);
         gSfxPlayerOn[2] = 1;
-        func_80026B74(asset);
+        asset_free(asset);
         sound_init_player(gAudioBankFiles[2], D_7DE880, 2);
     }
 }
@@ -960,11 +960,11 @@ void asset_load_sfb(Asset *asset) {
         playerID = 2;
     }
 
-    func_80026BE0(asset);
+    asset_read(asset);
     if (asset->data != NULL) {
         mem_move(gAudioBankFiles[playerID], asset->data, asset->unpacked_size);
         gSfxPlayerOn[playerID] = TRUE;
-        func_80026B74(asset);
+        asset_free(asset);
     }
 }
 
@@ -1000,7 +1000,7 @@ void asset_load_sp3(Asset *asset) {
     AssetGmd *s1;
     char *name;
 
-    func_80026BE0(asset);
+    asset_read(asset);
     unkHeader = asset->data;
     sp2C = asset->memory_slot;
     sp28 = unkHeader->numEntries;
@@ -1022,7 +1022,7 @@ void asset_load_sp3(Asset *asset) {
 }
 
 void asset_load_oc(Asset *asset) {
-    func_80026BE0(asset);
+    asset_read(asset);
 }
 
 void asset_reload_sp3(Asset *asset) {
@@ -1044,7 +1044,7 @@ void asset_load_k2(Asset *asset) {
     s32 sp28;
     AssetGmd *s1;
 
-    func_80026BE0(asset);
+    asset_read(asset);
     unkHeader = asset->data;
     sp2C = asset->memory_slot;
     sp28 = unkHeader->numEntries;
@@ -1083,12 +1083,12 @@ void asset_load_mov(Asset *asset) {
     if (D_8013C228 != NULL) {
         D_8013C228(asset);
     } else {
-        func_80026BE0(asset);
+        asset_read(asset);
     }
 }
 
 void asset_load_sym(Asset *asset) {
-    if (gBattleSettings[asset->context].unk_0E != 0) {
-        func_80026BE0(asset);
+    if (gBattleSettings[asset->context].isDebug) {
+        asset_read(asset);
     }
 }

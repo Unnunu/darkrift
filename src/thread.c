@@ -74,7 +74,7 @@ void thread3_main(void *arg0) {
     osCreateMesgQueue(&gSchedVRetraceQueue, gSchedVRetraceMessages, ARRAY_COUNT(gSchedVRetraceMessages));
     osViSetEvent(&gSchedVRetraceQueue, 0, 1);
 
-    cont_init(4);
+    cont_init(MAXCONTROLLERS);
 
     osCreateMesgQueue(&gSchedTaskRequestQueue, D_8005AE7C, ARRAY_COUNT(D_8005AE7C));
     osCreateMesgQueue(&gSchedSPTaskQueue, gSchedSPTaskMessages, ARRAY_COUNT(gSchedSPTaskMessages));

@@ -126,7 +126,7 @@ void func_80018088(Object *obj) {
         if (v1 != 0) {
             obj->frameIndex = 22 + ((obj->frameIndex + v1 + 3) % 5);
             obj1->vars[5] = 0;
-            gNumRounds = obj->frameIndex - 21;
+            gMaxRounds = obj->frameIndex - 21;
         }
     } else {
         if (obj->frameIndex >= 22 && obj->frameIndex <= 26) {
@@ -238,7 +238,7 @@ void func_800183FC(Object *obj) {
         obj->flags &= ~OBJ_FLAG_HIDDEN;
         if ((gPlayerInput[PLAYER_1].buttons == INP_START) || gPlayerInput[PLAYER_2].buttons == INP_START) {
             gNextGameMode = GAME_MODE_2;
-            D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+            gGlobalFlags |= GAME_FLAG_MODE_DONE;
             TASK_END(obj->currentTask);
             sound_play(2, 0);
         }
@@ -255,7 +255,7 @@ void func_800184A8(Object *obj) {
         obj->flags &= ~OBJ_FLAG_HIDDEN;
         if ((gPlayerInput[PLAYER_1].buttons == INP_START) || gPlayerInput[PLAYER_2].buttons == INP_START) {
             gNextGameMode = GAME_MODE_3;
-            D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+            gGlobalFlags |= GAME_FLAG_MODE_DONE;
             TASK_END(obj->currentTask);
             sound_play(2, 0);
         }
@@ -272,7 +272,7 @@ void func_80018554(Object *obj) {
         obj->flags &= ~OBJ_FLAG_HIDDEN;
         if ((gPlayerInput[PLAYER_1].buttons == INP_START) || gPlayerInput[PLAYER_2].buttons == INP_START) {
             gNextGameMode = GAME_MODE_4;
-            D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+            gGlobalFlags |= GAME_FLAG_MODE_DONE;
             TASK_END(obj->currentTask);
             sound_play(2, 0);
         }
@@ -289,7 +289,7 @@ void func_80018600(Object *obj) {
         obj->flags &= ~OBJ_FLAG_HIDDEN;
         if ((gPlayerInput[PLAYER_1].buttons == INP_START) || gPlayerInput[PLAYER_2].buttons == INP_START) {
             gNextGameMode = GAME_MODE_MAIN_MENU;
-            D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+            gGlobalFlags |= GAME_FLAG_MODE_DONE;
             TASK_END(obj->currentTask);
             sound_play(2, 0);
         }
@@ -425,7 +425,7 @@ void func_800189CC(Object *obj) {
         obj->flags &= ~OBJ_FLAG_HIDDEN;
         if (gPlayerInput[PLAYER_1].buttons == INP_START) {
             gNextGameMode = GAME_MODE_OPTIONS;
-            D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+            gGlobalFlags |= GAME_FLAG_MODE_DONE;
             TASK_END(obj->currentTask);
             v1++;
         }
@@ -434,7 +434,7 @@ void func_800189CC(Object *obj) {
         obj->flags &= ~OBJ_FLAG_HIDDEN;
         if (gPlayerInput[PLAYER_2].buttons == INP_START) {
             gNextGameMode = GAME_MODE_OPTIONS;
-            D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+            gGlobalFlags |= GAME_FLAG_MODE_DONE;
             TASK_END(obj->currentTask);
             v1++;
         }
@@ -468,11 +468,11 @@ void func_80018AD0(Object *obj) {
             obj->vars[0]--;
         }
 
-        mem_free(D_80049AE0);
-        D_80049AE0 = NULL;
+        mem_free(gBgLayerList);
+        gBgLayerList = NULL;
         str_copy(sp38, D_8004B844[obj->vars[0]].unk_04->name);
         str_concat(sp38, "st");
-        load_background(sp38, 0, 13, 0, 0, 1, 0x2000);
+        bg_layer_create(sp38, 0, 13, 0, 0, TEX_FLAG_1, 0x2000);
         sound_play(2, 1);
     } else if (buttons & INP_RIGHT) {
         characterId = obj->vars[0] = (obj->vars[0] + 1) % 11;
@@ -481,15 +481,15 @@ void func_80018AD0(Object *obj) {
             obj->vars[0]++;
         }
 
-        mem_free(D_80049AE0);
-        D_80049AE0 = NULL;
+        mem_free(gBgLayerList);
+        gBgLayerList = NULL;
         str_copy(sp38, D_8004B844[obj->vars[0]].unk_04->name);
         str_concat(sp38, "st");
-        load_background(sp38, 0, 13, 0, 0, 1, 0x2000);
+        bg_layer_create(sp38, 0, 13, 0, 0, TEX_FLAG_1, 0x2000);
         sound_play(2, 1);
     } else if (buttons & INP_START) {
         gNextGameMode = GAME_MODE_OPTIONS;
-        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+        gGlobalFlags |= GAME_FLAG_MODE_DONE;
         TASK_END(obj->currentTask);
         sound_play(2, 0);
     }
@@ -501,7 +501,7 @@ void func_80018D64(Object *obj) {
     buttons = gPlayerInput[PLAYER_1].buttons | gPlayerInput[PLAYER_2].buttons;
     if (buttons & INP_START) {
         gNextGameMode = GAME_MODE_OPTIONS;
-        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+        gGlobalFlags |= GAME_FLAG_MODE_DONE;
         TASK_END(obj->currentTask);
         sound_play(2, 0);
     }
@@ -557,12 +557,12 @@ void func_8001905C(Object *obj) {
     Object *v03;
     s32 pad;
 
-    if (!(D_8005BFC0 & GAME_FLAG_1000)) {
+    if (!(gGlobalFlags & GAME_FLAG_1000)) {
         return;
     }
     v0 = obj->vars[0]++;
     if (v0 == 0) {
-        func_80014CB4(D_80049AE0);
+        func_80014CB4(gBgLayerList);
     }
 
     for (i = 0; i < 10; i++) {

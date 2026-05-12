@@ -3,10 +3,9 @@
 #include "task.h"
 
 extern s16 D_80049390;
-extern Unk80015E74 D_8004C008[];
-extern Unk80015E74 D_8004C0C8[];
+extern HudMessage gWinMessages[];
 extern u8 D_8004A42C;
-extern s16 gNumRounds;
+extern s16 gMaxRounds;
 
 extern Object *D_8013C23C;
 
@@ -25,7 +24,7 @@ void func_80016A00(Object *);
 void func_800177C0(Object *);
 
 void func_80015BC0(Object *obj) {
-    D_8005BFC0 |= GAME_FLAG_80 | GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
+    gGlobalFlags |= GAME_FLAG_80 | GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
     gNextGameMode = GAME_MODE_PLAYER_SELECTION;
     func_800194E0(PLAY_MODE_50);
     if (gBattleSettings[PLAYER_1].isCpu) {
@@ -35,7 +34,7 @@ void func_80015BC0(Object *obj) {
     }
 
     gBattleSettings[PLAYER_1].isCpu = gBattleSettings[PLAYER_2].isCpu = FALSE;
-    gBattleSettings[PLAYER_1].unk_08 = gBattleSettings[PLAYER_2].unk_08 = 0;
+    gBattleSettings[PLAYER_1].roundsWon = gBattleSettings[PLAYER_2].roundsWon = 0;
     obj->flags |= OBJ_FLAG_DELETE;
 }
 
@@ -77,7 +76,7 @@ void func_80015D60(Object *obj) {
 
     if (obj->frameIndex >= obj->modInst->numAnimFrames) {
         if (--obj->vars[1] <= 0) {
-            if (obj->vars[0] < obj->unk_088.a) {
+            if (obj->unk_088.a > obj->vars[0]) {
                 obj->unk_088.a -= obj->vars[0];
             } else {
                 obj->unk_088.a = 0;
@@ -101,31 +100,31 @@ void func_80015E24(Object *obj) {
     }
 }
 
-Object *func_80015E74(Unk80015E74 *arg0, s32 arg1) {
+Object *create_hud_message(HudMessage *msg, s32 context) {
     Object *obj;
-    Vec4i sp7C;
+    Vec4i pos;
     Model *a3;
-    char sp28[80];
+    char filename[80];
 
     sound_stop(2);
-    str_copy(sp28, arg0->unk_00);
-    str_concat(sp28, ".k2");
+    str_copy(filename, msg->name);
+    str_concat(filename, ".k2");
 
-    a3 = gAssets[asset_find(sp28, arg1)].aux_data;
-    sp7C.x = sp7C.y = sp7C.z = 0;
-    obj = create_model_instance(&sp7C, 0x1000, arg0->unk_08, a3);
+    a3 = gAssets[asset_find(filename, context)].aux_data;
+    pos.x = pos.y = pos.z = 0;
+    obj = create_model_instance(&pos, 0x1000, msg->fn_update, a3);
 
     if (obj != NULL) {
         obj->flags |= OBJ_FLAG_1000000;
 
-        obj->vars[1] = arg0->unk_04;
+        obj->vars[1] = msg->duration;
         obj->flags |= OBJ_FLAG_800;
-        if (arg0->unk_06 != 0) {
+        if (msg->fadeRate != 0) {
             obj->unk_088.a = 128;
-            obj->vars[0] = arg0->unk_06;
+            obj->vars[0] = msg->fadeRate;
             obj->flags |= OBJ_FLAG_2000;
         }
-        obj->vars[2] = arg0->unk_0C;
+        obj->vars[2] = msg->soundId;
         obj->currentTask->start_delay = 2;
     }
 
@@ -139,11 +138,11 @@ void func_80015F60(Object *arg0, Object *arg1) {
     D_8013C23C->currentTask->start_delay = 30;
 }
 
-Object *func_80015FB4(s16 arg0) {
+Object *func_80015FB4(s16 msgId) {
     Object *obj;
 
-    obj = func_80015E74(D_8004C008 + arg0, 0xABAB);
-    if (obj != NULL && arg0 == 3) {
+    obj = create_hud_message(gGeneralMessages + msgId, CONTEXT_ABAB);
+    if (obj != NULL && msgId == MESSAGE_ID_CTDOWN) {
         obj->unk_1E8 = func_80015F60;
         obj->unk_076 |= 8;
     }
@@ -151,11 +150,11 @@ Object *func_80015FB4(s16 arg0) {
     return obj;
 }
 
-Object *func_80016020(s32 characterId, s32 arg1, u32 playerId) {
+Object *draw_win_message(s32 characterId, s32 arg1, u32 playerId) {
     s32 unused;
     Object *obj;
 
-    obj = func_80015E74(D_8004C0C8 + characterId, playerId);
+    obj = create_hud_message(gWinMessages + characterId, playerId);
 
     if (obj != NULL) {
         obj->currentTask->start_delay = arg1;
@@ -171,20 +170,21 @@ Object *func_80016020(s32 characterId, s32 arg1, u32 playerId) {
     return obj;
 }
 
-u16 func_800160C8(s32 arg0) {
-    Unk80015E74 *a0;
+u16 draw_round_number(s32 roundNumber) {
+    HudMessage *a0;
     Object *obj;
 
-    if (gBattleSettings[PLAYER_1].unk_08 == gNumRounds - 1 && gBattleSettings[PLAYER_2].unk_08 == gNumRounds - 1) {
-        a0 = &D_8004C008[5];
+    if (gBattleSettings[PLAYER_1].roundsWon == gMaxRounds - 1 &&
+        gBattleSettings[PLAYER_2].roundsWon == gMaxRounds - 1) {
+        a0 = &gGeneralMessages[MESSAGE_ID_FINALRD];
     } else {
-        a0 = &D_8004C008[6];
+        a0 = &gGeneralMessages[MESSAGE_ID_ROUND];
     }
-    obj = func_80015E74(a0, 0xABAB);
+    obj = create_hud_message(a0, CONTEXT_ABAB);
     if (obj != NULL) {
-        obj->frameIndex = arg0 * 2;
+        obj->frameIndex = roundNumber * 2;
     }
-    return a0->unk_04;
+    return a0->duration;
 }
 
 void func_80016144(Object *obj) {
@@ -234,8 +234,8 @@ void func_800162A4(Object *obj) {
     gPlayers[PLAYER_1].stateId = 0;
     gPlayers[PLAYER_2].stateId = 0;
 
-    func_80005B70(PLAYER_1);
-    func_80005B70(PLAYER_2);
+    create_player_obj(PLAYER_1);
+    create_player_obj(PLAYER_2);
 
     obj->flags |= OBJ_FLAG_DELETE;
     D_8013C224 = gFrameCounter % 5;
@@ -292,13 +292,13 @@ void func_800162A4(Object *obj) {
         D_8013C3C0[1] = D_80052D70[0] = D_80052D70[1] = D_80052D74[0] = D_80052D74[1] = 0;
     D_80052D78[0] = D_80052D78[1] = 2;
 
-    if (!D_8013C24E && gBattleSettings[D_8013C24C].unk_08 != 0) {
-        D_8013C258[D_8013C24C][gBattleSettings[D_8013C24C].unk_08 - 1]->frameIndex = 13;
-    } else if (D_8013C24E && gBattleSettings[PLAYER_1].unk_08 != 0 && gBattleSettings[PLAYER_2].unk_08 != 0) {
-        D_8013C258[PLAYER_1][gBattleSettings[PLAYER_1].unk_08 - 1]->frameIndex = 13;
-        D_8013C258[PLAYER_2][gBattleSettings[PLAYER_2].unk_08 - 1]->frameIndex = 13;
+    if (!D_8013C24E && gBattleSettings[D_8013C24C].roundsWon != 0) {
+        D_8013C258[D_8013C24C][gBattleSettings[D_8013C24C].roundsWon - 1]->frameIndex = 13;
+    } else if (D_8013C24E && gBattleSettings[PLAYER_1].roundsWon != 0 && gBattleSettings[PLAYER_2].roundsWon != 0) {
+        D_8013C258[PLAYER_1][gBattleSettings[PLAYER_1].roundsWon - 1]->frameIndex = 13;
+        D_8013C258[PLAYER_2][gBattleSettings[PLAYER_2].roundsWon - 1]->frameIndex = 13;
     } else {
-        for (i = 0; i < gNumRounds; i++) {
+        for (i = 0; i < gMaxRounds; i++) {
             D_8013C258[PLAYER_1][i]->frameIndex = D_8013C258[PLAYER_2][i]->frameIndex = 12;
         }
     }
@@ -366,16 +366,16 @@ void func_800168F0(Object *obj) {
     gPlayers[PLAYER_1].moveTimeout = gPlayers[PLAYER_2].moveTimeout = 0;
 
     if (--obj->vars[1] < 0 && func_800167D4()) {
-        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+        gGlobalFlags |= GAME_FLAG_MODE_DONE;
         TASK_END(obj->currentTask);
-        D_8005BFC0 |= GAME_FLAG_20;
+        gGlobalFlags |= GAME_FLAG_20;
         obj->flags |= OBJ_FLAG_DELETE;
     }
 
     if (--obj->vars[0] < 0) {
-        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+        gGlobalFlags |= GAME_FLAG_MODE_DONE;
         TASK_END(obj->currentTask);
-        D_8005BFC0 |= GAME_FLAG_20;
+        gGlobalFlags |= GAME_FLAG_20;
         obj->flags |= OBJ_FLAG_DELETE;
     }
 }
@@ -391,15 +391,15 @@ void func_80016A00(Object *obj) {
     s16 a3;
 
     if (gBattleSettings[PLAYER_1].isCpu || gBattleSettings[PLAYER_2].isCpu) {
-        a2 = func_80015FB4(7);
+        a2 = func_80015FB4(MESSAGE_ID_GAME_OVER);
         gNextGameMode = GAME_MODE_MAIN_MENU;
-        gBattleSettings[PLAYER_1].unk_0A = gBattleSettings[PLAYER_2].unk_0A = 0;
+        gBattleSettings[PLAYER_1].consecutiveWins = gBattleSettings[PLAYER_2].consecutiveWins = 0;
     } else {
-        a2 = func_80015FB4(7);
+        a2 = func_80015FB4(MESSAGE_ID_GAME_OVER);
         gNextGameMode = GAME_MODE_PLAYER_SELECTION;
 
         if (gPlayMode == PLAY_MODE_50) {
-            a3 = gNumRounds == gBattleSettings[PLAYER_2].unk_08;
+            a3 = gMaxRounds == gBattleSettings[PLAYER_2].roundsWon;
             func_800194E0(PLAY_MODE_TOURNAMENT_P1 + a3);
 
             gBattleSettings[1 - a3].isCpu = TRUE;
@@ -447,15 +447,15 @@ void func_80016B6C(Object *obj) {
 void func_80016C34(Object *obj) {
     Object *a1;
 
-    D_8005BFC0 |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_4;
 
     if (--obj->vars[2] == 0 || (--obj->vars[1] < 0 && func_800167D4())) {
         if (gBattleSettings[PLAYER_1].isCpu || gBattleSettings[PLAYER_2].isCpu) {
-            obj->varObj[5] = D_8008144C = func_80015FB4(2);
+            obj->varObj[5] = D_8008144C = func_80015FB4(MESSAGE_ID_CONT);
         } else {
-            obj->varObj[5] = D_8008144C = func_80015FB4(8);
+            obj->varObj[5] = D_8008144C = func_80015FB4(MESSAGE_ID_CONT2);
         }
-        obj->varObj[3] = D_80081450 = func_80015FB4(3);
+        obj->varObj[3] = D_80081450 = func_80015FB4(MESSAGE_ID_CTDOWN);
 
         gPlayerInput[1 - D_8013C24C].enabled = TRUE;
         obj->currentTask->func = func_80016B6C;
@@ -468,16 +468,16 @@ void func_80016C34(Object *obj) {
     }
 }
 
-ObjFunc func_80016D90(u32 playerId, u8 arg1) {
+ObjFunc handle_player_win(u32 playerId, u8 arg1) {
     ObjFunc a3;
 
     a3 = func_80016880;
 
-    gBattleSettings[playerId].unk_08++;
-    if (gNumRounds == gBattleSettings[playerId].unk_08) {
+    gBattleSettings[playerId].roundsWon++;
+    if (gBattleSettings[playerId].roundsWon == gMaxRounds) {
         if (!arg1) {
-            gBattleSettings[D_8013C24C].unk_0A++;
-            gBattleSettings[1 - D_8013C24C].unk_0A = 0;
+            gBattleSettings[D_8013C24C].consecutiveWins++;
+            gBattleSettings[1 - D_8013C24C].consecutiveWins = 0;
         }
 
         D_800B6368[gBattleSettings[playerId].characterId][0]++;
@@ -519,15 +519,15 @@ void func_80016F6C(Object *obj) {
 
     sp2C = func_8001675C(&gPlayers[D_8013C24C], (gFrameCounter & 1) ? 0x84 : 0xF7, 0x78);
     func_80016264();
-    obj->varObj[4] = D_80081440 = func_80016020(gPlayers[D_8013C24C].characterId, 6, D_8013C24C);
-    v02 = func_80016D90(D_8013C24C, 0);
+    obj->varObj[4] = D_80081440 = draw_win_message(gPlayers[D_8013C24C].characterId, 6, D_8013C24C);
+    v02 = handle_player_win(D_8013C24C, FALSE);
 
-    obj->vars[0] = sp2C + 0x78;
+    obj->vars[0] = sp2C + 120;
     obj->vars[1] = 10;
-    obj->vars[2] = 0xbe;
+    obj->vars[2] = 190;
     obj->currentTask->func = v02;
 
-    D_8005BFC0 &= ~GAME_FLAG_200;
+    gGlobalFlags &= ~GAME_FLAG_BATTLE_FINISHED;
     gPlayers[1 - D_8013C24C].obj->flags |= OBJ_FLAG_HIDDEN;
     gPlayers[D_8013C24C].obj->pos.x = gPlayers[D_8013C24C].obj->pos.y = gPlayers[D_8013C24C].obj->pos.z = 0;
     gPlayers[1 - D_8013C24C].obj->pos.x = gPlayers[1 - D_8013C24C].obj->pos.y = gPlayers[1 - D_8013C24C].obj->pos.z = 0;
@@ -551,7 +551,7 @@ void func_800171EC(Object *obj) {
     Object *v0;
     ObjFunc a3;
 
-    v0 = func_80015FB4(4);
+    v0 = func_80015FB4(MESSAGE_ID_DRAW);
     a3 = func_80016880;
 
     if (v0 != NULL) {
@@ -562,16 +562,16 @@ void func_800171EC(Object *obj) {
 
     func_8001675C(&gPlayers[PLAYER_2], 0x180, func_8001675C(&gPlayers[PLAYER_1], 0x180, 0x78));
 
-    if (gNumRounds == gBattleSettings[PLAYER_1].unk_08 + 1) {
-        a3 = func_80016D90(PLAYER_1, 1);
+    if (gMaxRounds == gBattleSettings[PLAYER_1].roundsWon + 1) {
+        a3 = handle_player_win(PLAYER_1, TRUE);
     } else {
-        gBattleSettings[PLAYER_1].unk_08++;
+        gBattleSettings[PLAYER_1].roundsWon++;
     }
 
-    if (gNumRounds == gBattleSettings[PLAYER_2].unk_08 + 1) {
-        a3 = func_80016D90(PLAYER_2, 1);
+    if (gMaxRounds == gBattleSettings[PLAYER_2].roundsWon + 1) {
+        a3 = handle_player_win(PLAYER_2, TRUE);
     } else {
-        gBattleSettings[PLAYER_2].unk_08++;
+        gBattleSettings[PLAYER_2].roundsWon++;
     }
 
     obj->vars[0] = 245;
@@ -671,7 +671,7 @@ void func_80017650(Object *obj) {
     Vec4i sp50 = { 250, 220, 0, 0 };
 
     gPlayerInput[D_8013C24C].enabled = TRUE;
-    D_8005BFC0 &= ~GAME_FLAG_200;
+    gGlobalFlags &= ~GAME_FLAG_BATTLE_FINISHED;
     if (TRUE) {
         D_80080234 = TRUE;
     }
@@ -705,14 +705,14 @@ void func_80017728(Object *obj) {
 }
 
 void func_800177C0(Object *obj) {
-    D_8005BFC0 &= ~GAME_FLAG_200;
+    gGlobalFlags &= ~GAME_FLAG_BATTLE_FINISHED;
 
     if (!D_80080234) {
-        if (gPlayers[PLAYER_1].obj->playerHp == gBattleSettings[PLAYER_1].unk_0C &&
+        if (gPlayers[PLAYER_1].obj->playerHp == gBattleSettings[PLAYER_1].initialHp &&
                 gPlayers[PLAYER_2].obj->playerHp == 0 ||
             gPlayers[PLAYER_1].obj->playerHp == 0 &&
-                gPlayers[PLAYER_2].obj->playerHp == gBattleSettings[PLAYER_2].unk_0C) {
-            obj->varObj[4] = D_80081448 = func_80015FB4(11);
+                gPlayers[PLAYER_2].obj->playerHp == gBattleSettings[PLAYER_2].initialHp) {
+            obj->varObj[4] = D_80081448 = func_80015FB4(MESSAGE_ID_PAUSE2);
             obj->vars[0] = 90;
             gPlayerInput[D_8013C24C].enabled = TRUE;
             obj->currentTask->func = func_80017728;
@@ -736,8 +736,8 @@ void func_8001792C(Object *obj) {
     if (D_800801F0 || gPlayers[PLAYER_1].obj->playerHp <= 0 || gPlayers[PLAYER_2].obj->playerHp <= 0) {
         func_80029044();
         D_800801F0 = TRUE;
-        if (!(D_8005BFC0 & GAME_FLAG_4)) {
-            D_8005BFC0 |= GAME_FLAG_4;
+        if (!(gGlobalFlags & GAME_FLAG_4)) {
+            gGlobalFlags |= GAME_FLAG_4;
             return;
         }
 
@@ -751,7 +751,7 @@ void func_8001792C(Object *obj) {
         D_8013C24E = (gPlayers[PLAYER_1].obj->playerHp == gPlayers[PLAYER_2].obj->playerHp);
 
         if (D_800801F0 && gPlayers[PLAYER_1].obj->playerHp != 0 && gPlayers[PLAYER_2].obj->playerHp != 0) {
-            newObj = func_80015FB4(10);
+            newObj = func_80015FB4(MESSAGE_ID_TIME_OVER);
             D_80081454 = newObj;
             obj->varObj[4] = newObj;
             obj->currentTask->func = func_800173DC;
@@ -765,15 +765,15 @@ void func_8001792C(Object *obj) {
 }
 
 void func_80017A90(Object *obj) {
-    D_8005BFC0 |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_4;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
 
     if (++obj->vars[0] > 900) {
         gNextGameMode = GAME_MODE_29;
-        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+        gGlobalFlags |= GAME_FLAG_MODE_DONE;
         obj->flags |= OBJ_FLAG_DELETE;
     } else if ((gPlayerInput[PLAYER_1].buttons & INP_START) || (gPlayerInput[PLAYER_2].buttons & INP_START)) {
-        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+        gGlobalFlags |= GAME_FLAG_MODE_DONE;
         gNextGameMode = GAME_MODE_MAIN_MENU;
         obj->flags |= OBJ_FLAG_DELETE;
     }
@@ -783,10 +783,10 @@ void func_80017B3C(Object *obj) {
     if (gPlayMode == PLAY_MODE_30) {
         obj->currentTask->func = func_80017A90;
         obj->vars[0] = 0;
-        D_8005BFC0 |= GAME_FLAG_4;
+        gGlobalFlags |= GAME_FLAG_4;
     } else {
         obj->currentTask->func = func_8001792C;
-        D_8005BFC0 &= ~GAME_FLAG_4;
+        gGlobalFlags &= ~GAME_FLAG_4;
     }
 
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
@@ -804,8 +804,10 @@ void func_80017B3C(Object *obj) {
 }
 
 void func_80017C3C(Object *obj) {
+    Object *v0;
     obj->currentTask->func = func_80017B3C;
-    obj->currentTask->start_delay = func_80015FB4(0)->modInst->numAnimFrames + 20;
+    v0 = func_80015FB4(MESSAGE_ID_BATTLE);
+    obj->currentTask->start_delay = v0->modInst->numAnimFrames + 20;
 }
 
 void func_80017C88(Object *obj) {
@@ -834,6 +836,6 @@ void func_80017CA8(void) {
     D_8013C23C->currentTask->start_delay = 0;
     D_8013C23C->currentTask->flags = TASK_FLAG_ENABLED;
     D_8013C23C->currentTask->start_delay =
-        func_800160C8(gBattleSettings[PLAYER_1].unk_08 + gBattleSettings[PLAYER_2].unk_08);
+        draw_round_number(gBattleSettings[PLAYER_1].roundsWon + gBattleSettings[PLAYER_2].roundsWon);
     D_80081440 = D_80081448 = D_8008144C = D_80081450 = D_80081454 = D_80081444 = NULL;
 }

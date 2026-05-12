@@ -256,7 +256,7 @@ s32 func_8000F074(Player *player1, Player *player2, ActionState *arg2) {
         }
 
         if (hp == 0) {
-            D_8005BFC0 |= GAME_FLAG_200;
+            gGlobalFlags |= GAME_FLAG_BATTLE_FINISHED;
             if (player1->flags & PLAYER_FLAG_NOT_FACING_OPP) {
                 if (t0 & STATE_FLAG_4) {
                     a3 = 118;

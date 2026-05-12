@@ -132,15 +132,15 @@ void practice_init_hud(void) {
     gPlayers[1 - gPracticingPlayer].flags |= PLAYER_FLAG_200000;
     gBattleSettings[1 - gPracticingPlayer].isCpu = FALSE;
 
-    temp_v0_2 = create_ui_element(&D_80052ED0, &D_80052E4C, 0xABAB);
+    temp_v0_2 = create_ui_element(&D_80052ED0, &D_80052E4C, CONTEXT_ABAB);
     temp_v0_2->frameIndex = SPR_PRA_DAMAGE;
     temp_v0_2->currentTask->func = func_800332D0;
 
-    D_8013C480 = create_ui_element(&D_80052EE0, &D_80052E4C, 0xABAB);
-    D_8013C484 = create_ui_element(&D_80052EF0, &D_80052E4C, 0xABAB);
-    D_8013C488 = create_ui_element(&D_80052F00, &D_80052E4C, 0xABAB);
-    D_8013C48C = create_ui_element(&D_80052F10, &D_80052E4C, 0xABAB);
-    D_8013C490 = create_ui_element(&D_80052F20, &D_80052E4C, 0xABAB);
+    D_8013C480 = create_ui_element(&D_80052EE0, &D_80052E4C, CONTEXT_ABAB);
+    D_8013C484 = create_ui_element(&D_80052EF0, &D_80052E4C, CONTEXT_ABAB);
+    D_8013C488 = create_ui_element(&D_80052F00, &D_80052E4C, CONTEXT_ABAB);
+    D_8013C48C = create_ui_element(&D_80052F10, &D_80052E4C, CONTEXT_ABAB);
+    D_8013C490 = create_ui_element(&D_80052F20, &D_80052E4C, CONTEXT_ABAB);
     task_clear(D_8013C480->taskList);
     D_8013C480->taskList = NULL;
     task_clear(D_8013C484->taskList);
@@ -159,41 +159,41 @@ void practice_init_hud(void) {
 void practice_enter_pause(s32 playerId) {
     Object *v0;
 
-    while (gTaskPool.count < 10 || D_8013C2B0.count < 10) {
-        func_8000132C();
+    while (gTaskPool.count < 10 || gObjectPool.count < 10) {
+        render_frame();
     }
 
-    D_8013C464 = create_ui_element(&D_80052E60, &D_80052DAC, 0xABAB);
+    D_8013C464 = create_ui_element(&D_80052E60, &D_80052DAC, CONTEXT_ABAB);
     D_8013C464->fn_render = func_80032D2C;
     task_clear(D_8013C464->taskList);
     D_8013C464->taskList = NULL;
 
-    D_8013C468 = create_ui_element(&D_80052E70, &D_80052DC0, 0xABAB);
+    D_8013C468 = create_ui_element(&D_80052E70, &D_80052DC0, CONTEXT_ABAB);
     D_8013C468->fn_render = func_80032E00;
     task_clear(D_8013C468->taskList);
     D_8013C468->taskList = NULL;
 
-    D_8013C46C = create_ui_element(&D_80052E80, &D_80052DD4, 0xABAB);
+    D_8013C46C = create_ui_element(&D_80052E80, &D_80052DD4, CONTEXT_ABAB);
     D_8013C46C->fn_render = func_80032EDC;
     task_clear(D_8013C46C->taskList);
     D_8013C46C->taskList = NULL;
 
-    D_8013C470 = create_ui_element(&D_80052E90, &D_80052DE8, 0xABAB);
+    D_8013C470 = create_ui_element(&D_80052E90, &D_80052DE8, CONTEXT_ABAB);
     D_8013C470->fn_render = func_8003307C;
     task_clear(D_8013C470->taskList);
     D_8013C470->taskList = NULL;
 
-    D_8013C474 = create_ui_element(&D_80052EA0, &D_80052DFC, 0xABAB);
+    D_8013C474 = create_ui_element(&D_80052EA0, &D_80052DFC, CONTEXT_ABAB);
     D_8013C474->fn_render = func_80033124;
     task_clear(D_8013C474->taskList);
     D_8013C474->taskList = NULL;
 
-    D_8013C478 = create_ui_element(&D_80052EB0, &D_80052E10, 0xABAB);
+    D_8013C478 = create_ui_element(&D_80052EB0, &D_80052E10, CONTEXT_ABAB);
     D_8013C478->fn_render = func_800331D0;
     task_clear(D_8013C478->taskList);
     D_8013C478->taskList = NULL;
 
-    D_8013C47C = create_ui_element(&D_80052EC0, &D_80052E24, 0xABAB);
+    D_8013C47C = create_ui_element(&D_80052EC0, &D_80052E24, CONTEXT_ABAB);
     D_8013C47C->fn_render = func_80033250;
     task_clear(D_8013C47C->taskList);
     D_8013C47C->taskList = NULL;
@@ -335,12 +335,12 @@ void func_800327D8(Object *obj) {
     if (buttons & INP_START) {
         switch (gPracticePauseMenuSelection) {
             case 118:
-                D_8005BFC0 |= GAME_FLAG_80 | GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
+                gGlobalFlags |= GAME_FLAG_80 | GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
                 gNextGameMode = GAME_MODE_MAIN_MENU;
                 obj->flags |= OBJ_FLAG_DELETE;
                 return;
             case 112:
-                D_8005BFC0 |= GAME_FLAG_40;
+                gGlobalFlags |= GAME_FLAG_40;
                 obj->flags |= OBJ_FLAG_DELETE;
                 gPracticePauseMenuSelection = D_8013C450;
                 D_8013C430 = D_8013C448;
@@ -349,19 +349,19 @@ void func_800327D8(Object *obj) {
                 D_8013C440 = D_8013C458;
                 return;
             case 117:
-                D_8005BFC0 |= GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
+                gGlobalFlags |= GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
                 obj->flags |= OBJ_FLAG_DELETE;
                 gNextGameMode = GAME_MODE_PLAYER_SELECTION;
                 return;
         }
 
-        D_8005BFC0 |= GAME_FLAG_40;
+        gGlobalFlags |= GAME_FLAG_40;
         obj->flags |= OBJ_FLAG_DELETE;
     }
 }
 
 void func_80032CEC(Object *obj) {
-    if (D_8005BFC0 & GAME_FLAG_40) {
+    if (gGlobalFlags & GAME_FLAG_40) {
         obj->flags |= OBJ_FLAG_DELETE;
     }
     func_80015724(obj);
@@ -549,7 +549,7 @@ void func_800333F4(void) {
     Vec4i sp3C = { 24, 177, 0, 0 };
 
     for (i = 0; i < 12; i++) {
-        D_8013C3D8[i] = create_ui_element(&sp4C, &D_80052E38, 0xABAB);
+        D_8013C3D8[i] = create_ui_element(&sp4C, &D_80052E38, CONTEXT_ABAB);
         D_8013C3D8[i]->flags |= OBJ_FLAG_HIDDEN;
         task_clear(D_8013C3D8[i]->taskList);
         D_8013C3D8[i]->taskList = NULL;
@@ -560,7 +560,7 @@ void func_800333F4(void) {
 
     D_8013C408 = 0;
     sp4C.y -= 20;
-    D_8013C460 = create_ui_element(&sp3C, &D_80052DAC, 0xABAB);
+    D_8013C460 = create_ui_element(&sp3C, &D_80052DAC, CONTEXT_ABAB);
     D_8013C460->frameIndex = SPR_PRA_AUTO_PLAY;
     D_8013C460->currentTask->func = func_80033E94;
 }
@@ -763,7 +763,7 @@ void func_80033C38(void) {
         } else {
             D_8013C444 = FALSE;
             gPlayerInput[gPracticingPlayer].enabled = TRUE;
-            D_8005BFC0 &= ~GAME_FLAG_4;
+            gGlobalFlags &= ~GAME_FLAG_4;
         }
     }
 }
@@ -812,7 +812,7 @@ void func_80033E94(Object *obj) {
     if (gPlayerInput[gPracticingPlayer].buttons == INP_A) {
         D_8013C444 = 1;
         D_8013C42C = 0;
-        D_8005BFC0 |= GAME_FLAG_4;
+        gGlobalFlags |= GAME_FLAG_4;
         if (D_8013C430 == 18) {
             gPlayerInput[gPracticingPlayer].enabled = FALSE;
         } else {

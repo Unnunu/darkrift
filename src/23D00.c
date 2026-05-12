@@ -179,7 +179,7 @@ void func_80023628(Object *obj) {
     Vec4i *pos;
     Vec4i *vel;
 
-    if (D_8005BFC0 & GAME_FLAG_2000) {
+    if (gGlobalFlags & GAME_FLAG_2000) {
         D_800AA3B0[s2->unk_1680] = FALSE;
         obj->flags |= OBJ_FLAG_DELETE;
         return;

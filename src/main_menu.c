@@ -3,7 +3,7 @@
 #include "task.h"
 
 extern s16 D_80051F68;
-extern s16 D_80080232;
+extern s16 gPreviousPlayMode;
 extern u32 gTournamentOpponentId;
 
 void func_800199E0(Object *);
@@ -16,10 +16,10 @@ s16 D_80049B90 = 0;
 
 /* .bss */
 s16 D_80081250;
-Texture *D_80081254;
+BackgroundLayer *D_80081254;
 
 void func_800194E0(u16 arg0) {
-    D_80080232 = gPlayMode;
+    gPreviousPlayMode = gPlayMode;
     gPlayMode = arg0;
 }
 
@@ -52,7 +52,7 @@ void func_8001954C(Object *obj, s16 buttons, s16 playerId) {
                     D_800801F1 = TRUE;
                     gTournamentOpponentId = 1 - playerId;
                     func_800194E0(PLAY_MODE_TOURNAMENT_P1 + playerId);
-                    gBattleSettings[PLAYER_1].unk_08 = gBattleSettings[PLAYER_2].unk_08 = FALSE;
+                    gBattleSettings[PLAYER_1].roundsWon = gBattleSettings[PLAYER_2].roundsWon = FALSE;
                     for (i = 0; i < NUM_CHARACTERS; i++) {
                         D_800B6350[PLAYER_1][i] = D_800B6350[PLAYER_2][i] = FALSE;
                     }
@@ -77,7 +77,7 @@ void func_8001954C(Object *obj, s16 buttons, s16 playerId) {
             }
 
             sound_play(2, 0);
-            D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+            gGlobalFlags |= GAME_FLAG_MODE_DONE;
             TASK_END(obj->currentTask);
         } else if (buttons & INP_LEFT) {
             obj->vars[4] = obj->vars[6] * 20 + 20;
@@ -105,7 +105,7 @@ void func_8001954C(Object *obj, s16 buttons, s16 playerId) {
 
 void func_800198D0(void) {
     gPlayMode = PLAY_MODE_30;
-    D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+    gGlobalFlags |= GAME_FLAG_MODE_DONE;
 
     gBattleSettings[PLAYER_1].characterId = gBattleSettings[PLAYER_2].characterId = SONORK;
     gBattleSettings[PLAYER_1].unk_06 = TRUE;
@@ -120,7 +120,7 @@ void func_800198D0(void) {
 void func_80019940(void) {
     gPlayMode = PLAY_MODE_30;
 
-    D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+    gGlobalFlags |= GAME_FLAG_MODE_DONE;
     D_80049B90 &= 7;
 
     gBattleSettings[PLAYER_1].characterId = D_80049B70[D_80049B90][PLAYER_1];
@@ -173,7 +173,7 @@ void func_80019A9C(Object *obj) {
     if ((gPlayerInput[PLAYER_1].buttons & INP_START) || (gPlayerInput[PLAYER_2].buttons & INP_START)) {
         sound_play(2, 0);
         assetData = gAssets[asset_find("title.k2", 0x2000)].aux_data;
-        obj1 = create_model_instance(&D_8004934C, 0x1000, func_800199E0, assetData);
+        obj1 = create_model_instance(&gZeroPosition, 0x1000, func_800199E0, assetData);
         obj1->currentTask->start_delay = 30;
         obj1->frameIndex = 0;
         obj1->flags |= OBJ_FLAG_1000000;
@@ -188,7 +188,7 @@ void func_80019A9C(Object *obj) {
 void func_80019BD0(Object *obj) {
     if (gPlayMode == PLAY_MODE_30 &&
         ((gPlayerInput[PLAYER_1].buttons & INP_START) || (gPlayerInput[PLAYER_2].buttons & INP_START))) {
-        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+        gGlobalFlags |= GAME_FLAG_MODE_DONE;
         gNextGameMode = GAME_MODE_MAIN_MENU;
         obj->flags |= OBJ_FLAG_DELETE;
         TASK_END(obj->currentTask);
@@ -199,7 +199,7 @@ void func_80019C48(Object *obj) {
     obj->vars[0]++;
     if (obj->vars[0] > 180) {
         D_8005BEFC = 0;
-        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+        gGlobalFlags |= GAME_FLAG_MODE_DONE;
         gNextGameMode = GAME_MODE_32;
         obj->flags |= OBJ_FLAG_DELETE;
         TASK_END(obj->currentTask);
@@ -230,9 +230,9 @@ void func_80019D2C(Object *obj) {
     if (D_8005BEFC + 8 < 255) {
         D_8005BEFC += 8;
     } else {
-        mem_free(D_80049AE0);
-        D_80049AE0 = NULL;
-        load_background("kronos", 0, 60, 0, 180, 1, CONTEXT_2000);
+        mem_free(gBgLayerList);
+        gBgLayerList = NULL;
+        bg_layer_create("kronos", 0, 60, 0, 180, TEX_FLAG_1, CONTEXT_2000);
         obj->fn_render = func_80019CC0;
     }
 
@@ -276,9 +276,9 @@ void func_80019F40(Object *obj) {
     Object *v1;
     Model *m;
 
-    if (D_80081250 + D_80049AE8 + SCREEN_HEIGHT >= 0 &&
+    if (D_80081250 + gBgScrollY + SCREEN_HEIGHT >= 0 &&
         ((gPlayerInput[PLAYER_1].buttons & INP_START) || (gPlayerInput[PLAYER_2].buttons & INP_START))) {
-        D_80081254->flags |= 4;
+        D_80081254->flags |= BG_FLAG_HIDDEN;
         obj->fn_render = func_8000A578;
 
         v1 = obj->varObj[0];
@@ -293,13 +293,13 @@ void func_80019F40(Object *obj) {
 
     if (++obj->vars[2] == 4) {
         obj->vars[2] = 0;
-        if (D_80081250 + D_80049AE8 + SCREEN_HEIGHT >= 0) {
-            D_80049AE8--;
+        if (D_80081250 + gBgScrollY + SCREEN_HEIGHT >= 0) {
+            gBgScrollY--;
             return;
         }
 
         v1 = obj->varObj[0];
-        D_80081254->flags |= 4;
+        D_80081254->flags |= BG_FLAG_HIDDEN;
         if (v1->unk_088.a >= 6) {
             v1->unk_088.a -= 6;
             v1->pos.z -= 160;
@@ -314,7 +314,7 @@ void func_80019F40(Object *obj) {
             v1->flags |= OBJ_FLAG_DELETE;
 
             m = (Model *) gAssets[asset_find("titopen.k2", CONTEXT_2000)].aux_data;
-            v1 = create_model_instance(&D_8004934C, 0x1000, func_80019E28, m);
+            v1 = create_model_instance(&gZeroPosition, 0x1000, func_80019E28, m);
             v1->flags |= OBJ_FLAG_1000000 | OBJ_FLAG_2000 | OBJ_FLAG_800;
             v1->unk_088.a = 128;
             obj->vars[2] = 3;
@@ -335,7 +335,7 @@ void func_8001A158(Object *obj, s16 arg1) {
     Model *m;
 
     m = (Model *) gAssets[asset_find("haze.k2", arg1)].aux_data;
-    v0 = create_model_instance(&D_8004934C, 0x1000, func_8001A130, m);
+    v0 = create_model_instance(&gZeroPosition, 0x1000, func_8001A130, m);
     v0->flags |= OBJ_FLAG_1000000 | OBJ_FLAG_2000 | OBJ_FLAG_800;
     v0->unk_088.a = 75;
     if (obj != NULL) {
@@ -356,7 +356,7 @@ void func_8001A158(Object *obj, s16 arg1) {
 
 void func_8001A294(Object *obj) {
     if (gPlayerInput[D_8013C24C].buttons & INP_START) {
-        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+        gGlobalFlags |= GAME_FLAG_MODE_DONE;
         gNextGameMode = GAME_MODE_36;
         obj->flags |= OBJ_FLAG_DELETE;
     }
@@ -384,7 +384,7 @@ void func_8001A334(Object *obj) {
 }
 
 void func_8001A3EC(Object *obj) {
-    D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+    gGlobalFlags |= GAME_FLAG_MODE_DONE;
 
     switch (gCurrentGameMode) {
         case GAME_MODE_36:
@@ -424,12 +424,12 @@ void func_8001A490(Object *obj) {
 void func_8001A4FC(Object *obj) {
     if (++obj->vars[3] == obj->vars[2]) {
         obj->vars[3] = 0;
-        if (D_80081250 + D_80081254->unk_1C + 40) {
-            D_80081254->unk_1C--;
+        if (D_80081250 + D_80081254->posY + 40) {
+            D_80081254->posY--;
         }
     }
 
-    if (!(D_80081250 + D_80081254->unk_1C + 40)) {
+    if (!(D_80081250 + D_80081254->posY + 40)) {
         if (gCurrentGameMode != GAME_MODE_36) {
             func_8001A3EC(obj);
         } else {
@@ -452,7 +452,7 @@ void func_8001A5D4(Object *obj) {
 
 void func_8001A63C(Object *obj) {
     if (--obj->vars[0] < 0) {
-        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+        gGlobalFlags |= GAME_FLAG_MODE_DONE;
         obj->flags |= OBJ_FLAG_DELETE;
     }
 }
@@ -476,14 +476,14 @@ void func_8001A674(Object *obj) {
     s16 i = 0;
 
     if (s2->obj->frameIndex == s2->currentState->unk_02 - 2) {
-        D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+        gGlobalFlags |= GAME_FLAG_MODE_DONE;
         obj->flags |= OBJ_FLAG_DELETE;
         gNextGameMode = GAME_MODE_BATTLE_DEMITRON;
         func_80014CB4(D_80081254);
     }
 
     if (s2->obj->frameIndex == 260) {
-        D_80081254 = load_background("demispk", 0, 160, 0, 0, 2, 0x3000);
+        D_80081254 = bg_layer_create("demispk", 0, 160, 0, 0, BG_FLAG_OVERLAY, 0x3000);
     }
 
     while (D_80049C5C[i].unk_00 != 0) {

@@ -273,7 +273,7 @@ void func_800115A0(PlayerSub6 *arg0, u8 arg1) {
     arg0->unk_144C = spF8.z;
     func_80011258(&arg0->unk_EC, &spF8);
 
-    if (!gIsPaused && arg1 && !(D_8005BFC0 & GAME_FLAG_200) && arg0->unk_1D0 < 16) {
+    if (!gIsPaused && arg1 && !(gGlobalFlags & GAME_FLAG_BATTLE_FINISHED) && arg0->unk_1D0 < 16) {
         s5 = &arg0->unk_1D8[arg0->unk_1D0];
         s4 = NULL;
 

@@ -134,7 +134,7 @@ void func_80028360(Object *obj) {
     if (--obj->unk_08C <= 0) {
         obj->unk_08C = obj->vars[2];
         v1 = obj->varObj[3];
-        v0 = create_3dsprite_with_properties(&v1->pos, &D_80051F50, 0xABAB);
+        v0 = create_3dsprite_with_properties(&v1->pos, &D_80051F50, CONTEXT_ABAB);
         if (v0 == NULL) {
             return;
         } else {
@@ -197,7 +197,7 @@ void func_8002856C(Object *obj) {
     Object *v0;
     s16 s0 = ((Player *) obj->varObj[0])->playerId;
 
-    v0 = create_3dsprite_with_properties(&D_8004934C, &D_80051F50, 0xABAB);
+    v0 = create_3dsprite_with_properties(&gZeroPosition, &D_80051F50, CONTEXT_ABAB);
     if (v0 == NULL) {
         return;
     } else {
@@ -211,7 +211,7 @@ void func_8002856C(Object *obj) {
         v0->flags |= OBJ_FLAG_HIDDEN;
     }
 
-    v0 = create_3dsprite_with_properties(&D_8004934C, &D_80051F50, 0xABAB);
+    v0 = create_3dsprite_with_properties(&gZeroPosition, &D_80051F50, CONTEXT_ABAB);
     if (v0 == NULL) {
         return;
     } else {
@@ -225,7 +225,7 @@ void func_8002856C(Object *obj) {
         v0->flags |= OBJ_FLAG_HIDDEN;
     }
 
-    v0 = create_3dsprite_with_properties(&D_8004934C, &D_80051F50, 0xABAB);
+    v0 = create_3dsprite_with_properties(&gZeroPosition, &D_80051F50, CONTEXT_ABAB);
     if (v0 == NULL) {
         return;
     } else {
@@ -239,7 +239,7 @@ void func_8002856C(Object *obj) {
         v0->flags |= OBJ_FLAG_HIDDEN;
     }
 
-    v0 = create_3dsprite_with_properties(&D_8004934C, &D_80051F50, 0xABAB);
+    v0 = create_3dsprite_with_properties(&gZeroPosition, &D_80051F50, CONTEXT_ABAB);
     if (v0 == NULL) {
         return;
     } else {
@@ -253,7 +253,7 @@ void func_8002856C(Object *obj) {
         v0->flags |= OBJ_FLAG_HIDDEN;
     }
 
-    v0 = create_3dsprite_with_properties(&D_8004934C, &D_80051F50, 0xABAB);
+    v0 = create_3dsprite_with_properties(&gZeroPosition, &D_80051F50, CONTEXT_ABAB);
     if (v0 == NULL) {
         return;
     } else {
@@ -277,7 +277,7 @@ void func_800287AC(Object *obj) {
     a = 0;
     b = -250;
     for (i = 0; i < 13; i++) {
-        v0 = create_3dsprite_with_properties(&D_8004934C, &D_80051F50, 0xABAB);
+        v0 = create_3dsprite_with_properties(&gZeroPosition, &D_80051F50, CONTEXT_ABAB);
         if (v0 == NULL) {
             return;
         }
@@ -307,7 +307,7 @@ void func_80028890(Object *obj) {
     } else {
         obj->vars[0]--;
         if (obj->vars[0] == 0) {
-            D_8005BFC0 |= GAME_FLAG_MODE_DONE;
+            gGlobalFlags |= GAME_FLAG_MODE_DONE;
             TASK_END(obj->currentTask);
         }
     }
@@ -507,9 +507,9 @@ void func_80029130(void) {
     Object *v0;
 
     D_8013C248 = NULL;
-    s0 = gBattleSettings[PLAYER_1].unk_0A;
+    s0 = gBattleSettings[PLAYER_1].consecutiveWins;
     if (s0 != 0) {
-        D_8013C248 = create_ui_element(&sp50, &sp60, 0xABAB);
+        D_8013C248 = create_ui_element(&sp50, &sp60, CONTEXT_ABAB);
         D_80081438--;
         D_80081434--;
         s3 = 0;
@@ -517,11 +517,11 @@ void func_80029130(void) {
 
         if (s0 >= 1000) {
             s0 = 1;
-            gBattleSettings[PLAYER_1].unk_0A = 1;
+            gBattleSettings[PLAYER_1].consecutiveWins = 1;
         }
 
         if (s0 >= 100) {
-            v0 = create_ui_element(D_800520D8[s3], &sp74, 0xABAB);
+            v0 = create_ui_element(D_800520D8[s3], &sp74, CONTEXT_ABAB);
             D_80081438--;
             v0->frameIndex = 28 + (s0 / 100);
             D_8013C248->varObj[s2] = v0;
@@ -532,8 +532,8 @@ void func_80029130(void) {
             v0->taskList = NULL;
         }
 
-        if (gBattleSettings[PLAYER_1].unk_0A >= 10) {
-            v0 = create_ui_element(D_800520D8[s3], &sp74, 0xABAB);
+        if (gBattleSettings[PLAYER_1].consecutiveWins >= 10) {
+            v0 = create_ui_element(D_800520D8[s3], &sp74, CONTEXT_ABAB);
             D_80081438--;
             v0->frameIndex = 28 + (s0 / 10);
             D_8013C248->varObj[s2] = v0;
@@ -544,7 +544,7 @@ void func_80029130(void) {
             v0->taskList = NULL;
         }
 
-        v0 = create_ui_element(D_800520D8[s3], &sp74, 0xABAB);
+        v0 = create_ui_element(D_800520D8[s3], &sp74, CONTEXT_ABAB);
         D_80081438--;
         v0->frameIndex = 28 + s0;
         D_8013C248->varObj[s2] = v0;
@@ -557,20 +557,20 @@ void func_80029130(void) {
         D_8013C248->taskList = NULL;
     }
 
-    s0 = gBattleSettings[PLAYER_2].unk_0A;
+    s0 = gBattleSettings[PLAYER_2].consecutiveWins;
     if (s0 != 0) {
-        D_8013C248 = create_ui_element(&sp40, &sp60, 0xABAB);
+        D_8013C248 = create_ui_element(&sp40, &sp60, CONTEXT_ABAB);
         D_80081438--;
         s3 = 3;
         s2 = 0;
 
         if (s0 >= 1000) {
             s0 = 1;
-            gBattleSettings[PLAYER_2].unk_0A = 1;
+            gBattleSettings[PLAYER_2].consecutiveWins = 1;
         }
 
         if (s0 >= 100) {
-            v0 = create_ui_element(D_800520D8[s3], &sp74, 0xABAB);
+            v0 = create_ui_element(D_800520D8[s3], &sp74, CONTEXT_ABAB);
             D_80081438--;
             v0->frameIndex = 28 + (s0 / 100);
             D_8013C248->varObj[s2] = v0;
@@ -581,8 +581,8 @@ void func_80029130(void) {
             v0->taskList = NULL;
         }
 
-        if (gBattleSettings[PLAYER_2].unk_0A >= 10) {
-            v0 = create_ui_element(D_800520D8[s3], &sp74, 0xABAB);
+        if (gBattleSettings[PLAYER_2].consecutiveWins >= 10) {
+            v0 = create_ui_element(D_800520D8[s3], &sp74, CONTEXT_ABAB);
             D_80081438--;
             v0->frameIndex = 28 + (s0 / 10);
             D_8013C248->varObj[s2] = v0;
@@ -594,7 +594,7 @@ void func_80029130(void) {
             v0->taskList = NULL;
         }
 
-        v0 = create_ui_element(D_800520D8[s3], &sp74, 0xABAB);
+        v0 = create_ui_element(D_800520D8[s3], &sp74, CONTEXT_ABAB);
         D_80081438--;
         v0->frameIndex = 28 + s0;
         D_8013C248->varObj[s2] = v0;
@@ -632,34 +632,34 @@ void func_80029630(void) {
         return;
     }
 
-    create_ui_element(&spCC, &sp10C, 0xABAB);
+    create_ui_element(&spCC, &sp10C, CONTEXT_ABAB);
 
     switch (gBattleDurationEnum) {
         case 0:
             break;
         case 1:
         case 2:
-            s00 = create_ui_element(&spAC, &spF8, 0xABAB);
-            v0 = create_ui_element(&spBC, &spE4, 0xABAB);
+            s00 = create_ui_element(&spAC, &spF8, CONTEXT_ABAB);
+            v0 = create_ui_element(&spBC, &spE4, CONTEXT_ABAB);
             v0->frameIndex = gBattleDurationEnum * 3 + 3;
             v0->varObj[0] = s00;
             D_8013C240 = v0;
             break;
     }
 
-    v0 = create_ui_element(&sp9C, &sp120, 0xABAB);
+    v0 = create_ui_element(&sp9C, &sp120, CONTEXT_ABAB);
     v0->frameIndex = 11;
     task_clear(v0->taskList);
     v0->taskList = NULL;
 
-    v0 = create_ui_element(&sp8C, &sp120, 0xABAB);
+    v0 = create_ui_element(&sp8C, &sp120, CONTEXT_ABAB);
     v0->frameIndex = 11;
     task_clear(v0->taskList);
     v0->taskList = NULL;
 
     s0 = 0;
-    for (s1 = 0; s1 < gBattleSettings[PLAYER_1].unk_08; s1++) {
-        D_8013C258[PLAYER_1][s1] = v0 = create_ui_element(&sp7C, &sp120, 0xABAB);
+    for (s1 = 0; s1 < gBattleSettings[PLAYER_1].roundsWon; s1++) {
+        D_8013C258[PLAYER_1][s1] = v0 = create_ui_element(&sp7C, &sp120, CONTEXT_ABAB);
         v0->frameIndex = 13;
         sp7C.x -= 8;
         s0++;
@@ -667,8 +667,8 @@ void func_80029630(void) {
         v0->taskList = NULL;
     }
 
-    for (; s0 < gNumRounds; s0++) {
-        D_8013C258[PLAYER_1][s0] = v0 = create_ui_element(&sp7C, &sp120, 0xABAB);
+    for (; s0 < gMaxRounds; s0++) {
+        D_8013C258[PLAYER_1][s0] = v0 = create_ui_element(&sp7C, &sp120, CONTEXT_ABAB);
         v0->frameIndex = 12;
         sp7C.x -= 8;
         task_clear(v0->taskList);
@@ -676,8 +676,8 @@ void func_80029630(void) {
     }
 
     s0 = 0;
-    for (s1 = 0; s1 < gBattleSettings[PLAYER_2].unk_08; s1++) {
-        D_8013C258[PLAYER_2][s1] = v0 = create_ui_element(&sp6C, &sp120, 0xABAB);
+    for (s1 = 0; s1 < gBattleSettings[PLAYER_2].roundsWon; s1++) {
+        D_8013C258[PLAYER_2][s1] = v0 = create_ui_element(&sp6C, &sp120, CONTEXT_ABAB);
         v0->frameIndex = 13;
         sp6C.x += 8;
         s0++;
@@ -685,26 +685,26 @@ void func_80029630(void) {
         v0->taskList = NULL;
     }
 
-    for (; s0 < gNumRounds; s0++) {
-        D_8013C258[PLAYER_2][s0] = v0 = create_ui_element(&sp6C, &sp120, 0xABAB);
+    for (; s0 < gMaxRounds; s0++) {
+        D_8013C258[PLAYER_2][s0] = v0 = create_ui_element(&sp6C, &sp120, CONTEXT_ABAB);
         v0->frameIndex = 12;
         sp6C.x += 8;
         task_clear(v0->taskList);
         v0->taskList = NULL;
     }
 
-    v0 = create_ui_element(&sp5C, &sp120, 0xABAB);
+    v0 = create_ui_element(&sp5C, &sp120, CONTEXT_ABAB);
     v0->frameIndex = 15;
     D_8013C234 = v0->sprite_map->sprites[15].parts;
     D_8013C234->offsetX = D_8013C234->offsetX - D_8013C234->uls + D_8013C234->lrs - 88;
     D_8013C234->uls = D_8013C234->lrs - 88;
 
-    v0 = create_ui_element(&sp4C, &sp120, 0xABAB);
+    v0 = create_ui_element(&sp4C, &sp120, CONTEXT_ABAB);
     v0->frameIndex = 14;
     D_8013C238 = v0->sprite_map->sprites[14].parts;
     D_8013C238->lrs = D_8013C238->uls + 80;
 
-    v0 = create_ui_element(&D_8004A5D0[gBattleSettings[PLAYER_1].characterId], &sp120, 0xABAB);
+    v0 = create_ui_element(&D_8004A5D0[gBattleSettings[PLAYER_1].characterId], &sp120, CONTEXT_ABAB);
     if (gBattleSettings[PLAYER_1].characterId < CHARACTER_5) {
         v0->frameIndex = 16 + gBattleSettings[PLAYER_1].characterId;
     } else {
@@ -713,7 +713,7 @@ void func_80029630(void) {
     task_clear(v0->taskList);
     v0->taskList = NULL;
 
-    v0 = create_ui_element(&D_8004A680[gBattleSettings[PLAYER_2].characterId], &sp120, 0xABAB);
+    v0 = create_ui_element(&D_8004A680[gBattleSettings[PLAYER_2].characterId], &sp120, CONTEXT_ABAB);
     if (gBattleSettings[PLAYER_2].characterId < CHARACTER_5) {
         v0->frameIndex = 16 + gBattleSettings[PLAYER_2].characterId;
     } else {
@@ -731,7 +731,7 @@ void func_80029630(void) {
 
 void func_80029D04(Object *obj) {
     if (--obj->frameIndex < 2) {
-        D_8005BFC0 |= GAME_FLAG_40;
+        gGlobalFlags |= GAME_FLAG_40;
         obj->flags |= OBJ_FLAG_DELETE;
     }
 
@@ -747,9 +747,9 @@ void func_80029D84(Object *obj) {
 
 void func_80029DC0(Object *obj) {
     if (++obj->frameIndex >= 130) {
-        D_8005BFC0 |= GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
+        gGlobalFlags |= GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
         gNextGameMode = GAME_MODE_MAIN_MENU;
-        D_8005BFC0 |= GAME_FLAG_80;
+        gGlobalFlags |= GAME_FLAG_80;
         obj->flags &= ~OBJ_FLAG_2000000;
         obj->fn_render = func_80029D84;
     }

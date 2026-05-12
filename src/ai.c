@@ -225,7 +225,7 @@ u8 func_8001BD5C(Player *player, PlayerSubH *subH) {
     return FALSE;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/1C3D0/func_8001BD5C.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/ai/func_8001BD5C.s")
 #endif
 
 void func_8001BF40(Player *player) {

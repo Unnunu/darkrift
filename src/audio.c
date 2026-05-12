@@ -568,20 +568,20 @@ void audio_fade_out_all(Object *obj, s32 arg1) {
     }
 }
 
-void func_80021918(Object *obj, s32 arg1) {
-    s32 v1 = FALSE;
+void music_play(Object *obj, s32 unused) {
+    s32 finish_task = FALSE;
 
     if (gMusicIsPlaying && gMusicIsPlaying) { // @bug gMusicIsPlaying checked twice
         alSeqpPlay(gMusicPlayer);
-        v1 = TRUE;
+        finish_task = TRUE;
     }
 
     obj->vars[0]++;
     if (obj->vars[0] >= 16 || (D_800A460C & 1)) {
-        v1 = TRUE;
+        finish_task = TRUE;
     }
 
-    if (v1) {
+    if (finish_task) {
         obj->flags |= OBJ_FLAG_DELETE;
         TASK_END(obj->currentTask);
     }

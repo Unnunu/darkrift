@@ -5,7 +5,7 @@
 Object *gObjectList = NULL;
 s32 D_80052C54 = 0;
 
-ItemPool D_8013C2B0;
+ItemPool gObjectPool;
 ItemPool gModelInstancePool;
 s32 D_8013C2D0_unused;
 
@@ -55,47 +55,47 @@ void func_8002A994(ItemPool *arg0, u32 count, u32 element_size) {
 }
 
 void func_8002ABCC(s32 count) {
-    func_8002A994(&D_8013C2B0, count, sizeof(Object));
+    func_8002A994(&gObjectPool, count, sizeof(Object));
     func_8002A994(&gTaskPool, count, sizeof(ObjectTask));
 }
 
 void func_8002AC10(void) {
-    func_8002A8C0(&D_8013C2B0, 50, sizeof(Object));
+    func_8002A8C0(&gObjectPool, 50, sizeof(Object));
     func_8002A8C0(&gModelInstancePool, 16, sizeof(ModelInstance));
     gObjectList = NULL;
     D_80052C54 = 0;
 }
 
-Object *obj_allocate(s16 arg0) {
+Object *obj_allocate(s16 priority) {
     Object *obj;
     Object *prev_obj;
 
     D_80052C54++;
-    if (D_8013C2B0.unk_0C <= 0) {
+    if (gObjectPool.unk_0C <= 0) {
         return NULL;
     }
 
     if (gObjectList == NULL) {
-        obj = gObjectList = (Object *) GET_ITEM(D_8013C2B0);
+        obj = gObjectList = (Object *) GET_ITEM(gObjectPool);
 
         obj->prevObject = NULL;
         obj->nextObject = NULL;
     } else {
         obj = gObjectList;
 
-        while (obj != NULL && obj->unk_074 >= arg0) {
+        while (obj != NULL && obj->priority >= priority) {
             prev_obj = obj;
             obj = obj->nextObject;
         }
 
         if (obj == NULL) {
-            prev_obj->nextObject = (Object *) GET_ITEM(D_8013C2B0);
+            prev_obj->nextObject = (Object *) GET_ITEM(gObjectPool);
 
             obj = prev_obj->nextObject;
             obj->prevObject = prev_obj;
             obj->nextObject = NULL;
         } else if (obj->prevObject == NULL) {
-            obj = (Object *) GET_ITEM(D_8013C2B0);
+            obj = (Object *) GET_ITEM(gObjectPool);
 
             obj->nextObject = gObjectList;
             gObjectList->prevObject = obj;
@@ -103,7 +103,7 @@ Object *obj_allocate(s16 arg0) {
             obj->prevObject = NULL;
         } else {
             if ((!obj->nextObject) != 0) {} // required to match
-            prev_obj = (Object *) GET_ITEM(D_8013C2B0);
+            prev_obj = (Object *) GET_ITEM(gObjectPool);
 
             obj->prevObject->nextObject = prev_obj;
             prev_obj->nextObject = obj;
@@ -113,7 +113,7 @@ Object *obj_allocate(s16 arg0) {
         }
     }
 
-    obj->unk_074 = arg0;
+    obj->priority = priority;
     return obj;
 }
 
@@ -139,9 +139,9 @@ void obj_delete(Object *obj) {
         }
     }
 
-    D_8013C2B0.unk_0C++;
-    D_8013C2B0.elements[D_8013C2B0.unk_0C] = obj;
-    D_8013C2B0.count++;
+    gObjectPool.unk_0C++;
+    gObjectPool.elements[gObjectPool.unk_0C] = obj;
+    gObjectPool.count++;
 }
 
 // unused
@@ -415,7 +415,7 @@ Object *create_worker(void (*fn_render)(Object *), s16 arg1) {
     Object *obj;
 
     obj = obj_allocate(arg1);
-    obj_init(obj, &D_8004934C, &gZeroRotation, NULL, NULL);
+    obj_init(obj, &gZeroPosition, &gZeroRotation, NULL, NULL);
     obj->fn_render = fn_render;
     obj->flags = OBJ_FLAG_WORKER;
     return obj;

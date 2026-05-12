@@ -3,6 +3,7 @@
 
 #define MEM_GUARD_MAGIC 0xABCD6789
 #define HEAP_SIZE 0x23E806
+#define NUM_SLOTS 256
 
 void heap_link(ChunkHeader *arg0, ChunkHeader **arg1);
 void mem_move(u32 *dest, u32 *src, u32 size);
@@ -15,7 +16,7 @@ OSIoMesg D_8005AE90;
 char heap_padding[0x8];
 s32 sAllocatedSize;
 s32 sFreeSize;
-UnkGamma D_8005AEB8[256];
+UnkGamma D_8005AEB8[NUM_SLOTS];
 s32 D_8005BEB8;
 char heap_padding2[0x4];
 void *gHeapBase;
@@ -317,14 +318,14 @@ void mem_move(u32 *dest, u32 *src, u32 size) {
 s32 mem_alloc_slot(s32 size) {
     s32 i;
 
-    if (D_8005BEB8 < 0x100) {
+    if (D_8005BEB8 < NUM_SLOTS) {
         D_8005AEB8[D_8005BEB8].data = do_mem_alloc(size);
         D_8005AEB8[D_8005BEB8].unk_00 = 0;
         D_8005AEB8[D_8005BEB8].move_cb = 0;
         return D_8005BEB8++;
     }
 
-    for (i = 0; i < 0x100; i++) {
+    for (i = 0; i < NUM_SLOTS; i++) {
         if (D_8005AEB8[i].unk_00 & 1) {
             D_8005AEB8[i].data = do_mem_alloc(size);
             D_8005AEB8[i].unk_00 = 0;
@@ -344,7 +345,7 @@ void mem_free_slot(s32 slotIndex) {
 
 void dma_read(s32 romAddr, void *vramAddr, s32 size) {
     osWritebackDCacheAll();
-    while (osRecvMesg(&gSchedDMAQueue, 0, 0) != -1) {}
+    while (osRecvMesg(&gSchedDMAQueue, NULL, OS_MESG_NOBLOCK) != -1) {}
     osPiStartDma(&D_8005AE90, 0, OS_READ, romAddr, vramAddr, size, &gSchedDMAQueue);
     osRecvMesg(&gSchedDMAQueue, NULL, OS_MESG_BLOCK);
     osInvalDCache(0, 0x3FFFFF);

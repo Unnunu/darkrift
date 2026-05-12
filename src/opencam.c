@@ -89,8 +89,8 @@ void func_8002C340(void) {
     D_8013C310.y = gCamera->pos.y;
     D_8013C310.z = gCamera->pos.z;
 
-    D_8013C332 = D_80049AE4;
-    D_8013C334 = D_80049AE8;
+    D_8013C332 = gBgScrollX;
+    D_8013C334 = gBgScrollY;
     D_8013C336 = D_8013C828;
     D_8013C338 = D_8013C5A0;
 
@@ -100,7 +100,7 @@ void func_8002C340(void) {
 }
 
 void func_8002C3FC(void) {
-    D_8013C302 = D_80049AE4;
+    D_8013C302 = gBgScrollX;
 
     D_8013C2F0.x = gCameraTarget.x;
     D_8013C2F0.y = gCameraTarget.y;
@@ -110,7 +110,7 @@ void func_8002C3FC(void) {
     D_8013C2E0.y = gCamera->pos.y;
     D_8013C2E0.z = gCamera->pos.z;
 
-    D_8013C300 = D_80049AE8;
+    D_8013C300 = gBgScrollY;
     D_8013C304 = D_8013C828;
     D_8013C308 = D_8013C5A0;
 }
@@ -127,8 +127,8 @@ void func_8002C490(Object *obj) {
     gCameraTarget.y = D_8013C320.y;
     gCameraTarget.z = D_8013C320.z;
 
-    D_80049AE4 = D_8013C332;
-    D_80049AE8 = D_8013C334;
+    gBgScrollX = D_8013C332;
+    gBgScrollY = D_8013C334;
     D_8013C828 = D_8013C336;
     D_8013C5A0 = D_8013C338;
 
@@ -161,8 +161,8 @@ void func_8002C490(Object *obj) {
     gCameraTarget.y = D_8013C2F0.y;
     gCameraTarget.z = D_8013C2F0.z;
 
-    D_80049AE8 = D_8013C300 - (s32) (D_8013C830 * 0.2f);
-    D_80049AE4 = 0;
+    gBgScrollY = D_8013C300 - (s32) (D_8013C830 * 0.2f);
+    gBgScrollX = 0;
     D_8013C828 = D_8013C304;
     D_8013C5A0 = D_8013C308;
 }
@@ -178,10 +178,10 @@ void func_8002C6E8(Object *obj) {
         } else {
             gPlayers[PLAYER_1].flags &= ~PLAYER_FLAG_100000;
             gPlayers[PLAYER_2].flags &= ~PLAYER_FLAG_100000;
-            D_8005BFC0 &= ~GAME_FLAG_4;
+            gGlobalFlags &= ~GAME_FLAG_4;
         }
 
-        D_80049AE4 = 0;
+        gBgScrollX = 0;
         D_8013C828 = D_8013C304;
         D_8013C5A0 = D_8013C308;
 
@@ -555,7 +555,7 @@ void func_8002D278(Object *obj, u8 arg1) {
         } else if (sp68.x < 0) {
             sp78 = -((u32) (sqrtf(SQ(spD4) + SQ(spD0)) + 0.5) >> 1);
         }
-        D_80049AE4 += sp78;
+        gBgScrollX += sp78;
     }
 
     dx = gCameraTarget.x - gCamera->pos.x;
@@ -568,9 +568,9 @@ void func_8002D278(Object *obj, u8 arg1) {
 
     func_80038F34(dx, dz, dxAbs, dzAbs);
 
-    D_80049AE8 = D_8013C82C;
+    gBgScrollY = D_8013C82C;
     if (spC0 > 1500) {
-        D_80049AE8 += (D_8013C364 * (spC0 - 1500)) >> 0x10;
+        gBgScrollY += (D_8013C364 * (spC0 - 1500)) >> 0x10;
         if (obj->vars || obj->vars) {} // @fake
     }
     D_80081428 = D_8013C828;
@@ -615,7 +615,7 @@ void func_8002DA08(Object *obj) {
 }
 
 void func_8002DCC8(Object *obj) {
-    D_80049AE8 = D_8013C82C;
+    gBgScrollY = D_8013C82C;
     D_80081428 = D_8013C828;
 
     if ((gPlayerInput[PLAYER_1].buttons & INP_START) || (gPlayerInput[PLAYER_2].buttons & INP_START)) {
@@ -624,10 +624,10 @@ void func_8002DCC8(Object *obj) {
         } else {
             gPlayers[PLAYER_1].flags &= ~PLAYER_FLAG_100000;
             gPlayers[PLAYER_2].flags &= ~PLAYER_FLAG_100000;
-            D_8005BFC0 &= ~GAME_FLAG_4;
+            gGlobalFlags &= ~GAME_FLAG_4;
         }
 
-        D_80049AE4 = 0;
+        gBgScrollX = 0;
         D_8013C828 = D_8013C304;
         D_8013C5A0 = D_8013C308;
 
@@ -653,7 +653,7 @@ void func_8002DE20(Object *obj) {
 
     str_copy(sp18, D_80052CCC);
     sp18[7] = '1' + D_8013C224;
-    assetId = asset_find(sp18, 0xABAB);
+    assetId = asset_find(sp18, CONTEXT_ABAB);
     camera_set_animation(gCamera, (AnimHeader *) gAssets[assetId].data);
     gCamera->currentTask->func = func_8002DCC8;
     gCamera->currentTask->start_delay = 0;
@@ -672,7 +672,7 @@ void func_8002DEFC(Object *obj) {
 
     str_copy(sp18, D_80052CCC);
     sp18[7] = '1' + D_8013C224;
-    assetId = asset_find(sp18, 0xABAB);
+    assetId = asset_find(sp18, CONTEXT_ABAB);
     camera_set_animation(gCamera, (AnimHeader *) gAssets[assetId].data);
     gCamera->currentTask->func = func_8002C6E8;
     gCamera->currentTask->start_delay = 0;
@@ -1069,9 +1069,9 @@ void func_8002EB2C(Object *obj) {
     }
     obj->vars[2] = spEC;
 
-    D_80049AE8 = D_8013C82C + D_80052CC0 - (s32) (D_8013C830 * 0.2f);
-    if (spEC > 1500 && D_80049AE8 < -24) {
-        D_80049AE8 = -24;
+    gBgScrollY = D_8013C82C + D_80052CC0 - (s32) (D_8013C830 * 0.2f);
+    if (spEC > 1500 && gBgScrollY < -24) {
+        gBgScrollY = -24;
     }
 
     gCameraTarget.y = ((D_8013C360 * spEC) >> 16) + D_80052CBC - 480;
@@ -1139,7 +1139,7 @@ void func_8002EB2C(Object *obj) {
             if (sp98 < -2) {
                 sp98 = -2;
             }
-            D_80049AE4 += sp98;
+            gBgScrollX += sp98;
         }
     }
 

@@ -31,14 +31,14 @@ extern UnkOmicron D_80080238;
 
 /* .bss */
 s16 gPlayMode;
-s16 D_80080232;
+s16 gPreviousPlayMode;
 u16 D_80080234;
 u16 D_80080236;
 UnkOmicron D_80080238;
 
 void func_80012150(PlayerSub6 *arg0, ModelInstance *arg1, Matrix4f *arg2, Matrix4f *arg3, Vec4i *arg4, ColorRGBA *arg5);
 
-void func_80005B70(s16 playerId);
+void create_player_obj(s16 playerId);
 void func_80003C04(Object *obj);
 
 typedef struct AssetDB {
@@ -137,7 +137,7 @@ void func_80003780(Object *obj) {
         v0 = s1->unk_00[s3];
         gPlayers[s3].obj->playerHp = v0;
         if (v0 == 0) {
-            D_8005BFC0 |= GAME_FLAG_200;
+            gGlobalFlags |= GAME_FLAG_BATTLE_FINISHED;
         }
 
         if (s1->unk_07 == 255) {
@@ -191,8 +191,8 @@ s32 func_80003974(void *arg0) {
     gPlayers[PLAYER_1].stateId = 0;
     gPlayers[PLAYER_2].stateId = 0;
 
-    func_80005B70(PLAYER_1);
-    func_80005B70(PLAYER_2);
+    create_player_obj(PLAYER_1);
+    create_player_obj(PLAYER_2);
     gPlayers[PLAYER_1].obj->frameIndex = 2;
     gPlayers[PLAYER_2].obj->frameIndex = 2;
     model_change_animation(gPlayers[PLAYER_1].obj);
@@ -228,7 +228,7 @@ s32 func_80003974(void *arg0) {
     v0->currentTask->flags = TASK_FLAG_ENABLED;
 
     D_8008012C |= GFX_FLAG_1;
-    D_8005BFC0 &= ~GAME_FLAG_200;
+    gGlobalFlags &= ~GAME_FLAG_BATTLE_FINISHED;
 
     if (s3 > 960) {
         s3 -= 960;
@@ -598,7 +598,7 @@ void func_800045B4(s16 playerId, s16 characterId) {
         func_80004334(s3, playerId);
     }
 
-    if (sp44->unk_0E) {
+    if (sp44->isDebug) {
         if (sp44->isDummy) {
             str_copy(sp80, "dum.sym");
         } else {
@@ -693,7 +693,7 @@ void func_80004D40(Asset *asset) {
         }
     }
     asset->name[6] = sp2B;
-    func_80026BE0(asset);
+    asset_read(asset);
     asset->context += 0x5000;
 }
 
@@ -727,7 +727,7 @@ void func_80004E14(s16 playerId) {
         str_copy(gPlayers[playerId].unk_980, sp38);
     }
     D_8013C228 = func_80004D40;
-    asset_open_folder(sp38, playerId);
+    asset_open_folder(sp38, CONTEXT_0000 + playerId);
 }
 
 void func_80004FC0(Object *obj) {
@@ -929,7 +929,7 @@ void func_800052EC(s16 playerId) {
     gPlayers[playerId].currentState = gPlayers[playerId].stateTable + gPlayers[playerId].stateId;
     func_80010664(&gPlayers[playerId], D_8004B844[spD6].unk_00);
 
-    spDC->playerHp = gBattleSettings[playerId].unk_0C;
+    spDC->playerHp = gBattleSettings[playerId].initialHp;
     func_80004B30(spDC, playerId, spD6);
 
     if (playerId == PLAYER_1) {
@@ -970,7 +970,7 @@ void func_800052EC(s16 playerId) {
     func_800050FC(playerId, spD6);
 }
 
-void func_80005B70(s16 playerId) {
+void create_player_obj(s16 playerId) {
     Object *obj = gPlayers[playerId].obj;
     s16 characterId;
     Vec4i spB4[] = { { -400, 0, 0, 0 }, { 400, 0, 0, 0 } };
@@ -1033,7 +1033,7 @@ void func_80005B70(s16 playerId) {
     }
 
     gPlayers[playerId].currentState = gPlayers[playerId].stateTable + gPlayers[playerId].stateId;
-    obj->playerHp = gBattleSettings[playerId].unk_0C;
+    obj->playerHp = gBattleSettings[playerId].initialHp;
 
     if (playerId == PLAYER_1) {
         gPlayerInput[playerId].mirrored = TRUE;
