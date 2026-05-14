@@ -131,7 +131,7 @@ typedef struct PlayerInput {
     /* 0x0A */ u8 enabled;
     /* 0x0B */ u8 connected;
     /* 0x0C */ u8 remapped;
-    /* 0x0D */ u8 unk_0D;
+    /* 0x0D */ u8 disableStick;
 } PlayerInput;
 
 typedef struct UnkGamma {
@@ -501,13 +501,6 @@ typedef struct UIElement {
     /* 0x10 */ char *map_name;
 } UIElement;
 
-typedef struct UnkObjDef3 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-} UnkObjDef3; // size = 0x10
-
 typedef struct BackgroundLayer {
     /* 0x00 */ u32 width;
     /* 0x04 */ u32 height;
@@ -830,7 +823,7 @@ typedef struct Player12 {
     /* 0x00 */ s16 characterId;
     /* 0x02 */ u8 isCpu; // probably wrong name
     /* 0x04 */ u16 unk_04;
-    /* 0x06 */ u8 unk_06;
+    /* 0x06 */ u8 assetContext;
     /* 0x08 */ s16 roundsWon;
     /* 0x0A */ s16 consecutiveWins;
     /* 0x0C */ s16 initialHp;
@@ -939,6 +932,11 @@ typedef struct UnkStruct800031FC {
     /* 0x04 */ s16 unk_04;
     /* 0x06 */ s16 unk_06;
 } UnkStruct800031FC; // size = 0x08
+
+typedef struct CharacterStats {
+    /* 0x00 */ s16 wins;
+    /* 0x02 */ s16 loses;
+} CharacterStats; // size = 0x4
 
 typedef s32 (*DISPCB)(void *);
 

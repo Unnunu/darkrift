@@ -68,7 +68,7 @@ segments:
       - [0x13050, c, math]
       - [0x15760, c, scroll]
       - [0x167C0, c, hud]
-      - [0x18A10, c]
+      - [0x18A10, c, menu_options]
       - [0x1A0E0, c, main_menu]
       - [0x1B6E0, c, gmd_pcl]
       - [0x1C3D0, c, ai]
@@ -253,7 +253,7 @@ segments:
       - [0x4A5B0, .data, 11700]
       - [0x4A6E0, .data, scroll]
       - [0x4A6F0, .data, hud]
-      - [0x4A740, .data, 18A10]
+      - [0x4A740, .data, menu_options]
       - [0x4A770, .data, main_menu]
       - [0x4A8F0, .data, gmd_pcl]
       - [0x4A910, .data, ai]
@@ -315,7 +315,7 @@ segments:
       - [0x553B0, .rodata, math]
       - [0x553D0, .rodata, scroll]
       - [0x553F0, .rodata, hud]
-      - [0x554B0, .rodata, 18A10]
+      - [0x554B0, .rodata, menu_options]
       - [0x554E0, .rodata, main_menu]
       - [0x55530, .rodata, gmd_pcl]
       - [0x55540, .rodata, ai]
@@ -363,7 +363,7 @@ segments:
       - { type: .bss, vram: 0x800812A0, name: math }
       - { type: .bss, vram: 0x80081420, name: scroll }
       - { type: .bss, vram: 0x80081440, name: hud }
-      - { type: .bss, vram: 0x80081460, name: 18A10 }
+      - { type: .bss, vram: 0x80081460, name: menu_options }
       - { type: .bss, vram: 0x800814E0, name: gmd_pcl }
       - { type: .bss, vram: 0x80081660, name: plyrsel }
       - { type: .bss, vram: 0x80081670, name: audio }

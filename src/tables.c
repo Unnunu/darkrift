@@ -361,11 +361,11 @@ u32 D_8004C178[] = { 430, 430, 430, 430, 430, 430, 430, 530, 470, 430, 430 };
 u32 D_8004C1A4[] = { 500, 450, 450, 450, 450, 450, 450, 370, 370, 450, 450 };
 
 s16 gMaxRounds = 3;
-s16 gBattleDurationEnum = 2;
+s16 gBattleDuration = 2;
 
 u8 D_8004C1D8[] = { 6, 7, 9, 6, 5, 5, 6, 8, 5, 8, 5 };
 
-s16 gDifficulty = 1;
+s16 gDifficulty = DIFFICULTY_NORMAL;
 
 PlayerSub5 D_8004C1E8[] = {
     /* idle */ { 0x0040010, func_80023FDC, func_8002FD78, NULL, 0x2700208 },
@@ -445,4 +445,4 @@ s32 D_800AA480;
 Player gPlayers[2];
 Player12 gBattleSettings[2];
 u8 D_800B6350[2][11];
-s16 D_800B6368[11][2];
+CharacterStats D_800B6368[NUM_CHARACTERS];

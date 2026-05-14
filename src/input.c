@@ -66,13 +66,13 @@ s32 D_8004A580[] = {
 };
 
 PlayerInput gPlayerInput[2];
-u16 D_800AA450[2][8];
+u16 gButtonsMap[2][8];
 
 u16 func_800249B0(u16 contId, u16 buttons) {
     u16 i;
     u16 mask;
     u16 v1;
-    u16 *ptr = D_800AA450[contId];
+    u16 *ptr = gButtonsMap[contId];
 
     mask = 1;
     v1 = 0;
@@ -90,7 +90,7 @@ u16 func_800249B0(u16 contId, u16 buttons) {
 void func_80024A38(u16 contId) {
     s32 i;
     s32 mask;
-    u16 *ptr = D_800AA450[contId];
+    u16 *ptr = gButtonsMap[contId];
 
     mask = 1;
     for (i = 0; i < 8; i++) {
@@ -112,7 +112,7 @@ void func_80024A90(s16 contId) {
     buttons |= D_8004A554[(v1 >> 8) & 0xF];
     buttons |= D_8004A580[(v1 >> 12) & 0xF];
 
-    if (!(gPlayerInput + contId)->unk_0D && !(buttons & INP_DIRECTION)) {
+    if (!(gPlayerInput + contId)->disableStick && !(buttons & INP_DIRECTION)) {
         if (gContData[contId]->stick_x > 40) {
             buttons |= INP_RIGHT;
         } else if (gContData[contId]->stick_x < -40) {
@@ -192,5 +192,5 @@ void func_80024D2C(void) {
     gPlayerInput[PLAYER_2].enabled = gPlayerInput[PLAYER_1].enabled = TRUE;
     gPlayerInput[PLAYER_2].prev_buttons = gPlayerInput[PLAYER_1].prev_buttons = 0;
     gPlayerInput[PLAYER_2].remapped = gPlayerInput[PLAYER_1].remapped = TRUE;
-    gPlayerInput[PLAYER_1].unk_0D = gPlayerInput[PLAYER_2].unk_0D = FALSE;
+    gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = FALSE;
 }

@@ -64,7 +64,7 @@ void func_8001954C(Object *obj, s16 buttons, s16 playerId) {
                     func_800194E0(PLAY_MODE_2_PLAYERS);
                     break;
                 case 2:
-                    gNextGameMode = GAME_MODE_OPTIONS;
+                    gNextGameMode = GAME_MODE_MENU_OPTIONS;
                     break;
                 case 3:
                     gBattleSettings[playerId].isCpu = FALSE;
@@ -108,8 +108,8 @@ void func_800198D0(void) {
     gGlobalFlags |= GAME_FLAG_MODE_DONE;
 
     gBattleSettings[PLAYER_1].characterId = gBattleSettings[PLAYER_2].characterId = SONORK;
-    gBattleSettings[PLAYER_1].unk_06 = TRUE;
-    gBattleSettings[PLAYER_2].unk_06 = FALSE;
+    gBattleSettings[PLAYER_1].assetContext = TRUE;
+    gBattleSettings[PLAYER_2].assetContext = FALSE;
     gBattleSettings[PLAYER_1].isCpu = FALSE;
     gBattleSettings[PLAYER_2].isCpu = TRUE;
 
@@ -124,8 +124,8 @@ void func_80019940(void) {
     D_80049B90 &= 7;
 
     gBattleSettings[PLAYER_1].characterId = D_80049B70[D_80049B90][PLAYER_1];
-    gBattleSettings[PLAYER_1].unk_06 = TRUE;
-    gBattleSettings[PLAYER_2].unk_06 = FALSE;
+    gBattleSettings[PLAYER_1].assetContext = TRUE;
+    gBattleSettings[PLAYER_2].assetContext = FALSE;
     gBattleSettings[PLAYER_1].isCpu = FALSE;
     gBattleSettings[PLAYER_2].isCpu = TRUE;
 
@@ -403,7 +403,7 @@ void func_8001A3EC(Object *obj) {
     }
 
     obj->flags |= OBJ_FLAG_DELETE;
-    func_80014CB4(D_80081254);
+    bg_layer_delete(D_80081254);
 }
 
 void func_8001A490(Object *obj) {
@@ -479,7 +479,7 @@ void func_8001A674(Object *obj) {
         gGlobalFlags |= GAME_FLAG_MODE_DONE;
         obj->flags |= OBJ_FLAG_DELETE;
         gNextGameMode = GAME_MODE_BATTLE_DEMITRON;
-        func_80014CB4(D_80081254);
+        bg_layer_delete(D_80081254);
     }
 
     if (s2->obj->frameIndex == 260) {

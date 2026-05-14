@@ -68,6 +68,8 @@ s16 D_8013C38C;
 s16 D_8013C38E;
 s32 D_8013C390_unused;
 
+s32 func_80012854(s32 arg0);
+
 void func_8002EB2C(Object *obj);
 void func_8002D278(Object *obj, u8 arg1);
 void func_8002DFCC(u8 arg0);
@@ -690,6 +692,7 @@ void func_8002DFCC(u8 arg0) {
     s16 s3;
     s16 lo;
     s16 s4;
+    Player *temp = gPlayers;
 
 restart:
     D_800801F4 = D_80080200;
@@ -715,13 +718,13 @@ restart:
         return;
     }
 
-    v1 = MIN(gPlayers[PLAYER_1].unk_198.unk_18->y, gPlayers[PLAYER_1].unk_198.unk_14->y);
-    v0 = MIN(gPlayers[PLAYER_2].unk_198.unk_18->y, gPlayers[PLAYER_2].unk_198.unk_14->y);
+    v1 = MIN(temp[PLAYER_1].unk_198.unk_18->y, temp[PLAYER_1].unk_198.unk_14->y);
+    v0 = MIN(temp[PLAYER_2].unk_198.unk_18->y, temp[PLAYER_2].unk_198.unk_14->y);
 
     if (v1 < v0) {
-        s0 = (gPlayers[PLAYER_2].unk_198.unk_08->y - 200.0f) < v1;
+        s0 = (temp[PLAYER_2].unk_198.unk_08->y - 200.0f) < v1;
     } else {
-        s0 = (gPlayers[PLAYER_1].unk_198.unk_08->y - 200.0f) < v0;
+        s0 = (temp[PLAYER_1].unk_198.unk_08->y - 200.0f) < v0;
     }
 
     if ((gPlayers[PLAYER_1].currentState->flags & STATE_FLAG_80000) ||

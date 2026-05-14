@@ -71,7 +71,7 @@ BackgroundLayer *bg_layer_create(char *assetName, s32 arg1, s32 posY, s32 parall
     return bgLayer;
 }
 
-void func_80014CB4(BackgroundLayer *tex) {
+void bg_layer_delete(BackgroundLayer *tex) {
     BackgroundLayer *it;
     BackgroundLayer *prev;
 

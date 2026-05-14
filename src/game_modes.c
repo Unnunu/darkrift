@@ -3,25 +3,13 @@
 #include "sprite_ids.h"
 #include "task.h"
 
-typedef struct UnkObjDef2 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-} UnkObjDef2; // size = 0x8
-
-typedef struct UnkObjDef4 {
-    /* 0x00 */ char *unk_00;
-    /* 0x04 */ void (*unk_04)(Object *);
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-} UnkObjDef4; // size = 0x10
-
 extern s16 D_80051F68;
 
 extern s32 D_8008012C;
-extern Object *D_80081460;
+extern Object *gRankTable;
 extern s16 D_80049B30[];
 
-extern u8 gAudioStereo;
+extern u8 gAudioMono;
 extern s32 gMusicVolume;
 extern s32 gSoundVolume;
 extern u8 D_80080129;
@@ -34,7 +22,6 @@ extern s16 D_8013C226;
 extern s8 D_80081430;
 extern s32 D_800AA480;
 extern s16 gPreviousPlayMode;
-extern s16 D_800B6368[11][2];
 
 extern u32 gTournamentOpponentId;
 extern u16 D_8013C250;
@@ -47,27 +34,27 @@ void func_800199E0(Object *);
 void func_80020670(Object *);
 void func_80019F40(Object *);
 void func_8001A158(Object *, s16);
-// s32 func_80019278(void);
+// s32 menu_rank_init(void);
 void func_800052EC(s16 arg0);
 void func_8001B5B0(char *, s32);
 void func_80029630(void);
 void func_8002DE20(Object *);
 void task_default_func(Object *);
-void func_8001905C(Object *);
-void func_80018974(Object *);
-void func_80018820(Object *);
-void func_800189CC(Object *);
-void func_80017F00(Object *);
-void func_80017F60(Object *);
-void func_80017FF4(Object *);
-void func_80018088(Object *);
-void func_80018120(Object *);
-void func_800181C8(Object *);
-void func_800182E0(Object *);
-void func_800183FC(Object *);
-void func_800184A8(Object *);
-void func_80018554(Object *);
-void func_80018600(Object *);
+void rank_table_update(Object *);
+void controls_controller_update(Object *);
+void controls_button_update(Object *);
+void controls_exit_update(Object *);
+void options_update(Object *);
+void options_difficulty_update(Object *);
+void options_timer_update(Object *);
+void options_rounds_update(Object *);
+void options_audio_update(Object *);
+void options_music_update(Object *);
+void options_sfx_update(Object *);
+void options_controls_update(Object *);
+void options_rankings_update(Object *);
+void options_stats_update(Object *);
+void options_exit_update(Object *);
 void func_80019A9C(Object *);
 void func_8001A4FC(Object *);
 void func_8001A98C(Object *);
@@ -134,11 +121,11 @@ void func_80006CEC(void) {
     D_800AA480 = 0;
 
     gBattleSettings[PLAYER_1].characterId = GORE;
-    gBattleSettings[PLAYER_1].unk_06 = TRUE;
+    gBattleSettings[PLAYER_1].assetContext = TRUE;
     gBattleSettings[PLAYER_1].isCpu = FALSE;
     gBattleSettings[PLAYER_1].roundsWon = 0;
     gBattleSettings[PLAYER_2].characterId = AARON;
-    gBattleSettings[PLAYER_2].unk_06 = FALSE;
+    gBattleSettings[PLAYER_2].assetContext = FALSE;
     gBattleSettings[PLAYER_2].isCpu = FALSE;
     gBattleSettings[PLAYER_2].roundsWon = 0;
     gBattleSettings[PLAYER_1].isDebug = FALSE;
@@ -158,7 +145,7 @@ void func_80006CEC(void) {
     }
 
     for (j = 0; j < 11; j++) {
-        D_800B6368[j][0] = D_800B6368[j][1] = 0;
+        D_800B6368[j].wins = D_800B6368[j].loses = 0;
     }
 
     gBattleSettings[PLAYER_1].unk_04 = 7;
@@ -204,7 +191,7 @@ void func_80006E6C(void) {
     gGlobalFlags &= ~(GAME_FLAG_400 | GAME_FLAG_10 | GAME_FLAG_MODE_DONE);
     D_8008012C &= ~GFX_FLAG_20;
     func_8002630C(0x6000);
-    func_80014CB4(sp30);
+    bg_layer_delete(sp30);
 }
 
 void func_80006FB4(void) {
@@ -241,7 +228,7 @@ void func_800070C0(void) {
 }
 
 void run_battle_gore_mode(void) {
-    s32 sp2C = gBattleSettings[PLAYER_2].unk_06;
+    s32 sp2C = gBattleSettings[PLAYER_2].assetContext;
     BackgroundLayer *bg;
 
     func_80006FB4();
@@ -277,7 +264,7 @@ void func_800071F0(Object *obj) {
 s32 D_80049400[] = { 0x40000, task_default_func, 0x2800, 0x10000000, 0, "tc", func_800071F0, 0x1000, 0 };
 
 void run_battle_aaron_mode(void) {
-    s32 sp2C = gBattleSettings[PLAYER_2].unk_06;
+    s32 sp2C = gBattleSettings[PLAYER_2].assetContext;
     Vec4i sp1C = { 0, -500, 0, 0 };
     BackgroundLayer *bg;
 
@@ -301,7 +288,7 @@ void run_battle_aaron_mode(void) {
 }
 
 void run_battle_demitron_mode(void) {
-    s32 sp2C = gBattleSettings[PLAYER_2].unk_06;
+    s32 sp2C = gBattleSettings[PLAYER_2].assetContext;
     BackgroundLayer *bg;
 
     func_80006FB4();
@@ -324,7 +311,7 @@ void run_battle_demitron_mode(void) {
 }
 
 void run_battle_demonica_mode(void) {
-    s32 sp2C = gBattleSettings[PLAYER_2].unk_06;
+    s32 sp2C = gBattleSettings[PLAYER_2].assetContext;
     BackgroundLayer *bg;
 
     func_80006FB4();
@@ -347,7 +334,7 @@ void run_battle_demonica_mode(void) {
 }
 
 void run_battle_eve_mode(void) {
-    s32 sp2C = gBattleSettings[PLAYER_2].unk_06;
+    s32 sp2C = gBattleSettings[PLAYER_2].assetContext;
     BackgroundLayer *bg;
 
     func_80006FB4();
@@ -370,7 +357,7 @@ void run_battle_eve_mode(void) {
 }
 
 void run_battle_morphix_mode(void) {
-    s32 sp2C = gBattleSettings[PLAYER_2].unk_06;
+    s32 sp2C = gBattleSettings[PLAYER_2].assetContext;
     BackgroundLayer *bg;
 
     func_80006FB4();
@@ -392,7 +379,7 @@ void run_battle_morphix_mode(void) {
 }
 
 void run_battle_niiki_mode(void) {
-    s32 sp2C = gBattleSettings[PLAYER_2].unk_06;
+    s32 sp2C = gBattleSettings[PLAYER_2].assetContext;
 
     func_80006FB4();
     bg_layer_create("bg2", 0, 94, 0x2000, 0x10000, 0, sp2C);
@@ -412,7 +399,7 @@ void run_battle_niiki_mode(void) {
 }
 
 void run_battle_scarlet_mode(void) {
-    s32 sp2C = gBattleSettings[PLAYER_2].unk_06;
+    s32 sp2C = gBattleSettings[PLAYER_2].assetContext;
     BackgroundLayer *bg;
 
     func_80006FB4();
@@ -435,7 +422,7 @@ void run_battle_scarlet_mode(void) {
 }
 
 void run_battle_sonork_mode(void) {
-    s32 sp2C = gBattleSettings[PLAYER_2].unk_06;
+    s32 sp2C = gBattleSettings[PLAYER_2].assetContext;
     BackgroundLayer *bg;
 
     func_80006FB4();
@@ -458,7 +445,7 @@ void run_battle_sonork_mode(void) {
 }
 
 void run_battle_zenmuron_mode(void) {
-    s32 sp2C = gBattleSettings[PLAYER_2].unk_06;
+    s32 sp2C = gBattleSettings[PLAYER_2].assetContext;
     BackgroundLayer *bg;
 
     func_80006FB4();
@@ -494,8 +481,8 @@ void func_80007B68(Object *obj) {
                 D_80081254->posY--;
             } else {
                 if (gPlayMode != PLAY_MODE_30) {
-                    gBattleSettings[gTournamentOpponentId].unk_06 = TRUE;
-                    gBattleSettings[1 - gTournamentOpponentId].unk_06 = FALSE;
+                    gBattleSettings[gTournamentOpponentId].assetContext = TRUE;
+                    gBattleSettings[1 - gTournamentOpponentId].assetContext = FALSE;
                     gNextGameMode = gBattleSettings[gTournamentOpponentId].characterId + GAME_MODE_BATTLE_AARON;
                 } else {
                     gNextGameMode = gBattleSettings[1 - gTournamentOpponentId].characterId + GAME_MODE_BATTLE_AARON;
@@ -509,11 +496,11 @@ void func_80007B68(Object *obj) {
         gPlayerInput[a3].accumulated = TRUE;
         if ((gPlayerInput[a3].buttons & INP_START) ||
             gPlayMode == PLAY_MODE_30 && (gPlayerInput[1 - a3].buttons & INP_START)) {
-            func_80014CB4(D_80081254);
+            bg_layer_delete(D_80081254);
             if (gPlayMode != PLAY_MODE_30) {
                 gNextGameMode = gBattleSettings[gTournamentOpponentId].characterId + GAME_MODE_BATTLE_AARON;
-                gBattleSettings[gTournamentOpponentId].unk_06 = TRUE;
-                gBattleSettings[1 - gTournamentOpponentId].unk_06 = FALSE;
+                gBattleSettings[gTournamentOpponentId].assetContext = TRUE;
+                gBattleSettings[1 - gTournamentOpponentId].assetContext = FALSE;
             } else {
                 gNextGameMode = GAME_MODE_MAIN_MENU;
             }
@@ -609,7 +596,7 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
 }
 
 void run_intro_gore_mode(void) {
-    s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
+    s32 temp_s0 = gBattleSettings[PLAYER_2].assetContext;
 
     asset_open_folder("/gore/goreint", CONTEXT_3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
@@ -628,7 +615,7 @@ void run_intro_gore_mode(void) {
 }
 
 void run_intro_aaron_mode(void) {
-    s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
+    s32 temp_s0 = gBattleSettings[PLAYER_2].assetContext;
 
     asset_open_folder("/aaro/aaroint", CONTEXT_3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
@@ -647,7 +634,7 @@ void run_intro_aaron_mode(void) {
 }
 
 void run_intro_demitron_mode(void) {
-    s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
+    s32 temp_s0 = gBattleSettings[PLAYER_2].assetContext;
 
     asset_open_folder("/demi/demiint", CONTEXT_3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
@@ -665,7 +652,7 @@ void run_intro_demitron_mode(void) {
 }
 
 void run_intro_demonica_mode(void) {
-    s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
+    s32 temp_s0 = gBattleSettings[PLAYER_2].assetContext;
 
     asset_open_folder("/demo/demoint", CONTEXT_3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
@@ -683,7 +670,7 @@ void run_intro_demonica_mode(void) {
 }
 
 void run_intro_eve_mode(void) {
-    s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
+    s32 temp_s0 = gBattleSettings[PLAYER_2].assetContext;
 
     asset_open_folder("/eve/eveint", CONTEXT_3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
@@ -701,7 +688,7 @@ void run_intro_eve_mode(void) {
 }
 
 void run_intro_morphix_mode(void) {
-    s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
+    s32 temp_s0 = gBattleSettings[PLAYER_2].assetContext;
 
     asset_open_folder("/morp/morpint", CONTEXT_3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
@@ -719,7 +706,7 @@ void run_intro_morphix_mode(void) {
 }
 
 void run_intro_niiki_mode(void) {
-    s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
+    s32 temp_s0 = gBattleSettings[PLAYER_2].assetContext;
 
     asset_open_folder("/niik/niikint", CONTEXT_3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
@@ -737,7 +724,7 @@ void run_intro_niiki_mode(void) {
 }
 
 void run_intro_scarlet_mode(void) {
-    s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
+    s32 temp_s0 = gBattleSettings[PLAYER_2].assetContext;
 
     asset_open_folder("/scar/scarint", CONTEXT_3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
@@ -755,7 +742,7 @@ void run_intro_scarlet_mode(void) {
 }
 
 void run_intro_sonork_mode(void) {
-    s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
+    s32 temp_s0 = gBattleSettings[PLAYER_2].assetContext;
 
     asset_open_folder("/sono/sonoint", CONTEXT_3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
@@ -773,7 +760,7 @@ void run_intro_sonork_mode(void) {
 }
 
 void run_intro_zenmuron_mode(void) {
-    s32 temp_s0 = gBattleSettings[PLAYER_2].unk_06;
+    s32 temp_s0 = gBattleSettings[PLAYER_2].assetContext;
 
     asset_open_folder("/zenm/zenmint", CONTEXT_3000);
     func_80007F4C(TRUE, 0x70, 0x3000);
@@ -813,8 +800,8 @@ void func_80008D98(void) {
     BackgroundLayer *sp30;
 
     gBattleSettings[PLAYER_1].characterId = SONORK;
-    gBattleSettings[PLAYER_1].unk_06 = TRUE;
-    gBattleSettings[PLAYER_2].unk_06 = FALSE;
+    gBattleSettings[PLAYER_1].assetContext = TRUE;
+    gBattleSettings[PLAYER_2].assetContext = FALSE;
     gBattleSettings[PLAYER_1].isCpu = FALSE;
     gBattleSettings[PLAYER_2].isCpu = TRUE;
 
@@ -840,7 +827,7 @@ void func_80008D98(void) {
     obj2->rotation.y = 0x400;
     obj2->unk_088.a = 80;
     create_worker(func_80008D0C, 0x1000);
-    func_80014CB4(sp30);
+    bg_layer_delete(sp30);
     main_loop();
 
     func_8002630C(0x3000);
@@ -860,7 +847,7 @@ void func_80008FDC(void) {
     void *a3;
     s32 padding;
 
-    sp44 = gBattleSettings[PLAYER_2].unk_06;
+    sp44 = gBattleSettings[PLAYER_2].assetContext;
     sp42 = gBattleSettings[PLAYER_2].isCpu;
 
     func_8002630C(CONTEXT_ABAB);
@@ -1003,7 +990,7 @@ void func_800096D0(u8 arg0) {
     Object *s0;
     Object *a3;
 
-    s1 = gBattleSettings[PLAYER_2].unk_06;
+    s1 = gBattleSettings[PLAYER_2].assetContext;
     t9 = 1 - s1;
     nv = s1;
     func_800052EC(0);
@@ -1071,7 +1058,7 @@ void func_800099F0(void) {
     u16 sp24;
     char sp2C[80];
 
-    sp7E = gBattleSettings[PLAYER_2].unk_06;
+    sp7E = gBattleSettings[PLAYER_2].assetContext;
     sp24 = 1 - sp7E;
     gBattleSettings[PLAYER_1].isDummy = gBattleSettings[PLAYER_2].isDummy = 0;
     D_800801F0 = TRUE;
@@ -1185,7 +1172,7 @@ void func_80009E8C(void) {
     Player *player2;
     char sp2C[72];
 
-    sp7E = gBattleSettings[PLAYER_2].unk_06;
+    sp7E = gBattleSettings[PLAYER_2].assetContext;
     sp24 = 1 - sp7E;
 
     player2 = &gPlayers[sp24];
@@ -1286,13 +1273,13 @@ void run_main_menu_mode(void) {
     Vec4i sp30 = { 164, 155, 0, 0 };
 
     func_800263A8();
-    gPlayerInput[PLAYER_1].unk_0D = gPlayerInput[PLAYER_2].unk_0D = TRUE;
+    gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = TRUE;
     asset_open_folder("/title", CONTEXT_2000);
     bg_layer_create("dr_title", 0, 0, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     D_8008012C |= GFX_FLAG_20;
     gGlobalFlags |= GAME_FLAG_4;
 
-    if (gPreviousGameMode == GAME_MODE_OPTIONS) {
+    if (gPreviousGameMode == GAME_MODE_MENU_OPTIONS) {
         Model *menuEntrySelectorModel = gAssets[asset_find("title.k2", CONTEXT_2000)].aux_data;
         menuEntrySelector = create_model_instance(&gZeroPosition, 0x1000, func_800199E0, menuEntrySelectorModel);
         menuEntrySelector->flags |= OBJ_FLAG_1000000;
@@ -1358,7 +1345,7 @@ void run_intro_mode(void) {
     asset_open_folder("/title/tit_int", CONTEXT_2000);
     asset_open_folder("/plyrsel/plyrsel", CONTEXT_EEFF);
     v0 = create_worker(func_80019F40, 0x1000);
-    gPlayerInput[PLAYER_1].unk_0D = gPlayerInput[PLAYER_2].unk_0D = TRUE;
+    gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = TRUE;
     func_8001A158(v0, 0x2000);
 
     D_80081254 = bg_layer_create("oplog", 0, 250, 0, 0x10000, BG_FLAG_OVERLAY, CONTEXT_2000);
@@ -1396,261 +1383,261 @@ void run_logo_mode(void) {
 }
 
 void run_options_mode(void) {
-    Object *s0;
-    Object *v0;
-    UIElement sp1AC = { 89, func_80017F00, 0, 0x1000, "options2.sp2" };
-    UIElement sp198 = { 203, func_80017F60, 0, 0x1000, "options2.sp2" };
-    UIElement sp184 = { 53, func_80017FF4, 0, 0x1000, "options2.sp2" };
-    UIElement sp170 = { 14, func_80018088, 0, 0x1000, "options2.sp2" };
-    UIElement sp15C = { 7, func_80018120, 0, 0x1000, "options2.sp2" };
-    UIElement sp148 = { 20, func_800181C8, 0, 0x1000, "options2.sp2" };
-    UIElement sp134 = { 20, func_800182E0, 0, 0x1000, "options2.sp2" };
-    UIElement sp120 = { 57, func_800183FC, 0, 0x1000, "options2.sp2" };
-    UIElement sp10C = { 58, func_800184A8, 0, 0x1000, "options2.sp2" };
-    UIElement spF8 = { 59, func_80018554, 0, 0x1000, "options2.sp2" };
-    UIElement spE4 = { 60, func_80018600, 0, 0x1000, "options2.sp2" };
-    Vec4i spD4 = { 130, 130, 0, 0 };
-    Vec4i spC4 = { 181, 74, 0, 0 };
-    Vec4i spB4 = { 181, 91, 0, 0 };
-    Vec4i spA4 = { 181, 105, 0, 0 };
-    Vec4i sp94 = { 181, 121, 0, 0 };
-    Vec4i sp84 = { 181, 136, 0, 0 };
-    Vec4i sp74 = { 181, 151, 0, 0 };
-    Vec4i sp64 = { 118, 166, 0, 0 };
-    Vec4i sp54 = { 117, 181, 0, 0 };
-    Vec4i sp44 = { 135, 198, 0, 0 };
-    Vec4i sp34 = { 146, 228, 0, 0 };
+    Object *controller;
+    Object *obj;
+    UIElement ui_labels = { OPTIONS_OPTIONS_TEXT, options_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    UIElement ui_difficulty = { OPTIONS_NORMAL_HL, options_difficulty_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    UIElement ui_timer = { OPTIONS_90, options_timer_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    UIElement ui_rounds = { OPTIONS_3, options_rounds_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    UIElement ui_audio = { OPTIONS_STEREO, options_audio_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    UIElement ui_music_volume = { OPTIONS_9, options_music_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    UIElement ui_sfx_volume = { OPTIONS_9, options_sfx_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    UIElement ui_controls = { OPTIONS_CONTROLS_HL, options_controls_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    UIElement ui_rankings = { OPTIONS_RANKINGS_HL, options_rankings_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    UIElement ui_stats = { OPTIONS_STATS_HL, options_stats_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    UIElement ui_exit = { OPTIONS_EXIT_HL, options_exit_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    Vec4i ui_labels_pos = { 130, 130, 0, 0 };
+    Vec4i ui_difficulty_pos = { 181, 74, 0, 0 };
+    Vec4i ui_timer_pos = { 181, 91, 0, 0 };
+    Vec4i ui_rounds_pos = { 181, 105, 0, 0 };
+    Vec4i ui_audio_pos = { 181, 121, 0, 0 };
+    Vec4i ui_music_volume_pos = { 181, 136, 0, 0 };
+    Vec4i ui_sfx_volume_pos = { 181, 151, 0, 0 };
+    Vec4i ui_controls_pos = { 118, 166, 0, 0 };
+    Vec4i ui_rankings_pos = { 117, 181, 0, 0 };
+    Vec4i ui_stats_pos = { 135, 198, 0, 0 };
+    Vec4i ui_exit_pos = { 146, 228, 0, 0 };
 
-    gPlayerInput[PLAYER_1].unk_0D = gPlayerInput[PLAYER_2].unk_0D = TRUE;
+    gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = TRUE;
     asset_open_folder("/title/option", CONTEXT_2000);
     bg_layer_create("bgopt", 0, 0, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     D_8008012C |= GFX_FLAG_20;
     gGlobalFlags |= GAME_FLAG_4;
 
-    s0 = create_ui_element(&spD4, &sp1AC, 0x2000);
+    controller = create_ui_element(&ui_labels_pos, &ui_labels, CONTEXT_2000);
 
-    v0 = create_ui_element(&spC4, &sp198, 0x2000);
-    v0->frameIndex = gDifficulty + 202;
-    v0->vars[3] = s0;
+    obj = create_ui_element(&ui_difficulty_pos, &ui_difficulty, CONTEXT_2000);
+    obj->frameIndex = gDifficulty + OPTIONS_EASY_HL;
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller;
 
-    v0 = create_ui_element(&spB4, &sp184, 0x2000);
-    v0->frameIndex = gBattleDurationEnum + 51;
-    v0->vars[3] = s0;
+    obj = create_ui_element(&ui_timer_pos, &ui_timer, CONTEXT_2000);
+    obj->frameIndex = gBattleDuration + OPTIONS_00;
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller;
 
-    v0 = create_ui_element(&spA4, &sp170, 0x2000);
-    v0->frameIndex = gMaxRounds + 11;
-    v0->vars[3] = s0;
+    obj = create_ui_element(&ui_rounds_pos, &ui_rounds, CONTEXT_2000);
+    obj->frameIndex = gMaxRounds + OPTIONS_0;
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller;
 
-    v0 = create_ui_element(&sp94, &sp15C, 0x2000);
-    v0->frameIndex = gAudioStereo + 7;
-    v0->vars[3] = s0;
+    obj = create_ui_element(&ui_audio_pos, &ui_audio, CONTEXT_2000);
+    obj->frameIndex = gAudioMono + OPTIONS_STEREO;
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller;
 
-    v0 = create_ui_element(&sp84, &sp148, 0x2000);
-    v0->frameIndex = gMusicVolume / (0x8000 / 9) + 11;
-    v0->vars[3] = s0;
+    obj = create_ui_element(&ui_music_volume_pos, &ui_music_volume, CONTEXT_2000);
+    obj->frameIndex = gMusicVolume / (0x8000 / 9) + OPTIONS_0;
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller;
 
-    v0 = create_ui_element(&sp74, &sp134, 0x2000);
-    v0->frameIndex = gSoundVolume / (0x8000 / 9) + 11;
-    v0->vars[3] = s0;
+    obj = create_ui_element(&ui_sfx_volume_pos, &ui_sfx_volume, CONTEXT_2000);
+    obj->frameIndex = gSoundVolume / (0x8000 / 9) + OPTIONS_0;
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller;
 
-    v0 = create_ui_element(&sp64, &sp120, 0x2000);
-    v0->vars[3] = s0;
+    obj = create_ui_element(&ui_controls_pos, &ui_controls, CONTEXT_2000);
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller;
 
-    v0 = create_ui_element(&sp54, &sp10C, 0x2000);
-    v0->vars[3] = s0;
+    obj = create_ui_element(&ui_rankings_pos, &ui_rankings, CONTEXT_2000);
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller;
 
-    v0 = create_ui_element(&sp44, &spF8, 0x2000);
-    v0->vars[3] = s0;
+    obj = create_ui_element(&ui_stats_pos, &ui_stats, CONTEXT_2000);
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller;
 
-    v0 = create_ui_element(&sp34, &spE4, 0x2000);
-    v0->vars[3] = s0;
+    obj = create_ui_element(&ui_exit_pos, &ui_exit, CONTEXT_2000);
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller;
 
     main_loop();
-    func_8002630C(0x2000);
+    func_8002630C(CONTEXT_2000);
 }
 
-void func_8000AFA4(Object *obj, s16 arg1) {
+void func_8000AFA4(Object *obj, s16 playerId) {
     s16 i;
-    s16 q;
+    s16 button;
 
-    q = D_80049B30[obj->vars[6]];
+    button = D_80049B30[obj->vars[VAR_OPT_CTRL_ROW]];
     for (i = 0; i < 8; i++) {
-        if (D_800AA450[arg1][i] == q) {
+        if (gButtonsMap[playerId][i] == button) {
             break;
         }
     }
 
     switch (i) {
         case 0:
-            obj->frameIndex = 67;
+            obj->frameIndex = OPTIONS_BUTTON_L;
             break;
         case 1:
-            obj->frameIndex = 65;
+            obj->frameIndex = OPTIONS_BUTTON_A;
             break;
         case 2:
-            obj->frameIndex = 68;
+            obj->frameIndex = OPTIONS_BUTTON_R;
             break;
         case 3:
-            obj->frameIndex = 66;
+            obj->frameIndex = OPTIONS_BUTTON_B;
             break;
         case 4:
-            obj->frameIndex = 61;
+            obj->frameIndex = OPTIONS_BUTTON_C_UP;
             break;
         case 5:
-            obj->frameIndex = 64;
+            obj->frameIndex = OPTIONS_BUTTON_C_RIGHT;
             break;
         case 6:
-            obj->frameIndex = 63;
+            obj->frameIndex = OPTIONS_BUTTON_C_DOWN;
             break;
         case 7:
-            obj->frameIndex = 62;
+            obj->frameIndex = OPTIONS_BUTTON_C_LEFT;
             break;
     }
 }
 
 void run_menu_control_mode(void) {
-    Object *sp21C;
-    Object *sp218;
-    Object *v0;
-    UIElement sp200 = { 90, NULL, 0, 0x1000, "options2.sp2" };
-    UIElement sp1EC = { 70, func_80018974, 0, 0x1000, "options2.sp2" };
-    UIElement sp1D8 = { 62, func_80018820, 0, 0x1000, "options2.sp2" };
-    UIElement sp1C4 = { 63, func_80018820, 0, 0x1000, "options2.sp2" };
-    UIElement sp1B0 = { 64, func_80018820, 0, 0x1000, "options2.sp2" };
-    UIElement sp19C = { 66, func_80018820, 0, 0x1000, "options2.sp2" };
-    UIElement sp188 = { 67, func_80018820, 0, 0x1000, "options2.sp2" };
-    UIElement sp174 = { 68, func_80018820, 0, 0x1000, "options2.sp2" };
-    UIElement sp160 = { 65, func_80018820, 0, 0x1000, "options2.sp2" };
-    UIElement sp14C = { 60, func_800189CC, 0, 0x1000, "options2.sp2" };
-    Vec4i sp13C = { 133, 126, 0, 0 };
-    Vec4i sp12C = { 40, 82, 0, 0 };
-    Vec4i sp11C = { 179, 82, 0, 0 };
-    Vec4i sp10C = { 40, 96, 0, 0 };
-    Vec4i spFC = { 179, 96, 0, 0 };
-    Vec4i spEC = { 40, 110, 0, 0 };
-    Vec4i spDC = { 179, 110, 0, 0 };
-    Vec4i spCC = { 40, 124, 0, 0 };
-    Vec4i spBC = { 179, 124, 0, 0 };
-    Vec4i spAC = { 40, 138, 0, 0 };
-    Vec4i sp9C = { 179, 138, 0, 0 };
-    Vec4i sp8C = { 40, 152, 0, 0 };
-    Vec4i sp7C = { 179, 152, 0, 0 };
-    Vec4i sp6C = { 40, 166, 0, 0 };
-    Vec4i sp5C = { 179, 166, 0, 0 };
-    Vec4i sp4C = { 40, 180, 0, 0 };
-    Vec4i sp3C = { 179, 180, 0, 0 };
-    Vec4i sp2C = { 149, 224, 0, 0 };
+    Object *controller_p1;
+    Object *controller_p2;
+    Object *obj;
+    UIElement labels = { OPTIONS_CONTROLS_TEXT, NULL, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    UIElement button_c_up = { OPTIONS_BUTTON_C_UP_HL, controls_controller_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    UIElement button_c_left = { OPTIONS_BUTTON_C_LEFT, controls_button_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    UIElement button_c_down = { OPTIONS_BUTTON_C_DOWN, controls_button_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    UIElement button_c_right = { OPTIONS_BUTTON_C_RIGHT, controls_button_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    UIElement button_b = { OPTIONS_BUTTON_B, controls_button_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    UIElement button_l = { OPTIONS_BUTTON_L, controls_button_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    UIElement button_r = { OPTIONS_BUTTON_R, controls_button_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    UIElement button_a = { OPTIONS_BUTTON_A, controls_button_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    UIElement exit_menu = { OPTIONS_EXIT_HL, controls_exit_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    Vec4i labels_pos = { 133, 126, 0, 0 };
+    Vec4i button_c_up_p1_pos = { 40, 82, 0, 0 };
+    Vec4i button_c_up_p2_pos = { 179, 82, 0, 0 };
+    Vec4i button_c_left_p1_pos = { 40, 96, 0, 0 };
+    Vec4i button_c_left_p2_pos = { 179, 96, 0, 0 };
+    Vec4i button_c_down_p1_pos = { 40, 110, 0, 0 };
+    Vec4i button_c_down_p2_pos = { 179, 110, 0, 0 };
+    Vec4i button_c_right_p1_pos = { 40, 124, 0, 0 };
+    Vec4i button_c_right_p2_pos = { 179, 124, 0, 0 };
+    Vec4i button_b_p1_pos = { 40, 138, 0, 0 };
+    Vec4i button_b_p2_pos = { 179, 138, 0, 0 };
+    Vec4i button_l_p1_pos = { 40, 152, 0, 0 };
+    Vec4i button_l_p2_pos = { 179, 152, 0, 0 };
+    Vec4i button_r_p1_pos = { 40, 166, 0, 0 };
+    Vec4i button_r_p2_pos = { 179, 166, 0, 0 };
+    Vec4i button_a_p1_pos = { 40, 180, 0, 0 };
+    Vec4i button_a_p2_pos = { 179, 180, 0, 0 };
+    Vec4i exit_menu_pos = { 149, 224, 0, 0 };
 
-    gPlayerInput[PLAYER_1].unk_0D = gPlayerInput[PLAYER_2].unk_0D = TRUE;
+    gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = TRUE;
     asset_open_folder("/title/control", CONTEXT_2000);
     bg_layer_create("bgcont", 0, 0, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     D_8008012C |= GFX_FLAG_20;
     gGlobalFlags |= GAME_FLAG_4;
 
-    create_ui_element(&sp13C, &sp200, 0x2000);
+    create_ui_element(&labels_pos, &labels, CONTEXT_2000);
 
-    sp21C = create_ui_element(&sp12C, &sp1EC, 0x2000);
-    sp21C->vars[3] = sp21C;
-    sp21C->vars[6] = 0;
-    func_8000AFA4(sp21C, 0);
+    controller_p1 = create_ui_element(&button_c_up_p1_pos, &button_c_up, CONTEXT_2000);
+    controller_p1->vars[VAR_OPT_CTRL_CONTROLLER] = controller_p1;
+    controller_p1->vars[VAR_OPT_CTRL_ROW] = 0;
+    func_8000AFA4(controller_p1, 0);
 
-    v0 = create_ui_element(&sp10C, &sp1D8, 0x2000);
-    v0->vars[3] = sp21C;
-    v0->vars[6] = 1;
-    func_8000AFA4(v0, 0);
+    obj = create_ui_element(&button_c_left_p1_pos, &button_c_left, CONTEXT_2000);
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller_p1;
+    obj->vars[VAR_OPT_CTRL_ROW] = 1;
+    func_8000AFA4(obj, 0);
 
-    v0 = create_ui_element(&spEC, &sp1C4, 0x2000);
-    v0->vars[3] = sp21C;
-    v0->vars[6] = 2;
-    func_8000AFA4(v0, 0);
+    obj = create_ui_element(&button_c_down_p1_pos, &button_c_down, CONTEXT_2000);
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller_p1;
+    obj->vars[VAR_OPT_CTRL_ROW] = 2;
+    func_8000AFA4(obj, 0);
 
-    v0 = create_ui_element(&spCC, &sp1B0, 0x2000);
-    v0->vars[3] = sp21C;
-    v0->vars[6] = 3;
-    func_8000AFA4(v0, 0);
+    obj = create_ui_element(&button_c_right_p1_pos, &button_c_right, CONTEXT_2000);
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller_p1;
+    obj->vars[VAR_OPT_CTRL_ROW] = 3;
+    func_8000AFA4(obj, 0);
 
-    v0 = create_ui_element(&spAC, &sp19C, 0x2000);
-    v0->vars[3] = sp21C;
-    v0->vars[6] = 4;
-    func_8000AFA4(v0, 0);
+    obj = create_ui_element(&button_b_p1_pos, &button_b, CONTEXT_2000);
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller_p1;
+    obj->vars[VAR_OPT_CTRL_ROW] = 4;
+    func_8000AFA4(obj, 0);
 
-    v0 = create_ui_element(&sp8C, &sp188, 0x2000);
-    v0->vars[3] = sp21C;
-    v0->vars[6] = 5;
-    func_8000AFA4(v0, 0);
+    obj = create_ui_element(&button_l_p1_pos, &button_l, CONTEXT_2000);
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller_p1;
+    obj->vars[VAR_OPT_CTRL_ROW] = 5;
+    func_8000AFA4(obj, 0);
 
-    v0 = create_ui_element(&sp6C, &sp174, 0x2000);
-    v0->vars[3] = sp21C;
-    v0->vars[6] = 6;
-    func_8000AFA4(v0, 0);
+    obj = create_ui_element(&button_r_p1_pos, &button_r, CONTEXT_2000);
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller_p1;
+    obj->vars[VAR_OPT_CTRL_ROW] = 6;
+    func_8000AFA4(obj, 0);
 
-    v0 = create_ui_element(&sp4C, &sp160, 0x2000);
-    v0->vars[3] = sp21C;
-    v0->vars[6] = 7;
-    func_8000AFA4(v0, 0);
+    obj = create_ui_element(&button_a_p1_pos, &button_a, CONTEXT_2000);
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller_p1;
+    obj->vars[VAR_OPT_CTRL_ROW] = 7;
+    func_8000AFA4(obj, 0);
 
-    sp218 = create_ui_element(&sp11C, &sp1EC, 0x2000);
-    sp218->vars[3] = sp218;
-    sp218->vars[6] = 0;
-    sp218->vars[0] = 1;
-    func_8000AFA4(sp218, 1);
+    controller_p2 = create_ui_element(&button_c_up_p2_pos, &button_c_up, CONTEXT_2000);
+    controller_p2->vars[VAR_OPT_CTRL_CONTROLLER] = controller_p2;
+    controller_p2->vars[VAR_OPT_CTRL_ROW] = 0;
+    controller_p2->vars[VAR_OPT_CTRL_PLAYER_ID] = PLAYER_2;
+    func_8000AFA4(controller_p2, 1);
 
-    v0 = create_ui_element(&spFC, &sp1D8, 0x2000);
-    v0->vars[3] = sp218;
-    v0->vars[6] = 1;
-    func_8000AFA4(v0, 1);
+    obj = create_ui_element(&button_c_left_p2_pos, &button_c_left, CONTEXT_2000);
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller_p2;
+    obj->vars[VAR_OPT_CTRL_ROW] = 1;
+    func_8000AFA4(obj, 1);
 
-    v0 = create_ui_element(&spDC, &sp1C4, 0x2000);
-    v0->vars[3] = sp218;
-    v0->vars[6] = 2;
-    func_8000AFA4(v0, 1);
+    obj = create_ui_element(&button_c_down_p2_pos, &button_c_down, CONTEXT_2000);
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller_p2;
+    obj->vars[VAR_OPT_CTRL_ROW] = 2;
+    func_8000AFA4(obj, 1);
 
-    v0 = create_ui_element(&spBC, &sp1B0, 0x2000);
-    v0->vars[3] = sp218;
-    v0->vars[6] = 3;
-    func_8000AFA4(v0, 1);
+    obj = create_ui_element(&button_c_right_p2_pos, &button_c_right, CONTEXT_2000);
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller_p2;
+    obj->vars[VAR_OPT_CTRL_ROW] = 3;
+    func_8000AFA4(obj, 1);
 
-    v0 = create_ui_element(&sp9C, &sp19C, 0x2000);
-    v0->vars[3] = sp218;
-    v0->vars[6] = 4;
-    func_8000AFA4(v0, 1);
+    obj = create_ui_element(&button_b_p2_pos, &button_b, CONTEXT_2000);
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller_p2;
+    obj->vars[VAR_OPT_CTRL_ROW] = 4;
+    func_8000AFA4(obj, 1);
 
-    v0 = create_ui_element(&sp7C, &sp188, 0x2000);
-    v0->vars[3] = sp218;
-    v0->vars[6] = 5;
-    func_8000AFA4(v0, 1);
+    obj = create_ui_element(&button_l_p2_pos, &button_l, CONTEXT_2000);
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller_p2;
+    obj->vars[VAR_OPT_CTRL_ROW] = 5;
+    func_8000AFA4(obj, 1);
 
-    v0 = create_ui_element(&sp5C, &sp174, 0x2000);
-    v0->vars[3] = sp218;
-    v0->vars[6] = 6;
-    func_8000AFA4(v0, 1);
+    obj = create_ui_element(&button_r_p2_pos, &button_r, CONTEXT_2000);
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller_p2;
+    obj->vars[VAR_OPT_CTRL_ROW] = 6;
+    func_8000AFA4(obj, 1);
 
-    v0 = create_ui_element(&sp3C, &sp160, 0x2000);
-    v0->vars[3] = sp218;
-    v0->vars[6] = 7;
-    func_8000AFA4(v0, 1);
+    obj = create_ui_element(&button_a_p2_pos, &button_a, CONTEXT_2000);
+    obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller_p2;
+    obj->vars[VAR_OPT_CTRL_ROW] = 7;
+    func_8000AFA4(obj, 1);
 
-    v0 = create_ui_element(&sp2C, &sp14C, 0x2000);
-    v0->vars[0] = sp21C;
-    v0->vars[1] = sp218;
+    obj = create_ui_element(&exit_menu_pos, &exit_menu, CONTEXT_2000);
+    obj->vars[VAR_OPT_CTRL_EXIT_0] = controller_p1;
+    obj->vars[VAR_OPT_CTRL_EXIT_1] = controller_p2;
 
     main_loop();
-    func_8002630C(0x2000);
+    func_8002630C(CONTEXT_2000);
 }
 
 void run_menu_rank_mode(void) {
-    UIElement sp3C = { 198, func_8001905C, 0, 0x1000, "options2.sp2" };
-    Vec4i sp2C = { 133, 126, 0, 0 };
+    UIElement rankTable = { OPTIONS_RANK_TABLE_TEMPLATE, rank_table_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
+    Vec4i rankTablePos = { 133, 126, 0, 0 };
 
-    gPlayerInput[PLAYER_1].unk_0D = gPlayerInput[PLAYER_2].unk_0D = TRUE;
+    gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = TRUE;
     asset_open_folder("/title/rank", CONTEXT_2000);
     bg_layer_create("bgrank", 0, 4, 0, 0, TEX_FLAG_1, CONTEXT_2000);
-    D_80081460 = create_ui_element(&sp2C, &sp3C, 0x2000);
-    func_80019278();
+    gRankTable = create_ui_element(&rankTablePos, &rankTable, CONTEXT_2000);
+    menu_rank_init();
     D_8008012C |= GFX_FLAG_20;
     gGlobalFlags |= GAME_FLAG_4;
     main_loop();
-    func_8002630C(0x2000);
+    func_8002630C(CONTEXT_2000);
 }
 
 void run_menu_stats_mode(void) {
@@ -1658,14 +1645,14 @@ void run_menu_stats_mode(void) {
     func_8002630C(1);
     func_8002630C(CONTEXT_ABAB);
 
-    gPlayerInput[PLAYER_1].unk_0D = gPlayerInput[PLAYER_2].unk_0D = TRUE;
+    gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = TRUE;
     asset_open_folder("/title/stats", CONTEXT_2000);
     bg_layer_create("aarost", 0, 13, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     D_8008012C |= GFX_FLAG_20;
     gGlobalFlags |= GAME_FLAG_4;
-    create_worker(func_80018AD0, 0x1000);
+    create_worker(stats_update, OBJ_PRIO_DEFAULT);
     main_loop();
-    func_8002630C(0x2000);
+    func_8002630C(CONTEXT_2000);
 }
 
 static void nullsub(void) {
@@ -1673,13 +1660,13 @@ static void nullsub(void) {
 
 void run_17_mode(void) {
     s32 unused;
-    UnkObjDef2 sp74 = { 0x0000FE70, 0 };
-    UnkObjDef3 sp64 = { 0xFFFFFE70, 0, 0, 0 };
-    UnkObjDef3 sp54 = { 400, 0, 0, 0 };
+    Vec4s sp74 = { 0, -400, 0, 0 };
+    Vec4i sp64 = { -400, 0, 0, 0 };
+    Vec4i sp54 = { 400, 0, 0, 0 };
     s32 unused2;
-    s32 sp4C = gBattleSettings[PLAYER_2].unk_06;
-    UnkObjDef4 sp3C = { "gore", task_default_func, 0x1000, 0 };
-    UnkObjDef4 sp2C = { "arena", task_default_func, 0x1000, 0 };
+    s32 sp4C = gBattleSettings[PLAYER_2].assetContext;
+    K2Def sp3C = { "gore", task_default_func, 0, 0x1000, 0 };
+    K2Def sp2C = { "arena", task_default_func, 0, 0x1000, 0 };
 
     asset_open_folder("/bars", CONTEXT_ABAB);
     func_800052EC(0);

@@ -466,7 +466,7 @@ void func_80028F38(Object *obj) {
 }
 
 void func_80028FCC(void) {
-    if (gPlayMode != PLAY_MODE_PRACTICE && gBattleDurationEnum != 0) {
+    if (gPlayMode != PLAY_MODE_PRACTICE && gBattleDuration != 0) {
         D_8013C240->currentTask->func = func_80028F38;
         D_8013C240->currentTask->start_delay = 0;
         D_8013C240->currentTask->flags = TASK_FLAG_ENABLED;
@@ -634,14 +634,14 @@ void func_80029630(void) {
 
     create_ui_element(&spCC, &sp10C, CONTEXT_ABAB);
 
-    switch (gBattleDurationEnum) {
+    switch (gBattleDuration) {
         case 0:
             break;
         case 1:
         case 2:
             s00 = create_ui_element(&spAC, &spF8, CONTEXT_ABAB);
             v0 = create_ui_element(&spBC, &spE4, CONTEXT_ABAB);
-            v0->frameIndex = gBattleDurationEnum * 3 + 3;
+            v0->frameIndex = gBattleDuration * 3 + 3;
             v0->varObj[0] = s00;
             D_8013C240 = v0;
             break;

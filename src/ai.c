@@ -689,7 +689,7 @@ s16 func_8001D070(Player *player) {
 
 u8 func_8001D1F8(Player *player) {
     switch (gDifficulty) {
-        case 0:
+        case DIFFICULTY_EASY:
             switch (gBattleSettings[player->playerId].unk_04) {
                 case 0:
                     return (guRandom() % 100) < 20;
@@ -705,8 +705,8 @@ u8 func_8001D1F8(Player *player) {
                     return TRUE;
             }
             break;
-        case 1:
-        case 2:
+        case DIFFICULTY_NORMAL:
+        case DIFFICULTY_HARD:
             switch (gBattleSettings[player->playerId].unk_04) {
                 case 0:
                     return (guRandom() % 100) < 20;

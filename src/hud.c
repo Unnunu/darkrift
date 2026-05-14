@@ -274,8 +274,8 @@ void func_800162A4(Object *obj) {
     gCameraTarget.y = -400;
     D_8013C834 = FALSE;
 
-    if (gBattleDurationEnum != 0) {
-        D_8013C240->frameIndex = 3 + gBattleDurationEnum * 3;
+    if (gBattleDuration != 0) {
+        D_8013C240->frameIndex = 3 + gBattleDuration * 3;
         v1 = D_8013C240->varObj[0];
         v1->frameIndex = 0;
         D_8013C240->currentTask->func = task_default_func;
@@ -381,7 +381,7 @@ void func_800168F0(Object *obj) {
 }
 
 void func_800169C4(Object *obj) {
-    gNextGameMode = gDifficulty > 0 ? GAME_MODE_34 : GAME_MODE_37; // not real mode? @bug?
+    gNextGameMode = gDifficulty >= DIFFICULTY_NORMAL ? GAME_MODE_34 : GAME_MODE_37; // not real mode? @bug?
     obj->currentTask->func = func_800168F0;
 }
 
@@ -480,8 +480,8 @@ ObjFunc handle_player_win(u32 playerId, u8 arg1) {
             gBattleSettings[1 - D_8013C24C].consecutiveWins = 0;
         }
 
-        D_800B6368[gBattleSettings[playerId].characterId][0]++;
-        D_800B6368[gBattleSettings[1 - playerId].characterId][1]++;
+        D_800B6368[gBattleSettings[playerId].characterId].wins++;
+        D_800B6368[gBattleSettings[1 - playerId].characterId].loses++;
         D_800801F1 = TRUE;
 
         switch (gPlayMode) {

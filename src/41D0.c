@@ -469,7 +469,7 @@ void func_80004334(AssetDB *arg0, s16 playerId) {
             func_8001C1C0(gPlayers + PLAYER_1);
         }
     } else if (gBattleSettings[playerId].unk_0F) {
-        if (gDifficulty == 2 && gBattleSettings[playerId].unk_04 == 0) {
+        if (gDifficulty == DIFFICULTY_HARD && gBattleSettings[playerId].unk_04 == 0) {
             gBattleSettings[playerId].unk_04 = 2;
         }
         s2 = gBattleSettings[playerId].unk_04;
@@ -481,11 +481,11 @@ void func_80004334(AssetDB *arg0, s16 playerId) {
         }
     } else {
         switch (gDifficulty) {
-            case 1:
-            case 2:
+            case DIFFICULTY_NORMAL:
+            case DIFFICULTY_HARD:
                 func_8001BF40(gPlayers + playerId);
                 break;
-            case 0:
+            case DIFFICULTY_EASY:
                 switch (func_8001DFE4(playerId)) {
                     case 0:
                         func_8001C1C0(gPlayers + playerId);
@@ -715,7 +715,7 @@ void func_80004E14(s16 playerId) {
         } else {
             str_concat(sp38, "1");
         }
-        if (gBattleSettings[playerId].unk_06) {
+        if (gBattleSettings[playerId].assetContext) {
             str_concat(sp38, "_h");
         } else {
             str_concat(sp38, "_v");
@@ -779,14 +779,14 @@ void func_800050FC(u16 arg0, u16 arg1) {
             sp2C->varObj[0] = &gPlayers[arg0];
             break;
         case DEMITRON:
-            if (gBattleSettings[arg0].unk_06) {
+            if (gBattleSettings[arg0].assetContext) {
                 sp2C = create_worker(func_80004FC0, 0x1000);
                 sp2C->varObj[0] = &D_8004B764.unk_10;
                 sp2C->varObj[1] = &D_8004B644.unk_10;
             }
             break;
         case DEMONICA:
-            if (gBattleSettings[arg0].unk_06) {
+            if (gBattleSettings[arg0].assetContext) {
                 sp2C = create_worker(func_80004FC0, 0x1000);
                 sp2C->varObj[0] = &D_8004B784.unk_10;
                 sp2C->varObj[1] = &D_8004B664.unk_10;

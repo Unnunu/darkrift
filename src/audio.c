@@ -84,7 +84,7 @@ OSMesg D_800A48A8[32];
 
 u8 gMusicIsPlaying = FALSE;
 u8 gSoundIsPlaying = FALSE;
-u8 gAudioStereo = 0;
+u8 gAudioMono = 0;
 u8 D_8004A42C = FALSE;
 s32 D_8004A430 = 0; // unused
 UnkAudioBeta *D_8004A434 = NULL;
@@ -591,7 +591,7 @@ void sound_set_pan(s32 playerId, u8 pan) {
     s32 i;
     ALSndId *tmp;
 
-    if (gAudioStereo != 0 || D_8004A42C) {
+    if (gAudioMono != 0 || D_8004A42C) {
         return;
     }
 

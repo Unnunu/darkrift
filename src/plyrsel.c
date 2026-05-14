@@ -26,8 +26,8 @@ extern s16 D_80049390;
 extern AssetSP2Sub3 *D_8013C234;
 extern AssetSP2Sub3 *D_8013C238;
 
-u8 D_80049DF0 = 0;
-u8 D_80049DF4 = 0;
+u8 gSonorkUnlocked = FALSE;
+u8 gDemitronUnlocked = FALSE;
 
 Object *gCharacterPortrait[2];
 u32 gTournamentOpponentId;
@@ -175,7 +175,7 @@ u8 func_8001E188(u8 playerId) {
                 return characterId;
             } else if (!D_800B6350[playerId][SONORK]) {
                 return SONORK;
-            } else if (!D_800B6350[playerId][DEMITRON] && gDifficulty >= 1) {
+            } else if (!D_800B6350[playerId][DEMITRON] && gDifficulty >= DIFFICULTY_NORMAL) {
                 return DEMITRON;
             } else {
                 return -1;
@@ -266,7 +266,7 @@ void func_8001E624(Object *obj) {
     obj->vars[1] = buttons = gPlayerInput[playerId].buttons;
 
     if (buttons & INP_START) {
-        sound_play(2, gAudioStereo != 0 ? 0 : playerId + 4);
+        sound_play(2, gAudioMono != 0 ? 0 : playerId + 4);
         func_8001E540(obj, obj->varObj[5]);
         TASK_END(obj->currentTask);
     } else if (buttons & (INP_LEFT | INP_RIGHT)) {
@@ -487,7 +487,7 @@ void plyrsel_portrait_update_2(Object *obj) {
     }
 
     if (v1 == obj->vars[6]) {
-        sound_play(2, gAudioStereo != 0 ? 0 : playerId + 4);
+        sound_play(2, gAudioMono != 0 ? 0 : playerId + 4);
         func_8001E540(obj, unkObj);
         unkObj = obj->varObj[4];
         unkObj->vars[7] = 20;
@@ -567,7 +567,7 @@ void plyrsel_portrait_update(Object *obj) {
         obj->vars[2] = 15;
         if (v1 & INP_START) {
             Object *unkObj;
-            sound_play(2, gAudioStereo != 0 ? 0 : a3 + 4);
+            sound_play(2, gAudioMono != 0 ? 0 : a3 + 4);
             unkObj = obj->varObj[4];
             unkObj->vars[7] = 20;
 
@@ -590,7 +590,7 @@ void plyrsel_portrait_update(Object *obj) {
                 v0++;
             }
 
-            if (D_80049DF0 == 0 && v0 == 8 || D_80049DF4 == 0 && v0 == 1) {
+            if (!gSonorkUnlocked && v0 == 8 || !gDemitronUnlocked && v0 == 1) {
                 if (v1 & INP_LEFT) {
                     v0--;
                 } else {
@@ -645,7 +645,7 @@ void plyrsel_image_vs_update(Object *obj) {
         return;
     }
 
-    gBattleSettings[PLAYER_1].unk_06 = gBattleSettings[PLAYER_2].unk_06 = 0;
+    gBattleSettings[PLAYER_1].assetContext = gBattleSettings[PLAYER_2].assetContext = 0;
     gBattleSettings[PLAYER_1].characterId = obj->vars[9];
     gBattleSettings[PLAYER_2].characterId = obj->vars[10];
     gBattleSettings[PLAYER_1].roundsWon = gBattleSettings[PLAYER_2].roundsWon = 0;
@@ -658,16 +658,16 @@ void plyrsel_image_vs_update(Object *obj) {
         gNextGameMode = gBattleSettings[gTournamentOpponentId].characterId + GAME_MODE_BATTLE_AARON;
         if (gBattleSettings[PLAYER_1].consecutiveWins + gBattleSettings[PLAYER_2].consecutiveWins == 0) {
             gNextGameMode = gBattleSettings[1 - gTournamentOpponentId].characterId + GAME_MODE_INTRO_AARON;
-            gBattleSettings[1 - gTournamentOpponentId].unk_06 = 1;
+            gBattleSettings[1 - gTournamentOpponentId].assetContext = 1;
         } else {
-            gBattleSettings[gTournamentOpponentId].unk_06 = 1;
+            gBattleSettings[gTournamentOpponentId].assetContext = 1;
         }
         if (gBattleSettings[gTournamentOpponentId].characterId == DEMITRON) {
             gNextGameMode = GAME_MODE_30;
         }
     } else {
         gNextGameMode = gBattleSettings[obj->vars[11]].characterId + GAME_MODE_BATTLE_AARON;
-        gBattleSettings[obj->vars[11]].unk_06++;
+        gBattleSettings[obj->vars[11]].assetContext++;
     }
 
     TASK_END(obj->currentTask);
@@ -738,16 +738,16 @@ void run_player_selection_mode(void) {
     char_p1 = gBattleSettings[PLAYER_1].characterId;
     char_p2 = gBattleSettings[PLAYER_2].characterId;
 
-    if (char_p1 == DEMITRON && D_80049DF4 == 0) {
+    if (char_p1 == DEMITRON && gDemitronUnlocked == 0) {
         char_p1 = GORE;
     }
-    if (char_p2 == DEMITRON && D_80049DF4 == 0) {
+    if (char_p2 == DEMITRON && gDemitronUnlocked == 0) {
         char_p2 = GORE;
     }
-    if (char_p1 == SONORK && D_80049DF0 == 0) {
+    if (char_p1 == SONORK && !gSonorkUnlocked) {
         char_p1 = AARON;
     }
-    if (char_p2 == SONORK && D_80049DF0 == 0) {
+    if (char_p2 == SONORK && !gSonorkUnlocked) {
         char_p2 = AARON;
     }
 
@@ -758,7 +758,7 @@ void run_player_selection_mode(void) {
         char_p2--;
     }
 
-    gPlayerInput[PLAYER_1].unk_0D = gPlayerInput[PLAYER_2].unk_0D = TRUE;
+    gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = TRUE;
     D_8008012C |= GFX_FLAG_20;
     gGlobalFlags |= GAME_FLAG_4;
 
@@ -876,9 +876,9 @@ void run_player_selection_mode(void) {
     func_8002630C(CONTEXT_EEFF);
 }
 
-void func_800201A4(s16 playerId, u16 arg1, u16 arg2) {
-    D_80049DF0 = arg1;
-    D_80049DF4 = arg2;
+void unlock_sonork_demitron(s16 playerId, u16 sonork, u16 demitron) {
+    gSonorkUnlocked = sonork;
+    gDemitronUnlocked = demitron;
 }
 
 void func_800201C4(s16 charId, s16 playerId) {
@@ -887,11 +887,11 @@ void func_800201C4(s16 charId, s16 playerId) {
 
     gBattleSettings[playerId].characterId = charId;
     gBattleSettings[playerId].isCpu = FALSE;
-    gBattleSettings[playerId].unk_06 = 0;
+    gBattleSettings[playerId].assetContext = 0;
 
     gBattleSettings[1 - playerId].characterId = DEMITRON;
     gBattleSettings[1 - playerId].isCpu = TRUE;
-    gBattleSettings[1 - playerId].unk_06 = 1;
+    gBattleSettings[1 - playerId].assetContext = 1;
 
     func_800194E0(playerId + PLAY_MODE_TOURNAMENT_P1);
 }
@@ -912,8 +912,8 @@ void func_800202D0(s16 playerId, u16 arg1, u16 arg2) {
 void func_800202F0(s16 playerId, u16 arg1, u16 arg2) {
     s16 i;
 
-    gBattleSettings[1 - playerId].unk_06 = 1;
-    gBattleSettings[playerId].unk_06 = 0;
+    gBattleSettings[1 - playerId].assetContext = 1;
+    gBattleSettings[playerId].assetContext = 0;
     gBattleSettings[playerId].isCpu = FALSE;
     gBattleSettings[1 - playerId].isCpu = TRUE;
     D_800801F1 = TRUE;
@@ -974,8 +974,8 @@ u16 D_8004A258[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_B,
 u16 D_8004A270[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_B, INP_B, INP_A, CHEAT_END };
 
 CheatCode gCheatCodes[] = { { D_8004A114, func_80020298, 0, 0 },
-                            { cheat_code_play_as_sonork, func_800201A4, 1, 0 },
-                            { cheat_code_play_as_sonork_or_demitron, func_800201A4, 1, 1 },
+                            { cheat_code_play_as_sonork, unlock_sonork_demitron, TRUE, FALSE },
+                            { cheat_code_play_as_sonork_or_demitron, unlock_sonork_demitron, TRUE, TRUE },
                             { cheat_code_ending_aaron, cheat_character_ending, 0, 0 },
                             { cheat_code_ending_demonica, cheat_character_ending, 2, 0 },
                             { cheat_code_ending_eve, cheat_character_ending, 3, 0 },
