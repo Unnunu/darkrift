@@ -115,10 +115,10 @@ void func_800343F8(Object *obj, u8 arg1) {
 
     for (i = 0; i < numNodes; i++) {
         s1 = &sam->unk_04->nodes[i];
-        s2 = s1->numParts;
+        s2 = s1->numBatches;
         for (j = 0; j < s2; j++) {
             sub1 = s1->batchAssets + j;
-            if ((u8) (sub1->unk_00 >= 0)) {
+            if ((u8) (sub1->texIndex >= 0)) {
                 func_80034090(sub1->texture);
             }
         }

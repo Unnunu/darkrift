@@ -778,7 +778,7 @@ void run_intro_zenmuron_mode(void) {
 }
 
 void func_80008D0C(Object *obj) {
-    if (gPlayers->obj->frameIndex + 2 == gPlayers->currentState->unk_02) {
+    if (gPlayers[PLAYER_1].currentState->unk_02 - 2 == gPlayers[PLAYER_1].obj->frameIndex) {
         gGlobalFlags |= GAME_FLAG_MODE_DONE;
         obj->flags |= OBJ_FLAG_DELETE;
         gNextGameMode = GAME_MODE_LOGO;
@@ -792,12 +792,12 @@ void func_80008D64(Object *obj) {
     }
 }
 
-void func_80008D98(void) {
+void run_29_mode(void) {
     Object *obj;
-    Object *obj2;
+    Object *relic;
     void *a3;
     Vec4i sp34 = { -200, 0, 0, 0 };
-    BackgroundLayer *sp30;
+    BackgroundLayer *bg;
 
     gBattleSettings[PLAYER_1].characterId = SONORK;
     gBattleSettings[PLAYER_1].assetContext = TRUE;
@@ -810,7 +810,7 @@ void func_80008D98(void) {
     D_8008012C |= GFX_FLAG_20;
 
     asset_open_folder("/sono/prize", CONTEXT_3000);
-    sp30 = bg_layer_create("prize", 0, 0x64, 0, 0, BG_FLAG_OVERLAY, 0x3000);
+    bg = bg_layer_create("prize", 0, 100, 0, 0, BG_FLAG_OVERLAY, 0x3000);
     obj = create_worker(func_80006E0C, 0x1000);
     obj->vars[0] = 6;
     main_loop();
@@ -823,11 +823,11 @@ void func_80008D98(void) {
     bg_layer_create("bg0", 0, -24, 0x1000, 0x10000, TEX_FLAG_1, 0);
     func_8001B5B0("arena", 0);
     a3 = gAssets[asset_find("relic.k2", 0x3000)].aux_data;
-    obj2 = create_model_instance(&sp34, 0x1000, func_80008D64, a3);
-    obj2->rotation.y = 0x400;
-    obj2->unk_088.a = 80;
+    relic = create_model_instance(&sp34, 0x1000, func_80008D64, a3);
+    relic->rotation.y = 0x400;
+    relic->unk_088.a = 80;
     create_worker(func_80008D0C, 0x1000);
-    bg_layer_delete(sp30);
+    bg_layer_delete(bg);
     main_loop();
 
     func_8002630C(0x3000);
@@ -838,7 +838,7 @@ void func_80008D98(void) {
     }
 }
 
-void func_80008FDC(void) {
+void run_30_mode(void) {
     Object *obj;
     Vec4i sp4C = { -800, -100, 0, 0 };
     Object *a1;
@@ -900,7 +900,7 @@ void func_80008FDC(void) {
     gNextGameMode = GAME_MODE_BATTLE_DEMITRON;
 }
 
-void func_800092B0(void) {
+void run_31_mode(void) {
     u16 var1;
     u16 sp54;
     Object *obj;
@@ -933,7 +933,7 @@ void func_800092B0(void) {
     func_8002630C(0x4000);
 }
 
-void func_80009480(void) {
+void run_36_mode(void) {
     Object *worker;
 
     func_800263A8();
@@ -957,7 +957,7 @@ void func_80009554(Object *obj) {
     }
 }
 
-void func_800095A8(void) {
+void run_37_mode(void) {
     func_800263A8();
     asset_open_folder("/title/easywin", CONTEXT_4000);
     bg_layer_create("easyimg", 0, 0, 0, 0, TEX_FLAG_1, 0x4000);
@@ -1053,7 +1053,7 @@ void func_800096D0(u8 arg0) {
     D_800801F0 = TRUE;
 }
 
-void func_800099F0(void) {
+void run_34_mode(void) {
     u16 sp7E;
     u16 sp24;
     char sp2C[80];
@@ -1160,7 +1160,7 @@ void func_80009CE0(void) {
     func_8002EA50(gCamera, sp56);
 }
 
-void func_80009E8C(void) {
+void run_35_mode(void) {
     Object *obj;
     Model *a3;
     Vec4i spA0 = { -600, 0, -30, 0 };

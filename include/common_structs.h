@@ -192,7 +192,7 @@ typedef struct Transform {
 } Transform; // size = 0x118
 
 typedef struct BatchAsset {
-    /* 0x00 */ s32 unk_00;
+    /* 0x00 */ s32 texIndex;
     /* 0x04 */ u16 vertIndex;
     /* 0x06 */ u16 triOffset;
     /* 0x08 */ u16 numVertices;
@@ -202,43 +202,19 @@ typedef struct BatchAsset {
 
 typedef struct ModelNodeAsset {
     /* 0x00 */ s32 numVertices;
-    /* 0x04 */ s32 unk_04;
+    /* 0x04 */ s32 numTriangles;
     /* 0x08 */ Vtx *vertices;
     /* 0x0C */ Vec3su *triangles;
     /* 0x10 */ char unk_10[0x8];
-    /* 0x18 */ s32 numParts;
+    /* 0x18 */ s32 numBatches;
     /* 0x1C */ BatchAsset *batchAssets;
 } ModelNodeAsset; // size = 0x20
 
-typedef struct AssetUnkHeader {
+typedef struct ModelFileHeader {
     /* 0x00 */ u8 signature[4]; // '2KMD' or '@KMD' ??
-    /* 0x04 */ s32 numEntries;
+    /* 0x04 */ s32 numNodes;
     /* 0x08 */ s32 offsets[1];
-} AssetUnkHeader;
-
-typedef struct AssetGmd {
-    /* 0x00 */ u32 numNodes;
-    /* 0x04 */ ModelNodeAsset *nodes;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ char unk_0C[0xA0];
-    /* 0xAC */ s32 unk_AC;
-    /* 0xB0 */ s32 unk_B0;
-    /* 0xB4 */ s32 unk_B4;
-    /* 0xB8 */ AssetUnkHeader *unk_B8;
-    /* 0xBC */ char unk_BC[4];
-    /* 0xC0 */ u8 *palettes16;
-    /* 0xC4 */ u8 *palettes256;
-    /* 0xC8 */ u8 unk_C8;
-    /* 0xCC */ BatchAsset unk_CC[0];
-} AssetGmd; // size = 0xCC
-
-typedef struct AssetUnkHeader2 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ s32 unk_10;
-} AssetUnkHeader2;
+} ModelFileHeader;
 
 typedef struct NodeAttachment {
     /* 0x00 */ s32 parent;
@@ -246,6 +222,31 @@ typedef struct NodeAttachment {
     /* 0x08 */ s32 y;
     /* 0x0C */ s32 z;
 } NodeAttachment; // size = 0x10
+
+typedef struct ModelAsset {
+    /* 0x00 */ u32 numNodes;
+    /* 0x04 */ ModelNodeAsset *nodes;
+    /* 0x08 */ NodeAttachment *nodeHierarchy;
+    /* 0x0C */ char unk_0C[0xA0];
+    /* 0xAC */ s32 rawFileMemSlot;
+    /* 0xB0 */ s32 fileFormat;
+    /* 0xB4 */ s32 unk_B4;
+    /* 0xB8 */ ModelFileHeader *header;
+    /* 0xBC */ char unk_BC[4];
+    /* 0xC0 */ u8 *palettes16;
+    /* 0xC4 */ u8 *palettes256;
+    /* 0xC8 */ u8 unk_C8;
+    /* 0xCC */ BatchAsset unk_CC[0];
+} ModelAsset; // size = 0xCC
+
+typedef struct ModelNodeFileEntry {
+    /* 0x00 */ s32 numVertices;
+    /* 0x04 */ s32 numTriangles;
+    /* 0x08 */ s32 verticesOffset;
+    /* 0x0C */ s32 trianglesOffset;
+    /* 0x10 */ s32 numBatchesOffset;
+    /* 0x14 */ s32 unused;
+} ModelNodeFileEntry;
 
 typedef struct ModelNode {
     /* 0x00 */ u8 unk_00;
@@ -287,7 +288,7 @@ typedef struct AnimHeader {
 
 typedef struct Model {
     /* 0x000 */ s32 unk_00;
-    /* 0x004 */ AssetGmd *unk_04;
+    /* 0x004 */ ModelAsset *unk_04;
     /* 0x008 */ char unk_08[0x128 - 8];
     /* 0x128 */ s32 numNodes;
     /* 0x12C */ char unk_12C[0x148 - 0x12C];

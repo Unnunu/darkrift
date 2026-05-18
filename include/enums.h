@@ -262,4 +262,6 @@ enum VarOptionControls {
 
 enum Difficulty { DIFFICULTY_EASY = 0, DIFFICULTY_NORMAL = 1, DIFFICULTY_HARD = 2 };
 
+enum ModelFileFormats { MODEL_FILE_FORMAT_V1 = 1, MODEL_FILE_FORMAT_V2 = 2 };
+
 #endif

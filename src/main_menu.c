@@ -103,7 +103,7 @@ void func_8001954C(Object *obj, s16 buttons, s16 playerId) {
     }
 }
 
-void func_800198D0(void) {
+void func_800198D0_unused(void) {
     gPlayMode = PLAY_MODE_30;
     gGlobalFlags |= GAME_FLAG_MODE_DONE;
 

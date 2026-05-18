@@ -73,19 +73,19 @@ void (*D_8013C228)(Asset *);
 
 void sound_init_player(ALBankFile *arg0, u8 *arg1, u32 arg2);
 void mem_move(u32 *dest, u32 *src, u32 size);
-void func_8000C0E4(AssetGmd *, s32);
-void func_8000DAB0(KModel *, AssetGmd *, char *, s32, u16);
+void model_asset_load_from_memory_slot(ModelAsset *, s32);
+void func_8000DAB0(KModel *, ModelAsset *, char *, s32, u16);
 void func_80025A0C(Asset *);
 void asset_read_all_files_in_folder(s32);
 void assets_clear_unused(void);
 void dma_read(s32 romAddr, void *vramAddr, s32 size);
-void func_8000E73C(Model *, AssetGmd *, char *, s32, Unk8000C3CCArg3 *, u16);
+void func_8000E73C(Model *, ModelAsset *, char *, s32, Unk8000C3CCArg3 *, u16);
 void func_80035CCC(Model *);
 void func_8000E0D8(Model *);
 
 void asset_free(Asset *);
 void func_80027680(Asset *);
-void func_8000BE18(AssetGmd *);
+void model_asset_build_from_file(ModelAsset *);
 
 void asset_reload_tmd(Asset *);
 void asset_reload_gmd(Asset *);
@@ -672,23 +672,23 @@ void asset_load_sp2(Asset *asset) {
 }
 
 void func_800271C0(Asset *asset) {
-    AssetUnkHeader *unkHeader;
+    ModelFileHeader *unkHeader;
     KModel *sp38;
     s32 sp34;
     s32 sp30;
-    AssetGmd *sp2C;
+    ModelAsset *sp2C;
 
     asset_read(asset);
     unkHeader = asset->data;
     sp34 = asset->memory_slot;
-    sp30 = unkHeader->numEntries;
+    sp30 = unkHeader->numNodes;
     asset->aux_memory_slot = asset->memory_slot;
-    asset->size = sp30 * sizeof(ModelNodeAsset) + sp30 * sizeof(BatchAsset) + sizeof(AssetGmd);
+    asset->size = sp30 * sizeof(ModelNodeAsset) + sp30 * sizeof(BatchAsset) + sizeof(ModelAsset);
 
     func_80026A94(asset, asset->size);
-    sp2C = (AssetGmd *) (asset->data);
+    sp2C = (ModelAsset *) (asset->data);
     sp2C->numNodes = sp30;
-    func_8000C0E4(sp2C, sp34);
+    model_asset_load_from_memory_slot(sp2C, sp34);
 
     sp38 = mem_alloc(sizeof(KModel), "wad.c", 742);
     func_8000DAB0(sp38, sp2C, asset->name, 0, asset->context);
@@ -696,23 +696,23 @@ void func_800271C0(Asset *asset) {
 }
 
 void asset_load_gmd(Asset *asset) {
-    AssetUnkHeader *unkHeader;
+    ModelFileHeader *unkHeader;
     KModel *sp38;
     s32 sp34;
     s32 sp30;
-    AssetGmd *sp2C;
+    ModelAsset *sp2C;
 
     asset_read(asset);
     unkHeader = asset->data;
     sp34 = asset->memory_slot;
-    sp30 = unkHeader->numEntries;
+    sp30 = unkHeader->numNodes;
     asset->aux_memory_slot = asset->memory_slot;
-    asset->size = sp30 * sizeof(ModelNodeAsset) + sp30 * sizeof(BatchAsset) + sizeof(AssetGmd);
+    asset->size = sp30 * sizeof(ModelNodeAsset) + sp30 * sizeof(BatchAsset) + sizeof(ModelAsset);
 
     func_80026A94(asset, asset->size);
-    sp2C = (AssetGmd *) (asset->data);
+    sp2C = (ModelAsset *) (asset->data);
     sp2C->numNodes = sp30;
-    func_8000C0E4(sp2C, sp34);
+    model_asset_load_from_memory_slot(sp2C, sp34);
 
     sp38 = mem_alloc(sizeof(KModel), "wad.c", 777);
     func_8000DAB0(sp38, sp2C, asset->name, 1, asset->context);
@@ -720,23 +720,23 @@ void asset_load_gmd(Asset *asset) {
 }
 
 void asset_load_k3(Asset *asset) {
-    AssetUnkHeader *unkHeader;
+    ModelFileHeader *unkHeader;
     Model *sp30;
-    s32 sp2C;
-    s32 sp28;
-    AssetGmd *s1;
+    s32 slot;
+    s32 numNodes;
+    ModelAsset *s1;
 
     asset_read(asset);
     unkHeader = asset->data;
-    sp2C = asset->memory_slot;
-    sp28 = unkHeader->numEntries;
+    slot = asset->memory_slot;
+    numNodes = unkHeader->numNodes;
     asset->aux_memory_slot = asset->memory_slot;
-    asset->size = sp28 * sizeof(ModelNodeAsset) + sp28 * sizeof(BatchAsset) + sizeof(AssetGmd);
+    asset->size = numNodes * sizeof(ModelNodeAsset) + numNodes * sizeof(BatchAsset) + sizeof(ModelAsset);
 
     func_80026A94(asset, asset->size);
-    s1 = (AssetGmd *) (asset->data);
-    s1->numNodes = sp28;
-    func_8000C0E4(s1, sp2C);
+    s1 = (ModelAsset *) (asset->data);
+    s1->numNodes = numNodes;
+    model_asset_load_from_memory_slot(s1, slot);
 
     sp30 = mem_alloc(sizeof(Model), "wad.c", 813);
     s1->unk_C8 = 1;
@@ -747,23 +747,23 @@ void asset_load_k3(Asset *asset) {
 }
 
 void asset_load_k4(Asset *asset) {
-    AssetUnkHeader *unkHeader;
+    ModelFileHeader *unkHeader;
     Model *sp30;
     s32 sp2C;
     s32 sp28;
-    AssetGmd *s1;
+    ModelAsset *s1;
 
     asset_read(asset);
     unkHeader = asset->data;
     sp2C = asset->memory_slot;
-    sp28 = unkHeader->numEntries;
+    sp28 = unkHeader->numNodes;
     asset->aux_memory_slot = asset->memory_slot;
-    asset->size = sp28 * sizeof(ModelNodeAsset) + sp28 * sizeof(BatchAsset) + sizeof(AssetGmd);
+    asset->size = sp28 * sizeof(ModelNodeAsset) + sp28 * sizeof(BatchAsset) + sizeof(ModelAsset);
 
     func_80026A94(asset, asset->size);
-    s1 = (AssetGmd *) (asset->data);
+    s1 = (ModelAsset *) (asset->data);
     s1->numNodes = sp28;
-    func_8000C0E4(s1, sp2C);
+    model_asset_load_from_memory_slot(s1, sp2C);
 
     sp30 = mem_alloc(sizeof(Model), "wad.c", 854);
     s1->unk_C8 = 1;
@@ -774,23 +774,23 @@ void asset_load_k4(Asset *asset) {
 }
 
 void asset_load_k5(Asset *asset) {
-    AssetUnkHeader *unkHeader;
+    ModelFileHeader *unkHeader;
     Model *sp30;
     s32 sp2C;
     s32 sp28;
-    AssetGmd *s1;
+    ModelAsset *s1;
 
     asset_read(asset);
     unkHeader = asset->data;
     sp2C = asset->memory_slot;
-    sp28 = unkHeader->numEntries;
+    sp28 = unkHeader->numNodes;
     asset->aux_memory_slot = asset->memory_slot;
-    asset->size = sp28 * sizeof(ModelNodeAsset) + sp28 * sizeof(BatchAsset) + sizeof(AssetGmd);
+    asset->size = sp28 * sizeof(ModelNodeAsset) + sp28 * sizeof(BatchAsset) + sizeof(ModelAsset);
 
     func_80026A94(asset, asset->size);
-    s1 = (AssetGmd *) (asset->data);
+    s1 = (ModelAsset *) (asset->data);
     s1->numNodes = sp28;
-    func_8000C0E4(s1, sp2C);
+    model_asset_load_from_memory_slot(s1, sp2C);
 
     sp30 = mem_alloc(sizeof(Model), "wad.c", 893);
     s1->unk_C8 = 1;
@@ -802,23 +802,23 @@ void asset_load_k5(Asset *asset) {
 }
 
 void asset_load_tmd(Asset *asset) {
-    AssetUnkHeader *unkHeader;
+    ModelFileHeader *unkHeader;
     Model *sp30;
     s32 sp2C;
     s32 sp28;
-    AssetGmd *s1;
+    ModelAsset *s1;
 
     asset_read(asset);
     unkHeader = asset->data;
     sp2C = asset->memory_slot;
-    sp28 = unkHeader->numEntries;
+    sp28 = unkHeader->numNodes;
     asset->aux_memory_slot = asset->memory_slot;
-    asset->size = sp28 * sizeof(ModelNodeAsset) + sp28 * sizeof(BatchAsset) + sizeof(AssetGmd);
+    asset->size = sp28 * sizeof(ModelNodeAsset) + sp28 * sizeof(BatchAsset) + sizeof(ModelAsset);
 
     func_80026A94(asset, asset->size);
-    s1 = (AssetGmd *) (asset->data);
+    s1 = (ModelAsset *) (asset->data);
     s1->numNodes = sp28;
-    func_8000C0E4(s1, sp2C);
+    model_asset_load_from_memory_slot(s1, sp2C);
 
     sp30 = mem_alloc(sizeof(Model), "wad.c", 934);
     s1->unk_C8 = 1;
@@ -831,24 +831,24 @@ void asset_load_tmd(Asset *asset) {
 
 void func_80027680(Asset *asset) {
     KModel *s0;
-    AssetGmd *sp28;
+    ModelAsset *sp28;
 
     s0 = mem_alloc(sizeof(KModel), "wad.c", 950);
     sp28 = asset->data;
 
-    func_8000BE18(sp28);
+    model_asset_build_from_file(sp28);
     func_8000DAB0(s0, sp28, asset->name, 0, asset->context);
     asset->aux_data = s0;
 }
 
 void asset_reload_tmd(Asset *asset) {
     Model *s0;
-    AssetGmd *sp28;
+    ModelAsset *sp28;
 
     s0 = mem_alloc(sizeof(Model), "wad.c", 963);
     sp28 = asset->data;
 
-    func_8000BE18(sp28);
+    model_asset_build_from_file(sp28);
     func_8000E73C(s0, sp28, asset->name, 0, &D_80049920, asset->context);
     func_8000E0D8(s0);
     s0->unk_3CC = 8;
@@ -857,12 +857,12 @@ void asset_reload_tmd(Asset *asset) {
 
 void asset_reload_k3(Asset *asset) {
     Model *s0;
-    AssetGmd *sp28;
+    ModelAsset *sp28;
 
     s0 = mem_alloc(sizeof(Model), "wad.c", 977);
     sp28 = asset->data;
 
-    func_8000BE18(sp28);
+    model_asset_build_from_file(sp28);
     func_8000E73C(s0, sp28, asset->name, 0, &D_80049968, asset->context);
     s0->unk_3CC = 0x10;
     asset->aux_data = s0;
@@ -870,12 +870,12 @@ void asset_reload_k3(Asset *asset) {
 
 void asset_reload_k4(Asset *asset) {
     Model *s0;
-    AssetGmd *sp28;
+    ModelAsset *sp28;
 
     s0 = mem_alloc(sizeof(Model), "wad.c", 991);
     sp28 = asset->data;
 
-    func_8000BE18(sp28);
+    model_asset_build_from_file(sp28);
     func_8000E73C(s0, sp28, asset->name, 0, &D_80049938, asset->context);
     s0->unk_3CC = 2;
     asset->aux_data = s0;
@@ -883,12 +883,12 @@ void asset_reload_k4(Asset *asset) {
 
 void asset_reload_k5(Asset *asset) {
     Model *s0;
-    AssetGmd *sp28;
+    ModelAsset *sp28;
 
     s0 = mem_alloc(sizeof(Model), "wad.c", 1005);
     sp28 = asset->data;
 
-    func_8000BE18(sp28);
+    model_asset_build_from_file(sp28);
     func_8000E73C(s0, sp28, asset->name, 0, &D_80049950, asset->context);
     s0->unk_3CC = 1;
     func_80035CCC(s0);
@@ -897,12 +897,12 @@ void asset_reload_k5(Asset *asset) {
 
 void asset_reload_gmd(Asset *asset) {
     KModel *s0;
-    AssetGmd *sp28;
+    ModelAsset *sp28;
 
     s0 = mem_alloc(sizeof(KModel), "wad.c", 1019);
     sp28 = asset->data;
 
-    func_8000BE18(sp28);
+    model_asset_build_from_file(sp28);
     func_8000DAB0(s0, sp28, asset->name, 1, asset->context);
     asset->aux_data = s0;
 }
@@ -990,24 +990,24 @@ void func_80027C54(Batch *arg0, Gfx **arg1) {
 }
 
 void asset_load_sp3(Asset *asset) {
-    AssetUnkHeader *unkHeader;
+    ModelFileHeader *unkHeader;
     Model *sp30;
     s32 sp2C;
     s32 sp28;
-    AssetGmd *s1;
+    ModelAsset *s1;
     char *name;
 
     asset_read(asset);
     unkHeader = asset->data;
     sp2C = asset->memory_slot;
-    sp28 = unkHeader->numEntries;
+    sp28 = unkHeader->numNodes;
     asset->aux_memory_slot = asset->memory_slot;
-    asset->size = sp28 * sizeof(ModelNodeAsset) + sp28 * sizeof(BatchAsset) + sizeof(AssetGmd);
+    asset->size = sp28 * sizeof(ModelNodeAsset) + sp28 * sizeof(BatchAsset) + sizeof(ModelAsset);
 
     func_80026A94(asset, asset->size);
-    s1 = (AssetGmd *) (asset->data);
+    s1 = (ModelAsset *) (asset->data);
     s1->numNodes = sp28;
-    func_8000C0E4(s1, sp2C);
+    model_asset_load_from_memory_slot(s1, sp2C);
 
     sp30 = mem_alloc(sizeof(Model), "wad.c", 1226);
     s1->unk_C8 = 1;
@@ -1024,34 +1024,34 @@ void asset_load_oc(Asset *asset) {
 
 void asset_reload_sp3(Asset *asset) {
     Model *s0;
-    AssetGmd *sp28;
+    ModelAsset *sp28;
 
     s0 = mem_alloc(sizeof(Model), "wad.c", 1257);
     sp28 = asset->data;
 
-    func_8000BE18(sp28);
+    model_asset_build_from_file(sp28);
     func_8000E73C(s0, sp28, asset->name, 0, &D_80049950, asset->context);
     asset->aux_data = s0;
 }
 
 void asset_load_k2(Asset *asset) {
-    AssetUnkHeader *unkHeader;
+    ModelFileHeader *unkHeader;
     Model *sp30;
     s32 sp2C;
     s32 sp28;
-    AssetGmd *s1;
+    ModelAsset *s1;
 
     asset_read(asset);
     unkHeader = asset->data;
     sp2C = asset->memory_slot;
-    sp28 = unkHeader->numEntries;
+    sp28 = unkHeader->numNodes;
     asset->aux_memory_slot = asset->memory_slot;
-    asset->size = sp28 * sizeof(ModelNodeAsset) + sp28 * sizeof(BatchAsset) + sizeof(AssetGmd);
+    asset->size = sp28 * sizeof(ModelNodeAsset) + sp28 * sizeof(BatchAsset) + sizeof(ModelAsset);
 
     func_80026A94(asset, asset->size);
-    s1 = (AssetGmd *) (asset->data);
+    s1 = (ModelAsset *) (asset->data);
     s1->numNodes = sp28;
-    func_8000C0E4(s1, sp2C);
+    model_asset_load_from_memory_slot(s1, sp2C);
 
     sp30 = mem_alloc(sizeof(Model), "wad.c", 1297);
     s1->unk_C8 = 1;
@@ -1064,12 +1064,12 @@ void asset_load_k2(Asset *asset) {
 
 void asset_reload_k2(Asset *asset) {
     Model *s0;
-    AssetGmd *sp28;
+    ModelAsset *sp28;
 
     s0 = mem_alloc(sizeof(Model), "wad.c", 1314);
     sp28 = asset->data;
 
-    func_8000BE18(sp28);
+    model_asset_build_from_file(sp28);
     func_8000E73C(s0, sp28, asset->name, 0, &D_80049950, asset->context);
     s0->unk_3CC = 4;
     func_80035CCC(s0);

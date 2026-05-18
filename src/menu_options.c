@@ -11,7 +11,7 @@ Object *gRankTable;
 char D_80081464_unused[4];
 Object *gRankRowObjects[MAX_OBJECTS_IN_RANK_ROW];
 s16 gRankRowObjectIndex;
-s32 D_80081494;
+s32 D_80081494_unused;
 s16 gRankOrder[NUM_CHARACTERS];
 s16 gWinPercent[NUM_CHARACTERS];
 Vec4i gRankRowPos;

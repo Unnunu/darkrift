@@ -38,35 +38,35 @@ Unk8000C3CCArg3 D_80049988 = {
     0,
 };
 
-void func_8000C158(AssetGmd *, u8);
+void model_asset_detect_format(ModelAsset *, u8);
 
-void func_8000BCF0(ModelNodeAsset *arg0, AssetUnkHeader2 *arg1, u32 arg2) {
-    arg0->numVertices = arg1->unk_00;
-    arg0->unk_04 = arg1->unk_04;
-    arg0->vertices = arg1->unk_08 + (s32) arg1;
-    arg0->triangles = arg1->unk_0C + (s32) arg1;
+void model_node_asset_init_from_file(ModelNodeAsset *node, ModelNodeFileEntry *arg1, u32 format) {
+    node->numVertices = arg1->numVertices;
+    node->numTriangles = arg1->numTriangles;
+    node->vertices = arg1->verticesOffset + (s32) arg1;
+    node->triangles = arg1->trianglesOffset + (s32) arg1;
 
-    if (arg2 >= 2) {
-        arg0->numParts = *(s32 *) (arg1->unk_10 + (s32) arg1);
+    if (format >= MODEL_FILE_FORMAT_V2) {
+        node->numBatches = *(s32 *) (arg1->numBatchesOffset + (s32) arg1);
     }
 }
 
-s32 func_8000BD38(AssetGmd *arg0) {
+s32 func_8000BD38(ModelAsset *modelAsset) {
     s32 sum = 0;
     u32 i;
 
-    for (i = 0; i < arg0->numNodes; i++) {
-        sum += arg0->nodes[i].numVertices;
+    for (i = 0; i < modelAsset->numNodes; i++) {
+        sum += modelAsset->nodes[i].numVertices;
     }
     return sum;
 }
 
-s32 func_8000BD70(AssetGmd *arg0) {
+s32 func_8000BD70(ModelAsset *arg0) {
     s32 sum = 0;
     u32 i;
 
     for (i = 0; i < arg0->numNodes; i++) {
-        sum += arg0->nodes[i].unk_04;
+        sum += arg0->nodes[i].numTriangles;
     }
     return sum;
 }
@@ -74,112 +74,117 @@ s32 func_8000BD70(AssetGmd *arg0) {
 void func_8000BDA8(s32 arg0) {
 }
 
-void func_8000BDB0(AssetGmd *arg0, BatchAsset *arg1) {
-    if (arg1->unk_00 >= 0) {
-        if ((u8) (arg0->unk_B0 == 1)) {
-            arg1->texture = (s32) arg0->unk_B8 + arg1->unk_00;
+void func_8000BDB0(ModelAsset *modelAsset, BatchAsset *batchAsset) {
+    if (batchAsset->texIndex >= 0) {
+        if ((u8) (modelAsset->fileFormat == MODEL_FILE_FORMAT_V1)) {
+            batchAsset->texture = (s32) modelAsset->header + batchAsset->texIndex;
         } else {
-            arg1->texture = (s32) arg0->unk_B8 + arg0->unk_B8->offsets[arg0->numNodes + arg1->unk_00 + 1];
+            batchAsset->texture =
+                (s32) modelAsset->header + modelAsset->header->offsets[modelAsset->numNodes + batchAsset->texIndex + 1];
         }
     } else {
-        arg1->texture = 0;
+        batchAsset->texture = NULL;
     }
 }
 
-void func_8000BE18(AssetGmd *arg0) {
-    AssetUnkHeader *s7;
+void model_asset_build_from_file(ModelAsset *modelAsset) {
+    ModelFileHeader *header;
     s32 sp40;
     u32 i;
-    ModelNodeAsset *s2;
-    s32 s1;
+    ModelNodeAsset *node;
+    s32 numBatches;
     u32 j;
 
-    s7 = (AssetUnkHeader *) D_8005AEB8[arg0->unk_AC].data;
-    arg0->nodes = (ModelNodeAsset *) ((s32) arg0 + sizeof(AssetGmd) + arg0->numNodes * sizeof(BatchAsset));
-    arg0->unk_B8 = s7;
+    header = (ModelFileHeader *) D_8005AEB8[modelAsset->rawFileMemSlot].data;
+    modelAsset->nodes =
+        (ModelNodeAsset *) ((s32) modelAsset + sizeof(ModelAsset) + modelAsset->numNodes * sizeof(BatchAsset));
+    modelAsset->header = header;
 
-    if (!((u8) (arg0->unk_B0 == 1))) {
-        sp40 = s7->offsets[arg0->numNodes];
+    if (!((u8) (modelAsset->fileFormat == MODEL_FILE_FORMAT_V1))) {
+        sp40 = header->offsets[modelAsset->numNodes];
     }
-    arg0->unk_B4 = sp40;
+    modelAsset->unk_B4 = sp40;
 
-    for (i = 0; i < arg0->numNodes; i++) {
-        s2 = arg0->nodes + i;
-        func_8000BCF0(s2, (AssetUnkHeader2 *) ((s32) s7 + s7->offsets[i]), arg0->unk_B0);
-        if ((u8) (arg0->unk_B0 == 1)) {
-            s2->batchAssets = &arg0->unk_CC[i];
+    for (i = 0; i < modelAsset->numNodes; i++) {
+        node = modelAsset->nodes + i;
+        model_node_asset_init_from_file(node, (ModelNodeFileEntry *) ((s32) header + header->offsets[i]),
+                                        modelAsset->fileFormat);
+        if ((u8) (modelAsset->fileFormat == MODEL_FILE_FORMAT_V1)) {
+            node->batchAssets = &modelAsset->unk_CC[i];
         } else {
-            s2->batchAssets = (BatchAsset *) ((s32) s7 + s7->offsets[arg0->numNodes + sp40 + i + 2]);
+            node->batchAssets = (BatchAsset *) ((s32) header + header->offsets[modelAsset->numNodes + sp40 + i + 2]);
         }
 
-        s1 = s2->numParts;
-        for (j = 0; j < s1; j++) {
-            func_8000BDB0(arg0, &s2->batchAssets[j]);
+        numBatches = node->numBatches;
+        for (j = 0; j < numBatches; j++) {
+            func_8000BDB0(modelAsset, &node->batchAssets[j]);
         }
     }
 
-    if (!((u8) (arg0->unk_B0 == 1))) {
-        arg0->palettes16 = (s32) s7 + s7->offsets[arg0->numNodes + sp40 + arg0->numNodes + 2];
-        arg0->palettes256 = (s32) s7 + s7->offsets[arg0->numNodes + sp40 + arg0->numNodes + 3];
+    if (!((u8) (modelAsset->fileFormat == MODEL_FILE_FORMAT_V1))) {
+        modelAsset->palettes16 = (s32) header + header->offsets[modelAsset->numNodes + sp40 + modelAsset->numNodes + 2];
+        modelAsset->palettes256 =
+            (s32) header + header->offsets[modelAsset->numNodes + sp40 + modelAsset->numNodes + 3];
     }
 
-    if ((u8) (arg0->unk_B0 == 1)) {
-        if (s7->offsets[2 * arg0->numNodes] != -1) {
-            arg0->unk_08 = (s32) s7 + s7->offsets[2 * arg0->numNodes];
+    if ((u8) (modelAsset->fileFormat == MODEL_FILE_FORMAT_V1)) {
+        if (header->offsets[2 * modelAsset->numNodes] != -1) {
+            modelAsset->nodeHierarchy = (s32) header + header->offsets[2 * modelAsset->numNodes];
         } else {
-            arg0->unk_08 = NULL;
+            modelAsset->nodeHierarchy = NULL;
         }
     } else {
-        if (s7->offsets[arg0->numNodes + arg0->unk_B4 + 1] != -1) {
-            arg0->unk_08 = (s32) s7 + s7->offsets[arg0->numNodes + arg0->unk_B4 + 1];
+        if (header->offsets[modelAsset->numNodes + modelAsset->unk_B4 + 1] != -1) {
+            modelAsset->nodeHierarchy = (s32) header + header->offsets[modelAsset->numNodes + modelAsset->unk_B4 + 1];
         } else {
-            arg0->unk_08 = NULL;
+            modelAsset->nodeHierarchy = NULL;
         }
     }
 }
 
-void func_8000C044(AssetGmd *arg0, AssetUnkHeader *arg1) {
+void model_asset_build_legacy_batches(ModelAsset *modelAsset, ModelFileHeader *header) {
     u32 i;
-    s32 var1, var2;
+    s32 numVertices, numTriangles;
 
-    arg0->nodes = (ModelNodeAsset *) ((s32) arg0 + sizeof(AssetGmd) + arg0->numNodes * sizeof(BatchAsset));
+    modelAsset->nodes =
+        (ModelNodeAsset *) ((s32) modelAsset + sizeof(ModelAsset) + modelAsset->numNodes * sizeof(BatchAsset));
 
-    for (i = 0; i < arg0->numNodes; i++) {
-        ModelNodeAsset *temp = arg0->nodes + i;
-        temp->numParts = 1;
+    for (i = 0; i < modelAsset->numNodes; i++) {
+        ModelNodeAsset *node = modelAsset->nodes + i;
+        node->numBatches = 1;
 
-        var1 = ((AssetUnkHeader2 *) ((s32) arg1 + arg1->offsets[i]))->unk_00;
-        var2 = ((AssetUnkHeader2 *) ((s32) arg1 + arg1->offsets[i]))->unk_04;
+        numVertices = ((ModelNodeFileEntry *) ((s32) header + header->offsets[i]))->numVertices;
+        numTriangles = ((ModelNodeFileEntry *) ((s32) header + header->offsets[i]))->numTriangles;
 
-        arg0->unk_CC[i].unk_00 = arg1->offsets[arg0->numNodes + i];
-        arg0->unk_CC[i].vertIndex = 0;
-        arg0->unk_CC[i].triOffset = 0;
-        arg0->unk_CC[i].numVertices = var1;
-        arg0->unk_CC[i].numTriangles = var2;
+        modelAsset->unk_CC[i].texIndex = header->offsets[modelAsset->numNodes + i];
+        modelAsset->unk_CC[i].vertIndex = 0;
+        modelAsset->unk_CC[i].triOffset = 0;
+        modelAsset->unk_CC[i].numVertices = numVertices;
+        modelAsset->unk_CC[i].numTriangles = numTriangles;
     }
 }
 
-void func_8000C0E4(AssetGmd *arg0, s32 slot) {
-    AssetUnkHeader *sp1C;
+void model_asset_load_from_memory_slot(ModelAsset *modelAsset, s32 rawFileMemSlot) {
+    ModelFileHeader *rawFileHeader;
 
-    arg0->unk_AC = slot;
-    sp1C = D_8005AEB8[slot].data;
-    func_8000C158(arg0, sp1C->signature[0]);
+    modelAsset->rawFileMemSlot = rawFileMemSlot;
+    rawFileHeader = D_8005AEB8[rawFileMemSlot].data;
+    model_asset_detect_format(modelAsset, rawFileHeader->signature[0]);
 
-    if ((u8) (arg0->unk_B0 == 1)) {
-        func_8000C044(arg0, sp1C);
+    if ((u8) (modelAsset->fileFormat == MODEL_FILE_FORMAT_V1)) {
+        model_asset_build_legacy_batches(modelAsset, rawFileHeader);
     }
 
-    func_8000BE18(arg0);
+    model_asset_build_from_file(modelAsset);
 }
 
-void func_8000C158(AssetGmd *arg0, u8 arg1) {
-    switch (arg1) {
+void model_asset_detect_format(ModelAsset *modelAsset, u8 firstChar) {
+    switch (firstChar) {
         case '@':
-            arg0->unk_B0 = 1;
+            modelAsset->fileFormat = MODEL_FILE_FORMAT_V1;
             break;
         case '2':
-            arg0->unk_B0 = 2;
+            modelAsset->fileFormat = MODEL_FILE_FORMAT_V2;
             break;
     }
 }
@@ -196,9 +201,9 @@ void func_8000C18C(s32 *new_data, s32 *old_data, void *priv) {
 
 void func_8000C1C4(KModel *arg0, s32 arg1) {
     ModelNodeAsset *v0 = &arg0->model.unk_04->nodes[arg1];
-    u32 numParts = v0->numParts;
+    u32 numParts = v0->numBatches;
     u32 numVertices = v0->numVertices;
-    u32 unk_04 = v0->unk_04;
+    u32 unk_04 = v0->numTriangles;
     s32 size;
 
     size = numParts * sizeof(Gfx) * 21 + (numVertices / 8) * sizeof(Gfx) + unk_04 * sizeof(Gfx); // TODO constant
@@ -291,7 +296,7 @@ void func_8000C3CC(Model *arg0, s32 nodeId, u8 arg2, Unk8000C3CCArg3 *arg3) {
     numBatches = 0;
 
     node = &arg0->unk_04->nodes[nodeId];
-    numParts = node->numParts;
+    numParts = node->numBatches;
     numVerts = node->numVertices;
     vertices = node->vertices;
     triangles = node->triangles;
@@ -389,12 +394,12 @@ void func_8000C3CC(Model *arg0, s32 nodeId, u8 arg2, Unk8000C3CCArg3 *arg3) {
         if (partIndex == 0 && !(arg3->flags & 1)) {
             gDPSetPrimColor(gfx++, 0, 0, arg3->primColor.r, arg3->primColor.g, arg3->primColor.b, arg3->primColor.a);
         }
-        if (!sp933 && !((u8) (nodeBatch->unk_00 >= 0))) {
+        if (!sp933 && !((u8) (nodeBatch->texIndex >= 0))) {
             gDPPipeSync(gfx++);
             gDPSetCombineMode(gfx++, G_CC_SHADE, G_CC_SHADE);
             sp933 = TRUE;
             sp932 = FALSE;
-        } else if (!sp932 && (u8) (nodeBatch->unk_00 >= 0)) {
+        } else if (!sp932 && (u8) (nodeBatch->texIndex >= 0)) {
             gDPPipeSync(gfx++);
             gfx->words.w0 = arg3->combineMode.words.w0;
             gfx->words.w1 = arg3->combineMode.words.w1;
@@ -469,7 +474,7 @@ void func_8000D11C(KModel *arg0, s32 arg1, u8 arg2) {
     sp12A = FALSE;
     s3 = arg0->model.dlist[arg1];
     v0 = &arg0->model.unk_04->nodes[arg1];
-    sp148 = v0->numParts;
+    sp148 = v0->numBatches;
     fp = v0->vertices;
     sp120 = v0->triangles;
 
@@ -485,13 +490,13 @@ void func_8000D11C(KModel *arg0, s32 arg1, u8 arg2) {
         s7 = fp;
         s7 += a1->vertIndex;
 
-        if (!sp12B && !((u8) (a1->unk_00 >= 0))) {
+        if (!sp12B && !((u8) (a1->texIndex >= 0))) {
             gDPPipeSync(s3++);
             gSPTexture(s3++, 0, 0, 0, G_TX_RENDERTILE, G_OFF);
             gDPSetCombineMode(s3++, G_CC_SHADE, G_CC_SHADE);
             sp12B = TRUE;
             sp12A = FALSE;
-        } else if (!sp12A && ((u8) (a1->unk_00 >= 0))) {
+        } else if (!sp12A && ((u8) (a1->texIndex >= 0))) {
             gDPPipeSync(s3++);
             gSPTexture(s3++, 0x8000, 0x8000, 0, G_TX_RENDERTILE, G_ON);
             gDPSetCombineMode(s3++, G_CC_DECALRGB, G_CC_DECALRGB);
@@ -547,7 +552,7 @@ void func_8000D11C(KModel *arg0, s32 arg1, u8 arg2) {
     gSPEndDisplayList(s3++);
 }
 
-void func_8000DAB0(KModel *arg0, AssetGmd *arg1, char *name, u8 arg3, s32 arg4) {
+void func_8000DAB0(KModel *arg0, ModelAsset *arg1, char *name, u8 arg3, s32 arg4) {
     u32 i;
     Asset *asset;
     char sp30[16];
@@ -561,7 +566,7 @@ void func_8000DAB0(KModel *arg0, AssetGmd *arg1, char *name, u8 arg3, s32 arg4) 
         func_8000D11C(arg0, i, arg3);
     }
 
-    arg0->model.nodeHierarchy = v0 = arg0->model.unk_04->unk_08;
+    arg0->model.nodeHierarchy = v0 = arg0->model.unk_04->nodeHierarchy;
 
     if (v0 != 0) {
         str_copy(sp30, name);
@@ -698,8 +703,8 @@ void func_8000E0D8(Model *arg0) {
         if (s0 < s6->numVertices) {
             s0 = s6->numVertices;
         }
-        if (s1 < s6->unk_04) {
-            s1 = s6->unk_04;
+        if (s1 < s6->numTriangles) {
+            s1 = s6->numTriangles;
         }
     }
 
@@ -712,7 +717,7 @@ void func_8000E0D8(Model *arg0) {
     for (i = 0; i < arg0->numNodes; i++) {
         spCA = func_8000DBC4(arg0, i, spC4);
         s6 = &arg0->unk_04->nodes[i];
-        s5 = s6->unk_04;
+        s5 = s6->numTriangles;
         s00 = s6->vertices;
         s4 = s6->triangles;
 
@@ -793,7 +798,7 @@ void func_8000E0D8(Model *arg0) {
     mem_free(spC4);
 }
 
-void func_8000E73C(Model *arg0, AssetGmd *arg1, char *name, u8 arg3, Unk8000C3CCArg3 *arg4, s32 arg5) {
+void func_8000E73C(Model *arg0, ModelAsset *arg1, char *name, u8 arg3, Unk8000C3CCArg3 *arg4, s32 arg5) {
     u32 i;
     s32 v1;
     s32 j;
@@ -812,9 +817,9 @@ void func_8000E73C(Model *arg0, AssetGmd *arg1, char *name, u8 arg3, Unk8000C3CC
         func_8000C3CC(arg0, i, arg3, arg4);
     }
 
-    if (arg0->unk_04->unk_08 != 0) {
+    if (arg0->unk_04->nodeHierarchy != NULL) {
         arg0->nodeHierarchy = mem_alloc(arg0->numNodes * 0x10 + 0x10, "kmd.c", 983);
-        memcpy(arg0->nodeHierarchy, arg0->unk_04->unk_08, arg0->numNodes * 0x10 + 0x10);
+        memcpy(arg0->nodeHierarchy, arg0->unk_04->nodeHierarchy, arg0->numNodes * 0x10 + 0x10);
     } else {
         arg0->nodeHierarchy = NULL;
     }

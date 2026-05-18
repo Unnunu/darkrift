@@ -2,7 +2,7 @@
 from pathlib import Path
 from struct import unpack_from, calcsize, pack
 import subprocess
-from n64img.image import CI8
+from n64img.image import CI8, CI4
 
 ROMFILE = "darkrift.z64"
 RAW_ASSETS_PATH = "game_assets/raw"
@@ -97,22 +97,27 @@ def replace_path(p):
     parts[1] = "extracted"
     return Path(*parts)
 
+def save_texture(data, width, height, fmt, palette, outpath):
+    if fmt == 8:
+        img = CI8(data, width, height)
+    elif fmt == 4:
+        img = CI4(data, width, height)
+    else:
+        raise ValueError(f"Unsupported format: {fmt}")
+    img.set_palette(palette)
+    img.write(outpath)
+
 def process_tex():
     for g in Path(RAW_ASSETS_PATH).glob('**/*.TEX'):
         content = g.read_bytes()
         width, height = unpack_from(">II", content)
-        
-        img = CI8(content[0x10:0x10 + width * height], width, height)
-
+        data = content[0x10:0x10 + width * height]
         palette = content[0x10 + width * height:]
         if len(palette) != 512:
-            # something wrong, continue
             continue
-        img.set_palette(palette)
-
         outpath = replace_path(g).with_suffix(".png")
         outpath.parent.mkdir(parents=True, exist_ok=True)
-        img.write(outpath)
+        save_texture(data, width, height, 8, palette, outpath)
 
 def process_sp2():
     for g in Path(RAW_ASSETS_PATH).glob('**/*.SP2'):
@@ -356,13 +361,176 @@ def process_db():
                 else:
                     for l in v:
                         print(f"\t{l}", file=outfile)
-            
+
+def process_models():
+    for ext in ("*.TMD", "*.GMD", "*.K2", "*.K3", "*.K4", "*.K5"):
+        for mdl in Path(RAW_ASSETS_PATH).glob(f'**/{ext}'):
+            content = mdl.read_bytes()
+
+            # ---- Header ----
+            signature = content[0:4]
+            if signature != b'2KMD':
+                raise NotImplementedError(f"Unsupported signature: {signature}")
+
+            numNodes = unpack_from(">I", content, 4)[0]
+
+            pos = 8
+            nodeOffsets = [unpack_from(">I", content, pos + 4 * i)[0] for i in range(numNodes)]
+            pos += 4 * numNodes
+
+            numTextures = unpack_from(">I", content, pos)[0]; pos += 4
+            textureOffsets = [unpack_from(">I", content, pos + 4 * i)[0] for i in range(numTextures)]
+            pos += 4 * numTextures
+
+            nodeHierarchyOffset = unpack_from(">i", content, pos)[0]; pos += 4
+            batchOffsets = [unpack_from(">I", content, pos + 4 * i)[0] for i in range(numNodes)]
+            pos += 4 * numNodes
+
+            ci4PaletteOffset = unpack_from(">i", content, pos)[0]; pos += 4
+            ci8PaletteOffset = unpack_from(">i", content, pos)[0]; pos += 4
+
+            # ---- Palettes ----
+            fileSize = len(content)
+
+            ci4Palettes = []
+            if ci4PaletteOffset != -1:
+                end = ci8PaletteOffset if ci8PaletteOffset != -1 else fileSize
+                palData = content[ci4PaletteOffset:end]
+                num = len(palData) // 32
+                ci4Palettes = [palData[i * 32:(i + 1) * 32] for i in range(num)]
+
+            ci8Palettes = []
+            if ci8PaletteOffset != -1:
+                palData = content[ci8PaletteOffset:]
+                num = len(palData) // 512
+                ci8Palettes = [palData[i * 512:(i + 1) * 512] for i in range(num)]
+
+            # ---- Textures ----
+            texInfos = []
+            for texOff in textureOffsets:
+                width, height, fmt, palIdx = unpack_from(">IIii", content, texOff)
+                if fmt not in (4, 8):
+                    print(f"  {mdl.name}: skipping texture fmt={fmt}")
+                    texInfos.append(None)
+                    continue
+                dataSize = (width * height) // (8 // fmt)
+                data = content[texOff + 0x10:texOff + 0x10 + dataSize]
+                palList = ci4Palettes if fmt == 4 else ci8Palettes
+                palette = palList[palIdx] if palIdx < len(palList) else None
+                texInfos.append(dict(width=width, height=height, format=fmt,
+                                     palIndex=palIdx, data=data, palette=palette))
+
+            # ---- Output dirs ----
+            outdir = replace_path(mdl)
+            outdir.mkdir(parents=True, exist_ok=True)
+            texDir = outdir / "Textures"
+            texDir.mkdir(parents=True, exist_ok=True)
+
+            for i, tex in enumerate(texInfos):
+                if tex is not None and tex["palette"] is not None:
+                    save_texture(tex["data"], tex["width"], tex["height"],
+                                 tex["format"], tex["palette"], texDir / f"tex_{i}.png")
+
+            # ---- Nodes ----
+            nodes = []
+            for nodeOff in nodeOffsets:
+                numV, numT, offV, offT, offNumBatches, unused = unpack_from(">IIIIII", content, nodeOff)
+
+                verts = []
+                baseV = nodeOff + offV
+                for j in range(numV):
+                    o = baseV + j * 16
+                    x, y, z, flag, u, v, r, g, b, a = unpack_from(">hhhHhhBBBB", content, o)
+                    verts.append((x, y, z, flag, u, v, r, g, b, a))
+
+                tris = []
+                baseT = nodeOff + offT
+                for j in range(numT):
+                    i0, i1, i2 = unpack_from(">HHH", content, baseT + j * 6)
+                    tris.append((i0, i1, i2))
+
+                numBatches = unpack_from(">I", content, nodeOff + offNumBatches)[0]
+                nodes.append(dict(verts=verts, tris=tris, numBatches=numBatches))
+
+            # ---- Batches ----
+            allBatches = []
+            for ni in range(numNodes):
+                bo = batchOffsets[ni]
+                nb = nodes[ni]["numBatches"]
+                batches = []
+                for j in range(nb):
+                    texIdx, vi, to, nv, nt, _ptr = unpack_from(">IHHHHI", content, bo + j * 16)
+                    batches.append(dict(texIndex=texIdx, vertIndex=vi, triOffset=to,
+                                        numVertices=nv, numTriangles=nt))
+                allBatches.append(batches)
+
+            # ---- Hierarchy ----
+            hierarchy = []
+            if nodeHierarchyOffset != -1:
+                for i in range(numNodes + 1):
+                    p, x, y, z = unpack_from(">iiii", content, nodeHierarchyOffset + i * 16)
+                    hierarchy.append((p, x, y, z))
+
+            # ---- Write output ----
+            outpath = outdir / f"{mdl.name}.txt"
+            with open(outpath, "w") as f:
+                print(f"# Model: {mdl.name}", file=f)
+                print(f"# Nodes: {numNodes}", file=f)
+                print(f"# Textures: {numTextures}", file=f)
+                print(file=f)
+
+                print("=== TEXTURES ===", file=f)
+                for i, tex in enumerate(texInfos):
+                    if tex is None:
+                        print(f"Texture {i}: INVALID", file=f)
+                    else:
+                        print(f"Texture {i}: {tex['width']}x{tex['height']} CI{tex['format']} palIdx={tex['palIndex']}", file=f)
+                print(file=f)
+
+                print("=== NODE HIERARCHY ===", file=f)
+                for i, (p, x, y, z) in enumerate(hierarchy):
+                    print(f"Node {i}: parent={p} pos=({x}, {y}, {z})", file=f)
+                print(file=f)
+
+                for ni in range(numNodes):
+                    node = nodes[ni]
+                    verts, tris = node["verts"], node["tris"]
+                    nb = node["numBatches"]
+                    print(f"=== NODE {ni} ({len(verts)} verts, {len(tris)} tris, {nb} batches) ===", file=f)
+
+                    print("--- Vertices (global) ---", file=f)
+                    for j, (x, y, z, flag, u, v, r, g, b, a) in enumerate(verts):
+                        print(f"  v {x} {y} {z}  uv={u} {v}  rgba={r} {g} {b} {a}", file=f)
+
+                    print("--- Triangles (global) ---", file=f)
+                    for j, (i0, i1, i2) in enumerate(tris):
+                        print(f"  f {i0} {i1} {i2}", file=f)
+
+                    print(f"=== BATCHES FOR NODE {ni} ===", file=f)
+                    for bj, batch in enumerate(allBatches[ni]):
+                        ti = batch["texIndex"]
+                        print(f"--- Batch {bj}: texIndex={ti} vertStart={batch['vertIndex']} "
+                              f"numVerts={batch['numVertices']} triStart={batch['triOffset']} "
+                              f"numTris={batch['numTriangles']} ---", file=f)
+                        vs = batch["vertIndex"]
+                        ve = vs + batch["numVertices"]
+                        for vj in range(vs, ve):
+                            x, y, z, flag, u, v, r, g, b, a = verts[vj]
+                            print(f"  v {x} {y} {z}  uv={u} {v}  rgba={r} {g} {b} {a}", file=f)
+                        ts = batch["triOffset"]
+                        te = ts + batch["numTriangles"]
+                        for tj in range(ts, te):
+                            i0, i1, i2 = tris[tj]
+                            ri0, ri1, ri2 = i0 - vs, i1 - vs, i2 - vs
+                            print(f"  f {i0} {i1} {i2}  (rel: {ri0} {ri1} {ri2})", file=f)
+                    print(file=f)
 
 def analyze():
     process_tex()
     process_sp2()
     process_sym()
     process_db()
+    process_models()
         
 def main():
     assets = Path(ROMFILE).read_bytes()[ASSETS_OFFSET:]
