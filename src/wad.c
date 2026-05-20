@@ -79,9 +79,9 @@ void func_80025A0C(Asset *);
 void asset_read_all_files_in_folder(s32);
 void assets_clear_unused(void);
 void dma_read(s32 romAddr, void *vramAddr, s32 size);
-void func_8000E73C(Model *, ModelAsset *, char *, s32, Unk8000C3CCArg3 *, u16);
+void model_init_from_asset(Model *, ModelAsset *, char *, s32, ModelRenderSettings *, u16);
 void func_80035CCC(Model *);
-void func_8000E0D8(Model *);
+void model_build_vertex_normals(Model *);
 
 void asset_free(Asset *);
 void func_80027680(Asset *);
@@ -740,7 +740,7 @@ void asset_load_k3(Asset *asset) {
 
     sp30 = mem_alloc(sizeof(Model), "wad.c", 813);
     s1->unk_C8 = 1;
-    func_8000E73C(sp30, s1, asset->name, 0, &D_80049968, asset->context);
+    model_init_from_asset(sp30, s1, asset->name, 0, &D_80049968, asset->context);
     sp30->unk_3CC = 0x10;
     asset->aux_data = sp30;
     s1->unk_C8 = 0;
@@ -767,7 +767,7 @@ void asset_load_k4(Asset *asset) {
 
     sp30 = mem_alloc(sizeof(Model), "wad.c", 854);
     s1->unk_C8 = 1;
-    func_8000E73C(sp30, s1, asset->name, 0, &D_80049938, asset->context);
+    model_init_from_asset(sp30, s1, asset->name, 0, &D_80049938, asset->context);
     sp30->unk_3CC = 2;
     asset->aux_data = sp30;
     s1->unk_C8 = 0;
@@ -794,7 +794,7 @@ void asset_load_k5(Asset *asset) {
 
     sp30 = mem_alloc(sizeof(Model), "wad.c", 893);
     s1->unk_C8 = 1;
-    func_8000E73C(sp30, s1, asset->name, 0, &D_80049950, asset->context);
+    model_init_from_asset(sp30, s1, asset->name, 0, &D_80049950, asset->context);
     sp30->unk_3CC = 1;
     func_80035CCC(sp30);
     asset->aux_data = sp30;
@@ -822,9 +822,9 @@ void asset_load_tmd(Asset *asset) {
 
     sp30 = mem_alloc(sizeof(Model), "wad.c", 934);
     s1->unk_C8 = 1;
-    func_8000E73C(sp30, s1, asset->name, 0, &D_80049920, asset->context);
+    model_init_from_asset(sp30, s1, asset->name, 0, &D_80049920, asset->context);
     sp30->unk_3CC = 8;
-    func_8000E0D8(sp30);
+    model_build_vertex_normals(sp30);
     asset->aux_data = sp30;
     s1->unk_C8 = 0;
 }
@@ -849,8 +849,8 @@ void asset_reload_tmd(Asset *asset) {
     sp28 = asset->data;
 
     model_asset_build_from_file(sp28);
-    func_8000E73C(s0, sp28, asset->name, 0, &D_80049920, asset->context);
-    func_8000E0D8(s0);
+    model_init_from_asset(s0, sp28, asset->name, 0, &D_80049920, asset->context);
+    model_build_vertex_normals(s0);
     s0->unk_3CC = 8;
     asset->aux_data = s0;
 }
@@ -863,7 +863,7 @@ void asset_reload_k3(Asset *asset) {
     sp28 = asset->data;
 
     model_asset_build_from_file(sp28);
-    func_8000E73C(s0, sp28, asset->name, 0, &D_80049968, asset->context);
+    model_init_from_asset(s0, sp28, asset->name, 0, &D_80049968, asset->context);
     s0->unk_3CC = 0x10;
     asset->aux_data = s0;
 }
@@ -876,7 +876,7 @@ void asset_reload_k4(Asset *asset) {
     sp28 = asset->data;
 
     model_asset_build_from_file(sp28);
-    func_8000E73C(s0, sp28, asset->name, 0, &D_80049938, asset->context);
+    model_init_from_asset(s0, sp28, asset->name, 0, &D_80049938, asset->context);
     s0->unk_3CC = 2;
     asset->aux_data = s0;
 }
@@ -889,7 +889,7 @@ void asset_reload_k5(Asset *asset) {
     sp28 = asset->data;
 
     model_asset_build_from_file(sp28);
-    func_8000E73C(s0, sp28, asset->name, 0, &D_80049950, asset->context);
+    model_init_from_asset(s0, sp28, asset->name, 0, &D_80049950, asset->context);
     s0->unk_3CC = 1;
     func_80035CCC(s0);
     asset->aux_data = s0;
@@ -1012,7 +1012,7 @@ void asset_load_sp3(Asset *asset) {
     sp30 = mem_alloc(sizeof(Model), "wad.c", 1226);
     s1->unk_C8 = 1;
     name = asset->name;
-    func_8000E73C(sp30, s1, asset->name, 0, &D_80049950, asset->context);
+    model_init_from_asset(sp30, s1, asset->name, 0, &D_80049950, asset->context);
     s1->unk_C8 = 0;
     asset->aux_data = sp30;
     strlen(name);
@@ -1030,7 +1030,7 @@ void asset_reload_sp3(Asset *asset) {
     sp28 = asset->data;
 
     model_asset_build_from_file(sp28);
-    func_8000E73C(s0, sp28, asset->name, 0, &D_80049950, asset->context);
+    model_init_from_asset(s0, sp28, asset->name, 0, &D_80049950, asset->context);
     asset->aux_data = s0;
 }
 
@@ -1055,7 +1055,7 @@ void asset_load_k2(Asset *asset) {
 
     sp30 = mem_alloc(sizeof(Model), "wad.c", 1297);
     s1->unk_C8 = 1;
-    func_8000E73C(sp30, s1, asset->name, 0, &D_80049950, asset->context);
+    model_init_from_asset(sp30, s1, asset->name, 0, &D_80049950, asset->context);
     sp30->unk_3CC = 4;
     func_80035CCC(sp30);
     asset->aux_data = sp30;
@@ -1070,7 +1070,7 @@ void asset_reload_k2(Asset *asset) {
     sp28 = asset->data;
 
     model_asset_build_from_file(sp28);
-    func_8000E73C(s0, sp28, asset->name, 0, &D_80049950, asset->context);
+    model_init_from_asset(s0, sp28, asset->name, 0, &D_80049950, asset->context);
     s0->unk_3CC = 4;
     func_80035CCC(s0);
     asset->aux_data = s0;

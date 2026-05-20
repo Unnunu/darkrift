@@ -114,7 +114,7 @@ void func_800343F8(Object *obj, u8 arg1) {
     }
 
     for (i = 0; i < numNodes; i++) {
-        s1 = &sam->unk_04->nodes[i];
+        s1 = &sam->modelAsset->nodes[i];
         s2 = s1->numBatches;
         for (j = 0; j < s2; j++) {
             sub1 = s1->batchAssets + j;
@@ -383,9 +383,9 @@ void func_80034FC8(ModelInstance *model, s32 arg1, Vec4i *arg2) {
     c = 0;
 
     if (model->kmodel != NULL) {
-        a1 = &model->kmodel->model.unk_04->nodes[arg1];
+        a1 = &model->kmodel->model.modelAsset->nodes[arg1];
     } else {
-        a1 = &model->model->unk_04->nodes[arg1];
+        a1 = &model->model->modelAsset->nodes[arg1];
     }
 
     count = a1->numVertices;
@@ -412,7 +412,7 @@ void func_8003517C(Model *sam, s32 arg1, Vec4i *arg2) {
     b = 0;
     c = 0;
 
-    a1 = &sam->unk_04->nodes[arg1];
+    a1 = &sam->modelAsset->nodes[arg1];
 
     count = a1->numVertices;
     vertices = a1->vertices;
@@ -1547,13 +1547,13 @@ void sprite3d_update(Object *obj) {
 void func_80037E28(Object *obj) {
     GameMode *a2;
     ModelInstance *v1;
-    UnkKappa *v0;
+    GlobalLighting *v0;
     u32 t6;    // sp160
     Model *t0; // sp168
     u32 t2;    // sp158
     s32 sp154;
     GlobalObjD *a1;
-    UnkSamSub *s0;
+    VertexPositionGroup *s0;
     Matrix4f *t4;
     u32 s7;
     s32 deltaX, deltaY, deltaZ;
@@ -1562,7 +1562,7 @@ void func_80037E28(Object *obj) {
     s32 v05;
     s32 s00, s11, s22;
     s32 v06;
-    ColorRGBA *ra;
+    ColorRGBA *ambient_color;
     s32 a33, t00, t11;
     s32 temp1;
     s32 vv0, vv1, tt4;
@@ -1605,21 +1605,21 @@ void func_80037E28(Object *obj) {
 
     t2 = v1->numNodes;
     t0 = v1->model;
-    ra = &a2->unk_1C; // TODO make ColorRGBA
+    ambient_color = &a2->ambient_color;
 
     v0 = a2->unk_18;
-    sp6C = v0->unk_0.r;
-    sp68 = v0->unk_0.g;
-    sp64 = v0->unk_0.b;
-    sp54 = v0->unk_4;
-    sp50 = v0->unk_8;
-    sp4C = v0->unk_C;
-    sp60 = v0->unk_10.r;
-    sp5C = v0->unk_10.g;
-    sp58 = v0->unk_10.b;
-    sp48 = v0->unk_14;
-    sp44 = v0->unk_18;
-    sp40 = v0->unk_1C;
+    sp6C = v0->lights[0].color.r;
+    sp68 = v0->lights[0].color.g;
+    sp64 = v0->lights[0].color.b;
+    sp54 = v0->lights[0].dir_x;
+    sp50 = v0->lights[0].dir_y;
+    sp4C = v0->lights[0].dir_z;
+    sp60 = v0->lights[1].color.r;
+    sp5C = v0->lights[1].color.g;
+    sp58 = v0->lights[1].color.b;
+    sp48 = v0->lights[1].dir_x;
+    sp44 = v0->lights[1].dir_y;
+    sp40 = v0->lights[1].dir_z;
 
     for (a1 = D_8013C4EC; a1 != NULL; a1 = a1->unk_2C) {
         a = a1->unk_28->unk_088.a;
@@ -1629,8 +1629,8 @@ void func_80037E28(Object *obj) {
     }
 
     for (; t6 < t2; t6 += 8) {
-        sp154 = t0->unk_394[t6];
-        s0 = t0->unk_324[t6];
+        sp154 = t0->num_vertex_position_groups[t6];
+        s0 = t0->vertex_position_groups[t6];
         t4 = &v1->transforms[t6].world_matrix;
 
         sp90 = (s32) (v1->transforms[t6].world_matrix.x.x * 1024.0f);
@@ -1669,13 +1669,13 @@ void func_80037E28(Object *obj) {
         }
 
         for (s7 = 0; s7 < sp154; s7++) {
-            vv0 = s0[s7].unk_00;
-            vv1 = s0[s7].unk_01;
-            tt4 = s0[s7].unk_02;
+            vv0 = s0[s7].normal_x;
+            vv1 = s0[s7].normal_y;
+            tt4 = s0[s7].normal_z;
 
-            a33 = ra->r;
-            t00 = ra->g;
-            t11 = ra->b;
+            a33 = ambient_color->r;
+            t00 = ambient_color->g;
+            t11 = ambient_color->b;
 
             if (vv0 & 0x80) {
                 vv0 |= ~0xFF;
@@ -1732,9 +1732,9 @@ void func_80037E28(Object *obj) {
                 t11 = t11 * 255 / v02;
             }
             a22 = 0;
-            while ((kek = s0[s7].unk_44[a22]) >= 0) {
-                vert = &t0->unk_04->nodes[t6].vertices[kek];
-                col = &s0[s7].unk_04[a22];
+            while ((kek = s0[s7].vertex_indices[a22]) >= 0) {
+                vert = &t0->modelAsset->nodes[t6].vertices[kek];
+                col = &s0[s7].original_colors[a22];
                 if (col->r != 255 || col->g != 255 || col->b != 255) {
                     a22++;
                 } else {

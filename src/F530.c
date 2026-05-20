@@ -8,10 +8,10 @@ ColorRGBA D_800499A4 = { 0, 0, 255, 0 };
 s32 D_80081260[2];
 Vec4s D_80081268;
 s32 D_80081270;
-Model *D_80081274;
-Model *D_80081278;
+Model *gComHit;
+Model *gComBlock;
 
-void func_8000E930(Object *obj) {
+void combat_hit_update(Object *obj) {
     if (obj->frameIndex < obj->modInst->numAnimFrames) {
         D_8008012C |= GFX_FLAG_10;
         obj->frameIndex++;
@@ -29,7 +29,7 @@ void func_8000E930(Object *obj) {
     }
 }
 
-void func_8000E9D8(Object *obj) {
+void combat_block_update(Object *obj) {
     if (obj->frameIndex < obj->modInst->numAnimFrames) {
         D_8008012C |= GFX_FLAG_10;
         obj->frameIndex++;
@@ -61,7 +61,7 @@ void func_8000EA80(Vec4s *pos, u8 isBlocked, Object *arg2, ColorRGBA *arg3) {
     sp24.z = pos->z;
 
     if (isBlocked) {
-        v0 = create_model_instance(&sp24, 0x1000, func_8000E9D8, D_80081278);
+        v0 = create_model_instance(&sp24, OBJ_PRIO_DEFAULT, combat_block_update, gComBlock);
         if (v0 != NULL) {
             v0->vars[0] = 255 / (v0->modInst->numAnimFrames - 2);
             v0->flags |= OBJ_FLAG_2000;
@@ -74,7 +74,7 @@ void func_8000EA80(Vec4s *pos, u8 isBlocked, Object *arg2, ColorRGBA *arg3) {
         }
         func_80023BE4(pos, arg2, arg3);
     } else {
-        v0 = create_model_instance(&sp24, 0x1000, func_8000E930, D_80081274);
+        v0 = create_model_instance(&sp24, OBJ_PRIO_DEFAULT, combat_hit_update, gComHit);
         if (v0 != NULL) {
             v0->vars[0] = 255 / (v0->modInst->numAnimFrames - 12);
             v0->flags |= OBJ_FLAG_2000;
@@ -232,7 +232,6 @@ s32 func_8000F074(Player *player1, Player *player2, ActionState *arg2) {
             player1->obj->pos.y = 0;
         }
     }
-
     v12 = (a3 == 270) || (a3 == 271);
 
     if (a3 != 0 && !D_8013C250) {

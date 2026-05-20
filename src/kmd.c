@@ -2,35 +2,35 @@
 #include "string.h"
 #include "PR/gt.h"
 
-Unk8000C3CCArg3 D_80049920 = {
+ModelRenderSettings D_80049920 = {
     gsDPSetCombineMode(G_CC_MODULATEIA, G_CC_MODULATEIA),
     G_RM_AA_OPA_SURF | G_RM_AA_OPA_SURF2,
     0x2200,
     { 192, 192, 192, 255 },
     1,
 };
-Unk8000C3CCArg3 D_80049938 = {
+ModelRenderSettings D_80049938 = {
     gsDPSetCombineMode(G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM),
     G_RM_OPA_SURF | G_RM_OPA_SURF2,
     0x2000,
     { 255, 255, 255, 255 },
     1,
 };
-Unk8000C3CCArg3 D_80049950 = {
+ModelRenderSettings D_80049950 = {
     gsDPSetCombineMode(G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM),
     G_RM_XLU_SURF | G_RM_XLU_SURF2,
     0,
     { 255, 255, 255, 128 },
     0,
 };
-Unk8000C3CCArg3 D_80049968 = {
+ModelRenderSettings D_80049968 = {
     gsDPSetCombineMode(G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM),
     G_RM_AA_XLU_SURF | G_RM_AA_XLU_SURF2,
     0x2000,
     { 192, 192, 192, 255 },
     0,
 };
-Unk8000C3CCArg3 D_80049988 = {
+ModelRenderSettings D_80049988 = {
     gsDPSetCombineMode(G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM),
     G_RM_XLU_SURF | G_RM_XLU_SURF2,
     0x2000,
@@ -51,7 +51,7 @@ void model_node_asset_init_from_file(ModelNodeAsset *node, ModelNodeFileEntry *a
     }
 }
 
-s32 func_8000BD38(ModelAsset *modelAsset) {
+s32 model_asset_get_total_vertex_count(ModelAsset *modelAsset) {
     s32 sum = 0;
     u32 i;
 
@@ -61,12 +61,12 @@ s32 func_8000BD38(ModelAsset *modelAsset) {
     return sum;
 }
 
-s32 func_8000BD70(ModelAsset *arg0) {
+s32 model_asset_get_total_triangle_count(ModelAsset *modelAsset) {
     s32 sum = 0;
     u32 i;
 
-    for (i = 0; i < arg0->numNodes; i++) {
-        sum += arg0->nodes[i].numTriangles;
+    for (i = 0; i < modelAsset->numNodes; i++) {
+        sum += modelAsset->nodes[i].numTriangles;
     }
     return sum;
 }
@@ -74,7 +74,7 @@ s32 func_8000BD70(ModelAsset *arg0) {
 void func_8000BDA8(s32 arg0) {
 }
 
-void func_8000BDB0(ModelAsset *modelAsset, BatchAsset *batchAsset) {
+void model_asset_resolve_batch_texture(ModelAsset *modelAsset, BatchAsset *batchAsset) {
     if (batchAsset->texIndex >= 0) {
         if ((u8) (modelAsset->fileFormat == MODEL_FILE_FORMAT_V1)) {
             batchAsset->texture = (s32) modelAsset->header + batchAsset->texIndex;
@@ -89,7 +89,7 @@ void func_8000BDB0(ModelAsset *modelAsset, BatchAsset *batchAsset) {
 
 void model_asset_build_from_file(ModelAsset *modelAsset) {
     ModelFileHeader *header;
-    s32 sp40;
+    s32 numTextures;
     u32 i;
     ModelNodeAsset *node;
     s32 numBatches;
@@ -101,30 +101,32 @@ void model_asset_build_from_file(ModelAsset *modelAsset) {
     modelAsset->header = header;
 
     if (!((u8) (modelAsset->fileFormat == MODEL_FILE_FORMAT_V1))) {
-        sp40 = header->offsets[modelAsset->numNodes];
+        numTextures = header->offsets[modelAsset->numNodes];
     }
-    modelAsset->unk_B4 = sp40;
+    modelAsset->numTextures = numTextures;
 
     for (i = 0; i < modelAsset->numNodes; i++) {
         node = modelAsset->nodes + i;
         model_node_asset_init_from_file(node, (ModelNodeFileEntry *) ((s32) header + header->offsets[i]),
                                         modelAsset->fileFormat);
         if ((u8) (modelAsset->fileFormat == MODEL_FILE_FORMAT_V1)) {
-            node->batchAssets = &modelAsset->unk_CC[i];
+            node->batchAssets = &modelAsset->legacyBatches[i];
         } else {
-            node->batchAssets = (BatchAsset *) ((s32) header + header->offsets[modelAsset->numNodes + sp40 + i + 2]);
+            node->batchAssets =
+                (BatchAsset *) ((s32) header + header->offsets[modelAsset->numNodes + numTextures + i + 2]);
         }
 
         numBatches = node->numBatches;
         for (j = 0; j < numBatches; j++) {
-            func_8000BDB0(modelAsset, &node->batchAssets[j]);
+            model_asset_resolve_batch_texture(modelAsset, &node->batchAssets[j]);
         }
     }
 
     if (!((u8) (modelAsset->fileFormat == MODEL_FILE_FORMAT_V1))) {
-        modelAsset->palettes16 = (s32) header + header->offsets[modelAsset->numNodes + sp40 + modelAsset->numNodes + 2];
+        modelAsset->palettes16 =
+            (s32) header + header->offsets[modelAsset->numNodes + numTextures + modelAsset->numNodes + 2];
         modelAsset->palettes256 =
-            (s32) header + header->offsets[modelAsset->numNodes + sp40 + modelAsset->numNodes + 3];
+            (s32) header + header->offsets[modelAsset->numNodes + numTextures + modelAsset->numNodes + 3];
     }
 
     if ((u8) (modelAsset->fileFormat == MODEL_FILE_FORMAT_V1)) {
@@ -134,8 +136,9 @@ void model_asset_build_from_file(ModelAsset *modelAsset) {
             modelAsset->nodeHierarchy = NULL;
         }
     } else {
-        if (header->offsets[modelAsset->numNodes + modelAsset->unk_B4 + 1] != -1) {
-            modelAsset->nodeHierarchy = (s32) header + header->offsets[modelAsset->numNodes + modelAsset->unk_B4 + 1];
+        if (header->offsets[modelAsset->numNodes + modelAsset->numTextures + 1] != -1) {
+            modelAsset->nodeHierarchy =
+                (s32) header + header->offsets[modelAsset->numNodes + modelAsset->numTextures + 1];
         } else {
             modelAsset->nodeHierarchy = NULL;
         }
@@ -156,11 +159,11 @@ void model_asset_build_legacy_batches(ModelAsset *modelAsset, ModelFileHeader *h
         numVertices = ((ModelNodeFileEntry *) ((s32) header + header->offsets[i]))->numVertices;
         numTriangles = ((ModelNodeFileEntry *) ((s32) header + header->offsets[i]))->numTriangles;
 
-        modelAsset->unk_CC[i].texIndex = header->offsets[modelAsset->numNodes + i];
-        modelAsset->unk_CC[i].vertIndex = 0;
-        modelAsset->unk_CC[i].triOffset = 0;
-        modelAsset->unk_CC[i].numVertices = numVertices;
-        modelAsset->unk_CC[i].numTriangles = numTriangles;
+        modelAsset->legacyBatches[i].texIndex = header->offsets[modelAsset->numNodes + i];
+        modelAsset->legacyBatches[i].vertIndex = 0;
+        modelAsset->legacyBatches[i].triOffset = 0;
+        modelAsset->legacyBatches[i].numVertices = numVertices;
+        modelAsset->legacyBatches[i].numTriangles = numTriangles;
     }
 }
 
@@ -200,7 +203,7 @@ void func_8000C18C(s32 *new_data, s32 *old_data, void *priv) {
 }
 
 void func_8000C1C4(KModel *arg0, s32 arg1) {
-    ModelNodeAsset *v0 = &arg0->model.unk_04->nodes[arg1];
+    ModelNodeAsset *v0 = &arg0->model.modelAsset->nodes[arg1];
     u32 numParts = v0->numBatches;
     u32 numVertices = v0->numVertices;
     u32 unk_04 = v0->numTriangles;
@@ -211,20 +214,20 @@ void func_8000C1C4(KModel *arg0, s32 arg1) {
     arg0->unk_A64 = size;
 }
 
-s32 func_8000C258(u16 *arg0, u32 arg1, s32 arg2) {
+s32 find_min_triangle_vertex_index(u16 *triArray, u32 minIndex, s32 numTriangles) {
     u32 i;
 
-    for (i = 0; i < arg2 * 3; i++) {
-        if (arg1 > arg0[i]) {
-            arg1 = arg0[i];
+    for (i = 0; i < numTriangles * 3; i++) {
+        if (minIndex > triArray[i]) {
+            minIndex = triArray[i];
         }
-        if (arg0[i] * 0) {} // @fake
+        if (triArray[i] * 0) {} // @fake
     }
 
-    return arg1;
+    return minIndex;
 }
 
-void func_8000C328(Vec3su *arg0, u32 arg1, u32 arg2, s32 *arg3, s32 *arg4) {
+void calculate_subbatch_vertex_window(Vec3su *arg0, u32 arg1, u32 arg2, s32 *arg3, s32 *arg4) {
     u32 v0;
 
     *arg3 = *arg4 = 0;
@@ -252,20 +255,20 @@ void func_8000C328(Vec3su *arg0, u32 arg1, u32 arg2, s32 *arg3, s32 *arg4) {
     *arg4 = v0 - arg1 + 1;
 }
 
-void func_8000C3CC(Model *arg0, s32 nodeId, u8 arg2, Unk8000C3CCArg3 *arg3) {
-    u32 partIndex;
+void model_build_node_batches(Model *model, s32 nodeId, u8 skip_palette_upload, ModelRenderSettings *renderSettings) {
+    u32 batchIndex;
     s32 numVerts;
     BatchTriangle *triangle;
     u32 numParts;
     Gfx *gfx;
     s32 partLastBatch;
     s32 partFirstBatch;
-    s32 sp940;
-    s32 sp93C;
+    s32 subbatch_vertex_count;
+    s32 subbatch_triangle_count;
     s32 numTriangles;
     BatchInfo *batchInfos;
-    u8 sp933;
-    u8 sp932;
+    u8 using_untextured_pipeline;
+    u8 using_textured_pipeline;
     s32 v02;
     Vec3su *triangles;
     s32 padding[4];
@@ -275,104 +278,106 @@ void func_8000C3CC(Model *arg0, s32 nodeId, u8 arg2, Unk8000C3CCArg3 *arg3) {
     s32 vertIndex;
     Vec3su *triPtr;
     s32 size;
-    BatchTriangle *triangleBuffer[100];
-    s32 numTriBuffer[100];
-    s32 numVertBuffer[100];
+    BatchTriangle *runtime_triangles[100];
+    s32 runtime_triangle_counts[100];
+    s32 runtime_vertex_counts[100];
     u32 numBatches;
-    Vtx *vertexBuffer[100];
+    Vtx *runtime_vertices[100];
     s32 sp2B8;
     u32 i;
     BatchAsset *nodeBatch;
     TextureAsset *tex;
-    s32 sp11C[100];
+    s32 batch_first_subbatch[100];
     Batch *batchArray;
     s32 padding3[2];
     u8 *pal16;
     u8 *pal256;
     ModelNodeAsset *node;
 
-    sp933 = FALSE;
-    sp932 = FALSE;
+    using_untextured_pipeline = FALSE;
+    using_textured_pipeline = FALSE;
     numBatches = 0;
 
-    node = &arg0->unk_04->nodes[nodeId];
+    node = &model->modelAsset->nodes[nodeId];
     numParts = node->numBatches;
     numVerts = node->numVertices;
     vertices = node->vertices;
     triangles = node->triangles;
 
-    if (arg0->unk_318) {
+    if (model->unk_318) {
         for (i = 0; i < numVerts; i++) {
             vertices[i].v.tc[0] >>= 1;
             vertices[i].v.tc[1] >>= 1;
         }
     }
 
-    for (partIndex = 0; partIndex < numParts; partIndex++) {
-        nodeBatch = node->batchAssets + partIndex;
+    for (batchIndex = 0; batchIndex < numParts; batchIndex++) {
+        nodeBatch = node->batchAssets + batchIndex;
         numTriangles = nodeBatch->numTriangles;
         vertIndex = nodeBatch->vertIndex;
         numVerts = nodeBatch->numVertices;
         triPtr = triangles;
         triPtr += nodeBatch->triOffset;
 
-        sp11C[partIndex] = numBatches;
+        batch_first_subbatch[batchIndex] = numBatches;
 
         if (numVerts <= 16U) {
-            triangle = triangleBuffer[numBatches] = mem_alloc(numTriangles * sizeof(BatchTriangle), "kmd.c", 421);
+            triangle = runtime_triangles[numBatches] = mem_alloc(numTriangles * sizeof(BatchTriangle), "kmd.c", 421);
             for (i = 0; i < numTriangles; triPtr++, i++) {
                 triangle[i].vi0 = triPtr->vi[0] - vertIndex;
                 triangle[i].vi1 = triPtr->vi[1] - vertIndex;
                 triangle[i].vi2 = triPtr->vi[2] - vertIndex;
                 triangle[i].d = 0;
             }
-            numTriBuffer[numBatches] = numTriangles;
-            vertexBuffer[numBatches] = vertices;
-            vertexBuffer[numBatches] += vertIndex;
-            numVertBuffer[numBatches] = numVerts;
+            runtime_triangle_counts[numBatches] = numTriangles;
+            runtime_vertices[numBatches] = vertices;
+            runtime_vertices[numBatches] += vertIndex;
+            runtime_vertex_counts[numBatches] = numVerts;
             numBatches++;
         } else {
             do {
-                vertIndex = func_8000C258(triPtr, vertIndex, numTriangles);
-                vertexBuffer[numBatches] = vertices;
-                vertexBuffer[numBatches] += vertIndex;
-                func_8000C328(triPtr, vertIndex, numTriangles, &sp93C, &sp940);
-                numTriangles -= sp93C;
-                numTriBuffer[numBatches] = sp93C;
-                numVertBuffer[numBatches] = sp940;
-                triangle = triangleBuffer[numBatches] = mem_alloc(sp93C * sizeof(BatchTriangle), "kmd.c", 449);
+                vertIndex = find_min_triangle_vertex_index(triPtr, vertIndex, numTriangles);
+                runtime_vertices[numBatches] = vertices;
+                runtime_vertices[numBatches] += vertIndex;
+                calculate_subbatch_vertex_window(triPtr, vertIndex, numTriangles, &subbatch_triangle_count,
+                                                 &subbatch_vertex_count);
+                numTriangles -= subbatch_triangle_count;
+                runtime_triangle_counts[numBatches] = subbatch_triangle_count;
+                runtime_vertex_counts[numBatches] = subbatch_vertex_count;
+                triangle = runtime_triangles[numBatches] =
+                    mem_alloc(subbatch_triangle_count * sizeof(BatchTriangle), "kmd.c", 449);
                 numBatches++;
 
-                for (i = 0; i < sp93C; i++, triPtr++) {
+                for (i = 0; i < subbatch_triangle_count; i++, triPtr++) {
                     triangle[i].vi0 = triPtr->vi[0] - vertIndex;
                     triangle[i].vi1 = triPtr->vi[1] - vertIndex;
                     triangle[i].vi2 = triPtr->vi[2] - vertIndex;
                     triangle[i].d = 0;
                 }
-                vertIndex += sp940;
+                vertIndex += subbatch_vertex_count;
             } while (numTriangles != 0);
         }
     }
 
-    batchArray = arg0->batches[nodeId] = (Batch *) mem_alloc(numBatches * sizeof(Batch), "kmd.c", 469);
-    batchInfos = arg0->batchInfos[nodeId] = (BatchInfo *) mem_alloc(numBatches * sizeof(BatchInfo), "kmd.c", 470);
+    batchArray = model->batches[nodeId] = (Batch *) mem_alloc(numBatches * sizeof(Batch), "kmd.c", 469);
+    batchInfos = model->batchInfos[nodeId] = (BatchInfo *) mem_alloc(numBatches * sizeof(BatchInfo), "kmd.c", 470);
 
     for (i = 0; i < numBatches; i++) {
         batchArray[i].context = NULL;
-        batchArray[i].vertices = vertexBuffer[i];
-        batchArray[i].triangles = triangleBuffer[i];
-        sp2B8 += numTriBuffer[i] * 4; // ??
+        batchArray[i].vertices = runtime_vertices[i];
+        batchArray[i].triangles = runtime_triangles[i];
+        sp2B8 += runtime_triangle_counts[i] * 4; // ??
         batchArray[i].info = batchInfos + i;
 
         mem_fill(batchInfos + i, 0, sizeof(BatchInfo));
-        (batchInfos + i)->header.triMask = arg3->triMask;
+        (batchInfos + i)->header.triMask = renderSettings->triMask;
         (batchInfos + i)->header.unk_04 = 0;
-        (batchInfos + i)->header.vtxNum = numVertBuffer[i];
+        (batchInfos + i)->header.vtxNum = runtime_vertex_counts[i];
         (batchInfos + i)->header.vtxOffset = 0;
-        (batchInfos + i)->header.numTriangles = numTriBuffer[i];
+        (batchInfos + i)->header.numTriangles = runtime_triangle_counts[i];
         (batchInfos + i)->header.unk_0B = (i != 0) ? 1 : 0;
         (batchInfos + i)->header.texGfx = NULL;
-        gtStateSetOthermode(&(batchInfos + i)->header.otherMode, GT_RENDERMODE, arg3->renderMode);
+        gtStateSetOthermode(&(batchInfos + i)->header.otherMode, GT_RENDERMODE, renderSettings->renderMode);
         gtStateSetOthermode(&(batchInfos + i)->header.otherMode, GT_CYCLETYPE, G_CYC_1CYCLE);
         gtStateSetOthermode(&(batchInfos + i)->header.otherMode, GT_TEXTFILT, G_TF_BILERP);
         gtStateSetOthermode(&(batchInfos + i)->header.otherMode, GT_TEXTCONV, G_TC_FILT);
@@ -380,35 +385,36 @@ void func_8000C3CC(Model *arg0, s32 nodeId, u8 arg2, Unk8000C3CCArg3 *arg3) {
         gtStateSetOthermode(&(batchInfos + i)->header.otherMode, GT_TEXTLUT, G_TT_RGBA16);
         gtStateSetOthermode(&(batchInfos + i)->header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
     }
-    arg0->batchCounts[nodeId] = numBatches;
+    model->batchCounts[nodeId] = numBatches;
 
     size = 22 * sizeof(Gfx) * numParts; // TODO: make constant
     gfx = (Gfx *) mem_alloc(size, "kmd.c", 501);
     mem_fill(gfx, 0, size);
-    for (partIndex = 0; partIndex < numParts; partIndex++) {
-        nodeBatch = node->batchAssets + partIndex;
-        partFirstBatch = sp11C[partIndex];
-        partLastBatch = (partIndex + 1 < numParts) ? sp11C[partIndex + 1] : numBatches;
+    for (batchIndex = 0; batchIndex < numParts; batchIndex++) {
+        nodeBatch = node->batchAssets + batchIndex;
+        partFirstBatch = batch_first_subbatch[batchIndex];
+        partLastBatch = (batchIndex + 1 < numParts) ? batch_first_subbatch[batchIndex + 1] : numBatches;
 
         batchArray[partFirstBatch].info->header.texGfx = gfx;
-        if (partIndex == 0 && !(arg3->flags & 1)) {
-            gDPSetPrimColor(gfx++, 0, 0, arg3->primColor.r, arg3->primColor.g, arg3->primColor.b, arg3->primColor.a);
+        if (batchIndex == 0 && !(renderSettings->flags & 1)) {
+            gDPSetPrimColor(gfx++, 0, 0, renderSettings->primColor.r, renderSettings->primColor.g,
+                            renderSettings->primColor.b, renderSettings->primColor.a);
         }
-        if (!sp933 && !((u8) (nodeBatch->texIndex >= 0))) {
+        if (!using_untextured_pipeline && !((u8) (nodeBatch->texIndex >= 0))) {
             gDPPipeSync(gfx++);
             gDPSetCombineMode(gfx++, G_CC_SHADE, G_CC_SHADE);
-            sp933 = TRUE;
-            sp932 = FALSE;
-        } else if (!sp932 && (u8) (nodeBatch->texIndex >= 0)) {
+            using_untextured_pipeline = TRUE;
+            using_textured_pipeline = FALSE;
+        } else if (!using_textured_pipeline && (u8) (nodeBatch->texIndex >= 0)) {
             gDPPipeSync(gfx++);
-            gfx->words.w0 = arg3->combineMode.words.w0;
-            gfx->words.w1 = arg3->combineMode.words.w1;
+            gfx->words.w0 = renderSettings->combineMode.words.w0;
+            gfx->words.w1 = renderSettings->combineMode.words.w1;
             gfx++;
-            sp933 = FALSE;
-            sp932 = TRUE;
+            using_untextured_pipeline = FALSE;
+            using_textured_pipeline = TRUE;
         }
 
-        if (sp932) {
+        if (using_textured_pipeline) {
             for (i = partFirstBatch; i < partLastBatch; i++) {
                 batchArray[i].info->header.triMask |= G_RDP_TRI_TXTR_MASK;
             }
@@ -422,8 +428,8 @@ void func_8000C3CC(Model *arg0, s32 nodeId, u8 arg2, Unk8000C3CCArg3 *arg3) {
 
             tex = nodeBatch->texture;
             if (tex->format == 4) {
-                if (!arg2) {
-                    pal16 = arg0->unk_04->palettes16 + tex->palIndex * 0x20;
+                if (!skip_palette_upload) {
+                    pal16 = model->modelAsset->palettes16 + tex->palIndex * 0x20;
                     pal16[1] &= ~1;
                     gDPLoadTLUT_pal16(gfx++, 0, VIRTUAL_TO_PHYSICAL(pal16));
                 }
@@ -431,8 +437,8 @@ void func_8000C3CC(Model *arg0, s32 nodeId, u8 arg2, Unk8000C3CCArg3 *arg3) {
                                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                                        G_TX_NOLOD, G_TX_NOLOD);
             } else {
-                if (!arg2) {
-                    pal256 = arg0->unk_04->palettes256 + tex->palIndex * 0x200;
+                if (!skip_palette_upload) {
+                    pal256 = model->modelAsset->palettes256 + tex->palIndex * 0x200;
                     pal256[1] &= ~1;
                     gDPLoadTLUT_pal256(gfx++, VIRTUAL_TO_PHYSICAL(pal256));
                 }
@@ -473,7 +479,7 @@ void func_8000D11C(KModel *arg0, s32 arg1, u8 arg2) {
     sp12B = FALSE;
     sp12A = FALSE;
     s3 = arg0->model.dlist[arg1];
-    v0 = &arg0->model.unk_04->nodes[arg1];
+    v0 = &arg0->model.modelAsset->nodes[arg1];
     sp148 = v0->numBatches;
     fp = v0->vertices;
     sp120 = v0->triangles;
@@ -508,7 +514,7 @@ void func_8000D11C(KModel *arg0, s32 arg1, u8 arg2) {
             a2 = a1->texture;
             if (a2->format == 4) {
                 if (!arg2) {
-                    pal16 = arg0->model.unk_04->palettes16 + a2->palIndex * 0x20;
+                    pal16 = arg0->model.modelAsset->palettes16 + a2->palIndex * 0x20;
                     gDPLoadTLUT_pal16(s3++, 0, VIRTUAL_TO_PHYSICAL(pal16));
                 }
                 gDPLoadTextureBlock_4b(s3++, a2->data, G_IM_FMT_CI, a2->width, a2->height, 0,
@@ -516,7 +522,7 @@ void func_8000D11C(KModel *arg0, s32 arg1, u8 arg2) {
                                        G_TX_NOLOD, G_TX_NOLOD);
             } else {
                 if (!arg2) {
-                    pal256 = arg0->model.unk_04->palettes256 + a2->palIndex * 0x200;
+                    pal256 = arg0->model.modelAsset->palettes256 + a2->palIndex * 0x200;
                     gDPLoadTLUT_pal256(s3++, VIRTUAL_TO_PHYSICAL(pal256));
                 }
                 gDPLoadTextureBlock(s3++, a2->data, G_IM_FMT_CI, G_IM_SIZ_8b, a2->width, a2->height, 0,
@@ -534,10 +540,10 @@ void func_8000D11C(KModel *arg0, s32 arg1, u8 arg2) {
             }
         } else {
             do {
-                s2 = func_8000C258(s1, s2, s6);
+                s2 = find_min_triangle_vertex_index(s1, s2, s6);
                 s7 = fp;
                 s7 += s2;
-                func_8000C328(s1, s2, s6, &sp134, &sp138);
+                calculate_subbatch_vertex_window(s1, s2, s6, &sp134, &sp138);
                 gSPVertex(s3++, s7, sp138, 0);
                 s6 -= sp134;
                 for (s0 = 0; s0 < sp134; s0++) {
@@ -558,7 +564,7 @@ void func_8000DAB0(KModel *arg0, ModelAsset *arg1, char *name, u8 arg3, s32 arg4
     char sp30[16];
     s32 v0;
 
-    arg0->model.unk_04 = arg1;
+    arg0->model.modelAsset = arg1;
     arg0->model.numNodes = arg1->numNodes;
 
     for (i = 0; i < arg0->model.numNodes; i++) {
@@ -566,7 +572,7 @@ void func_8000DAB0(KModel *arg0, ModelAsset *arg1, char *name, u8 arg3, s32 arg4
         func_8000D11C(arg0, i, arg3);
     }
 
-    arg0->model.nodeHierarchy = v0 = arg0->model.unk_04->nodeHierarchy;
+    arg0->model.nodeHierarchy = v0 = arg0->model.modelAsset->nodeHierarchy;
 
     if (v0 != 0) {
         str_copy(sp30, name);
@@ -581,56 +587,57 @@ void func_8000DAB0(KModel *arg0, ModelAsset *arg1, char *name, u8 arg3, s32 arg4
     }
 }
 
-s32 func_8000DBC4(Model *arg0, s32 arg1, s16 *arg2) {
-    ModelNodeAsset *a3;
-    s32 t4;
+s32 model_build_vertex_position_groups(Model *model, s32 node_id, s16 *vertex_group_indices) {
+    ModelNodeAsset *node;
+    s32 num_vertex_groups;
     u32 i;
     u32 j;
-    u32 t5;
-    Vtx *t3;
-    UnkSamSub *sub;
-    s16 a2;
+    u32 num_vertices;
+    Vtx *node_vertices;
+    VertexPositionGroup *vertex_position_groups;
+    s16 group_index;
 
-    t4 = 0;
-    a3 = &arg0->unk_04->nodes[arg1];
-    t5 = a3->numVertices;
+    num_vertex_groups = 0;
+    node = &model->modelAsset->nodes[node_id];
+    num_vertices = node->numVertices;
 
-    for (i = 0; i < t5; i++) {
-        arg2[i] = i;
+    for (i = 0; i < num_vertices; i++) {
+        vertex_group_indices[i] = i;
     }
 
-    t3 = a3->vertices;
+    node_vertices = node->vertices;
 
-    for (i = 0; i < t5 - 1; i++) {
-        if (arg2[i] == i) {
-            t4++;
-            for (j = 1; j < t5; j++) {
-                if (t3[i].v.ob[0] == t3[j].v.ob[0] && t3[i].v.ob[1] == t3[j].v.ob[1] &&
-                    t3[i].v.ob[2] == t3[j].v.ob[2]) {
-                    arg2[j] = t4 - 1;
+    for (i = 0; i < num_vertices - 1; i++) {
+        if (vertex_group_indices[i] == i) {
+            num_vertex_groups++;
+            for (j = 1; j < num_vertices; j++) {
+                if (node_vertices[i].v.ob[0] == node_vertices[j].v.ob[0] &&
+                    node_vertices[i].v.ob[1] == node_vertices[j].v.ob[1] &&
+                    node_vertices[i].v.ob[2] == node_vertices[j].v.ob[2]) {
+                    vertex_group_indices[j] = num_vertex_groups - 1;
                 }
             }
         }
     }
 
-    sub = mem_alloc(t4 * sizeof(UnkSamSub), "kmd.c", 761);
-    arg0->unk_324[arg1] = sub;
-    arg0->unk_394[arg1] = t4;
+    vertex_position_groups = mem_alloc(num_vertex_groups * sizeof(VertexPositionGroup), "kmd.c", 761);
+    model->vertex_position_groups[node_id] = vertex_position_groups;
+    model->num_vertex_position_groups[node_id] = num_vertex_groups;
 
-    for (i = 0; i < t4; i++) {
-        a2 = 0;
-        for (j = 0; j < t5; j++) {
-            if (arg2[j] == i) {
-                sub[i].unk_04[a2].r = t3[j].v.cn[0];
-                sub[i].unk_04[a2].g = t3[j].v.cn[1];
-                sub[i].unk_04[a2].b = t3[j].v.cn[2];
-                sub[i].unk_44[a2++] = j;
-                sub[i].unk_44[a2] = -1;
+    for (i = 0; i < num_vertex_groups; i++) {
+        group_index = 0;
+        for (j = 0; j < num_vertices; j++) {
+            if (vertex_group_indices[j] == i) {
+                vertex_position_groups[i].original_colors[group_index].r = node_vertices[j].v.cn[0];
+                vertex_position_groups[i].original_colors[group_index].g = node_vertices[j].v.cn[1];
+                vertex_position_groups[i].original_colors[group_index].b = node_vertices[j].v.cn[2];
+                vertex_position_groups[i].vertex_indices[group_index++] = j;
+                vertex_position_groups[i].vertex_indices[group_index] = -1;
             }
         }
     }
 
-    return t4;
+    return num_vertex_groups;
 }
 
 void func_8000DF5C(f32 *arg0) {
@@ -666,187 +673,187 @@ s32 func_8000DFF0(u32 arg0, u32 arg1, u16 *arg2, Vec3f *arg3, u32 arg4, u16 *arg
     return FALSE;
 }
 
-void func_8000E0D8(Model *arg0) {
+void model_build_vertex_normals(Model *model) {
     u32 i;
-    u32 sp110;
+    u32 group_index;
     u32 s0;
     u32 s1;
-    ModelNodeAsset *s6;
-    Vtx *s00;
-    Vec3su *s4;
+    ModelNodeAsset *node;
+    Vtx *vertices;
+    Vec3su *triangles;
     u16 j;
     u16 k;
     u16 l;
-    Vec3s *vec;
-    UnkSamSub *sub;
-    Vec3f *spE8;
-    Vec3f *fp;
+    Vec3s *packed_normal;
+    VertexPositionGroup *vertex_groups;
+    Vec3f *accumulated_normals;
+    Vec3f *face_normals;
     s32 padding3[2];
     Vec3f *vec2;
     f32 x, y, z;
-    s16 spCA;
-    s16 *spC4;
+    s16 num_vertex_groups;
+    s16 *vertex_group_map;
     Vec3s spBC;
     s32 padding2;
-    u16 s5;
+    u16 num_triangles;
     s16 temp;
     f32 fv0;
     Vtx *v0;
     Vtx *v1;
     Vtx *a1;
-    f32 sp98[3];
+    f32 face_normal[3];
 
     s0 = 0;
     s1 = 0;
-    for (i = 0; i < arg0->numNodes; i++) {
-        s6 = &arg0->unk_04->nodes[i];
-        if (s0 < s6->numVertices) {
-            s0 = s6->numVertices;
+    for (i = 0; i < model->numNodes; i++) {
+        node = &model->modelAsset->nodes[i];
+        if (s0 < node->numVertices) {
+            s0 = node->numVertices;
         }
-        if (s1 < s6->numTriangles) {
-            s1 = s6->numTriangles;
+        if (s1 < node->numTriangles) {
+            s1 = node->numTriangles;
         }
     }
 
-    spE8 = mem_alloc(s0 * 12, "kmd.c", 854);
-    fp = mem_alloc(s1 * 12, "kmd.c", 855);
-    spC4 = mem_alloc(s0 * 2, "kmd.c", 856);
-    mem_fill(spE8, 0, s0 * 12);
-    mem_fill(fp, 0, s1 * 12);
+    accumulated_normals = mem_alloc(s0 * 12, "kmd.c", 854);
+    face_normals = mem_alloc(s1 * 12, "kmd.c", 855);
+    vertex_group_map = mem_alloc(s0 * 2, "kmd.c", 856);
+    mem_fill(accumulated_normals, 0, s0 * 12);
+    mem_fill(face_normals, 0, s1 * 12);
 
-    for (i = 0; i < arg0->numNodes; i++) {
-        spCA = func_8000DBC4(arg0, i, spC4);
-        s6 = &arg0->unk_04->nodes[i];
-        s5 = s6->numTriangles;
-        s00 = s6->vertices;
-        s4 = s6->triangles;
+    for (i = 0; i < model->numNodes; i++) {
+        num_vertex_groups = model_build_vertex_position_groups(model, i, vertex_group_map);
+        node = &model->modelAsset->nodes[i];
+        num_triangles = node->numTriangles;
+        vertices = node->vertices;
+        triangles = node->triangles;
 
-        for (j = 0; j < s5; j++, s4++) {
-            a1 = s00;
-            a1 += s4->vi[0];
-            v0 = s00;
-            v0 += s4->vi[1];
-            v1 = s00;
-            v1 += s4->vi[2];
+        for (j = 0; j < num_triangles; j++, triangles++) {
+            a1 = vertices;
+            a1 += triangles->vi[0];
+            v0 = vertices;
+            v0 += triangles->vi[1];
+            v1 = vertices;
+            v1 += triangles->vi[2];
 
-            sp98[0] = a1->v.ob[1] * (v0->v.ob[2] - v1->v.ob[2]) + v0->v.ob[1] * (v1->v.ob[2] - a1->v.ob[2]) +
-                      v1->v.ob[1] * (a1->v.ob[2] - v0->v.ob[2]);
-            sp98[1] = a1->v.ob[2] * (v0->v.ob[0] - v1->v.ob[0]) + v0->v.ob[2] * (v1->v.ob[0] - a1->v.ob[0]) +
-                      v1->v.ob[2] * (a1->v.ob[0] - v0->v.ob[0]);
-            sp98[2] = a1->v.ob[0] * (v0->v.ob[1] - v1->v.ob[1]) + v0->v.ob[0] * (v1->v.ob[1] - a1->v.ob[1]) +
-                      v1->v.ob[0] * (a1->v.ob[1] - v0->v.ob[1]);
-            func_8000DF5C(sp98);
-            fp[j].x = sp98[0];
-            fp[j].y = sp98[1];
-            fp[j].z = sp98[2];
+            face_normal[0] = a1->v.ob[1] * (v0->v.ob[2] - v1->v.ob[2]) + v0->v.ob[1] * (v1->v.ob[2] - a1->v.ob[2]) +
+                             v1->v.ob[1] * (a1->v.ob[2] - v0->v.ob[2]);
+            face_normal[1] = a1->v.ob[2] * (v0->v.ob[0] - v1->v.ob[0]) + v0->v.ob[2] * (v1->v.ob[0] - a1->v.ob[0]) +
+                             v1->v.ob[2] * (a1->v.ob[0] - v0->v.ob[0]);
+            face_normal[2] = a1->v.ob[0] * (v0->v.ob[1] - v1->v.ob[1]) + v0->v.ob[0] * (v1->v.ob[1] - a1->v.ob[1]) +
+                             v1->v.ob[0] * (a1->v.ob[1] - v0->v.ob[1]);
+            func_8000DF5C(face_normal);
+            face_normals[j].x = face_normal[0];
+            face_normals[j].y = face_normal[1];
+            face_normals[j].z = face_normal[2];
         }
 
-        for (k = 0; k < spCA; k++) {
-            s4 = s6->triangles;
-            for (j = 0; j < s5; j++, s4++) {
-                vec2 = fp;
+        for (k = 0; k < num_vertex_groups; k++) {
+            triangles = node->triangles;
+            for (j = 0; j < num_triangles; j++, triangles++) {
+                vec2 = face_normals;
                 vec2 += j;
                 for (l = 0; l < 3; l++) {
-                    if (k == spC4[s4->vi[l]] && func_8000DFF0(k, j, s6->triangles, fp, s5, spC4) == 0) {
-                        spE8[k].x += vec2->x;
-                        spE8[k].y += vec2->y;
-                        spE8[k].z += vec2->z;
+                    if (k == vertex_group_map[triangles->vi[l]] &&
+                        func_8000DFF0(k, j, node->triangles, face_normals, num_triangles, vertex_group_map) == 0) {
+                        accumulated_normals[k].x += vec2->x;
+                        accumulated_normals[k].y += vec2->y;
+                        accumulated_normals[k].z += vec2->z;
                     }
                 }
             }
         }
 
-        sub = arg0->unk_324[i];
-        vec = &spBC;
-        for (sp110 = 0; sp110 < spCA; sp110++) {
-            x = spE8[sp110].x;
-            y = spE8[sp110].y;
-            z = spE8[sp110].z;
+        vertex_groups = model->vertex_position_groups[i];
+        packed_normal = &spBC;
+        for (group_index = 0; group_index < num_vertex_groups; group_index++) {
+            x = accumulated_normals[group_index].x;
+            y = accumulated_normals[group_index].y;
+            z = accumulated_normals[group_index].z;
             fv0 = sqrtf(SQ(x) + SQ(y) + SQ(z));
             if (fv0 != 0) {
-                spE8[sp110].x /= fv0;
-                spE8[sp110].y /= fv0;
-                spE8[sp110].z /= fv0;
+                accumulated_normals[group_index].x /= fv0;
+                accumulated_normals[group_index].y /= fv0;
+                accumulated_normals[group_index].z /= fv0;
             } else {
-                spE8[sp110].x = spE8[sp110].y = spE8[sp110].z = 0.0;
+                accumulated_normals[group_index].x = accumulated_normals[group_index].y =
+                    accumulated_normals[group_index].z = 0.0;
             }
 
-            vec->x = temp =
-                ((spE8[sp110].x * 128.0f) >= 0.0) ? ((spE8[sp110].x * 128.0f) + 0.5) : ((spE8[sp110].x * 128.0f) - 0.5);
+            packed_normal->x = temp = ROUND(accumulated_normals[group_index].x * 128.0f);
             if (temp > 127) {
-                vec->x = 127;
+                packed_normal->x = 127;
             }
-            vec->y = temp =
-                ((spE8[sp110].y * 128.0f) >= 0.0) ? ((spE8[sp110].y * 128.0f) + 0.5) : ((spE8[sp110].y * 128.0f) - 0.5);
+            packed_normal->y = temp = ROUND(accumulated_normals[group_index].y * 128.0f);
             if (temp > 127) {
-                vec->y = 127;
+                packed_normal->y = 127;
             }
-            vec->z = temp =
-                ((spE8[sp110].z * 128.0f) >= 0.0) ? ((spE8[sp110].z * 128.0f) + 0.5) : ((spE8[sp110].z * 128.0f) - 0.5);
+            packed_normal->z = temp = ROUND(accumulated_normals[group_index].z * 128.0f);
             if (temp > 127) {
-                vec->z = 127;
+                packed_normal->z = 127;
             }
 
-            sub[sp110].unk_00 = vec->x;
-            sub[sp110].unk_01 = vec->y;
-            sub[sp110].unk_02 = vec->z;
+            vertex_groups[group_index].normal_x = packed_normal->x;
+            vertex_groups[group_index].normal_y = packed_normal->y;
+            vertex_groups[group_index].normal_z = packed_normal->z;
         }
     }
 
-    mem_free(spE8);
-    mem_free(fp);
-    mem_free(spC4);
+    mem_free(accumulated_normals);
+    mem_free(face_normals);
+    mem_free(vertex_group_map);
 }
 
-void func_8000E73C(Model *arg0, ModelAsset *arg1, char *name, u8 arg3, Unk8000C3CCArg3 *arg4, s32 arg5) {
+void model_init_from_asset(Model *model, ModelAsset *model_asset, char *name, u8 skip_palette_upload,
+                           ModelRenderSettings *render_settings, s32 asset_context) {
     u32 i;
-    s32 v1;
+    s32 animation_asset_id;
     s32 j;
     s32 padding2;
-    char sp48[16];
+    char animation_name[16];
     char padding[16];
 
-    arg0->unk_04 = arg1;
-    arg0->numNodes = arg1->numNodes;
-    arg0->unk_318 = arg1->unk_C8;
-    arg0->unk_320 = 0;
-    arg0->unk_321 = 0;
-    arg0->unk_322 = 0;
+    model->modelAsset = model_asset;
+    model->numNodes = model_asset->numNodes;
+    model->unk_318 = model_asset->unk_C8;
+    model->unk_320 = 0;
+    model->unk_321 = 0;
+    model->unk_322 = 0;
 
-    for (i = 0; i < arg0->numNodes; i++) {
-        func_8000C3CC(arg0, i, arg3, arg4);
+    for (i = 0; i < model->numNodes; i++) {
+        model_build_node_batches(model, i, skip_palette_upload, render_settings);
     }
 
-    if (arg0->unk_04->nodeHierarchy != NULL) {
-        arg0->nodeHierarchy = mem_alloc(arg0->numNodes * 0x10 + 0x10, "kmd.c", 983);
-        memcpy(arg0->nodeHierarchy, arg0->unk_04->nodeHierarchy, arg0->numNodes * 0x10 + 0x10);
+    if (model->modelAsset->nodeHierarchy != NULL) {
+        model->nodeHierarchy = mem_alloc((model->numNodes + 1) * sizeof(NodeAttachment), "kmd.c", 983);
+        memcpy(model->nodeHierarchy, model->modelAsset->nodeHierarchy, (model->numNodes + 1) * sizeof(NodeAttachment));
     } else {
-        arg0->nodeHierarchy = NULL;
+        model->nodeHierarchy = NULL;
     }
 
-    str_copy(sp48, name);
-    for (j = 0; sp48[j] != '\0' && j < 16;) {
-        if (sp48[j++] == '.') {
-            sp48[j - 1] = '\0';
+    str_copy(animation_name, name);
+    for (j = 0; animation_name[j] != '\0' && j < 16;) {
+        if (animation_name[j++] == '.') {
+            animation_name[j - 1] = '\0';
             break;
         }
     }
 
-    str_concat(sp48, "_anm.anm");
-    v1 = asset_find(sp48, arg5);
+    str_concat(animation_name, "_anm.anm");
+    animation_asset_id = asset_find(animation_name, asset_context);
 
-    if (v1 < 0) {
-        str_copy(sp48, name);
-        sp48[3] = '\0';
-        str_concat(sp48, "_anm.anm");
-        v1 = asset_find(sp48, arg5);
+    if (animation_asset_id < 0) {
+        str_copy(animation_name, name);
+        animation_name[3] = '\0';
+        str_concat(animation_name, "_anm.anm");
+        animation_asset_id = asset_find(animation_name, asset_context);
     }
 
-    if (v1 >= 0) {
-        arg0->animations = D_8005AEB8[gAssets[v1].memory_slot].data;
-        arg0->unk_14C = gAssets[v1].aux_data;
-        heap_set_move_callback(gAssets[v1].memory_slot, func_8000C18C, arg0->unk_14C);
+    if (animation_asset_id >= 0) {
+        model->animations = D_8005AEB8[gAssets[animation_asset_id].memory_slot].data;
+        model->unk_14C = gAssets[animation_asset_id].aux_data;
+        heap_set_move_callback(gAssets[animation_asset_id].memory_slot, func_8000C18C, model->unk_14C);
     } else {
-        arg0->animations = NULL;
+        model->animations = NULL;
     }
 }

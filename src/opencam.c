@@ -240,7 +240,7 @@ void func_8002C9F4(Object *obj) {
     u32 temp1;
     u32 v1;
     u32 a1;
-    UnkKappa *v0;
+    GlobalLighting *v0;
 
     v0 = gGameModes[gCurrentGameMode].unk_18;
     temp1 = gPlayerInput[PLAYER_1].buttons;
@@ -271,20 +271,20 @@ void func_8002C9F4(Object *obj) {
 
         switch (a1) {
             case 0x80:
-                v0->unk_4 = -127;
-                v0->unk_C = 0;
+                v0->lights[0].dir_x = -127;
+                v0->lights[0].dir_z = 0;
                 break;
             case 0x20:
-                v0->unk_4 = 127;
-                v0->unk_C = 0;
+                v0->lights[0].dir_x = 127;
+                v0->lights[0].dir_z = 0;
                 break;
             case 0x10:
-                v0->unk_4 = 0;
-                v0->unk_C = 127;
+                v0->lights[0].dir_x = 0;
+                v0->lights[0].dir_z = 127;
                 break;
             case 0x40:
-                v0->unk_4 = 0;
-                v0->unk_C = -127;
+                v0->lights[0].dir_x = 0;
+                v0->lights[0].dir_z = -127;
                 break;
         }
     }

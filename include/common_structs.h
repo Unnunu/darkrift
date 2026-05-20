@@ -92,16 +92,16 @@ typedef struct DisplayData {
     /* 0x12082 */ char unk_12082[6];
 } DisplayData; // size = 0x12088
 
-typedef struct UnkKappa {
-    /* 0x00 */ ColorRGBA unk_0;
-    /* 0x04 */ s32 unk_4;
-    /* 0x08 */ s32 unk_8;
-    /* 0x0C */ s32 unk_C;
-    /* 0x10 */ ColorRGBA unk_10;
-    /* 0x14 */ s32 unk_14;
-    /* 0x18 */ s32 unk_18;
-    /* 0x1C */ s32 unk_1C;
-} UnkKappa; // size = 0x20
+typedef struct DirectionalLight {
+    /* 0x00 */ ColorRGBA color;
+    /* 0x04 */ s32 dir_x;
+    /* 0x08 */ s32 dir_y;
+    /* 0x0C */ s32 dir_z;
+} DirectionalLight; // size = 0x10
+
+typedef struct GlobalLighting {
+    /* 0x00 */ DirectionalLight lights[2];
+} GlobalLighting; // size = 0x20
 
 typedef struct GameMode {
     /* 0x00 */ void (*fn_run)(void);
@@ -117,8 +117,8 @@ typedef struct GameMode {
     /* 0x13 */ u8 unk_13;
     /* 0x14 */ u16 unk_14;
     /* 0x16 */ u16 unk_16;
-    /* 0x18 */ UnkKappa *unk_18;
-    /* 0x1C */ ColorRGBA unk_1C;
+    /* 0x18 */ GlobalLighting *unk_18;
+    /* 0x1C */ ColorRGBA ambient_color;
 } GameMode; // size = 0x20
 
 typedef struct PlayerInput {
@@ -230,13 +230,13 @@ typedef struct ModelAsset {
     /* 0x0C */ char unk_0C[0xA0];
     /* 0xAC */ s32 rawFileMemSlot;
     /* 0xB0 */ s32 fileFormat;
-    /* 0xB4 */ s32 unk_B4;
+    /* 0xB4 */ s32 numTextures;
     /* 0xB8 */ ModelFileHeader *header;
     /* 0xBC */ char unk_BC[4];
     /* 0xC0 */ u8 *palettes16;
     /* 0xC4 */ u8 *palettes256;
     /* 0xC8 */ u8 unk_C8;
-    /* 0xCC */ BatchAsset unk_CC[0];
+    /* 0xCC */ BatchAsset legacyBatches[0];
 } ModelAsset; // size = 0xCC
 
 typedef struct ModelNodeFileEntry {
@@ -259,14 +259,14 @@ typedef struct ModelNode {
     /* 0x48 */ Gfx *unk_48[4];
 } ModelNode; // size = 0x58
 
-typedef struct UnkSamSub {
-    /* 0x00 */ u8 unk_00;
-    /* 0x01 */ u8 unk_01;
-    /* 0x02 */ u8 unk_02;
+typedef struct VertexPositionGroup {
+    /* 0x00 */ u8 normal_x;
+    /* 0x01 */ u8 normal_y;
+    /* 0x02 */ u8 normal_z;
     /* 0x03 */ u8 unk_03;
-    /* 0x04 */ ColorRGBA unk_04[16];
-    /* 0x44 */ s16 unk_44[16];
-} UnkSamSub; // size = 0x64;
+    /* 0x04 */ ColorRGBA original_colors[16];
+    /* 0x44 */ s16 vertex_indices[16];
+} VertexPositionGroup; // size = 0x64;
 
 typedef union AnimEntry {
     s32 w;
@@ -288,7 +288,7 @@ typedef struct AnimHeader {
 
 typedef struct Model {
     /* 0x000 */ s32 unk_00;
-    /* 0x004 */ ModelAsset *unk_04;
+    /* 0x004 */ ModelAsset *modelAsset;
     /* 0x008 */ char unk_08[0x128 - 8];
     /* 0x128 */ s32 numNodes;
     /* 0x12C */ char unk_12C[0x148 - 0x12C];
@@ -310,8 +310,8 @@ typedef struct Model {
     /* 0x321 */ u8 unk_321;
     /* 0x322 */ u8 unk_322;
     /* 0x323 */ u8 unk_323;
-    /* 0x324 */ UnkSamSub *unk_324[28];
-    /* 0x394 */ u16 unk_394[28];
+    /* 0x324 */ VertexPositionGroup *vertex_position_groups[28];
+    /* 0x394 */ u16 num_vertex_position_groups[28];
     /* 0x3CC */ s32 unk_3CC;
 } Model; // size = 0x3D0
 
@@ -861,13 +861,13 @@ typedef struct HudMessage {
     /* 0x0C */ s32 soundId;
 } HudMessage;
 
-typedef struct Unk8000C3CCArg3 {
+typedef struct ModelRenderSettings {
     /* 0x00 */ Gfx combineMode;
     /* 0x08 */ s32 renderMode;
     /* 0x0C */ s32 triMask;
     /* 0x10 */ ColorRGBA primColor;
     /* 0x14 */ s32 flags;
-} Unk8000C3CCArg3;
+} ModelRenderSettings;
 
 typedef struct UnkTauSub {
     /* 0x00 */ s32 unk_00;

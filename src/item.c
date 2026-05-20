@@ -256,6 +256,7 @@ void obj_update_all(void) {
 #ifdef NON_EQUIVALENT
 void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, Transform *arg3, void (*taskFunc)(Object *)) {
     s16 i;
+    s32 temp;
 
     func_80012A20(arg3, &arg0->transform, -2, -3);
 

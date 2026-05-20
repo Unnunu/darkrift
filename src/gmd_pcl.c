@@ -218,13 +218,13 @@ void func_8001B5B0(char *name, s32 arg1) {
     D_8008160C = gAssets[asset_find(sp48, arg1)].aux_data;
     D_80049CF0 = &D_8008160C->model.dlist;
 
-    sub2 = D_8008160C->model.unk_04->nodes;
+    sub2 = D_8008160C->model.modelAsset->nodes;
     sub1 = sub2->batchAssets;
     a3 = sub1->texture;
     if (a3->format == 4) {
-        D_80081610 = D_8008160C->model.unk_04->palettes16 + a3->palIndex * 0x20; // TODO: type
+        D_80081610 = D_8008160C->model.modelAsset->palettes16 + a3->palIndex * 0x20; // TODO: type
     } else {
-        D_80081610 = D_8008160C->model.unk_04->palettes256 + a3->palIndex * 0x200; // TODO: type
+        D_80081610 = D_8008160C->model.modelAsset->palettes256 + a3->palIndex * 0x200; // TODO: type
     }
 
     D_800815E8 = sp74->unk_00;

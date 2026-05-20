@@ -19,10 +19,10 @@ typedef struct UnkOmicron {
 
 extern s16 D_8004A730[];
 extern s16 D_8004A748[];
-extern UnkKappa D_8004B644;
-extern UnkKappa D_8004B664;
-extern UnkKappa D_8004B764;
-extern UnkKappa D_8004B784;
+extern GlobalLighting D_8004B644;
+extern GlobalLighting D_8004B664;
+extern GlobalLighting D_8004B764;
+extern GlobalLighting D_8004B784;
 extern UnkQwe D_8004B94C[];
 extern PlayerSub5 D_8004C1E8[];
 
@@ -781,15 +781,15 @@ void func_800050FC(u16 arg0, u16 arg1) {
         case DEMITRON:
             if (gBattleSettings[arg0].assetContext) {
                 sp2C = create_worker(func_80004FC0, 0x1000);
-                sp2C->varObj[0] = &D_8004B764.unk_10;
-                sp2C->varObj[1] = &D_8004B644.unk_10;
+                sp2C->varObj[0] = &D_8004B764.lights[1].color;
+                sp2C->varObj[1] = &D_8004B644.lights[1].color;
             }
             break;
         case DEMONICA:
             if (gBattleSettings[arg0].assetContext) {
                 sp2C = create_worker(func_80004FC0, 0x1000);
-                sp2C->varObj[0] = &D_8004B784.unk_10;
-                sp2C->varObj[1] = &D_8004B664.unk_10;
+                sp2C->varObj[0] = &D_8004B784.lights[1].color;
+                sp2C->varObj[1] = &D_8004B664.lights[1].color;
             }
             break;
     }

@@ -81,8 +81,8 @@ Vec4i *D_80080224;
 Object *D_80080228[2];
 
 void func_80006AE0(void) {
-    D_80081274 = gAssets[asset_find("comhit.k5", CONTEXT_ABAB)].aux_data;
-    D_80081278 = gAssets[asset_find("comblock.k5", CONTEXT_ABAB)].aux_data;
+    gComHit = gAssets[asset_find("comhit.k5", CONTEXT_ABAB)].aux_data;
+    gComBlock = gAssets[asset_find("comblock.k5", CONTEXT_ABAB)].aux_data;
 
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
     if (gPlayMode == PLAY_MODE_PRACTICE) {
