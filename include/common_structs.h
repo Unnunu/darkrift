@@ -439,7 +439,7 @@ typedef struct Object {
     /* 0x1FC */ s32 unk_1FC;
     /* 0x200 */ ColorRGBA unk_200;
     /* 0x204 */ ColorRGBA unk_204;
-    /* 0x208 */ struct GlobalObjD *unk_208;
+    /* 0x208 */ struct GlobalObjD *light;
     /* 0x20C */ char unk_20C[4];
     /* 0x210 */ struct Object *nextObject;
     /* 0x214 */ struct Object *prevObject;
@@ -451,18 +451,18 @@ typedef struct TaskContext {
     /* 0x08 */ s16 start_delay;
 } TaskContext; // size = 0xC
 
-typedef struct TransitionDef {
-    /* 0x00 */ s16 index_in_field28;
-    /* 0x02 */ u16 buttons;
+typedef struct TransitionRule {
+    /* 0x00 */ s16 timingIndex;
+    /* 0x02 */ u16 requiredButtons;
     /* 0x04 */ u16 flags;
     /* 0x06 */ u16 unk_06;
-    /* 0x08 */ s16 index_in_field24;
-    /* 0x0A */ s16 stateId;
+    /* 0x08 */ s16 actionIndex;
+    /* 0x0A */ s16 targetStateId;
     /* 0x0C */ u16 button_mask;
     /* 0x0E */ u8 unk_0E[11];
     /* 0x19 */ u8 unk_19;
     /* 0x1A */ char unk_1C[2];
-} TransitionDef; // size = 0x1C
+} TransitionRule; // size = 0x1C
 
 typedef struct ObjectTaskParams {
     /* 0x00 */ union {
@@ -471,7 +471,7 @@ typedef struct ObjectTaskParams {
     };
     /* 0x04 */ union {
         s32 unk_04;
-        TransitionDef *unk_04_ptr;
+        TransitionRule *unk_04_ptr;
     };
     /* 0x08 */ s32 unk_08;
     /* 0x0C */ s32 stateId;
@@ -516,16 +516,16 @@ typedef struct BackgroundLayer {
     /* 0x28 */ struct BackgroundLayer *next;
 } BackgroundLayer; // size = 0x2C
 
-typedef struct ActionState {
+typedef struct PlayerStateDef {
     /* 0x00 */ s16 duration;
     /* 0x02 */ s16 unk_02;
-    /* 0x04 */ s16 unk_04;
-    /* 0x06 */ s16 unk_06;
+    /* 0x04 */ s16 hitboxActiveStart;
+    /* 0x06 */ s16 hitboxActiveEnd;
     /* 0x08 */ s16 animationId;
-    /* 0x0A */ s16 unk_0A;
-    /* 0x0C */ s16 unk_0C;
-    /* 0x0E */ s16 unk_0E;
-    /* 0x10 */ s16 unk_10;
+    /* 0x0A */ s16 hitMove1;
+    /* 0x0C */ s16 hitMove2;
+    /* 0x0E */ s16 hitMove3;
+    /* 0x10 */ s16 hitMove4;
     /* 0x12 */ s16 unk_12;
     /* 0x14 */ s16 unk_14;
     /* 0x16 */ s16 unk_16;
@@ -535,98 +535,98 @@ typedef struct ActionState {
     /* 0x1E */ s16 unk_1E;
     /* 0x20 */ s16 damage;
     /* 0x22 */ s16 soundTableIndex;
-    /* 0x24 */ s16 unk_24;
-    /* 0x26 */ s16 unk_26;
+    /* 0x24 */ s16 bodyHitboxStart;
+    /* 0x26 */ s16 bodyHitboxEnd;
     /* 0x28 */ s16 unk_28;
     /* 0x2A */ s16 unk_2A;
-    /* 0x2C */ s16 unk_2C;
-    /* 0x2E */ s16 unk_2E;
+    /* 0x2C */ s16 cameraStateIndex;
+    /* 0x2E */ s16 cameraAnimIndex;
     /* 0x30 */ s16 unk_30;
     /* 0x32 */ s16 unk_32;
     /* 0x34 */ s32 flags;
-} ActionState; // size = 0x38
+} PlayerStateDef; // size = 0x38
 
-typedef struct PlayerSub5 {
+typedef struct TransitionAction {
     /* 0x00 */ s32 playerFlags;
     /* 0x04 */ ObjFunc animFunc;
-    /* 0x08 */ ObjFunc unk_08;
+    /* 0x08 */ ObjFunc transitionFunc;
     /* 0x0C */ u8 (*checkFunc)(Object *);
     /* 0x10 */ s32 preserveFlags;
-} PlayerSub5;
+} TransitionAction;
 
-typedef struct PlayerSub6Sub4 {
-    /* 0x00 */ Vec4i unk_00[4];
-    /* 0x40 */ s32 unk_40;
-    /* 0x44 */ s32 unk_44;
-    /* 0x48 */ s32 unk_48;
-    /* 0x4C */ s32 unk_4C;
-} PlayerSub6Sub4; // size = 0x50
+typedef struct PositionRingBuffer {
+    /* 0x00 */ Vec4i positions[4];
+    /* 0x40 */ s32 readIndex;
+    /* 0x44 */ s32 writeIndex;
+    /* 0x48 */ s32 bufferMask;
+    /* 0x4C */ s32 count;
+} PositionRingBuffer; // size = 0x50
 
-typedef struct PlayerSub6Sub1 {
-    /* 0x00 */ PlayerSub6Sub4 unk_00;
-    /* 0x50 */ PlayerSub6Sub4 unk_50;
-    /* 0x50 */ Matrix4f unk_A0;
-} PlayerSub6Sub1; // size = 0xE0
+typedef struct SplineInterpolator {
+    /* 0x00 */ PositionRingBuffer inputBuffer;
+    /* 0x50 */ PositionRingBuffer outputBuffer;
+    /* 0x50 */ Matrix4f splineMatrix;
+} SplineInterpolator; // size = 0xE0
 
-typedef struct PlayerSub6Sub2 {
-    /* 0x000 */ BatchInfo unk_00;
-    /* 0x058 */ Vtx unk_58[10];
-    /* 0x0F8 */ s32 unk_F8;
-    /* 0x0FC */ s32 unk_FC;
-    /* 0x100 */ s32 unk_100;
-    /* 0x104 */ BatchTriangle *unk_104;
-    /* 0x108 */ u8 unk_108;
+typedef struct HitboxTrailSegment {
+    /* 0x000 */ BatchInfo batchInfo;
+    /* 0x058 */ Vtx vertices[10];
+    /* 0x0F8 */ s32 lifetime;
+    /* 0x0FC */ s32 vertexCount;
+    /* 0x100 */ s32 triangleCount;
+    /* 0x104 */ BatchTriangle *triangles;
+    /* 0x108 */ u8 isBehind;
     /* 0x10C */ s32 unk_10C;
-} PlayerSub6Sub2; // size = 0x110
+} HitboxTrailSegment; // size = 0x110
 
-typedef struct PlayerSub6 {
-    /* 0x0000 */ ModelInstance *unk_00;
-    /* 0x0004 */ Matrix4f *unk_04;
-    /* 0x0008 */ Matrix4f *unk_08;
-    /* 0x000C */ PlayerSub6Sub1 unk_0C;
-    /* 0x00EC */ PlayerSub6Sub1 unk_EC;
+typedef struct PlayerHitbox {
+    /* 0x0000 */ ModelInstance *modelInst;
+    /* 0x0004 */ Matrix4f *boneMatrixA;
+    /* 0x0008 */ Matrix4f *boneMatrixB;
+    /* 0x000C */ SplineInterpolator splineB;
+    /* 0x00EC */ SplineInterpolator splineA;
     /* 0x01CC */ s32 unk_1CC;
-    /* 0x01D0 */ s32 unk_1D0;
+    /* 0x01D0 */ s32 segmentCount;
     /* 0x01D4 */ s32 unk_1D4;
-    /* 0x01D8 */ PlayerSub6Sub2 unk_1D8[16];
+    /* 0x01D8 */ HitboxTrailSegment segments[16];
     /* 0x12D8 */ BatchInfo unk_12D8[4];
-    /* 0x1438 */ f32 unk_1438;
-    /* 0x143C */ f32 unk_143C;
-    /* 0x1440 */ f32 unk_1440;
-    /* 0x1444 */ f32 unk_1444;
-    /* 0x1448 */ f32 unk_1448;
-    /* 0x144C */ f32 unk_144C;
-    /* 0x1450 */ Vec4i *unk_1450;
-    /* 0x1454 */ ColorRGBA unk_1454;
-} PlayerSub6; // size = 0x1458;
+    /* 0x1438 */ f32 boneBPosX;
+    /* 0x143C */ f32 boneBPosY;
+    /* 0x1440 */ f32 boneBPosZ;
+    /* 0x1444 */ f32 boneAPosX;
+    /* 0x1448 */ f32 boneAPosY;
+    /* 0x144C */ f32 boneAPosZ;
+    /* 0x1450 */ Vec4i *refPosition;
+    /* 0x1454 */ ColorRGBA baseColor;
+} PlayerHitbox; // size = 0x1458;
 
-typedef struct PlayerSub9 {
-    /* 0x000 */ u8 unk_00;
-    /* 0x001 */ u8 unk_01;
-    /* 0x002 */ u8 unk_02;
-    /* 0x003 */ u8 unk_03;
-    /* 0x004 */ u8 unk_04;
-    /* 0x005 */ u8 unk_05;
-    /* 0x006 */ u8 unk_06;
+typedef struct HitboxBones {
+    /* 0x000 */ u8 hasTorsoZone;
+    /* 0x001 */ u8 hasGrabZone;
+    /* 0x002 */ u8 hasHeadZone;
+    /* 0x003 */ u8 hasTailZone;
+    /* 0x004 */ u8 hasWingZone;
+    /* 0x005 */ u8 hasLegZone;
+    /* 0x006 */ u8 hasExtraZone;
     /* 0x007 */ u8 unk_07;
-    /* 0x008 */ Vec4f *unk_08;
-    /* 0x00C */ Vec4f *unk_0C;
-    /* 0x010 */ Vec4f *unk_10;
-    /* 0x014 */ Vec4f *unk_14;
-    /* 0x018 */ Vec4f *unk_18;
-    /* 0x018 */ Vec4f *unk_1C;
-    /* 0x018 */ Vec4f *unk_20;
-    /* 0x018 */ Vec4f *unk_24;
-    /* 0x018 */ Vec4f *unk_28;
-    /* 0x02C */ s32 unk_2C;
-    /* 0x030 */ s32 unk_30;
+    /* 0x008 */ Vec4f *handPos;
+    /* 0x00C */ Vec4f *footPos;
+    /* 0x010 */ Vec4f *torsoPos;
+    /* 0x014 */ Vec4f *thighPos;
+    /* 0x018 */ Vec4f *headPos;
+    /* 0x018 */ Vec4f *shinPos;
+    /* 0x018 */ Vec4f *armPos;
+    /* 0x018 */ Vec4f *extraBonePos;
+    /* 0x018 */ Vec4f *rootPos;
+    /* 0x02C */ s32 strikeRadius;
+    /* 0x030 */ s32 comboRadius;
     /* 0x034 */ s32 unk_34;
-    /* 0x038 */ Transform unk_38;
-    /* 0x150 */ Transform unk_150;
-    /* 0x268 */ Transform unk_268;
-    /* 0x380 */ Transform unk_380;
-    /* 0x498 */ Transform unk_498;
-} PlayerSub9; // size = 0x5B0
+    /* 0x038 */ Transform torsoTransform;
+    /* 0x150 */ Transform grabTransform;
+    /* 0x268 */ Transform wingTransform;
+    /* 0x380 */ Transform legTransform;
+    /* 0x498 */ Transform tailTransform;
+} HitboxBones; // size = 0x5B0
 
 typedef struct Struct9C {
     /* 0x00 */ u8 unk_00;
@@ -649,19 +649,19 @@ typedef struct AnimationSoundTriggers {
     /* 0x07 */ u8 frame4;
 } AnimationSoundTriggers; // size = 0x8
 
-typedef struct PlayerSubD {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ u16 unk_02;
-} PlayerSubD; // size = 0x4
+typedef struct StateOverrideIndex {
+    /* 0x00 */ s16 overrideTableOffset;
+    /* 0x02 */ u16 numOverrides;
+} StateOverrideIndex; // size = 0x4
 
-typedef struct PlayerSubE {
-    /* 0x00 */ s16 unk_00;
+typedef struct FrameTriggerOverride {
+    /* 0x00 */ s16 stateIdOverride;
     /* 0x02 */ s16 frameIndex;
     /* 0x04 */ s16 stateId;
-    /* 0x06 */ s16 unk_06;
-} PlayerSubE; // size = 0x8
+    /* 0x06 */ s16 transitionActionOverride;
+} FrameTriggerOverride; // size = 0x8
 
-typedef struct PlayerSubF {
+typedef struct TransitionTiming {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ s16 unk_02;
     /* 0x04 */ s16 unk_04;
@@ -670,24 +670,24 @@ typedef struct PlayerSubF {
     /* 0x0A */ s16 unk_0A;
     /* 0x0C */ s16 unk_0C;
     /* 0x0E */ s16 moveTimeout;
-} PlayerSubF; // size = 0x10
+} TransitionTiming; // size = 0x10
 
 typedef struct PlayerSubG {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ s16 unk_02;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ s32 unk_10;
-    /* 0x14 */ s32 unk_14;
-    /* 0x18 */ s32 unk_18;
+    /* 0x04 */ s32 originX;
+    /* 0x08 */ s32 originY;
+    /* 0x0C */ s32 originZ;
+    /* 0x10 */ s32 velocityX;
+    /* 0x14 */ s32 velocityY;
+    /* 0x18 */ s32 velocityZ;
     /* 0x1C */ s16 unk_1C;
     /* 0x1E */ s16 unk_1E;
-    /* 0x20 */ s16 unk_20;
-    /* 0x22 */ s16 unk_22;
+    /* 0x20 */ s16 spriteIndex;
+    /* 0x22 */ s16 modelIndex;
     /* 0x24 */ s32 unk_24;
     /* 0x28 */ s32 unk_28;
-    /* 0x2C */ s16 unk_2C;
+    /* 0x2C */ s16 flags;
     /* 0x2E */ s16 unk_2E;
     /* 0x30 */ s16 unk_30;
     /* 0x32 */ s16 unk_32;
@@ -698,7 +698,7 @@ typedef struct PlayerSubG {
     /* 0x3C */ s32 unk_3C;
     /* 0x40 */ s16 unk_40;
     /* 0x42 */ s16 unk_42;
-    /* 0x44 */ ColorRGBA unk_44[2];
+    /* 0x44 */ ColorRGBA lightColors[2];
 } PlayerSubG; // size = 0x4C
 
 typedef struct PlayerSubJ {
@@ -736,46 +736,49 @@ typedef struct Player {
     /* 0x0010 */ ObjectTask *audioTask;
     /* 0x0014 */ ObjectTask *cameraTask;
     /* 0x0018 */ ObjectTask *unk_18;
-    /* 0x001C */ PlayerSubE *unk_1C;
-    /* 0x0020 */ ActionState *stateTable;
-    /* 0x0024 */ PlayerSub5 *table_24;
-    /* 0x0028 */ PlayerSubF *unk_28;
-    /* 0x002C */ TransitionDef *transitionTable;
-    /* 0x0030 */ PlayerSubD *unk_30;
+
+    // tables from .db file
+    /* 0x001C */ FrameTriggerOverride *frameTriggerOverrides;
+    /* 0x0020 */ PlayerStateDef *stateDefs;
+    /* 0x0024 */ TransitionAction *transitionActions;
+    /* 0x0028 */ TransitionTiming *transitionTimings;
+    /* 0x002C */ TransitionRule *transitionRules;
+    /* 0x0030 */ StateOverrideIndex *stateOverrideIndices;
     /* 0x0034 */ s16 *logicStates;
-    /* 0x0038 */ s16 *unk_38;
+    /* 0x0038 */ s16 *moveToRuleMap;
     /* 0x003C */ s32 unk_3C;
     /* 0x0040 */ AnimationSoundTriggers *soundTable;
     /* 0x0044 */ u8 *unk_44;
-    /* 0x0048 */ PlayerSubG *unk_48;
+    /* 0x0048 */ PlayerSubG *effectTable;
     /* 0x004C */ PlayerSubB *unk_4C;
-    /* 0x0050 */ u16 *unk_50;
-    /* 0x0054 */ s16 *unk_54;
-    /* 0x0058 */ PlayerSubJ *unk_58;
-    /* 0x005C */ s16 *unk_5C;
-    /* 0x0060 */ s16 *unk_60;
-    /* 0x0064 */ s16 *unk_64;
+    /* 0x0050 */ u16 *aiTable4;
+    /* 0x0054 */ s16 *aiTable3;
+    /* 0x0058 */ PlayerSubJ *aiTable2;
+    /* 0x005C */ s16 *aiTable1;
+    /* 0x0060 */ s16 *aiTable5;
+    /* 0x0064 */ s16 *aiTable6;
     /* 0x0068 */ u8 *unk_68;
+
     /* 0x006C */ s32 unk_6C;
     /* 0x0070 */ s16 unk_70;
     /* 0x0072 */ s16 unk_72;
     /* 0x0074 */ s16 unk_74;
-    /* 0x0076 */ s16 nextLogicState;
-    /* 0x0078 */ s16 unk_78;
+    /* 0x0076 */ s16 nextRuleIndex;
+    /* 0x0078 */ s16 currentRuleIndex;
     /* 0x007A */ s16 unk_7A;
     /* 0x007C */ s16 unk_7C;
-    /* 0x007E */ s16 stateId;
+    /* 0x007E */ s16 currentStateId;
     /* 0x0080 */ s32 flags;
     /* 0x0084 */ s32 unk_84;
-    /* 0x0088 */ PlayerSubF *unk_88;
+    /* 0x0088 */ TransitionTiming *currentTiming;
     /* 0x008C */ s32 unk_8C;
-    /* 0x0090 */ ActionState *currentState;
-    /* 0x0094 */ s16 moveTimeout;
+    /* 0x0090 */ PlayerStateDef *currentStateDef;
+    /* 0x0094 */ s16 autoTransitionTimer;
     /* 0x0096 */ s16 unk_96;
-    /* 0x0098 */ PlayerSub5 *unk_98;
+    /* 0x0098 */ TransitionAction *currentAction;
     /* 0x009C */ PlayerSubB *unk_9C;
-    /* 0x00A0 */ TransitionDef *currentTransition;
-    /* 0x00A4 */ TransitionDef *previousTransition;
+    /* 0x00A0 */ TransitionRule *currentTransition;
+    /* 0x00A4 */ TransitionRule *previousTransition;
     /* 0x00A8 */ PlayerSubH unk_A8;
     /* 0x00D8 */ s32 unk_D8;
     /* 0x00DC */ s16 unk_DC;
@@ -784,12 +787,12 @@ typedef struct Player {
     /* 0x0180 */ s32 unk_180;
     /* 0x0184 */ u8 unk_184;
     /* 0x0186 */ s16 unk_186;
-    /* 0x0188 */ s16 prevStateId;
+    /* 0x0188 */ s16 previousStateId;
     /* 0x018A */ s16 unk_18A;
     /* 0x018C */ s32 unk_18C;
     /* 0x0190 */ s32 unk_190;
-    /* 0x0194 */ Object *unk_194;
-    /* 0x0198 */ PlayerSub9 unk_198;
+    /* 0x0194 */ Object *currentEffect;
+    /* 0x0198 */ HitboxBones hitboxBones;
     /* 0x0748 */ char unk_748[8];
     /* 0x0750 */ Transform unk_750;
     /* 0x0868 */ Transform unk_868;
@@ -803,17 +806,17 @@ typedef struct Player {
     /* 0x0DBA */ s16 unk_DBA;
     /* 0x0DBC */ s16 unk_DBC;
     /* 0x0DBE */ s16 unk_DBE;
-    /* 0x0DC0 */ Model *unk_DC0[3]; // size unknown
-    /* 0x0DCC */ void *unk_DCC[3];  // size unknown
+    /* 0x0DC0 */ Model *effectSprites[3]; // size unknown
+    /* 0x0DCC */ Model *effectModels[3];  // size unknown
     /* 0x0DD8 */ char unk_DD8[4];
     /* 0x0DDC */ Model *unk_DDC;
     /* 0x0DE0 */ char unk_DE0[4];
     /* 0x0DE4 */ Model *unk_DE4;
-    /* 0x0DE8 */ PlayerSub6 unk_DE8;
-    /* 0x2240 */ PlayerSub6 unk_2240;
-    /* 0x3698 */ PlayerSub6 unk_3698;
-    /* 0x4AF0 */ PlayerSub6 unk_4AF0;
-    /* 0x5F48 */ s16 unk_5F48;
+    /* 0x0DE8 */ PlayerHitbox unk_DE8;
+    /* 0x2240 */ PlayerHitbox unk_2240;
+    /* 0x3698 */ PlayerHitbox unk_3698;
+    /* 0x4AF0 */ PlayerHitbox unk_4AF0;
+    /* 0x5F48 */ s16 hitCooldown;
     /* 0x5F4A */ u8 unk_5F4A;
     /* 0x5F4B */ u8 unk_5F4B;
     /* 0x5F4C */ s16 total_damage;
@@ -869,28 +872,28 @@ typedef struct ModelRenderSettings {
     /* 0x14 */ s32 flags;
 } ModelRenderSettings;
 
-typedef struct UnkTauSub {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-    /* 0x10 */ s32 unk_10;
-    /* 0x14 */ s32 unk_14;
-    /* 0x18 */ s32 unk_18;
-    /* 0x1C */ s32 unk_1C;
-    /* 0x20 */ s32 unk_20;
-    /* 0x24 */ s32 unk_24;
-    /* 0x28 */ s32 unk_28;
-    /* 0x2C */ Vec4i unk_2C;
-    /* 0x3C */ Vec4i unk_3C;
-    /* 0x4C */ Vec4i unk_4C;
-    /* 0x5C */ Vec4i unk_5C;
-    /* 0x6C */ s32 unk_6C;
-    /* 0x70 */ Vec4i unk_70;
-} UnkTauSub;
+typedef struct HitboxBoneSetup {
+    /* 0x00 */ s32 handBoneId;
+    /* 0x04 */ s32 footBoneId;
+    /* 0x08 */ s32 torsoBoneId;
+    /* 0x0C */ s32 thighBoneId;
+    /* 0x10 */ s32 headBoneId;
+    /* 0x14 */ s32 shinBoneId;
+    /* 0x18 */ s32 armBoneId;
+    /* 0x1C */ s32 torsoParentBoneId;
+    /* 0x20 */ s32 grabParentBoneId;
+    /* 0x24 */ s32 strikeRadius;
+    /* 0x28 */ s32 comboRadius;
+    /* 0x2C */ Vec4i torsoOffset;
+    /* 0x3C */ Vec4i grabOffset;
+    /* 0x4C */ Vec4i wingOffset;
+    /* 0x5C */ Vec4i legOffset;
+    /* 0x6C */ s32 headBoneId2;
+    /* 0x70 */ Vec4i tailOffset;
+} HitboxBoneSetup;
 
 typedef struct UnkTau {
-    /* 0x00 */ UnkTauSub *unk_00;
+    /* 0x00 */ HitboxBoneSetup *unk_00;
     /* 0x04 */ K2Def *unk_04;
     /* 0x08 */ ColorRGBA unk_08[2];
 } UnkTau; // size = 0x10
@@ -907,9 +910,9 @@ typedef struct UnkVec2s {
 } UnkVec2s; // size = 0x4
 
 typedef struct GlobalObjD {
-    /* 0x00 */ u32 unk_00;
-    /* 0x04 */ u32 unk_04;
-    /* 0x08 */ u32 unk_08;
+    /* 0x00 */ u32 red;
+    /* 0x04 */ u32 green;
+    /* 0x08 */ u32 blue;
     /* 0x0C */ s32 unk_0C;
     /* 0x10 */ s32 unk_10;
     /* 0x14 */ s32 unk_14;
@@ -917,9 +920,9 @@ typedef struct GlobalObjD {
     /* 0x1C */ s32 unk_1C;
     /* 0x20 */ s32 unk_20;
     /* 0x24 */ s32 unk_24;
-    /* 0x2C */ Object *unk_28;
-    /* 0x2C */ struct GlobalObjD *unk_2C;
-    /* 0x30 */ struct GlobalObjD *unk_30;
+    /* 0x2C */ Object *object;
+    /* 0x2C */ struct GlobalObjD *next;
+    /* 0x30 */ struct GlobalObjD *previous;
 } GlobalObjD; // size = 0x34
 
 typedef struct UnkQwe {

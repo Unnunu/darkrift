@@ -390,26 +390,27 @@ void func_8002CE58(s32 arg0, s32 arg1) {
         }
     }
 
-    gPlayers[PLAYER_1].unk_DE8.unk_1D0 = gPlayers[PLAYER_1].unk_2240.unk_1D0 = gPlayers[PLAYER_1].unk_3698.unk_1D0 =
-        gPlayers[PLAYER_1].unk_4AF0.unk_1D0 = gPlayers[PLAYER_2].unk_DE8.unk_1D0 = gPlayers[PLAYER_2].unk_2240.unk_1D0 =
-            gPlayers[PLAYER_2].unk_3698.unk_1D0 = gPlayers[PLAYER_2].unk_4AF0.unk_1D0 = 0;
+    gPlayers[PLAYER_1].unk_DE8.segmentCount = gPlayers[PLAYER_1].unk_2240.segmentCount =
+        gPlayers[PLAYER_1].unk_3698.segmentCount = gPlayers[PLAYER_1].unk_4AF0.segmentCount =
+            gPlayers[PLAYER_2].unk_DE8.segmentCount = gPlayers[PLAYER_2].unk_2240.segmentCount =
+                gPlayers[PLAYER_2].unk_3698.segmentCount = gPlayers[PLAYER_2].unk_4AF0.segmentCount = 0;
 
-    func_80010BE4(&gPlayers[PLAYER_1].unk_DE8.unk_0C);
-    func_80010BE4(&gPlayers[PLAYER_1].unk_DE8.unk_EC);
-    func_80010BE4(&gPlayers[PLAYER_1].unk_2240.unk_0C);
-    func_80010BE4(&gPlayers[PLAYER_1].unk_2240.unk_EC);
-    func_80010BE4(&gPlayers[PLAYER_1].unk_3698.unk_0C);
-    func_80010BE4(&gPlayers[PLAYER_1].unk_3698.unk_EC);
-    func_80010BE4(&gPlayers[PLAYER_1].unk_4AF0.unk_0C);
-    func_80010BE4(&gPlayers[PLAYER_1].unk_4AF0.unk_EC);
-    func_80010BE4(&gPlayers[PLAYER_2].unk_DE8.unk_0C);
-    func_80010BE4(&gPlayers[PLAYER_2].unk_DE8.unk_EC);
-    func_80010BE4(&gPlayers[PLAYER_2].unk_2240.unk_0C);
-    func_80010BE4(&gPlayers[PLAYER_2].unk_2240.unk_EC);
-    func_80010BE4(&gPlayers[PLAYER_2].unk_3698.unk_0C);
-    func_80010BE4(&gPlayers[PLAYER_2].unk_3698.unk_EC);
-    func_80010BE4(&gPlayers[PLAYER_2].unk_4AF0.unk_0C);
-    func_80010BE4(&gPlayers[PLAYER_2].unk_4AF0.unk_EC);
+    spline_interpolator_init(&gPlayers[PLAYER_1].unk_DE8.splineB);
+    spline_interpolator_init(&gPlayers[PLAYER_1].unk_DE8.splineA);
+    spline_interpolator_init(&gPlayers[PLAYER_1].unk_2240.splineB);
+    spline_interpolator_init(&gPlayers[PLAYER_1].unk_2240.splineA);
+    spline_interpolator_init(&gPlayers[PLAYER_1].unk_3698.splineB);
+    spline_interpolator_init(&gPlayers[PLAYER_1].unk_3698.splineA);
+    spline_interpolator_init(&gPlayers[PLAYER_1].unk_4AF0.splineB);
+    spline_interpolator_init(&gPlayers[PLAYER_1].unk_4AF0.splineA);
+    spline_interpolator_init(&gPlayers[PLAYER_2].unk_DE8.splineB);
+    spline_interpolator_init(&gPlayers[PLAYER_2].unk_DE8.splineA);
+    spline_interpolator_init(&gPlayers[PLAYER_2].unk_2240.splineB);
+    spline_interpolator_init(&gPlayers[PLAYER_2].unk_2240.splineA);
+    spline_interpolator_init(&gPlayers[PLAYER_2].unk_3698.splineB);
+    spline_interpolator_init(&gPlayers[PLAYER_2].unk_3698.splineA);
+    spline_interpolator_init(&gPlayers[PLAYER_2].unk_4AF0.splineB);
+    spline_interpolator_init(&gPlayers[PLAYER_2].unk_4AF0.splineA);
 }
 
 s32 func_8002CFD4(void *arg0) {
@@ -718,17 +719,17 @@ restart:
         return;
     }
 
-    v1 = MIN(temp[PLAYER_1].unk_198.unk_18->y, temp[PLAYER_1].unk_198.unk_14->y);
-    v0 = MIN(temp[PLAYER_2].unk_198.unk_18->y, temp[PLAYER_2].unk_198.unk_14->y);
+    v1 = MIN(temp[PLAYER_1].hitboxBones.headPos->y, temp[PLAYER_1].hitboxBones.thighPos->y);
+    v0 = MIN(temp[PLAYER_2].hitboxBones.headPos->y, temp[PLAYER_2].hitboxBones.thighPos->y);
 
     if (v1 < v0) {
-        s0 = (temp[PLAYER_2].unk_198.unk_08->y - 200.0f) < v1;
+        s0 = (temp[PLAYER_2].hitboxBones.handPos->y - 200.0f) < v1;
     } else {
-        s0 = (temp[PLAYER_1].unk_198.unk_08->y - 200.0f) < v0;
+        s0 = (temp[PLAYER_1].hitboxBones.handPos->y - 200.0f) < v0;
     }
 
-    if ((gPlayers[PLAYER_1].currentState->flags & STATE_FLAG_80000) ||
-        (gPlayers[PLAYER_2].currentState->flags & STATE_FLAG_80000)) {
+    if ((gPlayers[PLAYER_1].currentStateDef->flags & STATE_FLAG_80000) ||
+        (gPlayers[PLAYER_2].currentStateDef->flags & STATE_FLAG_80000)) {
         s0 = TRUE;
     }
 
@@ -752,8 +753,8 @@ restart:
     if (s1 < D_80080214 &&
         (!(gPlayers[PLAYER_1].flags & PLAYER_FLAG_8000) || (gPlayers[PLAYER_2].flags & PLAYER_FLAG_8000))) { // @bug ??
         s4 = D_80080214 - s1;
-        if ((gPlayers[PLAYER_1].currentState->flags & STATE_FLAG_80000) ||
-            (gPlayers[PLAYER_2].currentState->flags & STATE_FLAG_80000) ||
+        if ((gPlayers[PLAYER_1].currentStateDef->flags & STATE_FLAG_80000) ||
+            (gPlayers[PLAYER_2].currentStateDef->flags & STATE_FLAG_80000) ||
             (gPlayers[PLAYER_1].flags & PLAYER_FLAG_4000000) || (gPlayers[PLAYER_2].flags & PLAYER_FLAG_4000000)) {
             s4 >>= 1;
         }
@@ -1027,12 +1028,12 @@ void func_8002EB2C(Object *obj) {
     }
 
     sp34.x = D_80080220->x;
-    sp34.y = gPlayers[PLAYER_1].unk_198.unk_08->y;
+    sp34.y = gPlayers[PLAYER_1].hitboxBones.handPos->y;
     sp34.z = D_80080220->z;
     func_8002E628(&sp34, &sp60, &sp5C, &sp50);
 
     sp34.x = D_80080224->x;
-    sp34.y = gPlayers[PLAYER_2].unk_198.unk_08->y;
+    sp34.y = gPlayers[PLAYER_2].hitboxBones.handPos->y;
     sp34.z = D_80080224->z;
     func_8002E628(&sp34, &sp58, &sp54, &sp4C);
 

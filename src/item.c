@@ -208,7 +208,7 @@ void obj_update_all(void) {
                 obj->unk_1E8(obj, NULL);
             }
             if (obj->flags & OBJ_FLAG_20000000) {
-                func_800345D8(obj->unk_208);
+                delete_light(obj->light);
             }
             task_clear(obj->taskList);
             obj->taskList = NULL;
@@ -322,7 +322,7 @@ void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, Transform *arg3, void (*ta
 
     arg0->unk_200.r = arg0->unk_200.g = arg0->unk_200.b = 255;
     arg0->unk_204.r = arg0->unk_204.g = arg0->unk_204.b = arg0->unk_204.a = 0;
-    arg0->unk_208 = 0;
+    arg0->light = NULL;
 }
 #else
 #pragma GLOBAL_ASM("asm/nonmatchings/item/obj_init.s")

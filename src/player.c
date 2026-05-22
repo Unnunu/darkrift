@@ -2,20 +2,20 @@
 #include "task.h"
 #include "camera.h"
 
-typedef struct UnkOmicronSub {
-    /* 0x00 */ s16 unk_00[2];
-    /* 0x04 */ s16 unk_04;
-    /* 0x06 */ u8 unk_06;
-    /* 0x07 */ u8 unk_07;
-} UnkOmicronSub; // size=0x8
+typedef struct TransitionSnapshot {
+    /* 0x00 */ s16 playerHp[2];
+    /* 0x04 */ s16 ruleIndex;
+    /* 0x06 */ u8 playerId;
+    /* 0x07 */ u8 delayUntilNext;
+} TransitionSnapshot; // size=0x8
 
-typedef struct UnkOmicron {
-    /* 0x0000 */ UnkOmicronSub unk_00[512];
-    /* 0x1000 */ u16 unk_1000;
-    /* 0x1002 */ u16 unk_1002;
-    /* 0x1004 */ s32 unk_1004;
-    /* 0x1008 */ s32 unk_1008;
-} UnkOmicron; // size = 0x100C
+typedef struct TransitionRingBuffer {
+    /* 0x0000 */ TransitionSnapshot unk_00[512];
+    /* 0x1000 */ u16 headIndex;
+    /* 0x1002 */ u16 tailIndex;
+    /* 0x1004 */ s32 lastFrameCounter;
+    /* 0x1008 */ s32 startFrameCounter;
+} TransitionRingBuffer; // size = 0x100C
 
 extern s16 D_8004A730[];
 extern s16 D_8004A748[];
@@ -24,31 +24,32 @@ extern GlobalLighting D_8004B664;
 extern GlobalLighting D_8004B764;
 extern GlobalLighting D_8004B784;
 extern UnkQwe D_8004B94C[];
-extern PlayerSub5 D_8004C1E8[];
+extern TransitionAction D_8004C1E8[];
 
 extern s32 D_80080218;
-extern UnkOmicron D_80080238;
+extern TransitionRingBuffer D_80080238;
 
 /* .bss */
 s16 gPlayMode;
 s16 gPreviousPlayMode;
 u16 D_80080234;
 u16 D_80080236;
-UnkOmicron D_80080238;
+TransitionRingBuffer D_80080238;
 
-void func_80012150(PlayerSub6 *arg0, ModelInstance *arg1, Matrix4f *arg2, Matrix4f *arg3, Vec4i *arg4, ColorRGBA *arg5);
+void hitbox_render_init(PlayerHitbox *arg0, ModelInstance *arg1, Matrix4f *arg2, Matrix4f *arg3, Vec4i *arg4,
+                        ColorRGBA *arg5);
 
 void create_player_obj(s16 playerId);
 void func_80003C04(Object *obj);
 
-typedef struct AssetDB {
+typedef struct CharacterDefinition {
     /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
+    /* 0x04 */ s32 transitionTable;
+    /* 0x08 */ s32 logicStates;
     /* 0x0C */ s32 unk_0C;
     /* 0x10 */ s32 unk_10;
-    /* 0x14 */ s32 unk_14;
-    /* 0x18 */ s32 unk_18;
+    /* 0x14 */ s32 stateTable;
+    /* 0x18 */ s32 soundTable;
     /* 0x1C */ s32 unk_1C;
     /* 0x20 */ s32 unk_20;
     /* 0x24 */ s32 unk_24;
@@ -59,13 +60,13 @@ typedef struct AssetDB {
     /* 0x38 */ s32 unk_38;
     /* 0x3C */ s32 unk_3C;
     /* 0x40 */ s32 unk_40;
-} AssetDB; // size = 0x44
+} CharacterDefinition; // size = 0x44
 
 extern s16 D_8004B9FC[];
 
 #ifdef NON_MATCHING
 void func_800035D0(Player *player) {
-    UnkOmicronSub *a1;
+    TransitionSnapshot *a1;
     u16 t8;
     u16 a2;
     Object *v0;
@@ -78,31 +79,31 @@ void func_800035D0(Player *player) {
     if (D_80080236 || D_800801F0) {
         return;
     }
-    v1 = D_80080238.unk_1002;
+    v1 = D_80080238.tailIndex;
     a1 = D_80080238.unk_00 + v1;
-    a1->unk_04 = player->unk_78;
-    a1->unk_06 = player->playerId;
-    a1->unk_07 = 255;
+    a1->ruleIndex = player->currentRuleIndex;
+    a1->playerId = player->playerId;
+    a1->delayUntilNext = 255;
 
     t8 = 1 - player->playerId;
     a2 = player->playerId;
-    a1->unk_00[a2] = v0->playerHp;
-    a1->unk_00[t8] = gPlayers[t8].obj->playerHp;
+    a1->playerHp[a2] = v0->playerHp;
+    a1->playerHp[t8] = gPlayers[t8].obj->playerHp;
 
-    nv = D_80080238.unk_1002;
-    D_80080238.unk_00[((nv - 1) & 0x1FF)].unk_07 = gFrameCounter - D_80080238.unk_1004;
+    nv = D_80080238.tailIndex;
+    D_80080238.unk_00[((nv - 1) & 0x1FF)].delayUntilNext = gFrameCounter - D_80080238.lastFrameCounter;
 
     nv = (nv + 1) & 0x1FF;
-    D_80080238.unk_1002 = nv;
-    D_80080238.unk_1004 = gFrameCounter;
+    D_80080238.tailIndex = nv;
+    D_80080238.lastFrameCounter = gFrameCounter;
 
-    if (nv == D_80080238.unk_1000) {
+    if (nv == D_80080238.headIndex) {
         D_80080234 = 1;
-        D_80080238.unk_1000 = (D_80080238.unk_1000 + 1) & 0x1FF;
+        D_80080238.headIndex = (D_80080238.headIndex + 1) & 0x1FF;
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_800035D0.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/player/func_800035D0.s")
 void func_800035D0(Player *player);
 #endif
 
@@ -121,33 +122,33 @@ void func_80003704(Object *obj) {
 #ifdef NON_MATCHING
 void func_80003780(Object *obj) {
     s32 s0;
-    UnkOmicronSub *s1;
+    TransitionSnapshot *s1;
     s32 s3;
     s16 v0;
     s32 temp;
     Player *s2;
 
     while (TRUE) {
-        s0 = D_80080238.unk_1000;
+        s0 = D_80080238.headIndex;
         s1 = D_80080238.unk_00 + s0;
-        s3 = s1->unk_06;
+        s3 = s1->playerId;
 
         gPlayers[s3].flags |= PLAYER_FLAG_800000;
-        player_make_transition(gPlayers + s3, TRUE, s1->unk_04);
-        v0 = s1->unk_00[s3];
+        player_make_transition(gPlayers + s3, TRUE, s1->ruleIndex);
+        v0 = s1->playerHp[s3];
         gPlayers[s3].obj->playerHp = v0;
         if (v0 == 0) {
             gGlobalFlags |= GAME_FLAG_BATTLE_FINISHED;
         }
 
-        if (s1->unk_07 == 255) {
+        if (s1->delayUntilNext == 255) {
             break;
         }
 
         s0++;
-        D_80080238.unk_1000 = s0 & ~0x200;
+        D_80080238.headIndex = s0 & ~0x200;
 
-        temp = s1->unk_07;
+        temp = s1->delayUntilNext;
 
         if (obj && obj && obj) {} // @fake
 
@@ -162,7 +163,7 @@ void func_80003780(Object *obj) {
     obj->vars[0] = 260;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/41D0/func_80003780.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/player/func_80003780.s")
 void func_80003780(Object *obj);
 #endif
 
@@ -184,12 +185,12 @@ s32 func_80003974(void *arg0) {
     u32 i;
     s32 temp;
 
-    s3 = gFrameCounter - D_80080238.unk_1008;
+    s3 = gFrameCounter - D_80080238.startFrameCounter;
 
-    D_80080238.unk_1000 = 0;
+    D_80080238.headIndex = 0;
     D_8013C250 = 1;
-    gPlayers[PLAYER_1].stateId = 0;
-    gPlayers[PLAYER_2].stateId = 0;
+    gPlayers[PLAYER_1].currentStateId = 0;
+    gPlayers[PLAYER_2].currentStateId = 0;
 
     create_player_obj(PLAYER_1);
     create_player_obj(PLAYER_2);
@@ -245,7 +246,7 @@ s32 func_80003974(void *arg0) {
 }
 
 s32 func_80003BB4(void) {
-    s32 diff = gFrameCounter - D_80080238.unk_1008;
+    s32 diff = gFrameCounter - D_80080238.startFrameCounter;
 
     if (diff < 60) {
         return FALSE;
@@ -287,10 +288,10 @@ void func_80003C04(Object *obj) {
     }
 
     if (player->unk_184) {
-        if (player->moveTimeout != 0 && --player->moveTimeout == 0) {
+        if (player->autoTransitionTimer != 0 && --player->autoTransitionTimer == 0) {
             player_select_transition(player, TRUE);
         } else if (!(player->flags & (PLAYER_FLAG_TRANSITION_LOCKED | PLAYER_FLAG_100000)) &&
-                   gPlayerInput[playerId].accumulated && player->nextLogicState >= 0 &&
+                   gPlayerInput[playerId].accumulated && player->nextRuleIndex >= 0 &&
                    !(player->animTask->flags & TASK_FLAG_FRAME_TRIGGER)) {
             player_select_transition(player, FALSE);
         }
@@ -304,17 +305,17 @@ void player_update(Object *obj) {
     u16 playerId = player->playerId;
     u16 oppId;
     Player *opponent;
-    ActionState *currentState;
-    ActionState *oppState;
+    PlayerStateDef *currentState;
+    PlayerStateDef *oppState;
     s32 pad[2];
     Object *oppObj;
     u8 pad2;
     u8 sp2E;
 
-    currentState = player->currentState;
+    currentState = player->currentStateDef;
     oppId = 1 - playerId;
     opponent = &gPlayers[oppId];
-    oppState = opponent->currentState;
+    oppState = opponent->currentStateDef;
     oppObj = opponent->obj;
 
     if (func_80030BB0(obj)) {
@@ -331,15 +332,15 @@ void player_update(Object *obj) {
         player->flags &= ~PLAYER_FLAG_NOT_FACING_OPP;
     }
 
-    sp2E = (currentState->damage != 0) && (obj->frameIndex >= currentState->unk_24) &&
-           (obj->frameIndex < currentState->unk_26);
+    sp2E = (currentState->damage != 0) && (obj->frameIndex >= currentState->bodyHitboxStart) &&
+           (obj->frameIndex < currentState->bodyHitboxEnd);
 
-    func_800115A0(&player->unk_DE8, (currentState->flags & STATE_FLAG_40) && sp2E);
+    hitbox_render_update(&player->unk_DE8, (currentState->flags & STATE_FLAG_40) && sp2E);
     if (player->unk_5F4A) {
-        func_800115A0(&player->unk_2240, (currentState->flags & STATE_FLAG_2000) && sp2E);
+        hitbox_render_update(&player->unk_2240, (currentState->flags & STATE_FLAG_2000) && sp2E);
     }
-    func_800115A0(&player->unk_3698, (currentState->flags & STATE_FLAG_800) && sp2E);
-    func_800115A0(&player->unk_4AF0, (currentState->flags & (STATE_FLAG_20 | STATE_FLAG_1000)) && sp2E);
+    hitbox_render_update(&player->unk_3698, (currentState->flags & STATE_FLAG_800) && sp2E);
+    hitbox_render_update(&player->unk_4AF0, (currentState->flags & (STATE_FLAG_20 | STATE_FLAG_1000)) && sp2E);
 
     if (player->characterId != MORPHIX) {
         func_80037E28(obj);
@@ -364,41 +365,42 @@ void player_update(Object *obj) {
         if (!(player->unk_180 & 0x20000)) {
             func_8001B810(player);
         }
-        if (D_8013C444 && gPlayerInput[playerId].accumulated && player->nextLogicState >= 0 &&
+        if (D_8013C444 && gPlayerInput[playerId].accumulated && player->nextRuleIndex >= 0 &&
             !(player->animTask->flags & TASK_FLAG_FRAME_TRIGGER) && !(player->flags & PLAYER_FLAG_2000)) {
             player_select_transition(player, FALSE);
         }
     } else if (player->unk_184 && !D_800801F0) {
-        if (player->moveTimeout != 0 && --player->moveTimeout == 0) {
+        if (player->autoTransitionTimer != 0 && --player->autoTransitionTimer == 0) {
             player_select_transition(player, TRUE);
         } else if (!(player->flags & (PLAYER_FLAG_TRANSITION_LOCKED | PLAYER_FLAG_100000)) &&
-                   gPlayerInput[playerId].accumulated && player->nextLogicState >= 0 &&
+                   gPlayerInput[playerId].accumulated && player->nextRuleIndex >= 0 &&
                    !(player->animTask->flags & TASK_FLAG_FRAME_TRIGGER)) {
             player_select_transition(player, FALSE);
         }
     }
 
-    if (player->unk_5F48 > 0) {
-        player->unk_5F48--;
+    if (player->hitCooldown > 0) {
+        player->hitCooldown--;
     }
 
-    if (D_80080218 >= D_80080210 && !(player->currentState->flags & STATE_FLAG_40000) && player->unk_5F48 == 0 &&
-        oppObj->frameIndex >= oppState->unk_04 && oppObj->frameIndex <= oppState->unk_06) {
+    if (D_80080218 >= D_80080210 && !(player->currentStateDef->flags & STATE_FLAG_40000) && player->hitCooldown == 0 &&
+        oppObj->frameIndex >= oppState->hitboxActiveStart && oppObj->frameIndex <= oppState->hitboxActiveEnd) {
+
         if (oppState->flags & (STATE_FLAG_40 | STATE_FLAG_2000)) {
-            if ((player->currentState->flags & (STATE_FLAG_400 | STATE_FLAG_10000 | STATE_FLAG_20000)) &&
+            if ((player->currentStateDef->flags & (STATE_FLAG_400 | STATE_FLAG_10000 | STATE_FLAG_20000)) &&
                 obj->modInst->rootTransform.world_matrix.w.y > -100.0f) {
-                func_8000FE9C(player, opponent);
+                check_ground_combo_hit(player, opponent);
             } else {
-                func_8000F494(player, opponent);
+                check_strike_hit(player, opponent);
             }
         }
 
-        if (player->unk_5F48 == 0 && (oppState->flags & (STATE_FLAG_20 | STATE_FLAG_800 | STATE_FLAG_1000))) {
-            if ((player->currentState->flags & (STATE_FLAG_400 | STATE_FLAG_10000 | STATE_FLAG_20000)) &&
+        if (player->hitCooldown == 0 && (oppState->flags & (STATE_FLAG_20 | STATE_FLAG_800 | STATE_FLAG_1000))) {
+            if ((player->currentStateDef->flags & (STATE_FLAG_400 | STATE_FLAG_10000 | STATE_FLAG_20000)) &&
                 obj->modInst->rootTransform.world_matrix.w.y > -100.0f) {
-                func_80010280(player, opponent);
+                check_air_combo_hit(player, opponent);
             } else {
-                func_8000FB30(player, opponent);
+                check_launcher_hit(player, opponent);
             }
         }
     }
@@ -432,25 +434,25 @@ void func_8001C1C0(Player *);
 void func_8001BF40(Player *);
 s32 func_8001DFE4(s32 arg0);
 
-void func_80004334(AssetDB *arg0, s16 playerId) {
+void func_80004334(CharacterDefinition *arg0, s16 playerId) {
     AssetDB1 *v1;
     AssetDB3 *a2;
     s32 s2;
     s32 i;
     s32 pad;
 
-    gPlayers[playerId].unk_50 = arg0->unk_30 + (u32) arg0;
-    gPlayers[playerId].unk_54 = arg0->unk_34 + (u32) arg0;
+    gPlayers[playerId].aiTable4 = arg0->unk_30 + (u32) arg0;
+    gPlayers[playerId].aiTable3 = arg0->unk_34 + (u32) arg0;
 
     v1 = arg0->unk_38 + (u32) arg0;
     gPlayers[playerId].unk_DB8 = v1->unk_00;
-    gPlayers[playerId].unk_58 = v1->unk_04;
-    gPlayers[playerId].unk_5C = v1->unk_00 + v1->unk_04; // required to match
+    gPlayers[playerId].aiTable2 = v1->unk_04;
+    gPlayers[playerId].aiTable1 = v1->unk_00 + v1->unk_04; // required to match
 
     a2 = arg0->unk_3C + (u32) arg0;
     gPlayers[playerId].unk_DBA = a2->unk_00;
-    gPlayers[playerId].unk_64 = a2->unk_04;
-    gPlayers[playerId].unk_60 = (((a2->unk_00 & 1) + a2->unk_00) & 0xFFFFFFFF) + a2->unk_04; // required to match
+    gPlayers[playerId].aiTable6 = a2->unk_04;
+    gPlayers[playerId].aiTable5 = (((a2->unk_00 & 1) + a2->unk_00) & 0xFFFFFFFF) + a2->unk_04; // required to match
 
     gPlayers[playerId].unk_180 = 0x20000;
     gPlayers[playerId].unk_A8.unk_00 = NULL;
@@ -505,14 +507,14 @@ void func_80004334(AssetDB *arg0, s16 playerId) {
 void func_800045B4(s16 playerId, s16 characterId) {
     char sp94[20];
     char sp80[20];
-    ActionState *s0;
+    PlayerStateDef *s0;
     s32 *pad3;
     s32 *sp74;
     Player *player;
     ModelInstance *modInst;
     s16 a12;
     Player12 *sp44;
-    AssetDB *s3;
+    CharacterDefinition *s3;
     s32 i;
     s32 pad;
     s16 q;
@@ -531,26 +533,26 @@ void func_800045B4(s16 playerId, s16 characterId) {
         func_80004304(sp80, D_8004B844[characterId].unk_04->name, ".db");
     }
 
-    s3 = (AssetDB *) gAssets[asset_find(sp80, playerId)].data;
-    player->unk_28 = s3->unk_00 + (u32) s3;
-    player->transitionTable = pad = s3->unk_04 + 4 + (u32) s3;
-    player->logicStates = s3->unk_08 + (u32) s3;
-    player->unk_30 = s3->unk_0C + (u32) s3;
-    player->unk_1C = s3->unk_10 + (u32) s3;
+    s3 = (CharacterDefinition *) gAssets[asset_find(sp80, playerId)].data;
+    player->transitionTimings = s3->unk_00 + (u32) s3;
+    player->transitionRules = pad = s3->transitionTable + 4 + (u32) s3;
+    player->logicStates = s3->logicStates + (u32) s3;
+    player->stateOverrideIndices = s3->unk_0C + (u32) s3;
+    player->frameTriggerOverrides = s3->unk_10 + (u32) s3;
 
-    sp74 = s3->unk_14 + (u32) s3;
+    sp74 = s3->stateTable + (u32) s3;
     if (sp44->isDummy) {
         *sp74 = 0;
     }
-    player->stateTable = s0 = (u32) s3 + s3->unk_14 + 4;
+    player->stateDefs = s0 = (u32) s3 + s3->stateTable + 4;
 
-    player->soundTable = pad = s3->unk_18 + (u32) s3 + 4;
+    player->soundTable = pad = s3->soundTable + (u32) s3 + 4;
     pad3 = s3->unk_1C + (u32) s3;
     player->unk_6C = *pad3;
     if (((!player->obj) && (!player->obj)) & 0xFFFFFFFFu) {} // @fake
-    player->unk_38 = s3->unk_20 + (u32) s3;
+    player->moveToRuleMap = s3->unk_20 + (u32) s3;
     player->unk_44 = s3->unk_24 + (u32) s3;
-    player->unk_48 = s3->unk_28 + (u32) s3;
+    player->effectTable = s3->unk_28 + (u32) s3;
     player->unk_4C = s3->unk_2C + (u32) s3;
     player->unk_68 = s3->unk_40 + (u32) s3;
 
@@ -579,7 +581,7 @@ void func_800045B4(s16 playerId, s16 characterId) {
         s0[q].unk_02 = func_80037394(modInst, a12) - 1;
     }
 
-    player->stateId = 0;
+    player->currentStateId = 0;
 
     for (i = 0; i < *sp74; i++, s0++) {
         if (s0->unk_02 == -1) {
@@ -588,9 +590,9 @@ void func_800045B4(s16 playerId, s16 characterId) {
             s0->unk_02 = func_80037394(modInst, s0->animationId) - 1;
         }
 
-        if (s0->unk_24 == -1 || s0->unk_26 == -1) {
-            s0->unk_24 = s0->unk_04 + 3;
-            s0->unk_26 = s0->unk_06 - 1;
+        if (s0->bodyHitboxStart == -1 || s0->bodyHitboxEnd == -1) {
+            s0->bodyHitboxStart = s0->hitboxActiveStart + 3;
+            s0->bodyHitboxEnd = s0->hitboxActiveEnd - 1;
         }
     }
 
@@ -604,10 +606,10 @@ void func_800045B4(s16 playerId, s16 characterId) {
         } else {
             func_80004304(sp80, D_8004B844[characterId].unk_04->name, ".sym");
         }
-        s3 = (AssetDB *) gAssets[asset_find(sp80, playerId)].data;
+        s3 = (CharacterDefinition *) gAssets[asset_find(sp80, playerId)].data;
         player->unk_9A8 = s3->unk_00 + (u32) s3;
-        player->unk_9AC = s3->unk_04 + (u32) s3;
-        player->unk_9B0 = s3->unk_08 + (u32) s3;
+        player->unk_9AC = s3->transitionTable + (u32) s3;
+        player->unk_9B0 = s3->logicStates + (u32) s3;
         player->unk_9B4 = s3->unk_0C + (u32) s3;
     }
 }
@@ -770,12 +772,12 @@ void func_800050FC(u16 arg0, u16 arg1) {
     switch (arg1) {
         case EVE:
             sp2C = create_worker(func_80005060, 0x1000);
-            func_8003453C(sp2C, &sp38[arg0]);
+            create_light(sp2C, &sp38[arg0]);
             sp2C->varObj[0] = &gPlayers[arg0];
             break;
         case MORPHIX:
             sp2C = create_worker(func_800050B0, 0x1000);
-            func_8003453C(sp2C, &sp30[arg0]);
+            create_light(sp2C, &sp30[arg0]);
             sp2C->varObj[0] = &gPlayers[arg0];
             break;
         case DEMITRON:
@@ -868,7 +870,7 @@ void func_800052EC(s16 playerId) {
     while (TRUE) {
         v00 = asset_find(sp74, playerId);
         if (v00 >= 0) {
-            gPlayers[playerId].unk_DC0[i++] = gAssets[v00].aux_data;
+            gPlayers[playerId].effectSprites[i++] = gAssets[v00].aux_data;
         } else {
             break;
         }
@@ -882,11 +884,11 @@ void func_800052EC(s16 playerId) {
     while (TRUE) {
         v00 = asset_find(sp74, playerId);
         if (v00 >= 0) {
-            gPlayers[playerId].unk_DCC[i++] = gAssets[v00].aux_data;
+            gPlayers[playerId].effectModels[i++] = gAssets[v00].aux_data;
         } else {
             v00 = asset_find(sp60, playerId);
             if (v00 >= 0) {
-                gPlayers[playerId].unk_DCC[i++] = gAssets[v00].aux_data;
+                gPlayers[playerId].effectModels[i++] = gAssets[v00].aux_data;
             } else {
                 break;
             }
@@ -903,7 +905,7 @@ void func_800052EC(s16 playerId) {
     gPlayers[playerId].audioTask = task_add(spDC, player_play_sounds, 1);
     gPlayers[playerId].cameraTask = task_add(spDC, task_default_func, 1);
     gPlayers[playerId].unk_18 = task_add(spDC, func_8003184C, 1);
-    gPlayers[playerId].table_24 = D_8004C1E8;
+    gPlayers[playerId].transitionActions = D_8004C1E8;
 
     D_80080214 = D_8004A730[gBattleSettings[PLAYER_1].characterId] + D_8004A730[gBattleSettings[PLAYER_2].characterId];
     D_80080218 = D_8004A748[gBattleSettings[PLAYER_1].characterId] + D_8004A748[gBattleSettings[PLAYER_2].characterId];
@@ -911,8 +913,8 @@ void func_800052EC(s16 playerId) {
     D_80080210 = 1600;
 
     D_80080228[playerId] = spDC;
-    D_80080238.unk_1000 = D_80080238.unk_1002 = 0;
-    D_80080238.unk_1008 = gFrameCounter;
+    D_80080238.headIndex = D_80080238.tailIndex = 0;
+    D_80080238.startFrameCounter = gFrameCounter;
 
     D_80080236 = TRUE;
 
@@ -926,8 +928,8 @@ void func_800052EC(s16 playerId) {
         D_80080236 = FALSE;
     }
 
-    gPlayers[playerId].currentState = gPlayers[playerId].stateTable + gPlayers[playerId].stateId;
-    func_80010664(&gPlayers[playerId], D_8004B844[characterId].unk_00);
+    gPlayers[playerId].currentStateDef = gPlayers[playerId].stateDefs + gPlayers[playerId].currentStateId;
+    init_player_hitboxes(&gPlayers[playerId], D_8004B844[characterId].unk_00);
 
     spDC->playerHp = gBattleSettings[playerId].initialHp;
     func_80004B30(spDC, playerId, characterId);
@@ -936,29 +938,29 @@ void func_800052EC(s16 playerId) {
         gPlayerInput[playerId].mirrored = TRUE;
     }
 
-    func_80012150(&gPlayers[playerId].unk_DE8, spDC->modInst,
-                  &spDC->modInst->transforms[D_8004B844[characterId].unk_00->unk_08].world_matrix,
-                  &gPlayers[playerId].unk_198.unk_150.world_matrix, &spDC->pos,
-                  &D_8004B844[characterId].unk_08[playerId]);
+    hitbox_render_init(&gPlayers[playerId].unk_DE8, spDC->modInst,
+                       &spDC->modInst->transforms[D_8004B844[characterId].unk_00->torsoBoneId].world_matrix,
+                       &gPlayers[playerId].hitboxBones.grabTransform.world_matrix, &spDC->pos,
+                       &D_8004B844[characterId].unk_08[playerId]);
 
-    if (D_8004B844[characterId].unk_00->unk_1C >= 0) {
-        func_80012150(&gPlayers[playerId].unk_2240, spDC->modInst,
-                      &spDC->modInst->transforms[D_8004B844[characterId].unk_00->unk_04].world_matrix,
-                      &gPlayers[playerId].unk_198.unk_38.world_matrix, &spDC->pos,
-                      &D_8004B844[characterId].unk_08[playerId]);
+    if (D_8004B844[characterId].unk_00->torsoParentBoneId >= 0) {
+        hitbox_render_init(&gPlayers[playerId].unk_2240, spDC->modInst,
+                           &spDC->modInst->transforms[D_8004B844[characterId].unk_00->footBoneId].world_matrix,
+                           &gPlayers[playerId].hitboxBones.torsoTransform.world_matrix, &spDC->pos,
+                           &D_8004B844[characterId].unk_08[playerId]);
         gPlayers[playerId].unk_5F4A = 1;
     } else {
         gPlayers[playerId].unk_5F4A = 0;
     }
 
-    func_80012150(&gPlayers[playerId].unk_3698, spDC->modInst,
-                  &spDC->modInst->transforms[D_8004B844[characterId].unk_00->unk_14].world_matrix,
-                  &spDC->modInst->transforms[D_8004B844[characterId].unk_00->unk_0C].world_matrix, &spDC->pos,
-                  &D_8004B844[characterId].unk_08[playerId]);
-    func_80012150(&gPlayers[playerId].unk_4AF0, spDC->modInst,
-                  &spDC->modInst->transforms[D_8004B844[characterId].unk_00->unk_18].world_matrix,
-                  &spDC->modInst->transforms[D_8004B844[characterId].unk_00->unk_10].world_matrix, &spDC->pos,
-                  &D_8004B844[characterId].unk_08[playerId]);
+    hitbox_render_init(&gPlayers[playerId].unk_3698, spDC->modInst,
+                       &spDC->modInst->transforms[D_8004B844[characterId].unk_00->shinBoneId].world_matrix,
+                       &spDC->modInst->transforms[D_8004B844[characterId].unk_00->thighBoneId].world_matrix, &spDC->pos,
+                       &D_8004B844[characterId].unk_08[playerId]);
+    hitbox_render_init(&gPlayers[playerId].unk_4AF0, spDC->modInst,
+                       &spDC->modInst->transforms[D_8004B844[characterId].unk_00->armBoneId].world_matrix,
+                       &spDC->modInst->transforms[D_8004B844[characterId].unk_00->headBoneId].world_matrix, &spDC->pos,
+                       &D_8004B844[characterId].unk_08[playerId]);
 
     gPlayers[playerId].unk_184 = FALSE;
     if (gPlayMode == PLAY_MODE_PRACTICE) {
@@ -1015,13 +1017,13 @@ void create_player_obj(s16 playerId) {
     D_80080214 = D_8004A730[gBattleSettings[PLAYER_1].characterId] + D_8004A730[gBattleSettings[PLAYER_2].characterId];
     D_80080218 = D_8004A748[gBattleSettings[PLAYER_1].characterId] + D_8004A748[gBattleSettings[PLAYER_2].characterId];
     D_8008020C = 0x800;
-    D_80080238.unk_1000 = D_80080238.unk_1002 = 0;
+    D_80080238.headIndex = D_80080238.tailIndex = 0;
     D_80080236 = TRUE;
-    D_80080238.unk_1008 = gFrameCounter;
+    D_80080238.startFrameCounter = gFrameCounter;
     obj->rotation.y = 0xC00 - spB0[playerId];
     D_80080210 = 1600;
     obj->flags = (obj->flags & OBJ_FLAG_2000) | OBJ_FLAG_MODEL;
-    D_80080238.unk_1000 = D_80080238.unk_1002 = 0;
+    D_80080238.headIndex = D_80080238.tailIndex = 0;
     D_80080236 = TRUE;
 
     if (gBattleSettings[playerId].isCpu) {
@@ -1034,7 +1036,7 @@ void create_player_obj(s16 playerId) {
         D_80080236 = FALSE;
     }
 
-    gPlayers[playerId].currentState = gPlayers[playerId].stateTable + gPlayers[playerId].stateId;
+    gPlayers[playerId].currentStateDef = gPlayers[playerId].stateDefs + gPlayers[playerId].currentStateId;
     obj->playerHp = gBattleSettings[playerId].initialHp;
 
     if (playerId == PLAYER_1) {
@@ -1048,34 +1050,34 @@ u8 player_make_transition(Player *player, u8 arg1, u16 logicState) {
     u16 sp4E;
     u16 sp4C;
     ObjectTask *animTask;
-    PlayerSubE *sp44;
+    FrameTriggerOverride *sp44;
     u16 sp42;
-    PlayerSub5 *sp3C;
+    TransitionAction *sp3C;
     s32 pad1;
     ObjectTaskParams *animTaskParams;
-    PlayerSubD *pad3;
-    ActionState *nextState;
+    StateOverrideIndex *pad3;
+    PlayerStateDef *nextState;
     u16 transitionId;
-    TransitionDef *transition;
+    TransitionRule *transition;
     s16 stateId;
     u16 i;
 
     transitionId = player->logicStates[logicState];
-    transition = &player->transitionTable[transitionId];
-    sp4C = transition->index_in_field28;
-    sp4E = transition->index_in_field24;
+    transition = &player->transitionRules[transitionId];
+    sp4C = transition->timingIndex;
+    sp4E = transition->actionIndex;
     // clang-format off
-    stateId = transition->stateId; \
-    if (stateId == player->stateId && !arg1) {
+    stateId = transition->targetStateId; \
+    if (stateId == player->currentStateId && !arg1) {
         stateId = -1;
     }
     // clang-format on
 
-    sp3C = player->table_24 + sp4E;
-    pad3 = player->unk_30 + player->stateId;
+    sp3C = player->transitionActions + sp4E;
+    pad3 = player->stateOverrideIndices + player->currentStateId;
 
-    sp44 = pad3->unk_00 + player->unk_1C;
-    sp42 = pad3->unk_02;
+    sp44 = pad3->overrideTableOffset + player->frameTriggerOverrides;
+    sp42 = pad3->numOverrides;
 
     if (sp3C->checkFunc != NULL && !sp3C->checkFunc(player->obj)) {
         return FALSE;
@@ -1100,9 +1102,9 @@ u8 player_make_transition(Player *player, u8 arg1, u16 logicState) {
                 player->unk_08->start_delay = 0;
                 player->unk_08->flags = TASK_FLAG_ENABLED;
 
-                animTaskParams->unk_08 = sp44->unk_06;
-                animTaskParams->stateId = sp44->unk_00;
-                animTaskParams->unk_10 = sp3C->unk_08;
+                animTaskParams->unk_08 = sp44->transitionActionOverride;
+                animTaskParams->stateId = sp44->stateIdOverride;
+                animTaskParams->unk_10 = sp3C->transitionFunc;
             } else {
                 animTask->func = func_80024764;
                 animTask->start_delay = 0;
@@ -1112,9 +1114,9 @@ u8 player_make_transition(Player *player, u8 arg1, u16 logicState) {
                 player->unk_08->start_delay = 0;
                 player->unk_08->flags = TASK_FLAG_ENABLED;
 
-                animTaskParams->unk_08 = sp44->unk_06;
-                animTaskParams->stateId = sp44->unk_00;
-                animTaskParams->unk_10 = sp3C->unk_08;
+                animTaskParams->unk_08 = sp44->transitionActionOverride;
+                animTaskParams->stateId = sp44->stateIdOverride;
+                animTaskParams->unk_10 = sp3C->transitionFunc;
 
                 player->unk_180 |= 0x20000;
             }
@@ -1122,7 +1124,7 @@ u8 player_make_transition(Player *player, u8 arg1, u16 logicState) {
         }
     }
 
-    player->unk_08->func = sp3C->unk_08;
+    player->unk_08->func = sp3C->transitionFunc;
     player->unk_08->start_delay = 0;
     player->unk_08->flags = TASK_FLAG_ENABLED;
     if (stateId >= 0) {
@@ -1136,14 +1138,14 @@ label:
     if (stateId >= 0) {
         animTaskParams->unk_04 = stateId;
         animTaskParams->unk_00_f = sp3C->animFunc;
-        player->prevStateId = player->stateId;
-        player->stateId = stateId;
+        player->previousStateId = player->currentStateId;
+        player->currentStateId = stateId;
 
-        nextState = player->stateTable + stateId;
-        if (nextState->unk_2C >= 0 && nextState->unk_2E == -1) {
+        nextState = player->stateDefs + stateId;
+        if (nextState->cameraStateIndex >= 0 && nextState->cameraAnimIndex == -1) {
             func_8002C340();
-            camera_set_animation(gCamera,
-                                 player->obj->modInst->animations[player->stateTable[nextState->unk_2C].animationId]);
+            camera_set_animation(
+                gCamera, player->obj->modInst->animations[player->stateDefs[nextState->cameraStateIndex].animationId]);
             gCamera->currentTask->func = func_8002C490;
             gCamera->currentTask->start_delay = 0;
             gCamera->currentTask->flags = TASK_FLAG_ENABLED;
@@ -1157,53 +1159,53 @@ label:
     player->unk_186 = player->unk_7C;
     player->unk_18C = player->flags;
     player->unk_7C = sp4E;
-    player->unk_88 = player->unk_28 + sp4C;
+    player->currentTiming = player->transitionTimings + sp4C;
 
     player->flags = sp3C->playerFlags | (player->flags & sp3C->preserveFlags);
-    player->unk_98 = sp3C;
+    player->currentAction = sp3C;
     player->unk_74 = transitionId;
-    player->unk_78 = logicState;
+    player->currentRuleIndex = logicState;
 
     func_800035D0(player);
 
-    if (gPlayers[1 - player->playerId].unk_5F48 < 3) {
-        gPlayers[1 - player->playerId].unk_5F48 = 3;
+    if (gPlayers[1 - player->playerId].hitCooldown < 3) {
+        gPlayers[1 - player->playerId].hitCooldown = 3;
     }
 
     player->unk_8C = gFrameCounter;
-    if (player->unk_88->unk_0C != 0) {
-        player->unk_08->start_delay = player->unk_88->unk_0C;
+    if (player->currentTiming->unk_0C != 0) {
+        player->unk_08->start_delay = player->currentTiming->unk_0C;
     }
-    player->moveTimeout = player->unk_88->moveTimeout;
-    player->obj->velocity.z = player->unk_88->unk_08;
+    player->autoTransitionTimer = player->currentTiming->moveTimeout;
+    player->obj->velocity.z = player->currentTiming->unk_08;
     player->obj->flags &= ~OBJ_FLAG_800;
-    player->nextLogicState = player->logicStates[logicState + 1];
+    player->nextRuleIndex = player->logicStates[logicState + 1];
 
     return TRUE;
 }
 
-u8 func_8000636C(Player *player, s16 arg1, u8 arg2) {
-    s16 v1;
+u8 func_8000636C(Player *player, s16 moveId, u8 arg2) {
+    s16 logicState;
 
-    v1 = player->unk_38[arg1];
+    logicState = player->moveToRuleMap[moveId];
     player->animTask->flags &= ~TASK_FLAG_FRAME_TRIGGER;
-    return player_make_transition(player, arg2, v1);
+    return player_make_transition(player, arg2, logicState);
 }
 
-u8 func_800063C4(Player *player, s16 arg1, u8 arg2) {
+u8 func_800063C4(Player *player, s16 moveId, u8 arg2) {
     if (gBattleSettings[player->playerId].isCpu) {
-        player->moveTimeout = 0;
-        return func_8001B7D0(player, arg1);
+        player->autoTransitionTimer = 0;
+        return func_8001B7D0(player, moveId);
     } else {
-        return func_8000636C(player, arg1, arg2);
+        return func_8000636C(player, moveId, arg2);
     }
 }
 
 u8 player_select_transition(Player *player, u8 arg1) {
     ObjectTask *animTask;
     void *sp68;
-    TransitionDef *possibleMove;
-    TransitionDef *transitionTable;
+    TransitionRule *possibleMove;
+    TransitionRule *transitionTable;
     s16 sp5E;
     s16 transitionIndex;
     s16 *logicStates;
@@ -1214,9 +1216,9 @@ u8 player_select_transition(Player *player, u8 arg1) {
     s32 pad2[2];
     u16 buttons;
 
-    transitionIndex = player->nextLogicState;
+    transitionIndex = player->nextRuleIndex;
     sp68 = NULL;
-    transitionTable = player->transitionTable;
+    transitionTable = player->transitionRules;
     logicStates = player->logicStates;
     sp4C = gFrameCounter - player->unk_8C;
 
@@ -1248,7 +1250,7 @@ u8 player_select_transition(Player *player, u8 arg1) {
         }
 
         // triggers only on timeout, no input check
-        if ((moveFlags & TRANSITION_FLAG_TIMEOUT_TRIGGER) && player->moveTimeout <= 0) {
+        if ((moveFlags & TRANSITION_FLAG_TIMEOUT_TRIGGER) && player->autoTransitionTimer <= 0) {
             gPlayerInput[player->playerId].accumulated = FALSE;
             D_80080236 = TRUE;
             if (player_make_transition(player, TRUE, transitionIndex)) {
@@ -1264,17 +1266,19 @@ u8 player_select_transition(Player *player, u8 arg1) {
         // move to turn around
         if (buttons && (moveFlags & TRANSITION_FLAG_10) && (moveFlags & TRANSITION_FLAG_800) &&
             (player->flags & PLAYER_FLAG_NOT_FACING_OPP)) {
-            if (possibleMove->buttons == 0 || (possibleMove->buttons != 0 && masked_buttons == possibleMove->buttons) ||
-                (possibleMove->buttons == 0xFFFF && masked_buttons != 0)) {
+            if (possibleMove->requiredButtons == 0 ||
+                (possibleMove->requiredButtons != 0 && masked_buttons == possibleMove->requiredButtons) ||
+                (possibleMove->requiredButtons == 0xFFFF && masked_buttons != 0)) {
 
-                if ((moveFlags & TRANSITION_FLAG_4) && player->currentState == player->stateTable + player->stateId &&
-                    player->currentState->unk_02 != player->obj->frameIndex &&
+                if ((moveFlags & TRANSITION_FLAG_4) &&
+                    player->currentStateDef == player->stateDefs + player->currentStateId &&
+                    player->currentStateDef->unk_02 != player->obj->frameIndex &&
                     !(player->flags & (PLAYER_FLAG_800 | PLAYER_FLAG_4000))) {
                     animTask = player->animTask;
                     animTask->params.unk_00_i = transitionIndex;
                     animTask->params.unk_04 = possibleMove;
                     animTask->flags |= TASK_FLAG_FRAME_TRIGGER;
-                    animTask->unk_86 = player->currentState->unk_02 - 1;
+                    animTask->unk_86 = player->currentStateDef->unk_02 - 1;
                     animTask->conditional_context.func = func_800247CC;
                     animTask->conditional_context.flags = TASK_FLAG_CALL | TASK_FLAG_ENABLED;
 
@@ -1291,16 +1295,17 @@ u8 player_select_transition(Player *player, u8 arg1) {
             }
         }
 
-        if (possibleMove->buttons == masked_buttons &&
+        if (possibleMove->requiredButtons == masked_buttons &&
             ((moveFlags & TRANSITION_FLAG_1) ||
-             ((moveFlags & TRANSITION_FLAG_4) && player->currentState == player->stateTable + player->stateId))) {
+             ((moveFlags & TRANSITION_FLAG_4) &&
+              player->currentStateDef == player->stateDefs + player->currentStateId))) {
 
             gPlayerInput[player->playerId].accumulated = FALSE;
 
             if (moveFlags & TRANSITION_FLAG_20) {
-                if (player->currentState->unk_02 != player->obj->frameIndex &&
+                if (player->currentStateDef->unk_02 != player->obj->frameIndex &&
                     (!(player->flags & (PLAYER_FLAG_800 | PLAYER_FLAG_4000)) ||
-                     player->currentState->duration != player->obj->frameIndex)) {
+                     player->currentStateDef->duration != player->obj->frameIndex)) {
                     transitionIndex += 2;
                     continue;
                 } else if (player_make_transition(player, TRUE, transitionIndex)) {
@@ -1311,20 +1316,20 @@ u8 player_select_transition(Player *player, u8 arg1) {
                 }
             }
 
-            if ((moveFlags & TRANSITION_FLAG_4) && player->currentState->unk_02 != player->obj->frameIndex &&
+            if ((moveFlags & TRANSITION_FLAG_4) && player->currentStateDef->unk_02 != player->obj->frameIndex &&
                 !(player->flags & (PLAYER_FLAG_800 | PLAYER_FLAG_4000))) {
                 animTask = player->animTask;
                 animTask->params.unk_00_i = transitionIndex;
                 animTask->params.unk_04_ptr = possibleMove;
                 animTask->flags |= TASK_FLAG_FRAME_TRIGGER;
-                animTask->unk_86 = player->currentState->unk_02 - 1;
+                animTask->unk_86 = player->currentStateDef->unk_02 - 1;
                 animTask->conditional_context.func = func_800247CC;
                 animTask->conditional_context.flags = TASK_FLAG_CALL | TASK_FLAG_ENABLED;
                 return TRUE;
             }
 
             if ((moveFlags & TRANSITION_FLAG_40)) {
-                if (sp4C <= player->unk_28[possibleMove->index_in_field28].unk_06) {
+                if (sp4C <= player->transitionTimings[possibleMove->timingIndex].unk_06) {
                     if (player_make_transition(player, TRUE, transitionIndex)) {
                         return TRUE;
                     } else {
@@ -1349,7 +1354,7 @@ u8 player_select_transition(Player *player, u8 arg1) {
         gPlayerInput[player->playerId].accumulated = FALSE;
         D_80080236 = TRUE;
         if (player_make_transition(player, TRUE, sp5E)) {
-            player->nextLogicState = logicStates[sp5E + 1];
+            player->nextRuleIndex = logicStates[sp5E + 1];
             D_80080236 = FALSE;
             return TRUE;
         }
@@ -1362,14 +1367,14 @@ u8 player_select_transition(Player *player, u8 arg1) {
 u8 ai_select_transition(Player *player) {
     s16 nextLogicState;
     u16 transitionFlags;
-    TransitionDef *t2;
-    TransitionDef *transitionTable;
-    TransitionDef *possibleTransition;
+    TransitionRule *t2;
+    TransitionRule *transitionTable;
+    TransitionRule *possibleTransition;
     s16 sp26;
     s16 *logicStates;
 
-    nextLogicState = player->nextLogicState;
-    transitionTable = player->transitionTable;
+    nextLogicState = player->nextRuleIndex;
+    transitionTable = player->transitionRules;
     logicStates = player->logicStates;
     t2 = NULL;
 
@@ -1392,7 +1397,7 @@ u8 ai_select_transition(Player *player) {
     if (t2 != NULL) {
         D_80080236 = TRUE;
         if (player_make_transition(player, TRUE, sp26)) {
-            player->nextLogicState = logicStates[sp26 + 1];
+            player->nextRuleIndex = logicStates[sp26 + 1];
             D_80080236 = FALSE;
             return TRUE;
         }

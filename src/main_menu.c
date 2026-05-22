@@ -349,7 +349,7 @@ void func_8001A158(Object *obj, s16 arg1) {
     if (obj != NULL) {
         obj->varObj[1] = v0;
     }
-    func_800343F8(v0, FALSE);
+    enable_texture_scrolling_for_object(v0, FALSE);
 
     create_worker(func_80019F08, 0x1000);
 }
@@ -475,7 +475,7 @@ void func_8001A674(Object *obj) {
     Player *s2 = &gPlayers[s3];
     s16 i = 0;
 
-    if (s2->obj->frameIndex == s2->currentState->unk_02 - 2) {
+    if (s2->obj->frameIndex == s2->currentStateDef->unk_02 - 2) {
         gGlobalFlags |= GAME_FLAG_MODE_DONE;
         obj->flags |= OBJ_FLAG_DELETE;
         gNextGameMode = GAME_MODE_BATTLE_DEMITRON;
@@ -501,7 +501,7 @@ void func_8001A7DC(Object *obj) {
     s16 i = 0;
     s16 *qwe;
 
-    if (s1->obj->frameIndex == s1->currentState->unk_02 - 2) {
+    if (s1->obj->frameIndex == s1->currentStateDef->unk_02 - 2) {
         obj->vars[0] = 10;
         obj->fn_render = func_8001A63C;
     }
@@ -523,7 +523,7 @@ void func_8001A7DC(Object *obj) {
         }
 
         if (s1->obj->frameIndex == 278) {
-            func_800226E8(s->obj, 9);
+            spawn_effect(s->obj, 9);
         }
     }
 }

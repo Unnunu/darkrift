@@ -26,19 +26,19 @@ void func_80021DC4(Object *obj) {
     ;
     for (s0 = player->unk_9C->unk_00; s0->unk_00 != 255; s0++) {
         if (obj->frameIndex == s0->unk_01) {
-            func_800226E8(obj, s0->unk_00);
+            spawn_effect(obj, s0->unk_00);
         }
     }
 }
 
 void func_80021E34(Object *obj) {
     Player *player = (Player *) obj->vars[0];
-    ActionState *state;
+    PlayerStateDef *state;
 
-    state = &player->stateTable[player->stateId];
+    state = &player->stateDefs[player->currentStateId];
     if (state->unk_28 >= 0) {
         player->unk_9C = &player->unk_4C[state->unk_28];
-        player->unk_194 = NULL;
+        player->currentEffect = NULL;
         obj->currentTask->func = func_80021DC4;
     } else {
         TASK_END(obj->currentTask);
@@ -56,7 +56,7 @@ void func_80021EA8(Object *obj, Object *obj2) {
     }
 }
 
-void func_80021EE8(Object *obj, PlayerSubG *arg1) {
+void func_80021EE8(Object *obj, PlayerSubG *effect) {
     Player *player = (Player *) obj->vars[0];
 
     player->flags &= ~PLAYER_FLAG_2000000;
@@ -84,7 +84,7 @@ void func_80021EE8(Object *obj, PlayerSubG *arg1) {
     obj->flags |= OBJ_FLAG_DELETE;
 }
 
-void func_80021FEC(Object *obj) {
+void update_effect_sprite(Object *obj) {
     u8 *t0;
     PlayerSubG *s0;
     s32 temp2;
@@ -99,7 +99,7 @@ void func_80021FEC(Object *obj) {
     player = (Player *) obj->vars[0];
     playerObj = player->obj;
 
-    if ((s0->unk_2C & 2) && s0->unk_02 >= 0) {
+    if ((s0->flags & 2) && s0->unk_02 >= 0) {
         func_80028120(playerObj, s0, &sp28);
         obj->pos.x = sp28.x;
         obj->pos.y = sp28.y;
@@ -120,7 +120,7 @@ void func_80021FEC(Object *obj) {
         }
 
         obj->frameIndex = v1;
-        if ((s0->unk_2C & 1) && obj->frameIndex >= s0->unk_36) {
+        if ((s0->flags & 1) && obj->frameIndex >= s0->unk_36) {
             if (obj->unk_088.a >= obj->vars[9]) {
                 obj->unk_088.a -= obj->vars[9];
             } else {
@@ -133,12 +133,12 @@ void func_80021FEC(Object *obj) {
 
     obj->flags &= ~OBJ_FLAG_HIDDEN;
 
-    if (((s0->unk_2C & 0x10) && --obj->vars[5] < 0) || obj->pos.y > 0) { // @bug probably
+    if (((s0->flags & 0x10) && --obj->vars[5] < 0) || obj->pos.y > 0) { // @bug probably
         func_80021EE8(obj, s0);
         return;
     }
 
-    if (s0->unk_2C & 4) {
+    if (s0->flags & 4) {
         func_80022EC0(obj);
     }
 
@@ -149,12 +149,12 @@ void func_80021FEC(Object *obj) {
     temp2 = s0->unk_30;
     if (temp2 >= 0 && --obj->vars[8] < 0) {
         obj->vars[8] = s0->unk_34;
-        func_800226E8(obj, temp2 ^ 0); // required to match
+        spawn_effect(obj, temp2 ^ 0); // required to match
     }
 }
 
-void func_80022218(Object *obj) {
-    PlayerSubG *s0;
+void update_effect_model(Object *obj) {
+    PlayerSubG *effect;
     s32 temp2;
     Player *player;
     u8 v1;
@@ -162,14 +162,14 @@ void func_80022218(Object *obj) {
     Object *playerObj;
     Vec4i sp2C;
 
-    s0 = (PlayerSubG *) obj->vars[7];
+    effect = (PlayerSubG *) obj->vars[7];
     player = (Player *) obj->vars[0];
     playerObj = player->obj;
 
     D_8008012C |= GFX_FLAG_10;
 
-    if ((s0->unk_2C & 2) && s0->unk_02 >= 0) {
-        func_80028120(playerObj, s0, &sp2C);
+    if ((effect->flags & 2) && effect->unk_02 >= 0) {
+        func_80028120(playerObj, effect, &sp2C);
         obj->pos.x = sp2C.x;
         obj->pos.y = sp2C.y;
         obj->pos.z = sp2C.z;
@@ -178,22 +178,22 @@ void func_80022218(Object *obj) {
     obj->flags &= ~OBJ_FLAG_HIDDEN;
     obj->frameIndex++;
 
-    if (s0->unk_2C & 0x10) {
+    if (effect->flags & 0x10) {
         if (--obj->vars[5] < 0 || obj->pos.y > 0) {
-            func_80021EE8(obj, s0);
+            func_80021EE8(obj, effect);
             return;
         }
         if (obj->frameIndex >= obj->modInst->numAnimFrames) {
-            obj->frameIndex = s0->unk_24;
+            obj->frameIndex = effect->unk_24;
         }
     }
 
     if (obj->frameIndex >= obj->modInst->numAnimFrames) {
-        func_80021EE8(obj, s0);
+        func_80021EE8(obj, effect);
         return;
     }
 
-    if (s0->unk_2C & 4) {
+    if (effect->flags & 4) {
         func_80022EC0(obj);
     }
 
@@ -201,20 +201,20 @@ void func_80022218(Object *obj) {
     obj->pos.y += obj->velocity.y;
     obj->pos.z += obj->velocity.z;
 
-    if ((s0->unk_2C & 1) && obj->frameIndex >= s0->unk_36) {
+    if ((effect->flags & 1) && obj->frameIndex >= effect->unk_36) {
         if (obj->unk_088.a >= obj->vars[9]) {
             obj->unk_088.a -= obj->vars[9];
         } else {
             obj->unk_088.a = 0;
-            func_80021EE8(obj, s0);
+            func_80021EE8(obj, effect);
             return;
         }
     }
 
-    temp2 = s0->unk_30;
+    temp2 = effect->unk_30;
     if (temp2 >= 0 && --obj->vars[8] < 0) {
-        obj->vars[8] = s0->unk_34;
-        func_800226E8(obj, temp2 ^ 0); // required to match
+        obj->vars[8] = effect->unk_34;
+        spawn_effect(obj, temp2 ^ 0); // required to match
     }
 }
 
@@ -226,18 +226,18 @@ void func_80022428(Object *obj, Object *obj2) {
 
     player = (Player *) obj->vars[0];
     v1 = (PlayerSubG *) obj->vars[7];
-    v2 = player->unk_48 + v1->unk_42;
+    v2 = player->effectTable + v1->unk_42;
 
     obj->unk_07C = obj->unk_07A = 0;
     obj->flags |= OBJ_FLAG_DELETE;
     TASK_END(obj->currentTask);
 
     v2->unk_00 = 0x10;
-    v2->unk_2C |= 0x10;
+    v2->flags |= 0x10;
     v2->unk_36 = 0;
     v2->unk_38 = 0x10;
 
-    v0 = func_800226E8(obj, v1->unk_42);
+    v0 = spawn_effect(obj, v1->unk_42);
     if (v0 != NULL) {
         obj->unk_076 |= 8;
         v0->unk_076 &= ~2;
@@ -274,7 +274,7 @@ void func_8002250C(Object *obj, Object *arg1) {
     sp30.z += obj->pos.z;
     obj->unk_1FC = 0;
 
-    v0 = create_model_instance(&sp30, 0x1000, func_80021D40, player->unk_DCC[v1->unk_42]);
+    v0 = create_model_instance(&sp30, 0x1000, func_80021D40, player->effectModels[v1->unk_42]);
     if (v0 == NULL) {
         return;
     }
@@ -289,10 +289,10 @@ void func_8002250C(Object *obj, Object *arg1) {
         v0->unk_07C = 2;
     }
     v0->unk_1FC = 300;
-    func_8003453C(v0, &sp24[player->playerId]);
+    create_light(v0, &sp24[player->playerId]);
 }
 
-ObjFunc D_8004A4C8[2] = { func_80022218, func_80021FEC }; // unused
+ObjFunc D_8004A4C8[2] = { update_effect_model, update_effect_sprite }; // unused
 
 void func_80022694(Object *obj, s32 arg1, Object *arg2) {
     Player *player = (Player *) obj->vars[0];
@@ -308,145 +308,145 @@ void func_80022694(Object *obj, s32 arg1, Object *arg2) {
     }
 }
 
-Object *func_800226E8(Object *obj, s32 arg1) {
-    Vec4i sp40;
-    Object *a2;
+Object *spawn_effect(Object *obj, s32 effectId) {
+    Vec4i pos;
+    Object *effectObj;
     Player *player = (Player *) obj->vars[0];
-    PlayerSubG *s0 = player->unk_48 + arg1;
+    PlayerSubG *effect = player->effectTable + effectId;
     s32 pad[2];
 
-    if (s0->unk_02 >= 0) {
-        func_80028120(obj, s0, &sp40);
+    if (effect->unk_02 >= 0) {
+        func_80028120(obj, effect, &pos);
     } else {
-        sp40.x = s0->unk_04;
-        sp40.y = s0->unk_08;
-        sp40.z = s0->unk_0C;
-        func_8001370C(&sp40, &obj->rotation);
-        sp40.x += obj->pos.x;
-        sp40.y += obj->pos.y;
-        sp40.z += obj->pos.z;
+        pos.x = effect->originX;
+        pos.y = effect->originY;
+        pos.z = effect->originZ;
+        func_8001370C(&pos, &obj->rotation);
+        pos.x += obj->pos.x;
+        pos.y += obj->pos.y;
+        pos.z += obj->pos.z;
     }
 
-    if (s0->unk_20 >= 0) {
-        a2 = create_3dsprite(&sp40, 0x1100, func_80021FEC, player->unk_DC0[s0->unk_20]);
-        if (a2 == NULL) {
-            return a2;
+    if (effect->spriteIndex >= 0) {
+        effectObj = create_3dsprite(&pos, 0x1100, update_effect_sprite, player->effectSprites[effect->spriteIndex]);
+        if (effectObj == NULL) {
+            return effectObj;
         }
 
-        a2->frameIndex = player->unk_44[s0->unk_1C];
-        a2->unk_08C = a2->vars[4] = s0->unk_1E;
+        effectObj->frameIndex = player->unk_44[effect->unk_1C];
+        effectObj->unk_08C = effectObj->vars[4] = effect->unk_1E;
     } else {
-        a2 = create_model_instance(&sp40, 0x1000, func_80022218, player->unk_DCC[s0->unk_22]);
-        if (a2 == NULL) {
-            return a2;
+        effectObj = create_model_instance(&pos, 0x1000, update_effect_model, player->effectModels[effect->modelIndex]);
+        if (effectObj == NULL) {
+            return effectObj;
         }
 
-        a2->flags |= OBJ_FLAG_HIDDEN;
-        a2->currentTask->start_delay = s0->unk_1E;
-        player->unk_194 = a2;
+        effectObj->flags |= OBJ_FLAG_HIDDEN;
+        effectObj->currentTask->start_delay = effect->unk_1E;
+        player->currentEffect = effectObj;
     }
 
-    if (a2->modInst == NULL) {
+    if (effectObj->modInst == NULL) {
         return NULL;
     }
 
-    if (a2 != NULL) {
-        if (s0->unk_2C & 4) {
+    if (effectObj != NULL) {
+        if (effect->flags & 4) {
             if (player->playerId != PLAYER_1) {
-                a2->unk_07A = 2;
+                effectObj->unk_07A = 2;
             } else {
-                a2->unk_07C = 2;
+                effectObj->unk_07C = 2;
             }
-            a2->unk_1FC = 300;
-            a2->unk_076 |= 2;
-            a2->unk_076 |= 8;
-            a2->unk_1E8 = func_80021EA8;
+            effectObj->unk_1FC = 300;
+            effectObj->unk_076 |= 2;
+            effectObj->unk_076 |= 8;
+            effectObj->unk_1E8 = func_80021EA8;
             player->flags |= PLAYER_FLAG_2000000;
         }
 
-        if (s0->unk_2C & 0x40) {
-            func_8003453C(a2, &s0->unk_44[player->playerId]);
+        if (effect->flags & 0x40) {
+            create_light(effectObj, &effect->lightColors[player->playerId]);
         }
 
-        a2->vars[0] = player;
-        a2->vars[1] = player->unk_44 + s0->unk_1C;
-        a2->vars[2] = 0;
-        a2->vars[5] = s0->unk_00;
-        a2->vars[6] = player->currentState;
-        a2->vars[7] = s0;
-        a2->vars[3] = arg1;
-        a2->velocity.x = s0->unk_10;
-        a2->velocity.y = s0->unk_14;
-        a2->velocity.z = s0->unk_18;
-        a2->unk_040.x = 0xF00000;
-        a2->unk_040.y = 0xF00000;
-        a2->unk_040.z = 0xF00000;
+        effectObj->vars[0] = player;
+        effectObj->vars[1] = player->unk_44 + effect->unk_1C;
+        effectObj->vars[2] = 0;
+        effectObj->vars[5] = effect->unk_00;
+        effectObj->vars[6] = player->currentStateDef;
+        effectObj->vars[7] = effect;
+        effectObj->vars[3] = effectId;
+        effectObj->velocity.x = effect->velocityX;
+        effectObj->velocity.y = effect->velocityY;
+        effectObj->velocity.z = effect->velocityZ;
+        effectObj->unk_040.x = 0xF00000;
+        effectObj->unk_040.y = 0xF00000;
+        effectObj->unk_040.z = 0xF00000;
 
-        func_8001370C(&a2->velocity, &obj->rotation);
+        func_8001370C(&effectObj->velocity, &obj->rotation);
 
-        a2->vars[8] = s0->unk_32;
-        a2->rotation.y = player->obj->rotation.y;
-        s0->unk_40 = 0;
+        effectObj->vars[8] = effect->unk_32;
+        effectObj->rotation.y = player->obj->rotation.y;
+        effect->unk_40 = 0;
 
-        if (s0->unk_2C & 9) {
-            a2->flags |= OBJ_FLAG_2000;
-            a2->unk_088.a = 255;
+        if (effect->flags & 9) {
+            effectObj->flags |= OBJ_FLAG_2000;
+            effectObj->unk_088.a = 255;
 
-            if (s0->unk_38 > 0) {
-                a2->vars[9] = 255 / s0->unk_38;
-            } else if (s0->unk_20 < 0 && a2->modInst->numAnimFrames != 0) {
-                a2->vars[9] = 255 / a2->modInst->numAnimFrames;
+            if (effect->unk_38 > 0) {
+                effectObj->vars[9] = 255 / effect->unk_38;
+            } else if (effect->spriteIndex < 0 && effectObj->modInst->numAnimFrames != 0) {
+                effectObj->vars[9] = 255 / effectObj->modInst->numAnimFrames;
             } else {
-                a2->vars[9] = 255 / a2->modInst->numNodes; // ?????????
+                effectObj->vars[9] = 255 / effectObj->modInst->numNodes; // ?????????
             }
 
-            if (player->characterId == DEMITRON && s0->unk_22 == 0) {
+            if (player->characterId == DEMITRON && effect->modelIndex == 0) {
 
-                a2->vars[9] = 128 / a2->modInst->numAnimFrames;
-                a2->unk_088.a = 128;
+                effectObj->vars[9] = 128 / effectObj->modInst->numAnimFrames;
+                effectObj->unk_088.a = 128;
             }
         }
 
-        func_80022694(obj, arg1, a2);
+        func_80022694(obj, effectId, effectObj);
     }
 
-    return a2;
+    return effectObj;
 }
 
 u8 func_80022B44(Player *arg0, Player *arg1, Object *arg2) {
     s16 v0;
-    ActionState *a2;
+    PlayerStateDef *a2;
     u8 isBlock;
 
-    a2 = (ActionState *) arg2->vars[6];
+    a2 = (PlayerStateDef *) arg2->vars[6];
 
     if (D_800801F0 && !D_8013C250) {
         return FALSE;
     }
 
-    v0 = func_8000F074(arg0, arg1, a2);
+    v0 = apply_damage_and_reaction(arg0, arg1, a2);
     isBlock = (v0 == 270 || v0 == 271);
     return isBlock;
 }
 
 void func_80022BB0(Object *obj, Player *arg1, PlayerSubG *arg2, u8 arg3) {
     Player *player = (Player *) obj->vars[0];
-    PlayerSubG *sp18 = player->unk_48 + arg2->unk_42;
+    PlayerSubG *sp18 = player->effectTable + arg2->unk_42;
     Object *v00;
 
     if (func_80022B44(arg1, player, obj)) {
         sp18->unk_00 = 0x10;
-        sp18->unk_2C |= 0x10;
+        sp18->flags |= 0x10;
         sp18->unk_36 = 0;
         sp18->unk_38 = 0x10;
     } else {
         sp18->unk_00 = 0;
-        sp18->unk_2C &= ~0x10;
+        sp18->flags &= ~0x10;
         sp18->unk_38 = -1;
     }
 
     if (arg3) {
-        v00 = func_800226E8(obj, arg2->unk_42);
+        v00 = spawn_effect(obj, arg2->unk_42);
         if (v00 != NULL) {
             v00->unk_088.a = 128;
             if (v00->modInst->numAnimFrames != 0) {
@@ -489,13 +489,13 @@ u8 func_80022CD0(Object *obj) {
             // a2->unk_40 += 22;
             // obj->unk_1FC = a2->unk_40;
             if (FAST_HYPOT(dx, dz) < (obj->unk_1FC = a2->unk_40 += 22) &&
-                !(sp20->currentState->flags & (STATE_FLAG_2 | STATE_FLAG_8))) {
+                !(sp20->currentStateDef->flags & (STATE_FLAG_2 | STATE_FLAG_8))) {
                 func_80022BB0(obj, sp20, a2, FALSE);
 
                 sp44.x = playerPos->x;
                 sp44.z = playerPos->z;
                 sp44.y = 0;
-                v0 = create_model_instance(&sp44, 0x1000, func_80021D40, player->unk_DCC[a2->unk_42]);
+                v0 = create_model_instance(&sp44, 0x1000, func_80021D40, player->effectModels[a2->unk_42]);
                 if (v0 != NULL) {
                     v0->unk_088.a = 255;
                     v0->vars[0] = 255 / v0->modInst->numAnimFrames;
@@ -517,7 +517,7 @@ u8 func_80022CD0(Object *obj);
 
 void func_80022EC0(Object *obj) {
     Player *player;
-    Player *s0;
+    Player *opponent;
     s32 pad[2];
     Vec4s sp40;
     Vec4s sp38;
@@ -528,38 +528,38 @@ void func_80022EC0(Object *obj) {
 
     sp2C = (PlayerSubG *) obj->vars[7];
     player = (Player *) obj->vars[0];
-    s0 = gPlayers + (player->playerId != PLAYER_1 ? PLAYER_1 : PLAYER_2);
+    opponent = gPlayers + (player->playerId != PLAYER_1 ? PLAYER_1 : PLAYER_2);
 
-    if (s0->currentState->flags & STATE_FLAG_40000) {
+    if (opponent->currentStateDef->flags & STATE_FLAG_40000) {
         return;
     }
     if (func_80022CD0(obj)) {
         return;
     }
 
-    sp40.x = s0->unk_198.unk_08->x;
-    sp40.y = s0->unk_198.unk_08->y;
-    sp40.z = s0->unk_198.unk_08->z;
+    sp40.x = opponent->hitboxBones.handPos->x;
+    sp40.y = opponent->hitboxBones.handPos->y;
+    sp40.z = opponent->hitboxBones.handPos->z;
 
     sp38.x = obj->pos.x;
     sp38.y = obj->pos.y;
     sp38.z = obj->pos.z;
 
-    if (func_8000EC70(&sp40, &s0->obj->pos, s0->unk_198.unk_2C + 80000, &sp38)) {
-        if (!(sp2C->unk_2C & 0x20) && !(player->flags & PLAYER_FLAG_2000)) {
-            sp30 = player->unk_48 + sp2C->unk_42;
-            if (func_80022B44(s0, player, obj)) {
+    if (is_point_in_hit_range(&sp40, &opponent->obj->pos, opponent->hitboxBones.strikeRadius + 80000, &sp38)) {
+        if (!(sp2C->flags & 0x20) && !(player->flags & PLAYER_FLAG_2000)) {
+            sp30 = player->effectTable + sp2C->unk_42;
+            if (func_80022B44(opponent, player, obj)) {
                 sp30->unk_00 = 0x10;
-                sp30->unk_2C |= 0x10;
+                sp30->flags |= 0x10;
                 sp30->unk_36 = 0;
                 sp30->unk_38 = 0x10;
             } else {
                 sp30->unk_00 = 0;
-                sp30->unk_2C &= ~0x10;
+                sp30->flags &= ~0x10;
                 sp30->unk_38 = -1;
             }
 
-            v00 = func_800226E8(obj, sp2C->unk_42);
+            v00 = spawn_effect(obj, sp2C->unk_42);
             if (v00 != NULL) {
                 v00->unk_076 &= ~2;
                 if (player->playerId != PLAYER_1) {
@@ -575,6 +575,6 @@ void func_80022EC0(Object *obj) {
             func_80021EE8(obj, sp2C);
         }
 
-        player->unk_194 = NULL;
+        player->currentEffect = NULL;
     }
 }

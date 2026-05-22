@@ -92,16 +92,16 @@ extern Unk_8004BA6C D_8005287C;
 extern Unk_8004BA6C D_80052890;
 extern Unk_8004BA6C D_80052C3C;
 
-extern UnkTauSub D_80052220;
-extern UnkTauSub D_80052420;
-extern UnkTauSub D_80052580;
-extern UnkTauSub D_800526B0;
-extern UnkTauSub D_80052330;
-extern UnkTauSub D_800527A0;
-extern UnkTauSub D_800528B0;
-extern UnkTauSub D_80052990;
-extern UnkTauSub D_80052A60;
-extern UnkTauSub D_80052B30;
+extern HitboxBoneSetup D_80052220;
+extern HitboxBoneSetup D_80052420;
+extern HitboxBoneSetup D_80052580;
+extern HitboxBoneSetup D_800526B0;
+extern HitboxBoneSetup D_80052330;
+extern HitboxBoneSetup D_800527A0;
+extern HitboxBoneSetup D_800528B0;
+extern HitboxBoneSetup D_80052990;
+extern HitboxBoneSetup D_80052A60;
+extern HitboxBoneSetup D_80052B30;
 
 extern GlobalLighting D_8004935C;
 
@@ -367,7 +367,7 @@ u8 D_8004C1D8[] = { 6, 7, 9, 6, 5, 5, 6, 8, 5, 8, 5 };
 
 s16 gDifficulty = DIFFICULTY_NORMAL;
 
-PlayerSub5 D_8004C1E8[] = {
+TransitionAction D_8004C1E8[] = {
     /* idle */ { 0x0040010, func_80023FDC, func_8002FD78, NULL, 0x2700208 },
     /* unknown step */ { 0x0041010, task_default_func, func_80030A60, NULL, 0x2700208 },
     /* dash */ { 0x0001010, func_80024078, func_8002F9E8, NULL, 0x2700208 },

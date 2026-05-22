@@ -40,9 +40,9 @@ void func_80012490(void);
 void func_80024D2C(void);
 void audio_init(void);
 Object *camera_create(void);
-void func_80034508(void);
+void reset_lights(void);
 void func_80024A38(s32);
-void func_800343EC(void);
+void reset_scrollable_textures(void);
 void func_80023200(void);
 extern s16 D_800800FA;
 
@@ -289,14 +289,14 @@ void func_800031FC(u16 gameMode) {
     D_80080116 = D_80080118 = 0;
     D_80080129 = TRUE;
     reset_post_render_hooks();
-    func_80034508();
+    reset_lights();
     gGlobalFlags = GAME_FLAG_4;
     func_80024A38(0);
     func_80024A38(1);
     D_8005BFF0[0].perspNorm = 0;
     D_8005BFF0[1].perspNorm = 1;
     D_8005BFCE = 0;
-    func_800343EC();
+    reset_scrollable_textures();
     func_80023200();
 }
 #else
@@ -331,9 +331,9 @@ void func_80003468(u16 gameMode) {
     D_80080118 = 0;
     D_80080129 = TRUE;
     reset_post_render_hooks();
-    func_80034508();
+    reset_lights();
     gGlobalFlags = GAME_FLAG_4;
     D_80080128 = 1;
-    func_800343EC();
+    reset_scrollable_textures();
     func_80023200();
 }

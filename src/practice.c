@@ -4,15 +4,15 @@
 
 u32 D_80052D80[] = { 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5 };
 
-UIElement D_80052DAC = { SPR_PRA_PAUSE_MENU_3, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
-UIElement D_80052DC0 = { SPR_PRA_BLUE_ON, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
-UIElement D_80052DD4 = { SPR_PRA_BLUE_OFF, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
-UIElement D_80052DE8 = { SPR_PRA_AARON, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
-UIElement D_80052DFC = { SPR_PRA_AARON, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
-UIElement D_80052E10 = { SPR_PRA_RED_DIGIT_1, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
-UIElement D_80052E24 = { SPR_PRA_RED_DIGIT_1, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
-UIElement D_80052E38 = { SPR_PRA_RED_DIGIT_1, task_default_func, 0x04000000, 0x1000, "practice.sp2" };
-UIElement D_80052E4C = { SPR_PRA_RED_DIGIT_0, task_default_func, 0, 0x1000, "practice.sp2" };
+UIElement D_80052DAC = { SPR_PRA_PAUSE_MENU_3, task_default_func, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
+UIElement D_80052DC0 = { SPR_PRA_BLUE_ON, task_default_func, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
+UIElement D_80052DD4 = { SPR_PRA_BLUE_OFF, task_default_func, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
+UIElement D_80052DE8 = { SPR_PRA_AARON, task_default_func, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
+UIElement D_80052DFC = { SPR_PRA_AARON, task_default_func, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
+UIElement D_80052E10 = { SPR_PRA_RED_DIGIT_1, task_default_func, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
+UIElement D_80052E24 = { SPR_PRA_RED_DIGIT_1, task_default_func, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
+UIElement D_80052E38 = { SPR_PRA_RED_DIGIT_1, task_default_func, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
+UIElement D_80052E4C = { SPR_PRA_RED_DIGIT_0, task_default_func, 0, OBJ_PRIO_DEFAULT, "practice.sp2" };
 
 Vec4i D_80052E60 = { 164, 133, 0, 0 };
 Vec4i D_80052E70 = { 177, 93, 0, 0 };
@@ -28,8 +28,8 @@ Vec4i D_80052F00 = { 104, 51, 0, 0 };
 Vec4i D_80052F10 = { 95, 51, 0, 0 };
 Vec4i D_80052F20 = { 86, 51, 0, 0 };
 
-s16 **D_80052F30[] = { D_800522EC, D_80052524, D_8005264C, D_80052770, D_800523E4,
-                       D_80052864, D_8005296C, D_80052A48, D_80052B18, D_80052C18 };
+s16 **gCombolLists[] = { gCombosAaron, D_80052524, D_8005264C, D_80052770, D_800523E4,
+                         D_80052864,   D_8005296C, D_80052A48, D_80052B18, D_80052C18 };
 
 s32 D_80052F58[] = { 0, SPR_PRA_BUTTON_L, SPR_PRA_BUTTON_A, 0, SPR_PRA_BUTTON_R, 0, 0, 0, SPR_PRA_BUTTON_B };
 s32 D_80052F7C[] = { 0,
@@ -678,72 +678,72 @@ void func_800338D0(void) {
 }
 
 void func_80033958(void) {
-    s16 v1;
-    Player *s2;
-    s16 *s0;
+    s16 charIndex;
+    Player *player;
+    s16 *combo;
     s16 s1;
-    TransitionDef *new_var;
-    s16 **q;
+    TransitionRule *new_var;
+    s16 **charCombos;
     s16 *tmp2;
     s16 t3;
 
-    s2 = gPlayers + gPracticingPlayer;
-    v1 = gPlayers[gPracticingPlayer].characterId;
-    if (v1 >= CHARACTER_5) {
-        v1--;
+    player = gPlayers + gPracticingPlayer;
+    charIndex = gPlayers[gPracticingPlayer].characterId;
+    if (charIndex >= CHARACTER_5) {
+        charIndex--;
     }
 
-    q = D_80052F30[v1];
-    s0 = q[D_8013C43C];
+    charCombos = gCombolLists[charIndex];
+    combo = charCombos[D_8013C43C];
 
     func_800335BC();
     D_8013C428 = D_8013C42A = 0;
 
-    s1 = *s0;
+    s1 = *combo;
     while (s1 != 0) {
-        t3 = s2->unk_38[s1];
-        tmp2 = s2->logicStates;
-        new_var = &s2->transitionTable[tmp2[t3]];
+        t3 = player->moveToRuleMap[s1];
+        tmp2 = player->logicStates;
+        new_var = &player->transitionRules[tmp2[t3]];
         D_8013C410[D_8013C428++] = tmp2[t3];
-        func_800336E4(new_var->buttons);
-        s0++;
-        s1 = *s0;
+        func_800336E4(new_var->requiredButtons);
+        combo++;
+        s1 = *combo;
     }
 
     D_8013C408 = 0;
 }
 
 void func_80033AB0(void) {
-    s16 v1;
-    Player *s2;
-    s16 *s0;
+    s16 oppCharIndex;
+    Player *opponent;
+    s16 *combo;
     s16 s1;
-    TransitionDef *new_var;
-    s16 **q;
-    s16 *tmp2;
-    s16 t3;
+    TransitionRule *transition;
+    s16 **oppCombos;
+    s16 *logicStates;
+    s16 logicStateId;
 
-    s2 = gPlayers + 1 - gPracticingPlayer;
-    v1 = gPlayers[1 - gPracticingPlayer].characterId;
-    if (v1 >= CHARACTER_5) {
-        v1--;
+    opponent = gPlayers + 1 - gPracticingPlayer;
+    oppCharIndex = gPlayers[1 - gPracticingPlayer].characterId;
+    if (oppCharIndex >= CHARACTER_5) {
+        oppCharIndex--;
     }
 
-    q = D_80052F30[v1];
-    s0 = q[D_8013C440];
+    oppCombos = gCombolLists[oppCharIndex];
+    combo = oppCombos[D_8013C440];
 
     func_800335BC();
     D_8013C428 = D_8013C42A = 0;
 
-    s1 = *s0;
+    s1 = *combo;
     while (s1 != 0) {
-        t3 = s2->unk_38[s1];
-        tmp2 = s2->logicStates;
-        new_var = &s2->transitionTable[tmp2[t3]];
-        D_8013C410[D_8013C428++] = tmp2[t3];
-        func_800336E4(new_var->buttons);
-        s0++;
-        s1 = *s0;
+        logicStateId = opponent->moveToRuleMap[s1];
+        logicStates = opponent->logicStates;
+        transition = &opponent->transitionRules[logicStates[logicStateId]];
+        D_8013C410[D_8013C428++] = logicStates[logicStateId];
+        func_800336E4(transition->requiredButtons);
+        combo++;
+        s1 = *combo;
     }
 
     D_8013C408 = 0;
@@ -751,14 +751,14 @@ void func_80033AB0(void) {
 
 void func_80033C38(void) {
     u16 a2;
-    TransitionDef *new_var;
+    TransitionRule *new_var;
 
     if (--D_8013C42C <= 0) {
         a2 = (D_8013C430 == 18) ? gPracticingPlayer : 1 - gPracticingPlayer;
 
         if (D_8013C42A < D_8013C428) {
-            new_var = &gPlayers[a2].transitionTable[D_8013C410[D_8013C42A]];
-            gPlayerInput[a2].buttons = new_var->buttons;
+            new_var = &gPlayers[a2].transitionRules[D_8013C410[D_8013C42A]];
+            gPlayerInput[a2].buttons = new_var->requiredButtons;
             gPlayerInput[a2].accumulated = TRUE;
         } else {
             D_8013C444 = FALSE;
@@ -784,7 +784,7 @@ void func_80033D64(void) {
     }
 
     if (player->unk_74 == D_8013C410[D_8013C42A]) {
-        func_800337C8(player->currentTransition->buttons);
+        func_800337C8(player->currentTransition->requiredButtons);
         D_8013C42A++;
         if (D_8013C444) {
             func_80033C38();

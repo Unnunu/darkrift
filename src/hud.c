@@ -231,8 +231,8 @@ void func_800162A4(Object *obj) {
     Object *v1;
     u32 i;
 
-    gPlayers[PLAYER_1].stateId = 0;
-    gPlayers[PLAYER_2].stateId = 0;
+    gPlayers[PLAYER_1].currentStateId = 0;
+    gPlayers[PLAYER_2].currentStateId = 0;
 
     create_player_obj(PLAYER_1);
     create_player_obj(PLAYER_2);
@@ -331,8 +331,8 @@ u32 func_8001675C(Player *player, s32 arg1, u32 arg2) {
     func_8000636C(player, arg1, TRUE);
 
     temp = player->animTask->params.unk_04;
-    if (arg2 < player->stateTable[temp].unk_02 + 0x78) {
-        res = player->stateTable[temp].unk_02 + 0x78;
+    if (arg2 < player->stateDefs[temp].unk_02 + 0x78) {
+        res = player->stateDefs[temp].unk_02 + 0x78;
     } else {
         res = arg2;
     }
@@ -351,7 +351,7 @@ u8 func_800167D4(void) {
 }
 
 void func_80016880(Object *obj) {
-    gPlayers[PLAYER_1].moveTimeout = gPlayers[PLAYER_2].moveTimeout = 0;
+    gPlayers[PLAYER_1].autoTransitionTimer = gPlayers[PLAYER_2].autoTransitionTimer = 0;
 
     if (--obj->vars[1] < 0 && func_800167D4()) {
         func_800162A4(obj);
@@ -363,7 +363,7 @@ void func_80016880(Object *obj) {
 }
 
 void func_800168F0(Object *obj) {
-    gPlayers[PLAYER_1].moveTimeout = gPlayers[PLAYER_2].moveTimeout = 0;
+    gPlayers[PLAYER_1].autoTransitionTimer = gPlayers[PLAYER_2].autoTransitionTimer = 0;
 
     if (--obj->vars[1] < 0 && func_800167D4()) {
         gGlobalFlags |= GAME_FLAG_MODE_DONE;
@@ -612,27 +612,27 @@ void func_80017304(Object *obj) {
 
 void func_800173DC(Object *obj) {
     if (gPlayers[PLAYER_1].flags & PLAYER_FLAG_80) {
-        if (--gPlayers[PLAYER_1].moveTimeout > 20) {
-            gPlayers[PLAYER_1].moveTimeout = 20;
+        if (--gPlayers[PLAYER_1].autoTransitionTimer > 20) {
+            gPlayers[PLAYER_1].autoTransitionTimer = 20;
         } else {
             player_select_transition(&gPlayers[PLAYER_1], TRUE);
         }
     } else if (gPlayers[PLAYER_2].flags & PLAYER_FLAG_80) {
-        if (--gPlayers[PLAYER_2].moveTimeout > 20) {
-            gPlayers[PLAYER_2].moveTimeout = 20;
+        if (--gPlayers[PLAYER_2].autoTransitionTimer > 20) {
+            gPlayers[PLAYER_2].autoTransitionTimer = 20;
         } else {
             player_select_transition(&gPlayers[PLAYER_2], TRUE);
         }
     } else if ((gPlayers[PLAYER_1].flags & PLAYER_FLAG_40000) && (gPlayers[PLAYER_2].flags & PLAYER_FLAG_40000)) {
-        if ((gPlayers[PLAYER_1].currentState->flags & STATE_FLAG_1) && gPlayers[PLAYER_1].stateId != 4) {
+        if ((gPlayers[PLAYER_1].currentStateDef->flags & STATE_FLAG_1) && gPlayers[PLAYER_1].currentStateId != 4) {
             func_8000636C(&gPlayers[PLAYER_1], 320, FALSE);
-        } else if (gPlayers[PLAYER_1].stateId != 17) {
+        } else if (gPlayers[PLAYER_1].currentStateId != 17) {
             func_8000636C(&gPlayers[PLAYER_1], 68, FALSE);
         }
 
-        if ((gPlayers[PLAYER_2].currentState->flags & STATE_FLAG_1) && gPlayers[PLAYER_2].stateId != 4) {
+        if ((gPlayers[PLAYER_2].currentStateDef->flags & STATE_FLAG_1) && gPlayers[PLAYER_2].currentStateId != 4) {
             func_8000636C(&gPlayers[PLAYER_2], 320, FALSE);
-        } else if (gPlayers[PLAYER_2].stateId != 17) {
+        } else if (gPlayers[PLAYER_2].currentStateId != 17) {
             func_8000636C(&gPlayers[PLAYER_2], 68, FALSE);
         }
 

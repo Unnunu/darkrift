@@ -93,20 +93,20 @@ void func_80028090(Object *obj) {
     }
 }
 
-void func_80028120(Object *obj, PlayerSubG *arg1, Vec4i *arg2) {
-    Vec4i sp20;
+void func_80028120(Object *obj, PlayerSubG *arg1, Vec4i *worldPos) {
+    Vec4i pos;
 
-    sp20.x = arg1->unk_04;
-    sp20.y = arg1->unk_08;
-    sp20.z = arg1->unk_0C;
+    pos.x = arg1->originX;
+    pos.y = arg1->originY;
+    pos.z = arg1->originZ;
 
     func_80012AF4(&D_800813E0);
-    math_translate(&D_800813E0, &sp20);
+    math_translate(&D_800813E0, &pos);
     func_80012BBC(&D_800813E0, &obj->modInst->transforms[arg1->unk_02].world_matrix);
 
-    arg2->x = D_800813E0.w.x;
-    arg2->y = D_800813E0.w.y;
-    arg2->z = D_800813E0.w.z;
+    worldPos->x = D_800813E0.w.x;
+    worldPos->y = D_800813E0.w.y;
+    worldPos->z = D_800813E0.w.z;
 }
 
 void func_800281F8(s16 arg0, Vec4i *arg1, Vec4i *arg2) {

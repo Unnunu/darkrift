@@ -224,6 +224,9 @@ def get_buttons(x):
 def get_move_flags(x):
     return ' | '.join(f"TF_{1<<i:x}" for i in range(16) if (x & 2**i))
 
+def get_sdf_flags(x):
+    return ' | '.join(f"SDF_{1<<i:x}" for i in range(16) if (x & 2**i))
+
 def read_sym(f):
     content = f.read_bytes()
     off1, off2, off3, off4 = unpack_from(">IIII", content)
@@ -314,7 +317,7 @@ def process_db():
                       "unk_18":e[12], "unk_1A":e[13], "unk_1C":e[14], "unk_1E":e[15],
                       "damage":e[16], "unk_22":e[17], "unk_24":e[18], "unk_26":e[19],
                       "unk_28":e[20], "unk_2A":e[21], "unk_2C":e[22], "unk_2E":e[23],
-                      "unk_30":e[24], "unk_32":e[25], "flags":e[26]})
+                      "unk_30":e[24], "unk_32":e[25], "flags":get_sdf_flags(e[26])})
         dbdata["actionStates"] = l
 
         l = []
@@ -332,7 +335,7 @@ def process_db():
         l = []
         for off in range(offs[8], offs[9], 2):
             e = unpack_from(">h", content, off)
-            l.append({"logicState":e[0]})
+            l.append({"moveId": f"MOVE_ID_{(off - offs[8]) // 2}", "logicState":e[0]})
         dbdata["player_38"] = l
 
         l = []
@@ -489,7 +492,10 @@ def process_models():
 
                 print("=== NODE HIERARCHY ===", file=f)
                 for i, (p, x, y, z) in enumerate(hierarchy):
-                    print(f"Node {i}: parent={p} pos=({x}, {y}, {z})", file=f)
+                    if i == 0:
+                        print(f"Base: num_nodes={p} pos=({x}, {y}, {z})", file=f)
+                    else:
+                        print(f"Node {i - 1}: parent={p} pos=({x}, {y}, {z})", file=f)
                 print(file=f)
 
                 for ni in range(numNodes):

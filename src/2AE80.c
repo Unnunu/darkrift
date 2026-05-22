@@ -39,7 +39,7 @@ void func_8002A288(Object *obj) {
         sp44.y = 0;
         sp38 = create_model_instance(&sp44, 0x1000, func_80021D40, player->unk_DE4);
         if (sp38 != NULL) {
-            func_8003453C(sp38, &sp30[player->playerId]);
+            create_light(sp38, &sp30[player->playerId]);
             sp38->unk_088.a = 160;
             if (func_80022B44(opponent, player, obj)) {
                 sp38->vars[0] = 32;
@@ -72,7 +72,7 @@ void func_8002A4E0(Object *obj) {
             v0->flags |= OBJ_FLAG_2000;
             v0->varObj[0] = player;
             v0->vars[6] = obj->vars[6];
-            func_8003453C(v0, &sp28[player->playerId]);
+            create_light(v0, &sp28[player->playerId]);
             sound_play(player->playerId, 10);
             v0 = func_80030908();
             if (v0 != NULL) {
@@ -90,7 +90,7 @@ void func_8002A4E0(Object *obj) {
             v0->flags |= OBJ_FLAG_2000;
             v0->varObj[0] = player;
             v0->vars[6] = obj->vars[6];
-            func_8003453C(v0, &sp28[player->playerId]);
+            create_light(v0, &sp28[player->playerId]);
             sound_play(player->playerId, 10);
         }
     } else if (obj->vars[1] == 16) {
@@ -104,7 +104,7 @@ void func_8002A4E0(Object *obj) {
             v0->flags |= OBJ_FLAG_2000;
             v0->varObj[0] = player;
             v0->vars[6] = obj->vars[6];
-            func_8003453C(v0, &sp28[player->playerId]);
+            create_light(v0, &sp28[player->playerId]);
             sound_play(player->playerId, 10);
         }
     } else if (obj->vars[1] == 24) {

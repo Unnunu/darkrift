@@ -1,6 +1,6 @@
 #include "common.h"
 
-UnkTauSub D_80052330 = {
+HitboxBoneSetup D_80052330 = {
     5,
     8,
     3,

@@ -14,112 +14,112 @@ s32 D_8013C4E4_unused;
 ModelNodeRenderInfo *D_8013C4E8;
 GlobalObjD *D_8013C4EC;
 ItemPool D_8013C4F0;
-TextureAsset *D_8013C500[16];
-u32 D_8013C540;
+TextureAsset *gScrollableTextures[16];
+u32 gScrollableTextureCount;
 
-void func_80034090(TextureAsset *arg0) {
+void register_texture_for_scrolling(TextureAsset *texture) {
     u32 i;
 
-    for (i = 0; i < D_8013C540; i++) {
-        if (D_8013C500[i] == arg0) {
+    for (i = 0; i < gScrollableTextureCount; i++) {
+        if (gScrollableTextures[i] == texture) {
             return;
         }
     }
 
-    D_8013C500[D_8013C540++] = arg0;
+    gScrollableTextures[gScrollableTextureCount++] = texture;
 }
 
-s32 func_800340E8(void *arg0) {
+s32 scroll_textures_global_mode(void *unused) {
     u32 i, j;
-    TextureAsset *v1;
-    u32 tmp;
-    u32 a3;
-    u32 *ptr;
-    u32 q;
+    TextureAsset *texture;
+    u32 num_words;
+    u32 first_pixel_word;
+    u32 *word_ptr;
+    u32 next_pixel;
 
-    for (i = 0; i < D_8013C540; i++) {
-        v1 = D_8013C500[i];
-        tmp = (v1->width * v1->height) / 8;
-        ptr = v1->data;
-        a3 = ((u32 *) v1->data)[0];
+    for (i = 0; i < gScrollableTextureCount; i++) {
+        texture = gScrollableTextures[i];
+        num_words = (texture->width * texture->height) / 8;
+        word_ptr = texture->data;
+        first_pixel_word = ((u32 *) texture->data)[0];
 
-        for (j = 0; j < tmp - 1; j++, ptr++) {
-            *ptr <<= 4;
-            q = ptr[1];
-            q = (q & 0xF0000000) >> 28;
-            *ptr |= q;
+        for (j = 0; j < num_words - 1; j++, word_ptr++) {
+            *word_ptr <<= 4;
+            next_pixel = word_ptr[1];
+            next_pixel = (next_pixel & 0xF0000000) >> 28;
+            *word_ptr |= next_pixel;
         }
 
-        *ptr <<= 4;
-        a3 = (a3 & 0xF0000000) >> 28;
-        *ptr |= a3;
+        *word_ptr <<= 4;
+        first_pixel_word = (first_pixel_word & 0xF0000000) >> 28;
+        *word_ptr |= first_pixel_word;
     }
 
     return 1;
 }
 
-s32 func_8003424C(void *arg0) {
+s32 scroll_textures_row_by_row_mode(void *unused) {
     u32 i, j, k;
     TextureAsset *v1;
-    u32 tmp;
-    u32 a3;
-    u32 *ptr;
-    u32 q;
+    u32 words_per_row;
+    u32 first_pixel_of_row;
+    u32 *word_ptr;
+    u32 next_pixel;
 
     if (gFrameCounter & 1) {
         return 1;
     }
 
-    for (i = 0; i < D_8013C540; i++) {
-        v1 = D_8013C500[i];
-        tmp = v1->width / 8;
-        ptr = v1->data;
+    for (i = 0; i < gScrollableTextureCount; i++) {
+        v1 = gScrollableTextures[i];
+        words_per_row = v1->width / 8;
+        word_ptr = v1->data;
 
         for (j = 0; j < v1->height; j++) {
-            a3 = *ptr;
-            for (k = 0; k < tmp - 1; k++, ptr++) {
-                *ptr <<= 4;
-                q = ptr[1];
-                q = (q & 0xF0000000) >> 28;
-                *ptr |= q;
+            first_pixel_of_row = *word_ptr;
+            for (k = 0; k < words_per_row - 1; k++, word_ptr++) {
+                *word_ptr <<= 4;
+                next_pixel = word_ptr[1];
+                next_pixel = (next_pixel & 0xF0000000) >> 28;
+                *word_ptr |= next_pixel;
             }
-            *ptr <<= 4;
-            a3 = (a3 & 0xF0000000) >> 28;
-            *ptr |= a3;
+            *word_ptr <<= 4;
+            first_pixel_of_row = (first_pixel_of_row & 0xF0000000) >> 28;
+            *word_ptr |= first_pixel_of_row;
         }
     }
 
     return 1;
 }
 
-void func_800343EC(void) {
-    D_8013C540 = 0;
+void reset_scrollable_textures(void) {
+    gScrollableTextureCount = 0;
 }
 
-void func_800343F8(Object *obj, u8 arg1) {
-    ModelInstance *model = obj->modInst;
-    Model *sam = model->model;
-    s32 numNodes = model->numNodes;
+void enable_texture_scrolling_for_object(Object *obj, u8 mode_is_global) {
+    ModelInstance *modelInstance = obj->modInst;
+    Model *model = modelInstance->model;
+    s32 numNodes = modelInstance->numNodes;
     u32 i, j;
-    ModelNodeAsset *s1;
-    s32 s2;
-    BatchAsset *sub1;
+    ModelNodeAsset *node;
+    s32 numBatches;
+    BatchAsset *batchAsset;
 
-    if (D_8013C540 == 0) {
-        if (arg1) {
-            set_post_render_hook(func_800340E8, NULL);
+    if (gScrollableTextureCount == 0) {
+        if (mode_is_global) {
+            set_post_render_hook(scroll_textures_global_mode, NULL);
         } else {
-            set_post_render_hook(func_8003424C, NULL);
+            set_post_render_hook(scroll_textures_row_by_row_mode, NULL);
         }
     }
 
     for (i = 0; i < numNodes; i++) {
-        s1 = &sam->modelAsset->nodes[i];
-        s2 = s1->numBatches;
-        for (j = 0; j < s2; j++) {
-            sub1 = s1->batchAssets + j;
-            if ((u8) (sub1->texIndex >= 0)) {
-                func_80034090(sub1->texture);
+        node = &model->modelAsset->nodes[i];
+        numBatches = node->numBatches;
+        for (j = 0; j < numBatches; j++) {
+            batchAsset = node->batchAssets + j;
+            if ((u8) (batchAsset->texIndex >= 0)) {
+                register_texture_for_scrolling(batchAsset->texture);
             }
         }
     }
@@ -127,12 +127,12 @@ void func_800343F8(Object *obj, u8 arg1) {
     obj->flags |= OBJ_FLAG_2000;
 }
 
-void func_80034508(void) {
+void reset_lights(void) {
     D_8013C4EC = NULL;
     func_8002A8C0(&D_8013C4F0, 5, sizeof(GlobalObjD));
 }
 
-void func_8003453C(Object *obj, ColorRGBA *arg1) {
+void create_light(Object *obj, ColorRGBA *arg1) {
     GlobalObjD *objD;
 
     if (D_8013C4F0.count == 0) {
@@ -142,28 +142,28 @@ void func_8003453C(Object *obj, ColorRGBA *arg1) {
     objD = (GlobalObjD *) GET_ITEM(D_8013C4F0);
     obj->flags |= OBJ_FLAG_20000000;
 
-    objD->unk_2C = D_8013C4EC;
-    objD->unk_30 = NULL;
+    objD->next = D_8013C4EC;
+    objD->previous = NULL;
     if (D_8013C4EC != NULL) {
-        D_8013C4EC->unk_30 = objD;
+        D_8013C4EC->previous = objD;
     }
     D_8013C4EC = objD;
 
-    objD->unk_28 = obj;
-    objD->unk_00 = arg1->r;
-    objD->unk_04 = arg1->g;
-    objD->unk_08 = arg1->b;
-    obj->unk_208 = objD;
+    objD->object = obj;
+    objD->red = arg1->r;
+    objD->green = arg1->g;
+    objD->blue = arg1->b;
+    obj->light = objD;
 }
 
-void func_800345D8(GlobalObjD *arg0) {
-    if (arg0->unk_30 != NULL) {
-        arg0->unk_30->unk_2C = arg0->unk_2C;
+void delete_light(GlobalObjD *arg0) {
+    if (arg0->previous != NULL) {
+        arg0->previous->next = arg0->next;
     } else {
-        D_8013C4EC = arg0->unk_2C;
+        D_8013C4EC = arg0->next;
     }
-    if (arg0->unk_2C != NULL) {
-        arg0->unk_2C->unk_30 = arg0->unk_30;
+    if (arg0->next != NULL) {
+        arg0->next->previous = arg0->previous;
     }
 
     RELEASE_ITEM(D_8013C4F0, arg0);
@@ -1621,11 +1621,11 @@ void func_80037E28(Object *obj) {
     sp44 = v0->lights[1].dir_y;
     sp40 = v0->lights[1].dir_z;
 
-    for (a1 = D_8013C4EC; a1 != NULL; a1 = a1->unk_2C) {
-        a = a1->unk_28->unk_088.a;
-        a1->unk_1C = (a1->unk_00 * a) / 256;
-        a1->unk_20 = (a1->unk_04 * a) / 256;
-        a1->unk_24 = (a1->unk_08 * a) / 256;
+    for (a1 = D_8013C4EC; a1 != NULL; a1 = a1->next) {
+        a = a1->object->unk_088.a;
+        a1->unk_1C = (a1->red * a) / 256;
+        a1->unk_20 = (a1->green * a) / 256;
+        a1->unk_24 = (a1->blue * a) / 256;
     }
 
     for (; t6 < t2; t6 += 8) {
@@ -1643,8 +1643,8 @@ void func_80037E28(Object *obj) {
         sp74 = (s32) (v1->transforms[t6].world_matrix.z.y * 1024.0f);
         sp70 = (s32) (v1->transforms[t6].world_matrix.z.z * 1024.0f);
 
-        for (a1 = D_8013C4EC; a1 != NULL; a1 = a1->unk_2C) {
-            pos = &a1->unk_28->pos;
+        for (a1 = D_8013C4EC; a1 != NULL; a1 = a1->next) {
+            pos = &a1->object->pos;
             absDeltaX = deltaX = pos->x - t4->w.x;
             absDeltaY = deltaY = pos->y - t4->w.y;
             absDeltaZ = deltaZ = pos->z - t4->w.z;
@@ -1705,7 +1705,7 @@ void func_80037E28(Object *obj) {
                 t11 += (sp58 * v06) >> 14;
             }
 
-            for (a1 = D_8013C4EC; a1 != NULL; a1 = a1->unk_2C) {
+            for (a1 = D_8013C4EC; a1 != NULL; a1 = a1->next) {
                 v12 = a1->unk_18;
                 v06 = a1->unk_0C * s00 + a1->unk_10 * s11 + a1->unk_14 * s22;
                 if (v06 > 0) {

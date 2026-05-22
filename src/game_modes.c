@@ -81,8 +81,8 @@ Vec4i *D_80080224;
 Object *D_80080228[2];
 
 void func_80006AE0(void) {
-    gComHit = gAssets[asset_find("comhit.k5", CONTEXT_ABAB)].aux_data;
-    gComBlock = gAssets[asset_find("comblock.k5", CONTEXT_ABAB)].aux_data;
+    gHitSparkModel = gAssets[asset_find("comhit.k5", CONTEXT_ABAB)].aux_data;
+    gBlockSparkModel = gAssets[asset_find("comblock.k5", CONTEXT_ABAB)].aux_data;
 
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
     if (gPlayMode == PLAY_MODE_PRACTICE) {
@@ -527,10 +527,10 @@ void func_80007DB0(Player *arg0, Object *arg1, s32 arg2) {
         name[4] = (i % 10) + '0';
 
         if ((v0 = asset_find(name, arg2)) >= 0) {
-            a1 = arg0->stateTable[D_80049434[i]].animationId;
+            a1 = arg0->stateDefs[D_80049434[i]].animationId;
             arg1->modInst->animations[a1] = gAssets[v0].data;
             s4++;
-            arg0->stateTable[D_80049434[i]].unk_02 = func_80037394(arg1->modInst, a1);
+            arg0->stateDefs[D_80049434[i]].unk_02 = func_80037394(arg1->modInst, a1);
         }
     }
 }
@@ -778,7 +778,7 @@ void run_intro_zenmuron_mode(void) {
 }
 
 void func_80008D0C(Object *obj) {
-    if (gPlayers[PLAYER_1].currentState->unk_02 - 2 == gPlayers[PLAYER_1].obj->frameIndex) {
+    if (gPlayers[PLAYER_1].currentStateDef->unk_02 - 2 == gPlayers[PLAYER_1].obj->frameIndex) {
         gGlobalFlags |= GAME_FLAG_MODE_DONE;
         obj->flags |= OBJ_FLAG_DELETE;
         gNextGameMode = GAME_MODE_LOGO;

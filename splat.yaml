@@ -60,11 +60,11 @@ segments:
       - [0x1310, c, heap]
       - [0x1D20, c, main]
       - [0x34B0, c, sched]
-      - [0x41D0, c]
+      - [0x41D0, c, player]
       - [0x76E0, c, game_modes]
       - [0xC8F0, c, kmd]
-      - [0xF530, c]
-      - [0x11700, c]
+      - [0xF530, c, player_combat]
+      - [0x11700, c, hitbox_render]
       - [0x13050, c, math]
       - [0x15760, c, scroll]
       - [0x167C0, c, hud]
@@ -246,11 +246,11 @@ segments:
       - [0x49E70, .data, thread]
       - [0x49E80, .data, heap]
       - [0x49E90, .data, main]
-      - [0x49F90, .data, 41D0]
+      - [0x49F90, .data, player]
       - [0x49FF0, .data, game_modes]
       - [0x4A520, .data, kmd]
-      - [0x4A5A0, .data, F530]
-      - [0x4A5B0, .data, 11700]
+      - [0x4A5A0, .data, player_combat]
+      - [0x4A5B0, .data, hitbox_render]
       - [0x4A6E0, .data, scroll]
       - [0x4A6F0, .data, hud]
       - [0x4A740, .data, menu_options]
@@ -309,7 +309,7 @@ segments:
       - [0x54960, .data, ../ultralib/src/vimodes/vimodentsclan1]
       - [0x549B0, .data, ../ultralib/src/vimodes/vimodempallan1]
       - [0x54A00, data]
-      - [0x54A10, .rodata, 41D0]
+      - [0x54A10, .rodata, player]
       - [0x54AC0, .rodata, game_modes]
       - [0x55330, .rodata, kmd]
       - [0x553B0, .rodata, math]
@@ -356,10 +356,10 @@ segments:
       - { type: .bss, vram: 0x8005BED0, name: main }
       - { type: .bss, vram: 0x80080110, name: sched }
       - { type: .bss, vram: 0x800801F0, name: game_modes }
-      - { type: .bss, vram: 0x80080230, name: 41D0 }
+      - { type: .bss, vram: 0x80080230, name: player }
       - { type: .bss, vram: 0x80081250, name: main_menu }
-      - { type: .bss, vram: 0x80081260, name: F530 }
-      - { type: .bss, vram: 0x80081280, name: 11700 }
+      - { type: .bss, vram: 0x80081260, name: player_combat }
+      - { type: .bss, vram: 0x80081280, name: hitbox_render }
       - { type: .bss, vram: 0x800812A0, name: math }
       - { type: .bss, vram: 0x80081420, name: scroll }
       - { type: .bss, vram: 0x80081440, name: hud }
