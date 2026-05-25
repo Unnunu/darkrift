@@ -271,7 +271,7 @@ s32 apply_damage_and_reaction(Player *defender, Player *attacker, PlayerStateDef
             }
         }
 
-        func_800063C4(defender, a3, TRUE);
+        player_force_move(defender, a3, TRUE);
     }
 
     return a3;

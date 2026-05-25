@@ -18,7 +18,7 @@ void player_anim_next_transition(Object *obj) {
 
         ai_reset(player);
 
-        if (player->nextRuleIndex >= 0 && (player->flags & PLAYER_FLAG_1000)) {
+        if (player->nextLogicState >= 0 && (player->flags & PLAYER_FLAG_1000)) {
             if (ai_select_transition(player)) {
                 player->aiState.aiFlags |= 0x8000;
                 return;
@@ -26,7 +26,7 @@ void player_anim_next_transition(Object *obj) {
         }
     } else if (!(player->flags & PLAYER_FLAG_TRANSITION_LOCKED) &&
                (gPlayerInput[playerId].accumulated || (player->flags & PLAYER_FLAG_1000)) &&
-               player->nextRuleIndex >= 0 && !(player->animTask->flags & TASK_FLAG_FRAME_TRIGGER)) {
+               player->nextLogicState >= 0 && !(player->animTask->flags & TASK_FLAG_TRIGGER_FRAME)) {
         if (player_select_transition(player, TRUE)) {
             return;
         }
@@ -40,9 +40,9 @@ void player_anim_next_transition(Object *obj) {
     }
 
     if (stateFlags & STATE_FLAG_1) {
-        func_8000636C(player, 320, FALSE);
+        player_apply_move(player, 320, FALSE);
     } else {
-        func_8000636C(player, 68, FALSE);
+        player_apply_move(player, 68, FALSE);
     }
 
     D_80080236 = FALSE;
@@ -186,21 +186,21 @@ void func_80024214(Object *obj) {
 }
 
 void func_80024390(Object *obj) {
-    ObjectTaskParams *sp24;
+    s32 *sp24;
     Player *player = (Player *) obj->varObj[0];
     PlayerStateDef *currentState;
 
     currentState = player->currentStateDef;
-    sp24 = &obj->currentTask->params;
+    sp24 = obj->currentTask->params;
 
     if (player->currentStateId >= 0) {
         currentState = player->stateDefs + player->currentStateId;
         if (currentState->animationId == obj->modInst->currentAnimId && obj->frameIndex + 1 < currentState->duration) {
             obj->frameIndex++;
-            player->animTask->flags |= TASK_FLAG_FRAME_TRIGGER;
-            player->animTask->unk_86 = currentState->duration - 2;
-            player->animTask->conditional_context.flags = TASK_FLAG_ENABLED;
-            player->animTask->conditional_context.func = func_80024214;
+            player->animTask->flags |= TASK_FLAG_TRIGGER_FRAME;
+            player->animTask->triggerAt = currentState->duration - 2;
+            player->animTask->triggerSlot.flags = TASK_FLAG_ENABLED;
+            player->animTask->triggerSlot.func = func_80024214;
             obj->currentTask->func = func_80024078;
             return;
         }
@@ -227,14 +227,14 @@ void func_80024390(Object *obj) {
         if (player->flags & PLAYER_FLAG_800) {
             obj->frameIndex = currentState->unk_02;
         } else {
-            obj->frameIndex = MAX(currentState->duration, sp24->unk_08);
+            obj->frameIndex = MAX(currentState->duration, sp24[2]);
         }
 
         obj->modInst->currentAnimId = currentState->animationId;
         obj->modInst->previousAnimId = -1;
     }
 
-    obj->currentTask->func = sp24->unk_00_f; // ????
+    obj->currentTask->func = sp24[0]; // ????
 
     if (currentState->flags & STATE_FLAG_10) {
         obj->flags |= OBJ_FLAG_400;
@@ -260,7 +260,7 @@ void func_80024640(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
     s32 i;
     s32 s2;
-    ObjectTaskParams *v0;
+    s32 *v0;
 
     if (obj->frameIndex < player->currentStateDef->unk_02) {
         obj->frameIndex++;
@@ -268,8 +268,8 @@ void func_80024640(Object *obj) {
     }
 
     player->flags &= ~PLAYER_FLAG_TRANSITION_LOCKED;
-    v0 = &obj->currentTask->params;
-    player->unk_08->func = v0->unk_10;
+    v0 = obj->currentTask->params;
+    player->unk_08->func = v0[4];
     player->unk_08->start_delay = 0;
     player->unk_08->flags = TASK_FLAG_ENABLED;
     func_80024390(obj);
@@ -298,7 +298,7 @@ void func_80024764(Object *obj) {
 
     obj->currentTask->func = func_80024640;
     obj->frameIndex = 1;
-    temp = obj->currentTask->params.stateId + player->stateDefs; // required to match
+    temp = obj->currentTask->params[3] + player->stateDefs; // required to match
     player->currentStateDef = temp;
     obj->modInst->currentAnimId = temp->animationId;
     player->flags |= PLAYER_FLAG_TRANSITION_LOCKED;
@@ -315,13 +315,13 @@ void func_800247CC(Object *obj) {
     ObjectTask *currentTask;
 
     v0 = player->animTask;
-    moveId = v0->params.unk_00_i;
+    moveId = v0->params[0];
     transitionTable = player->logicStates;
     currentTask = obj->currentTask;
     obj->frameIndex++;
 
     if (player_make_transition(player, TRUE, moveId)) {
-        player->nextRuleIndex = transitionTable[moveId + 1];
+        player->nextLogicState = transitionTable[moveId + 1];
         player->unk_184 = FALSE;
         currentTask->stackPos--;
     } else {

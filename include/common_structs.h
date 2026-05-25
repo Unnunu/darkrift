@@ -464,33 +464,17 @@ typedef struct TransitionRule {
     /* 0x1A */ char unk_1C[2];
 } TransitionRule; // size = 0x1C
 
-typedef struct ObjectTaskParams {
-    /* 0x00 */ union {
-        s32 unk_00_i;
-        ObjFunc unk_00_f;
-    };
-    /* 0x04 */ union {
-        s32 unk_04;
-        TransitionRule *unk_04_ptr;
-    };
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 stateId;
-    /* 0x10 */ ObjFunc unk_10;
-    /* 0x14 */ char unk_14[4];
-} ObjectTaskParams; // size >= 0xC
-
 typedef struct ObjectTask {
     /* 0x00 */ u32 flags;
     /* 0x04 */ ObjFunc func;
-    /* 0x08 */ ObjectTaskParams params;
+    /* 0x08 */ s32 params[6];
     /* 0x20 */ u16 stackPos;
-    /* 0x22 */ char unk_22[2];
     /* 0x24 */ TaskContext stack[8];
     /* 0x84 */ s16 start_delay;
-    /* 0x86 */ s16 unk_86;
+    /* 0x86 */ s16 triggerAt;
     /* 0x88 */ s16 id;
     /* 0x8A */ char unk_8A[6];
-    /* 0x90 */ TaskContext conditional_context;
+    /* 0x90 */ TaskContext triggerSlot;
     /* 0x9C */ struct ObjectTask *next;
 } ObjectTask; // size = 0xA0
 
@@ -748,7 +732,7 @@ typedef struct Player {
     /* 0x002C */ TransitionRule *transitionRules;
     /* 0x0030 */ StateOverrideIndex *stateOverrideIndices;
     /* 0x0034 */ s16 *logicStates;
-    /* 0x0038 */ s16 *moveToRuleMap;
+    /* 0x0038 */ s16 *moveToLogicStateMap;
     /* 0x003C */ s32 unk_3C;
     /* 0x0040 */ AnimationSoundTriggers *soundTable;
     /* 0x0044 */ u8 *unk_44;
@@ -765,16 +749,16 @@ typedef struct Player {
     /* 0x006C */ s32 unk_6C;
     /* 0x0070 */ s16 unk_70;
     /* 0x0072 */ s16 unk_72;
-    /* 0x0074 */ s16 unk_74;
-    /* 0x0076 */ s16 nextRuleIndex;
-    /* 0x0078 */ s16 currentRuleIndex;
+    /* 0x0074 */ s16 transitionId;
+    /* 0x0076 */ s16 nextLogicState;
+    /* 0x0078 */ s16 currentLogicState;
     /* 0x007A */ s16 unk_7A;
-    /* 0x007C */ s16 unk_7C;
+    /* 0x007C */ s16 actionIndex;
     /* 0x007E */ s16 currentStateId;
     /* 0x0080 */ s32 flags;
     /* 0x0084 */ s32 unk_84;
     /* 0x0088 */ TransitionTiming *currentTiming;
-    /* 0x008C */ s32 unk_8C;
+    /* 0x008C */ s32 transitionTimeStamp;
     /* 0x0090 */ PlayerStateDef *currentStateDef;
     /* 0x0094 */ s16 autoTransitionTimer;
     /* 0x0096 */ s16 unk_96;
@@ -784,10 +768,9 @@ typedef struct Player {
     /* 0x00A4 */ TransitionRule *previousTransition;
     /* 0x00A8 */ AiState aiState;
     /* 0x0184 */ u8 unk_184;
-    /* 0x0186 */ s16 unk_186;
+    /* 0x0186 */ s16 previousActionIndex;
     /* 0x0188 */ s16 previousStateId;
-    /* 0x018A */ s16 unk_18A;
-    /* 0x018C */ s32 unk_18C;
+    /* 0x018C */ s32 previousFlags;
     /* 0x0190 */ s32 unk_190;
     /* 0x0194 */ Object *currentEffect;
     /* 0x0198 */ HitboxBones hitboxBones;

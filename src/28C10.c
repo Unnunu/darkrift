@@ -300,7 +300,7 @@ void func_80028890(Object *obj) {
     gPlayerInput[PLAYER_2].enabled = FALSE;
 
     if (obj->vars[0] == 0) {
-        if (gPlayers[PLAYER_1].unk_7C == 0 && gPlayers[PLAYER_2].unk_7C == 0) {
+        if (gPlayers[PLAYER_1].actionIndex == 0 && gPlayers[PLAYER_2].actionIndex == 0) {
             func_80028E84();
             obj->vars[0] = 240;
         }
@@ -433,14 +433,14 @@ void func_80028E84(void) {
     v0 = gPlayers[PLAYER_1].obj->playerHp;
     v1 = gPlayers[PLAYER_2].obj->playerHp;
     if (v0 > v1) {
-        func_8000636C(&gPlayers[PLAYER_1], 132, 1);
-        func_8000636C(&gPlayers[PLAYER_2], 384, 1);
+        player_apply_move(&gPlayers[PLAYER_1], 132, 1);
+        player_apply_move(&gPlayers[PLAYER_2], 384, 1);
     } else if (v0 < v1) {
-        func_8000636C(&gPlayers[PLAYER_1], 384, 1);
-        func_8000636C(&gPlayers[PLAYER_2], 132, 1);
+        player_apply_move(&gPlayers[PLAYER_1], 384, 1);
+        player_apply_move(&gPlayers[PLAYER_2], 132, 1);
     } else {
-        func_8000636C(&gPlayers[PLAYER_1], 384, 1);
-        func_8000636C(&gPlayers[PLAYER_2], 384, 1);
+        player_apply_move(&gPlayers[PLAYER_1], 384, 1);
+        player_apply_move(&gPlayers[PLAYER_2], 384, 1);
     }
 }
 

@@ -3,14 +3,13 @@
 #include "common.h"
 
 enum TaskFlags {
-    TASK_FLAG_ENABLED = 1 << 0,
-    TASK_FLAG_2 = 1 << 1,
-    TASK_FLAG_FRAME_TRIGGER = 1 << 2,
-    TASK_FLAG_TIME_TRIGGER = 1 << 3,
-    TASK_FLAG_10 = 1 << 4,
-    TASK_FLAG_20 = 1 << 5,
-    TASK_FLAG_CALL = 1 << 6,
-    TASK_FLAG_END = 1 << 7
+    TASK_FLAG_ENABLED = 0x1,
+    TASK_FLAG_TRIGGER_FRAME = 0x4,
+    TASK_FLAG_TRIGGER_TIME = 0x8,
+    TASK_FLAG_10 = 0x10,
+    TASK_FLAG_20 = 0x20,
+    TASK_FLAG_PREEMPT = 0x40,
+    TASK_FLAG_END = 0x80
 };
 
 #define TASK_END(task) (task)->flags |= TASK_FLAG_END

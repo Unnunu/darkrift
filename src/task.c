@@ -29,12 +29,12 @@ void task_execute(Object *obj) {
         obj->currentTask = task;
         flags = task->flags;
 
-        if (((flags & TASK_FLAG_FRAME_TRIGGER) && obj->frameIndex >= task->unk_86) ||
-            ((flags & TASK_FLAG_TIME_TRIGGER) && task->unk_86 < (gFrameCounter & 0xFFFF)) ||
+        if (((flags & TASK_FLAG_TRIGGER_FRAME) && obj->frameIndex >= task->triggerAt) ||
+            ((flags & TASK_FLAG_TRIGGER_TIME) && task->triggerAt < (gFrameCounter & 0xFFFF)) ||
             ((flags & TASK_FLAG_10) && (flags & TASK_FLAG_20))) {
-            TaskContext *conditional_context = &task->conditional_context;
+            TaskContext *slot = &task->triggerSlot;
 
-            if (conditional_context->flags & TASK_FLAG_CALL) {
+            if (slot->flags & TASK_FLAG_PREEMPT) {
                 // push active task on stack
                 task->stack[task->stackPos].func = task->func;
                 task->stack[task->stackPos].start_delay = task->start_delay;
@@ -43,9 +43,9 @@ void task_execute(Object *obj) {
             } else {
                 task->stackPos = 0;
             }
-            task->func = conditional_context->func;
-            task->flags = conditional_context->flags;
-            task->start_delay = conditional_context->start_delay;
+            task->func = slot->func;
+            task->flags = slot->flags;
+            task->start_delay = slot->start_delay;
         }
 
         if (flags & TASK_FLAG_END) {

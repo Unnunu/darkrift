@@ -684,7 +684,7 @@ void func_80033958(void) {
     s16 s1;
     TransitionRule *new_var;
     s16 **charCombos;
-    s16 *tmp2;
+    s16 *logicStates;
     s16 t3;
 
     player = gPlayers + gPracticingPlayer;
@@ -701,10 +701,10 @@ void func_80033958(void) {
 
     s1 = *combo;
     while (s1 != 0) {
-        t3 = player->moveToRuleMap[s1];
-        tmp2 = player->logicStates;
-        new_var = &player->transitionRules[tmp2[t3]];
-        D_8013C410[D_8013C428++] = tmp2[t3];
+        t3 = player->moveToLogicStateMap[s1];
+        logicStates = player->logicStates;
+        new_var = &player->transitionRules[logicStates[t3]];
+        D_8013C410[D_8013C428++] = logicStates[t3];
         func_800336E4(new_var->requiredButtons);
         combo++;
         s1 = *combo;
@@ -737,7 +737,7 @@ void func_80033AB0(void) {
 
     s1 = *combo;
     while (s1 != 0) {
-        logicStateId = opponent->moveToRuleMap[s1];
+        logicStateId = opponent->moveToLogicStateMap[s1];
         logicStates = opponent->logicStates;
         transition = &opponent->transitionRules[logicStates[logicStateId]];
         D_8013C410[D_8013C428++] = logicStates[logicStateId];
@@ -783,14 +783,14 @@ void func_80033D64(void) {
         func_80033C38();
     }
 
-    if (player->unk_74 == D_8013C410[D_8013C42A]) {
+    if (player->transitionId == D_8013C410[D_8013C42A]) {
         func_800337C8(player->currentTransition->requiredButtons);
         D_8013C42A++;
         if (D_8013C444) {
             func_80033C38();
         }
         D_8013C42C = 15;
-    } else if (D_8013C42A != 0 && player->unk_74 != D_8013C410[D_8013C42A - 1]) {
+    } else if (D_8013C42A != 0 && player->transitionId != D_8013C410[D_8013C42A - 1]) {
         func_80033868();
         D_8013C444 = FALSE;
     }

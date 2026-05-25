@@ -317,8 +317,8 @@ void func_800162A4(Object *obj) {
     model_update_animated_params(gPlayers[PLAYER_2].obj);
     gPlayers[PLAYER_1].obj->previousFrameIndex = gPlayers[PLAYER_1].obj->frameIndex;
     gPlayers[PLAYER_2].obj->previousFrameIndex = gPlayers[PLAYER_2].obj->frameIndex;
-    gPlayers[PLAYER_1].animTask->flags &= ~TASK_FLAG_FRAME_TRIGGER;
-    gPlayers[PLAYER_2].animTask->flags &= ~TASK_FLAG_FRAME_TRIGGER;
+    gPlayers[PLAYER_1].animTask->flags &= ~TASK_FLAG_TRIGGER_FRAME;
+    gPlayers[PLAYER_2].animTask->flags &= ~TASK_FLAG_TRIGGER_FRAME;
 
     gPlayerAngle = 0x800;
     func_80029130();
@@ -328,11 +328,11 @@ u32 func_8001675C(Player *player, s32 arg1, u32 arg2) {
     s32 temp;
     u32 res;
 
-    func_8000636C(player, arg1, TRUE);
+    player_apply_move(player, arg1, TRUE);
 
-    temp = player->animTask->params.unk_04;
-    if (arg2 < player->stateDefs[temp].unk_02 + 0x78) {
-        res = player->stateDefs[temp].unk_02 + 0x78;
+    temp = player->animTask->params[1];
+    if (arg2 < player->stateDefs[temp].unk_02 + 120) {
+        res = player->stateDefs[temp].unk_02 + 120;
     } else {
         res = arg2;
     }
@@ -625,15 +625,15 @@ void func_800173DC(Object *obj) {
         }
     } else if ((gPlayers[PLAYER_1].flags & PLAYER_FLAG_40000) && (gPlayers[PLAYER_2].flags & PLAYER_FLAG_40000)) {
         if ((gPlayers[PLAYER_1].currentStateDef->flags & STATE_FLAG_1) && gPlayers[PLAYER_1].currentStateId != 4) {
-            func_8000636C(&gPlayers[PLAYER_1], 320, FALSE);
+            player_apply_move(&gPlayers[PLAYER_1], 320, FALSE);
         } else if (gPlayers[PLAYER_1].currentStateId != 17) {
-            func_8000636C(&gPlayers[PLAYER_1], 68, FALSE);
+            player_apply_move(&gPlayers[PLAYER_1], 68, FALSE);
         }
 
         if ((gPlayers[PLAYER_2].currentStateDef->flags & STATE_FLAG_1) && gPlayers[PLAYER_2].currentStateId != 4) {
-            func_8000636C(&gPlayers[PLAYER_2], 320, FALSE);
+            player_apply_move(&gPlayers[PLAYER_2], 320, FALSE);
         } else if (gPlayers[PLAYER_2].currentStateId != 17) {
-            func_8000636C(&gPlayers[PLAYER_2], 68, FALSE);
+            player_apply_move(&gPlayers[PLAYER_2], 68, FALSE);
         }
 
         gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
