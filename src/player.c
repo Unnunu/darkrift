@@ -76,7 +76,7 @@ void func_800035D0(Player *player) {
 
     v0 = player->obj;
 
-    if (D_80080236 || D_800801F0) {
+    if (D_80080236 || gRoundOver) {
         return;
     }
     v1 = D_80080238.tailIndex;
@@ -188,7 +188,7 @@ s32 func_80003974(void *arg0) {
     s3 = gFrameCounter - D_80080238.startFrameCounter;
 
     D_80080238.headIndex = 0;
-    D_8013C250 = 1;
+    sReplayActive = 1;
     gPlayers[PLAYER_1].currentStateId = 0;
     gPlayers[PLAYER_2].currentStateId = 0;
 
@@ -211,13 +211,13 @@ s32 func_80003974(void *arg0) {
     gPlayers[PLAYER_1].animTask->flags &= ~TASK_FLAG_FRAME_TRIGGER;
     gPlayers[PLAYER_2].animTask->flags &= ~TASK_FLAG_FRAME_TRIGGER;
 
-    D_8008020C = 0x800;
-    func_8002DA08(gCamera);
-    gCamera->currentTask->func = func_8002EB2C;
+    gPlayerAngle = 0x800;
+    camera_orbit_init(gCamera);
+    gCamera->currentTask->func = camera_battle_update;
     gCamera->currentTask->start_delay = 0;
     gCameraTarget.x = gCameraTarget.z = 0;
     gCameraTarget.y = -400;
-    D_8013C834 = FALSE;
+    sCutsceneAnimDone = FALSE;
 
     temp = guRandom() % 2;
 
@@ -239,7 +239,7 @@ s32 func_80003974(void *arg0) {
             func_800038C8(v0);
         }
 
-        func_8002D278(gCamera, TRUE);
+        camera_orbit_update(gCamera, TRUE);
     }
 
     return 0;
@@ -361,15 +361,15 @@ void player_update(Object *obj) {
         }
     }
 
-    if (gBattleSettings[playerId].isCpu && !D_800801F0 && !(player->flags & PLAYER_FLAG_100000)) {
-        if (!(player->unk_180 & 0x20000)) {
-            func_8001B810(player);
+    if (gBattleSettings[playerId].isCpu && !gRoundOver && !(player->flags & PLAYER_FLAG_100000)) {
+        if (!(player->aiState.aiFlags & 0x20000)) {
+            ai_update(player);
         }
         if (D_8013C444 && gPlayerInput[playerId].accumulated && player->nextRuleIndex >= 0 &&
             !(player->animTask->flags & TASK_FLAG_FRAME_TRIGGER) && !(player->flags & PLAYER_FLAG_2000)) {
             player_select_transition(player, FALSE);
         }
-    } else if (player->unk_184 && !D_800801F0) {
+    } else if (player->unk_184 && !gRoundOver) {
         if (player->autoTransitionTimer != 0 && --player->autoTransitionTimer == 0) {
             player_select_transition(player, TRUE);
         } else if (!(player->flags & (PLAYER_FLAG_TRANSITION_LOCKED | PLAYER_FLAG_100000)) &&
@@ -383,8 +383,9 @@ void player_update(Object *obj) {
         player->hitCooldown--;
     }
 
-    if (D_80080218 >= D_80080210 && !(player->currentStateDef->flags & STATE_FLAG_40000) && player->hitCooldown == 0 &&
-        oppObj->frameIndex >= oppState->hitboxActiveStart && oppObj->frameIndex <= oppState->hitboxActiveEnd) {
+    if (D_80080218 >= gPlayerDistance && !(player->currentStateDef->flags & STATE_FLAG_40000) &&
+        player->hitCooldown == 0 && oppObj->frameIndex >= oppState->hitboxActiveStart &&
+        oppObj->frameIndex <= oppState->hitboxActiveEnd) {
 
         if (oppState->flags & (STATE_FLAG_40 | STATE_FLAG_2000)) {
             if ((player->currentStateDef->flags & (STATE_FLAG_400 | STATE_FLAG_10000 | STATE_FLAG_20000)) &&
@@ -430,8 +431,8 @@ typedef struct AssetDB3 {
 s16 D_80049390 = -1;
 s16 D_80049394 = -1;
 
-void func_8001C1C0(Player *);
-void func_8001BF40(Player *);
+void ai_set_temp_max_difficulty(Player *);
+void ai_increase_difficulty(Player *);
 s32 func_8001DFE4(s32 arg0);
 
 void func_80004334(CharacterDefinition *arg0, s16 playerId) {
@@ -441,34 +442,35 @@ void func_80004334(CharacterDefinition *arg0, s16 playerId) {
     s32 i;
     s32 pad;
 
-    gPlayers[playerId].aiTable4 = arg0->unk_30 + (u32) arg0;
-    gPlayers[playerId].aiTable3 = arg0->unk_34 + (u32) arg0;
+    gPlayers[playerId].aiActionTable = arg0->unk_30 + (u32) arg0;
+    gPlayers[playerId].aiActionIndexMap = arg0->unk_34 + (u32) arg0;
 
     v1 = arg0->unk_38 + (u32) arg0;
     gPlayers[playerId].unk_DB8 = v1->unk_00;
-    gPlayers[playerId].aiTable2 = v1->unk_04;
-    gPlayers[playerId].aiTable1 = v1->unk_00 + v1->unk_04; // required to match
+    gPlayers[playerId].aiCandidateTable = v1->unk_04;
+    gPlayers[playerId].aiSequenceTable = v1->unk_00 + v1->unk_04; // required to match
 
     a2 = arg0->unk_3C + (u32) arg0;
     gPlayers[playerId].unk_DBA = a2->unk_00;
-    gPlayers[playerId].aiTable6 = a2->unk_04;
-    gPlayers[playerId].aiTable5 = (((a2->unk_00 & 1) + a2->unk_00) & 0xFFFFFFFF) + a2->unk_04; // required to match
+    gPlayers[playerId].aiResponseIndexMap = a2->unk_04;
+    gPlayers[playerId].aiResponseTable =
+        (((a2->unk_00 & 1) + a2->unk_00) & 0xFFFFFFFF) + a2->unk_04; // required to match
 
-    gPlayers[playerId].unk_180 = 0x20000;
-    gPlayers[playerId].unk_A8.unk_00 = NULL;
-    gPlayers[playerId].unk_A8.unk_0C = &D_80049394;
-    gPlayers[playerId].unk_A8.unk_10 = &D_80049394;
-    gPlayers[playerId].unk_A8.unk_14 = 0;
-    gPlayers[playerId].unk_A8.unk_18 = 0;
-    gPlayers[playerId].unk_A8.unk_1C = 0;
+    gPlayers[playerId].aiState.aiFlags = 0x20000;
+    gPlayers[playerId].aiState.recentActions[0] = NULL;
+    gPlayers[playerId].aiState.sequencePtr = &D_80049394;
+    gPlayers[playerId].aiState.actionPtr = &D_80049394;
+    gPlayers[playerId].aiState.stateCallback = 0;
+    gPlayers[playerId].aiState.actionParam = 0;
+    gPlayers[playerId].aiState.conditionFlags = 0;
 
     gPlayerInput[playerId].enabled = FALSE;
 
     if (gPlayMode == PLAY_MODE_30) {
         if (playerId != PLAYER_1) {
-            func_8001C114(gPlayers + playerId);
+            ai_reset_difficulty_hard(gPlayers + playerId);
         } else {
-            func_8001C1C0(gPlayers + PLAYER_1);
+            ai_set_temp_max_difficulty(gPlayers + PLAYER_1);
         }
     } else if (gBattleSettings[playerId].unk_0F) {
         if (gDifficulty == DIFFICULTY_HARD && gBattleSettings[playerId].unk_04 == 0) {
@@ -476,24 +478,24 @@ void func_80004334(CharacterDefinition *arg0, s16 playerId) {
         }
         s2 = gBattleSettings[playerId].unk_04;
 
-        func_8001C114(gPlayers + playerId);
+        ai_reset_difficulty_hard(gPlayers + playerId);
         gBattleSettings[playerId].unk_0F = FALSE;
         for (i = 0; i < s2; i++) {
-            func_8001BF40(gPlayers + playerId);
+            ai_increase_difficulty(gPlayers + playerId);
         }
     } else {
         switch (gDifficulty) {
             case DIFFICULTY_NORMAL:
             case DIFFICULTY_HARD:
-                func_8001BF40(gPlayers + playerId);
+                ai_increase_difficulty(gPlayers + playerId);
                 break;
             case DIFFICULTY_EASY:
                 switch (func_8001DFE4(playerId)) {
                     case 0:
-                        func_8001C1C0(gPlayers + playerId);
+                        ai_set_temp_max_difficulty(gPlayers + playerId);
                         break;
                     default:
-                        func_8001BF40(gPlayers + playerId);
+                        ai_increase_difficulty(gPlayers + playerId);
                         break;
                     case 4:
                     case 7:
@@ -909,10 +911,10 @@ void func_800052EC(s16 playerId) {
 
     D_80080214 = D_8004A730[gBattleSettings[PLAYER_1].characterId] + D_8004A730[gBattleSettings[PLAYER_2].characterId];
     D_80080218 = D_8004A748[gBattleSettings[PLAYER_1].characterId] + D_8004A748[gBattleSettings[PLAYER_2].characterId];
-    D_8008020C = 0x800;
-    D_80080210 = 1600;
+    gPlayerAngle = 0x800;
+    gPlayerDistance = 1600;
 
-    D_80080228[playerId] = spDC;
+    gPlayerObjects[playerId] = spDC;
     D_80080238.headIndex = D_80080238.tailIndex = 0;
     D_80080238.startFrameCounter = gFrameCounter;
 
@@ -983,7 +985,7 @@ void create_player_obj(s16 playerId) {
 
     gPlayers[playerId].playerId = playerId;
     gPlayers[playerId].flags = 0;
-    gPlayers[playerId].unk_180 = 0;
+    gPlayers[playerId].aiState.aiFlags = 0;
     gPlayers[playerId].characterId = characterId = gBattleSettings[playerId].characterId;
 
     obj->rotation.y = 0xC00 - spB0[playerId];
@@ -1016,12 +1018,12 @@ void create_player_obj(s16 playerId) {
 
     D_80080214 = D_8004A730[gBattleSettings[PLAYER_1].characterId] + D_8004A730[gBattleSettings[PLAYER_2].characterId];
     D_80080218 = D_8004A748[gBattleSettings[PLAYER_1].characterId] + D_8004A748[gBattleSettings[PLAYER_2].characterId];
-    D_8008020C = 0x800;
+    gPlayerAngle = 0x800;
     D_80080238.headIndex = D_80080238.tailIndex = 0;
     D_80080236 = TRUE;
     D_80080238.startFrameCounter = gFrameCounter;
     obj->rotation.y = 0xC00 - spB0[playerId];
-    D_80080210 = 1600;
+    gPlayerDistance = 1600;
     obj->flags = (obj->flags & OBJ_FLAG_2000) | OBJ_FLAG_MODEL;
     D_80080238.headIndex = D_80080238.tailIndex = 0;
     D_80080236 = TRUE;
@@ -1118,7 +1120,7 @@ u8 player_make_transition(Player *player, u8 arg1, u16 logicState) {
                 animTaskParams->stateId = sp44->stateIdOverride;
                 animTaskParams->unk_10 = sp3C->transitionFunc;
 
-                player->unk_180 |= 0x20000;
+                player->aiState.aiFlags |= 0x20000;
             }
             goto label;
         }
@@ -1143,10 +1145,10 @@ label:
 
         nextState = player->stateDefs + stateId;
         if (nextState->cameraStateIndex >= 0 && nextState->cameraAnimIndex == -1) {
-            func_8002C340();
+            camera_save_state();
             camera_set_animation(
                 gCamera, player->obj->modInst->animations[player->stateDefs[nextState->cameraStateIndex].animationId]);
-            gCamera->currentTask->func = func_8002C490;
+            gCamera->currentTask->func = camera_cutscene_playback;
             gCamera->currentTask->start_delay = 0;
             gCamera->currentTask->flags = TASK_FLAG_ENABLED;
         }
@@ -1195,7 +1197,7 @@ u8 func_8000636C(Player *player, s16 moveId, u8 arg2) {
 u8 func_800063C4(Player *player, s16 moveId, u8 arg2) {
     if (gBattleSettings[player->playerId].isCpu) {
         player->autoTransitionTimer = 0;
-        return func_8001B7D0(player, moveId);
+        return ai_force_transition(player, moveId);
     } else {
         return func_8000636C(player, moveId, arg2);
     }
@@ -1222,7 +1224,7 @@ u8 player_select_transition(Player *player, u8 arg1) {
     logicStates = player->logicStates;
     sp4C = gFrameCounter - player->unk_8C;
 
-    if (D_800801F0) {
+    if (gRoundOver) {
         buttons = 0;
     } else if (player->flags & PLAYER_FLAG_1000) {
         buttons = gPlayerInput[player->playerId].prev_buttons;

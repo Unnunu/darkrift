@@ -67,7 +67,7 @@ s32 D_8013C214;
 s32 D_8013C218;
 u32 gWadNumFiles;
 u32 gWadNumFolders;
-s16 D_8013C224;
+s16 sCutsceneVariant;
 s16 D_8013C226;
 void (*D_8013C228)(Asset *);
 

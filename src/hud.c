@@ -238,11 +238,11 @@ void func_800162A4(Object *obj) {
     create_player_obj(PLAYER_2);
 
     obj->flags |= OBJ_FLAG_DELETE;
-    D_8013C224 = gFrameCounter % 5;
+    sCutsceneVariant = gFrameCounter % 5;
     D_8013C226 = 0;
 
     func_80016264();
-    func_80006AE0();
+    battle_round_init();
     func_80021D30();
 
     v0 = obj->varObj[4];
@@ -268,11 +268,11 @@ void func_800162A4(Object *obj) {
         D_80081454->flags |= OBJ_FLAG_DELETE;
     }
 
-    gCamera->currentTask->func = func_8002DEFC;
+    gCamera->currentTask->func = camera_outro_start;
     gCamera->currentTask->start_delay = 0;
     gCameraTarget.x = gCameraTarget.z = 0;
     gCameraTarget.y = -400;
-    D_8013C834 = FALSE;
+    sCutsceneAnimDone = FALSE;
 
     if (gBattleDuration != 0) {
         D_8013C240->frameIndex = 3 + gBattleDuration * 3;
@@ -320,7 +320,7 @@ void func_800162A4(Object *obj) {
     gPlayers[PLAYER_1].animTask->flags &= ~TASK_FLAG_FRAME_TRIGGER;
     gPlayers[PLAYER_2].animTask->flags &= ~TASK_FLAG_FRAME_TRIGGER;
 
-    D_8008020C = 0x800;
+    gPlayerAngle = 0x800;
     func_80029130();
 }
 
@@ -426,7 +426,7 @@ void func_80016B6C(Object *obj) {
     Object *v0;
 
     if (gPlayerInput[1 - D_8013C24C].buttons & INP_START) {
-        func_80006C14();
+        battle_match_init();
 
         if (gPlayMode == PLAY_MODE_TOURNAMENT_P1) {
             D_800B6350[PLAYER_2][gPlayers[PLAYER_2].characterId] = FALSE;
@@ -733,9 +733,9 @@ void func_800177C0(Object *obj) {
 void func_8001792C(Object *obj) {
     Object *newObj;
 
-    if (D_800801F0 || gPlayers[PLAYER_1].obj->playerHp <= 0 || gPlayers[PLAYER_2].obj->playerHp <= 0) {
+    if (gRoundOver || gPlayers[PLAYER_1].obj->playerHp <= 0 || gPlayers[PLAYER_2].obj->playerHp <= 0) {
         func_80029044();
-        D_800801F0 = TRUE;
+        gRoundOver = TRUE;
         if (!(gGlobalFlags & GAME_FLAG_4)) {
             gGlobalFlags |= GAME_FLAG_4;
             return;
@@ -750,7 +750,7 @@ void func_8001792C(Object *obj) {
 
         D_8013C24E = (gPlayers[PLAYER_1].obj->playerHp == gPlayers[PLAYER_2].obj->playerHp);
 
-        if (D_800801F0 && gPlayers[PLAYER_1].obj->playerHp != 0 && gPlayers[PLAYER_2].obj->playerHp != 0) {
+        if (gRoundOver && gPlayers[PLAYER_1].obj->playerHp != 0 && gPlayers[PLAYER_2].obj->playerHp != 0) {
             newObj = func_80015FB4(MESSAGE_ID_TIME_OVER);
             D_80081454 = newObj;
             obj->varObj[4] = newObj;
@@ -794,10 +794,10 @@ void func_80017B3C(Object *obj) {
     gPlayers[PLAYER_2].flags &= ~PLAYER_FLAG_100000;
 
     if (gBattleSettings[PLAYER_1].isCpu) {
-        gPlayers[PLAYER_1].unk_180 &= ~0x20000;
+        gPlayers[PLAYER_1].aiState.aiFlags &= ~0x20000;
     }
     if (gBattleSettings[PLAYER_2].isCpu) {
-        gPlayers[PLAYER_2].unk_180 &= ~0x20000;
+        gPlayers[PLAYER_2].aiState.aiFlags &= ~0x20000;
     }
 
     func_80028FCC();
@@ -816,20 +816,20 @@ void func_80017C88(Object *obj) {
 
 void func_80017CA8(void) {
     D_8013C23C = create_worker(func_80017C88, 1);
-    D_800801F0 = FALSE;
-    D_8013C834 = 0;
+    gRoundOver = FALSE;
+    sCutsceneAnimDone = 0;
 
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = FALSE;
     gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
     gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
-    D_8013C250 = FALSE;
+    sReplayActive = FALSE;
     D_80080234 = FALSE;
 
     if (gBattleSettings[PLAYER_1].isCpu) {
-        gPlayers[PLAYER_1].unk_180 |= 0x20000;
+        gPlayers[PLAYER_1].aiState.aiFlags |= 0x20000;
     }
     if (gBattleSettings[PLAYER_2].isCpu) {
-        gPlayers[PLAYER_2].unk_180 |= 0x20000;
+        gPlayers[PLAYER_2].aiState.aiFlags |= 0x20000;
     }
 
     D_8013C23C->currentTask->func = func_80017C3C;

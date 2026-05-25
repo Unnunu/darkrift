@@ -420,7 +420,7 @@ u8 func_80022B44(Player *arg0, Player *arg1, Object *arg2) {
 
     a2 = (PlayerStateDef *) arg2->vars[6];
 
-    if (D_800801F0 && !D_8013C250) {
+    if (gRoundOver && !sReplayActive) {
         return FALSE;
     }
 

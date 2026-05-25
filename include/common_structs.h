@@ -701,31 +701,34 @@ typedef struct PlayerSubG {
     /* 0x44 */ ColorRGBA lightColors[2];
 } PlayerSubG; // size = 0x4C
 
-typedef struct PlayerSubJ {
-    /* 0x00 */ s16 unk_00;
-    /* 0x02 */ s16 unk_02;
-    /* 0x04 */ s16 unk_04;
-    /* 0x06 */ s16 unk_06;
-    /* 0x08 */ u16 unk_08;
+typedef struct AiAction {
+    /* 0x00 */ s16 actionIndex;
+    /* 0x02 */ s16 difficultyMask;
+    /* 0x04 */ s16 distanceMax;
+    /* 0x06 */ s16 distanceMin;
+    /* 0x08 */ u16 conditionFlags;
     /* 0x0A */ s16 unk_0A;
-} PlayerSubJ; // size = 0xC
+} AiAction; // size = 0xC
 
-typedef struct PlayerSubH {
-    /* 0x0000 */ PlayerSubJ *unk_00;
-    /* 0x0004 */ PlayerSubJ *unk_04;
-    /* 0x0008 */ PlayerSubJ *unk_08;
-    /* 0x000C */ s16 *unk_0C;
-    /* 0x0010 */ u16 *unk_10;
-    /* 0x0014 */ s16 (*unk_14)(struct Player *);
-    /* 0x0018 */ s16 unk_18;
+typedef struct AiState {
+    /* 0x0000 */ AiAction *recentActions[3];
+    /* 0x000C */ s16 *sequencePtr;
+    /* 0x0010 */ u16 *actionPtr;
+    /* 0x0014 */ s16 (*stateCallback)(struct Player *);
+    /* 0x0018 */ s16 actionParam;
     /* 0x001A */ s16 unk_1A;
-    /* 0x001C */ s32 unk_1C;
-    /* 0x0020 */ s32 unk_20;
+    /* 0x001C */ s32 conditionFlags;
+    /* 0x0020 */ s32 actionFlags;
     /* 0x0024 */ s16 unk_24;
-    /* 0x0026 */ s16 unk_26;
+    /* 0x0026 */ s16 opponentHpAtAction;
     /* 0x0028 */ s32 unk_28;
-    /* 0x002C */ s16 *unk_2C;
-} PlayerSubH;
+    /* 0x002C */ s16 *tableRow;
+    /* 0x00D8 */ s32 unk_D8;
+    /* 0x00DC */ s16 hitCount;
+    /* 0x00DE */ s16 delayCount;
+    /* 0x00E0 */ char aiDebugName[160];
+    /* 0x0180 */ s32 aiFlags;
+} AiState;
 
 typedef struct Player {
     /* 0x0000 */ Object *obj;
@@ -751,12 +754,12 @@ typedef struct Player {
     /* 0x0044 */ u8 *unk_44;
     /* 0x0048 */ PlayerSubG *effectTable;
     /* 0x004C */ PlayerSubB *unk_4C;
-    /* 0x0050 */ u16 *aiTable4;
-    /* 0x0054 */ s16 *aiTable3;
-    /* 0x0058 */ PlayerSubJ *aiTable2;
-    /* 0x005C */ s16 *aiTable1;
-    /* 0x0060 */ s16 *aiTable5;
-    /* 0x0064 */ s16 *aiTable6;
+    /* 0x0050 */ u16 *aiActionTable;
+    /* 0x0054 */ s16 *aiActionIndexMap;
+    /* 0x0058 */ AiAction *aiCandidateTable;
+    /* 0x005C */ s16 *aiSequenceTable;
+    /* 0x0060 */ s16 *aiResponseTable;
+    /* 0x0064 */ s16 *aiResponseIndexMap;
     /* 0x0068 */ u8 *unk_68;
 
     /* 0x006C */ s32 unk_6C;
@@ -779,12 +782,7 @@ typedef struct Player {
     /* 0x009C */ PlayerSubB *unk_9C;
     /* 0x00A0 */ TransitionRule *currentTransition;
     /* 0x00A4 */ TransitionRule *previousTransition;
-    /* 0x00A8 */ PlayerSubH unk_A8;
-    /* 0x00D8 */ s32 unk_D8;
-    /* 0x00DC */ s16 unk_DC;
-    /* 0x00DE */ s16 unk_DE;
-    /* 0x00E0 */ char unk_E0[160];
-    /* 0x0180 */ s32 unk_180;
+    /* 0x00A8 */ AiState aiState;
     /* 0x0184 */ u8 unk_184;
     /* 0x0186 */ s16 unk_186;
     /* 0x0188 */ s16 previousStateId;

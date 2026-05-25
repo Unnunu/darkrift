@@ -30,8 +30,8 @@ NodeAttachment D_8013C808;
 Vec4i D_8013C818;
 s32 D_8013C828;
 s32 D_8013C82C;
-s32 D_8013C830;
-u8 D_8013C834;
+s32 sPostCutsceneZoom;
+u8 sCutsceneAnimDone;
 s32 D_8013C838;
 
 void camera_set_animation(Object *obj, AnimHeader *animation) {
@@ -164,8 +164,8 @@ void camera_update(Object *obj) {
                    gCameraFarClip, gCameraScale);
 
     if (obj->pos.x != 0 || obj->pos.z != 0 || gCameraTarget.x != 0 || gCameraTarget.z != 0) {
-        guLookAtF(&gCameraViewMatrix, obj->pos.x, obj->pos.y + (f32) D_8013C830, obj->pos.z, gCameraTarget.x,
-                  gCameraTarget.y + (f32) D_8013C830, gCameraTarget.z, 0.0f, -1.0f, 0.0f);
+        guLookAtF(&gCameraViewMatrix, obj->pos.x, obj->pos.y + (f32) sPostCutsceneZoom, obj->pos.z, gCameraTarget.x,
+                  gCameraTarget.y + (f32) sPostCutsceneZoom, gCameraTarget.z, 0.0f, -1.0f, 0.0f);
         math_mtxf_mul(&gCameraViewMatrix, &gCameraPerspMatrix, &gCameraProjectionMatrix);
     }
 
@@ -189,7 +189,7 @@ void camera_update(Object *obj) {
 
     if (!(D_8008012C & GFX_FLAG_20) || model->animations[0]) {
         D_80081428 = D_8013C828;
-        gBgScrollY = D_8013C82C - (s32) (D_8013C830 * 0.2f);
+        gBgScrollY = D_8013C82C - (s32) (sPostCutsceneZoom * 0.2f);
     }
 }
 
@@ -263,7 +263,7 @@ Object *camera_create(void) {
 
     obj->flags |= OBJ_FLAG_CAMERA;
     D_8013C59C = D_8013C5A0 = 0.0f;
-    D_8013C834 = FALSE;
+    sCutsceneAnimDone = FALSE;
 
     return obj;
 }

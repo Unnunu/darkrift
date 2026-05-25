@@ -39,7 +39,7 @@ void run_37_mode(void);
 
 void func_80015D60(Object *obj);
 void func_80016144(Object *obj);
-void func_80023FDC(Object *);
+void player_anim_loop(Object *);
 void func_8002FD78(Object *);
 void func_80030A60(Object *);
 void func_8002F9E8(Object *);
@@ -368,14 +368,14 @@ u8 D_8004C1D8[] = { 6, 7, 9, 6, 5, 5, 6, 8, 5, 8, 5 };
 s16 gDifficulty = DIFFICULTY_NORMAL;
 
 TransitionAction D_8004C1E8[] = {
-    /* idle */ { 0x0040010, func_80023FDC, func_8002FD78, NULL, 0x2700208 },
+    /* idle */ { 0x0040010, player_anim_loop, func_8002FD78, NULL, 0x2700208 },
     /* unknown step */ { 0x0041010, task_default_func, func_80030A60, NULL, 0x2700208 },
     /* dash */ { 0x0001010, func_80024078, func_8002F9E8, NULL, 0x2700208 },
-    /* step */ { 0x0040010, func_80023FDC, func_8002FA78, NULL, 0x2F00208 },
-    /* ----- */ { 0x0040000, func_80023FDC, task_default_func, NULL, 0x2700208 },
-    /* run */ { 0x0040000, func_80023FDC, func_80030F00, NULL, 0x2700208 },
+    /* step */ { 0x0040010, player_anim_loop, func_8002FA78, NULL, 0x2F00208 },
+    /* ----- */ { 0x0040000, player_anim_loop, task_default_func, NULL, 0x2700208 },
+    /* run */ { 0x0040000, player_anim_loop, func_80030F00, NULL, 0x2700208 },
     /* jump */ { 0x0001010, func_80024078, func_80031088, NULL, 0x2700208 },
-    /* crouch */ { 0x0040010, func_80023FDC, func_8002FE10, NULL, 0x2F00208 },
+    /* crouch */ { 0x0040010, player_anim_loop, func_8002FE10, NULL, 0x2F00208 },
     /* crouch exit*/ { 0x0001810, func_80023ED0, task_default_func, NULL, 0x2F00208 },
     /* crouch restart */ { 0x0001010, func_80024214, task_default_func, NULL, 0x2700208 },
     /* stand block */ { 0x0801010, func_80024078, task_default_func, NULL, 0x2700208 },
@@ -384,12 +384,12 @@ TransitionAction D_8004C1E8[] = {
     /* grab */ { 0x0000010, func_80024078, func_80030330, NULL, 0x2700208 },
     /* grabbed */ { 0x1003090, func_80024078, func_800309EC, NULL, 0x2700208 },
     /* co-grabbed */ { 0x0000000, func_80024078, task_default_func, NULL, 0x2700208 },
-    /* intro */ { 0x0040000, func_80023FDC, task_default_func, NULL, 0x2700208 },
-    /* key up */ { 0x0040000, func_80023FDC, task_default_func, NULL, 0x2700208 },
+    /* intro */ { 0x0040000, player_anim_loop, task_default_func, NULL, 0x2700208 },
+    /* key up */ { 0x0040000, player_anim_loop, task_default_func, NULL, 0x2700208 },
     /* various SP */ { 0x0000000, func_80024078, func_8002FEA0, NULL, 0x2700208 },
     /* damaged */ { 0x0003010, func_80024078, func_80031724, NULL, 0x2700208 },
     /* end */ { 0x0041000, player_anim_step_once, task_default_func, NULL, 0x2700208 },
-    /* lying down */ { 0x0040090, func_80023FDC, task_default_func, NULL, 0x2700208 },
+    /* lying down */ { 0x0040090, player_anim_loop, task_default_func, NULL, 0x2700208 },
     { 0x0040000, player_anim_pingpong_forward, task_default_func, NULL, 0x2700208 },
     /* dmg jump */ { 0x0003000, player_anim_step_once, func_80030B74, NULL, 0x2700208 },
     /* timeout to idle */ { 0x0000000, task_default_func, player_anim_next_transition, NULL, 0x2700208 },
@@ -406,7 +406,7 @@ TransitionAction D_8004C1E8[] = {
     /* turn around */ { 0x0008010, func_80024078, func_8002FEA0, NULL, 0x2700208 },
     { 0x0000010, func_80024078, task_default_func, NULL, 0x2700208 },
     { 0x0040010, player_anim_pingpong_forward, task_default_func, NULL, 0x2700208 },
-    { 0x0040010, func_80023FDC, task_default_func, NULL, 0x2700208 },
+    { 0x0040010, player_anim_loop, task_default_func, NULL, 0x2700208 },
     { 0x0008010, func_80024078, func_800305FC, func_80030764, 0x2700208 },
     /* Aaron specific */ { 0x1013090, func_80024078, func_800302A4, func_8002FF7C, 0x2700208 },
     { 0x0000010, func_80024078, func_800306FC, func_80030764, 0x2700208 },
@@ -415,7 +415,7 @@ TransitionAction D_8004C1E8[] = {
     { 0x0040090, player_anim_step_once, task_default_func, NULL, 0x2700208 },
     { 0x0008000, func_80024078, task_default_func, NULL, 0x2700208 },
     { 0x0029010, func_80024078, task_default_func, NULL, 0x2700208 },
-    { 0x0068010, func_80023FDC, task_default_func, NULL, 0x2700208 },
+    { 0x0068010, player_anim_loop, task_default_func, NULL, 0x2700208 },
     { 0x0029010, func_80024078, func_80031F24, NULL, 0x2700208 },
     { 0x0003090, func_80024078, func_800309EC, NULL, 0x2700208 },
     { 0x0041000, player_anim_step_once, task_default_func, NULL, 0x2700208 },
@@ -432,9 +432,9 @@ TransitionAction D_8004C1E8[] = {
     { 0x0008010, func_80024078, func_800311A0, NULL, 0x2700208 },
     { 0x0000000, func_80024078, func_8003146C, NULL, 0x2700208 },
     { 0x0061010, func_80024078, func_80031164, NULL, 0x2700208 },
-    { 0x0008000, func_80023FDC, func_80031FBC, NULL, 0x2700208 },
+    { 0x0008000, player_anim_loop, func_80031FBC, NULL, 0x2700208 },
     { 0x0000000, player_anim_step_once, func_80031F88, NULL, 0x2700208 },
-    { 0x0000000, func_80023FDC, func_80032044, NULL, 0x2700208 },
+    { 0x0000000, player_anim_loop, func_80032044, NULL, 0x2700208 },
     { 0x0001000, func_80024078, func_800313EC, NULL, 0x2700208 },
     { 0x8005000, func_80023ED0, task_default_func, NULL, 0x2F00208 },
 };

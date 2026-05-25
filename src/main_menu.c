@@ -444,7 +444,7 @@ void func_8001A4FC(Object *obj) {
 
 void func_8001A5D4(Object *obj) {
     if (gCamera->modInst->animations[0] == NULL) {
-        func_8002EA50(gCamera, obj->vars[1]);
+        camera_cutscene_shake_start(gCamera, obj->vars[1]);
         TASK_END(obj->currentTask);
         obj->flags |= OBJ_FLAG_DELETE;
     }

@@ -11,16 +11,16 @@ void player_anim_next_transition(Object *obj) {
     u16 playerId = player->playerId;
     s32 stateFlags;
 
-    if (gBattleSettings[playerId].isCpu && !D_800801F0) {
-        if (func_8001BB80(player) || func_8001C53C(player, TRUE)) {
+    if (gBattleSettings[playerId].isCpu && !gRoundOver) {
+        if (ai_advance_sequence(player) || ai_decide(player, TRUE)) {
             return;
         }
 
-        func_8001BB2C(player);
+        ai_reset(player);
 
         if (player->nextRuleIndex >= 0 && (player->flags & PLAYER_FLAG_1000)) {
             if (ai_select_transition(player)) {
-                player->unk_180 |= 0x8000;
+                player->aiState.aiFlags |= 0x8000;
                 return;
             }
         }
@@ -86,7 +86,7 @@ void player_anim_step_once(Object *obj) {
     }
 }
 
-void func_80023FDC(Object *obj) {
+void player_anim_loop(Object *obj) {
     Player *player;
     s16 characterId;
 
@@ -127,7 +127,7 @@ void func_800240C8(Object *obj) {
     if (player->currentStateDef->cameraStateIndex < 0) {
         TASK_END(obj->currentTask);
     } else if (obj->frameIndex >= player->currentStateDef->cameraAnimIndex) {
-        func_8002C340();
+        camera_save_state();
 
         sp2C.x = (gPlayers[PLAYER_1].obj->pos.x + gPlayers[PLAYER_2].obj->pos.x) >> 1;
         sp2C.z = (gPlayers[PLAYER_1].obj->pos.z + gPlayers[PLAYER_2].obj->pos.z) >> 1;
@@ -136,7 +136,7 @@ void func_800240C8(Object *obj) {
             gCamera, &sp2C, obj->rotation.y,
             obj->modInst->animations[player->stateDefs[player->currentStateDef->cameraStateIndex].animationId]);
 
-        gCamera->currentTask->func = func_8002C490;
+        gCamera->currentTask->func = camera_cutscene_playback;
         gCamera->currentTask->start_delay = 0;
         gCamera->currentTask->flags = TASK_FLAG_ENABLED;
         gCamera->currentTask->start_delay = 1;
@@ -289,7 +289,7 @@ void func_80024640(Object *obj) {
         obj->frameIndex = s2;
     }
 
-    player->unk_180 &= ~0x20000;
+    player->aiState.aiFlags &= ~0x20000;
 }
 
 void func_80024764(Object *obj) {
@@ -302,7 +302,7 @@ void func_80024764(Object *obj) {
     player->currentStateDef = temp;
     obj->modInst->currentAnimId = temp->animationId;
     player->flags |= PLAYER_FLAG_TRANSITION_LOCKED;
-    player->unk_180 |= 0x20000;
+    player->aiState.aiFlags |= 0x20000;
 }
 
 void func_800247CC(Object *obj) {

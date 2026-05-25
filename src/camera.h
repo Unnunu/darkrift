@@ -11,10 +11,10 @@ extern Matrix4f D_8013C6B0;
 extern Vec4i gCameraTarget;
 extern s32 D_8013C588;
 extern s32 D_8013C82C;
-extern s32 D_8013C830;
+extern s32 sPostCutsceneZoom;
 extern s32 gCameraHeading;
 extern s32 D_8013C828;
-extern u8 D_8013C834;
+extern u8 sCutsceneAnimDone;
 extern f32 D_8013C5A0;
 extern f32 D_8013C594;
 

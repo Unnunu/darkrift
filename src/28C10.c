@@ -48,7 +48,7 @@ Object *D_8013C244;
 Object *D_8013C248;
 u16 D_8013C24C;
 u16 D_8013C24E;
-u16 D_8013C250;
+u16 sReplayActive;
 s32 D_8013C254_unused;
 Object *D_8013C258[2][10];
 s16 D_8013C2A8;
@@ -355,7 +355,7 @@ void func_80028AE4(Object *obj) {
 
     sp22 = D_8005BFCE;
 
-    if (D_800801F0) {
+    if (gRoundOver) {
         D_80051F6C = D_80051F70 = D_8013C2A8 = D_8013C2AA = 0;
     }
 
@@ -447,7 +447,7 @@ void func_80028E84(void) {
 void func_80028F38(Object *obj) {
     Object *v1;
 
-    if (D_800801F0) {
+    if (gRoundOver) {
         TASK_END(obj->currentTask);
     }
 
@@ -458,7 +458,7 @@ void func_80028F38(Object *obj) {
         v1->frameIndex = 9;
         if (--obj->frameIndex < 0) {
             obj->frameIndex = 0;
-            D_800801F0 = TRUE;
+            gRoundOver = TRUE;
             v1->frameIndex = 0;
             TASK_END(obj->currentTask);
         }

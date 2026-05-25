@@ -162,7 +162,7 @@ void func_8002FEC8(Object *obj) {
 
     sp1A = (0xC00 - obj->rotation.y) & 0xFFF;
 
-    temp = func_8002CDFC(D_8008020C - (player->playerId != PLAYER_1 ? 0 : 0x800), sp1A);
+    temp = angle_diff(gPlayerAngle - (player->playerId != PLAYER_1 ? 0 : 0x800), sp1A);
     if (temp < 0) {
         v1 = temp + 0x800;
     } else {
@@ -284,7 +284,7 @@ void func_80030330(Object *obj) {
     PlayerStateDef *sp44;
     Vec4i sp34;
 
-    if (D_800801F0 && D_8013C250 == 0) {
+    if (gRoundOver && sReplayActive == 0) {
         TASK_END(obj->currentTask);
         return;
     }
@@ -297,7 +297,7 @@ void func_80030330(Object *obj) {
     oppId = 1 - player->playerId;
     player->hitCooldown = 2;
 
-    if (!(player->flags & PLAYER_FLAG_NOT_FACING_OPP) && D_80080210 < D_8004C178[player->characterId] &&
+    if (!(player->flags & PLAYER_FLAG_NOT_FACING_OPP) && gPlayerDistance < D_8004C178[player->characterId] &&
         (gPlayers[oppId].currentStateDef->flags & STATE_FLAG_4) &&
         !(gPlayers[oppId].currentStateDef->flags & STATE_FLAG_40000)) {
         TASK_END(obj->currentTask);
@@ -403,10 +403,10 @@ void func_80030824(Object *obj) {
     obj->vars[0]++;
     if (obj->vars[0] > 60) {
         obj->flags |= OBJ_FLAG_DELETE;
-        D_8013C830 = 0;
+        sPostCutsceneZoom = 0;
         D_80052D60 = 0;
-    } else if (D_8013C830 > 0) {
-        D_8013C830 -= 10;
+    } else if (sPostCutsceneZoom > 0) {
+        sPostCutsceneZoom -= 10;
     } else {
         obj->fn_render = func_8003088C;
     }
@@ -416,10 +416,10 @@ void func_8003088C(Object *obj) {
     obj->vars[0]++;
     if (obj->vars[0] > 60) {
         obj->flags |= OBJ_FLAG_DELETE;
-        D_8013C830 = 0;
+        sPostCutsceneZoom = 0;
         D_80052D60 = 0;
-    } else if (D_8013C830 < obj->vars[1]) {
-        D_8013C830 += 10;
+    } else if (sPostCutsceneZoom < obj->vars[1]) {
+        sPostCutsceneZoom += 10;
     } else {
         obj->fn_render = func_80030824;
         obj->vars[1] -= 15;
@@ -520,11 +520,11 @@ u8 func_80030BB0(Object *obj) {
     }
 
     if (player->playerId != PLAYER_1) {
-        if (abs(func_8002CDFC(D_8008020C, t8)) > 0x400) {
+        if (abs(angle_diff(gPlayerAngle, t8)) > 0x400) {
             sp1B = TRUE;
         }
     } else {
-        if (abs(func_8002CDFC(D_8008020C, t8)) < 0x400) {
+        if (abs(angle_diff(gPlayerAngle, t8)) < 0x400) {
             sp1B = TRUE;
         }
     }
@@ -546,9 +546,9 @@ u8 func_80030C88(Object *obj) {
     if (((opponent->currentStateDef->flags & (STATE_FLAG_200 | STATE_FLAG_400 | STATE_FLAG_10000 | STATE_FLAG_20000)) &&
          !(opponent->currentStateDef->flags & STATE_FLAG_40000)) > 0) {
         if (player->playerId != PLAYER_1) {
-            player->obj->rotation.y = 0xC00 - D_8008020C;
+            player->obj->rotation.y = 0xC00 - gPlayerAngle;
         } else {
-            player->obj->rotation.y = 0x1400 - D_8008020C;
+            player->obj->rotation.y = 0x1400 - gPlayerAngle;
         }
         return TRUE;
     } else {
@@ -569,7 +569,7 @@ void func_80030DA8(Object *obj) {
     s16 a1 = 97;
 
     if ((opponent->flags & (PLAYER_FLAG_TRANSITION_LOCKED | PLAYER_FLAG_10000 | PLAYER_FLAG_20000)) &&
-        D_80080210 < 400 && obj->frameIndex >= player->currentStateDef->hitboxActiveStart) {
+        gPlayerDistance < 400 && obj->frameIndex >= player->currentStateDef->hitboxActiveStart) {
         if (opponent->currentStateDef->flags & STATE_FLAG_200) {
             a1 = 206;
         }
@@ -581,7 +581,7 @@ void func_80030DA8(Object *obj) {
 void func_80030E88(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
-    if (D_80080210 < D_8004C1A4[player->characterId] && player->currentStateId != 17) {
+    if (gPlayerDistance < D_8004C1A4[player->characterId] && player->currentStateId != 17) {
         func_800063C4(player, 110, 1);
         TASK_END(obj->currentTask);
     }
@@ -599,7 +599,7 @@ void func_80030F00(Object *obj) {
 }
 
 u8 func_80030F40(s32 arg0) {
-    return D_80080210 > 550;
+    return gPlayerDistance > 550;
 }
 
 void func_80030F5C(Object *obj) {
@@ -609,7 +609,7 @@ void func_80030F5C(Object *obj) {
     s16 sp1A;
 
     sp26 = (0xC00 - opponent->obj->rotation.y) & 0xFFF;
-    sp1A = func_8002CDFC(D_8008020C, sp26);
+    sp1A = angle_diff(gPlayerAngle, sp26);
 
     if (sp1A < 0) {
         sp1A -= 0x800;
@@ -669,8 +669,8 @@ void func_800311A0(Object *obj) {
 void func_80031234(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
     Player *opponent = &gPlayers[player->playerId != PLAYER_1 ? PLAYER_1 : PLAYER_2];
-    Object *sp24 = D_80080228[PLAYER_1];
-    Object *sp20 = D_80080228[PLAYER_2];
+    Object *sp24 = gPlayerObjects[PLAYER_1];
+    Object *sp20 = gPlayerObjects[PLAYER_2];
     s16 sp1E;
     s16 sp1C;
     s16 sp1A;
@@ -683,7 +683,7 @@ void func_80031234(Object *obj) {
         (player->currentStateId == 39 || player->currentStateId == 84)) {
         if (player->playerId != PLAYER_1) {
             sp1C = (0xC00 - sp20->rotation.y) & 0xFFF;
-            sp1A = func_8002CDFC(D_8008020C - 0x800, sp1C);
+            sp1A = angle_diff(gPlayerAngle - 0x800, sp1C);
 
             if (abs(sp1A) > 140) {
                 if (sp1A < 0) {
@@ -695,7 +695,7 @@ void func_80031234(Object *obj) {
             sp20->rotation.y = 0xC00 - (sp1C + sp1A);
         } else {
             sp1E = (0xC00 - sp24->rotation.y) & 0xFFF;
-            sp1A = func_8002CDFC(D_8008020C, sp1E);
+            sp1A = angle_diff(gPlayerAngle, sp1E);
 
             if (abs(sp1A) > 140) {
                 if (sp1A < 0) {
@@ -711,14 +711,14 @@ void func_80031234(Object *obj) {
 
 void func_800313EC(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
-    Object *player1 = D_80080228[PLAYER_1];
-    Object *player2 = D_80080228[PLAYER_2];
+    Object *player1 = gPlayerObjects[PLAYER_1];
+    Object *player2 = gPlayerObjects[PLAYER_2];
 
     if (!(player->flags & PLAYER_FLAG_NOT_FACING_OPP) && obj->frameIndex >= player->currentStateDef->unk_02 - 1) {
         if (player->playerId != PLAYER_1) {
-            player2->rotation.y = 0xC00 - D_8008020C;
+            player2->rotation.y = 0xC00 - gPlayerAngle;
         } else {
-            player1->rotation.y = 0x1400 - D_8008020C;
+            player1->rotation.y = 0x1400 - gPlayerAngle;
         }
     }
 }
@@ -754,15 +754,15 @@ void func_8003146C(Object *obj) {
         v12 = TRUE;
         if (opponent->flags & PLAYER_FLAG_10) {
             if (opponent->playerId != PLAYER_1) {
-                opponent->obj->rotation.y = 0x1400 - D_8008020C;
+                opponent->obj->rotation.y = 0x1400 - gPlayerAngle;
             } else {
-                opponent->obj->rotation.y = 0xC00 - D_8008020C;
+                opponent->obj->rotation.y = 0xC00 - gPlayerAngle;
             }
         } else {
             if (opponent->playerId != PLAYER_1) {
-                opponent->obj->rotation.y = 0xC00 - D_8008020C;
+                opponent->obj->rotation.y = 0xC00 - gPlayerAngle;
             } else {
-                opponent->obj->rotation.y = 0x1400 - D_8008020C;
+                opponent->obj->rotation.y = 0x1400 - gPlayerAngle;
             }
         }
     }
@@ -820,12 +820,12 @@ void func_80031724(Object *obj) {
         v0->obj->frameIndex < v0->currentStateDef->hitboxActiveStart) {
         if (v0->flags & PLAYER_FLAG_1) {
             func_800063C4(player, 39, 1);
-            player->unk_A8.unk_14 = func_8001D070;
-            player->unk_A8.unk_18 = 60;
+            player->aiState.stateCallback = func_8001D070;
+            player->aiState.actionParam = 60;
         } else {
             func_800063C4(player, 59, 1);
-            player->unk_A8.unk_14 = func_8001CE18;
-            player->unk_A8.unk_18 = 60;
+            player->aiState.stateCallback = func_8001CE18;
+            player->aiState.actionParam = 60;
         }
     }
 }
@@ -861,10 +861,10 @@ void func_8003184C(Object *arg0) {
     sp58.z = 0;
 
     temp_v0 = temp_ra->unk_7C;
-    temp_ft3 = D_80080228[temp_t8]->modInst->rootTransform.world_matrix.y.y + 360.0f;
+    temp_ft3 = gPlayerObjects[temp_t8]->modInst->rootTransform.world_matrix.y.y + 360.0f;
     if (temp_v0 == 0 || temp_v0 == 7 || (temp_ra->currentStateDef->flags & STATE_FLAG_4000)) {
-        sp60.x = func_80012518(temp_ft3, D_80080210);
-        var_t2 = func_8002CDFC((s16) ((0xC00 - arg0->rotation.y) & 0xFFF), (s16) (D_8008020C - (temp_t8 << 0xB)));
+        sp60.x = func_80012518(temp_ft3, gPlayerDistance);
+        var_t2 = angle_diff((s16) ((0xC00 - arg0->rotation.y) & 0xFFF), (s16) (gPlayerAngle - (temp_t8 << 0xB)));
 
         if (var_t2 > 1700) {
             var_t2 = 1700;
@@ -1124,7 +1124,7 @@ void func_80032130(Object *obj) {
         func_80021DC4(obj);
         obj->currentTask->func = func_80021DC4;
     } else {
-        D_8013C3C8[v1] = D_80080210;
+        D_8013C3C8[v1] = gPlayerDistance;
         func_80021E34(obj);
         obj->currentTask->func = func_8003208C;
     }

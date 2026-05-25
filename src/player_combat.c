@@ -234,7 +234,7 @@ s32 apply_damage_and_reaction(Player *defender, Player *attacker, PlayerStateDef
     }
     v12 = (a3 == 270) || (a3 == 271);
 
-    if (a3 != 0 && !D_8013C250) {
+    if (a3 != 0 && !sReplayActive) {
         attacker->damage = attackerStateDef->damage;
         if (attacker->obj->vars[3] < 0) {
             attacker->total_damage += attacker->damage;
@@ -288,7 +288,7 @@ void process_hit(Player *defender, Player *attacker, Vec4s *arg2) {
 
     attackerStateDef = attacker->currentStateDef;
 
-    if (!D_800801F0 || D_8013C250) {
+    if (!gRoundOver || sReplayActive) {
         v0 = apply_damage_and_reaction(defender, attacker, attackerStateDef);
         isBlock = v0 == 270 || v0 == 271;
         if (v0 != 0) {

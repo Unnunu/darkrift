@@ -82,7 +82,7 @@ DisplayData *D_80080100;
 void func_800030E4(void);
 // void sched_execute_tasks(void);
 void func_800031FC(u16);
-void func_80006CEC(void);
+void battle_global_init(void);
 void func_80003468(u16);
 void obj_update_all(void);
 void func_80002978(void);
@@ -574,7 +574,7 @@ void func_80002744(Object *obj) {
 void game_main(void) {
     gNextGameMode = GAME_MODE_LOGO;
     func_800031FC(gNextGameMode);
-    func_80006CEC();
+    battle_global_init();
 
     while (TRUE) {
         gCurrentGameMode = gNextGameMode;

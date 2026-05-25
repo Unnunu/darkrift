@@ -17,18 +17,18 @@ extern s16 D_80081250;
 extern BackgroundLayer *D_80081254;
 extern s16 D_80080116;
 extern s16 gPreviousGameMode;
-extern s16 D_8013C224;
+extern s16 sCutsceneVariant;
 extern s16 D_8013C226;
 extern s8 D_80081430;
 extern s32 D_800AA480;
 extern s16 gPreviousPlayMode;
 
 extern u32 gTournamentOpponentId;
-extern u16 D_8013C250;
+extern u16 sReplayActive;
 
 void func_8001A674(Object *);
 void func_8001A334(Object *);
-void func_8002EA50(Object *, s32);
+void camera_cutscene_shake_start(Object *, s32);
 Object *create_model_instance(Vec4i *, s32, void (*)(Object *), Model *);
 void func_800199E0(Object *);
 void func_80020670(Object *);
@@ -38,7 +38,7 @@ void func_8001A158(Object *, s16);
 void func_800052EC(s16 arg0);
 void func_8001B5B0(char *, s32);
 void func_80029630(void);
-void func_8002DE20(Object *);
+void camera_intro_start(Object *);
 void task_default_func(Object *);
 void rank_table_update(Object *);
 void controls_controller_update(Object *);
@@ -63,7 +63,7 @@ void func_8001A7DC(Object *);
 s32 D_800493F0[] = { 0, -783, -2453, 0 };
 
 /* .bss */
-u8 D_800801F0;
+u8 gRoundOver;
 u8 D_800801F1;
 s32 D_800801F4;
 s32 D_800801F8;
@@ -71,16 +71,16 @@ s32 D_800801FC;
 s32 D_80080200;
 s32 D_80080204;
 s32 D_80080208;
-s32 D_8008020C;
-s32 D_80080210;
+s32 gPlayerAngle;
+s32 gPlayerDistance;
 s32 D_80080214;
 s32 D_80080218;
 s32 D_8008021C;
-Vec4i *D_80080220;
-Vec4i *D_80080224;
-Object *D_80080228[2];
+Vec4i *gPlayerPos1;
+Vec4i *gPlayerPos2;
+Object *gPlayerObjects[2];
 
-void func_80006AE0(void) {
+void battle_round_init(void) {
     gHitSparkModel = gAssets[asset_find("comhit.k5", CONTEXT_ABAB)].aux_data;
     gBlockSparkModel = gAssets[asset_find("comblock.k5", CONTEXT_ABAB)].aux_data;
 
@@ -91,14 +91,14 @@ void func_80006AE0(void) {
         gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
     }
 
-    D_800801F0 = FALSE;
+    gRoundOver = FALSE;
     gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
     gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
     D_80051F6C = D_80051F70 = D_8013C2A8 = D_8013C2AA = 0;
-    D_8013C250 = 0;
+    sReplayActive = 0;
 }
 
-void func_80006C14(void) {
+void battle_match_init(void) {
     gBattleSettings[PLAYER_1].roundsWon = gBattleSettings[PLAYER_2].roundsWon = 0;
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
 
@@ -108,14 +108,14 @@ void func_80006C14(void) {
         gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
     }
 
-    D_800801F0 = FALSE;
+    gRoundOver = FALSE;
     gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
     gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
     D_800801F1 = FALSE;
     D_80051F6C = D_80051F70 = D_8013C2A8 = D_8013C2AA = 0;
 }
 
-void func_80006CEC(void) {
+void battle_global_init(void) {
     u8 i, j;
 
     D_800AA480 = 0;
@@ -153,7 +153,7 @@ void func_80006CEC(void) {
     gPracticingPlayer = 0;
 }
 
-void func_80006E0C(Object *obj) {
+void wait_screen_update(Object *obj) {
     if (--obj->vars[0] < 0) {
         obj->flags |= OBJ_FLAG_DELETE;
         gGlobalFlags |= GAME_FLAG_MODE_DONE;
@@ -162,7 +162,7 @@ void func_80006E0C(Object *obj) {
     }
 }
 
-void func_80006E6C(void) {
+void wait_screen(void) {
     Object *obj;
     BackgroundLayer *sp30;
     u16 sp2E;
@@ -181,7 +181,7 @@ void func_80006E6C(void) {
     gGlobalFlags |= GAME_FLAG_400 | GAME_FLAG_10;
     D_8008012C |= GFX_FLAG_20;
 
-    obj = create_worker(&func_80006E0C, 0x1000);
+    obj = create_worker(&wait_screen_update, 0x1000);
     obj->vars[0] = 6;
     main_loop();
 
@@ -194,14 +194,14 @@ void func_80006E6C(void) {
     bg_layer_delete(sp30);
 }
 
-void func_80006FB4(void) {
-    D_8013C224 = gFrameCounter % 5;
+void battle_preload(void) {
+    sCutsceneVariant = gFrameCounter % 5;
     D_8013C226 = 0;
     D_80081430 = 0;
     gBattleSettings[PLAYER_1].isDummy = gBattleSettings[PLAYER_2].isDummy = 0;
 
     if (gPreviousGameMode != GAME_MODE_PLAYER_SELECTION) {
-        func_80006E6C();
+        wait_screen();
     }
 
     if (gPlayMode != PLAY_MODE_PRACTICE) {
@@ -214,14 +214,14 @@ void func_80006FB4(void) {
     func_800052EC(1);
 
     if (D_800801F1) {
-        func_80006C14();
+        battle_match_init();
     } else {
-        func_80006AE0();
+        battle_round_init();
     }
     osViBlack(1);
 }
 
-void func_800070C0(void) {
+void battle_cleanup(void) {
     func_8002630C(CONTEXT_ABAB);
     func_8002630C(0x5000);
     func_8002630C(0x5001);
@@ -231,7 +231,7 @@ void run_battle_gore_mode(void) {
     s32 sp2C = gBattleSettings[PLAYER_2].assetContext;
     BackgroundLayer *bg;
 
-    func_80006FB4();
+    battle_preload();
     bg = bg_layer_create("bg3", 0, 74, 0x2000, 0x10000, 0, sp2C);
     bg->height -= 16;
 
@@ -242,13 +242,13 @@ void run_battle_gore_mode(void) {
 
     gCamera->currentTask->start_delay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
-    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
 
-    func_80006AE0();
+    battle_round_init();
     main_loop();
 
-    func_800070C0();
+    battle_cleanup();
 }
 
 void func_800071F0(Object *obj) {
@@ -268,7 +268,7 @@ void run_battle_aaron_mode(void) {
     Vec4i sp1C = { 0, -500, 0, 0 };
     BackgroundLayer *bg;
 
-    func_80006FB4();
+    battle_preload();
     bg = bg_layer_create("bg2", 0, 74, 0x2000, 0x10000, 0, sp2C);
     bg->height -= 16;
 
@@ -279,19 +279,19 @@ void run_battle_aaron_mode(void) {
 
     gCamera->currentTask->start_delay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
-    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
 
-    func_80006AE0();
+    battle_round_init();
     main_loop();
-    func_800070C0();
+    battle_cleanup();
 }
 
 void run_battle_demitron_mode(void) {
     s32 sp2C = gBattleSettings[PLAYER_2].assetContext;
     BackgroundLayer *bg;
 
-    func_80006FB4();
+    battle_preload();
     bg = bg_layer_create("bg2", 0, -20, 0x2000, 0x10000, 0, sp2C);
     bg->height -= 16;
 
@@ -302,19 +302,19 @@ void run_battle_demitron_mode(void) {
 
     gCamera->currentTask->start_delay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
-    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
 
-    func_80006AE0();
+    battle_round_init();
     main_loop();
-    func_800070C0();
+    battle_cleanup();
 }
 
 void run_battle_demonica_mode(void) {
     s32 sp2C = gBattleSettings[PLAYER_2].assetContext;
     BackgroundLayer *bg;
 
-    func_80006FB4();
+    battle_preload();
     bg = bg_layer_create("bg2", 0, 40, 0x2000, 0x10000, 0, sp2C);
     bg->height -= 16;
 
@@ -325,19 +325,19 @@ void run_battle_demonica_mode(void) {
 
     gCamera->currentTask->start_delay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
-    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
 
-    func_80006AE0();
+    battle_round_init();
     main_loop();
-    func_800070C0();
+    battle_cleanup();
 }
 
 void run_battle_eve_mode(void) {
     s32 sp2C = gBattleSettings[PLAYER_2].assetContext;
     BackgroundLayer *bg;
 
-    func_80006FB4();
+    battle_preload();
     bg = bg_layer_create("bg2", 0, 52, 0x2000, 0x10000, 0, sp2C);
     bg->height -= 16;
 
@@ -348,19 +348,19 @@ void run_battle_eve_mode(void) {
 
     gCamera->currentTask->start_delay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
-    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
 
-    func_80006AE0();
+    battle_round_init();
     main_loop();
-    func_800070C0();
+    battle_cleanup();
 }
 
 void run_battle_morphix_mode(void) {
     s32 sp2C = gBattleSettings[PLAYER_2].assetContext;
     BackgroundLayer *bg;
 
-    func_80006FB4();
+    battle_preload();
     bg = bg_layer_create("bg2", 0, 96, 0x2000, 0x10000, 0, sp2C);
     bg->height -= 16;
     bg_layer_create("bg0", 0, 8, 0x1000, 0x10000, TEX_FLAG_1, sp2C);
@@ -370,18 +370,18 @@ void run_battle_morphix_mode(void) {
 
     gCamera->currentTask->start_delay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
-    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
 
-    func_80006AE0();
+    battle_round_init();
     main_loop();
-    func_800070C0();
+    battle_cleanup();
 }
 
 void run_battle_niiki_mode(void) {
     s32 sp2C = gBattleSettings[PLAYER_2].assetContext;
 
-    func_80006FB4();
+    battle_preload();
     bg_layer_create("bg2", 0, 94, 0x2000, 0x10000, 0, sp2C);
     bg_layer_create("bg0", 0, -8, 0x1000, 0x10000, TEX_FLAG_1, sp2C);
 
@@ -390,19 +390,19 @@ void run_battle_niiki_mode(void) {
 
     gCamera->currentTask->start_delay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
-    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
 
-    func_80006AE0();
+    battle_round_init();
     main_loop();
-    func_800070C0();
+    battle_cleanup();
 }
 
 void run_battle_scarlet_mode(void) {
     s32 sp2C = gBattleSettings[PLAYER_2].assetContext;
     BackgroundLayer *bg;
 
-    func_80006FB4();
+    battle_preload();
     bg = bg_layer_create("bg2", 0, -7, 0x2000, 0x10000, 0, sp2C);
     bg->height -= 16;
 
@@ -413,19 +413,19 @@ void run_battle_scarlet_mode(void) {
 
     gCamera->currentTask->start_delay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
-    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
 
-    func_80006AE0();
+    battle_round_init();
     main_loop();
-    func_800070C0();
+    battle_cleanup();
 }
 
 void run_battle_sonork_mode(void) {
     s32 sp2C = gBattleSettings[PLAYER_2].assetContext;
     BackgroundLayer *bg;
 
-    func_80006FB4();
+    battle_preload();
     bg = bg_layer_create("bg2", 0, 20, 0x2000, 0x10000, 0, sp2C);
     bg->height -= 16;
 
@@ -436,19 +436,19 @@ void run_battle_sonork_mode(void) {
 
     gCamera->currentTask->start_delay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
-    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
 
-    func_80006AE0();
+    battle_round_init();
     main_loop();
-    func_800070C0();
+    battle_cleanup();
 }
 
 void run_battle_zenmuron_mode(void) {
     s32 sp2C = gBattleSettings[PLAYER_2].assetContext;
     BackgroundLayer *bg;
 
-    func_80006FB4();
+    battle_preload();
     bg = bg_layer_create("bg2", 0, -6, 0x2000, 0x10000, 0, sp2C);
     bg->height -= 16;
 
@@ -459,12 +459,12 @@ void run_battle_zenmuron_mode(void) {
 
     gCamera->currentTask->start_delay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
-    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
 
-    func_80006AE0();
+    battle_round_init();
     main_loop();
-    func_800070C0();
+    battle_cleanup();
 }
 
 void func_80007B68(Object *obj) {
@@ -547,7 +547,7 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
     gBattleSettings[1 - s0].isDummy = 0;
 
     if (gPreviousGameMode != GAME_MODE_PLAYER_SELECTION && gCurrentGameMode != GAME_MODE_29) {
-        func_80006E6C();
+        wait_screen();
     }
 
     if (arg0) {
@@ -560,14 +560,14 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
 
     gBattleSettings[PLAYER_1].unk_0F = gBattleSettings[PLAYER_2].unk_0F = TRUE;
 
-    a1 = D_80080228[1 - s0];
+    a1 = gPlayerObjects[1 - s0];
     a1->pos.x = 0;
     a1->pos.z = 0;
     a1->rotation.y = 0x400;
 
-    D_80080228[s0]->pos.x = -5000;
-    D_80080228[s0]->pos.z = -5000;
-    D_80080228[s0]->flags |= OBJ_FLAG_HIDDEN;
+    gPlayerObjects[s0]->pos.x = -5000;
+    gPlayerObjects[s0]->pos.z = -5000;
+    gPlayerObjects[s0]->flags |= OBJ_FLAG_HIDDEN;
 
     gPlayers[PLAYER_1].flags |= PLAYER_FLAG_400000;
     gPlayers[PLAYER_2].flags |= PLAYER_FLAG_400000;
@@ -581,7 +581,7 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
 
-    D_800801F0 = FALSE;
+    gRoundOver = FALSE;
 
     gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
     gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
@@ -590,7 +590,7 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
     TASK_END(gPlayers[PLAYER_2].unk_18);
 
     func_80007DB0(gPlayers + 1 - s0, a1, arg2);
-    func_8002DA08(gCamera);
+    camera_orbit_init(gCamera);
     func_8000636C(gPlayers + 1 - s0, arg1, 1);
     D_8008012C |= GFX_FLAG_4;
 }
@@ -608,7 +608,7 @@ void run_intro_gore_mode(void) {
     main_loop();
 
     func_8002630C(0x3000);
-    func_800070C0();
+    battle_cleanup();
     if (gPlayMode != PLAY_MODE_30) {
         func_8002630C(temp_s0);
     }
@@ -627,7 +627,7 @@ void run_intro_aaron_mode(void) {
     main_loop();
 
     func_8002630C(0x3000);
-    func_800070C0();
+    battle_cleanup();
     if (gPlayMode != PLAY_MODE_30) {
         func_8002630C(temp_s0);
     }
@@ -645,7 +645,7 @@ void run_intro_demitron_mode(void) {
     func_8001B5B0("arena", temp_s0);
     main_loop();
     func_8002630C(0x3000);
-    func_800070C0();
+    battle_cleanup();
     if (gPlayMode != PLAY_MODE_30) {
         func_8002630C(temp_s0);
     }
@@ -663,7 +663,7 @@ void run_intro_demonica_mode(void) {
     func_8001B5B0("arena", temp_s0);
     main_loop();
     func_8002630C(0x3000);
-    func_800070C0();
+    battle_cleanup();
     if (gPlayMode != PLAY_MODE_30) {
         func_8002630C(temp_s0);
     }
@@ -681,7 +681,7 @@ void run_intro_eve_mode(void) {
     func_8001B5B0("arena", temp_s0);
     main_loop();
     func_8002630C(0x3000);
-    func_800070C0();
+    battle_cleanup();
     if (gPlayMode != PLAY_MODE_30) {
         func_8002630C(temp_s0);
     }
@@ -699,7 +699,7 @@ void run_intro_morphix_mode(void) {
     func_8001B5B0("arena", temp_s0);
     main_loop();
     func_8002630C(0x3000);
-    func_800070C0();
+    battle_cleanup();
     if (gPlayMode != PLAY_MODE_30) {
         func_8002630C(temp_s0);
     }
@@ -717,7 +717,7 @@ void run_intro_niiki_mode(void) {
     func_8001B5B0("arena", temp_s0);
     main_loop();
     func_8002630C(0x3000);
-    func_800070C0();
+    battle_cleanup();
     if (gPlayMode != PLAY_MODE_30) {
         func_8002630C(temp_s0);
     }
@@ -735,7 +735,7 @@ void run_intro_scarlet_mode(void) {
     func_8001B5B0("arena", temp_s0);
     main_loop();
     func_8002630C(0x3000);
-    func_800070C0();
+    battle_cleanup();
     if (gPlayMode != PLAY_MODE_30) {
         func_8002630C(temp_s0);
     }
@@ -753,7 +753,7 @@ void run_intro_sonork_mode(void) {
     func_8001B5B0("arena", temp_s0);
     main_loop();
     func_8002630C(0x3000);
-    func_800070C0();
+    battle_cleanup();
     if (gPlayMode != PLAY_MODE_30) {
         func_8002630C(temp_s0);
     }
@@ -771,7 +771,7 @@ void run_intro_zenmuron_mode(void) {
     func_8001B5B0("arena", temp_s0);
     main_loop();
     func_8002630C(0x3000);
-    func_800070C0();
+    battle_cleanup();
     if (gPlayMode != PLAY_MODE_30) {
         func_8002630C(temp_s0);
     }
@@ -811,7 +811,7 @@ void run_29_mode(void) {
 
     asset_open_folder("/sono/prize", CONTEXT_3000);
     bg = bg_layer_create("prize", 0, 100, 0, 0, BG_FLAG_OVERLAY, 0x3000);
-    obj = create_worker(func_80006E0C, 0x1000);
+    obj = create_worker(wait_screen_update, 0x1000);
     obj->vars[0] = 6;
     main_loop();
 
@@ -859,9 +859,9 @@ void run_30_mode(void) {
     a1->pos.x = a1->pos.z = 0;
     a1->rotation.y = 0x400;
 
-    D_80080228[1 - sp42]->pos.x = -5000;
-    D_80080228[1 - sp42]->pos.z = -5000;
-    D_80080228[1 - sp42]->flags |= OBJ_FLAG_HIDDEN;
+    gPlayerObjects[1 - sp42]->pos.x = -5000;
+    gPlayerObjects[1 - sp42]->pos.z = -5000;
+    gPlayerObjects[1 - sp42]->flags |= OBJ_FLAG_HIDDEN;
 
     gPlayers[PLAYER_1].flags |= PLAYER_FLAG_400000;
     gPlayers[PLAYER_2].flags |= PLAYER_FLAG_400000;
@@ -872,7 +872,7 @@ void run_30_mode(void) {
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
 
-    D_800801F0 = FALSE;
+    gRoundOver = FALSE;
 
     gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
     gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
@@ -880,11 +880,11 @@ void run_30_mode(void) {
     TASK_END(gPlayers[PLAYER_2].unk_18);
 
     func_80007DB0(&gPlayers[sp42], a1, 0x3000);
-    func_8002DA08(gCamera);
+    camera_orbit_init(gCamera);
     func_8000636C(&gPlayers[sp42], 346, 1);
     D_8008012C |= GFX_FLAG_4;
     create_worker(func_8001A674, 0x1000);
-    func_80006AE0();
+    battle_round_init();
 
     a3 = gAssets[asset_find("relic.k5", 0x3000)].aux_data;
     obj = create_model_instance(&sp4C, 0x1000, func_80008D64, a3);
@@ -894,7 +894,7 @@ void run_30_mode(void) {
     bg_layer_create("bg2", 0, -32, 0x2000, 0x10000, 0, sp44);
     bg_layer_create("bg0", 0, 8, 0x1000, 0x10000, TEX_FLAG_1, sp44);
     func_8001B5B0("arena", sp44);
-    D_800801F0 = TRUE;
+    gRoundOver = TRUE;
     main_loop();
     func_8002630C(0x3000);
     gNextGameMode = GAME_MODE_BATTLE_DEMITRON;
@@ -1035,14 +1035,14 @@ void func_800096D0(u8 arg0) {
     gGlobalFlags |= GAME_FLAG_4;
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
-    D_800801F0 = FALSE;
+    gRoundOver = FALSE;
 
     gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
     gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
     TASK_END(gPlayers[PLAYER_1].unk_18);
     TASK_END(gPlayers[PLAYER_2].unk_18);
 
-    func_8002DA08(gCamera);
+    camera_orbit_init(gCamera);
     func_80007DB0(&gPlayers[nv], a3, 0x4000);
     func_80007DB0(&gPlayers[t9], s0, 0x4000);
     D_8008012C |= GFX_FLAG_4;
@@ -1050,7 +1050,7 @@ void func_800096D0(u8 arg0) {
     bg_layer_create("bg0", nv * 0, 8, 0x1000, 0x10000, TEX_FLAG_1, nv);
     func_8000965C(GAME_MODE_BATTLE_DEMITRON);
     func_8001B5B0("arena", nv);
-    D_800801F0 = TRUE;
+    gRoundOver = TRUE;
 }
 
 void run_34_mode(void) {
@@ -1061,7 +1061,7 @@ void run_34_mode(void) {
     sp7E = gBattleSettings[PLAYER_2].assetContext;
     sp24 = 1 - sp7E;
     gBattleSettings[PLAYER_1].isDummy = gBattleSettings[PLAYER_2].isDummy = 0;
-    D_800801F0 = TRUE;
+    gRoundOver = TRUE;
     D_80080234 = 1;
 
     switch (gBattleSettings[sp24].characterId) {
@@ -1157,7 +1157,7 @@ void func_80009CE0(void) {
 
     D_80080129 = FALSE;
     gGlobalFlags |= GAME_FLAG_4;
-    func_8002EA50(gCamera, sp56);
+    camera_cutscene_shake_start(gCamera, sp56);
 }
 
 void run_35_mode(void) {
@@ -1178,7 +1178,7 @@ void run_35_mode(void) {
     player2 = &gPlayers[sp24];
     player1 = &gPlayers[sp7E];
 
-    D_800801F0 = TRUE;
+    gRoundOver = TRUE;
     D_80080234 = 1;
     gBattleSettings[sp7E].isDummy = gBattleSettings[sp24].isDummy = 0;
 
@@ -1678,7 +1678,7 @@ void run_17_mode(void) {
 
     gCamera->currentTask->start_delay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
-    gCamera->currentTask->func = func_8002DE20;
+    gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
 
     main_loop();
