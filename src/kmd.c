@@ -2,28 +2,28 @@
 #include "string.h"
 #include "PR/gt.h"
 
-ModelRenderSettings D_80049920 = {
+ModelRenderSettings sRenderSettingsTmd = {
     gsDPSetCombineMode(G_CC_MODULATEIA, G_CC_MODULATEIA),
     G_RM_AA_OPA_SURF | G_RM_AA_OPA_SURF2,
     0x2200,
     { 192, 192, 192, 255 },
     1,
 };
-ModelRenderSettings D_80049938 = {
+ModelRenderSettings sRenderSettingsK4 = {
     gsDPSetCombineMode(G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM),
     G_RM_OPA_SURF | G_RM_OPA_SURF2,
     0x2000,
     { 255, 255, 255, 255 },
     1,
 };
-ModelRenderSettings D_80049950 = {
+ModelRenderSettings sRenderSettingsK2K5SP3 = {
     gsDPSetCombineMode(G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM),
     G_RM_XLU_SURF | G_RM_XLU_SURF2,
     0,
     { 255, 255, 255, 128 },
     0,
 };
-ModelRenderSettings D_80049968 = {
+ModelRenderSettings sRenderSettingsK3 = {
     gsDPSetCombineMode(G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM),
     G_RM_AA_XLU_SURF | G_RM_AA_XLU_SURF2,
     0x2000,
@@ -580,8 +580,8 @@ void func_8000DAB0(KModel *arg0, ModelAsset *arg1, char *name, u8 arg3, s32 arg4
         str_concat(sp30, "_anm.anm");
         asset = &gAssets[asset_find(sp30, arg4)];
         arg0->model.animations = D_8005AEB8[asset->memory_slot].data;
-        arg0->model.unk_14C = asset->aux_data;
-        heap_set_move_callback(asset->memory_slot, func_8000C18C, arg0->model.unk_14C);
+        arg0->model.animCount = asset->aux_data;
+        heap_set_move_callback(asset->memory_slot, func_8000C18C, arg0->model.animCount);
     } else {
         arg0->model.animations = NULL;
     }
@@ -851,8 +851,8 @@ void model_init_from_asset(Model *model, ModelAsset *model_asset, char *name, u8
 
     if (animation_asset_id >= 0) {
         model->animations = D_8005AEB8[gAssets[animation_asset_id].memory_slot].data;
-        model->unk_14C = gAssets[animation_asset_id].aux_data;
-        heap_set_move_callback(gAssets[animation_asset_id].memory_slot, func_8000C18C, model->unk_14C);
+        model->animCount = gAssets[animation_asset_id].aux_data;
+        heap_set_move_callback(gAssets[animation_asset_id].memory_slot, func_8000C18C, model->animCount);
     } else {
         model->animations = NULL;
     }

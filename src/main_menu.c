@@ -300,8 +300,8 @@ void func_80019F40(Object *obj) {
 
         v1 = obj->varObj[0];
         D_80081254->flags |= BG_FLAG_HIDDEN;
-        if (v1->unk_088.a >= 6) {
-            v1->unk_088.a -= 6;
+        if (v1->color.a >= 6) {
+            v1->color.a -= 6;
             v1->pos.z -= 160;
 
             v1 = obj->varObj[1];
@@ -315,8 +315,8 @@ void func_80019F40(Object *obj) {
 
             m = (Model *) gAssets[asset_find("titopen.k2", CONTEXT_2000)].aux_data;
             v1 = create_model_instance(&gZeroPosition, 0x1000, func_80019E28, m);
-            v1->flags |= OBJ_FLAG_1000000 | OBJ_FLAG_2000 | OBJ_FLAG_800;
-            v1->unk_088.a = 128;
+            v1->flags |= OBJ_FLAG_1000000 | OBJ_FLAG_TRANSPARENT | OBJ_FLAG_800;
+            v1->color.a = 128;
             obj->vars[2] = 3;
             sound_stop_one(0x2000, 8);
         }
@@ -336,16 +336,16 @@ void func_8001A158(Object *obj, s16 arg1) {
 
     m = (Model *) gAssets[asset_find("haze.k2", arg1)].aux_data;
     v0 = create_model_instance(&gZeroPosition, 0x1000, func_8001A130, m);
-    v0->flags |= OBJ_FLAG_1000000 | OBJ_FLAG_2000 | OBJ_FLAG_800;
-    v0->unk_088.a = 75;
+    v0->flags |= OBJ_FLAG_1000000 | OBJ_FLAG_TRANSPARENT | OBJ_FLAG_800;
+    v0->color.a = 75;
     if (obj != NULL) {
         obj->varObj[0] = v0;
     }
 
     m = (Model *) gAssets[asset_find("haze1.k2", arg1)].aux_data;
     v0 = create_model_instance(&sp24, 0x1000, NULL, m);
-    v0->flags |= OBJ_FLAG_1000000 | OBJ_FLAG_2000 | OBJ_FLAG_800;
-    v0->unk_088.a = 75;
+    v0->flags |= OBJ_FLAG_1000000 | OBJ_FLAG_TRANSPARENT | OBJ_FLAG_800;
+    v0->color.a = 75;
     if (obj != NULL) {
         obj->varObj[1] = v0;
     }
@@ -379,7 +379,7 @@ void func_8001A334(Object *obj) {
         obj->vars[1] = 0;
         m = (Model *) gAssets[asset_find("theend.k2", 0x4000)].aux_data;
         v0 = create_model_instance(&sp20, 0x1000, func_8001A2F4, m);
-        v0->flags |= OBJ_FLAG_1000000 | OBJ_FLAG_2000 | OBJ_FLAG_800;
+        v0->flags |= OBJ_FLAG_1000000 | OBJ_FLAG_TRANSPARENT | OBJ_FLAG_800;
     }
 }
 
@@ -410,8 +410,8 @@ void func_8001A490(Object *obj) {
     Object *v0 = obj->varObj[0];
     Object *v1 = obj->varObj[1];
 
-    if (v0 != NULL && v0->unk_088.a >= 6) {
-        v0->unk_088.a -= 6;
+    if (v0 != NULL && v0->color.a >= 6) {
+        v0->color.a -= 6;
         v0->pos.z -= 150;
         v1->pos.z += 450;
         return;
@@ -475,7 +475,7 @@ void func_8001A674(Object *obj) {
     Player *s2 = &gPlayers[s3];
     s16 i = 0;
 
-    if (s2->obj->frameIndex == s2->currentStateDef->unk_02 - 2) {
+    if (s2->obj->frameIndex == s2->combatState->maxFrame - 2) {
         gGlobalFlags |= GAME_FLAG_MODE_DONE;
         obj->flags |= OBJ_FLAG_DELETE;
         gNextGameMode = GAME_MODE_BATTLE_DEMITRON;
@@ -501,7 +501,7 @@ void func_8001A7DC(Object *obj) {
     s16 i = 0;
     s16 *qwe;
 
-    if (s1->obj->frameIndex == s1->currentStateDef->unk_02 - 2) {
+    if (s1->obj->frameIndex == s1->combatState->maxFrame - 2) {
         obj->vars[0] = 10;
         obj->fn_render = func_8001A63C;
     }
@@ -523,7 +523,7 @@ void func_8001A7DC(Object *obj) {
         }
 
         if (s1->obj->frameIndex == 278) {
-            spawn_effect(s->obj, 9);
+            projectile_spawn(s->obj, 9);
         }
     }
 }

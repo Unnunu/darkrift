@@ -39,45 +39,45 @@ void run_37_mode(void);
 
 void func_80015D60(Object *obj);
 void func_80016144(Object *obj);
-void player_anim_loop(Object *);
-void func_8002FD78(Object *);
-void func_80030A60(Object *);
-void func_8002F9E8(Object *);
-void func_8002FA78(Object *);
-void func_80030F00(Object *);
-void func_80031088(Object *);
-void func_8002FE10(Object *);
-void func_80024214(Object *);
-void func_80030330(Object *);
-void func_800309EC(Object *);
-void func_8002FEA0(Object *);
-void func_80031724(Object *);
-void player_anim_step_once(Object *);
-void player_anim_pingpong_forward(Object *);
-void func_80030B74(Object *);
-void player_anim_next_transition(Object *);
-u8 func_80030C88(Object *);
-void func_800311A0(Object *);
-u8 func_800315FC(Object *);
-u8 func_80031648(Object *);
-void func_8002FEC8(Object *);
-void func_800305FC(Object *);
-u8 func_80030764(Object *);
-u8 func_8002FF7C(Object *);
-void func_800306FC(Object *);
-void func_80031F24(Object *);
-u8 func_800316A0(Object *);
-void func_800302A4(Object *);
-u8 func_8002F9A0(Object *);
-void func_80030074(Object *);
-void func_80032130(Object *);
-void func_80031234(Object *);
-void func_8003146C(Object *);
-void func_80031164(Object *);
-void func_80031FBC(Object *);
-void func_80032044(Object *);
-void func_80031F88(Object *);
-void func_800313EC(Object *);
+void anim_loop(Object *);
+void player_trans_func_1(Object *);
+void player_trans_func_2(Object *);
+void player_trans_func_3(Object *);
+void player_trans_func_4(Object *);
+void player_trans_func_5(Object *);
+void player_trans_func_6(Object *);
+void player_trans_func_7(Object *);
+void player_anim_func_3(Object *);
+void player_trans_func_8(Object *);
+void player_trans_func_9(Object *);
+void player_trans_func_10(Object *);
+void player_trans_func_11(Object *);
+void anim_play_once(Object *);
+void anim_pingpong_forward(Object *);
+void player_trans_func_12(Object *);
+void action_animation_end(Object *);
+u8 player_check_func_1(Object *);
+void player_trans_func_14(Object *);
+u8 player_check_func_3(Object *);
+u8 player_check_func_4(Object *);
+void player_trans_func_15(Object *);
+void player_trans_func_16(Object *);
+u8 player_check_func_5(Object *);
+u8 player_check_func_6(Object *);
+void player_trans_func_17(Object *);
+void player_trans_func_18(Object *);
+u8 player_check_func_7(Object *);
+void player_trans_func_22(Object *);
+u8 player_check_func_8(Object *);
+void player_trans_func_19(Object *);
+void player_trans_func_20(Object *);
+void player_trans_func_21(Object *);
+void player_trans_func_23(Object *);
+void player_trans_func_24(Object *);
+void player_trans_func_25(Object *);
+void player_trans_func_27(Object *);
+void player_trans_func_26(Object *);
+void player_trans_func_28(Object *);
 void func_80015CD8(Object *);
 void func_80015E24(Object *);
 void func_8002A1F0(Object *);
@@ -125,7 +125,7 @@ s16 D_8004A748[] = {
     400, 400, 250, 480, 550, 400, 900, 400, 400, 1000, 400,
 };
 
-K2DefSub D_8004A760[] = {
+ModelNodeGroup D_8004A760[] = {
     { { 18, 0, -1, 0 }, -1 }, { { 1, -1, 0, 0 }, 1 },   { { 2, -1, 0, 0 }, 2 },     { { 3, -1, 0, 0 }, 3 },
     { { 4, -1, 0, 0 }, 4 },   { { 5, -1, 0, 0 }, 5 },   { { 6, -1, 0, 0 }, 6 },     { { 7, -1, 0, 0 }, 7 },
     { { 8, -1, 0, 0 }, 8 },   { { 9, -1, 0, 0 }, 9 },   { { 10, -1, 0, 0 }, 10 },   { { 11, -1, 0, 0 }, 11 },
@@ -133,7 +133,7 @@ K2DefSub D_8004A760[] = {
     { { 16, -1, 0, 0 }, 16 }, { { 17, -1, 0, 0 }, 17 }, { { -1, -1, -1, -1 }, -1 },
 };
 
-K2DefSub D_8004A8DC[] = {
+ModelNodeGroup D_8004A8DC[] = {
     { { 22, 0, -1, 0 }, -1 }, { { 1, -1, 0, 0 }, 1 },   { { 2, -1, 0, 0 }, 2 },     { { 3, -1, 0, 0 }, 3 },
     { { 4, -1, 0, 0 }, 4 },   { { 5, -1, 0, 0 }, 5 },   { { 6, -1, 0, 0 }, 6 },     { { 7, -1, 0, 0 }, 7 },
     { { 8, -1, 0, 0 }, 8 },   { { 9, -1, 0, 0 }, 9 },   { { 10, -1, 0, 0 }, 10 },   { { 11, -1, 0, 0 }, 11 },
@@ -142,7 +142,7 @@ K2DefSub D_8004A8DC[] = {
     { { 20, -1, 0, 0 }, 20 }, { { 21, -1, 0, 0 }, 21 }, { { -1, -1, -1, -1 }, -1 },
 };
 
-K2DefSub D_8004AAA8[] = {
+ModelNodeGroup D_8004AAA8[] = {
     { { 25, 0, -1, 0 }, -1 }, { { 1, -1, 0, 0 }, 1 },     { { 2, -1, 0, 0 }, 2 },   { { 3, -1, 0, 0 }, 3 },
     { { 4, -1, 0, 0 }, 4 },   { { 5, -1, 0, 0 }, 5 },     { { 6, -1, 0, 0 }, 6 },   { { 7, -1, 0, 0 }, 7 },
     { { 8, -1, 0, 0 }, 8 },   { { 9, -1, 0, 0 }, 9 },     { { 10, -1, 0, 0 }, 10 }, { { 11, -1, 0, 0 }, 11 },
@@ -152,7 +152,7 @@ K2DefSub D_8004AAA8[] = {
     { { 24, -1, 0, 0 }, 24 }, { { -1, -1, -1, -1 }, -1 },
 };
 
-K2DefSub D_8004ACB0[] = {
+ModelNodeGroup D_8004ACB0[] = {
     { { 16, 0, -1, 0 }, -1 },   { { 1, -1, 0, 0 }, 1 },   { { 2, -1, 0, 0 }, 2 },   { { 3, -1, 0, 0 }, 3 },
     { { 4, -1, 0, 0 }, 4 },     { { 5, -1, 0, 0 }, 5 },   { { 6, -1, 0, 0 }, 6 },   { { 7, -1, 0, 0 }, 7 },
     { { 8, -1, 0, 0 }, 8 },     { { 9, -1, 0, 0 }, 9 },   { { 10, -1, 0, 0 }, 10 }, { { 11, -1, 0, 0 }, 11 },
@@ -160,13 +160,13 @@ K2DefSub D_8004ACB0[] = {
     { { -1, -1, -1, -1 }, -1 },
 };
 
-K2DefSub D_8004AE04[] = {
+ModelNodeGroup D_8004AE04[] = {
     { { 15, 0, -1, 0 }, -1 },  { { 1, -1, 0, 0 }, -1 },    { { 2, -1, 0, 0 }, -2 }, { { 4, 3, -1, 0 }, 3 },
     { { 5, -1, 0, 0 }, 5 },    { { 6, -1, 0, 0 }, 6 },     { { 7, -1, 0, 0 }, 7 },  { { 8, -1, 0, 0 }, 8 },
     { { 11, 10, 9, -1 }, 11 }, { { 14, 13, 12, -1 }, 14 }, { { -1, -1, 0, 0 }, 0 },
 };
 
-K2DefSub D_8004AEE0[] = {
+ModelNodeGroup D_8004AEE0[] = {
     { { 18, 0, -1, 0 }, -1 }, { { 1, -1, 0, 0 }, 1 },   { { 2, -1, 0, 0 }, 2 },     { { 3, -1, 0, 0 }, 3 },
     { { 4, -1, 0, 0 }, 4 },   { { 5, -1, 0, 0 }, 5 },   { { 6, -1, 0, 0 }, 6 },     { { 7, -1, 0, 0 }, 7 },
     { { 8, -1, 0, 0 }, 8 },   { { 9, -1, 0, 0 }, 9 },   { { 10, -1, 0, 0 }, 10 },   { { 11, -1, 0, 0 }, 11 },
@@ -174,7 +174,7 @@ K2DefSub D_8004AEE0[] = {
     { { 16, -1, 0, 0 }, 16 }, { { 17, -1, 0, 0 }, 17 }, { { -1, -1, -1, -1 }, -1 },
 };
 
-K2DefSub D_8004B05C[] = {
+ModelNodeGroup D_8004B05C[] = {
     { { 22, 0, -1, 0 }, -1 }, { { 1, -1, 0, 0 }, 1 },   { { 2, -1, 0, 0 }, 2 },     { { 3, -1, 0, 0 }, 3 },
     { { 4, -1, 0, 0 }, 4 },   { { 5, -1, 0, 0 }, 5 },   { { 6, -1, 0, 0 }, 6 },     { { 7, -1, 0, 0 }, 7 },
     { { 8, -1, 0, 0 }, 8 },   { { 9, -1, 0, 0 }, 9 },   { { 10, -1, 0, 0 }, 10 },   { { 11, -1, 0, 0 }, 11 },
@@ -183,14 +183,14 @@ K2DefSub D_8004B05C[] = {
     { { 20, -1, 0, 0 }, 20 }, { { 21, -1, 0, 0 }, 21 }, { { -1, -1, -1, -1 }, -1 },
 };
 
-K2DefSub D_8004B228[] = {
+ModelNodeGroup D_8004B228[] = {
     { { 15, 0, -1, 0 }, -1 }, { { 1, -1, 0, 0 }, 1 },   { { 2, -1, 0, 0 }, 2 },   { { 3, -1, 0, 0 }, 3 },
     { { 4, -1, 0, 0 }, 4 },   { { 5, -1, 0, 0 }, 5 },   { { 6, -1, 0, 0 }, 6 },   { { 7, -1, 0, 0 }, 7 },
     { { 8, -1, 0, 0 }, 8 },   { { 9, -1, 0, 0 }, 9 },   { { 10, -1, 0, 0 }, 10 }, { { 11, -1, 0, 0 }, 11 },
     { { 12, -1, 0, 0 }, 12 }, { { 13, -1, 0, 0 }, 13 }, { { 14, -1, 0, 0 }, 14 }, { { -1, -1, -1, -1 }, -1 },
 };
 
-K2DefSub D_8004B368[] = {
+ModelNodeGroup D_8004B368[] = {
     { { 18, 0, -1, 0 }, -1 }, { { 1, -1, 0, 0 }, 1 },   { { 2, -1, 0, 0 }, 2 },     { { 3, -1, 0, 0 }, 3 },
     { { 4, -1, 0, 0 }, 4 },   { { 5, -1, 0, 0 }, 5 },   { { 6, -1, 0, 0 }, 6 },     { { 7, -1, 0, 0 }, 7 },
     { { 8, -1, 0, 0 }, 8 },   { { 9, -1, 0, 0 }, 9 },   { { 10, -1, 0, 0 }, 10 },   { { 11, -1, 0, 0 }, 11 },
@@ -198,7 +198,7 @@ K2DefSub D_8004B368[] = {
     { { 16, -1, 0, 0 }, 16 }, { { 17, -1, 0, 0 }, 17 }, { { -1, -1, -1, -1 }, -1 },
 };
 
-K2DefSub D_8004B4E4[] = {
+ModelNodeGroup D_8004B4E4[] = {
     { { 15, 0, -1, 0 }, -1 }, { { 1, -1, 0, 0 }, 1 },   { { 2, -1, 0, 0 }, 2 },   { { 3, -1, 0, 0 }, 3 },
     { { 4, -1, 0, 0 }, 4 },   { { 5, -1, 0, 0 }, 5 },   { { 6, -1, 0, 0 }, 6 },   { { 7, -1, 0, 0 }, 7 },
     { { 8, -1, 0, 0 }, 8 },   { { 9, -1, 0, 0 }, 9 },   { { 10, -1, 0, 0 }, 10 }, { { 11, -1, 0, 0 }, 11 },
@@ -218,16 +218,16 @@ GlobalLighting D_8004B744 = { { { { 219, 228, 255, 0 }, 11, -115, -117 }, { { 23
 GlobalLighting D_8004B764 = { { { { 255, 254, 254, 255 }, 0, -126, -86 }, { { 255, 59, 27, 0 }, 20, 126, 0 } } };
 GlobalLighting D_8004B784 = { { { { 191, 112, 96, 255 }, -1, -126, -55 }, { { 30, 255, 132, 0 }, 5, 127, 191 } } };
 
-K2Def D_8004B7A4 = { "aaro", NULL, 0, 0x1000, D_8004A760 };
-K2Def D_8004B7B4 = { "demi", NULL, 0, 0x1000, D_8004A8DC };
-K2Def D_8004B7C4 = { "demo", NULL, 0, 0x1000, D_8004AAA8 };
-K2Def D_8004B7D4 = { "eve", NULL, 0, 0x1000, D_8004ACB0 };
-K2Def D_8004B7E4 = { "gore", NULL, 0, 0x1000, D_8004AE04 };
-K2Def D_8004B7F4 = { "morp", NULL, 0, 0x1000, D_8004AEE0 };
-K2Def D_8004B804 = { "niik", NULL, 0, 0x1000, D_8004B05C };
-K2Def D_8004B814 = { "scar", NULL, 0, 0x1000, D_8004B228 };
-K2Def D_8004B824 = { "sono", NULL, 0, 0x1000, D_8004B368 };
-K2Def D_8004B834 = { "zenm", NULL, 0, 0x1000, D_8004B4E4 };
+K2Def D_8004B7A4 = { "aaro", NULL, 0, OBJ_PRIO_DEFAULT, D_8004A760 };
+K2Def D_8004B7B4 = { "demi", NULL, 0, OBJ_PRIO_DEFAULT, D_8004A8DC };
+K2Def D_8004B7C4 = { "demo", NULL, 0, OBJ_PRIO_DEFAULT, D_8004AAA8 };
+K2Def D_8004B7D4 = { "eve", NULL, 0, OBJ_PRIO_DEFAULT, D_8004ACB0 };
+K2Def D_8004B7E4 = { "gore", NULL, 0, OBJ_PRIO_DEFAULT, D_8004AE04 };
+K2Def D_8004B7F4 = { "morp", NULL, 0, OBJ_PRIO_DEFAULT, D_8004AEE0 };
+K2Def D_8004B804 = { "niik", NULL, 0, OBJ_PRIO_DEFAULT, D_8004B05C };
+K2Def D_8004B814 = { "scar", NULL, 0, OBJ_PRIO_DEFAULT, D_8004B228 };
+K2Def D_8004B824 = { "sono", NULL, 0, OBJ_PRIO_DEFAULT, D_8004B368 };
+K2Def D_8004B834 = { "zenm", NULL, 0, OBJ_PRIO_DEFAULT, D_8004B4E4 };
 
 UnkTau D_8004B844[] = {
     { &D_80052220, &D_8004B7A4, { { 99, 185, 255, 0 }, { 255, 124, 46, 0 } } },
@@ -367,76 +367,76 @@ u8 D_8004C1D8[] = { 6, 7, 9, 6, 5, 5, 6, 8, 5, 8, 5 };
 
 s16 gDifficulty = DIFFICULTY_NORMAL;
 
-TransitionAction D_8004C1E8[] = {
-    /* idle */ { 0x0040010, player_anim_loop, func_8002FD78, NULL, 0x2700208 },
-    /* unknown step */ { 0x0041010, task_default_func, func_80030A60, NULL, 0x2700208 },
-    /* dash */ { 0x0001010, func_80024078, func_8002F9E8, NULL, 0x2700208 },
-    /* step */ { 0x0040010, player_anim_loop, func_8002FA78, NULL, 0x2F00208 },
-    /* ----- */ { 0x0040000, player_anim_loop, task_default_func, NULL, 0x2700208 },
-    /* run */ { 0x0040000, player_anim_loop, func_80030F00, NULL, 0x2700208 },
-    /* jump */ { 0x0001010, func_80024078, func_80031088, NULL, 0x2700208 },
-    /* crouch */ { 0x0040010, player_anim_loop, func_8002FE10, NULL, 0x2F00208 },
-    /* crouch exit*/ { 0x0001810, func_80023ED0, task_default_func, NULL, 0x2F00208 },
-    /* crouch restart */ { 0x0001010, func_80024214, task_default_func, NULL, 0x2700208 },
-    /* stand block */ { 0x0801010, func_80024078, task_default_func, NULL, 0x2700208 },
-    /* crouch abort */ { 0x0005000, func_80023ED0, task_default_func, NULL, 0x2F00208 },
-    /* SB reabort */ { 0x0000000, func_80024214, task_default_func, NULL, 0x2700208 },
-    /* grab */ { 0x0000010, func_80024078, func_80030330, NULL, 0x2700208 },
-    /* grabbed */ { 0x1003090, func_80024078, func_800309EC, NULL, 0x2700208 },
-    /* co-grabbed */ { 0x0000000, func_80024078, task_default_func, NULL, 0x2700208 },
-    /* intro */ { 0x0040000, player_anim_loop, task_default_func, NULL, 0x2700208 },
-    /* key up */ { 0x0040000, player_anim_loop, task_default_func, NULL, 0x2700208 },
-    /* various SP */ { 0x0000000, func_80024078, func_8002FEA0, NULL, 0x2700208 },
-    /* damaged */ { 0x0003010, func_80024078, func_80031724, NULL, 0x2700208 },
-    /* end */ { 0x0041000, player_anim_step_once, task_default_func, NULL, 0x2700208 },
-    /* lying down */ { 0x0040090, player_anim_loop, task_default_func, NULL, 0x2700208 },
-    { 0x0040000, player_anim_pingpong_forward, task_default_func, NULL, 0x2700208 },
-    /* dmg jump */ { 0x0003000, player_anim_step_once, func_80030B74, NULL, 0x2700208 },
-    /* timeout to idle */ { 0x0000000, task_default_func, player_anim_next_transition, NULL, 0x2700208 },
-    /* body slam */ { 0x0001000, func_80024078, task_default_func, func_80030C88, 0x2700208 },
-    { 0x0003000, func_80024078, task_default_func, NULL, 0x2700208 },
-    /* turn to opponent */ { 0x0001018, func_80024078, task_default_func, func_80030BB0, 0x2700208 },
-    { 0x0000010, func_80024078, func_80021E34, NULL, 0x2700208 },
-    /* intro projecti */ { 0x0001000, func_80024078, task_default_func, NULL, 0x2700208 },
-    /* various */ { 0x0001010, func_80024078, func_800311A0, func_800315FC, 0x2700208 },
-    /* roll */ { 0x0001010, func_80024078, func_800311A0, func_80031648, 0x2700208 },
-    /* roll 2*/ { 0x0000010, func_80024078, func_800311A0, func_800315FC, 0x2700208 },
-    /* side step */ { 0x0000010, func_80024078, func_800311A0, func_80031648, 0x2700208 },
-    /* side step 2 */ { 0x0000010, func_80024078, func_8002FEC8, func_80030BB0, 0x2700208 },
-    /* turn around */ { 0x0008010, func_80024078, func_8002FEA0, NULL, 0x2700208 },
-    { 0x0000010, func_80024078, task_default_func, NULL, 0x2700208 },
-    { 0x0040010, player_anim_pingpong_forward, task_default_func, NULL, 0x2700208 },
-    { 0x0040010, player_anim_loop, task_default_func, NULL, 0x2700208 },
-    { 0x0008010, func_80024078, func_800305FC, func_80030764, 0x2700208 },
-    /* Aaron specific */ { 0x1013090, func_80024078, func_800302A4, func_8002FF7C, 0x2700208 },
-    { 0x0000010, func_80024078, func_800306FC, func_80030764, 0x2700208 },
-    { 0x0000080, func_80024078, task_default_func, NULL, 0x2700208 },
-    { 0x0003000, func_80024078, task_default_func, NULL, 0x2700208 },
-    { 0x0040090, player_anim_step_once, task_default_func, NULL, 0x2700208 },
-    { 0x0008000, func_80024078, task_default_func, NULL, 0x2700208 },
-    { 0x0029010, func_80024078, task_default_func, NULL, 0x2700208 },
-    { 0x0068010, player_anim_loop, task_default_func, NULL, 0x2700208 },
-    { 0x0029010, func_80024078, func_80031F24, NULL, 0x2700208 },
-    { 0x0003090, func_80024078, func_800309EC, NULL, 0x2700208 },
-    { 0x0041000, player_anim_step_once, task_default_func, NULL, 0x2700208 },
-    { 0x0000010, func_80024078, func_800311A0, NULL, 0x2700208 },
-    { 0x0041010, func_80024078, task_default_func, func_800316A0, 0x2700208 },
-    { 0x0001000, func_80024078, func_80021E34, func_8002F9A0, 0x2F00208 },
-    { 0x1000010, func_80024078, func_80030074, NULL, 0x2700208 },
-    { 0x1021000, func_80024078, func_80032130, NULL, 0x2700208 },
-    { 0x0000010, player_anim_step_once, func_80021E34, NULL, 0x2700208 },
-    { 0x0001000, func_80024078, func_80031234, func_800315FC, 0x2700208 },
-    { 0x0001000, func_80024078, func_80031234, func_80031648, 0x2700208 },
-    { 0x1003090, func_80024078, func_800302A4, NULL, 0x2700208 },
-    { 0x1013090, func_80024078, task_default_func, func_8002FF7C, 0x2700208 },
-    { 0x0008010, func_80024078, func_800311A0, NULL, 0x2700208 },
-    { 0x0000000, func_80024078, func_8003146C, NULL, 0x2700208 },
-    { 0x0061010, func_80024078, func_80031164, NULL, 0x2700208 },
-    { 0x0008000, player_anim_loop, func_80031FBC, NULL, 0x2700208 },
-    { 0x0000000, player_anim_step_once, func_80031F88, NULL, 0x2700208 },
-    { 0x0000000, player_anim_loop, func_80032044, NULL, 0x2700208 },
-    { 0x0001000, func_80024078, func_800313EC, NULL, 0x2700208 },
-    { 0x8005000, func_80023ED0, task_default_func, NULL, 0x2F00208 },
+Behavior D_8004C1E8[] = {
+    /* idle */ { 0x0040010, anim_loop, player_trans_func_1, NULL, 0x2700208 },
+    /* unknown step */ { 0x0041010, task_default_func, player_trans_func_2, NULL, 0x2700208 },
+    /* dash */ { 0x0001010, anim_advance, player_trans_func_3, NULL, 0x2700208 },
+    /* step */ { 0x0040010, anim_loop, player_trans_func_4, NULL, 0x2F00208 },
+    /* ----- */ { 0x0040000, anim_loop, task_default_func, NULL, 0x2700208 },
+    /* run */ { 0x0040000, anim_loop, player_trans_func_5, NULL, 0x2700208 },
+    /* jump */ { 0x0001010, anim_advance, player_trans_func_6, NULL, 0x2700208 },
+    /* crouch */ { 0x0040010, anim_loop, player_trans_func_7, NULL, 0x2F00208 },
+    /* crouch exit*/ { 0x0001810, anim_reverse, task_default_func, NULL, 0x2F00208 },
+    /* crouch restart */ { 0x0001010, player_anim_func_3, task_default_func, NULL, 0x2700208 },
+    /* stand block */ { 0x0801010, anim_advance, task_default_func, NULL, 0x2700208 },
+    /* crouch abort */ { 0x0005000, anim_reverse, task_default_func, NULL, 0x2F00208 },
+    /* SB reabort */ { 0x0000000, player_anim_func_3, task_default_func, NULL, 0x2700208 },
+    /* grab */ { 0x0000010, anim_advance, player_trans_func_8, NULL, 0x2700208 },
+    /* grabbed */ { 0x1003090, anim_advance, player_trans_func_9, NULL, 0x2700208 },
+    /* co-grabbed */ { 0x0000000, anim_advance, task_default_func, NULL, 0x2700208 },
+    /* intro */ { 0x0040000, anim_loop, task_default_func, NULL, 0x2700208 },
+    /* key up */ { 0x0040000, anim_loop, task_default_func, NULL, 0x2700208 },
+    /* various SP */ { 0x0000000, anim_advance, player_trans_func_10, NULL, 0x2700208 },
+    /* damaged */ { 0x0003010, anim_advance, player_trans_func_11, NULL, 0x2700208 },
+    /* end */ { 0x0041000, anim_play_once, task_default_func, NULL, 0x2700208 },
+    /* lying down */ { 0x0040090, anim_loop, task_default_func, NULL, 0x2700208 },
+    { 0x0040000, anim_pingpong_forward, task_default_func, NULL, 0x2700208 },
+    /* dmg jump */ { 0x0003000, anim_play_once, player_trans_func_12, NULL, 0x2700208 },
+    /* timeout to idle */ { 0x0000000, task_default_func, action_animation_end, NULL, 0x2700208 },
+    /* body slam */ { 0x0001000, anim_advance, task_default_func, player_check_func_1, 0x2700208 },
+    { 0x0003000, anim_advance, task_default_func, NULL, 0x2700208 },
+    /* turn to opponent */ { 0x0001018, anim_advance, task_default_func, player_check_func_2, 0x2700208 },
+    { 0x0000010, anim_advance, player_action_init_projectiles, NULL, 0x2700208 },
+    /* intro projecti */ { 0x0001000, anim_advance, task_default_func, NULL, 0x2700208 },
+    /* various */ { 0x0001010, anim_advance, player_trans_func_14, player_check_func_3, 0x2700208 },
+    /* roll */ { 0x0001010, anim_advance, player_trans_func_14, player_check_func_4, 0x2700208 },
+    /* roll 2*/ { 0x0000010, anim_advance, player_trans_func_14, player_check_func_3, 0x2700208 },
+    /* side step */ { 0x0000010, anim_advance, player_trans_func_14, player_check_func_4, 0x2700208 },
+    /* side step 2 */ { 0x0000010, anim_advance, player_trans_func_15, player_check_func_2, 0x2700208 },
+    /* turn around */ { 0x0008010, anim_advance, player_trans_func_10, NULL, 0x2700208 },
+    { 0x0000010, anim_advance, task_default_func, NULL, 0x2700208 },
+    { 0x0040010, anim_pingpong_forward, task_default_func, NULL, 0x2700208 },
+    { 0x0040010, anim_loop, task_default_func, NULL, 0x2700208 },
+    { 0x0008010, anim_advance, player_trans_func_16, player_check_func_5, 0x2700208 },
+    /* Aaron specific */ { 0x1013090, anim_advance, player_trans_func_22, player_check_func_6, 0x2700208 },
+    { 0x0000010, anim_advance, player_trans_func_17, player_check_func_5, 0x2700208 },
+    { 0x0000080, anim_advance, task_default_func, NULL, 0x2700208 },
+    { 0x0003000, anim_advance, task_default_func, NULL, 0x2700208 },
+    { 0x0040090, anim_play_once, task_default_func, NULL, 0x2700208 },
+    { 0x0008000, anim_advance, task_default_func, NULL, 0x2700208 },
+    { 0x0029010, anim_advance, task_default_func, NULL, 0x2700208 },
+    { 0x0068010, anim_loop, task_default_func, NULL, 0x2700208 },
+    { 0x0029010, anim_advance, player_trans_func_18, NULL, 0x2700208 },
+    { 0x0003090, anim_advance, player_trans_func_9, NULL, 0x2700208 },
+    { 0x0041000, anim_play_once, task_default_func, NULL, 0x2700208 },
+    { 0x0000010, anim_advance, player_trans_func_14, NULL, 0x2700208 },
+    { 0x0041010, anim_advance, task_default_func, player_check_func_7, 0x2700208 },
+    { 0x0001000, anim_advance, player_action_init_projectiles, player_check_func_8, 0x2F00208 },
+    { 0x1000010, anim_advance, player_trans_func_19, NULL, 0x2700208 },
+    { 0x1021000, anim_advance, player_trans_func_20, NULL, 0x2700208 },
+    { 0x0000010, anim_play_once, player_action_init_projectiles, NULL, 0x2700208 },
+    { 0x0001000, anim_advance, player_trans_func_21, player_check_func_3, 0x2700208 },
+    { 0x0001000, anim_advance, player_trans_func_21, player_check_func_4, 0x2700208 },
+    { 0x1003090, anim_advance, player_trans_func_22, NULL, 0x2700208 },
+    { 0x1013090, anim_advance, task_default_func, player_check_func_6, 0x2700208 },
+    { 0x0008010, anim_advance, player_trans_func_14, NULL, 0x2700208 },
+    { 0x0000000, anim_advance, player_trans_func_23, NULL, 0x2700208 },
+    { 0x0061010, anim_advance, player_trans_func_24, NULL, 0x2700208 },
+    { 0x0008000, anim_loop, player_trans_func_25, NULL, 0x2700208 },
+    { 0x0000000, anim_play_once, player_trans_func_26, NULL, 0x2700208 },
+    { 0x0000000, anim_loop, player_trans_func_27, NULL, 0x2700208 },
+    { 0x0001000, anim_advance, player_trans_func_28, NULL, 0x2700208 },
+    { 0x8005000, anim_reverse, task_default_func, NULL, 0x2F00208 },
 };
 
 /* .bss */

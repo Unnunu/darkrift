@@ -224,8 +224,8 @@ def get_buttons(x):
 def get_move_flags(x):
     return ' | '.join(f"TF_{1<<i:x}" for i in range(16) if (x & 2**i))
 
-def get_sdf_flags(x):
-    return ' | '.join(f"SDF_{1<<i:x}" for i in range(16) if (x & 2**i))
+def get_csf_flags(x):
+    return ' | '.join(f"CSF_{1<<i:x}" for i in range(32) if (x & 2**i))
 
 def read_sym(f):
     content = f.read_bytes()
@@ -267,7 +267,7 @@ def process_db():
         for off in range(offs[1] + 4, offs[2], 28):
             e = unpack_from(">hHHHhhH14IIIH", content, off)
             l.append({"name":symbols[0][i], "index":i, "index_in_field28":e[0], "buttons":get_buttons(e[1]), "flags":get_move_flags(e[2]), "unk06":e[3],
-                      "index_in_field24":f"f24_{e[4]}_", "actionState":e[5], "button_mask":get_buttons(e[6]), "unk0E":[e[7],e[8],e[9],e[10]]})
+                      "behavior":f"BHV_{e[4]}", "actionState": f"CS_{e[5]}", "button_mask":get_buttons(e[6]), "unk0E":[e[7],e[8],e[9],e[10]]})
             i += 1
         dbdata["transitionTable"] = l
 
@@ -311,13 +311,13 @@ def process_db():
         l = []
         for off in range(offs[5] + 4, offs[6], 56):
             e = unpack_from(">26hI", content, off)
-            l.append({"unk_00":e[0], "unk_02":e[1], "unk_04":e[2], "unk_06":e[3],
+            l.append({"index": f"CS_{(off - offs[5] - 4) // 56}", "minFrame":e[0], "maxFrame":e[1], "unk_04":e[2], "unk_06":e[3],
                       "animationId":e[4], "unk_0A":e[5], "unk_0C":e[6], "unk_0E":e[7],
                       "unk_10":e[8], "unk_12":e[9], "unk_14":e[10], "unk_16":e[11],
                       "unk_18":e[12], "unk_1A":e[13], "unk_1C":e[14], "unk_1E":e[15],
                       "damage":e[16], "unk_22":e[17], "unk_24":e[18], "unk_26":e[19],
                       "unk_28":e[20], "unk_2A":e[21], "unk_2C":e[22], "unk_2E":e[23],
-                      "unk_30":e[24], "unk_32":e[25], "flags":get_sdf_flags(e[26])})
+                      "unk_30":e[24], "unk_32":e[25], "flags":get_csf_flags(e[26])})
         dbdata["actionStates"] = l
 
         l = []

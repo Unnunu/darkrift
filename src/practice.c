@@ -237,9 +237,9 @@ void func_800327D8(Object *obj) {
 
     func_80002178(160, NULL);
 
-    if (gPlayerInput[playerId].accumulated) {
+    if (gPlayerInput[playerId].pendingInput) {
         buttons = gPlayerInput[playerId].raw_buttons;
-        gPlayerInput[playerId].accumulated = FALSE;
+        gPlayerInput[playerId].pendingInput = FALSE;
     }
 
     if (!buttons) {
@@ -702,8 +702,8 @@ void func_80033958(void) {
     s1 = *combo;
     while (s1 != 0) {
         t3 = player->moveToLogicStateMap[s1];
-        logicStates = player->logicStates;
-        new_var = &player->transitionRules[logicStates[t3]];
+        logicStates = player->logicStateTable;
+        new_var = &player->transitionRuleTable[logicStates[t3]];
         D_8013C410[D_8013C428++] = logicStates[t3];
         func_800336E4(new_var->requiredButtons);
         combo++;
@@ -738,8 +738,8 @@ void func_80033AB0(void) {
     s1 = *combo;
     while (s1 != 0) {
         logicStateId = opponent->moveToLogicStateMap[s1];
-        logicStates = opponent->logicStates;
-        transition = &opponent->transitionRules[logicStates[logicStateId]];
+        logicStates = opponent->logicStateTable;
+        transition = &opponent->transitionRuleTable[logicStates[logicStateId]];
         D_8013C410[D_8013C428++] = logicStates[logicStateId];
         func_800336E4(transition->requiredButtons);
         combo++;
@@ -757,9 +757,9 @@ void func_80033C38(void) {
         a2 = (D_8013C430 == 18) ? gPracticingPlayer : 1 - gPracticingPlayer;
 
         if (D_8013C42A < D_8013C428) {
-            new_var = &gPlayers[a2].transitionRules[D_8013C410[D_8013C42A]];
+            new_var = &gPlayers[a2].transitionRuleTable[D_8013C410[D_8013C42A]];
             gPlayerInput[a2].buttons = new_var->requiredButtons;
-            gPlayerInput[a2].accumulated = TRUE;
+            gPlayerInput[a2].pendingInput = TRUE;
         } else {
             D_8013C444 = FALSE;
             gPlayerInput[gPracticingPlayer].enabled = TRUE;
@@ -784,7 +784,7 @@ void func_80033D64(void) {
     }
 
     if (player->transitionId == D_8013C410[D_8013C42A]) {
-        func_800337C8(player->currentTransition->requiredButtons);
+        func_800337C8(player->transition->requiredButtons);
         D_8013C42A++;
         if (D_8013C444) {
             func_80033C38();

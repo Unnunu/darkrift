@@ -1249,16 +1249,16 @@ void func_80014974(Transform *transform) {
     }
 }
 
-void math_mtxf_mul(Matrix4f *m11, Matrix4f *m22, Matrix4f *m33) {
+void math_mtxf_mul(Matrix4f *op1, Matrix4f *op2, Matrix4f *result) {
     s32 i, j, k;
     float (*m1)[4];
     float (*m2)[4];
     float (*m3)[4];
     f32 temp[4][4];
 
-    m1 = m11;
-    m2 = m22;
-    m3 = m33;
+    m1 = op1;
+    m2 = op2;
+    m3 = result;
 
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {

@@ -185,7 +185,7 @@ void func_8002AF8C(Object *obj) {
 void obj_update_all(void) {
     Object *obj;
     Object *tempObj;
-    ModelNodeRenderInfo *renderInfo;
+    ClusterRenderSlot *renderInfo;
     s32 s1;
     u32 i;
     u32 j;
@@ -222,14 +222,14 @@ void obj_update_all(void) {
     }
 
     for (renderInfo = D_8013C4E8; renderInfo != NULL; renderInfo = renderInfo->next) {
-        s1 = renderInfo->unk_04->unk_24;
-        if (renderInfo->unk_04->unk_00) {
+        s1 = renderInfo->cluster->groupSize;
+        if (renderInfo->cluster->unk_00) {
             for (i = 0; i < s1; i++) {
                 if (renderInfo->flags & 1) {
                     continue;
                 }
-                v0 = renderInfo->unk_04->unk_28[i];
-                t2 = renderInfo->unk_04->unk_38[i];
+                v0 = renderInfo->cluster->transforms[i];
+                t2 = renderInfo->cluster->batchCounts[i];
                 for (j = 0; j < t2; j++) {
                     if (renderInfo->flags & 2) {
                         gSPTriBatch(gOverlayBatchPos, NULL, (j != 0) ? v0->info : renderInfo->unk_08[i], v0->vertices,
@@ -245,9 +245,9 @@ void obj_update_all(void) {
         } else {
             s32 temp = D_8005BFCE * s1;
             for (i = 0; i < s1; i++) {
-                gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(renderInfo->unk_04->unk_28[i + temp]),
+                gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(renderInfo->cluster->transforms[i + temp]),
                           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-                gSPDisplayList(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(renderInfo->unk_04->unk_48[i]));
+                gSPDisplayList(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(renderInfo->cluster->dlists[i]));
             }
         }
     }
@@ -261,7 +261,7 @@ void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, Transform *arg3, void (*ta
     func_80012A20(arg3, &arg0->transform, -2, -3);
 
     arg0->unk_076 = 0;
-    arg0->unk_088.r = arg0->unk_088.g = arg0->unk_088.b = 160;
+    arg0->color.r = arg0->color.g = arg0->color.b = 160;
 
     arg0->acceleration.x = 0;
     arg0->acceleration.y = 0;
@@ -292,7 +292,7 @@ void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, Transform *arg3, void (*ta
     arg0->unk_078 = 0;
     arg0->frameIndex = 0;
     arg0->previousFrameIndex = -1;
-    arg0->unk_088.a = 128;
+    arg0->color.a = 128;
     arg0->unk_1F8 = 0;
     arg0->unk_1FA = 0;
 
@@ -406,7 +406,7 @@ Object *create_kmd_object(Vec4i *arg0, char *arg1, K2Def *properties, s32 arg3) 
     if (properties != NULL && properties->unk_0C != NULL) {
         func_800352FC(modInst, properties->unk_0C);
     } else {
-        modInst->unk_604 = NULL;
+        modInst->nodeClusters = NULL;
     }
 
     return obj;
@@ -454,7 +454,7 @@ Object *create_model_instance_with_properties(Vec4i *pos, char *name, K2Def *pro
             obj = obj_allocate(properties->objPriority);
             obj_init(obj, pos, &gZeroRotation, NULL, properties->taskFunc);
         } else {
-            obj = obj_allocate(0x1000);
+            obj = obj_allocate(OBJ_PRIO_DEFAULT);
             obj_init(obj, pos, &gZeroRotation, NULL, NULL);
         }
     }
@@ -471,7 +471,7 @@ Object *create_model_instance_with_properties(Vec4i *pos, char *name, K2Def *pro
     for (i = 0; i < numNodes; i++) {
         memcpy(&modInst->renderBatches[i].header, model->batchInfos[i], sizeof(BatchHeader));
         memcpy(&modInst->renderBatches[30 + i].header, model->batchInfos[i], sizeof(BatchHeader));
-        modInst->unk_1F6E[i] = modInst->unk_1F50[i] = FALSE;
+        modInst->nodeOpaque[i] = modInst->nodeOpaquePrev[i] = FALSE;
     }
 
     if (model->nodeHierarchy != NULL) {
@@ -487,7 +487,7 @@ Object *create_model_instance_with_properties(Vec4i *pos, char *name, K2Def *pro
     if (properties != NULL && properties->unk_0C != NULL) {
         func_800359E4(modInst, properties->unk_0C);
     } else {
-        modInst->unk_604 = NULL;
+        modInst->nodeClusters = NULL;
     }
 
     obj->flags |= OBJ_FLAG_40000;
@@ -497,19 +497,19 @@ Object *create_model_instance_with_properties(Vec4i *pos, char *name, K2Def *pro
 
 Object *create_3dsprite_with_properties(Vec4i *pos, UnkK2Def *properties, s32 context) {
     Object *obj;
-    ModelNode *new_var;
+    NodeCluster *new_var;
 
     if (gModelInstancePool.count >= 2) {
         obj = create_model_instance_with_properties(pos, NULL, &properties->base, context);
         obj->fn_render = sprite3d_update;
         obj->frameIndex = properties->startingFrame;
         obj->flags |= properties->flags | OBJ_FLAG_3DSPRITE;
-        obj->unk_088.a = 128;
+        obj->color.a = 128;
 
         new_var = &obj->modInst->unk_A50;
         new_var->unk_00 = 1;
-        new_var->unk_24 = 1;
-        obj->modInst->unk_A30.unk_04 = new_var;
+        new_var->groupSize = 1;
+        obj->modInst->unk_A30.cluster = new_var;
         if (obj->flags & OBJ_FLAG_800) {
             obj->modInst->unk_A30.zOrder = -0x80000000;
         } else {
@@ -552,8 +552,8 @@ Object *create_model_instance(Vec4i *pos, s32 objPriority, void (*taskFunc)(Obje
     for (i = 0; i < numNodes; i++) {
         memcpy(&modInst->renderBatches[i].header, model->batchInfos[i], sizeof(BatchHeader));
         memcpy(&modInst->renderBatches[30 + i].header, model->batchInfos[i], sizeof(BatchHeader));
-        modInst->unk_1F50[i] = modInst->nodeUpdated[i] = FALSE;
-        modInst->unk_1F6E[i] = FALSE;
+        modInst->nodeOpaquePrev[i] = modInst->nodeUpdated[i] = FALSE;
+        modInst->nodeOpaque[i] = FALSE;
     }
 
     if (model->nodeHierarchy != NULL) {
@@ -571,10 +571,10 @@ Object *create_model_instance(Vec4i *pos, s32 objPriority, void (*taskFunc)(Obje
     modInst->unk_A2C = model->unk_234;
     obj->flags |= OBJ_FLAG_40000 | OBJ_FLAG_4000;
     modInst->unk_9C8 = numNodes;
-    modInst->unk_604 = model->unk_31C;
+    modInst->nodeClusters = model->unk_31C;
 
     for (i = 0; i < modInst->unk_9C8; i++) {
-        modInst->unk_608[i].unk_04 = &model->unk_31C[i];
+        modInst->unk_608[i].cluster = &model->unk_31C[i];
     }
 
     modInst->currentAnimId = 0;
@@ -593,7 +593,7 @@ Object *create_model_instance(Vec4i *pos, s32 objPriority, void (*taskFunc)(Obje
 
 Object *create_3dsprite(Vec4i *pos, s32 objPriority, void (*taskFunc)(Object *), Model *model) {
     Object *obj;
-    ModelNode *new_var;
+    NodeCluster *new_var;
 
     if (gModelInstancePool.count == 0) {
         return NULL;
@@ -602,13 +602,13 @@ Object *create_3dsprite(Vec4i *pos, s32 objPriority, void (*taskFunc)(Object *),
     obj = create_model_instance(pos, objPriority, taskFunc, model);
     obj->fn_render = sprite3d_update;
     obj->frameIndex = 0;
-    obj->flags |= OBJ_FLAG_4000 | OBJ_FLAG_2000 | OBJ_FLAG_3DSPRITE;
-    obj->unk_088.a = 128;
+    obj->flags |= OBJ_FLAG_4000 | OBJ_FLAG_TRANSPARENT | OBJ_FLAG_3DSPRITE;
+    obj->color.a = 128;
 
     new_var = &obj->modInst->unk_A50;
     new_var->unk_00 = 1;
-    new_var->unk_24 = 1;
-    obj->modInst->unk_A30.unk_04 = new_var;
+    new_var->groupSize = 1;
+    obj->modInst->unk_A30.cluster = new_var;
     obj->modInst->unk_A30.zOrder = -9000;
     obj->modInst->unk_A30.flags = 0;
     return obj;

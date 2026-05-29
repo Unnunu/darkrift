@@ -1040,7 +1040,7 @@ void func_800204C0(CheatCodeState *state, s16 playerId) {
     CheatCode *ptr;
     s32 unused;
 
-    if (!gPlayerInput[playerId].accumulated) {
+    if (!gPlayerInput[playerId].pendingInput) {
         return;
     }
     raw_buttons = gPlayerInput[playerId].raw_buttons;
@@ -1050,13 +1050,13 @@ void func_800204C0(CheatCodeState *state, s16 playerId) {
 
     if (raw_buttons & (INP_UP | INP_DOWN | INP_LEFT | INP_RIGHT | INP_CRIGHT)) {
         if (state->current_buttons == raw_buttons) {
-            gPlayerInput[playerId].accumulated = FALSE;
+            gPlayerInput[playerId].pendingInput = FALSE;
             return;
         }
         state->current_buttons = raw_buttons;
     }
 
-    gPlayerInput[playerId].accumulated = FALSE;
+    gPlayerInput[playerId].pendingInput = FALSE;
     current_cheat = state->cheat;
     if (current_cheat != NULL) {
         if (raw_buttons == current_cheat->sequence[state->numValid]) {
@@ -1072,7 +1072,7 @@ void func_800204C0(CheatCodeState *state, s16 playerId) {
                 return;
             }
         }
-        gPlayerInput[playerId].accumulated = TRUE;
+        gPlayerInput[playerId].pendingInput = TRUE;
         if (0) {} // required to match
 
         state->cheat = NULL;

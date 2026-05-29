@@ -25,8 +25,8 @@ void func_8002A288(Object *obj) {
         D_8008012C &= ~GFX_FLAG_10;
     }
 
-    if (obj->unk_088.a >= 4) {
-        obj->unk_088.a -= 4;
+    if (obj->color.a >= 4) {
+        obj->color.a -= 4;
     }
 
     dx = ABS(playerPos->x - oppPos->x);
@@ -37,16 +37,16 @@ void func_8002A288(Object *obj) {
         sp44.x = oppPos->x;
         sp44.z = oppPos->z;
         sp44.y = 0;
-        sp38 = create_model_instance(&sp44, 0x1000, func_80021D40, player->unk_DE4);
+        sp38 = create_model_instance(&sp44, 0x1000, projectile_fade_away, player->effectModels[6]);
         if (sp38 != NULL) {
             create_light(sp38, &sp30[player->playerId]);
-            sp38->unk_088.a = 160;
-            if (func_80022B44(opponent, player, obj)) {
+            sp38->color.a = 160;
+            if (projectile_apply_damage(opponent, player, obj)) {
                 sp38->vars[0] = 32;
             } else {
                 sp38->vars[0] = 160 / sp38->modInst->numAnimFrames;
             }
-            sp38->flags |= OBJ_FLAG_2000;
+            sp38->flags |= OBJ_FLAG_TRANSPARENT;
         }
         TASK_END(obj->currentTask);
         obj->flags |= OBJ_FLAG_DELETE;
@@ -65,11 +65,11 @@ void func_8002A4E0(Object *obj) {
         sp38.x = obj->modInst->transforms[0].world_matrix.w.x;
         sp38.y = obj->modInst->transforms[0].world_matrix.w.y;
         sp38.z = obj->modInst->transforms[0].world_matrix.w.z;
-        v0 = create_model_instance(&sp38, 0x1000, func_8002A288, player->unk_DDC);
+        v0 = create_model_instance(&sp38, 0x1000, func_8002A288, player->effectModels[4]);
         if (v0 != NULL) {
-            v0->unk_088.a = 160;
+            v0->color.a = 160;
             v0->vars[1] = 160 / v0->modInst->numAnimFrames;
-            v0->flags |= OBJ_FLAG_2000;
+            v0->flags |= OBJ_FLAG_TRANSPARENT;
             v0->varObj[0] = player;
             v0->vars[6] = obj->vars[6];
             create_light(v0, &sp28[player->playerId]);
@@ -83,11 +83,11 @@ void func_8002A4E0(Object *obj) {
         sp38.x = obj->modInst->transforms[1].world_matrix.w.x;
         sp38.y = obj->modInst->transforms[1].world_matrix.w.y;
         sp38.z = obj->modInst->transforms[1].world_matrix.w.z;
-        v0 = create_model_instance(&sp38, 0x1000, func_8002A288, player->unk_DDC);
+        v0 = create_model_instance(&sp38, 0x1000, func_8002A288, player->effectModels[4]);
         if (v0 != NULL) {
-            v0->unk_088.a = 160;
+            v0->color.a = 160;
             v0->vars[1] = 160 / v0->modInst->numAnimFrames;
-            v0->flags |= OBJ_FLAG_2000;
+            v0->flags |= OBJ_FLAG_TRANSPARENT;
             v0->varObj[0] = player;
             v0->vars[6] = obj->vars[6];
             create_light(v0, &sp28[player->playerId]);
@@ -97,11 +97,11 @@ void func_8002A4E0(Object *obj) {
         sp38.x = obj->modInst->transforms[2].world_matrix.w.x;
         sp38.y = obj->modInst->transforms[2].world_matrix.w.y;
         sp38.z = obj->modInst->transforms[2].world_matrix.w.z;
-        v0 = create_model_instance(&sp38, 0x1000, func_8002A288, player->unk_DDC);
+        v0 = create_model_instance(&sp38, 0x1000, func_8002A288, player->effectModels[4]);
         if (v0 != NULL) {
-            v0->unk_088.a = 160;
+            v0->color.a = 160;
             v0->vars[1] = 160 / v0->modInst->numAnimFrames;
-            v0->flags |= OBJ_FLAG_2000;
+            v0->flags |= OBJ_FLAG_TRANSPARENT;
             v0->varObj[0] = player;
             v0->vars[6] = obj->vars[6];
             create_light(v0, &sp28[player->playerId]);

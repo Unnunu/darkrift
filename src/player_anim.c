@@ -4,9 +4,9 @@
 
 u8 ai_select_transition(Player *);
 
-void player_anim_pingpong_forward(Object *);
+void anim_pingpong_forward(Object *);
 
-void player_anim_next_transition(Object *obj) {
+void action_animation_end(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
     u16 playerId = player->playerId;
     s32 stateFlags;
@@ -18,28 +18,28 @@ void player_anim_next_transition(Object *obj) {
 
         ai_reset(player);
 
-        if (player->nextLogicState >= 0 && (player->flags & PLAYER_FLAG_1000)) {
+        if (player->lookupLogicTable >= 0 && (player->flags & PLAYER_FLAG_1000)) {
             if (ai_select_transition(player)) {
                 player->aiState.aiFlags |= 0x8000;
                 return;
             }
         }
     } else if (!(player->flags & PLAYER_FLAG_TRANSITION_LOCKED) &&
-               (gPlayerInput[playerId].accumulated || (player->flags & PLAYER_FLAG_1000)) &&
-               player->nextLogicState >= 0 && !(player->animTask->flags & TASK_FLAG_TRIGGER_FRAME)) {
+               (gPlayerInput[playerId].pendingInput || (player->flags & PLAYER_FLAG_1000)) &&
+               player->lookupLogicTable >= 0 && !(player->animTask->flags & TASK_FLAG_TRIGGER_FRAME)) {
         if (player_select_transition(player, TRUE)) {
             return;
         }
     }
 
     D_80080236 = TRUE;
-    stateFlags = player->currentStateDef->flags;
+    stateFlags = player->combatState->flags;
     if (player->flags & PLAYER_FLAG_8000000) {
         player->flags &= ~PLAYER_FLAG_8000000;
-        stateFlags ^= STATE_FLAG_1 | STATE_FLAG_4;
+        stateFlags ^= CSF_CROUCH | CSF_STANDING;
     }
 
-    if (stateFlags & STATE_FLAG_1) {
+    if (stateFlags & CSF_CROUCH) {
         player_apply_move(player, 320, FALSE);
     } else {
         player_apply_move(player, 68, FALSE);
@@ -49,36 +49,36 @@ void player_anim_next_transition(Object *obj) {
     player->flags |= PLAYER_FLAG_TRANSITION_LOCKED;
 }
 
-void func_80023ED0(Object *obj) {
+void anim_reverse(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
 
-    if (obj->frameIndex > player->currentStateDef->duration + 1) {
+    if (obj->frameIndex > player->combatState->minFrame + 1) {
         obj->frameIndex--;
     } else {
         obj->frameIndex--;
-        player_anim_next_transition(obj);
+        action_animation_end(obj);
     }
 }
 
-void player_anim_pingpong_backward(Object *obj) {
+void anim_pingpong_backward(Object *obj) {
     if (obj->frameIndex != 0) {
         obj->frameIndex--;
     } else {
         obj->frameIndex++;
-        obj->currentTask->func = player_anim_pingpong_forward;
+        obj->currentTask->func = anim_pingpong_forward;
     }
 }
 
-void player_anim_pingpong_forward(Object *obj) {
+void anim_pingpong_forward(Object *obj) {
     if (obj->frameIndex < obj->modInst->numAnimFrames - 1) {
         obj->frameIndex++;
     } else {
         obj->frameIndex--;
-        obj->currentTask->func = player_anim_pingpong_backward;
+        obj->currentTask->func = anim_pingpong_backward;
     }
 }
 
-void player_anim_step_once(Object *obj) {
+void anim_play_once(Object *obj) {
     if (obj->frameIndex < obj->modInst->numAnimFrames - 1) {
         obj->frameIndex++;
     } else {
@@ -86,11 +86,11 @@ void player_anim_step_once(Object *obj) {
     }
 }
 
-void player_anim_loop(Object *obj) {
+void anim_loop(Object *obj) {
     Player *player;
     s16 characterId;
 
-    if (obj->frameIndex < ((Player *) obj->varObj[0])->currentStateDef->unk_02) {
+    if (obj->frameIndex < ((Player *) obj->varObj[0])->combatState->maxFrame) {
         obj->frameIndex++;
         return;
     } else {
@@ -99,7 +99,7 @@ void player_anim_loop(Object *obj) {
         characterId = player->characterId;
 
         if (obj->modInst->velocity.z != 0) {
-            if (player->currentStateDef->flags & STATE_FLAG_4) {
+            if (player->combatState->flags & CSF_STANDING) {
                 obj->modInst->velocity.z = D_8004BA98[characterId].z;
             } else {
                 obj->modInst->velocity.z = D_8004BAF0[characterId].z;
@@ -111,30 +111,29 @@ void player_anim_loop(Object *obj) {
     }
 }
 
-void func_80024078(Object *obj) {
-    if (obj->frameIndex < ((Player *) obj->varObj[0])->currentStateDef->unk_02 - 1) {
+void anim_advance(Object *obj) {
+    if (obj->frameIndex < ((Player *) obj->varObj[0])->combatState->maxFrame - 1) {
         obj->frameIndex++;
     } else {
         obj->frameIndex++;
-        player_anim_next_transition(obj);
+        action_animation_end(obj);
     }
 }
 
-void func_800240C8(Object *obj) {
+void player_anim_func_3_sub(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
     Vec4i sp2C;
 
-    if (player->currentStateDef->cameraStateIndex < 0) {
+    if (player->combatState->cutsceneId < 0) {
         TASK_END(obj->currentTask);
-    } else if (obj->frameIndex >= player->currentStateDef->cameraAnimIndex) {
+    } else if (obj->frameIndex >= player->combatState->custsceneDelay) {
         camera_save_state();
 
         sp2C.x = (gPlayers[PLAYER_1].obj->pos.x + gPlayers[PLAYER_2].obj->pos.x) >> 1;
         sp2C.z = (gPlayers[PLAYER_1].obj->pos.z + gPlayers[PLAYER_2].obj->pos.z) >> 1;
         sp2C.y = 0;
-        func_80038E8C(
-            gCamera, &sp2C, obj->rotation.y,
-            obj->modInst->animations[player->stateDefs[player->currentStateDef->cameraStateIndex].animationId]);
+        func_80038E8C(gCamera, &sp2C, obj->rotation.y,
+                      obj->modInst->animations[player->combatStateTable[player->combatState->cutsceneId].animationId]);
 
         gCamera->currentTask->func = camera_cutscene_playback;
         gCamera->currentTask->start_delay = 0;
@@ -144,101 +143,103 @@ void func_800240C8(Object *obj) {
     }
 }
 
-void func_80024214(Object *obj) {
+void player_anim_func_3(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
     s32 unused[2];
-    PlayerStateDef *currentState;
+    CombatState *targetState;
 
-    currentState = player->stateDefs + player->currentStateId;
-    player->currentStateDef = currentState;
+    targetState = player->combatStateTable + player->combatStateId;
+    player->combatState = targetState;
 
-    if (currentState->cameraStateIndex >= 0 && currentState->cameraAnimIndex != -1) {
-        player->cameraTask->func = func_800240C8;
+    if (targetState->cutsceneId >= 0 && targetState->custsceneDelay != -1) {
+        player->cameraTask->func = player_anim_func_3_sub;
         player->cameraTask->start_delay = 0;
         player->cameraTask->flags = TASK_FLAG_ENABLED;
     }
 
-    if (currentState->unk_30 != -1) {
-        func_80034C18(obj, player->unk_68 + currentState->unk_30 * obj->modInst->numNodes);
+    if (targetState->unk_30 != -1) {
+        func_80034C18(obj, player->unk_68 + targetState->unk_30 * obj->modInst->numNodes);
     } else {
         func_80034A58(obj);
     }
 
-    obj->currentTask->func = func_80024078;
+    obj->currentTask->func = anim_advance;
     obj->frameIndex++;
 
-    if (currentState->flags & STATE_FLAG_10) {
+    if (targetState->flags & CSF_10) {
         obj->flags |= OBJ_FLAG_400;
-        if (currentState->flags & STATE_FLAG_8000) {
+        if (targetState->flags & CSF_8000) {
             obj->flags |= OBJ_FLAG_20000;
         }
     } else {
         obj->flags &= ~OBJ_FLAG_400;
     }
 
-    if (currentState->flags & STATE_FLAG_80) {
+    if (targetState->flags & CSF_80) {
         obj->flags |= OBJ_FLAG_800000;
     }
 
-    if (currentState->flags & STATE_FLAG_200000) {
+    if (targetState->flags & CSF_200000) {
         obj->flags |= OBJ_FLAG_100000;
     }
 }
 
-void func_80024390(Object *obj) {
-    s32 *sp24;
+void anim_change_combat_state(Object *obj) {
+    s32 *params;
     Player *player = (Player *) obj->varObj[0];
-    PlayerStateDef *currentState;
+    CombatState *targetState;
 
-    currentState = player->currentStateDef;
-    sp24 = obj->currentTask->params;
+    targetState = player->combatState;
+    params = obj->currentTask->params;
 
-    if (player->currentStateId >= 0) {
-        currentState = player->stateDefs + player->currentStateId;
-        if (currentState->animationId == obj->modInst->currentAnimId && obj->frameIndex + 1 < currentState->duration) {
+    if (player->combatStateId >= 0) {
+        targetState = player->combatStateTable + player->combatStateId;
+
+        if (targetState->animationId == obj->modInst->currentAnimId && obj->frameIndex + 1 < targetState->minFrame) {
             obj->frameIndex++;
             player->animTask->flags |= TASK_FLAG_TRIGGER_FRAME;
-            player->animTask->triggerAt = currentState->duration - 2;
+            player->animTask->triggerAt = targetState->minFrame - 2;
             player->animTask->triggerSlot.flags = TASK_FLAG_ENABLED;
-            player->animTask->triggerSlot.func = func_80024214;
-            obj->currentTask->func = func_80024078;
+            player->animTask->triggerSlot.func = player_anim_func_3;
+            obj->currentTask->func = anim_advance;
             return;
         }
 
-        if (currentState->animationId == obj->modInst->currentAnimId && obj->frameIndex == currentState->duration - 1) {
-            func_80024214(obj);
+        if (targetState->animationId == obj->modInst->currentAnimId && obj->frameIndex == targetState->minFrame - 1) {
+            player_anim_func_3(obj);
             return;
         }
 
-        if (currentState->cameraStateIndex >= 0 && currentState->cameraAnimIndex != -1) {
-            player->cameraTask->func = func_800240C8;
+        if (targetState->cutsceneId >= 0 && targetState->custsceneDelay != -1) {
+            player->cameraTask->func = player_anim_func_3_sub;
             player->cameraTask->start_delay = 0;
             player->cameraTask->flags = TASK_FLAG_ENABLED;
         }
 
-        if (currentState->unk_30 != -1) {
-            func_80034C18(obj, player->unk_68 + currentState->unk_30 * obj->modInst->numNodes);
+        if (targetState->unk_30 != -1) {
+            func_80034C18(obj, player->unk_68 + targetState->unk_30 * obj->modInst->numNodes);
         } else {
             func_80034A58(obj);
         }
 
-        player->currentStateDef = currentState;
+        player->combatState = targetState;
 
         if (player->flags & PLAYER_FLAG_800) {
-            obj->frameIndex = currentState->unk_02;
+            obj->frameIndex = targetState->maxFrame;
         } else {
-            obj->frameIndex = MAX(currentState->duration, sp24[2]);
+            obj->frameIndex = MAX(targetState->minFrame, params[2]);
         }
 
-        obj->modInst->currentAnimId = currentState->animationId;
+        obj->modInst->currentAnimId = targetState->animationId;
+        // trigger animation change code in model_update
         obj->modInst->previousAnimId = -1;
     }
 
-    obj->currentTask->func = sp24[0]; // ????
+    obj->currentTask->func = params[0];
 
-    if (currentState->flags & STATE_FLAG_10) {
+    if (targetState->flags & CSF_10) {
         obj->flags |= OBJ_FLAG_400;
-        if (currentState->flags & STATE_FLAG_8000) {
+        if (targetState->flags & CSF_8000) {
             obj->flags |= OBJ_FLAG_20000;
         } else {
             obj->flags &= ~OBJ_FLAG_20000;
@@ -247,11 +248,11 @@ void func_80024390(Object *obj) {
         obj->flags &= ~OBJ_FLAG_400;
     }
 
-    if (currentState->flags & STATE_FLAG_80) {
+    if (targetState->flags & CSF_80) {
         obj->flags |= OBJ_FLAG_400000;
     }
 
-    if (currentState->flags & STATE_FLAG_200000) {
+    if (targetState->flags & CSF_200000) {
         obj->flags |= OBJ_FLAG_100000;
     }
 }
@@ -262,17 +263,17 @@ void func_80024640(Object *obj) {
     s32 s2;
     s32 *v0;
 
-    if (obj->frameIndex < player->currentStateDef->unk_02) {
+    if (obj->frameIndex < player->combatState->maxFrame) {
         obj->frameIndex++;
         return;
     }
 
     player->flags &= ~PLAYER_FLAG_TRANSITION_LOCKED;
     v0 = obj->currentTask->params;
-    player->unk_08->func = v0[4];
-    player->unk_08->start_delay = 0;
-    player->unk_08->flags = TASK_FLAG_ENABLED;
-    func_80024390(obj);
+    player->actionTask->func = v0[4];
+    player->actionTask->start_delay = 0;
+    player->actionTask->flags = TASK_FLAG_ENABLED;
+    anim_change_combat_state(obj);
 
     if (obj->frameIndex >= 2) {
         model_change_animation(obj);
@@ -294,12 +295,12 @@ void func_80024640(Object *obj) {
 
 void func_80024764(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
-    PlayerStateDef *temp;
+    CombatState *temp;
 
     obj->currentTask->func = func_80024640;
     obj->frameIndex = 1;
-    temp = obj->currentTask->params[3] + player->stateDefs; // required to match
-    player->currentStateDef = temp;
+    temp = obj->currentTask->params[3] + player->combatStateTable; // required to match
+    player->combatState = temp;
     obj->modInst->currentAnimId = temp->animationId;
     player->flags |= PLAYER_FLAG_TRANSITION_LOCKED;
     player->aiState.aiFlags |= 0x20000;
@@ -316,13 +317,13 @@ void func_800247CC(Object *obj) {
 
     v0 = player->animTask;
     moveId = v0->params[0];
-    transitionTable = player->logicStates;
+    transitionTable = player->logicStateTable;
     currentTask = obj->currentTask;
     obj->frameIndex++;
 
     if (player_make_transition(player, TRUE, moveId)) {
-        player->nextLogicState = transitionTable[moveId + 1];
-        player->unk_184 = FALSE;
+        player->lookupLogicTable = transitionTable[moveId + 1];
+        player->allowTransition = FALSE;
         currentTask->stackPos--;
     } else {
         stack = currentTask->stack + (--currentTask->stackPos);
@@ -340,7 +341,7 @@ void func_800247CC(Object *obj) {
 
 void player_play_sounds(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
-    s16 soundTableIndex = player->currentStateDef->soundTableIndex;
+    s16 soundTableIndex = player->combatState->soundTableIndex;
     AnimationSoundTriggers *soundTable = player->soundTable;
     s16 playerId = player->playerId;
 

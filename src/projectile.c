@@ -1,62 +1,62 @@
 #include "common.h"
 #include "task.h"
 
-void func_80022428(Object *obj, Object *obj2);
+void projectile_impact_explosion(Object *obj, Object *obj2);
 void func_80022EC0(Object *);
 
-void func_80021D40(Object *obj) {
+void projectile_fade_away(Object *obj) {
     if (++obj->frameIndex >= obj->modInst->numAnimFrames) {
         TASK_END(obj->currentTask);
         obj->flags |= OBJ_FLAG_DELETE;
     }
 
-    if (obj->unk_088.a >= obj->vars[0]) {
-        obj->unk_088.a -= obj->vars[0];
+    if (obj->color.a >= obj->vars[0]) {
+        obj->color.a -= obj->vars[0];
     } else {
-        obj->unk_088.a = 0;
+        obj->color.a = 0;
         TASK_END(obj->currentTask);
         obj->flags |= OBJ_FLAG_DELETE;
     }
 }
 
-void func_80021DC4(Object *obj) {
+void projectile_spawn_at_frame(Object *obj) {
     Player *player = (Player *) obj->vars[0];
-    Struct9C *s0;
+    ProjectileShot *s0;
 
     ;
-    for (s0 = player->unk_9C->unk_00; s0->unk_00 != 255; s0++) {
-        if (obj->frameIndex == s0->unk_01) {
-            spawn_effect(obj, s0->unk_00);
+    for (s0 = player->barrage->unk_00; s0->projectileId != 255; s0++) {
+        if (obj->frameIndex == s0->frameIndex) {
+            projectile_spawn(obj, s0->projectileId);
         }
     }
 }
 
-void func_80021E34(Object *obj) {
+void player_action_init_projectiles(Object *obj) {
     Player *player = (Player *) obj->vars[0];
-    PlayerStateDef *state;
+    CombatState *state;
 
-    state = &player->stateDefs[player->currentStateId];
-    if (state->unk_28 >= 0) {
-        player->unk_9C = &player->unk_4C[state->unk_28];
-        player->currentEffect = NULL;
-        obj->currentTask->func = func_80021DC4;
+    state = &player->combatStateTable[player->combatStateId];
+    if (state->projBarrage >= 0) {
+        player->barrage = &player->barrageTable[state->projBarrage];
+        player->projectileObj = NULL;
+        obj->currentTask->func = projectile_spawn_at_frame;
     } else {
         TASK_END(obj->currentTask);
     }
 }
 
-void func_80021EA0(Object *obj) {
+void projectile_noop(Object *obj) {
 }
 
-void func_80021EA8(Object *obj, Object *obj2) {
+void projectile_on_impact(Object *obj, Object *obj2) {
     if (obj->unk_078 == 8) {
-        func_80021EA0(obj);
+        projectile_noop(obj);
     } else {
-        func_80022428(obj, obj2);
+        projectile_impact_explosion(obj, obj2);
     }
 }
 
-void func_80021EE8(Object *obj, PlayerSubG *effect) {
+void projectile_cleanup(Object *obj, ProjectileDef *effect) {
     Player *player = (Player *) obj->vars[0];
 
     player->flags &= ~PLAYER_FLAG_2000000;
@@ -84,9 +84,9 @@ void func_80021EE8(Object *obj, PlayerSubG *effect) {
     obj->flags |= OBJ_FLAG_DELETE;
 }
 
-void update_effect_sprite(Object *obj) {
+void projectile_update_sprite(Object *obj) {
     u8 *t0;
-    PlayerSubG *s0;
+    ProjectileDef *s0;
     s32 temp2;
     Player *player;
     u8 v1;
@@ -94,12 +94,12 @@ void update_effect_sprite(Object *obj) {
     Object *playerObj;
     Vec4i sp28;
 
-    s0 = (PlayerSubG *) obj->vars[7];
+    s0 = (ProjectileDef *) obj->vars[7];
     t0 = (u8 *) obj->vars[1];
     player = (Player *) obj->vars[0];
     playerObj = player->obj;
 
-    if ((s0->flags & 2) && s0->unk_02 >= 0) {
+    if ((s0->flags & 2) && s0->boneId >= 0) {
         func_80028120(playerObj, s0, &sp28);
         obj->pos.x = sp28.x;
         obj->pos.y = sp28.y;
@@ -115,16 +115,16 @@ void update_effect_sprite(Object *obj) {
             obj->vars[2] = 1;
             v1 = t0[0];
         } else if (v1 == 0xFE) {
-            func_80021EE8(obj, s0);
+            projectile_cleanup(obj, s0);
             return;
         }
 
         obj->frameIndex = v1;
         if ((s0->flags & 1) && obj->frameIndex >= s0->unk_36) {
-            if (obj->unk_088.a >= obj->vars[9]) {
-                obj->unk_088.a -= obj->vars[9];
+            if (obj->color.a >= obj->vars[9]) {
+                obj->color.a -= obj->vars[9];
             } else {
-                obj->unk_088.a = 0;
+                obj->color.a = 0;
                 TASK_END(obj->currentTask);
                 obj->flags |= OBJ_FLAG_DELETE;
             }
@@ -134,7 +134,7 @@ void update_effect_sprite(Object *obj) {
     obj->flags &= ~OBJ_FLAG_HIDDEN;
 
     if (((s0->flags & 0x10) && --obj->vars[5] < 0) || obj->pos.y > 0) { // @bug probably
-        func_80021EE8(obj, s0);
+        projectile_cleanup(obj, s0);
         return;
     }
 
@@ -149,12 +149,12 @@ void update_effect_sprite(Object *obj) {
     temp2 = s0->unk_30;
     if (temp2 >= 0 && --obj->vars[8] < 0) {
         obj->vars[8] = s0->unk_34;
-        spawn_effect(obj, temp2 ^ 0); // required to match
+        projectile_spawn(obj, temp2 ^ 0); // required to match
     }
 }
 
-void update_effect_model(Object *obj) {
-    PlayerSubG *effect;
+void projectile_update_model(Object *obj) {
+    ProjectileDef *effect;
     s32 temp2;
     Player *player;
     u8 v1;
@@ -162,13 +162,13 @@ void update_effect_model(Object *obj) {
     Object *playerObj;
     Vec4i sp2C;
 
-    effect = (PlayerSubG *) obj->vars[7];
+    effect = (ProjectileDef *) obj->vars[7];
     player = (Player *) obj->vars[0];
     playerObj = player->obj;
 
     D_8008012C |= GFX_FLAG_10;
 
-    if ((effect->flags & 2) && effect->unk_02 >= 0) {
+    if ((effect->flags & 2) && effect->boneId >= 0) {
         func_80028120(playerObj, effect, &sp2C);
         obj->pos.x = sp2C.x;
         obj->pos.y = sp2C.y;
@@ -180,7 +180,7 @@ void update_effect_model(Object *obj) {
 
     if (effect->flags & 0x10) {
         if (--obj->vars[5] < 0 || obj->pos.y > 0) {
-            func_80021EE8(obj, effect);
+            projectile_cleanup(obj, effect);
             return;
         }
         if (obj->frameIndex >= obj->modInst->numAnimFrames) {
@@ -189,7 +189,7 @@ void update_effect_model(Object *obj) {
     }
 
     if (obj->frameIndex >= obj->modInst->numAnimFrames) {
-        func_80021EE8(obj, effect);
+        projectile_cleanup(obj, effect);
         return;
     }
 
@@ -202,11 +202,11 @@ void update_effect_model(Object *obj) {
     obj->pos.z += obj->velocity.z;
 
     if ((effect->flags & 1) && obj->frameIndex >= effect->unk_36) {
-        if (obj->unk_088.a >= obj->vars[9]) {
-            obj->unk_088.a -= obj->vars[9];
+        if (obj->color.a >= obj->vars[9]) {
+            obj->color.a -= obj->vars[9];
         } else {
-            obj->unk_088.a = 0;
-            func_80021EE8(obj, effect);
+            obj->color.a = 0;
+            projectile_cleanup(obj, effect);
             return;
         }
     }
@@ -214,30 +214,30 @@ void update_effect_model(Object *obj) {
     temp2 = effect->unk_30;
     if (temp2 >= 0 && --obj->vars[8] < 0) {
         obj->vars[8] = effect->unk_34;
-        spawn_effect(obj, temp2 ^ 0); // required to match
+        projectile_spawn(obj, temp2 ^ 0); // required to match
     }
 }
 
-void func_80022428(Object *obj, Object *obj2) {
+void projectile_impact_explosion(Object *obj, Object *obj2) {
     Player *player;
     Object *v0;
-    PlayerSubG *v2;
-    PlayerSubG *v1;
+    ProjectileDef *v2;
+    ProjectileDef *v1;
 
     player = (Player *) obj->vars[0];
-    v1 = (PlayerSubG *) obj->vars[7];
-    v2 = player->effectTable + v1->unk_42;
+    v1 = (ProjectileDef *) obj->vars[7];
+    v2 = player->projectileTable + v1->unk_42;
 
     obj->unk_07C = obj->unk_07A = 0;
     obj->flags |= OBJ_FLAG_DELETE;
     TASK_END(obj->currentTask);
 
-    v2->unk_00 = 0x10;
+    v2->lifetime = 0x10;
     v2->flags |= 0x10;
     v2->unk_36 = 0;
     v2->unk_38 = 0x10;
 
-    v0 = spawn_effect(obj, v1->unk_42);
+    v0 = projectile_spawn(obj, v1->unk_42);
     if (v0 != NULL) {
         obj->unk_076 |= 8;
         v0->unk_076 &= ~2;
@@ -250,15 +250,15 @@ void func_80022428(Object *obj, Object *obj2) {
     }
 }
 
-void func_8002250C(Object *obj, Object *arg1) {
+void projectile_impact_fade_model(Object *obj, Object *arg1) {
     Player *player = (Player *) obj->vars[0];
     Object *v0;
     Vec4i sp30;
-    PlayerSubG *v1 = (PlayerSubG *) obj->vars[7];
+    ProjectileDef *v1 = (ProjectileDef *) obj->vars[7];
     ColorRGBA sp24[2] = { { 215, 180, 45, 0 }, { 250, 190, 55, 0 } };
 
     if ((obj->unk_078 & 8) && (obj->unk_076 & 8)) {
-        func_80021EA0(obj);
+        projectile_noop(obj);
         return;
     }
 
@@ -274,14 +274,14 @@ void func_8002250C(Object *obj, Object *arg1) {
     sp30.z += obj->pos.z;
     obj->unk_1FC = 0;
 
-    v0 = create_model_instance(&sp30, 0x1000, func_80021D40, player->effectModels[v1->unk_42]);
+    v0 = create_model_instance(&sp30, 0x1000, projectile_fade_away, player->effectModels[v1->unk_42]);
     if (v0 == NULL) {
         return;
     }
 
-    v0->unk_088.a = 255;
+    v0->color.a = 255;
     v0->vars[0] = 5;
-    v0->flags |= OBJ_FLAG_2000;
+    v0->flags |= OBJ_FLAG_TRANSPARENT;
     v0->unk_076 &= ~2;
     if (player->playerId != PLAYER_1) {
         v0->unk_07A = 2;
@@ -292,14 +292,14 @@ void func_8002250C(Object *obj, Object *arg1) {
     create_light(v0, &sp24[player->playerId]);
 }
 
-ObjFunc D_8004A4C8[2] = { update_effect_model, update_effect_sprite }; // unused
+ObjFunc D_8004A4C8[2] = { projectile_update_model, projectile_update_sprite }; // unused
 
-void func_80022694(Object *obj, s32 arg1, Object *arg2) {
+void projectile_gore_homing_setup(Object *obj, s32 arg1, Object *arg2) {
     Player *player = (Player *) obj->vars[0];
     Object *v0;
 
     if (player->characterId == GORE && arg1 == 0) {
-        arg2->unk_1E8 = func_8002250C;
+        arg2->unk_1E8 = projectile_impact_fade_model;
         v0 = func_80030908();
         if (v0 != NULL) {
             v0->vars[1] = 50;
@@ -308,14 +308,14 @@ void func_80022694(Object *obj, s32 arg1, Object *arg2) {
     }
 }
 
-Object *spawn_effect(Object *obj, s32 effectId) {
+Object *projectile_spawn(Object *obj, s32 projectileId) {
     Vec4i pos;
     Object *effectObj;
     Player *player = (Player *) obj->vars[0];
-    PlayerSubG *effect = player->effectTable + effectId;
+    ProjectileDef *effect = player->projectileTable + projectileId;
     s32 pad[2];
 
-    if (effect->unk_02 >= 0) {
+    if (effect->boneId >= 0) {
         func_80028120(obj, effect, &pos);
     } else {
         pos.x = effect->originX;
@@ -328,22 +328,23 @@ Object *spawn_effect(Object *obj, s32 effectId) {
     }
 
     if (effect->spriteIndex >= 0) {
-        effectObj = create_3dsprite(&pos, 0x1100, update_effect_sprite, player->effectSprites[effect->spriteIndex]);
+        effectObj = create_3dsprite(&pos, 0x1100, projectile_update_sprite, player->effectSprites[effect->spriteIndex]);
         if (effectObj == NULL) {
             return effectObj;
         }
 
-        effectObj->frameIndex = player->unk_44[effect->unk_1C];
+        effectObj->frameIndex = player->unk_44[effect->spriteFrame];
         effectObj->unk_08C = effectObj->vars[4] = effect->unk_1E;
     } else {
-        effectObj = create_model_instance(&pos, 0x1000, update_effect_model, player->effectModels[effect->modelIndex]);
+        effectObj =
+            create_model_instance(&pos, 0x1000, projectile_update_model, player->effectModels[effect->modelIndex]);
         if (effectObj == NULL) {
             return effectObj;
         }
 
         effectObj->flags |= OBJ_FLAG_HIDDEN;
         effectObj->currentTask->start_delay = effect->unk_1E;
-        player->currentEffect = effectObj;
+        player->projectileObj = effectObj;
     }
 
     if (effectObj->modInst == NULL) {
@@ -360,7 +361,7 @@ Object *spawn_effect(Object *obj, s32 effectId) {
             effectObj->unk_1FC = 300;
             effectObj->unk_076 |= 2;
             effectObj->unk_076 |= 8;
-            effectObj->unk_1E8 = func_80021EA8;
+            effectObj->unk_1E8 = projectile_on_impact;
             player->flags |= PLAYER_FLAG_2000000;
         }
 
@@ -369,12 +370,12 @@ Object *spawn_effect(Object *obj, s32 effectId) {
         }
 
         effectObj->vars[0] = player;
-        effectObj->vars[1] = player->unk_44 + effect->unk_1C;
+        effectObj->vars[1] = player->unk_44 + effect->spriteFrame;
         effectObj->vars[2] = 0;
-        effectObj->vars[5] = effect->unk_00;
-        effectObj->vars[6] = player->currentStateDef;
+        effectObj->vars[5] = effect->lifetime;
+        effectObj->vars[6] = player->combatState;
         effectObj->vars[7] = effect;
-        effectObj->vars[3] = effectId;
+        effectObj->vars[3] = projectileId;
         effectObj->velocity.x = effect->velocityX;
         effectObj->velocity.y = effect->velocityY;
         effectObj->velocity.z = effect->velocityZ;
@@ -389,8 +390,8 @@ Object *spawn_effect(Object *obj, s32 effectId) {
         effect->unk_40 = 0;
 
         if (effect->flags & 9) {
-            effectObj->flags |= OBJ_FLAG_2000;
-            effectObj->unk_088.a = 255;
+            effectObj->flags |= OBJ_FLAG_TRANSPARENT;
+            effectObj->color.a = 255;
 
             if (effect->unk_38 > 0) {
                 effectObj->vars[9] = 255 / effect->unk_38;
@@ -403,24 +404,24 @@ Object *spawn_effect(Object *obj, s32 effectId) {
             if (player->characterId == DEMITRON && effect->modelIndex == 0) {
 
                 effectObj->vars[9] = 128 / effectObj->modInst->numAnimFrames;
-                effectObj->unk_088.a = 128;
+                effectObj->color.a = 128;
             }
         }
 
-        func_80022694(obj, effectId, effectObj);
+        projectile_gore_homing_setup(obj, projectileId, effectObj);
     }
 
     return effectObj;
 }
 
-u8 func_80022B44(Player *arg0, Player *arg1, Object *arg2) {
+u8 projectile_apply_damage(Player *arg0, Player *arg1, Object *arg2) {
     s16 v0;
-    PlayerStateDef *a2;
+    CombatState *a2;
     u8 isBlock;
 
-    a2 = (PlayerStateDef *) arg2->vars[6];
+    a2 = (CombatState *) arg2->vars[6];
 
-    if (gRoundOver && !sReplayActive) {
+    if (gRoundOver && !gReplayActive) {
         return FALSE;
     }
 
@@ -429,33 +430,33 @@ u8 func_80022B44(Player *arg0, Player *arg1, Object *arg2) {
     return isBlock;
 }
 
-void func_80022BB0(Object *obj, Player *arg1, PlayerSubG *arg2, u8 arg3) {
+void projectile_hit_opponent(Object *obj, Player *arg1, ProjectileDef *arg2, u8 arg3) {
     Player *player = (Player *) obj->vars[0];
-    PlayerSubG *sp18 = player->effectTable + arg2->unk_42;
+    ProjectileDef *sp18 = player->projectileTable + arg2->unk_42;
     Object *v00;
 
-    if (func_80022B44(arg1, player, obj)) {
-        sp18->unk_00 = 0x10;
+    if (projectile_apply_damage(arg1, player, obj)) {
+        sp18->lifetime = 0x10;
         sp18->flags |= 0x10;
         sp18->unk_36 = 0;
         sp18->unk_38 = 0x10;
     } else {
-        sp18->unk_00 = 0;
+        sp18->lifetime = 0;
         sp18->flags &= ~0x10;
         sp18->unk_38 = -1;
     }
 
     if (arg3) {
-        v00 = spawn_effect(obj, arg2->unk_42);
+        v00 = projectile_spawn(obj, arg2->unk_42);
         if (v00 != NULL) {
-            v00->unk_088.a = 128;
+            v00->color.a = 128;
             if (v00->modInst->numAnimFrames != 0) {
                 v00->vars[9] = 255 / v00->modInst->numAnimFrames;
             }
         }
     }
 
-    func_80021EE8(obj, arg2);
+    projectile_cleanup(obj, arg2);
 }
 
 #ifdef NON_EQUIVALENT
@@ -463,7 +464,7 @@ u8 func_80022CD0(Object *obj) {
     Player *player;
     Vec4i *playerPos;
     Vec4i *oppPos;
-    PlayerSubG *a2;
+    ProjectileDef *a2;
     Object *v0;
     Vec4i sp44;
     Player *sp20;
@@ -473,7 +474,7 @@ u8 func_80022CD0(Object *obj) {
 
     player = (Player *) obj->vars[0];
     sp20 = gPlayers + (player->playerId != PLAYER_1 ? PLAYER_1 : PLAYER_2);
-    a2 = (PlayerSubG *) obj->vars[7];
+    a2 = (ProjectileDef *) obj->vars[7];
 
     playerPos = &obj->pos;
     oppPos = &sp20->obj->pos;
@@ -489,17 +490,17 @@ u8 func_80022CD0(Object *obj) {
             // a2->unk_40 += 22;
             // obj->unk_1FC = a2->unk_40;
             if (FAST_HYPOT(dx, dz) < (obj->unk_1FC = a2->unk_40 += 22) &&
-                !(sp20->currentStateDef->flags & (STATE_FLAG_2 | STATE_FLAG_8))) {
-                func_80022BB0(obj, sp20, a2, FALSE);
+                !(sp20->combatState->flags & (CSF_JUMP | CSF_HOP))) {
+                projectile_hit_opponent(obj, sp20, a2, FALSE);
 
                 sp44.x = playerPos->x;
                 sp44.z = playerPos->z;
                 sp44.y = 0;
-                v0 = create_model_instance(&sp44, 0x1000, func_80021D40, player->effectModels[a2->unk_42]);
+                v0 = create_model_instance(&sp44, 0x1000, projectile_fade_away, player->effectModels[a2->unk_42]);
                 if (v0 != NULL) {
-                    v0->unk_088.a = 255;
+                    v0->color.a = 255;
                     v0->vars[0] = 255 / v0->modInst->numAnimFrames;
-                    v0->flags |= OBJ_FLAG_2000;
+                    v0->flags |= OBJ_FLAG_TRANSPARENT;
                 }
             }
 
@@ -511,7 +512,7 @@ u8 func_80022CD0(Object *obj) {
     return FALSE;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/22940/func_80022CD0.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/projectile/func_80022CD0.s")
 u8 func_80022CD0(Object *obj);
 #endif
 
@@ -522,15 +523,15 @@ void func_80022EC0(Object *obj) {
     Vec4s sp40;
     Vec4s sp38;
     Object *v00;
-    PlayerSubG *sp30;
-    PlayerSubG *sp2C;
+    ProjectileDef *sp30;
+    ProjectileDef *sp2C;
     s32 pad2;
 
-    sp2C = (PlayerSubG *) obj->vars[7];
+    sp2C = (ProjectileDef *) obj->vars[7];
     player = (Player *) obj->vars[0];
     opponent = gPlayers + (player->playerId != PLAYER_1 ? PLAYER_1 : PLAYER_2);
 
-    if (opponent->currentStateDef->flags & STATE_FLAG_40000) {
+    if (opponent->combatState->flags & CSF_INVINSIBLE) {
         return;
     }
     if (func_80022CD0(obj)) {
@@ -547,19 +548,19 @@ void func_80022EC0(Object *obj) {
 
     if (is_point_in_hit_range(&sp40, &opponent->obj->pos, opponent->hitboxBones.strikeRadius + 80000, &sp38)) {
         if (!(sp2C->flags & 0x20) && !(player->flags & PLAYER_FLAG_2000)) {
-            sp30 = player->effectTable + sp2C->unk_42;
-            if (func_80022B44(opponent, player, obj)) {
-                sp30->unk_00 = 0x10;
+            sp30 = player->projectileTable + sp2C->unk_42;
+            if (projectile_apply_damage(opponent, player, obj)) {
+                sp30->lifetime = 0x10;
                 sp30->flags |= 0x10;
                 sp30->unk_36 = 0;
                 sp30->unk_38 = 0x10;
             } else {
-                sp30->unk_00 = 0;
+                sp30->lifetime = 0;
                 sp30->flags &= ~0x10;
                 sp30->unk_38 = -1;
             }
 
-            v00 = spawn_effect(obj, sp2C->unk_42);
+            v00 = projectile_spawn(obj, sp2C->unk_42);
             if (v00 != NULL) {
                 v00->unk_076 &= ~2;
                 if (player->playerId != PLAYER_1) {
@@ -570,11 +571,11 @@ void func_80022EC0(Object *obj) {
                 v00->unk_1FC = 300;
             }
 
-            func_80021EE8(obj, sp2C);
+            projectile_cleanup(obj, sp2C);
         } else {
-            func_80021EE8(obj, sp2C);
+            projectile_cleanup(obj, sp2C);
         }
 
-        player->currentEffect = NULL;
+        player->projectileObj = NULL;
     }
 }

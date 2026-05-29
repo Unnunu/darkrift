@@ -48,7 +48,7 @@ Object *D_8013C244;
 Object *D_8013C248;
 u16 D_8013C24C;
 u16 D_8013C24E;
-u16 sReplayActive;
+u16 gReplayActive;
 s32 D_8013C254_unused;
 Object *D_8013C258[2][10];
 s16 D_8013C2A8;
@@ -63,10 +63,10 @@ void func_80028010(Object *obj) {
     obj->flags &= ~OBJ_FLAG_HIDDEN;
     if (obj->frameIndex <= 12) {
         obj->frameIndex++;
-        if (obj->unk_088.a > 100) {
-            obj->unk_088.a -= 8;
-        } else if (obj->unk_088.a > 3) {
-            obj->unk_088.a -= 3;
+        if (obj->color.a > 100) {
+            obj->color.a -= 8;
+        } else if (obj->color.a > 3) {
+            obj->color.a -= 3;
         }
         obj->currentTask->start_delay = 2;
     } else {
@@ -80,10 +80,10 @@ void func_80028090(Object *obj) {
         obj->flags &= ~OBJ_FLAG_HIDDEN;
         if (obj->frameIndex <= 8) {
             obj->frameIndex++;
-            if (obj->unk_088.a > 100) {
-                obj->unk_088.a -= 8;
-            } else if (obj->unk_088.a > 4) {
-                obj->unk_088.a -= 2;
+            if (obj->color.a > 100) {
+                obj->color.a -= 8;
+            } else if (obj->color.a > 4) {
+                obj->color.a -= 2;
             }
             obj->currentTask->start_delay = 2;
         } else {
@@ -93,7 +93,7 @@ void func_80028090(Object *obj) {
     }
 }
 
-void func_80028120(Object *obj, PlayerSubG *arg1, Vec4i *worldPos) {
+void func_80028120(Object *obj, ProjectileDef *arg1, Vec4i *worldPos) {
     Vec4i pos;
 
     pos.x = arg1->originX;
@@ -102,7 +102,7 @@ void func_80028120(Object *obj, PlayerSubG *arg1, Vec4i *worldPos) {
 
     func_80012AF4(&D_800813E0);
     math_translate(&D_800813E0, &pos);
-    func_80012BBC(&D_800813E0, &obj->modInst->transforms[arg1->unk_02].world_matrix);
+    func_80012BBC(&D_800813E0, &obj->modInst->transforms[arg1->boneId].world_matrix);
 
     worldPos->x = D_800813E0.w.x;
     worldPos->y = D_800813E0.w.y;
@@ -160,7 +160,7 @@ void func_80028400(Object *obj) {
     v0->vars[1] = 4;
     v0->vars[2] = 3;
     v0->varObj[3] = obj;
-    v0->unk_088.a = 100;
+    v0->color.a = 100;
     v0->unk_08C = 0;
 }
 
@@ -207,7 +207,7 @@ void func_8002856C(Object *obj) {
         v0->vars[0] = s0;
         v0->vars[1] = 0;
         v0->vars[2] = 150;
-        v0->unk_088.a = 60;
+        v0->color.a = 60;
         v0->flags |= OBJ_FLAG_HIDDEN;
     }
 
@@ -221,7 +221,7 @@ void func_8002856C(Object *obj) {
         v0->vars[0] = s0;
         v0->vars[1] = 3;
         v0->vars[2] = 50;
-        v0->unk_088.a = 60;
+        v0->color.a = 60;
         v0->flags |= OBJ_FLAG_HIDDEN;
     }
 
@@ -235,7 +235,7 @@ void func_8002856C(Object *obj) {
         v0->vars[0] = s0;
         v0->vars[1] = 5;
         v0->vars[2] = -200;
-        v0->unk_088.a = 40;
+        v0->color.a = 40;
         v0->flags |= OBJ_FLAG_HIDDEN;
     }
 
@@ -249,7 +249,7 @@ void func_8002856C(Object *obj) {
         v0->vars[0] = s0;
         v0->vars[1] = 7;
         v0->vars[2] = 100;
-        v0->unk_088.a = 40;
+        v0->color.a = 40;
         v0->flags |= OBJ_FLAG_HIDDEN;
     }
 
@@ -263,7 +263,7 @@ void func_8002856C(Object *obj) {
         v0->vars[0] = s0;
         v0->vars[1] = 9;
         v0->vars[2] = -250;
-        v0->unk_088.a = 30;
+        v0->color.a = 30;
         v0->flags |= OBJ_FLAG_HIDDEN;
     }
 }
@@ -287,7 +287,7 @@ void func_800287AC(Object *obj) {
         v0->unk_058 = v0->unk_05C = v0->unk_060 = 0x64000;
         v0->unk_08C = 1;
         v0->vars[0] = s4;
-        v0->unk_088.a = 40;
+        v0->color.a = 40;
         v0->flags |= OBJ_FLAG_HIDDEN;
 
         b += 50;
@@ -300,7 +300,7 @@ void func_80028890(Object *obj) {
     gPlayerInput[PLAYER_2].enabled = FALSE;
 
     if (obj->vars[0] == 0) {
-        if (gPlayers[PLAYER_1].actionIndex == 0 && gPlayers[PLAYER_2].actionIndex == 0) {
+        if (gPlayers[PLAYER_1].behaviorId == 0 && gPlayers[PLAYER_2].behaviorId == 0) {
             func_80028E84();
             obj->vars[0] = 240;
         }
@@ -774,7 +774,7 @@ void func_80029EBC(Object *obj) {
     buttons = 0;
     playerId = obj->vars[0];
 
-    if (gPlayerInput[playerId].accumulated) {
+    if (gPlayerInput[playerId].pendingInput) {
         buttons = gPlayerInput[playerId].buttons;
     }
 
@@ -796,7 +796,7 @@ void func_80029F58(Object *obj) {
     buttons = 0;
     playerId = obj->vars[0];
 
-    if (gPlayerInput[playerId].accumulated) {
+    if (gPlayerInput[playerId].pendingInput) {
         buttons = gPlayerInput[playerId].buttons;
     }
 
@@ -829,7 +829,7 @@ void func_8002A050(Object *obj) {
     buttons = 0;
     playerId = obj->vars[0];
 
-    if (gPlayerInput[playerId].accumulated) {
+    if (gPlayerInput[playerId].pendingInput) {
         buttons = gPlayerInput[playerId].buttons;
     }
 
@@ -851,7 +851,7 @@ void func_8002A0EC(Object *obj) {
     buttons = 0;
     playerId = obj->vars[0];
 
-    if (gPlayerInput[playerId].accumulated) {
+    if (gPlayerInput[playerId].pendingInput) {
         buttons = gPlayerInput[playerId].buttons;
     }
 

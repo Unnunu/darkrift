@@ -24,7 +24,7 @@ extern s32 D_800AA480;
 extern s16 gPreviousPlayMode;
 
 extern u32 gTournamentOpponentId;
-extern u16 sReplayActive;
+extern u16 gReplayActive;
 
 void func_8001A674(Object *);
 void func_8001A334(Object *);
@@ -95,7 +95,7 @@ void battle_round_init(void) {
     gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
     gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
     D_80051F6C = D_80051F70 = D_8013C2A8 = D_8013C2AA = 0;
-    sReplayActive = 0;
+    gReplayActive = 0;
 }
 
 void battle_match_init(void) {
@@ -493,7 +493,7 @@ void func_80007B68(Object *obj) {
             }
         }
 
-        gPlayerInput[a3].accumulated = TRUE;
+        gPlayerInput[a3].pendingInput = TRUE;
         if ((gPlayerInput[a3].buttons & INP_START) ||
             gPlayMode == PLAY_MODE_30 && (gPlayerInput[1 - a3].buttons & INP_START)) {
             bg_layer_delete(D_80081254);
@@ -527,10 +527,10 @@ void func_80007DB0(Player *arg0, Object *arg1, s32 arg2) {
         name[4] = (i % 10) + '0';
 
         if ((v0 = asset_find(name, arg2)) >= 0) {
-            a1 = arg0->stateDefs[D_80049434[i]].animationId;
+            a1 = arg0->combatStateTable[D_80049434[i]].animationId;
             arg1->modInst->animations[a1] = gAssets[v0].data;
             s4++;
-            arg0->stateDefs[D_80049434[i]].unk_02 = func_80037394(arg1->modInst, a1);
+            arg0->combatStateTable[D_80049434[i]].maxFrame = func_80037394(arg1->modInst, a1);
         }
     }
 }
@@ -778,7 +778,7 @@ void run_intro_zenmuron_mode(void) {
 }
 
 void func_80008D0C(Object *obj) {
-    if (gPlayers[PLAYER_1].currentStateDef->unk_02 - 2 == gPlayers[PLAYER_1].obj->frameIndex) {
+    if (gPlayers[PLAYER_1].combatState->maxFrame - 2 == gPlayers[PLAYER_1].obj->frameIndex) {
         gGlobalFlags |= GAME_FLAG_MODE_DONE;
         obj->flags |= OBJ_FLAG_DELETE;
         gNextGameMode = GAME_MODE_LOGO;
@@ -825,7 +825,7 @@ void run_29_mode(void) {
     a3 = gAssets[asset_find("relic.k2", 0x3000)].aux_data;
     relic = create_model_instance(&sp34, 0x1000, func_80008D64, a3);
     relic->rotation.y = 0x400;
-    relic->unk_088.a = 80;
+    relic->color.a = 80;
     create_worker(func_80008D0C, 0x1000);
     bg_layer_delete(bg);
     main_loop();
@@ -889,7 +889,7 @@ void run_30_mode(void) {
     a3 = gAssets[asset_find("relic.k5", 0x3000)].aux_data;
     obj = create_model_instance(&sp4C, 0x1000, func_80008D64, a3);
     obj->rotation.y = 0x400;
-    obj->unk_088.a = 80;
+    obj->color.a = 80;
 
     bg_layer_create("bg2", 0, -32, 0x2000, 0x10000, 0, sp44);
     bg_layer_create("bg0", 0, 8, 0x1000, 0x10000, TEX_FLAG_1, sp44);
@@ -1232,7 +1232,7 @@ void run_35_mode(void) {
     asset_open_folder("/demi/relic", CONTEXT_4000);
     a3 = gAssets[asset_find("relic.k5", 0x4000)].aux_data;
     obj = create_model_instance(&sp80, 0x1000, func_80008D64, a3);
-    obj->unk_088.a = 80;
+    obj->color.a = 80;
 
     if (gBattleSettings[sp24].characterId == SONORK || gBattleSettings[sp24].characterId == DEMONICA) {
         if (sp24 != 0) {
@@ -1242,7 +1242,7 @@ void run_35_mode(void) {
         }
         obj = create_model_instance(&sp80, 0x1000, NULL, a3);
         obj->rotation.y = -1179;
-        obj->unk_088.a = 255;
+        obj->color.a = 255;
         obj->flags |= OBJ_FLAG_10000000;
     }
 

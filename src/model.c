@@ -11,7 +11,7 @@ K2Def gShadowProps = { "xxxxxxxxx", NULL, 0, 0xF9C, NULL };
 Mtx D_8013C4A0;
 Gfx **D_8013C4E0;
 s32 D_8013C4E4_unused;
-ModelNodeRenderInfo *D_8013C4E8;
+ClusterRenderSlot *D_8013C4E8;
 GlobalObjD *D_8013C4EC;
 ItemPool D_8013C4F0;
 TextureAsset *gScrollableTextures[16];
@@ -124,7 +124,7 @@ void enable_texture_scrolling_for_object(Object *obj, u8 mode_is_global) {
         }
     }
 
-    obj->flags |= OBJ_FLAG_2000;
+    obj->flags |= OBJ_FLAG_TRANSPARENT;
 }
 
 void reset_lights(void) {
@@ -212,7 +212,7 @@ void batch_set_zb_off(BatchInfo *arg0, s32 noAntiAliasing, s32 transparent) {
 s32 func_80034860(Object *obj) {
     ModelInstance *modInst;
     u32 j;
-    BatchInfo *array;
+    BatchInfo *batchInfo;
     Model *model;
     u32 i;
     s32 count;
@@ -221,7 +221,7 @@ s32 func_80034860(Object *obj) {
     s32 flags;
     s32 noAA;
     s32 transparent;
-    u8 *ptr;
+    u8 *nodeOpaque;
 
     flags = obj->flags;
     modInst = obj->modInst;
@@ -230,13 +230,13 @@ s32 func_80034860(Object *obj) {
     batches1 = modInst->renderBatches;
     batches2 = modInst->renderBatches + 30;
     noAA = obj->flags & OBJ_FLAG_40000000;
-    transparent = flags & OBJ_FLAG_2000;
-    ptr = modInst->unk_1F6E;
+    transparent = flags & OBJ_FLAG_TRANSPARENT;
+    nodeOpaque = modInst->nodeOpaque;
 
     for (i = 0; i < count; batches1++, batches2++, i++) {
-        s32 s3 = ptr[i];
+        s32 isOpaque = nodeOpaque[i];
 
-        if (s3 && !D_800801E2) {
+        if (isOpaque && !D_800801E2) {
             batch_set_zb_on(batches1, transparent);
             batch_set_zb_on(batches2, transparent);
         } else {
@@ -244,12 +244,12 @@ s32 func_80034860(Object *obj) {
             batch_set_zb_off(batches2, noAA, transparent);
         }
 
-        array = model->batchInfos[i];
+        batchInfo = model->batchInfos[i];
         for (j = 1; j < model->batchCounts[i]; j++) {
-            if (s3 && !D_800801E2) {
-                batch_set_zb_on(&array[j], transparent);
+            if (isOpaque && !D_800801E2) {
+                batch_set_zb_on(&batchInfo[j], transparent);
             } else {
-                batch_set_zb_off(&array[j], noAA, transparent);
+                batch_set_zb_off(&batchInfo[j], noAA, transparent);
             }
         }
     }
@@ -261,10 +261,10 @@ void func_800349F0(Object *obj) {
     u32 i;
     ModelInstance *model = obj->modInst;
     s32 numNodes = model->numNodes;
-    u8 *buffer = model->unk_1F6E;
+    u8 *nodeOpaque = model->nodeOpaque;
 
     for (i = 0; i < numNodes; i++) {
-        buffer[i] = TRUE;
+        nodeOpaque[i] = TRUE;
     }
 }
 
@@ -272,10 +272,10 @@ void func_80034A58(Object *obj) {
     ModelInstance *model = obj->modInst;
     u32 i;
     s32 numNodes = model->numNodes;
-    u8 *ptr2 = model->unk_1F6E;
+    u8 *nodeOpaque = model->nodeOpaque;
 
     for (i = 0; i < numNodes; i++) {
-        ptr2[i] = FALSE;
+        nodeOpaque[i] = FALSE;
     }
 }
 
@@ -286,8 +286,8 @@ void func_80034AB8(Object *obj) {
     u8 *ptr1;
     u8 *ptr2;
 
-    ptr2 = model->unk_1F6E;
-    ptr1 = model->unk_1F50;
+    ptr2 = model->nodeOpaque;
+    ptr1 = model->nodeOpaquePrev;
 
     if (D_8008012C & GFX_FLAG_10) {
         if (!(obj->flags & OBJ_FLAG_40000000)) {
@@ -324,8 +324,8 @@ void func_80034C18(Object *obj, u8 *arg1) {
     ModelInstance *model = obj->modInst;
     s32 count = model->numNodes;
     u32 i;
-    u8 *ptr1 = model->unk_1F50;
-    u8 *ptr2 = model->unk_1F6E;
+    u8 *ptr1 = model->nodeOpaquePrev;
+    u8 *ptr2 = model->nodeOpaque;
 
     if (D_8008012C & GFX_FLAG_10) {
         for (i = 0; i < count; i++) {
@@ -341,7 +341,7 @@ void func_80034C18(Object *obj, u8 *arg1) {
 s32 func_80034D54(Object *obj) {
     ModelInstance *modInst = obj->modInst;
     ColorRGBA *color;
-    u8 v1 = obj->unk_088.a;
+    u8 v1 = obj->color.a;
     u32 i;
     u32 count = modInst->numNodes;
     Model *model = modInst->model;
@@ -352,7 +352,7 @@ s32 func_80034D54(Object *obj) {
         disp = model->batches[i];
         gfx = disp->info->header.texGfx;
         color = &obj->unk_200;
-        if (gfx->words.w0 == 0xFA000000) {
+        if (gfx->words.w0 == _SHIFTL(G_SETPRIMCOLOR, 24, 8)) {
             gDPSetPrimColor(gfx, 0, 0, color->r, color->g, color->b, v1);
         }
     }
@@ -364,7 +364,7 @@ void func_80034F34(Object *obj) {
     ColorRGBA *color1 = &obj->unk_200;
     ColorRGBA *color2 = &obj->unk_204;
 
-    color1->a = obj->unk_088.a;
+    color1->a = obj->color.a;
 
     if (color2->r != color1->r || color2->g != color1->g || color2->b != color1->b || color2->a != color1->a) {
         set_post_render_hook(func_80034D54, obj);
@@ -372,136 +372,138 @@ void func_80034F34(Object *obj) {
     }
 }
 
-void func_80034FC8(ModelInstance *model, s32 arg1, Vec4i *arg2) {
-    ModelNodeAsset *a1;
-    s32 a, b, c;
-    s32 i, count;
-    Vtx *array;
-
-    a = 0;
-    b = 0;
-    c = 0;
-
-    if (model->kmodel != NULL) {
-        a1 = &model->kmodel->model.modelAsset->nodes[arg1];
-    } else {
-        a1 = &model->model->modelAsset->nodes[arg1];
-    }
-
-    count = a1->numVertices;
-    array = a1->vertices;
-
-    for (i = 0; i < count; i++) {
-        a += array[i].v.ob[0];
-        b += array[i].v.ob[1];
-        c += array[i].v.ob[2];
-    }
-
-    arg2->x = a / count;
-    arg2->y = b / count;
-    arg2->z = c / count;
-}
-
-void func_8003517C(Model *sam, s32 arg1, Vec4i *arg2) {
-    ModelNodeAsset *a1;
-    s32 a, b, c;
-    s32 i, count;
+void model_node_centroid(ModelInstance *modInst, s32 nodeId, Vec4i *centroid) {
+    ModelNodeAsset *node;
+    s32 x, y, z;
+    s32 i, numVertices;
     Vtx *vertices;
 
-    a = 0;
-    b = 0;
-    c = 0;
+    x = 0;
+    y = 0;
+    z = 0;
 
-    a1 = &sam->modelAsset->nodes[arg1];
-
-    count = a1->numVertices;
-    vertices = a1->vertices;
-
-    for (i = 0; i < count; i++) {
-        a += vertices[i].v.ob[0];
-        b += vertices[i].v.ob[1];
-        c += vertices[i].v.ob[2];
+    if (modInst->kmodel != NULL) {
+        node = &modInst->kmodel->model.modelAsset->nodes[nodeId];
+    } else {
+        node = &modInst->model->modelAsset->nodes[nodeId];
     }
 
-    arg2->x = a / count;
-    arg2->y = b / count;
-    arg2->z = c / count;
+    numVertices = node->numVertices;
+    vertices = node->vertices;
+
+    for (i = 0; i < numVertices; i++) {
+        x += vertices[i].v.ob[0];
+        y += vertices[i].v.ob[1];
+        z += vertices[i].v.ob[2];
+    }
+
+    centroid->x = x / numVertices;
+    centroid->y = y / numVertices;
+    centroid->z = z / numVertices;
 }
 
-void func_800352FC(ModelInstance *arg0, K2DefSub *arg1) {
-    u32 s1;
-    s32 s2, s3, s4;
-    u32 sp7C;
-    u32 sp78;
-    s32 s5;
-    s32 tmp;
-    s32 tmp2;
-    K2DefSub *ptr;
-    Vec4i sp58;
-    ModelNode *s7;
-    Transform *sp50;
-    Gfx **sp4C;
+void model_node_centroid_2(Model *model, s32 nodeId, Vec4i *centroid) {
+    ModelNodeAsset *node;
+    s32 x, y, z;
+    s32 i, numVertices;
+    Vtx *vertices;
 
-    sp50 = arg0->transforms;
-    sp4C = arg0->kmodel->model.batches;
-    if (s7) {}
-    sp7C = 0;
-    ptr = arg1;
-    while (ptr->unk_00[0] >= 0) {
-        ptr++;
-        sp7C++;
+    x = 0;
+    y = 0;
+    z = 0;
+
+    node = &model->modelAsset->nodes[nodeId];
+
+    numVertices = node->numVertices;
+    vertices = node->vertices;
+
+    for (i = 0; i < numVertices; i++) {
+        x += vertices[i].v.ob[0];
+        y += vertices[i].v.ob[1];
+        z += vertices[i].v.ob[2];
     }
-    arg0->unk_9C8 = sp7C;
 
-    arg0->unk_604 = s7 = mem_alloc(sp7C * sizeof(ModelNode), "model.c", 0x21C);
+    centroid->x = x / numVertices;
+    centroid->y = y / numVertices;
+    centroid->z = z / numVertices;
+}
 
-    for (sp78 = 0; sp78 < sp7C; sp78++) {
-        if (arg1->unk_10 >= 0) {
-            func_80034FC8(arg0, tmp = arg1->unk_10, &sp58);
-            s7->unk_14.x = sp58.x;
-            s7->unk_14.y = sp58.y;
-            s7->unk_14.z = sp58.z;
+void func_800352FC(ModelInstance *modInst, ModelNodeGroup *nodeGroups) {
+    u32 j;
+    s32 z, y, x;
+    u32 count;
+    u32 i;
+    s32 k;
+    s32 nodeId;
+    s32 nodeInGroup;
+    ModelNodeGroup *ptr;
+    Vec4i centroid;
+    NodeCluster *s7;
+    Transform *transforms;
+    Gfx **dlists;
+
+    transforms = modInst->transforms;
+    dlists = modInst->kmodel->model.batches;
+
+    if (s7) {}
+
+    count = 0;
+    ptr = nodeGroups;
+    while (ptr->idInGroup[0] >= 0) {
+        ptr++;
+        count++;
+    }
+    modInst->unk_9C8 = count;
+
+    modInst->nodeClusters = s7 = mem_alloc(count * sizeof(NodeCluster), "model.c", 0x21C);
+
+    for (i = 0; i < count; i++) {
+        if (nodeGroups->singleNode >= 0) {
+            model_node_centroid(modInst, nodeId = nodeGroups->singleNode, &centroid);
+            s7->centroid.x = centroid.x;
+            s7->centroid.y = centroid.y;
+            s7->centroid.z = centroid.z;
         } else {
-            s4 = s3 = s2 = 0;
-            for (s1 = 0; s1 < 4; s1++) {
-                if (arg1->unk_00[s1] >= 0) {
-                    func_80034FC8(arg0, tmp = arg1->unk_00[s1], &sp58);
-                    s4 += sp58.x;
-                    s3 += sp58.y;
-                    s2 += sp58.z;
+            x = y = z = 0;
+            for (j = 0; j < 4; j++) {
+                if (nodeGroups->idInGroup[j] >= 0) {
+                    model_node_centroid(modInst, nodeId = nodeGroups->idInGroup[j], &centroid);
+                    x += centroid.x;
+                    y += centroid.y;
+                    z += centroid.z;
                 } else {
                     break;
                 }
             }
-            s7->unk_14.x = s4 / (s32) s1;
-            s7->unk_14.y = s3 / (s32) s1;
-            s7->unk_14.z = s2 / (s32) s1;
+            s7->centroid.x = x / (s32) j;
+            s7->centroid.y = y / (s32) j;
+            s7->centroid.z = z / (s32) j;
         }
 
-        for (s1 = 0; s1 < 4; s1++) {
-            tmp = s7->unk_04[s1] = arg1->unk_00[s1];
-            if (tmp < 0) {
+        for (j = 0; j < 4; j++) {
+            nodeId = s7->group[j] = nodeGroups->idInGroup[j];
+            if (nodeId < 0) {
                 break;
             }
         }
 
-        s7->unk_20 = arg1->unk_10;
-        s7->unk_24 = s1;
+        s7->singleNode = nodeGroups->singleNode;
+        s7->groupSize = j;
 
-        for (s5 = 0; s5 < s1; s5++) {
-            tmp2 = s7->unk_04[s5];
-            s7->unk_28[s5] = sp50[tmp2].mtx + 0;
-            s7->unk_28[s1 + s5] = sp50[tmp2].mtx + 1;
-            s7->unk_48[s5] = sp4C[tmp2];
+        for (k = 0; k < j; k++) {
+            nodeInGroup = s7->group[k];
+            s7->transforms[k] = transforms[nodeInGroup].mtx + 0;
+            s7->transforms[j + k] = transforms[nodeInGroup].mtx + 1;
+            s7->dlists[k] = dlists[nodeInGroup];
         }
 
         s7->unk_00 = 0;
         s7++;
-        arg1++;
+        nodeGroups++;
     }
 
-    for (s1 = 0; s1 < arg0->unk_9C8; s1++) {
-        arg0->unk_608[s1].unk_04 = arg0->unk_604 + s1;
+    for (j = 0; j < modInst->unk_9C8; j++) {
+        modInst->unk_608[j].cluster = modInst->nodeClusters + j;
     }
 }
 
@@ -509,14 +511,14 @@ void func_8003561C(Object *obj, s32 arg1) {
     ModelInstance *model;
     Matrix4f *projMatrix;
     u32 i;
-    ModelNodeRenderInfo *s6;
+    ClusterRenderSlot *s6;
     s32 sp74;
     Transform *transforms;
-    ModelNode *s1;
+    NodeCluster *s1;
     f32 x, y, z, w;
     u32 a00;
     s32 a1, a3;
-    ModelNode *a2;
+    NodeCluster *a2;
     u32 flags;
 
     model = obj->modInst;
@@ -531,22 +533,22 @@ void func_8003561C(Object *obj, s32 arg1) {
     }
 
     for (i = 0; i < sp74; i++) {
-        s1 = s6[i].unk_04;
+        s1 = s6[i].cluster;
         if (transforms != NULL) {
-            Matrix4f *mtx =
-                (s1->unk_20 >= 0) ? &transforms[s1->unk_20].world_matrix : &transforms[s1->unk_04[0]].world_matrix;
+            Matrix4f *mtx = (s1->singleNode >= 0) ? &transforms[s1->singleNode].world_matrix
+                                                  : &transforms[s1->group[0]].world_matrix;
             math_mtxf_mul(mtx, projMatrix, &D_800813E0);
         } else {
             math_mtxf_mul(&model->rootTransform.world_matrix, projMatrix, &D_800813E0);
         }
 
-        x = D_800813E0.x.x * s1->unk_14.x + D_800813E0.y.x * s1->unk_14.y + D_800813E0.z.x * s1->unk_14.z +
+        x = D_800813E0.x.x * s1->centroid.x + D_800813E0.y.x * s1->centroid.y + D_800813E0.z.x * s1->centroid.z +
             D_800813E0.w.x;
-        y = D_800813E0.x.y * s1->unk_14.x + D_800813E0.y.y * s1->unk_14.y + D_800813E0.z.y * s1->unk_14.z +
+        y = D_800813E0.x.y * s1->centroid.x + D_800813E0.y.y * s1->centroid.y + D_800813E0.z.y * s1->centroid.z +
             D_800813E0.w.y;
-        z = D_800813E0.x.z * s1->unk_14.x + D_800813E0.y.z * s1->unk_14.y + D_800813E0.z.z * s1->unk_14.z +
+        z = D_800813E0.x.z * s1->centroid.x + D_800813E0.y.z * s1->centroid.y + D_800813E0.z.z * s1->centroid.z +
             D_800813E0.w.z;
-        w = D_800813E0.x.w * s1->unk_14.x + D_800813E0.y.w * s1->unk_14.y + D_800813E0.z.w * s1->unk_14.z +
+        w = D_800813E0.x.w * s1->centroid.x + D_800813E0.y.w * s1->centroid.y + D_800813E0.z.w * s1->centroid.z +
             D_800813E0.w.w;
 
         if (w != 0.0f) {
@@ -566,23 +568,23 @@ void func_8003561C(Object *obj, s32 arg1) {
     }
 
     for (i = 1; i < sp74; i++) {
-        a2 = s6[i].unk_04;
+        a2 = s6[i].cluster;
         a1 = s6[i].zOrder;
         a3 = s6[i].flags;
         a00 = i;
         for (a00 = i; a00 != 0 && s6[a00 - 1].zOrder < a1; a00--) {
-            s6[a00].unk_04 = s6[a00 - 1].unk_04;
+            s6[a00].cluster = s6[a00 - 1].cluster;
             s6[a00].zOrder = s6[a00 - 1].zOrder;
             s6[a00].flags = s6[a00 - 1].flags;
         }
 
-        s6[a00].unk_04 = a2;
+        s6[a00].cluster = a2;
         s6[a00].zOrder = a1;
         s6[a00].flags = a3;
     }
 }
 
-void func_800359E4(ModelInstance *modInst, K2DefSub *arg1) {
+void func_800359E4(ModelInstance *modInst, ModelNodeGroup *arg1) {
     u32 s1;
     s32 s2, s3, s4;
     u32 sp7C;
@@ -592,8 +594,8 @@ void func_800359E4(ModelInstance *modInst, K2DefSub *arg1) {
     s32 tmp2;
     s32 pad3;
     Vec4i sp58;
-    K2DefSub *ptr;
-    ModelNode *s7;
+    ModelNodeGroup *ptr;
+    NodeCluster *s7;
     Batch **batches;
     u32 pad2;
 
@@ -601,26 +603,26 @@ void func_800359E4(ModelInstance *modInst, K2DefSub *arg1) {
 
     sp7C = 0;
     ptr = arg1;
-    while (ptr->unk_00[0] >= 0) {
+    while (ptr->idInGroup[0] >= 0) {
         ptr++;
         sp7C++;
     }
     modInst->unk_9C8 = sp7C;
 
-    modInst->unk_604 = s7 = mem_alloc(sp7C * sizeof(ModelNode), "model.c", 0x2B5);
+    modInst->nodeClusters = s7 = mem_alloc(sp7C * sizeof(NodeCluster), "model.c", 693);
 
     for (sp78 = 0; sp78 < sp7C; sp78++) {
         s7->unk_00 = 1;
-        if (arg1->unk_10 >= 0) {
-            func_80034FC8(modInst, tmp = arg1->unk_10, &sp58);
-            s7->unk_14.x = sp58.x;
-            s7->unk_14.y = sp58.y;
-            s7->unk_14.z = sp58.z;
+        if (arg1->singleNode >= 0) {
+            model_node_centroid(modInst, tmp = arg1->singleNode, &sp58);
+            s7->centroid.x = sp58.x;
+            s7->centroid.y = sp58.y;
+            s7->centroid.z = sp58.z;
         } else {
             s4 = s3 = s2 = 0;
             for (s1 = 0; s1 < 4; s1++) {
-                if (arg1->unk_00[s1] >= 0) {
-                    func_80034FC8(modInst, tmp2 = arg1->unk_00[s1], &sp58);
+                if (arg1->idInGroup[s1] >= 0) {
+                    model_node_centroid(modInst, tmp2 = arg1->idInGroup[s1], &sp58);
                     s4 += sp58.x;
                     s3 += sp58.y;
                     s2 += sp58.z;
@@ -628,25 +630,25 @@ void func_800359E4(ModelInstance *modInst, K2DefSub *arg1) {
                     break;
                 }
             }
-            s7->unk_14.x = s4 / (s32) s1;
-            s7->unk_14.y = s3 / (s32) s1;
-            s7->unk_14.z = s2 / (s32) s1;
+            s7->centroid.x = s4 / (s32) s1;
+            s7->centroid.y = s3 / (s32) s1;
+            s7->centroid.z = s2 / (s32) s1;
         }
 
         for (s1 = 0; s1 < 4; s1++) {
-            if ((s7->unk_04[s1] = arg1->unk_00[s1]) < 0) {
+            if ((s7->group[s1] = arg1->idInGroup[s1]) < 0) {
                 break;
             }
         }
 
-        s7->unk_20 = arg1->unk_10;
-        s7->unk_24 = s1;
+        s7->singleNode = arg1->singleNode;
+        s7->groupSize = s1;
 
         pad2 = s1;
         for (s5 = 0; s5 < pad2; s5++) {
-            s32 tmp2 = s7->unk_04[s5];
-            s7->unk_28[s5] = batches[tmp2];
-            s7->unk_38[s5] = modInst->model->batchCounts[tmp2];
+            s32 tmp2 = s7->group[s5];
+            s7->transforms[s5] = batches[tmp2];
+            s7->batchCounts[s5] = modInst->model->batchCounts[tmp2];
         }
 
         arg1++;
@@ -654,14 +656,14 @@ void func_800359E4(ModelInstance *modInst, K2DefSub *arg1) {
     }
 
     for (s1 = 0; s1 < modInst->unk_9C8; s1++) {
-        modInst->unk_608[s1].unk_04 = modInst->unk_604 + s1;
+        modInst->unk_608[s1].cluster = modInst->nodeClusters + s1;
     }
 }
 
 void func_80035CCC(Model *arg0) {
     s32 count;
     u32 i;
-    ModelNode *s1;
+    NodeCluster *s1;
     s32 unused[4];
     u32 j;
     Batch **var1;
@@ -670,27 +672,27 @@ void func_80035CCC(Model *arg0) {
     s32 temp2;
 
     count = arg0->numNodes;
-    s1 = arg0->unk_31C = (ModelNode *) mem_alloc(count * sizeof(ModelNode), "model.c", 766);
+    s1 = arg0->unk_31C = (NodeCluster *) mem_alloc(count * sizeof(NodeCluster), "model.c", 766);
     temp = 1; // required to match
     var1 = arg0->batches;
     for (i = 0; i < count; i++, s1++) {
         s1->unk_00 = temp;
 
-        func_8003517C(arg0, i, &sp58);
-        s1->unk_14.x = sp58.x;
-        s1->unk_14.y = sp58.y;
-        s1->unk_14.z = sp58.z;
+        model_node_centroid_2(arg0, i, &sp58);
+        s1->centroid.x = sp58.x;
+        s1->centroid.y = sp58.y;
+        s1->centroid.z = sp58.z;
 
-        s1->unk_04[0] = i;
-        s1->unk_04[1] = -1;
-        s1->unk_20 = i;
-        s1->unk_24 = temp;
+        s1->group[0] = i;
+        s1->group[1] = -1;
+        s1->singleNode = i;
+        s1->groupSize = temp;
 
         temp2 = 1; // required to match
         for (j = 0; j < temp2; j++) {
-            s32 v0 = s1->unk_04[j];
-            s1->unk_28[j] = var1[v0];
-            s1->unk_38[j] = arg0->batchCounts[v0];
+            s32 v0 = s1->group[j];
+            s1->transforms[j] = var1[v0];
+            s1->batchCounts[j] = arg0->batchCounts[v0];
         }
     }
 }
@@ -1375,10 +1377,10 @@ void model_change_animation(Object *obj) {
     }
 }
 
-void func_80037788(ModelNodeRenderInfo *nodeList, s32 numNodes) {
+void func_80037788(ClusterRenderSlot *nodeList, s32 numNodes) {
     u32 i, j;
-    ModelNodeRenderInfo *v1;
-    ModelNodeRenderInfo *a1;
+    ClusterRenderSlot *v1;
+    ClusterRenderSlot *a1;
 
     if (D_8013C4E8 != NULL) {
         v1 = D_8013C4E8;
@@ -1461,7 +1463,7 @@ void model_update_kmd(Object *obj) {
             obj->previousFrameIndex = obj->frameIndex;
         }
 
-        if (modInst->unk_604 != NULL) {
+        if (modInst->nodeClusters != NULL) {
             func_8003561C(obj, 0);
 
             for (i = 0; i < sp6C; i++) {
@@ -1492,7 +1494,7 @@ void sprite3d_update(Object *obj) {
     Transform *mu;
     Model *sub2;
     s32 index;
-    ModelNode *sub6;
+    NodeCluster *sub6;
     Batch *newvar;
     s32 batchIndex;
     s32 nv2;
@@ -1518,7 +1520,7 @@ void sprite3d_update(Object *obj) {
     mu = &obj->transform;
     renderBatches = modInst->renderBatches;
 
-    if (obj->flags & OBJ_FLAG_2000) {
+    if (obj->flags & OBJ_FLAG_TRANSPARENT) {
         func_80034F34(obj);
     }
 
@@ -1537,8 +1539,8 @@ void sprite3d_update(Object *obj) {
     nv2 = sub2->batchCounts[index];
     modInst->unk_A30.unk_08[0] = sub;
 
-    sub6->unk_28[0] = newvar;
-    sub6->unk_38[0] = nv2;
+    sub6->transforms[0] = newvar;
+    sub6->batchCounts[0] = nv2;
     modInst->unk_A30.next = D_8013C4E8;
     D_8013C4E8 = &modInst->unk_A30;
 }
@@ -1622,7 +1624,7 @@ void func_80037E28(Object *obj) {
     sp40 = v0->lights[1].dir_z;
 
     for (a1 = D_8013C4EC; a1 != NULL; a1 = a1->next) {
-        a = a1->object->unk_088.a;
+        a = a1->object->color.a;
         a1->unk_1C = (a1->red * a) / 256;
         a1->unk_20 = (a1->green * a) / 256;
         a1->unk_24 = (a1->blue * a) / 256;
@@ -1757,11 +1759,11 @@ void model_update(Object *obj) {
     Transform *spAC;
     s32 j;
     u32 i;
-    ModelNode *new_var;
+    NodeCluster *new_var;
     Matrix4f *a1;
     BatchInfo *s0;
     s32 sp94;
-    ModelNodeRenderInfo *renderInfo;
+    ClusterRenderSlot *renderInfo;
     s32 s6;
     Transform *objTransform;
     Matrix4f *nu;
@@ -1812,7 +1814,7 @@ void model_update(Object *obj) {
         math_translate(&objTransform->local_matrix, &obj->pos);
         func_80014974(objTransform);
 
-        if (modInst->unk_604 != NULL) {
+        if (modInst->nodeClusters != NULL) {
             if (obj->flags & OBJ_FLAG_800) {
                 func_8003561C(obj, -10000);
             } else {
@@ -1821,16 +1823,16 @@ void model_update(Object *obj) {
 
             renderInfo = modInst->unk_608;
             for (i = 0; i < modInst->unk_9C8; i++) {
-                new_var = renderInfo[i].unk_04;
+                new_var = renderInfo[i].cluster;
                 if (obj->flags & OBJ_FLAG_2000000) {
                     renderInfo[i].flags |= 2;
                 }
 
-                s6 = new_var->unk_24;
+                s6 = new_var->groupSize;
                 s7 = modInst->renderBatches;
 
                 for (j = 0; j < s6; j++) {
-                    s32 s1 = new_var->unk_04[j];
+                    s32 s1 = new_var->group[j];
 
                     if (obj->flags & OBJ_FLAG_1000000) {
                         a1 = &D_8013C6B0;

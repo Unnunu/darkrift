@@ -144,7 +144,7 @@ void func_80024A90(s16 contId) {
         }
     }
 
-    if (!gPlayerInput[contId].accumulated) {
+    if (!gPlayerInput[contId].pendingInput) {
         gPlayerInput[contId].held_buttons = gPlayerInput[contId].prev_buttons;
     } else {
         gPlayerInput[contId].held_buttons = gPlayerInput[contId].held_buttons & gPlayerInput[contId].prev_buttons;
@@ -158,7 +158,7 @@ void func_80024A90(s16 contId) {
     v0 = gPlayerInput[contId].prev_buttons;
     if (buttons != v0 ||
         (buttons & (INP_CRIGHT | INP_LEFT | INP_DOWN | INP_RIGHT)) && !(buttons & (INP_CLEFT | INP_CDOWN | INP_CUP))) {
-        gPlayerInput[contId].accumulated = TRUE;
+        gPlayerInput[contId].pendingInput = TRUE;
     }
 
     gPlayerInput[contId].prev_buttons = buttons;
@@ -186,7 +186,7 @@ void input_update(void) {
 }
 
 void func_80024D2C(void) {
-    gPlayerInput[PLAYER_1].accumulated = gPlayerInput[PLAYER_2].accumulated = FALSE;
+    gPlayerInput[PLAYER_1].pendingInput = gPlayerInput[PLAYER_2].pendingInput = FALSE;
     gPlayerInput[PLAYER_1].buttons = gPlayerInput[PLAYER_2].buttons = 0;
     gPlayerInput[PLAYER_1].mirrored = gPlayerInput[PLAYER_2].mirrored = FALSE;
     gPlayerInput[PLAYER_2].enabled = gPlayerInput[PLAYER_1].enabled = TRUE;

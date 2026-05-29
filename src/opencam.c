@@ -191,7 +191,7 @@ void camera_outro_playback(Object *obj) {
 
         obj->currentTask->func = camera_battle_update;
         obj->modInst->animations[0] = NULL;
-        gPlayerInput[PLAYER_1].accumulated = gPlayerInput[PLAYER_2].accumulated = FALSE;
+        gPlayerInput[PLAYER_1].pendingInput = gPlayerInput[PLAYER_2].pendingInput = FALSE;
         D_8008012C &= ~(GFX_FLAG_1 | GFX_FLAG_10);
     }
 
@@ -490,7 +490,7 @@ void camera_orbit_update(Object *obj, u8 arg1) {
     f32 ft5;
     s32 temp;
 
-    if (sReplayActive == 0) {
+    if (gReplayActive == 0) {
         D_8008012C |= GFX_FLAG_20;
     } else {
         D_8008012C &= ~GFX_FLAG_20;
@@ -638,7 +638,7 @@ void camera_intro_playback(Object *obj) {
 
         obj->currentTask->func = camera_battle_update;
         obj->modInst->animations[0] = NULL;
-        gPlayerInput[PLAYER_1].accumulated = gPlayerInput[PLAYER_2].accumulated = FALSE;
+        gPlayerInput[PLAYER_1].pendingInput = gPlayerInput[PLAYER_2].pendingInput = FALSE;
         D_8008012C &= ~(GFX_FLAG_1 | GFX_FLAG_10);
     } else {
         if (--obj->vars[10] <= 0) {
@@ -663,7 +663,7 @@ void camera_intro_start(Object *obj) {
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->start_delay = 1;
     gCamera->vars[10] = 60;
-    gPlayerInput[PLAYER_1].accumulated = assetId = gPlayerInput[PLAYER_2].accumulated = FALSE; // required to match
+    gPlayerInput[PLAYER_1].pendingInput = assetId = gPlayerInput[PLAYER_2].pendingInput = FALSE; // required to match
 }
 
 void camera_outro_start(Object *obj) {
@@ -681,7 +681,7 @@ void camera_outro_start(Object *obj) {
     gCamera->currentTask->start_delay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->start_delay = 1;
-    gPlayerInput[PLAYER_1].accumulated = assetId = gPlayerInput[PLAYER_2].accumulated = FALSE; // required to match
+    gPlayerInput[PLAYER_1].pendingInput = assetId = gPlayerInput[PLAYER_2].pendingInput = FALSE; // required to match
 }
 
 #ifdef NON_EQUIVALENT
@@ -728,8 +728,7 @@ restart:
         s0 = (temp[PLAYER_1].hitboxBones.handPos->y - 200.0f) < v0;
     }
 
-    if ((gPlayers[PLAYER_1].currentStateDef->flags & STATE_FLAG_80000) ||
-        (gPlayers[PLAYER_2].currentStateDef->flags & STATE_FLAG_80000)) {
+    if ((gPlayers[PLAYER_1].combatState->flags & CSF_80000) || (gPlayers[PLAYER_2].combatState->flags & CSF_80000)) {
         s0 = TRUE;
     }
 
@@ -753,9 +752,9 @@ restart:
     if (s1 < D_80080214 &&
         (!(gPlayers[PLAYER_1].flags & PLAYER_FLAG_8000) || (gPlayers[PLAYER_2].flags & PLAYER_FLAG_8000))) { // @bug ??
         s4 = D_80080214 - s1;
-        if ((gPlayers[PLAYER_1].currentStateDef->flags & STATE_FLAG_80000) ||
-            (gPlayers[PLAYER_2].currentStateDef->flags & STATE_FLAG_80000) ||
-            (gPlayers[PLAYER_1].flags & PLAYER_FLAG_4000000) || (gPlayers[PLAYER_2].flags & PLAYER_FLAG_4000000)) {
+        if ((gPlayers[PLAYER_1].combatState->flags & CSF_80000) ||
+            (gPlayers[PLAYER_2].combatState->flags & CSF_80000) || (gPlayers[PLAYER_1].flags & PLAYER_FLAG_4000000) ||
+            (gPlayers[PLAYER_2].flags & PLAYER_FLAG_4000000)) {
             s4 >>= 1;
         }
     } else {
@@ -929,7 +928,7 @@ void camera_battle_update(Object *obj) {
     Vec4i sp34;
 
     sp6A = FALSE;
-    if (sReplayActive == 0) {
+    if (gReplayActive == 0) {
         D_8008012C |= GFX_FLAG_20;
     } else {
         D_8008012C &= ~GFX_FLAG_20;
@@ -1161,7 +1160,7 @@ void camera_battle_update(Object *obj) {
 
     if (*gCamera->modInst->animations == NULL && !(gPlayers[PLAYER_1].flags & PLAYER_FLAG_400000) &&
             !(gPlayers[PLAYER_2].flags & PLAYER_FLAG_400000) ||
-        sReplayActive != 0) {
+        gReplayActive != 0) {
         camera_check_bounds(obj);
     }
 }

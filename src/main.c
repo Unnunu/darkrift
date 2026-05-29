@@ -220,7 +220,7 @@ void handle_start_button(s16 whoPressed) {
     counter = 6;
 
     sp33 = FALSE;
-    gPlayerInput[whoPressed].accumulated = FALSE;
+    gPlayerInput[whoPressed].pendingInput = FALSE;
 
     while (gTaskPool.count < 10 || gModelInstancePool.count <= 0) {
         render_frame();
@@ -278,7 +278,7 @@ void handle_start_button(s16 whoPressed) {
         gPlayerInput[PLAYER_1].mirrored = sp34;
         gPlayerInput[PLAYER_2].mirrored = sp35;
 
-        gPlayerInput[whoPressed].accumulated = FALSE;
+        gPlayerInput[whoPressed].pendingInput = FALSE;
         gIsPaused = FALSE;
         gGlobalFlags &= ~GAME_FLAG_40;
         alSeqSetLoc(gMusicSequence, &gMusicMarkerStart);
@@ -327,11 +327,11 @@ void main_loop(void) {
     while (!(gGlobalFlags & GAME_FLAG_MODE_DONE) || !(gGlobalFlags & GAME_FLAG_1000)) {
         if (!(gGlobalFlags & GAME_FLAG_BATTLE_FINISHED) && !(gGlobalFlags & GAME_FLAG_4) &&
             gPlayerInput[PLAYER_1].buttons == INP_START && gPlayerInput[PLAYER_1].enabled &&
-            gPlayerInput[PLAYER_1].accumulated) {
+            gPlayerInput[PLAYER_1].pendingInput) {
             handle_start_button(PLAYER_1);
         } else if (!(gGlobalFlags & GAME_FLAG_BATTLE_FINISHED) && !(gGlobalFlags & GAME_FLAG_4) &&
                    gPlayerInput[PLAYER_2].buttons == INP_START && gPlayerInput[PLAYER_2].enabled &&
-                   gPlayerInput[PLAYER_2].accumulated) {
+                   gPlayerInput[PLAYER_2].pendingInput) {
             handle_start_button(PLAYER_2);
         }
 
