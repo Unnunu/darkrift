@@ -487,47 +487,205 @@ def process_db():
         outpath = replace_path(g).with_name(f"{g.name}.txt")
         outpath.parent.mkdir(parents=True, exist_ok=True)
         with open(outpath, 'w') as outfile:
-            for k,v in dbdata.items():
-                print(f"{k}:", file=outfile)
-                if k == "logicStates":
-                    for l in v:
-                        for k1, v1 in l.items():
-                            print(f"\t{k1}:", file=outfile)
-                            for m in v1:
-                                print(f"\t\t{m}", file=outfile)
-                elif k == "aiResponseIndexMap":
-                    for i, val in enumerate(v):
-                        print(f"\t{i}: {val}", file=outfile)
-                elif k == "aiSequenceGroups":
-                    for i, g in enumerate(v):
-                        acts = ", ".join(f'{a["index"]}:"{a["name"]}"' for a in g["actions"])
-                        print(f"\tgroup {i}: [{acts}]", file=outfile)
+            def p(line=""):
+                print(line, file=outfile)
+
+            for k, v in dbdata.items():
+
+                # ── Timing Data ──
+                if k == "player_28":
+                    p("### Timing Frame Data (16B × N entries) ###")
+                    for i, e in enumerate(v):
+                        p(f"  [{i:3d}] fMin={e['unk00']:4d}  fMax={e['unk02']:4d}"
+                          f"  {e['unk04']:4d}  {e['unk06']:4d}  {e['unk08']:4d}  {e['unk0A']:4d}"
+                          f"  {e['unk0C']:4d}  {e['unk0E']:4d}")
+                    p()
+
+                # ── Transition Rules ──
+                elif k == "transitionTable":
+                    p("### Transition Rules (28B each) ###")
+                    for e in v:
+                        resp_str = "  ".join(r for r in e['aiResponseForChar'])
+                        state_str = e['actionState']
+                        btn_str = e['buttons'] if e['buttons'] else "—"
+                        mask_str = e['button_mask'] if e['button_mask'] else "—"
+                        p(f"  [{e['index']:3d}] \"{e['name']}\"")
+                        p(f"        tOff={e['index_in_field28']:3d}  btn={btn_str:15s}  flags={e['flags']:25s}  hold={e['unk06']:5d}"
+                          f"  bhv={e['behavior']:>8s}  state={state_str:>8s}  mask={mask_str}")
+                        p(f"        self={e['aiResponseSelf']:3d}  aiResp→ {resp_str}")
+                    p()
+
+                # ── Logic States ──
+                elif k == "logicStates":
+                    p("### State Machine (Logic States) ###")
+                    for group in v:
+                        for grp_name, entries in group.items():
+                            p(f"  [{grp_name}]")
+                            for m in entries:
+                                ns = m['nextLogicState']
+                                ns_str = f"→ state_{ns}" if ns >= 0 else "→ TERMINAL"
+                                p(f"      step {m['index']:3d}: transition={m['transitionId']:3d} \"{m['transitionName']}\"  {ns_str}")
+                    p()
+
+                # ── Player_30 (transition group indices) ──
+                elif k == "player_30":
+                    p("### Player_30 (Transition Group Counts) ###")
+                    for i, e in enumerate(v):
+                        p(f"  [{i:3d}] index={e['index_in_field1C']:4d}  count={e['count']:3d}")
+                    p()
+
+                # ── Player_1C ──
+                elif k == "player_1C":
+                    p("### Player_1C (4×s16 per entry, 8B each) ###")
+                    for i, e in enumerate(v):
+                        p(f"  [{i:3d}]  {e['unk_00']:5d}  {e['unk_02']:5d}  {e['unk_04']:5d}  {e['unk_06']:5d}")
+                    p()
+
+                # ── Combat States ──
+                elif k == "actionStates":
+                    p("### Combat States (56B each) ###")
+                    for e in v:
+                        dmg = e['damage']
+                        dmg_str = f"dmg={dmg:4d}" if dmg else "dmg=———"
+                        p(f"  {e['index']}:"
+                          f"  frame={e['minFrame']:4d}..{e['maxFrame']:4d}"
+                          f"  anim={e['animationId']:3d}"
+                          f"  {dmg_str}"
+                          f"  flags={e['flags']}")
+                        unk_str = "  ".join(f"{k}={v}" for k, v in e.items()
+                                            if k.startswith('unk_'))
+                        if unk_str:
+                            p(f"        {unk_str}")
+                    p()
+
+                # ── Sounds ──
+                elif k == "sounds":
+                    p("### Sound/Frame Triggers (8B each) ###")
+                    for i, e in enumerate(v):
+                        parts = []
+                        for j in range(1, 5):
+                            s = e[f'sound{j}']
+                            frm = e[f'frame{j}']
+                            if s != 0xFF:
+                                parts.append(f"snd={s:2d} @f:{frm:3d}")
+                        p(f"  [{i:3d}]  {'  '.join(parts) if parts else '(empty)'}")
+                    p()
+
+                # ── Player_6C ──
+                elif k == "player_6C":
+                    p("### Player_6C ###")
+                    for e in v:
+                        p(f"  unk_num={e['unk_num']}")
+                    p()
+
+                # ── Move-to-LogicState Map ──
+                elif k == "player_38":
+                    p("### Move-to-LogicState Map (2B each) ###")
+                    for e in v:
+                        p(f"  {e['moveId']:>12s}  →  {e['logicState']:4d}")
+                    p()
+
+                # ── Player_44 (per-frame data) ──
+                elif k == "player_44":
+                    p("### Player_44 (Per-Frame Bytes) ###")
+                    frames_per_line = 20
+                    entries = v
+                    for start in range(0, len(entries), frames_per_line):
+                        chunk = entries[start:start + frames_per_line]
+                        line = f"  [{start:4d}] " + " ".join(f"{e['frame']:3d}" for e in chunk)
+                        p(line)
+                    p()
+
+                # ── Projectile Definitions ──
+                elif k == "projectileDefs":
+                    p("### Projectile Definitions (76B each) ###")
+                    for i, e in enumerate(v):
+                        p(f"  [{i:3d}] lifetime={e['lifetime']:3d}  boneId={e['boneId']:3d}"
+                          f"  origin=({e['originX']:4d},{e['originY']:4d},{e['originZ']:4d})"
+                          f"  velocity=({e['velocityX']:4d},{e['velocityY']:4d},{e['velocityZ']:4d})"
+                          f"  sprite=({e['spriteIndex']},{e['spriteFrame']})"
+                          f"  modelIdx={e['modelIndex']}")
+                        p(f"        flags={e['flags']:#06x}  "
+                          f"{e['unk_1E']:4d} {e['unk_24']:4d} {e['unk_28']:4d}"
+                          f" {e['unk_2E']:4d} {e['unk_30']:4d} {e['unk_32']:4d}"
+                          f" {e['unk_34']:4d} {e['unk_36']:4d} {e['unk_38']:4d}"
+                          f" {e['unk_3A']:4d} {e['unk_3C']:4d} {e['unk_40']:4d} {e['unk_42']:4d}"
+                          f"  light={e['lightColors']}")
+                    p()
+
+                # ── Projectile Barrages ──
+                elif k == "projectileBarrages":
+                    p("### Projectile Barrages (8 shots × 3B each) ###")
+                    for i, e in enumerate(v):
+                        shots_str = ", ".join(f"proj{s['projectileId']:d}@f:{s['frameIndex']:d}" for s in e['shots'])
+                        p(f"  [{i:3d}] {len(e['shots'])} shots: {shots_str}")
+                    p()
+
+                # ── AI Action Rows ──
                 elif k == "aiActionRows":
+                    p("### AI Action Rows ###")
                     for r in v:
-                        name = r['name']
                         if r['callbackIdx'] == -1:
                             cb = "none"
                         else:
                             cb = f"func_8001CDxx[{r['callbackIdx']}]"
                         moves_str = ", ".join(str(m) for m in r['moves'])
-                        print(f"\t{r['index']}: name=\"{name}\", callback={cb}, "
-                              f"condFlags={r['conditionFlags']:#x}, moves=[{moves_str}]", file=outfile)
-                elif k == "aiResponseTable":
-                    for i, r in enumerate(v):
-                        name = r['name']
-                        print(f"\t{i}: name=\"{name}\", flags={r['flags']:#x}, "
-                              f"val1={r['val1']}, val2={r['val2']}, adj={r['adj']}, "
-                              f"candidates={r['candidates']}", file=outfile)
+                        p(f"  [{r['index']:3d}] \"{r['name']}\""
+                          f"  cb={cb}  param={r['actionParam']:5d}"
+                          f"  cond=0x{r['conditionFlags']:04x}"
+                          f"  moves=[{moves_str}]")
+                    p()
+
+                # ── AI Candidate Table ──
                 elif k == "aiCandidateTable":
+                    p("### AI Candidate Table (12B each) ###")
                     for i, c in enumerate(v):
-                        print(f"\t{i}: name=\"{c['name']}\", actionIndex={c['actionIndex']}, "
-                              f"difficultyMask={c['difficultyMask']:#x}, distance=({c['distanceMin']},{c['distanceMax']}), "
-                              f"condFlags={c['conditionFlags']:#x}", file=outfile)
+                        p(f"  [{i:3d}] \"{c['name']}\""
+                          f"  seqIdx={c['actionIndex']:3d}"
+                          f"  diffMask=0x{c['difficultyMask']:04x}"
+                          f"  dist=({c['distanceMin']:5d},{c['distanceMax']:5d})"
+                          f"  cond=0x{c['conditionFlags']:04x}")
+                    p()
+
+                # ── AI Sequence Groups ──
+                elif k == "aiSequenceGroups":
+                    p("### AI Sequence Groups (× actionIndex) ###")
+                    for i, g in enumerate(v):
+                        acts = ", ".join(f'{a["index"]}:"{a["name"]}"' for a in g["actions"])
+                        p(f"  group {i:3d}: [{acts}]")
+                    p()
+
+                # ── AI Response Index Map ──
+                elif k == "aiResponseIndexMap":
+                    p("### AI Response Index Map (offset per response) ###")
+                    for i, off in enumerate(v):
+                        p(f"  [{i:3d}] offset={off:5d}")
+                    p()
+
+                # ── AI Response Table ──
+                elif k == "aiResponseTable":
+                    p("### AI Response Table (per-state AI decisions) ###")
+                    for i, r in enumerate(v):
+                        p(f"  [{i:3d}] \"{r['name']}\""
+                          f"  flags=0x{r['flags']:04x}"
+                          f"  v1={r['val1']:4d}  v2={r['val2']:4d}  adj={r['adj']:4d}"
+                          f"  candidates={r['candidates']}")
+                    p()
+
+                # ── Raw unk_68 ──
                 elif k == "unk_68":
-                    print(f"\t{v}", file=outfile)
+                    p("### Unknown Data (offset 16 → EOF) ###")
+                    hex_str = v
+                    for start in range(0, len(hex_str), 64):
+                        p(f"  {hex_str[start:start+64]}")
+                    p()
+
+                # ── anything else ──
                 else:
-                    for l in v:
-                        print(f"\t{l}", file=outfile)
+                    p(f"### {k} ###")
+                    for entry in v:
+                        p(f"  {entry}")
+                    p()
 
 def process_models():
     for ext in ("*.TMD", "*.GMD", "*.K2", "*.K3", "*.K4", "*.K5"):
