@@ -906,7 +906,7 @@ void func_80020298(s16 playerId, u16 arg1, u16 arg2) {
 }
 
 void func_800202D0(s16 playerId, u16 arg1, u16 arg2) {
-    gBattleSettings[PLAYER_1].unk_04 = gBattleSettings[PLAYER_2].unk_04 = arg1;
+    gBattleSettings[PLAYER_1].aiDifficulty = gBattleSettings[PLAYER_2].aiDifficulty = arg1;
 }
 
 void func_800202F0(s16 playerId, u16 arg1, u16 arg2) {

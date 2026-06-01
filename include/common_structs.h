@@ -459,9 +459,9 @@ typedef struct TransitionRule {
     /* 0x08 */ s16 behaviorId;
     /* 0x0A */ s16 targetStateId;
     /* 0x0C */ u16 button_mask;
-    /* 0x0E */ u8 unk_0E[11];
-    /* 0x19 */ u8 unk_19;
-    /* 0x1A */ char unk_1C[2];
+    /* 0x0E */ u8 aiResponseForChar[11];
+    /* 0x19 */ u8 aiResponseSelf;
+    /* 0x1A */ char pad_1A[2];
 } TransitionRule; // size = 0x1C
 
 typedef struct ObjectTask {
@@ -802,7 +802,7 @@ typedef struct Player {
 typedef struct Player12 {
     /* 0x00 */ s16 characterId;
     /* 0x02 */ u8 isCpu; // probably wrong name
-    /* 0x04 */ u16 unk_04;
+    /* 0x04 */ u16 aiDifficulty;
     /* 0x06 */ u8 assetContext;
     /* 0x08 */ s16 roundsWon;
     /* 0x0A */ s16 consecutiveWins;

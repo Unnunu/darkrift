@@ -12,21 +12,21 @@ u8 ai_parse_action(Player *, AiState *);
 s16 func_8001DA90(Player *);
 
 s16 ai_cond_approach(Player *);
-s16 func_8001CC8C(Player *);
-s16 func_8001CD28(Player *);
-s16 func_8001CD34(Player *);
-s16 func_8001CDAC(Player *);
-s16 func_8001CE18(Player *);
-s16 func_8001CE0C(Player *);
-s16 func_8001D070(Player *);
-s16 func_8001D9B0(Player *);
-s16 func_8001D660(Player *);
-s16 func_8001DA10(Player *);
-s16 func_8001CC18(Player *);
-s16 func_8001DB2C(Player *);
-s16 func_8001DC68(Player *);
-s16 func_8001DDA4(Player *);
-s16 func_8001DDEC(Player *);
+s16 ai_cond_func_8001CC8C(Player *);
+s16 ai_cond_func_8001CD28(Player *);
+s16 ai_cond_func_8001CD34(Player *);
+s16 ai_cond_func_8001CDAC(Player *);
+s16 ai_cond_func_8001CE18(Player *);
+s16 ai_cond_func_8001CE0C(Player *);
+s16 ai_cond_func_8001D070(Player *);
+s16 ai_cond_func_8001D9B0(Player *);
+s16 ai_cond_func_8001D660(Player *);
+s16 ai_cond_func_8001DA10(Player *);
+s16 ai_cond_func_8001CC18(Player *);
+s16 ai_cond_func_8001DB2C(Player *);
+s16 ai_cond_func_8001DC68(Player *);
+s16 ai_cond_func_8001DDA4(Player *);
+s16 ai_cond_func_8001DDEC(Player *);
 
 s16 D_80049D10[] = { 30, 20, 20, 10, 10, 10, 0, 0, 0, 0 };
 s16 D_80049D24[] = { 30, 30, 10, 6, 5, 2, 2, 0 };
@@ -35,27 +35,28 @@ s16 D_80049D44[] = { 70, 60, 60, 55, 50, 45, 40, 40 };
 s16 D_80049D54[] = { 8, 6, 4, 2, 0, 0, 0, 0 };
 s16 D_80049D64[] = { 2, 2, 2, 1, 1, 1, 1, 1 };
 s16 (*D_80049D74[])(struct Player *) = {
-    ai_cond_approach, func_8001CC8C, func_8001CD28, func_8001CD34, func_8001CDAC, func_8001CE18,
-    func_8001CE0C,    func_8001D070, func_8001D9B0, func_8001D660, func_8001DA10, func_8001CC18,
-    func_8001DB2C,    func_8001DC68, func_8001DDA4, func_8001DDEC,
+    ai_cond_approach,      ai_cond_func_8001CC8C, ai_cond_func_8001CD28, ai_cond_func_8001CD34,
+    ai_cond_func_8001CDAC, ai_cond_func_8001CE18, ai_cond_func_8001CE0C, ai_cond_func_8001D070,
+    ai_cond_func_8001D9B0, ai_cond_func_8001D660, ai_cond_func_8001DA10, ai_cond_func_8001CC18,
+    ai_cond_func_8001DB2C, ai_cond_func_8001DC68, ai_cond_func_8001DDA4, ai_cond_func_8001DDEC,
 };
 s16 D_80049DB4[] = { 13, 13, 13, 10, 19, 19, 10, 10, 19, 10, 10, 0 };
 s16 D_80049DCC[] = { 10, 10, 10, 7, 12, 12, 10, 10, 12, 10, 10, 0, 0, 0, 0, 0, 0, 0 };
 
 u8 ai_force_transition(Player *player, s16 arg1) {
     ai_reset(player);
-    player->aiState.aiFlags |= 0x8000;
-    return player_apply_move(player, arg1, 1);
+    player->aiState.aiFlags |= AIF_ACTION_IN_PROGRESS;
+    return player_apply_move(player, arg1, TRUE);
 }
 
 void ai_update(Player *player) {
     u8 v04;
     s16 *sp30;
-    AiState *v1;
-    u16 sp2A;
-    s16 v02;
+    AiState *aiState;
+    u16 aiDifficulty;
+    s16 cbResult;
 
-    sp2A = gBattleSettings[player->playerId].unk_04;
+    aiDifficulty = gBattleSettings[player->playerId].aiDifficulty;
     if (player->obj->playerHp == 0) {
         return;
     }
@@ -64,24 +65,24 @@ void ai_update(Player *player) {
         player->aiState.hitCount = 0;
     }
 
-    if (player->aiState.aiFlags & 0x8000) {
-        v1 = &player->aiState;
+    if (player->aiState.aiFlags & AIF_ACTION_IN_PROGRESS) {
+        aiState = &player->aiState;
         if (player->autoTransitionTimer != 0 && --player->autoTransitionTimer == 0) {
             ai_reset(player);
             if (player->lookupLogicTable >= 0 && (player->flags & PLAYER_FLAG_1000)) {
                 if (ai_select_transition(player)) {
-                    player->aiState.aiFlags |= 0x8000;
+                    player->aiState.aiFlags |= AIF_ACTION_IN_PROGRESS;
                 }
             }
-        } else if (v1->stateCallback != NULL) {
-            v02 = v1->stateCallback(player);
-            if (v02 > 0) {
+        } else if (aiState->stateCallback != NULL) {
+            cbResult = aiState->stateCallback(player);
+            if (cbResult > 0) {
                 return;
             }
 
-            v1->stateCallback = NULL;
-            player->aiState.aiFlags &= ~0x8000;
-            if (v02 < 0) {
+            aiState->stateCallback = NULL;
+            player->aiState.aiFlags &= ~AIF_ACTION_IN_PROGRESS;
+            if (cbResult < 0) {
                 ai_reset(player);
             } else {
                 ai_advance_sequence(player);
@@ -94,11 +95,11 @@ void ai_update(Player *player) {
         if (player_check_func_2(player->obj) && !(player->combatState->flags & CSF_80) &&
             !(player->obj->flags & OBJ_FLAG_800000)) {
             if (player->combatState->flags & CSF_CROUCH) {
-                ai_force_transition(player, 0x62);
+                ai_force_transition(player, 98);
                 return;
             }
             if (player->combatState->flags & CSF_STANDING) {
-                ai_force_transition(player, 0x5F);
+                ai_force_transition(player, 95);
                 return;
             }
         }
@@ -110,9 +111,9 @@ void ai_update(Player *player) {
 
         if ((--player->unk_DBE <= 0 || v04 && !(*sp30 & 2)) &&
                 (player->combatState->flags & (CSF_CROUCH | CSF_STANDING)) ||
-            player->transition->unk_19 != 0xFF) {
-            player->unk_DBE = D_80049D10[sp2A];
-            player->unk_DBE += guRandom() & D_80049D24[sp2A];
+            player->transition->aiResponseSelf != 0xFF) {
+            player->unk_DBE = D_80049D10[aiDifficulty];
+            player->unk_DBE += guRandom() & D_80049D24[aiDifficulty];
 
             if (!ai_decide(player, (player->flags & PLAYER_FLAG_200000) != 0)) {
                 player->unk_DBE = 0;
@@ -128,18 +129,18 @@ void ai_reset(Player *player) {
 
     player->aiState.stateCallback = NULL;
     player->aiState.sequencePtr = player->aiState.actionPtr = NULL;
-    player->aiState.aiFlags &= ~0x3C000;
+    player->aiState.aiFlags &= ~(AIF_4000 | AIF_ACTION_IN_PROGRESS | AIF_10000 | AIF_20000);
     player->autoTransitionTimer = 0;
 
     if (player->flags & PLAYER_FLAG_2000) {
-        player->aiState.aiFlags |= 0x4000;
+        player->aiState.aiFlags |= AIF_4000;
     }
 }
 
 u8 ai_advance_sequence(Player *player) {
-    AiState *subH = &player->aiState;
+    AiState *aiState = &player->aiState;
 
-    if (player->flags & PLAYER_FLAG_2000 || (player->unk_DBC > 0x100 && !(subH->actionFlags & 0x1000)) ||
+    if (player->flags & PLAYER_FLAG_2000 || (player->unk_DBC > 0x100 && !(aiState->actionFlags & 0x1000)) ||
         player->transition->targetStateId != player->combatStateId) {
         ai_reset(player);
         return FALSE;
@@ -149,31 +150,31 @@ u8 ai_advance_sequence(Player *player) {
         return TRUE;
     }
 
-    if (subH->sequencePtr == NULL || *subH->sequencePtr == -1 || (player->aiState.aiFlags & 0x10000)) {
+    if (aiState->sequencePtr == NULL || *aiState->sequencePtr == -1 || (player->aiState.aiFlags & AIF_10000)) {
         ai_reset(player);
         return FALSE;
     }
 
-    subH->sequencePtr++;
+    aiState->sequencePtr++;
 
-    if (subH->sequencePtr == NULL || *subH->sequencePtr == -1) {
+    if (aiState->sequencePtr == NULL || *aiState->sequencePtr == -1) {
         ai_reset(player);
         return FALSE;
     }
 
-    ai_parse_action(player, subH);
+    ai_parse_action(player, aiState);
     return ai_execute_action(player);
 }
 
 u8 ai_execute_action(Player *player) {
-    AiState *subH = &player->aiState;
+    AiState *aiState = &player->aiState;
     s16 oppId = (player->playerId != PLAYER_1) ? PLAYER_1 : PLAYER_2;
 
-    if (subH->actionPtr != NULL && (s16) *subH->actionPtr != -1) {
-        if (player_apply_move(player, *subH->actionPtr, 1)) {
-            subH->opponentHpAtAction = gPlayers[oppId].obj->playerHp;
-            player->aiState.aiFlags |= 0x8000;
-            subH->actionPtr++;
+    if (aiState->actionPtr != NULL && (s16) *aiState->actionPtr != -1) {
+        if (player_apply_move(player, *aiState->actionPtr, TRUE)) {
+            aiState->opponentHpAtAction = gPlayers[oppId].obj->playerHp;
+            player->aiState.aiFlags |= AIF_ACTION_IN_PROGRESS;
+            aiState->actionPtr++;
             return TRUE;
         }
 
@@ -184,42 +185,44 @@ u8 ai_execute_action(Player *player) {
 }
 
 #ifdef NON_MATCHING
-u8 ai_parse_action(Player *player, AiState *subH) {
+u8 ai_parse_action(Player *player, AiState *aiState) {
     s32 a2;
     s32 pf;
     u8 a3;
 
     do {
-        subH++; // @fake
-        subH--; // @fake
+        aiState++; // @fake
+        aiState--; // @fake
         pf = player->flags;
         a2 = player->combatState->flags;
 
-        subH->actionPtr = player->aiActionTable + player->aiActionIndexMap[*subH->sequencePtr];
-        subH->stateCallback = ((s16) *subH->actionPtr == -1) ? NULL : D_80049D74[*subH->actionPtr];
-        subH->actionPtr++;
-        subH->actionParam = *subH->actionPtr++;
-        subH->conditionFlags = *subH->actionPtr++;
+        aiState->actionPtr = player->aiActionTable + player->aiActionIndexMap[*aiState->sequencePtr];
+        aiState->stateCallback = ((s16) *aiState->actionPtr == -1) ? NULL : D_80049D74[*aiState->actionPtr];
+        aiState->actionPtr++;
+        aiState->actionParam = *aiState->actionPtr++;
+        aiState->conditionFlags = *aiState->actionPtr++;
 
-        a3 = (subH->conditionFlags & a2 & 0x400) && !((subH->conditionFlags & 0x200) ^ (a2 & 0x200));
-        if (a3 && (subH->conditionFlags & 8) && ((subH->conditionFlags & 8) ^ (pf & PLAYER_FLAG_NOT_FACING_OPP))) {
+        a3 = (aiState->conditionFlags & a2 & 0x400) && !((aiState->conditionFlags & 0x200) ^ (a2 & 0x200));
+        if (a3 && (aiState->conditionFlags & 8) &&
+            ((aiState->conditionFlags & 8) ^ (pf & PLAYER_FLAG_NOT_FACING_OPP))) {
             a3 = FALSE;
         }
 
-        if ((subH->conditionFlags & 0x1000) || a3 ||
-            ((!(subH->conditionFlags & 0x4000)) || ((subH->conditionFlags & 0x4000) ^ (a2 & 0x4000))) &&
-                !((subH->conditionFlags & 8) ^ (pf & PLAYER_FLAG_NOT_FACING_OPP)) && (subH->conditionFlags & a2 & 5)) {
-            subH->opponentHpAtAction = gPlayers[1 - player->playerId].obj->playerHp;
-            player->aiState.aiFlags &= ~0x3C000;
-            player->aiState.aiFlags |= 0x8000;
-            if (subH->conditionFlags & 0x8000) {
-                player->aiState.aiFlags |= 0x10000;
+        if ((aiState->conditionFlags & 0x1000) || a3 ||
+            ((!(aiState->conditionFlags & 0x4000)) || ((aiState->conditionFlags & 0x4000) ^ (a2 & 0x4000))) &&
+                !((aiState->conditionFlags & 8) ^ (pf & PLAYER_FLAG_NOT_FACING_OPP)) &&
+                (aiState->conditionFlags & a2 & 5)) {
+            aiState->opponentHpAtAction = gPlayers[1 - player->playerId].obj->playerHp;
+            player->aiState.aiFlags &= ~(AIF_4000 | AIF_ACTION_IN_PROGRESS | AIF_10000 | AIF_20000);
+            player->aiState.aiFlags |= AIF_ACTION_IN_PROGRESS;
+            if (aiState->conditionFlags & 0x8000) {
+                player->aiState.aiFlags |= AIF_10000;
             }
             return TRUE;
         }
 
-        subH->sequencePtr++;
-    } while (*subH->sequencePtr >= 0);
+        aiState->sequencePtr++;
+    } while (*aiState->sequencePtr >= 0);
 
     ai_reset(player);
     return FALSE;
@@ -236,11 +239,11 @@ void ai_increase_difficulty(Player *player) {
 
     a1 = player->unk_DBA;
 
-    gBattleSettings[player->playerId].unk_04++;
-    if (gBattleSettings[player->playerId].unk_04 > 7) {
-        gBattleSettings[player->playerId].unk_04 = 7;
+    gBattleSettings[player->playerId].aiDifficulty++;
+    if (gBattleSettings[player->playerId].aiDifficulty > 7) {
+        gBattleSettings[player->playerId].aiDifficulty = 7;
     }
-    a3 = gBattleSettings[player->playerId].unk_04;
+    a3 = gBattleSettings[player->playerId].aiDifficulty;
 
     for (i = 0; i < a1; i++) {
         ptr = player->aiResponseTable + player->aiResponseIndexMap[i];
@@ -249,7 +252,7 @@ void ai_increase_difficulty(Player *player) {
     }
 
     ai_reset(player);
-    player->aiState.aiFlags = 0x20000;
+    player->aiState.aiFlags = AIF_20000;
 }
 
 void ai_reset_diffculty(Player *player) {
@@ -267,17 +270,17 @@ void ai_reset_diffculty(Player *player) {
 
     ai_reset(player);
 
-    a3 = gBattleSettings[player->playerId].unk_04;
+    a3 = gBattleSettings[player->playerId].aiDifficulty;
     if (a3 == 0x7FFF) {
         a3 = 0;
     }
-    gBattleSettings[player->playerId].unk_04 = 0;
+    gBattleSettings[player->playerId].aiDifficulty = 0;
 
     for (i = 0; i < a3; i++) {
         ai_increase_difficulty(player);
     }
 
-    player->aiState.aiFlags = 0x20000;
+    player->aiState.aiFlags = AIF_20000;
 }
 
 void ai_reset_difficulty_hard(Player *player) {
@@ -293,9 +296,9 @@ void ai_reset_difficulty_hard(Player *player) {
     }
 
     ai_reset(player);
-    gBattleSettings[player->playerId].unk_04 = 0;
-    gBattleSettings[player->playerId].unk_04 = 0;
-    player->aiState.aiFlags = 0x20000;
+    gBattleSettings[player->playerId].aiDifficulty = 0;
+    gBattleSettings[player->playerId].aiDifficulty = 0;
+    player->aiState.aiFlags = AIF_20000;
 }
 
 void ai_set_temp_max_difficulty(Player *player) {
@@ -313,15 +316,15 @@ void ai_set_temp_max_difficulty(Player *player) {
 
     ai_reset(player);
 
-    gBattleSettings[player->playerId].unk_04 = 8;
-    a3 = gBattleSettings[player->playerId].unk_04;
-    gBattleSettings[player->playerId].unk_04 = 0;
+    gBattleSettings[player->playerId].aiDifficulty = 8;
+    a3 = gBattleSettings[player->playerId].aiDifficulty;
+    gBattleSettings[player->playerId].aiDifficulty = 0;
 
     for (i = 0; i < a3; i++) {
         ai_increase_difficulty(player);
     }
 
-    player->aiState.aiFlags = 0x20000;
+    player->aiState.aiFlags = AIF_20000;
 }
 
 u8 ai_get_transition_rule(Player *player, s16 **arg1, u8 arg2) {
@@ -338,9 +341,9 @@ u8 ai_get_transition_rule(Player *player, s16 **arg1, u8 arg2) {
         v1 = (gPlayers[1 - player->playerId].combatState->flags & CSF_CROUCH) ? 320 : 68;
         a1 = opp->moveToLogicStateMap[v1];
         a2 = opp->logicStateTable[a1];
-        a3 = opp->transitionRuleTable[a2].unk_0E[player->characterId];
+        a3 = opp->transitionRuleTable[a2].aiResponseForChar[player->characterId];
     } else {
-        a3 = gPlayers[1 - player->playerId].transition->unk_0E[player->characterId];
+        a3 = gPlayers[1 - player->playerId].transition->aiResponseForChar[player->characterId];
         if (a3 == 0xFF) {
             return FALSE;
         }
@@ -359,7 +362,7 @@ u8 ai_get_opponent_response(Player *player, s16 **arg1) {
     s16 a3;
     s16 *ptr;
 
-    a3 = gPlayers[1 - player->playerId].transition->unk_0E[player->characterId];
+    a3 = gPlayers[1 - player->playerId].transition->aiResponseForChar[player->characterId];
     if (a3 == 0xFF) {
         return FALSE;
     }
@@ -373,7 +376,7 @@ u8 ai_get_self_response(Player *player, s16 **arg1) {
     s16 a3;
     s16 *ptr;
 
-    a3 = gPlayers[player->playerId].transition->unk_19;
+    a3 = gPlayers[player->playerId].transition->aiResponseSelf;
     if (a3 == 0xFF) {
         return FALSE;
     }
@@ -390,21 +393,21 @@ u8 ai_get_self_response(Player *player, s16 **arg1) {
 
 u8 ai_decide(Player *player, u8 arg1) {
     s16 *sp38C;
-    s32 s0;
-    s16 a3;
-    AiState *subH;
+    s32 oppId;
+    s16 numCandidates;
+    AiState *aiState;
     s16 *ptr;
-    AiCandidate sp5C[100];
+    AiCandidate candidates[100];
     u8 s2;
     AiAction *v1;
     s32 pad;
     s16 pad2;
-    u16 sp4C;
-    s32 sp48;
-    s32 sp44;
-    s16 v2;
+    u16 difficultyMask;
+    s32 combatFlags;
+    s32 playerFlags;
+    s16 selectedCandidate;
 
-    s0 = (player->playerId != PLAYER_1) ? PLAYER_1 : PLAYER_2;
+    oppId = (player->playerId != PLAYER_1) ? PLAYER_1 : PLAYER_2;
 
     if (!(player->flags & PLAYER_FLAG_2000) && (player->combatStateId == 216 || player->combatStateId == 42) &&
         ai_get_transition_rule(player, &sp38C, TRUE)) {
@@ -418,8 +421,8 @@ u8 ai_decide(Player *player, u8 arg1) {
         return FALSE;
     }
 
-    if (s2 && (*sp38C & 2) && (gPlayers[s0].combatState->flags & (CSF_200 | CSF_400)) && !gBattleSettings[s0].isCpu &&
-        !(gPlayers[s0].flags & PLAYER_FLAG_10000)) {
+    if (s2 && (*sp38C & 2) && (gPlayers[oppId].combatState->flags & (CSF_200 | CSF_400)) &&
+        !gBattleSettings[oppId].isCpu && !(gPlayers[oppId].flags & PLAYER_FLAG_10000)) {
         return FALSE;
     }
 
@@ -431,11 +434,11 @@ u8 ai_decide(Player *player, u8 arg1) {
         s2 = FALSE;
     }
 
-    a3 = 0;
+    numCandidates = 0;
 
-    sp4C = 1 << gBattleSettings[player->playerId].unk_04;
-    sp48 = player->combatState->flags;
-    sp44 = player->flags;
+    difficultyMask = 1 << gBattleSettings[player->playerId].aiDifficulty;
+    combatFlags = player->combatState->flags;
+    playerFlags = player->flags;
 
     do {
         ptr = sp38C + 4;
@@ -444,16 +447,17 @@ u8 ai_decide(Player *player, u8 arg1) {
             ptr++;
 
             if (v1->distanceMax <= gPlayerDistance + 200 && v1->distanceMin >= gPlayerDistance - 200) {
-                subH = &player->aiState;
-                if (v1->difficultyMask & sp4C) {
-                    if (v1 != subH->recentActions[1] && v1 != subH->recentActions[2] || !(v1->conditionFlags & 0x800)) {
-                        if ((v1->conditionFlags & 0x1000) || ((v1->conditionFlags & sp48) & 0x600) ||
-                            (sp44 & PLAYER_FLAG_NOT_FACING_OPP) == (v1->conditionFlags & 8) &&
-                                ((u8) (v1->conditionFlags & sp48) & 5)) {
+                aiState = &player->aiState;
+                if (v1->difficultyMask & difficultyMask) {
+                    if (v1 != aiState->recentActions[1] && v1 != aiState->recentActions[2] ||
+                        !(v1->conditionFlags & 0x800)) {
+                        if ((v1->conditionFlags & 0x1000) || ((v1->conditionFlags & combatFlags) & 0x600) ||
+                            (playerFlags & PLAYER_FLAG_NOT_FACING_OPP) == (v1->conditionFlags & 8) &&
+                                ((u8) (v1->conditionFlags & combatFlags) & 5)) {
                             // clang-format off
-                            sp5C[a3].index = ptr[-1];\
-                            sp5C[a3].entry = v1;\
-                            a3++;
+                            candidates[numCandidates].index = ptr[-1];\
+                            candidates[numCandidates].entry = v1;\
+                            numCandidates++;
                             // clang-format on
                         }
                     }
@@ -461,7 +465,7 @@ u8 ai_decide(Player *player, u8 arg1) {
             }
         }
 
-        if (a3 == 0) {
+        if (numCandidates == 0) {
             if (!s2) {
                 if (arg1) {
                     return FALSE;
@@ -469,9 +473,9 @@ u8 ai_decide(Player *player, u8 arg1) {
 
                 player->aiState.recentActions[0] = NULL;
 
-                if (gPlayerDistance > 800 && !(player->aiState.aiFlags & 0x40000)) {
-                    if (gBattleSettings[player->playerId].unk_04 < 4) {
-                        player_apply_move(player, 45, TRUE);
+                if (gPlayerDistance > 800 && !(player->aiState.aiFlags & AIF_MOVED_FORWARD)) {
+                    if (gBattleSettings[player->playerId].aiDifficulty < 4) {
+                        player_apply_move(player, MOVE_ID_45, TRUE);
                         str_copy(gPlayers[PLAYER_2].aiState.aiDebugName, "Default ss fwd");
                         player->aiState.stateCallback = func_8001DA90;
                     } else {
@@ -479,10 +483,10 @@ u8 ai_decide(Player *player, u8 arg1) {
                         str_copy(gPlayers[PLAYER_2].aiState.aiDebugName, "Default dash fwd");
                     }
 
-                    player->aiState.aiFlags &= ~0x180000;
-                    player->aiState.aiFlags |= 0x40000;
+                    player->aiState.aiFlags &= ~(AIF_MOVED_BACK | AIF_SIDE_STEPPED);
+                    player->aiState.aiFlags |= AIF_MOVED_FORWARD;
                 } else if (gPlayerDistance < 800 && !(player->aiState.aiFlags << 19)) { // ???
-                    if (gBattleSettings[player->playerId].unk_04 < 4) {
+                    if (gBattleSettings[player->playerId].aiDifficulty < 4) {
                         player_apply_move(player, 300, TRUE);
                         str_copy(gPlayers[PLAYER_2].aiState.aiDebugName, "Default ss bak");
                         player->aiState.stateCallback = func_8001DA90;
@@ -491,8 +495,8 @@ u8 ai_decide(Player *player, u8 arg1) {
                         str_copy(gPlayers[PLAYER_2].aiState.aiDebugName, "Default dash bak");
                     }
 
-                    player->aiState.aiFlags &= ~0x140000;
-                    player->aiState.aiFlags |= 0x80000;
+                    player->aiState.aiFlags &= ~(AIF_MOVED_FORWARD | AIF_SIDE_STEPPED);
+                    player->aiState.aiFlags |= AIF_MOVED_BACK;
                 } else {
                     if (guRandom() & 1 & gFrameCounter) {
                         str_copy(gPlayers[PLAYER_2].aiState.aiDebugName, "Default ss in");
@@ -508,12 +512,12 @@ u8 ai_decide(Player *player, u8 arg1) {
                         player->aiState.stateCallback = NULL;
                     }
 
-                    player->aiState.aiFlags &= ~0xC0000;
-                    player->aiState.aiFlags |= 0x100000;
+                    player->aiState.aiFlags &= ~(AIF_MOVED_FORWARD | AIF_MOVED_BACK);
+                    player->aiState.aiFlags |= AIF_SIDE_STEPPED;
                 }
 
                 player->aiState.actionPtr = NULL;
-                player->aiState.aiFlags |= 0x8000;
+                player->aiState.aiFlags |= AIF_ACTION_IN_PROGRESS;
                 return TRUE;
             }
 
@@ -524,18 +528,18 @@ u8 ai_decide(Player *player, u8 arg1) {
                 return FALSE;
             }
         }
-    } while (a3 == 0);
+    } while (numCandidates == 0);
 
-    subH = &player->aiState;
+    aiState = &player->aiState;
 
-    v2 = guRandom() % a3;
-    subH->recentActions[0] = sp5C[v2].entry;
-    pad2 = subH->recentActions[0]->actionIndex;
-    subH->sequencePtr = player->aiSequenceTable + pad2;
-    subH->actionFlags = subH->recentActions[0]->conditionFlags;
-    subH->tableRow = sp38C;
+    selectedCandidate = guRandom() % numCandidates;
+    aiState->recentActions[0] = candidates[selectedCandidate].entry;
+    pad2 = aiState->recentActions[0]->actionIndex;
+    aiState->sequencePtr = player->aiSequenceTable + pad2;
+    aiState->actionFlags = aiState->recentActions[0]->conditionFlags;
+    aiState->tableRow = sp38C;
 
-    return ai_parse_action(player, subH) && ai_execute_action(player);
+    return ai_parse_action(player, aiState) && ai_execute_action(player);
 }
 
 s16 ai_cond_approach(Player *player) {
@@ -551,7 +555,7 @@ s16 ai_cond_approach(Player *player) {
            (!v0 || (*sp24 & 2));
 }
 
-s16 func_8001CC18(Player *player) {
+s16 ai_cond_func_8001CC18(Player *player) {
     s16 *sp24;
     u8 v0;
 
@@ -560,7 +564,7 @@ s16 func_8001CC18(Player *player) {
            (!v0 || (*sp24 & 2));
 }
 
-s16 func_8001CC8C(Player *player) {
+s16 ai_cond_func_8001CC8C(Player *player) {
     s16 *sp24;
     u8 v0;
 
@@ -574,11 +578,11 @@ s16 func_8001CC8C(Player *player) {
            (!v0 || (*sp24 & 2));
 }
 
-s16 func_8001CD28(Player *player) {
+s16 ai_cond_func_8001CD28(Player *player) {
     return 0;
 }
 
-s16 func_8001CD34(Player *player) {
+s16 ai_cond_func_8001CD34(Player *player) {
     s16 *sp24;
     u8 v0;
 
@@ -591,7 +595,7 @@ s16 func_8001CD34(Player *player) {
     return (player->aiState.actionParam) && !(player->flags & PLAYER_FLAG_NOT_FACING_OPP) && (!v0 || (*sp24 & 2));
 }
 
-s16 func_8001CDAC(Player *player) {
+s16 ai_cond_func_8001CDAC(Player *player) {
     if (player->obj->frameIndex < (player->combatState->maxFrame >> 1)) {
         return 1;
     }
@@ -609,11 +613,11 @@ s16 func_8001CDE0(Player *player) {
     }
 }
 
-s16 func_8001CE0C(Player *player) {
+s16 ai_cond_func_8001CE0C(Player *player) {
     return -1;
 }
 
-s16 func_8001CE18(Player *player) {
+s16 ai_cond_func_8001CE18(Player *player) {
     s16 *sp34;
     s16 oppId;
     s16 sp30;
@@ -629,7 +633,7 @@ s16 func_8001CE18(Player *player) {
     if (player->flags & PLAYER_FLAG_2000) {
         return 1;
     }
-    if (player->aiState.hitCount >= D_80049D34[gBattleSettings[player->playerId].unk_04] &&
+    if (player->aiState.hitCount >= D_80049D34[gBattleSettings[player->playerId].aiDifficulty] &&
         !(gPlayers[1 - player->playerId].flags & PLAYER_FLAG_2000000)) {
         return 0;
     }
@@ -659,7 +663,7 @@ s16 func_8001CE18(Player *player) {
     return player->aiState.actionParam > 0 || !(*sp34 & 2);
 }
 
-s16 func_8001D070(Player *player) {
+s16 ai_cond_func_8001D070(Player *player) {
     s16 oppId = 1 - player->playerId;
     s32 pad;
     s16 *sp24;
@@ -669,7 +673,7 @@ s16 func_8001D070(Player *player) {
         return TRUE;
     }
 
-    if (player->aiState.hitCount >= D_80049D34[gBattleSettings[player->playerId].unk_04] &&
+    if (player->aiState.hitCount >= D_80049D34[gBattleSettings[player->playerId].aiDifficulty] &&
         !(gPlayers[1 - player->playerId].flags & PLAYER_FLAG_2000000)) {
         return FALSE;
     }
@@ -694,7 +698,7 @@ s16 func_8001D070(Player *player) {
 u8 func_8001D1F8(Player *player) {
     switch (gDifficulty) {
         case DIFFICULTY_EASY:
-            switch (gBattleSettings[player->playerId].unk_04) {
+            switch (gBattleSettings[player->playerId].aiDifficulty) {
                 case 0:
                     return (guRandom() % 100) < 20;
                 case 1:
@@ -711,7 +715,7 @@ u8 func_8001D1F8(Player *player) {
             break;
         case DIFFICULTY_NORMAL:
         case DIFFICULTY_HARD:
-            switch (gBattleSettings[player->playerId].unk_04) {
+            switch (gBattleSettings[player->playerId].aiDifficulty) {
                 case 0:
                     return (guRandom() % 100) < 20;
                 case 1:
@@ -736,7 +740,7 @@ s16 func_8001D3A8(Player *player) {
 
     player->aiState.actionParam--;
 
-    if (player->aiState.hitCount < D_80049D34[gBattleSettings[playerId].unk_04]) {
+    if (player->aiState.hitCount < D_80049D34[gBattleSettings[playerId].aiDifficulty]) {
         v0 = ai_get_opponent_response(player, &sp24);
         if (v0 && !(*sp24 & 2) && !(*sp24 & 4)) {
             player_force_move(player, 56, TRUE);
@@ -762,7 +766,7 @@ s16 func_8001D44C(Player *player) {
 
     player->aiState.actionParam--;
 
-    if (player->aiState.hitCount < D_80049D34[gBattleSettings[player->playerId].unk_04]) {
+    if (player->aiState.hitCount < D_80049D34[gBattleSettings[player->playerId].aiDifficulty]) {
         if (ai_get_opponent_response(player, &sp34)) {
             if (!(*sp34 & 2) && !(*sp34 & 4)) {
                 player_force_move(player, 56, TRUE);
@@ -785,7 +789,7 @@ s16 func_8001D44C(Player *player) {
     return 1;
 }
 
-s16 func_8001D660(Player *player) {
+s16 ai_cond_func_8001D660(Player *player) {
     player->aiState.delayCount = 0;
     player->aiState.hitCount++;
 
@@ -806,7 +810,7 @@ s16 func_8001D6C0(Player *player) {
 
     player->aiState.actionParam--;
 
-    if (player->aiState.hitCount < D_80049D34[gBattleSettings[playerId].unk_04]) {
+    if (player->aiState.hitCount < D_80049D34[gBattleSettings[playerId].aiDifficulty]) {
         v0 = ai_get_opponent_response(player, &sp24);
         if (v0 && !(*sp24 & 2) && (*sp24 & 4)) {
             player_force_move(player, 57, TRUE);
@@ -832,7 +836,7 @@ s16 func_8001D764(Player *player) {
 
     player->aiState.actionParam--;
 
-    if (player->aiState.hitCount < D_80049D34[gBattleSettings[player->playerId].unk_04]) {
+    if (player->aiState.hitCount < D_80049D34[gBattleSettings[player->playerId].aiDifficulty]) {
         if (ai_get_opponent_response(player, &sp34)) {
             if (!(*sp34 & 2) && (*sp34 & 4)) {
                 player_force_move(player, 57, TRUE);
@@ -855,7 +859,7 @@ s16 func_8001D764(Player *player) {
     return 1;
 }
 
-s16 func_8001D9B0(Player *player) {
+s16 ai_cond_func_8001D9B0(Player *player) {
     player->aiState.delayCount = 0;
     player->aiState.hitCount++;
 
@@ -868,10 +872,10 @@ s16 func_8001D9B0(Player *player) {
     }
 }
 
-s16 func_8001DA10(Player *player) {
+s16 ai_cond_func_8001DA10(Player *player) {
     s16 sp1E;
 
-    sp1E = gBattleSettings[player->playerId].unk_04;
+    sp1E = gBattleSettings[player->playerId].aiDifficulty;
     player->aiState.actionParam = D_80049D44[sp1E] + (guRandom() & D_80049D24[sp1E]); // @BUG ??
     player->aiState.stateCallback = func_8001CDE0;
     return 1;
@@ -896,13 +900,13 @@ s16 func_8001DA90(Player *player) {
     return 0;
 }
 
-s16 func_8001DB2C(Player *player) {
+s16 ai_cond_func_8001DB2C(Player *player) {
     s16 sp24;
     s32 pad;
     s16 pad2;
     s16 sp2C;
 
-    sp24 = gBattleSettings[player->playerId].unk_04;
+    sp24 = gBattleSettings[player->playerId].aiDifficulty;
     sp2C = D_80049D54[sp24];
     sp2C += guRandom() % D_80049D64[sp24];
     player->aiState.delayCount++;
@@ -918,13 +922,13 @@ s16 func_8001DB2C(Player *player) {
     }
 }
 
-s16 func_8001DC68(Player *player) {
+s16 ai_cond_func_8001DC68(Player *player) {
     s16 sp24;
     s32 pad;
     s16 pad2;
     s16 sp2C;
 
-    sp24 = gBattleSettings[player->playerId].unk_04;
+    sp24 = gBattleSettings[player->playerId].aiDifficulty;
     sp2C = D_80049D54[sp24];
     sp2C += guRandom() % D_80049D64[sp24];
     player->aiState.delayCount++;
@@ -940,7 +944,7 @@ s16 func_8001DC68(Player *player) {
     }
 }
 
-s16 func_8001DDA4(Player *player) {
+s16 ai_cond_func_8001DDA4(Player *player) {
     s16 *sp1C;
 
     if (ai_get_opponent_response(player, &sp1C) != 0) {
@@ -954,7 +958,7 @@ s16 func_8001DDA4(Player *player) {
     }
 }
 
-s16 func_8001DDEC(Player *player) {
+s16 ai_cond_func_8001DDEC(Player *player) {
     player->aiState.stateCallback = NULL;
     player->aiState.sequencePtr -= 2;
     return 1;

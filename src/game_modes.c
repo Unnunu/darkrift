@@ -148,8 +148,8 @@ void battle_global_init(void) {
         D_800B6368[j].wins = D_800B6368[j].loses = 0;
     }
 
-    gBattleSettings[PLAYER_1].unk_04 = 7;
-    gBattleSettings[PLAYER_2].unk_04 = 7;
+    gBattleSettings[PLAYER_1].aiDifficulty = 7;
+    gBattleSettings[PLAYER_2].aiDifficulty = 7;
     gPracticingPlayer = 0;
 }
 
@@ -1264,7 +1264,7 @@ void func_8000A298(void) {
     gBattleSettings[PLAYER_1].unk_0F = gBattleSettings[PLAYER_2].unk_0F = TRUE;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
     gBattleSettings[PLAYER_1].initialHp = gBattleSettings[PLAYER_2].initialHp = 400;
-    gBattleSettings[PLAYER_1].unk_04 = gBattleSettings[PLAYER_2].unk_04 = 0;
+    gBattleSettings[PLAYER_1].aiDifficulty = gBattleSettings[PLAYER_2].aiDifficulty = 0;
 }
 
 void run_main_menu_mode(void) {

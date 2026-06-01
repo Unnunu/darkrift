@@ -362,7 +362,7 @@ void player_update(Object *obj) {
     }
 
     if (gBattleSettings[playerId].isCpu && !gRoundOver && !(player->flags & PLAYER_FLAG_100000)) {
-        if (!(player->aiState.aiFlags & 0x20000)) {
+        if (!(player->aiState.aiFlags & AIF_20000)) {
             ai_update(player);
         }
         if (D_8013C444 && gPlayerInput[playerId].pendingInput && player->lookupLogicTable >= 0 &&
@@ -455,7 +455,7 @@ void func_80004334(CharacterDefinition *arg0, s16 playerId) {
     gPlayers[playerId].aiResponseTable =
         (((a2->unk_00 & 1) + a2->unk_00) & 0xFFFFFFFF) + a2->unk_04; // required to match
 
-    gPlayers[playerId].aiState.aiFlags = 0x20000;
+    gPlayers[playerId].aiState.aiFlags = AIF_20000;
     gPlayers[playerId].aiState.recentActions[0] = NULL;
     gPlayers[playerId].aiState.sequencePtr = &D_80049394;
     gPlayers[playerId].aiState.actionPtr = &D_80049394;
@@ -472,10 +472,10 @@ void func_80004334(CharacterDefinition *arg0, s16 playerId) {
             ai_set_temp_max_difficulty(gPlayers + PLAYER_1);
         }
     } else if (gBattleSettings[playerId].unk_0F) {
-        if (gDifficulty == DIFFICULTY_HARD && gBattleSettings[playerId].unk_04 == 0) {
-            gBattleSettings[playerId].unk_04 = 2;
+        if (gDifficulty == DIFFICULTY_HARD && gBattleSettings[playerId].aiDifficulty == 0) {
+            gBattleSettings[playerId].aiDifficulty = 2;
         }
-        s2 = gBattleSettings[playerId].unk_04;
+        s2 = gBattleSettings[playerId].aiDifficulty;
 
         ai_reset_difficulty_hard(gPlayers + playerId);
         gBattleSettings[playerId].unk_0F = FALSE;
@@ -1120,7 +1120,7 @@ u8 player_make_transition(Player *player, u8 arg1, u16 logicState) {
                 animTaskParams[3] = sp44->stateIdOverride;
                 animTaskParams[4] = behavior->actionFunc;
 
-                player->aiState.aiFlags |= 0x20000;
+                player->aiState.aiFlags |= AIF_20000;
             }
             goto label;
         }

@@ -20,7 +20,7 @@ void action_animation_end(Object *obj) {
 
         if (player->lookupLogicTable >= 0 && (player->flags & PLAYER_FLAG_1000)) {
             if (ai_select_transition(player)) {
-                player->aiState.aiFlags |= 0x8000;
+                player->aiState.aiFlags |= AIF_ACTION_IN_PROGRESS;
                 return;
             }
         }
@@ -290,7 +290,7 @@ void func_80024640(Object *obj) {
         obj->frameIndex = s2;
     }
 
-    player->aiState.aiFlags &= ~0x20000;
+    player->aiState.aiFlags &= ~AIF_20000;
 }
 
 void func_80024764(Object *obj) {
@@ -303,7 +303,7 @@ void func_80024764(Object *obj) {
     player->combatState = temp;
     obj->modInst->currentAnimId = temp->animationId;
     player->flags |= PLAYER_FLAG_TRANSITION_LOCKED;
-    player->aiState.aiFlags |= 0x20000;
+    player->aiState.aiFlags |= AIF_20000;
 }
 
 void func_800247CC(Object *obj) {

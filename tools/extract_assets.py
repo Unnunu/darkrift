@@ -265,9 +265,21 @@ def process_db():
         l = []
         i = 0
         for off in range(offs[1] + 4, offs[2], 28):
-            e = unpack_from(">hHHHhhH14IIIH", content, off)
-            l.append({"name":symbols[0][i], "index":i, "index_in_field28":e[0], "buttons":get_buttons(e[1]), "flags":get_move_flags(e[2]), "unk06":e[3],
-                      "behavior":f"BHV_{e[4]}", "actionState": f"CS_{e[5]}", "button_mask":get_buttons(e[6]), "unk0E":[e[7],e[8],e[9],e[10]]})
+            head = unpack_from(">hHHHhhH", content, off)
+            forChar = list(unpack_from("11B", content, off + 14))
+            selfResp = unpack_from("B", content, off + 25)[0]
+            # annotate response indices with SYM names
+            forCharAnnotated = []
+            for idx, val in enumerate(forChar):
+                if val == 0xFF:
+                    forCharAnnotated.append(f"{idx}:0xFF (none)")
+                elif idx < len(symbols[1]) and val < len(symbols[1]):
+                    forCharAnnotated.append(f"{idx}:{val}:\"{symbols[1][val]}\"")
+                else:
+                    forCharAnnotated.append(f"{idx}:{val}")
+            l.append({"name":symbols[0][i], "index":i, "index_in_field28":head[0], "buttons":get_buttons(head[1]), "flags":get_move_flags(head[2]), "unk06":head[3],
+                      "behavior":f"BHV_{head[4]}", "actionState": f"CS_{head[5]}", "button_mask":get_buttons(head[6]),
+                      "aiResponseForChar":forCharAnnotated, "aiResponseSelf":selfResp})
             i += 1
         dbdata["transitionTable"] = l
 
@@ -344,11 +356,133 @@ def process_db():
             l.append({"frame":e[0]})
         dbdata["player_44"] = l
 
+        # ProjectileDef (76 bytes each)
         l = []
         for off in range(offs[10], offs[11], 76):
-            e = unpack_from(">B", content, off)
-            l.append({"frame":e[0]})
-        dbdata["player_48"] = l
+            e = unpack_from(">hhiiiiiihhhhiihhhhhhhhihh8s", content, off)
+            l.append({
+                "lifetime":e[0], "boneId":e[1],
+                "originX":e[2], "originY":e[3], "originZ":e[4],
+                "velocityX":e[5], "velocityY":e[6], "velocityZ":e[7],
+                "spriteFrame":e[8], "unk_1E":e[9], "spriteIndex":e[10], "modelIndex":e[11],
+                "unk_24":e[12], "unk_28":e[13],
+                "flags":e[14], "unk_2E":e[15], "unk_30":e[16], "unk_32":e[17],
+                "unk_34":e[18], "unk_36":e[19], "unk_38":e[20], "unk_3A":e[21],
+                "unk_3C":e[22], "unk_40":e[23], "unk_42":e[24],
+                "lightColors":e[25].hex()
+            })
+        dbdata["projectileDefs"] = l
+
+        # ProjectileBarrage (24 bytes each = 8 ProjectileShot)
+        l = []
+        for off in range(offs[11], offs[12], 24):
+            shots = []
+            for si in range(8):
+                s = unpack_from(">BBB", content, off + si * 3)
+                if s[0] == 0xFF:
+                    break
+                shots.append({"projectileId":s[0], "frameIndex":s[1], "unk_02":s[2]})
+            l.append({"shots": shots})
+        dbdata["projectileBarrages"] = l
+
+        # aiActionTable → grouped rows by aiActionIndexMap
+        l_rows = []
+        idxmap_vals = []
+        for off in range(offs[13], offs[14], 2):
+            idxmap_vals.append(unpack_from(">h", content, off)[0])
+        for i, offset in enumerate(idxmap_vals):
+            off_bytes = offs[12] + offset * 2
+            if off_bytes + 6 > offs[13]:
+                l_rows.append({
+                    "index": i,
+                    "name": symbols[3][i] if i < len(symbols[3]) else f"ACT_{i}",
+                    "callbackIdx": 0, "actionParam": 0, "conditionFlags": 0, "moves": []
+                })
+                continue
+            cb = unpack_from(">h", content, off_bytes)[0]
+            param = unpack_from(">h", content, off_bytes + 2)[0]
+            cond = unpack_from(">H", content, off_bytes + 4)[0]
+            moves = []
+            pos = off_bytes + 6
+            while pos < offs[13]:
+                val = unpack_from(">h", content, pos)[0]
+                if val == -1:
+                    break
+                moves.append(val)
+                pos += 2
+            l_rows.append({
+                "index": i,
+                "name": symbols[3][i] if i < len(symbols[3]) else f"ACT_{i}",
+                "callbackIdx": cb,
+                "actionParam": param,
+                "conditionFlags": cond,
+                "moves": moves
+            })
+        dbdata["aiActionRows"] = l_rows
+
+        # AiCandidate section: s32 count + AiAction[count] (12B each) + s16 sequenceTable
+        l_cands = []
+        l_seq_groups = []
+        if offs[14] < offs[15]:
+            cand_count = unpack_from(">I", content, offs[14])[0]
+            cand_off = offs[14] + 4
+            for i in range(cand_count):
+                e = unpack_from(">hhhhHH", content, cand_off + i * 12)
+                l_cands.append({
+                    "name": symbols[2][i] if i < len(symbols[2]) else f"CAND_{i}",
+                    "actionIndex":e[0], "difficultyMask":e[1], "distanceMax":e[2],
+                    "distanceMin":e[3], "conditionFlags":e[4], "unk_0A":e[5]
+                })
+            seq_off = cand_off + cand_count * 12
+            group = []
+            for off in range(seq_off, offs[15], 2):
+                val = unpack_from(">h", content, off)[0]
+                if val == -1:
+                    if group:
+                        l_seq_groups.append({"actions": group})
+                        group = []
+                else:
+                    name = symbols[3][val] if val < len(symbols[3]) else f"ACT_{val}"
+                    group.append({"index": val, "name": name})
+            if group:
+                l_seq_groups.append({"actions": group})
+        dbdata["aiCandidateTable"] = l_cands
+        dbdata["aiSequenceGroups"] = l_seq_groups
+
+        # AiResponse section: s32 count + s16 indexMap[count] + s16 responseData[]
+        l_idxmap = []
+        l_resp = []
+        if offs[15] < offs[16]:
+            resp_count = unpack_from(">I", content, offs[15])[0]
+            idx_off = offs[15] + 4
+            idxmap_vals = []
+            for i in range(resp_count):
+                e = unpack_from(">h", content, idx_off + i * 2)
+                idxmap_vals.append(e[0])
+            l_idxmap = idxmap_vals
+            resp_off = idx_off + resp_count * 2
+            s16_data = unpack_from(f">{ (offs[16] - resp_off)//2 }h", content, resp_off) if resp_off < offs[16] else []
+            for i, start in enumerate(idxmap_vals):
+                if start >= len(s16_data):
+                    break
+                flags = s16_data[start]
+                v1 = s16_data[start + 1] if start + 1 < len(s16_data) else 0
+                v2 = s16_data[start + 2] if start + 2 < len(s16_data) else 0
+                adj = s16_data[start + 3] if start + 3 < len(s16_data) else 0
+                cands = []
+                pos = start + 4
+                while pos < len(s16_data) and s16_data[pos] != -1:
+                    cands.append(s16_data[pos] & 0xFF)
+                    pos += 1
+                l_resp.append({
+                    "name": symbols[1][i] if i < len(symbols[1]) else f"RESP_{i}",
+                    "flags":flags, "val1":v1, "val2":v2, "adj":adj, "candidates":cands
+                })
+        dbdata["aiResponseIndexMap"] = l_idxmap
+        dbdata["aiResponseTable"] = l_resp
+
+        # unk_68 (offs[16] -> EOF, raw bytes)
+        dbdata["unk_68"] = content[offs[16]:].hex()
 
         outpath = replace_path(g).with_name(f"{g.name}.txt")
         outpath.parent.mkdir(parents=True, exist_ok=True)
@@ -361,6 +495,36 @@ def process_db():
                             print(f"\t{k1}:", file=outfile)
                             for m in v1:
                                 print(f"\t\t{m}", file=outfile)
+                elif k == "aiResponseIndexMap":
+                    for i, val in enumerate(v):
+                        print(f"\t{i}: {val}", file=outfile)
+                elif k == "aiSequenceGroups":
+                    for i, g in enumerate(v):
+                        acts = ", ".join(f'{a["index"]}:"{a["name"]}"' for a in g["actions"])
+                        print(f"\tgroup {i}: [{acts}]", file=outfile)
+                elif k == "aiActionRows":
+                    for r in v:
+                        name = r['name']
+                        if r['callbackIdx'] == -1:
+                            cb = "none"
+                        else:
+                            cb = f"func_8001CDxx[{r['callbackIdx']}]"
+                        moves_str = ", ".join(str(m) for m in r['moves'])
+                        print(f"\t{r['index']}: name=\"{name}\", callback={cb}, "
+                              f"condFlags={r['conditionFlags']:#x}, moves=[{moves_str}]", file=outfile)
+                elif k == "aiResponseTable":
+                    for i, r in enumerate(v):
+                        name = r['name']
+                        print(f"\t{i}: name=\"{name}\", flags={r['flags']:#x}, "
+                              f"val1={r['val1']}, val2={r['val2']}, adj={r['adj']}, "
+                              f"candidates={r['candidates']}", file=outfile)
+                elif k == "aiCandidateTable":
+                    for i, c in enumerate(v):
+                        print(f"\t{i}: name=\"{c['name']}\", actionIndex={c['actionIndex']}, "
+                              f"difficultyMask={c['difficultyMask']:#x}, distance=({c['distanceMin']},{c['distanceMax']}), "
+                              f"condFlags={c['conditionFlags']:#x}", file=outfile)
+                elif k == "unk_68":
+                    print(f"\t{v}", file=outfile)
                 else:
                     for l in v:
                         print(f"\t{l}", file=outfile)

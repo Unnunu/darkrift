@@ -794,10 +794,10 @@ void func_80017B3C(Object *obj) {
     gPlayers[PLAYER_2].flags &= ~PLAYER_FLAG_100000;
 
     if (gBattleSettings[PLAYER_1].isCpu) {
-        gPlayers[PLAYER_1].aiState.aiFlags &= ~0x20000;
+        gPlayers[PLAYER_1].aiState.aiFlags &= ~AIF_20000;
     }
     if (gBattleSettings[PLAYER_2].isCpu) {
-        gPlayers[PLAYER_2].aiState.aiFlags &= ~0x20000;
+        gPlayers[PLAYER_2].aiState.aiFlags &= ~AIF_20000;
     }
 
     func_80028FCC();
@@ -826,10 +826,10 @@ void func_80017CA8(void) {
     D_80080234 = FALSE;
 
     if (gBattleSettings[PLAYER_1].isCpu) {
-        gPlayers[PLAYER_1].aiState.aiFlags |= 0x20000;
+        gPlayers[PLAYER_1].aiState.aiFlags |= AIF_20000;
     }
     if (gBattleSettings[PLAYER_2].isCpu) {
-        gPlayers[PLAYER_2].aiState.aiFlags |= 0x20000;
+        gPlayers[PLAYER_2].aiState.aiFlags |= AIF_20000;
     }
 
     D_8013C23C->currentTask->func = func_80017C3C;

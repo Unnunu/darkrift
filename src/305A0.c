@@ -766,7 +766,7 @@ void player_trans_func_23(Object *obj) {
         }
     }
 
-    if (player->unk_DBC > 256 || (opponent->combatState->flags & CSF_JUMP) || v12) {
+    if (player->unk_DBC > 0x100 || (opponent->combatState->flags & CSF_JUMP) || v12) {
         player->flags |= PLAYER_FLAG_10;
         TASK_END(obj->currentTask);
     }
@@ -817,11 +817,11 @@ void player_trans_func_11(Object *obj) {
         v0->obj->frameIndex < v0->combatState->hitboxActiveStart) {
         if (v0->flags & PLAYER_FLAG_1) {
             player_force_move(player, 39, 1);
-            player->aiState.stateCallback = func_8001D070;
+            player->aiState.stateCallback = ai_cond_func_8001D070;
             player->aiState.actionParam = 60;
         } else {
             player_force_move(player, 59, 1);
-            player->aiState.stateCallback = func_8001CE18;
+            player->aiState.stateCallback = ai_cond_func_8001CE18;
             player->aiState.actionParam = 60;
         }
     }
