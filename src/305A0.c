@@ -2,6 +2,9 @@
 #include "camera.h"
 #include "task.h"
 
+s16 ai_cond_blockstring(Player *);
+s16 ai_cond_punish(Player *);
+
 void func_8002FA98(Object *obj);
 void func_80031DCC(Object *);
 void func_80030DA8(Object *);
@@ -817,11 +820,11 @@ void player_trans_func_11(Object *obj) {
         v0->obj->frameIndex < v0->combatState->hitboxActiveStart) {
         if (v0->flags & PLAYER_FLAG_1) {
             player_force_move(player, 39, 1);
-            player->aiState.stateCallback = ai_cond_func_8001D070;
+            player->aiState.stateCallback = ai_cond_blockstring;
             player->aiState.actionParam = 60;
         } else {
             player_force_move(player, 59, 1);
-            player->aiState.stateCallback = ai_cond_func_8001CE18;
+            player->aiState.stateCallback = ai_cond_punish;
             player->aiState.actionParam = 60;
         }
     }

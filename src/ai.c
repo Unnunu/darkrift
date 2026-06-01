@@ -9,24 +9,24 @@ typedef struct AiCandidate {
 u8 ai_get_opponent_response(Player *, s16 **);
 u8 ai_execute_action(Player *);
 u8 ai_parse_action(Player *, AiState *);
-s16 func_8001DA90(Player *);
+s16 ai_cond_move_wait(Player *);
 
 s16 ai_cond_approach(Player *);
-s16 ai_cond_func_8001CC8C(Player *);
-s16 ai_cond_func_8001CD28(Player *);
-s16 ai_cond_func_8001CD34(Player *);
-s16 ai_cond_func_8001CDAC(Player *);
-s16 ai_cond_func_8001CE18(Player *);
-s16 ai_cond_func_8001CE0C(Player *);
-s16 ai_cond_func_8001D070(Player *);
-s16 ai_cond_func_8001D9B0(Player *);
-s16 ai_cond_func_8001D660(Player *);
-s16 ai_cond_func_8001DA10(Player *);
-s16 ai_cond_func_8001CC18(Player *);
-s16 ai_cond_func_8001DB2C(Player *);
-s16 ai_cond_func_8001DC68(Player *);
-s16 ai_cond_func_8001DDA4(Player *);
-s16 ai_cond_func_8001DDEC(Player *);
+s16 ai_cond_retreat(Player *);
+s16 ai_cond_immediate(Player *);
+s16 ai_cond_timer(Player *);
+s16 ai_cond_anim_half(Player *);
+s16 ai_cond_punish(Player *);
+s16 ai_cond_reset(Player *);
+s16 ai_cond_blockstring(Player *);
+s16 ai_cond_breaker_crouch(Player *);
+s16 ai_cond_counter_stand(Player *);
+s16 ai_cond_random_delay(Player *);
+s16 ai_cond_distance(Player *);
+s16 ai_cond_delay_advance(Player *);
+s16 ai_cond_delay_advance2(Player *);
+s16 ai_cond_response_gate(Player *);
+s16 ai_cond_loop_back(Player *);
 
 s16 D_80049D10[] = { 30, 20, 20, 10, 10, 10, 0, 0, 0, 0 };
 s16 D_80049D24[] = { 30, 30, 10, 6, 5, 2, 2, 0 };
@@ -35,10 +35,10 @@ s16 D_80049D44[] = { 70, 60, 60, 55, 50, 45, 40, 40 };
 s16 D_80049D54[] = { 8, 6, 4, 2, 0, 0, 0, 0 };
 s16 D_80049D64[] = { 2, 2, 2, 1, 1, 1, 1, 1 };
 s16 (*D_80049D74[])(struct Player *) = {
-    ai_cond_approach,      ai_cond_func_8001CC8C, ai_cond_func_8001CD28, ai_cond_func_8001CD34,
-    ai_cond_func_8001CDAC, ai_cond_func_8001CE18, ai_cond_func_8001CE0C, ai_cond_func_8001D070,
-    ai_cond_func_8001D9B0, ai_cond_func_8001D660, ai_cond_func_8001DA10, ai_cond_func_8001CC18,
-    ai_cond_func_8001DB2C, ai_cond_func_8001DC68, ai_cond_func_8001DDA4, ai_cond_func_8001DDEC,
+    ai_cond_approach,       ai_cond_retreat,        ai_cond_immediate,     ai_cond_timer,
+    ai_cond_anim_half,      ai_cond_punish,         ai_cond_reset,         ai_cond_blockstring,
+    ai_cond_breaker_crouch, ai_cond_counter_stand,  ai_cond_random_delay,  ai_cond_distance,
+    ai_cond_delay_advance,  ai_cond_delay_advance2, ai_cond_response_gate, ai_cond_loop_back,
 };
 s16 D_80049DB4[] = { 13, 13, 13, 10, 19, 19, 10, 10, 19, 10, 10, 0 };
 s16 D_80049DCC[] = { 10, 10, 10, 7, 12, 12, 10, 10, 12, 10, 10, 0, 0, 0, 0, 0, 0, 0 };
@@ -359,15 +359,15 @@ u8 ai_get_transition_rule(Player *player, s16 **arg1, u8 arg2) {
 }
 
 u8 ai_get_opponent_response(Player *player, s16 **arg1) {
-    s16 a3;
+    s16 oppResponse;
     s16 *ptr;
 
-    a3 = gPlayers[1 - player->playerId].transition->aiResponseForChar[player->characterId];
-    if (a3 == 0xFF) {
+    oppResponse = gPlayers[1 - player->playerId].transition->aiResponseForChar[player->characterId];
+    if (oppResponse == 0xFF) {
         return FALSE;
     }
 
-    ptr = player->aiResponseTable + player->aiResponseIndexMap[a3];
+    ptr = player->aiResponseTable + player->aiResponseIndexMap[oppResponse];
     *arg1 = ptr;
     return TRUE;
 }
@@ -477,7 +477,7 @@ u8 ai_decide(Player *player, u8 arg1) {
                     if (gBattleSettings[player->playerId].aiDifficulty < 4) {
                         player_apply_move(player, MOVE_ID_45, TRUE);
                         str_copy(gPlayers[PLAYER_2].aiState.aiDebugName, "Default ss fwd");
-                        player->aiState.stateCallback = func_8001DA90;
+                        player->aiState.stateCallback = ai_cond_move_wait;
                     } else {
                         player_apply_move(player, 33, TRUE);
                         str_copy(gPlayers[PLAYER_2].aiState.aiDebugName, "Default dash fwd");
@@ -489,7 +489,7 @@ u8 ai_decide(Player *player, u8 arg1) {
                     if (gBattleSettings[player->playerId].aiDifficulty < 4) {
                         player_apply_move(player, 300, TRUE);
                         str_copy(gPlayers[PLAYER_2].aiState.aiDebugName, "Default ss bak");
-                        player->aiState.stateCallback = func_8001DA90;
+                        player->aiState.stateCallback = ai_cond_move_wait;
                     } else {
                         player_apply_move(player, 32, TRUE);
                         str_copy(gPlayers[PLAYER_2].aiState.aiDebugName, "Default dash bak");
@@ -555,7 +555,7 @@ s16 ai_cond_approach(Player *player) {
            (!v0 || (*sp24 & 2));
 }
 
-s16 ai_cond_func_8001CC18(Player *player) {
+s16 ai_cond_distance(Player *player) {
     s16 *sp24;
     u8 v0;
 
@@ -564,7 +564,7 @@ s16 ai_cond_func_8001CC18(Player *player) {
            (!v0 || (*sp24 & 2));
 }
 
-s16 ai_cond_func_8001CC8C(Player *player) {
+s16 ai_cond_retreat(Player *player) {
     s16 *sp24;
     u8 v0;
 
@@ -578,11 +578,11 @@ s16 ai_cond_func_8001CC8C(Player *player) {
            (!v0 || (*sp24 & 2));
 }
 
-s16 ai_cond_func_8001CD28(Player *player) {
+s16 ai_cond_immediate(Player *player) {
     return 0;
 }
 
-s16 ai_cond_func_8001CD34(Player *player) {
+s16 ai_cond_timer(Player *player) {
     s16 *sp24;
     u8 v0;
 
@@ -595,7 +595,7 @@ s16 ai_cond_func_8001CD34(Player *player) {
     return (player->aiState.actionParam) && !(player->flags & PLAYER_FLAG_NOT_FACING_OPP) && (!v0 || (*sp24 & 2));
 }
 
-s16 ai_cond_func_8001CDAC(Player *player) {
+s16 ai_cond_anim_half(Player *player) {
     if (player->obj->frameIndex < (player->combatState->maxFrame >> 1)) {
         return 1;
     }
@@ -603,7 +603,7 @@ s16 ai_cond_func_8001CDAC(Player *player) {
     return 0;
 }
 
-s16 func_8001CDE0(Player *player) {
+s16 ai_cond_timer_abort(Player *player) {
     player->aiState.actionParam--;
 
     if (player->aiState.actionParam > 0) {
@@ -613,11 +613,11 @@ s16 func_8001CDE0(Player *player) {
     }
 }
 
-s16 ai_cond_func_8001CE0C(Player *player) {
+s16 ai_cond_reset(Player *player) {
     return -1;
 }
 
-s16 ai_cond_func_8001CE18(Player *player) {
+s16 ai_cond_punish(Player *player) {
     s16 *sp34;
     s16 oppId;
     s16 sp30;
@@ -663,7 +663,7 @@ s16 ai_cond_func_8001CE18(Player *player) {
     return player->aiState.actionParam > 0 || !(*sp34 & 2);
 }
 
-s16 ai_cond_func_8001D070(Player *player) {
+s16 ai_cond_blockstring(Player *player) {
     s16 oppId = 1 - player->playerId;
     s32 pad;
     s16 *sp24;
@@ -732,7 +732,7 @@ u8 func_8001D1F8(Player *player) {
     return TRUE;
 }
 
-s16 func_8001D3A8(Player *player) {
+s16 ai_cond_counter_def_stand(Player *player) {
     s16 *sp24;
     s32 pad[2];
     u8 v0;
@@ -751,7 +751,7 @@ s16 func_8001D3A8(Player *player) {
     return 1;
 }
 
-s16 func_8001D44C(Player *player) {
+s16 ai_cond_counter_agg_stand(Player *player) {
     s16 *sp34;
     s16 oppId;
     s16 sp30;
@@ -789,20 +789,20 @@ s16 func_8001D44C(Player *player) {
     return 1;
 }
 
-s16 ai_cond_func_8001D660(Player *player) {
+s16 ai_cond_counter_stand(Player *player) {
     player->aiState.delayCount = 0;
     player->aiState.hitCount++;
 
     if (func_8001D1F8(player)) {
-        player->aiState.stateCallback = func_8001D44C;
-        return func_8001D44C(player);
+        player->aiState.stateCallback = ai_cond_counter_agg_stand;
+        return ai_cond_counter_agg_stand(player);
     } else {
-        player->aiState.stateCallback = func_8001D3A8;
-        return func_8001D3A8(player);
+        player->aiState.stateCallback = ai_cond_counter_def_stand;
+        return ai_cond_counter_def_stand(player);
     }
 }
 
-s16 func_8001D6C0(Player *player) {
+s16 ai_cond_counter_def_crouch(Player *player) {
     s32 pad[2];
     s16 *sp24;
     u8 v0;
@@ -821,7 +821,7 @@ s16 func_8001D6C0(Player *player) {
     return 1;
 }
 
-s16 func_8001D764(Player *player) {
+s16 ai_cond_counter_agg_crouch(Player *player) {
     s16 oppId;
     s16 sp30;
     s16 sp2E;
@@ -859,29 +859,29 @@ s16 func_8001D764(Player *player) {
     return 1;
 }
 
-s16 ai_cond_func_8001D9B0(Player *player) {
+s16 ai_cond_breaker_crouch(Player *player) {
     player->aiState.delayCount = 0;
     player->aiState.hitCount++;
 
     if (func_8001D1F8(player)) {
-        player->aiState.stateCallback = func_8001D764;
-        return func_8001D764(player);
+        player->aiState.stateCallback = ai_cond_counter_agg_crouch;
+        return ai_cond_counter_agg_crouch(player);
     } else {
-        player->aiState.stateCallback = func_8001D6C0;
-        return func_8001D6C0(player);
+        player->aiState.stateCallback = ai_cond_counter_def_crouch;
+        return ai_cond_counter_def_crouch(player);
     }
 }
 
-s16 ai_cond_func_8001DA10(Player *player) {
+s16 ai_cond_random_delay(Player *player) {
     s16 sp1E;
 
     sp1E = gBattleSettings[player->playerId].aiDifficulty;
     player->aiState.actionParam = D_80049D44[sp1E] + (guRandom() & D_80049D24[sp1E]); // @BUG ??
-    player->aiState.stateCallback = func_8001CDE0;
+    player->aiState.stateCallback = ai_cond_timer_abort;
     return 1;
 }
 
-s16 func_8001DA90(Player *player) {
+s16 ai_cond_move_wait(Player *player) {
     s16 *sp24;
     s32 v0;
 
@@ -900,7 +900,7 @@ s16 func_8001DA90(Player *player) {
     return 0;
 }
 
-s16 ai_cond_func_8001DB2C(Player *player) {
+s16 ai_cond_delay_advance(Player *player) {
     s16 sp24;
     s32 pad;
     s16 pad2;
@@ -922,7 +922,7 @@ s16 ai_cond_func_8001DB2C(Player *player) {
     }
 }
 
-s16 ai_cond_func_8001DC68(Player *player) {
+s16 ai_cond_delay_advance2(Player *player) {
     s16 sp24;
     s32 pad;
     s16 pad2;
@@ -944,7 +944,7 @@ s16 ai_cond_func_8001DC68(Player *player) {
     }
 }
 
-s16 ai_cond_func_8001DDA4(Player *player) {
+s16 ai_cond_response_gate(Player *player) {
     s16 *sp1C;
 
     if (ai_get_opponent_response(player, &sp1C) != 0) {
@@ -958,7 +958,7 @@ s16 ai_cond_func_8001DDA4(Player *player) {
     }
 }
 
-s16 ai_cond_func_8001DDEC(Player *player) {
+s16 ai_cond_loop_back(Player *player) {
     player->aiState.stateCallback = NULL;
     player->aiState.sequencePtr -= 2;
     return 1;

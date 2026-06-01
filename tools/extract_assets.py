@@ -2,6 +2,7 @@
 from pathlib import Path
 from struct import unpack_from, calcsize, pack
 import subprocess
+import shutil
 from n64img.image import CI8, CI4
 
 ROMFILE = "darkrift.z64"
@@ -14,6 +15,7 @@ class BinaryReader:
         self.offset = offset
         self.path = Path(path)
         self.cache = {}
+        self.saved_hashes = {}
 
     def trim_name(self, data):
         bin_name = data["name"]
@@ -61,6 +63,12 @@ class BinaryReader:
             file_content = self.data[file["offset"]:file["offset"] + file["size"]]
             self.offset += file["size"]
 
+        import hashlib
+        h = hashlib.sha256(file_content).hexdigest()
+        if h in self.saved_hashes:
+            return
+        self.saved_hashes[h] = True
+
         file_name = file["name"]
         if file["size"] != file["unpacked_size"]:
             is_packed = True
@@ -87,6 +95,7 @@ class BinaryReader:
             # parse inner wad file
             print("opening wad", file_path)
             reader = BinaryReader(file_content, file_path.with_suffix(''))
+            reader.saved_hashes = self.saved_hashes  # share dedup tracker
             reader.read_wad()
 
 def trim_name(name):
@@ -246,8 +255,37 @@ def read_sym(f):
     
     return (list1, list2, list3, list4)
 
+# Character name → character ID mapping (from include/enums.h)
+# enum CharacterIds { AARON=0, DEMITRON=1, DEMONICA=2, EVE=3, GORE=4,
+#                     CHARACTER_5=5 (cut), MORPHIX=6, NIIKI=7,
+#                     SCARLET=8, SONORK=9, ZENMURON=10, NUM_CHARACTERS=11 }
+CHAR_NAMES_BY_ID = {
+    0: "AARO",
+    1: "DEMI",
+    2: "DEMO",
+    3: "EVE",
+    4: "GORE",
+    5: "[CUT]",
+    6: "MORP",
+    7: "NIIK",
+    8: "SCAR",
+    9: "SONO",
+    10: "ZENM",
+}
+FOLDER_TO_CHAR_ID = {name: id for id, name in CHAR_NAMES_BY_ID.items()}
+CHAR_RESPONSE_NAMES = {}  # char_id -> list of response SYM names
+
+def build_char_name_map():
+    """Pre-load all characters' response SYM names for cross-referencing."""
+    for g in sorted(Path(RAW_ASSETS_PATH).glob('**/*.DB')):
+        folder_name = g.parent.parent.name
+        char_id = FOLDER_TO_CHAR_ID.get(folder_name)
+        if char_id is not None:
+            sym = read_sym(g.with_suffix(".SYM"))
+            CHAR_RESPONSE_NAMES[char_id] = sym[1]
+
 def process_db():
-    for g in Path(RAW_ASSETS_PATH).glob('**/*.DB'):
+    for g in sorted(Path(RAW_ASSETS_PATH).glob('**/*.DB')):
 
         symbols = read_sym(g.with_suffix(".SYM"))
 
@@ -268,15 +306,39 @@ def process_db():
             head = unpack_from(">hHHHhhH", content, off)
             forChar = list(unpack_from("11B", content, off + 14))
             selfResp = unpack_from("B", content, off + 25)[0]
-            # annotate response indices with SYM names
-            forCharAnnotated = []
+            # annotate response indices with character names (skip cut char 5)
+            from collections import defaultdict
+            by_name = defaultdict(list)
             for idx, val in enumerate(forChar):
+                if idx == 5:
+                    continue
+                ch = CHAR_NAMES_BY_ID.get(idx, f"CHAR{idx}")
+                names = CHAR_RESPONSE_NAMES.get(idx, [])
                 if val == 0xFF:
-                    forCharAnnotated.append(f"{idx}:0xFF (none)")
-                elif idx < len(symbols[1]) and val < len(symbols[1]):
-                    forCharAnnotated.append(f"{idx}:{val}:\"{symbols[1][val]}\"")
+                    by_name["0xFF (none)"].append(ch)
+                elif val < len(names):
+                    by_name[names[val]].append((ch, val))
                 else:
-                    forCharAnnotated.append(f"{idx}:{val}")
+                    by_name["(???)"].append((ch, val))
+            forCharAnnotated = []
+            if len(by_name) == 1:
+                (name, entries) = next(iter(by_name.items()))
+                if name == "0xFF (none)":
+                    forCharAnnotated.append("ALL:0xFF (none)")
+                else:
+                    forCharAnnotated.append(f"ALL:`{name}`")
+            else:
+                for idx, val in enumerate(forChar):
+                    if idx == 5:
+                        continue
+                    ch = CHAR_NAMES_BY_ID.get(idx, f"CHAR{idx}")
+                    names = CHAR_RESPONSE_NAMES.get(idx, [])
+                    if val == 0xFF:
+                        forCharAnnotated.append(f"{ch}:0xFF (none)")
+                    elif val < len(names):
+                        forCharAnnotated.append(f"{ch}:{val}:`{names[val]}`")
+                    else:
+                        forCharAnnotated.append(f"{ch}:{val}:(???)")
             l.append({"name":symbols[0][i], "index":i, "index_in_field28":head[0], "buttons":get_buttons(head[1]), "flags":get_move_flags(head[2]), "unk06":head[3],
                       "behavior":f"BHV_{head[4]}", "actionState": f"CS_{head[5]}", "button_mask":get_buttons(head[6]),
                       "aiResponseForChar":forCharAnnotated, "aiResponseSelf":selfResp})
@@ -450,7 +512,6 @@ def process_db():
         dbdata["aiSequenceGroups"] = l_seq_groups
 
         # AiResponse section: s32 count + s16 indexMap[count] + s16 responseData[]
-        l_idxmap = []
         l_resp = []
         if offs[15] < offs[16]:
             resp_count = unpack_from(">I", content, offs[15])[0]
@@ -459,7 +520,6 @@ def process_db():
             for i in range(resp_count):
                 e = unpack_from(">h", content, idx_off + i * 2)
                 idxmap_vals.append(e[0])
-            l_idxmap = idxmap_vals
             resp_off = idx_off + resp_count * 2
             s16_data = unpack_from(f">{ (offs[16] - resp_off)//2 }h", content, resp_off) if resp_off < offs[16] else []
             for i, start in enumerate(idxmap_vals):
@@ -478,7 +538,6 @@ def process_db():
                     "name": symbols[1][i] if i < len(symbols[1]) else f"RESP_{i}",
                     "flags":flags, "val1":v1, "val2":v2, "adj":adj, "candidates":cands
                 })
-        dbdata["aiResponseIndexMap"] = l_idxmap
         dbdata["aiResponseTable"] = l_resp
 
         # unk_68 (offs[16] -> EOF, raw bytes)
@@ -623,12 +682,30 @@ def process_db():
 
                 # ── AI Action Rows ──
                 elif k == "aiActionRows":
+                    AI_CALLBACK_NAMES = [
+                        "approach",          # 0  - wait until opponent within actionParam
+                        "retreat",           # 1  - wait until opponent beyond actionParam
+                        "immediate",         # 2  - returns 0 immediately (no-op)
+                        "timer",             # 3  - actionParam countdown, done when 0
+                        "anim_half",         # 4  - wait until past first half of animation
+                        "punish",            # 5  - watch opponent hitbox, punish whiffs
+                        "reset",             # 6  - returns -1 immediately (force reset)
+                        "blockstring",       # 7  - pressure/blockstring mixup
+                        "breaker_crouch",    # 8  - combo breaker setup (crouching variant)
+                        "counter_stand",     # 9  - counter setup (standing variant)
+                        "random_delay",      #10  - set random delay timer, then countdown
+                        "distance",          #11  - raw distance check (no anim guard)
+                        "delay_advance",     #12  - random delay, then advance+execute next
+                        "delay_advance2",    #13  - random delay variant (identical to 12)
+                        "response_gate",     #14  - opponent response flag gate (hit confirm)
+                        "loop_back",         #15  - rewind sequence by 2 steps
+                    ]
                     p("### AI Action Rows ###")
                     for r in v:
                         if r['callbackIdx'] == -1:
                             cb = "none"
                         else:
-                            cb = f"func_8001CDxx[{r['callbackIdx']}]"
+                            cb = AI_CALLBACK_NAMES[r['callbackIdx']]
                         moves_str = ", ".join(str(m) for m in r['moves'])
                         p(f"  [{r['index']:3d}] \"{r['name']}\""
                           f"  cb={cb}  param={r['actionParam']:5d}"
@@ -653,13 +730,6 @@ def process_db():
                     for i, g in enumerate(v):
                         acts = ", ".join(f'{a["index"]}:"{a["name"]}"' for a in g["actions"])
                         p(f"  group {i:3d}: [{acts}]")
-                    p()
-
-                # ── AI Response Index Map ──
-                elif k == "aiResponseIndexMap":
-                    p("### AI Response Index Map (offset per response) ###")
-                    for i, off in enumerate(v):
-                        p(f"  [{i:3d}] offset={off:5d}")
                     p()
 
                 # ── AI Response Table ──
@@ -857,10 +927,17 @@ def analyze():
     process_tex()
     process_sp2()
     process_sym()
+    build_char_name_map()
     process_db()
     process_models()
         
 def main():
+    raw_root = Path(RAW_ASSETS_PATH) / "ROOT"
+    extracted_root = Path("game_assets/extracted") / "ROOT"
+    for p in (raw_root, extracted_root):
+        if p.exists():
+            shutil.rmtree(p)
+            print(f"Cleaned {p}")
     assets = Path(ROMFILE).read_bytes()[ASSETS_OFFSET:]
     reader = BinaryReader(assets, RAW_ASSETS_PATH)
     reader.read_wad()
