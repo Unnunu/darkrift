@@ -3,7 +3,29 @@ from pathlib import Path
 from struct import unpack_from, calcsize, pack
 import subprocess
 import shutil
+import re
 from n64img.image import CI8, CI4
+
+MOVE_ID_BY_NUM = {}
+def parse_move_enum():
+    global MOVE_ID_BY_NUM
+    enum_path = Path(__file__).resolve().parent.parent / "include" / "enums.h"
+    text = enum_path.read_text()
+    in_move_ids = False
+    for line in text.splitlines():
+        if line.strip() == "enum MoveIds {":
+            in_move_ids = True
+            continue
+        if in_move_ids:
+            if line.strip() == "};":
+                break
+            m = re.match(r'\s*(MOVE_ID_\w+)\s*=\s*(\d+)\s*,', line)
+            if m:
+                MOVE_ID_BY_NUM[int(m.group(2))] = m.group(1)
+parse_move_enum()
+
+def get_move_name(move_id):
+    return MOVE_ID_BY_NUM.get(move_id, f"MOVE_ID_{move_id}")
 
 ROMFILE = "darkrift.z64"
 RAW_ASSETS_PATH = "game_assets/raw"
@@ -385,13 +407,24 @@ def process_db():
         l = []
         for off in range(offs[5] + 4, offs[6], 56):
             e = unpack_from(">26hI", content, off)
-            l.append({"index": f"CS_{(off - offs[5] - 4) // 56}", "minFrame":e[0], "maxFrame":e[1], "unk_04":e[2], "unk_06":e[3],
-                      "animationId":e[4], "unk_0A":e[5], "unk_0C":e[6], "unk_0E":e[7],
-                      "unk_10":e[8], "unk_12":e[9], "unk_14":e[10], "unk_16":e[11],
-                      "unk_18":e[12], "unk_1A":e[13], "unk_1C":e[14], "unk_1E":e[15],
-                      "damage":e[16], "unk_22":e[17], "unk_24":e[18], "unk_26":e[19],
-                      "unk_28":e[20], "unk_2A":e[21], "unk_2C":e[22], "unk_2E":e[23],
-                      "unk_30":e[24], "unk_32":e[25], "flags":get_csf_flags(e[26])})
+            l.append({"index": f"CS_{(off - offs[5] - 4) // 56}",
+                      "minFrame":e[0], "maxFrame":e[1],
+                      "hitboxActiveStart":e[2], "hitboxActiveEnd":e[3],
+                      "animationId":e[4],
+                      "hitStanding":e[5], "hitCrouch":e[6],
+                      "blockStanding":e[7], "blockCrouch":e[8],
+                      "hitAirborne":e[9], "hitJuggle":e[10],
+                      "hitBackStanding":e[11], "hitBackCrouch":e[12],
+                      "hitBackAirborne":e[13], "hitMove10":e[14],
+                      "unk_1E":e[15],
+                      "damage":e[16],
+                      "soundTableIndex":e[17],
+                      "bodyHitboxStart":e[18], "bodyHitboxEnd":e[19],
+                      "projBarrage":e[20],
+                      "unk_2A":e[21],
+                      "cutsceneId":e[22], "custsceneDelay":e[23],
+                      "unk_30":e[24], "unk_32":e[25],
+                      "flags":get_csf_flags(e[26])})
         dbdata["actionStates"] = l
 
         l = []
@@ -409,8 +442,8 @@ def process_db():
         l = []
         for off in range(offs[8], offs[9], 2):
             e = unpack_from(">h", content, off)
-            l.append({"moveId": f"MOVE_ID_{(off - offs[8]) // 2}", "logicState":e[0]})
-        dbdata["player_38"] = l
+            l.append({"moveId": get_move_name((off - offs[8]) // 2), "logicState":e[0]})
+        moveIdToLogicState = l  # used inline in logic states output
 
         l = []
         for off in range(offs[9], offs[10], 1):
@@ -576,6 +609,13 @@ def process_db():
 
                 # ── Logic States ──
                 elif k == "logicStates":
+                    # build reverse index: step_number → [MOVE_ID_X, ...]
+                    move_to_state = {}
+                    for e in moveIdToLogicState:
+                        mid = e['moveId']
+                        ls = e['logicState']
+                        move_to_state.setdefault(ls, []).append(mid)
+                    # also build reverse from transition names for cross-ref
                     p("### State Machine (Logic States) ###")
                     for group in v:
                         for grp_name, entries in group.items():
@@ -583,7 +623,12 @@ def process_db():
                             for m in entries:
                                 ns = m['nextLogicState']
                                 ns_str = f"→ state_{ns}" if ns >= 0 else "→ TERMINAL"
-                                p(f"      step {m['index']:3d}: transition={m['transitionId']:3d} \"{m['transitionName']}\"  {ns_str}")
+                                mids = move_to_state.get(m['index'], [])
+                                if m['index'] == 0:
+                                    mid_str = ""
+                                else:
+                                    mid_str = f"  ← {' '.join(mids)}" if mids else ""
+                                p(f"      state_{m['index']:3d}: transition={m['transitionId']:3d} \"{m['transitionName']}\"  {ns_str}{mid_str}")
                     p()
 
                 # ── Player_30 (transition group indices) ──
@@ -603,6 +648,9 @@ def process_db():
                 # ── Combat States ──
                 elif k == "actionStates":
                     p("### Combat States (56B each) ###")
+                    MOVE_FIELDS = ['hitStanding','hitCrouch','blockStanding','blockCrouch',
+                                   'hitAirborne','hitJuggle',
+                                   'hitBackStanding','hitBackCrouch','hitBackAirborne','hitMove10']
                     for e in v:
                         dmg = e['damage']
                         dmg_str = f"dmg={dmg:4d}" if dmg else "dmg=———"
@@ -610,11 +658,20 @@ def process_db():
                           f"  frame={e['minFrame']:4d}..{e['maxFrame']:4d}"
                           f"  anim={e['animationId']:3d}"
                           f"  {dmg_str}"
-                          f"  flags={e['flags']}")
+                          f"  flags={e['flags']}"
+                          f"  hitbox=[{e['hitboxActiveStart']:3d},{e['hitboxActiveEnd']:3d}]"
+                          f"  bodyHitbox=[{e['bodyHitboxStart']:3d},{e['bodyHitboxEnd']:3d}]")
+                        mv = [f"{f}={get_move_name(e[f])}" for f in MOVE_FIELDS if e[f] > 0]
+                        if mv:
+                            p(f"        {'  '.join(mv)}")
+                        other = [f"{f}={e[f]}" for f in ['soundTableIndex','projBarrage',
+                                 'cutsceneId'] if e[f] > 0]
                         unk_str = "  ".join(f"{k}={v}" for k, v in e.items()
-                                            if k.startswith('unk_'))
+                                            if k.startswith('unk_') and v > 0)
                         if unk_str:
-                            p(f"        {unk_str}")
+                            other.append(unk_str)
+                        if other:
+                            p(f"        {'  '.join(other)}")
                     p()
 
                 # ── Sounds ──
@@ -635,13 +692,6 @@ def process_db():
                     p("### Player_6C ###")
                     for e in v:
                         p(f"  unk_num={e['unk_num']}")
-                    p()
-
-                # ── Move-to-LogicState Map ──
-                elif k == "player_38":
-                    p("### Move-to-LogicState Map (2B each) ###")
-                    for e in v:
-                        p(f"  {e['moveId']:>12s}  →  {e['logicState']:4d}")
                     p()
 
                 # ── Player_44 (per-frame data) ──
@@ -706,7 +756,7 @@ def process_db():
                             cb = "none"
                         else:
                             cb = AI_CALLBACK_NAMES[r['callbackIdx']]
-                        moves_str = ", ".join(str(m) for m in r['moves'])
+                        moves_str = ", ".join(get_move_name(m) if m != -1 else "-1" for m in r['moves'])
                         p(f"  [{r['index']:3d}] \"{r['name']}\""
                           f"  cb={cb}  param={r['actionParam']:5d}"
                           f"  cond=0x{r['conditionFlags']:04x}"

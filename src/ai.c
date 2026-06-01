@@ -475,11 +475,11 @@ u8 ai_decide(Player *player, u8 arg1) {
 
                 if (gPlayerDistance > 800 && !(player->aiState.aiFlags & AIF_MOVED_FORWARD)) {
                     if (gBattleSettings[player->playerId].aiDifficulty < 4) {
-                        player_apply_move(player, MOVE_ID_45, TRUE);
+                        player_apply_move(player, MOVE_ID_SHUFFLE_TOWARDS, TRUE);
                         str_copy(gPlayers[PLAYER_2].aiState.aiDebugName, "Default ss fwd");
                         player->aiState.stateCallback = ai_cond_move_wait;
                     } else {
-                        player_apply_move(player, 33, TRUE);
+                        player_apply_move(player, MOVE_ID_DASH, TRUE);
                         str_copy(gPlayers[PLAYER_2].aiState.aiDebugName, "Default dash fwd");
                     }
 
@@ -487,11 +487,11 @@ u8 ai_decide(Player *player, u8 arg1) {
                     player->aiState.aiFlags |= AIF_MOVED_FORWARD;
                 } else if (gPlayerDistance < 800 && !(player->aiState.aiFlags << 19)) { // ???
                     if (gBattleSettings[player->playerId].aiDifficulty < 4) {
-                        player_apply_move(player, 300, TRUE);
+                        player_apply_move(player, MOVE_ID_SHUFFLE_BACK, TRUE);
                         str_copy(gPlayers[PLAYER_2].aiState.aiDebugName, "Default ss bak");
                         player->aiState.stateCallback = ai_cond_move_wait;
                     } else {
-                        player_apply_move(player, 32, TRUE);
+                        player_apply_move(player, MOVE_ID_DASH_BACK, TRUE);
                         str_copy(gPlayers[PLAYER_2].aiState.aiDebugName, "Default dash bak");
                     }
 
@@ -500,13 +500,13 @@ u8 ai_decide(Player *player, u8 arg1) {
                 } else {
                     if (guRandom() & 1 & gFrameCounter) {
                         str_copy(gPlayers[PLAYER_2].aiState.aiDebugName, "Default ss in");
-                        if (!player_apply_move(player, 293, TRUE)) {
+                        if (!player_apply_move(player, MOVE_ID_AI_SIDE_STEP_I, TRUE)) {
                             return FALSE;
                         }
                         player->aiState.stateCallback = NULL;
                     } else {
                         str_copy(gPlayers[PLAYER_2].aiState.aiDebugName, "Default ss out");
-                        if (!player_apply_move(player, 292, TRUE)) {
+                        if (!player_apply_move(player, MOVE_ID_AI_SIDE_STEP_O, TRUE)) {
                             return FALSE;
                         }
                         player->aiState.stateCallback = NULL;
@@ -643,7 +643,7 @@ s16 ai_cond_punish(Player *player) {
     if (ai_get_opponent_response(player, &sp34)) {
         if (!(*sp34 & 2)) {
             if (*sp34 & 4) {
-                player_force_move(player, 57, TRUE);
+                player_force_move(player, MOVE_ID_CROUCH_BLOCK_INTERRUPT, TRUE);
             }
             return 1;
         }
@@ -682,7 +682,7 @@ s16 ai_cond_blockstring(Player *player) {
     v0 = ai_get_opponent_response(player, &sp24);
     if (v0 && !(*sp24 & 2)) {
         if (!(*sp24 & 4)) {
-            player_force_move(player, 56, TRUE);
+            player_force_move(player, MOVE_ID_CROUCH_BLOCK_2_STAND_BLOCK, TRUE);
         }
         return TRUE;
     }
@@ -743,7 +743,7 @@ s16 ai_cond_counter_def_stand(Player *player) {
     if (player->aiState.hitCount < D_80049D34[gBattleSettings[playerId].aiDifficulty]) {
         v0 = ai_get_opponent_response(player, &sp24);
         if (v0 && !(*sp24 & 2) && !(*sp24 & 4)) {
-            player_force_move(player, 56, TRUE);
+            player_force_move(player, MOVE_ID_CROUCH_BLOCK_2_STAND_BLOCK, TRUE);
             return 1;
         }
     }
@@ -769,7 +769,7 @@ s16 ai_cond_counter_agg_stand(Player *player) {
     if (player->aiState.hitCount < D_80049D34[gBattleSettings[player->playerId].aiDifficulty]) {
         if (ai_get_opponent_response(player, &sp34)) {
             if (!(*sp34 & 2) && !(*sp34 & 4)) {
-                player_force_move(player, 56, TRUE);
+                player_force_move(player, MOVE_ID_CROUCH_BLOCK_2_STAND_BLOCK, TRUE);
                 return 1;
             }
         }
@@ -813,7 +813,7 @@ s16 ai_cond_counter_def_crouch(Player *player) {
     if (player->aiState.hitCount < D_80049D34[gBattleSettings[playerId].aiDifficulty]) {
         v0 = ai_get_opponent_response(player, &sp24);
         if (v0 && !(*sp24 & 2) && (*sp24 & 4)) {
-            player_force_move(player, 57, TRUE);
+            player_force_move(player, MOVE_ID_CROUCH_BLOCK_INTERRUPT, TRUE);
             return 1;
         }
     }
@@ -839,7 +839,7 @@ s16 ai_cond_counter_agg_crouch(Player *player) {
     if (player->aiState.hitCount < D_80049D34[gBattleSettings[player->playerId].aiDifficulty]) {
         if (ai_get_opponent_response(player, &sp34)) {
             if (!(*sp34 & 2) && (*sp34 & 4)) {
-                player_force_move(player, 57, TRUE);
+                player_force_move(player, MOVE_ID_CROUCH_BLOCK_INTERRUPT, TRUE);
                 return 1;
             }
         }

@@ -40,9 +40,9 @@ void action_animation_end(Object *obj) {
     }
 
     if (stateFlags & CSF_CROUCH) {
-        player_apply_move(player, 320, FALSE);
+        player_apply_move(player, MOVE_ID_CROUCH_IDLE, FALSE);
     } else {
-        player_apply_move(player, 68, FALSE);
+        player_apply_move(player, MOVE_ID_IDLE_068, FALSE);
     }
 
     D_80080236 = FALSE;

@@ -201,9 +201,9 @@ s32 apply_damage_and_reaction(Player *defender, Player *attacker, CombatState *a
         moveId = attackerStateDef->hitJuggle;
     } else if ((defenderFlags & CSF_400) && attackerStateDef->unk_1E != 0) {
         if (defenderFlags & CSF_200) {
-            moveId = 206; // slammed face down ?
+            moveId = MOVE_ID_SLAMMED_FACE_D; // slammed face down
         } else {
-            moveId = 97; // slammed face up ?
+            moveId = MOVE_ID_SLAMMED_FACE_U; // slammed face up
         }
     } else if (player_check_func_2(defender->obj) && !v1) {
         if (defenderFlags & (CSF_JUMP | CSF_STANDING | CSF_HOP)) {
@@ -233,7 +233,7 @@ s32 apply_damage_and_reaction(Player *defender, Player *attacker, CombatState *a
         }
     }
 
-    v12 = (moveId == 270) || (moveId == 271);
+    v12 = (moveId == MOVE_ID_STANDING_BLOCK_270) || (moveId == MOVE_ID_CROUCH_BLOCK_I);
 
     if (moveId != 0 && !gReplayActive) {
         attacker->damage = attackerStateDef->damage;
@@ -244,7 +244,7 @@ s32 apply_damage_and_reaction(Player *defender, Player *attacker, CombatState *a
             attacker->obj->vars[3] = -1;
         }
 
-        if (moveId >= 236 && moveId <= 245) {
+        if (moveId >= MOVE_ID_COGRABBED_BY_A_236 && moveId <= MOVE_ID_COGRABBED_BY_Z_245) {
             // CoGrabbed
             defender->obj->vars[2] = attackerStateDef->damage;
         } else if (!v12 && gPlayMode != PLAY_MODE_PRACTICE) {
@@ -260,15 +260,15 @@ s32 apply_damage_and_reaction(Player *defender, Player *attacker, CombatState *a
             gGlobalFlags |= GAME_FLAG_BATTLE_FINISHED;
             if (defender->flags & PLAYER_FLAG_NOT_FACING_OPP) {
                 if (defenderFlags & CSF_STANDING) {
-                    moveId = 118;
+                    moveId = MOVE_ID_KD_FALL_FORWAR_118;
                 } else if (defenderFlags & CSF_CROUCH) {
-                    moveId = 81;
+                    moveId = MOVE_ID_KD_FALL_FORWAR_081;
                 }
             } else {
                 if (defenderFlags & CSF_STANDING) {
-                    moveId = 70;
+                    moveId = MOVE_ID_KD_UPPER_CUT;
                 } else if (defenderFlags & CSF_CROUCH) {
-                    moveId = 73;
+                    moveId = MOVE_ID_KD_FALL_BACK_C;
                 }
             }
         }

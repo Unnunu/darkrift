@@ -433,14 +433,14 @@ void func_80028E84(void) {
     v0 = gPlayers[PLAYER_1].obj->playerHp;
     v1 = gPlayers[PLAYER_2].obj->playerHp;
     if (v0 > v1) {
-        player_apply_move(&gPlayers[PLAYER_1], 132, 1);
-        player_apply_move(&gPlayers[PLAYER_2], 384, 1);
+        player_apply_move(&gPlayers[PLAYER_1], MOVE_ID_VICTORY_132, 1);
+        player_apply_move(&gPlayers[PLAYER_2], MOVE_ID_DEFEAT_INTRO, 1);
     } else if (v0 < v1) {
-        player_apply_move(&gPlayers[PLAYER_1], 384, 1);
-        player_apply_move(&gPlayers[PLAYER_2], 132, 1);
+        player_apply_move(&gPlayers[PLAYER_1], MOVE_ID_DEFEAT_INTRO, 1);
+        player_apply_move(&gPlayers[PLAYER_2], MOVE_ID_VICTORY_132, 1);
     } else {
-        player_apply_move(&gPlayers[PLAYER_1], 384, 1);
-        player_apply_move(&gPlayers[PLAYER_2], 384, 1);
+        player_apply_move(&gPlayers[PLAYER_1], MOVE_ID_DEFEAT_INTRO, 1);
+        player_apply_move(&gPlayers[PLAYER_2], MOVE_ID_DEFEAT_INTRO, 1);
     }
 }
 

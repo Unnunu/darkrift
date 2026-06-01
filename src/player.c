@@ -921,9 +921,9 @@ void func_800052EC(s16 playerId) {
     D_80080236 = TRUE;
 
     if (gBattleSettings[playerId].isCpu) {
-        player_apply_move(gPlayers + playerId, 282, 0);
+        player_apply_move(gPlayers + playerId, MOVE_ID_AI_OPENING_MOVE, 0);
     } else {
-        player_apply_move(gPlayers + playerId, 68, 0);
+        player_apply_move(gPlayers + playerId, MOVE_ID_IDLE_068, 0);
     }
 
     if (playerId != 0) {
@@ -1029,9 +1029,9 @@ void create_player_obj(s16 playerId) {
     D_80080236 = TRUE;
 
     if (gBattleSettings[playerId].isCpu) {
-        player_apply_move(gPlayers + playerId, 282, 0);
+        player_apply_move(gPlayers + playerId, MOVE_ID_AI_OPENING_MOVE, 0);
     } else {
-        player_apply_move(gPlayers + playerId, 68, 0);
+        player_apply_move(gPlayers + playerId, MOVE_ID_IDLE_068, 0);
     }
 
     if (playerId != PLAYER_1) {

@@ -517,7 +517,7 @@ void func_80016F6C(Object *obj) {
     s32 sp2C;
     ObjFunc v02;
 
-    sp2C = func_8001675C(&gPlayers[D_8013C24C], (gFrameCounter & 1) ? 0x84 : 0xF7, 0x78);
+    sp2C = func_8001675C(&gPlayers[D_8013C24C], (gFrameCounter & 1) ? MOVE_ID_VICTORY_132 : MOVE_ID_VICTORY_2, 0x78);
     func_80016264();
     obj->varObj[4] = D_80081440 = draw_win_message(gPlayers[D_8013C24C].characterId, 6, D_8013C24C);
     v02 = handle_player_win(D_8013C24C, FALSE);
@@ -560,7 +560,7 @@ void func_800171EC(Object *obj) {
 
     D_80081444 = v0;
 
-    func_8001675C(&gPlayers[PLAYER_2], 0x180, func_8001675C(&gPlayers[PLAYER_1], 0x180, 0x78));
+    func_8001675C(&gPlayers[PLAYER_2], MOVE_ID_DEFEAT_INTRO, func_8001675C(&gPlayers[PLAYER_1], MOVE_ID_DEFEAT_INTRO, 0x78));
 
     if (gMaxRounds == gBattleSettings[PLAYER_1].roundsWon + 1) {
         a3 = handle_player_win(PLAYER_1, TRUE);
@@ -625,15 +625,15 @@ void func_800173DC(Object *obj) {
         }
     } else if ((gPlayers[PLAYER_1].flags & PLAYER_FLAG_40000) && (gPlayers[PLAYER_2].flags & PLAYER_FLAG_40000)) {
         if ((gPlayers[PLAYER_1].combatState->flags & CSF_CROUCH) && gPlayers[PLAYER_1].combatStateId != 4) {
-            player_apply_move(&gPlayers[PLAYER_1], 320, FALSE);
+            player_apply_move(&gPlayers[PLAYER_1], MOVE_ID_CROUCH_IDLE, FALSE);
         } else if (gPlayers[PLAYER_1].combatStateId != 17) {
-            player_apply_move(&gPlayers[PLAYER_1], 68, FALSE);
+            player_apply_move(&gPlayers[PLAYER_1], MOVE_ID_IDLE_068, FALSE);
         }
 
         if ((gPlayers[PLAYER_2].combatState->flags & CSF_CROUCH) && gPlayers[PLAYER_2].combatStateId != 4) {
-            player_apply_move(&gPlayers[PLAYER_2], 320, FALSE);
+            player_apply_move(&gPlayers[PLAYER_2], MOVE_ID_CROUCH_IDLE, FALSE);
         } else if (gPlayers[PLAYER_2].combatStateId != 17) {
-            player_apply_move(&gPlayers[PLAYER_2], 68, FALSE);
+            player_apply_move(&gPlayers[PLAYER_2], MOVE_ID_IDLE_068, FALSE);
         }
 
         gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;

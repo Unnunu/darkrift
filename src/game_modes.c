@@ -881,7 +881,7 @@ void run_30_mode(void) {
 
     func_80007DB0(&gPlayers[sp42], a1, 0x3000);
     camera_orbit_init(gCamera);
-    player_apply_move(&gPlayers[sp42], 346, 1);
+    player_apply_move(&gPlayers[sp42], MOVE_ID_AI_INTRO_BOSS, 1);
     D_8008012C |= GFX_FLAG_4;
     create_worker(func_8001A674, 0x1000);
     battle_round_init();
@@ -1117,8 +1117,8 @@ void run_34_mode(void) {
 
     func_800096D0(FALSE);
     asset_open_folder("/demi/demidust", CONTEXT_ABAB);
-    player_apply_move(&gPlayers[sp7E], 365, 1);
-    player_apply_move(&gPlayers[sp24], 366, 1);
+    player_apply_move(&gPlayers[sp7E], MOVE_ID_DEMI_DEAD, 1);
+    player_apply_move(&gPlayers[sp24], MOVE_ID_WIN_END_CINEMA, 1);
     create_worker(func_8001A7DC, 0x1000);
     main_loop();
     func_8002630C(0x4000);
@@ -1224,8 +1224,8 @@ void run_35_mode(void) {
     asset_open_folder(sp2C, CONTEXT_4000);
 
     func_800096D0(TRUE);
-    player_apply_move(player1, 252, 1);
-    player_apply_move(player2, 367, 1);
+    player_apply_move(player1, MOVE_ID_IDLE_252, 1);
+    player_apply_move(player2, MOVE_ID_CLOSING_CINEMA_367, 1);
     player1->obj->flags |= OBJ_FLAG_HIDDEN;
     func_80009CE0();
 
