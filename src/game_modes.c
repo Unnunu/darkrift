@@ -132,7 +132,7 @@ void battle_global_init(void) {
     gBattleSettings[PLAYER_2].isDebug = FALSE;
     gBattleSettings[PLAYER_1].initialHp = 400;
     gBattleSettings[PLAYER_2].initialHp = 400;
-    gBattleSettings[PLAYER_1].unk_0F = gBattleSettings[PLAYER_2].unk_0F = TRUE;
+    gBattleSettings[PLAYER_1].initDifficulty = gBattleSettings[PLAYER_2].initDifficulty = TRUE;
     gBattleSettings[PLAYER_1].isDummy = gBattleSettings[PLAYER_2].isDummy = 0;
 
     gPreviousPlayMode = gPlayMode = PLAY_MODE_2_PLAYERS;
@@ -558,7 +558,7 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
     func_800052EC(0);
     func_800052EC(1);
 
-    gBattleSettings[PLAYER_1].unk_0F = gBattleSettings[PLAYER_2].unk_0F = TRUE;
+    gBattleSettings[PLAYER_1].initDifficulty = gBattleSettings[PLAYER_2].initDifficulty = TRUE;
 
     a1 = gPlayerObjects[1 - s0];
     a1->pos.x = 0;
@@ -1261,7 +1261,7 @@ void func_8000A298(void) {
         D_800B6350[PLAYER_1][i] = 0;
     }
 
-    gBattleSettings[PLAYER_1].unk_0F = gBattleSettings[PLAYER_2].unk_0F = TRUE;
+    gBattleSettings[PLAYER_1].initDifficulty = gBattleSettings[PLAYER_2].initDifficulty = TRUE;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
     gBattleSettings[PLAYER_1].initialHp = gBattleSettings[PLAYER_2].initialHp = 400;
     gBattleSettings[PLAYER_1].aiDifficulty = gBattleSettings[PLAYER_2].aiDifficulty = 0;

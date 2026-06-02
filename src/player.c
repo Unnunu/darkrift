@@ -362,7 +362,7 @@ void player_update(Object *obj) {
     }
 
     if (gBattleSettings[playerId].isCpu && !gRoundOver && !(player->flags & PLAYER_FLAG_100000)) {
-        if (!(player->aiState.aiFlags & AIF_20000)) {
+        if (!(player->aiState.aiFlags & AIF_AI_DISABLED)) {
             ai_update(player);
         }
         if (D_8013C444 && gPlayerInput[playerId].pendingInput && player->lookupLogicTable >= 0 &&
@@ -430,7 +430,7 @@ typedef struct AssetDB3 {
 s16 D_80049390 = -1;
 s16 D_80049394 = -1;
 
-void ai_set_temp_max_difficulty(Player *);
+void ai_max_difficulty(Player *);
 void ai_increase_difficulty(Player *);
 s32 func_8001DFE4(s32 arg0);
 
@@ -445,40 +445,40 @@ void func_80004334(CharacterDefinition *arg0, s16 playerId) {
     gPlayers[playerId].aiActionIndexMap = arg0->unk_34 + (u32) arg0;
 
     v1 = arg0->unk_38 + (u32) arg0;
-    gPlayers[playerId].unk_DB8 = v1->unk_00;
+    gPlayers[playerId].numAiCandidates = v1->unk_00;
     gPlayers[playerId].aiCandidateTable = v1->unk_04;
-    gPlayers[playerId].aiSequenceTable = v1->unk_00 + v1->unk_04; // required to match
+    gPlayers[playerId].aiActionSequenceTable = v1->unk_00 + v1->unk_04; // required to match
 
     a2 = arg0->unk_3C + (u32) arg0;
-    gPlayers[playerId].unk_DBA = a2->unk_00;
-    gPlayers[playerId].aiResponseIndexMap = a2->unk_04;
-    gPlayers[playerId].aiResponseTable =
+    gPlayers[playerId].numAiStrategies = a2->unk_00;
+    gPlayers[playerId].aiStrategyIndexMap = a2->unk_04;
+    gPlayers[playerId].aiStrategyTable =
         (((a2->unk_00 & 1) + a2->unk_00) & 0xFFFFFFFF) + a2->unk_04; // required to match
 
-    gPlayers[playerId].aiState.aiFlags = AIF_20000;
-    gPlayers[playerId].aiState.recentActions[0] = NULL;
-    gPlayers[playerId].aiState.sequencePtr = &D_80049394;
-    gPlayers[playerId].aiState.actionPtr = &D_80049394;
-    gPlayers[playerId].aiState.stateCallback = 0;
+    gPlayers[playerId].aiState.aiFlags = AIF_AI_DISABLED;
+    gPlayers[playerId].aiState.recentTactics[0] = NULL;
+    gPlayers[playerId].aiState.tacticActionsPtr = &D_80049394;
+    gPlayers[playerId].aiState.moveSequence = &D_80049394;
+    gPlayers[playerId].aiState.continueActionFunc = 0;
     gPlayers[playerId].aiState.actionParam = 0;
-    gPlayers[playerId].aiState.conditionFlags = 0;
+    gPlayers[playerId].aiState.actionFlags = 0;
 
     gPlayerInput[playerId].enabled = FALSE;
 
     if (gPlayMode == PLAY_MODE_30) {
         if (playerId != PLAYER_1) {
-            ai_reset_difficulty_hard(gPlayers + playerId);
+            ai_min_difficulty(gPlayers + playerId);
         } else {
-            ai_set_temp_max_difficulty(gPlayers + PLAYER_1);
+            ai_max_difficulty(gPlayers + PLAYER_1);
         }
-    } else if (gBattleSettings[playerId].unk_0F) {
+    } else if (gBattleSettings[playerId].initDifficulty) {
         if (gDifficulty == DIFFICULTY_HARD && gBattleSettings[playerId].aiDifficulty == 0) {
             gBattleSettings[playerId].aiDifficulty = 2;
         }
         s2 = gBattleSettings[playerId].aiDifficulty;
 
-        ai_reset_difficulty_hard(gPlayers + playerId);
-        gBattleSettings[playerId].unk_0F = FALSE;
+        ai_min_difficulty(gPlayers + playerId);
+        gBattleSettings[playerId].initDifficulty = FALSE;
         for (i = 0; i < s2; i++) {
             ai_increase_difficulty(gPlayers + playerId);
         }
@@ -491,7 +491,7 @@ void func_80004334(CharacterDefinition *arg0, s16 playerId) {
             case DIFFICULTY_EASY:
                 switch (func_8001DFE4(playerId)) {
                     case 0:
-                        ai_set_temp_max_difficulty(gPlayers + playerId);
+                        ai_max_difficulty(gPlayers + playerId);
                         break;
                     default:
                         ai_increase_difficulty(gPlayers + playerId);
@@ -1120,7 +1120,7 @@ u8 player_make_transition(Player *player, u8 arg1, u16 logicState) {
                 animTaskParams[3] = sp44->stateIdOverride;
                 animTaskParams[4] = behavior->actionFunc;
 
-                player->aiState.aiFlags |= AIF_20000;
+                player->aiState.aiFlags |= AIF_AI_DISABLED;
             }
             goto label;
         }
@@ -1197,7 +1197,7 @@ u8 player_apply_move(Player *player, s16 moveId, u8 arg2) {
 u8 player_force_move(Player *player, s16 moveId, u8 arg2) {
     if (gBattleSettings[player->playerId].isCpu) {
         player->autoTransitionTimer = 0;
-        return ai_force_transition(player, moveId);
+        return ai_force_move(player, moveId);
     } else {
         return player_apply_move(player, moveId, arg2);
     }

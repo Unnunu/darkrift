@@ -460,7 +460,7 @@ typedef struct TransitionRule {
     /* 0x0A */ s16 targetStateId;
     /* 0x0C */ u16 button_mask;
     /* 0x0E */ u8 aiResponseForChar[11];
-    /* 0x19 */ u8 aiResponseSelf;
+    /* 0x19 */ u8 aiSelfStrategy;
     /* 0x1A */ char pad_1A[2];
 } TransitionRule; // size = 0x1C
 
@@ -685,28 +685,44 @@ typedef struct ProjectileDef {
     /* 0x44 */ ColorRGBA lightColors[2];
 } ProjectileDef; // size = 0x4C
 
-typedef struct AiAction {
-    /* 0x00 */ s16 actionIndex;
+typedef struct AiTactic {
+    /* 0x00 */ s16 actionSequence;
     /* 0x02 */ s16 difficultyMask;
-    /* 0x04 */ s16 distanceMax;
-    /* 0x06 */ s16 distanceMin;
+    /* 0x04 */ s16 distanceMin;
+    /* 0x06 */ s16 distanceMax;
     /* 0x08 */ u16 conditionFlags;
     /* 0x0A */ s16 unk_0A;
-} AiAction; // size = 0xC
+} AiTactic; // size = 0xC
+
+typedef struct AiAction {
+    /* 0x00 */ s16 callbackIndex; // index into callback table (-1 = none)
+    /* 0x02 */ s16 actionParam;
+    /* 0x04 */ u16 conditionFlags;
+    /* 0x06 */ s16 pad_06;
+    /* 0x08 */ s16 moveSequence[]; // MOVE_ID list, -1 terminated
+} AiAction;
+
+typedef struct AiStrategy {
+    /* 0x00 */ s16 flags;
+    /* 0x02 */ s16 unk_02;
+    /* 0x04 */ s16 unk_04;
+    /* 0x06 */ s16 difficulty;
+    /* 0x08 */ s16 candidates[]; // -1 terminated, indices into aiCandidateTable (AiTactic[])
+} AiStrategy;
 
 typedef struct AiState {
-    /* 0x0000 */ AiAction *recentActions[3];
-    /* 0x000C */ s16 *sequencePtr;
-    /* 0x0010 */ u16 *actionPtr;
-    /* 0x0014 */ s16 (*stateCallback)(struct Player *);
+    /* 0x0000 */ AiTactic *recentTactics[3];
+    /* 0x000C */ s16 *tacticActionsPtr;
+    /* 0x0010 */ u16 *moveSequence;
+    /* 0x0014 */ s16 (*continueActionFunc)(struct Player *);
     /* 0x0018 */ s16 actionParam;
     /* 0x001A */ s16 unk_1A;
-    /* 0x001C */ s32 conditionFlags;
-    /* 0x0020 */ s32 actionFlags;
+    /* 0x001C */ s32 actionFlags;
+    /* 0x0020 */ s32 tacticFlags;
     /* 0x0024 */ s16 unk_24;
     /* 0x0026 */ s16 opponentHpAtAction;
     /* 0x0028 */ s32 unk_28;
-    /* 0x002C */ s16 *tableRow;
+    /* 0x002C */ AiStrategy *currentStrategy;
     /* 0x00D8 */ s32 unk_D8;
     /* 0x00DC */ s16 hitCount;
     /* 0x00DE */ s16 delayCount;
@@ -740,10 +756,10 @@ typedef struct Player {
     /* 0x004C */ ProjectileBarrage *barrageTable;
     /* 0x0050 */ u16 *aiActionTable;
     /* 0x0054 */ s16 *aiActionIndexMap;
-    /* 0x0058 */ AiAction *aiCandidateTable;
-    /* 0x005C */ s16 *aiSequenceTable;
-    /* 0x0060 */ s16 *aiResponseTable;
-    /* 0x0064 */ s16 *aiResponseIndexMap;
+    /* 0x0058 */ AiTactic *aiCandidateTable;
+    /* 0x005C */ s16 *aiActionSequenceTable;
+    /* 0x0060 */ s16 *aiStrategyTable;
+    /* 0x0064 */ s16 *aiStrategyIndexMap;
     /* 0x0068 */ u8 *unk_68;
 
     /* 0x006C */ s32 unk_6C;
@@ -782,8 +798,8 @@ typedef struct Player {
     /* 0x09B0 */ s32 unk_9B0;
     /* 0x09B4 */ s32 unk_9B4;
     /* 0x09B8 */ char unk_9B8[1024];
-    /* 0x0DB8 */ s16 unk_DB8;
-    /* 0x0DBA */ s16 unk_DBA;
+    /* 0x0DB8 */ s16 numAiCandidates;
+    /* 0x0DBA */ s16 numAiStrategies;
     /* 0x0DBC */ s16 unk_DBC;
     /* 0x0DBE */ s16 unk_DBE;
     /* 0x0DC0 */ Model *effectSprites[3];
@@ -808,7 +824,7 @@ typedef struct Player12 {
     /* 0x0A */ s16 consecutiveWins;
     /* 0x0C */ s16 initialHp;
     /* 0x0E */ u8 isDebug;
-    /* 0x0F */ u8 unk_0F;
+    /* 0x0F */ u8 initDifficulty;
     /* 0x0F */ u8 isDummy;
     /* 0x0F */ u8 unk_11;
 } Player12; // size = 0x12

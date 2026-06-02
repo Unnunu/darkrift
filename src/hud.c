@@ -560,7 +560,8 @@ void func_800171EC(Object *obj) {
 
     D_80081444 = v0;
 
-    func_8001675C(&gPlayers[PLAYER_2], MOVE_ID_DEFEAT_INTRO, func_8001675C(&gPlayers[PLAYER_1], MOVE_ID_DEFEAT_INTRO, 0x78));
+    func_8001675C(&gPlayers[PLAYER_2], MOVE_ID_DEFEAT_INTRO,
+                  func_8001675C(&gPlayers[PLAYER_1], MOVE_ID_DEFEAT_INTRO, 0x78));
 
     if (gMaxRounds == gBattleSettings[PLAYER_1].roundsWon + 1) {
         a3 = handle_player_win(PLAYER_1, TRUE);
@@ -794,10 +795,10 @@ void func_80017B3C(Object *obj) {
     gPlayers[PLAYER_2].flags &= ~PLAYER_FLAG_100000;
 
     if (gBattleSettings[PLAYER_1].isCpu) {
-        gPlayers[PLAYER_1].aiState.aiFlags &= ~AIF_20000;
+        gPlayers[PLAYER_1].aiState.aiFlags &= ~AIF_AI_DISABLED;
     }
     if (gBattleSettings[PLAYER_2].isCpu) {
-        gPlayers[PLAYER_2].aiState.aiFlags &= ~AIF_20000;
+        gPlayers[PLAYER_2].aiState.aiFlags &= ~AIF_AI_DISABLED;
     }
 
     func_80028FCC();
@@ -826,10 +827,10 @@ void func_80017CA8(void) {
     D_80080234 = FALSE;
 
     if (gBattleSettings[PLAYER_1].isCpu) {
-        gPlayers[PLAYER_1].aiState.aiFlags |= AIF_20000;
+        gPlayers[PLAYER_1].aiState.aiFlags |= AIF_AI_DISABLED;
     }
     if (gBattleSettings[PLAYER_2].isCpu) {
-        gPlayers[PLAYER_2].aiState.aiFlags |= AIF_20000;
+        gPlayers[PLAYER_2].aiState.aiFlags |= AIF_AI_DISABLED;
     }
 
     D_8013C23C->currentTask->func = func_80017C3C;

@@ -24,6 +24,29 @@ def parse_move_enum():
                 MOVE_ID_BY_NUM[int(m.group(2))] = m.group(1)
 parse_move_enum()
 
+CS_ID_BY_NUM = {}
+def parse_cs_enum():
+    global CS_ID_BY_NUM
+    enum_path = Path(__file__).resolve().parent.parent / "include" / "enums.h"
+    text = enum_path.read_text()
+    in_cs_ids = False
+    for line in text.splitlines():
+        if line.strip() == "enum CombatStateIds {":
+            in_cs_ids = True
+            continue
+        if in_cs_ids:
+            if line.strip() == "};":
+                break
+            m = re.match(r'\s*([A-Za-z_]\w+)\s*=\s*(\d+)\s*,', line)
+            if m:
+                CS_ID_BY_NUM[int(m.group(2))] = m.group(1)
+parse_cs_enum()
+
+def get_cs_name(cs_id):
+    if cs_id == -1:
+        return "NONE"
+    return CS_ID_BY_NUM.get(cs_id, f"CS_ID_{cs_id}")
+
 def get_move_name(move_id):
     return MOVE_ID_BY_NUM.get(move_id, f"MOVE_ID_{move_id}")
 
@@ -361,9 +384,10 @@ def process_db():
                         forCharAnnotated.append(f"{ch}:{val}:`{names[val]}`")
                     else:
                         forCharAnnotated.append(f"{ch}:{val}:(???)")
+            selfRespName = symbols[1][selfResp] if selfResp != 0xFF and selfResp < len(symbols[1]) else None
             l.append({"name":symbols[0][i], "index":i, "index_in_field28":head[0], "buttons":get_buttons(head[1]), "flags":get_move_flags(head[2]), "unk06":head[3],
-                      "behavior":f"BHV_{head[4]}", "actionState": f"CS_{head[5]}", "button_mask":get_buttons(head[6]),
-                      "aiResponseForChar":forCharAnnotated, "aiResponseSelf":selfResp})
+                      "behavior":f"BHV_{head[4]}", "actionState": get_cs_name(head[5]), "button_mask":get_buttons(head[6]),
+                      "aiResponseForChar":forCharAnnotated, "aiResponseSelf":selfResp, "aiResponseSelfName":selfRespName})
             i += 1
         dbdata["transitionTable"] = l
 
@@ -407,7 +431,7 @@ def process_db():
         l = []
         for off in range(offs[5] + 4, offs[6], 56):
             e = unpack_from(">26hI", content, off)
-            l.append({"index": f"CS_{(off - offs[5] - 4) // 56}",
+            l.append({"index": get_cs_name((off - offs[5] - 4) // 56),
                       "minFrame":e[0], "maxFrame":e[1],
                       "hitboxActiveStart":e[2], "hitboxActiveEnd":e[3],
                       "animationId":e[4],
@@ -525,7 +549,7 @@ def process_db():
                 e = unpack_from(">hhhhHH", content, cand_off + i * 12)
                 l_cands.append({
                     "name": symbols[2][i] if i < len(symbols[2]) else f"CAND_{i}",
-                    "actionIndex":e[0], "difficultyMask":e[1], "distanceMax":e[2],
+                    "actionSequence":e[0], "difficultyMask":e[1], "distanceMax":e[2],
                     "distanceMin":e[3], "conditionFlags":e[4], "unk_0A":e[5]
                 })
             seq_off = cand_off + cand_count * 12
@@ -553,12 +577,13 @@ def process_db():
             for i in range(resp_count):
                 e = unpack_from(">h", content, idx_off + i * 2)
                 idxmap_vals.append(e[0])
-            resp_off = idx_off + resp_count * 2
+            pad = (resp_count & 1) * 2  # alignment padding (2 bytes for odd counts)
+            resp_off = idx_off + resp_count * 2 + pad
             s16_data = unpack_from(f">{ (offs[16] - resp_off)//2 }h", content, resp_off) if resp_off < offs[16] else []
             for i, start in enumerate(idxmap_vals):
                 if start >= len(s16_data):
                     break
-                flags = s16_data[start]
+                flags = s16_data[start] & 0xFFFF
                 v1 = s16_data[start + 1] if start + 1 < len(s16_data) else 0
                 v2 = s16_data[start + 2] if start + 2 < len(s16_data) else 0
                 adj = s16_data[start + 3] if start + 3 < len(s16_data) else 0
@@ -604,7 +629,8 @@ def process_db():
                         p(f"  [{e['index']:3d}] \"{e['name']}\"")
                         p(f"        tOff={e['index_in_field28']:3d}  btn={btn_str:15s}  flags={e['flags']:25s}  hold={e['unk06']:5d}"
                           f"  bhv={e['behavior']:>8s}  state={state_str:>8s}  mask={mask_str}")
-                        p(f"        self={e['aiResponseSelf']:3d}  aiResp→ {resp_str}")
+                        self_str = f"self=`{e['aiResponseSelfName']}`" if e['aiResponseSelfName'] else ""
+                        p(f"        {self_str:30s}  aiResp→ {resp_str}")
                     p()
 
                 # ── Logic States ──
@@ -733,24 +759,24 @@ def process_db():
                 # ── AI Action Rows ──
                 elif k == "aiActionRows":
                     AI_CALLBACK_NAMES = [
-                        "approach",          # 0  - wait until opponent within actionParam
-                        "retreat",           # 1  - wait until opponent beyond actionParam
-                        "immediate",         # 2  - returns 0 immediately (no-op)
-                        "timer",             # 3  - actionParam countdown, done when 0
-                        "anim_half",         # 4  - wait until past first half of animation
-                        "punish",            # 5  - watch opponent hitbox, punish whiffs
-                        "reset",             # 6  - returns -1 immediately (force reset)
-                        "blockstring",       # 7  - pressure/blockstring mixup
-                        "breaker_crouch",    # 8  - combo breaker setup (crouching variant)
-                        "counter_stand",     # 9  - counter setup (standing variant)
-                        "random_delay",      #10  - set random delay timer, then countdown
-                        "distance",          #11  - raw distance check (no anim guard)
-                        "delay_advance",     #12  - random delay, then advance+execute next
-                        "delay_advance2",    #13  - random delay variant (identical to 12)
-                        "response_gate",     #14  - opponent response flag gate (hit confirm)
-                        "loop_back",         #15  - rewind sequence by 2 steps
+                        "approach",            # 0  - wait until opponent within actionParam
+                        "retreat",             # 1  - wait until opponent beyond actionParam
+                        "immediate",           # 2  - returns 0 immediately (no-op)
+                        "timer",               # 3  - actionParam countdown, done when 0
+                        "anim_half",           # 4  - wait until past first half of animation
+                        "stand_block_exit",    # 5  - exit standing block when safe
+                        "abort",               # 6  - returns -1 immediately (force tactic abort)
+                        "crouch_block_exit",   # 7  - exit crouching block when safe
+                        "stand_impact",        # 8  - reaction to hit while standing
+                        "crouch_impact",       # 9  - reaction to hit while crouching
+                        "lay_down",            #10  - random delay, then stand up
+                        "run",                 #11  - raw distance check for run
+                        "stand_block_try",     #12  - enter standing block
+                        "crouch_block_try",    #13  - enter crouching block
+                        "block_release",       #14  - release block when opponent stops attacking
+                        "block_loop",          #15  - restart block sequence
                     ]
-                    p("### AI Action Rows ###")
+                    p("### AI Action Rows (callback + params + moveSequence) ###")
                     for r in v:
                         if r['callbackIdx'] == -1:
                             cb = "none"
@@ -763,33 +789,54 @@ def process_db():
                           f"  moves=[{moves_str}]")
                     p()
 
-                # ── AI Candidate Table ──
+                # ── AI Tactic Table (was: Candidate) ──
                 elif k == "aiCandidateTable":
-                    p("### AI Candidate Table (12B each) ###")
+                    seq_groups = dbdata.get("aiSequenceGroups", [])
+                    # actionSequence is an s16 offset into the flat sequence table,
+                    # not a group index. Build offset→group map.
+                    off_to_group = {}
+                    cumul = 0
+                    for g in seq_groups:
+                        off_to_group[cumul] = g
+                        cumul += len(g['actions']) + 1  # +1 for -1 terminator
+                    p("### AI Tactic Table (12B each) ###")
                     for i, c in enumerate(v):
+                        seq = off_to_group.get(c['actionSequence'])
+                        acts = ""
+                        if seq:
+                            acts = " → ".join(f'{a["index"]}:"{a["name"]}"' for a in seq["actions"])
                         p(f"  [{i:3d}] \"{c['name']}\""
-                          f"  seqIdx={c['actionIndex']:3d}"
                           f"  diffMask=0x{c['difficultyMask']:04x}"
                           f"  dist=({c['distanceMin']:5d},{c['distanceMax']:5d})"
                           f"  cond=0x{c['conditionFlags']:04x}")
+                        p(f"        actionSequence: [{acts}]")
                     p()
-
-                # ── AI Sequence Groups ──
-                elif k == "aiSequenceGroups":
-                    p("### AI Sequence Groups (× actionIndex) ###")
-                    for i, g in enumerate(v):
-                        acts = ", ".join(f'{a["index"]}:"{a["name"]}"' for a in g["actions"])
-                        p(f"  group {i:3d}: [{acts}]")
-                    p()
-
-                # ── AI Response Table ──
+                # ── AI Strategy Table (was: Response) ──
                 elif k == "aiResponseTable":
-                    p("### AI Response Table (per-state AI decisions) ###")
+                    cand_names = dbdata.get("aiCandidateTable", [])
+                    p("### AI Strategy Table (per-state AI decisions) ###")
+                    p("  # Note: candidate index 0 is the universal fallback tactic (see ai_decide)")
                     for i, r in enumerate(v):
-                        p(f"  [{i:3d}] \"{r['name']}\""
-                          f"  flags=0x{r['flags']:04x}"
-                          f"  v1={r['val1']:4d}  v2={r['val2']:4d}  adj={r['adj']:4d}"
-                          f"  candidates={r['candidates']}")
+                        # decode known flag bits
+                        fl = r['flags']
+                        parts = []
+                        for bit, name in [(1, 'difficulty_locked'), (2, 'deferrable'),
+                                          (4, 'block_low'), (8, 'flag8')]:
+                            if fl & bit:
+                                parts.append(name)
+                        unknown = fl & ~15
+                        if unknown:
+                            parts.append(f'unk_{unknown:04x}')
+                        flag_str = '|'.join(parts) if parts else '0'
+                        name_pad = r['name'][:30].ljust(30)
+                        p(f"  [{i:3d}] \"{name_pad}\" ({flag_str})"
+                          f"  v1={r['val1']:3d}  v2={r['val2']:3d}  adj={r['adj']:3d}")
+                        if r['candidates']:
+                            for c in r['candidates']:
+                                cn = cand_names[c]['name'] if c < len(cand_names) else f"TACTIC_{c}"
+                                p(f"         candidates:  {c:3d}: \"{cn}\"")
+                        else:
+                            p(f"         candidates:  (none)")
                     p()
 
                 # ── Raw unk_68 ──
@@ -800,7 +847,9 @@ def process_db():
                         p(f"  {hex_str[start:start+64]}")
                     p()
 
-                # ── anything else ──
+                # ── anything else (skip handled sub-keys) ──
+                elif k == "aiSequenceGroups":
+                    pass  # shown inline with aiCandidateTable
                 else:
                     p(f"### {k} ###")
                     for entry in v:

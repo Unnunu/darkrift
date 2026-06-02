@@ -2,8 +2,8 @@
 #include "camera.h"
 #include "task.h"
 
-s16 ai_cond_blockstring(Player *);
-s16 ai_cond_punish(Player *);
+s16 ai_step_crouch_block_exit(Player *);
+s16 ai_step_stand_block_exit(Player *);
 
 void func_8002FA98(Object *obj);
 void func_80031DCC(Object *);
@@ -820,11 +820,11 @@ void player_trans_func_11(Object *obj) {
         v0->obj->frameIndex < v0->combatState->hitboxActiveStart) {
         if (v0->flags & PLAYER_FLAG_1) {
             player_force_move(player, MOVE_ID_CROUCH_BLOCK_IDLE, 1);
-            player->aiState.stateCallback = ai_cond_blockstring;
+            player->aiState.continueActionFunc = ai_step_crouch_block_exit;
             player->aiState.actionParam = 60;
         } else {
             player_force_move(player, MOVE_ID_STANDING_BLOCK, 1);
-            player->aiState.stateCallback = ai_cond_punish;
+            player->aiState.continueActionFunc = ai_step_stand_block_exit;
             player->aiState.actionParam = 60;
         }
     }

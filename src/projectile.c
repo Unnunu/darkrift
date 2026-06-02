@@ -59,7 +59,7 @@ void projectile_on_impact(Object *obj, Object *obj2) {
 void projectile_cleanup(Object *obj, ProjectileDef *effect) {
     Player *player = (Player *) obj->vars[0];
 
-    player->flags &= ~PLAYER_FLAG_2000000;
+    player->flags &= ~PLAYER_FLAG_SHOOTED;
 
     switch (player->characterId) {
         case AARON:
@@ -362,7 +362,7 @@ Object *projectile_spawn(Object *obj, s32 projectileId) {
             effectObj->unk_076 |= 2;
             effectObj->unk_076 |= 8;
             effectObj->unk_1E8 = projectile_on_impact;
-            player->flags |= PLAYER_FLAG_2000000;
+            player->flags |= PLAYER_FLAG_SHOOTED;
         }
 
         if (effect->flags & 0x40) {
