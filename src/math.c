@@ -610,7 +610,7 @@ f32 func_80012978(u16 arg0) {
 f32 func_80012978(u16 arg0);
 #endif
 
-void func_80012A20(Transform *parent, Transform *arg1, s32 id, s32 parentId) {
+void init_transform(Transform *parent, Transform *arg1, s32 id, s32 parentId) {
     func_80012B34(&arg1->mtx[0]);
     func_80012B34(&arg1->mtx[1]);
     func_80012AA8(&arg1->local_matrix);
@@ -926,7 +926,7 @@ void math_translate(Matrix4f *arg0, Vec4i *arg1) {
     arg0->w.z = arg1->z;
 }
 
-void func_8001370C(Vec4i *arg0, Vec4s *arg1) {
+void math_rotate_vector(Vec4i *arg0, Vec4s *arg1) {
     f32 x, y, z;
     f64 temp;
     math_rotate(&D_800813E0, arg1);
@@ -953,7 +953,7 @@ void func_8001386C(Vec4i *arg0, Vec4i *arg1, Matrix4f *arg2) {
     arg1->z = temp = z >= 0.0 ? z + 0.5 : z - 0.5;
 }
 
-void func_800139A0(Matrix4f *arg0, Vec4i *arg1) {
+void math_scale(Matrix4f *arg0, Vec4i *arg1) {
     if (arg1->x != 0x100 || arg1->y != 0x100 || arg1->z != 0x100) {
         D_80081360.x.x = (f32) arg1->x * (1.0 / 256);
         D_80081360.y.y = (f32) arg1->y * (1.0 / 256);
@@ -1041,7 +1041,7 @@ void func_80013E64(Vec4s *arg0, Vec4i *arg1, Mtx *arg2) {
     math_rotate(&D_800813E0, arg0);
 
     if (arg1->x != 0x1000 || arg1->y != 0x1000 || arg1->z != 0x1000) {
-        func_800139A0(&D_800813E0, arg1);
+        math_scale(&D_800813E0, arg1);
     }
 
     xx = FTOFIX32(D_800813E0.x.x);
@@ -1205,7 +1205,7 @@ void func_80014464(Vec4s *arg0, Mtx *arg1) {
     func_80012470(&D_800813E0);
 }
 
-void func_800146B4(Matrix4f *arg0, Matrix4f *arg1) {
+void math_mtxf_copy(Matrix4f *arg0, Matrix4f *arg1) {
     arg0->x.x = arg1->x.x;
     arg0->x.y = arg1->x.y;
     arg0->x.z = arg1->x.z;
@@ -1220,7 +1220,7 @@ void func_800146B4(Matrix4f *arg0, Matrix4f *arg1) {
     arg0->w.z = arg1->w.z;
 }
 
-void func_80014718(Matrix4f *arg0, Matrix4f *arg1, Matrix4f *arg2) {
+void math_mtxf_apply_parent(Matrix4f *arg0, Matrix4f *arg1, Matrix4f *arg2) {
     arg0->x.x = arg1->x.x * arg2->x.x + arg1->x.y * arg2->y.x + arg1->x.z * arg2->z.x;
     arg0->x.y = arg1->x.x * arg2->x.y + arg1->x.y * arg2->y.y + arg1->x.z * arg2->z.y;
     arg0->x.z = arg1->x.x * arg2->x.z + arg1->x.y * arg2->y.z + arg1->x.z * arg2->z.z;
@@ -1235,17 +1235,17 @@ void func_80014718(Matrix4f *arg0, Matrix4f *arg1, Matrix4f *arg2) {
     arg0->w.z = arg1->w.x * arg2->x.z + arg1->w.y * arg2->y.z + arg1->w.z * arg2->z.z + arg2->w.z;
 }
 
-void func_80014974(Transform *transform) {
+void math_sync_transforms(Transform *transform) {
     Transform *ptr;
 
     if (transform->parent != NULL) {
-        func_80014718(&transform->world_matrix, &transform->local_matrix, &transform->parent->world_matrix);
+        math_mtxf_apply_parent(&transform->world_matrix, &transform->local_matrix, &transform->parent->world_matrix);
     } else {
-        func_800146B4(&transform->world_matrix, &transform->local_matrix);
+        math_mtxf_copy(&transform->world_matrix, &transform->local_matrix);
     }
 
     for (ptr = transform->firstChild; ptr != NULL; ptr = ptr->nextSibling) {
-        func_80014974(ptr);
+        math_sync_transforms(ptr);
     }
 }
 

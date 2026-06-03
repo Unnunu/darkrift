@@ -386,31 +386,31 @@ void camera_shift_world(s32 arg0, s32 arg1) {
         if (!(obj->flags & OBJ_FLAG_UIELEMENT)) {
             obj->pos.x += arg0;
             obj->pos.z += arg1;
-            func_80014974(&obj->transform);
+            math_sync_transforms(&obj->transform);
         }
     }
 
-    gPlayers[PLAYER_1].unk_DE8.segmentCount = gPlayers[PLAYER_1].unk_2240.segmentCount =
-        gPlayers[PLAYER_1].unk_3698.segmentCount = gPlayers[PLAYER_1].unk_4AF0.segmentCount =
-            gPlayers[PLAYER_2].unk_DE8.segmentCount = gPlayers[PLAYER_2].unk_2240.segmentCount =
-                gPlayers[PLAYER_2].unk_3698.segmentCount = gPlayers[PLAYER_2].unk_4AF0.segmentCount = 0;
+    gPlayers[PLAYER_1].rightHandTrail.segmentCount = gPlayers[PLAYER_1].leftHandTrail.segmentCount =
+        gPlayers[PLAYER_1].leftLegTrail.segmentCount = gPlayers[PLAYER_1].rightLegTrail.segmentCount =
+            gPlayers[PLAYER_2].rightHandTrail.segmentCount = gPlayers[PLAYER_2].leftHandTrail.segmentCount =
+                gPlayers[PLAYER_2].leftLegTrail.segmentCount = gPlayers[PLAYER_2].rightLegTrail.segmentCount = 0;
 
-    spline_interpolator_init(&gPlayers[PLAYER_1].unk_DE8.splineB);
-    spline_interpolator_init(&gPlayers[PLAYER_1].unk_DE8.splineA);
-    spline_interpolator_init(&gPlayers[PLAYER_1].unk_2240.splineB);
-    spline_interpolator_init(&gPlayers[PLAYER_1].unk_2240.splineA);
-    spline_interpolator_init(&gPlayers[PLAYER_1].unk_3698.splineB);
-    spline_interpolator_init(&gPlayers[PLAYER_1].unk_3698.splineA);
-    spline_interpolator_init(&gPlayers[PLAYER_1].unk_4AF0.splineB);
-    spline_interpolator_init(&gPlayers[PLAYER_1].unk_4AF0.splineA);
-    spline_interpolator_init(&gPlayers[PLAYER_2].unk_DE8.splineB);
-    spline_interpolator_init(&gPlayers[PLAYER_2].unk_DE8.splineA);
-    spline_interpolator_init(&gPlayers[PLAYER_2].unk_2240.splineB);
-    spline_interpolator_init(&gPlayers[PLAYER_2].unk_2240.splineA);
-    spline_interpolator_init(&gPlayers[PLAYER_2].unk_3698.splineB);
-    spline_interpolator_init(&gPlayers[PLAYER_2].unk_3698.splineA);
-    spline_interpolator_init(&gPlayers[PLAYER_2].unk_4AF0.splineB);
-    spline_interpolator_init(&gPlayers[PLAYER_2].unk_4AF0.splineA);
+    spline_interpolator_init(&gPlayers[PLAYER_1].rightHandTrail.splineB);
+    spline_interpolator_init(&gPlayers[PLAYER_1].rightHandTrail.splineA);
+    spline_interpolator_init(&gPlayers[PLAYER_1].leftHandTrail.splineB);
+    spline_interpolator_init(&gPlayers[PLAYER_1].leftHandTrail.splineA);
+    spline_interpolator_init(&gPlayers[PLAYER_1].leftLegTrail.splineB);
+    spline_interpolator_init(&gPlayers[PLAYER_1].leftLegTrail.splineA);
+    spline_interpolator_init(&gPlayers[PLAYER_1].rightLegTrail.splineB);
+    spline_interpolator_init(&gPlayers[PLAYER_1].rightLegTrail.splineA);
+    spline_interpolator_init(&gPlayers[PLAYER_2].rightHandTrail.splineB);
+    spline_interpolator_init(&gPlayers[PLAYER_2].rightHandTrail.splineA);
+    spline_interpolator_init(&gPlayers[PLAYER_2].leftHandTrail.splineB);
+    spline_interpolator_init(&gPlayers[PLAYER_2].leftHandTrail.splineA);
+    spline_interpolator_init(&gPlayers[PLAYER_2].leftLegTrail.splineB);
+    spline_interpolator_init(&gPlayers[PLAYER_2].leftLegTrail.splineA);
+    spline_interpolator_init(&gPlayers[PLAYER_2].rightLegTrail.splineB);
+    spline_interpolator_init(&gPlayers[PLAYER_2].rightLegTrail.splineA);
 }
 
 s32 camera_wrapping_post_render(void *arg0) {
@@ -552,7 +552,7 @@ void camera_orbit_update(Object *obj, u8 arg1) {
         sp68.z = -spD0;
         sp60.y = (0x400 - gCameraHeading) & 0xFFF;
         sp60.x = sp60.z = 0;
-        func_8001370C(&sp68, &sp60);
+        math_rotate_vector(&sp68, &sp60);
         if (sp68.x > 0) {
             sp78 = (u32) (sqrtf(SQ(spD4) + SQ(spD0)) + 0.5) >> 1;
         } else if (sp68.x < 0) {
@@ -719,13 +719,13 @@ restart:
         return;
     }
 
-    v1 = MIN(temp[PLAYER_1].hitboxBones.headPos->y, temp[PLAYER_1].hitboxBones.thighPos->y);
-    v0 = MIN(temp[PLAYER_2].hitboxBones.headPos->y, temp[PLAYER_2].hitboxBones.thighPos->y);
+    v1 = MIN(temp[PLAYER_1].hitZones.rightFootPos->y, temp[PLAYER_1].hitZones.leftFootPos->y);
+    v0 = MIN(temp[PLAYER_2].hitZones.rightFootPos->y, temp[PLAYER_2].hitZones.leftFootPos->y);
 
     if (v1 < v0) {
-        s0 = (temp[PLAYER_2].hitboxBones.handPos->y - 200.0f) < v1;
+        s0 = (temp[PLAYER_2].hitZones.headPos->y - 200.0f) < v1;
     } else {
-        s0 = (temp[PLAYER_1].hitboxBones.handPos->y - 200.0f) < v0;
+        s0 = (temp[PLAYER_1].hitZones.headPos->y - 200.0f) < v0;
     }
 
     if ((gPlayers[PLAYER_1].combatState->flags & CSF_80000) || (gPlayers[PLAYER_2].combatState->flags & CSF_80000)) {
@@ -1027,12 +1027,12 @@ void camera_battle_update(Object *obj) {
     }
 
     sp34.x = gPlayerPos1->x;
-    sp34.y = gPlayers[PLAYER_1].hitboxBones.handPos->y;
+    sp34.y = gPlayers[PLAYER_1].hitZones.headPos->y;
     sp34.z = gPlayerPos1->z;
     camera_project_to_screen(&sp34, &sp60, &sp5C, &sp50);
 
     sp34.x = gPlayerPos2->x;
-    sp34.y = gPlayers[PLAYER_2].hitboxBones.handPos->y;
+    sp34.y = gPlayers[PLAYER_2].hitZones.headPos->y;
     sp34.z = gPlayerPos2->z;
     camera_project_to_screen(&sp34, &sp58, &sp54, &sp4C);
 
@@ -1128,7 +1128,7 @@ void camera_battle_update(Object *obj) {
 
             sp6C.y = (0x400 - gCameraHeading) & 0xFFF;
             sp6C.x = sp6C.z = 0;
-            func_8001370C(&sp74, &sp6C);
+            math_rotate_vector(&sp74, &sp6C);
 
             if (sp74.x > 0) {
                 sp98 = (u32) (sqrtf(sp100 * sp100 + spFC * spFC) + 0.5) >> 1;

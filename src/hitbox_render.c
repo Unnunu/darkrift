@@ -221,7 +221,7 @@ void init_overlay_batch_info(BatchInfo *batch) {
     gtStateSetOthermode(&batch->header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
 }
 
-void hitbox_render_update(PlayerHitbox *arg0, u8 arg1) {
+void hitbox_render_update(MotionTrail *arg0, u8 arg1) {
     Vec4i spF8;
     Vec4i *spF4;
     u8 spF3;
@@ -590,24 +590,24 @@ void hitbox_render_update(PlayerHitbox *arg0, u8 arg1) {
     }
 }
 
-void hitbox_render_init(PlayerHitbox *arg0, ModelInstance *arg1, Matrix4f *arg2, Matrix4f *arg3, Vec4i *arg4,
-                        ColorRGBA *arg5) {
+void motion_trail_init(MotionTrail *trail, ModelInstance *modelInst, Matrix4f *arg2, Matrix4f *arg3, Vec4i *arg4,
+                       ColorRGBA *arg5) {
     u32 i, j;
     Gfx *gfx;
     u32 a;
     HitboxTrailSegment *s6;
     BatchInfo *s2;
 
-    arg0->modelInst = arg1;
-    arg0->boneMatrixA = arg2;
-    arg0->boneMatrixB = arg3;
+    trail->modelInst = modelInst;
+    trail->boneMatrixA = arg2;
+    trail->boneMatrixB = arg3;
 
-    spline_interpolator_init(&arg0->splineB);
-    spline_interpolator_init(&arg0->splineA);
+    spline_interpolator_init(&trail->splineB);
+    spline_interpolator_init(&trail->splineA);
 
-    arg0->unk_1CC = 0;
-    arg0->segmentCount = 0;
-    arg0->refPosition = arg4;
+    trail->unk_1CC = 0;
+    trail->segmentCount = 0;
+    trail->refPosition = arg4;
 
     gfx = D_80081280;
     gDPSetPrimColor(gfx++, 0, 0, 255, 255, 255, 255);
@@ -615,14 +615,14 @@ void hitbox_render_init(PlayerHitbox *arg0, ModelInstance *arg1, Matrix4f *arg2,
     gSPNoOp(gfx++);
 
     for (i = 0; i < 4; i++) {
-        s2 = arg0->unk_12D8 + i;
+        s2 = trail->unk_12D8 + i;
         init_overlay_batch_info(s2);
         s2->header.texGfx = D_80081280;
         s2->header.unk_0B = 0;
     }
 
     for (i = 0; i < 16; i++) {
-        s6 = &arg0->segments[i];
+        s6 = &trail->segments[i];
         init_overlay_batch_info(&s6->batchInfo);
         mem_fill(s6->vertices, 0, sizeof(Vtx) * 8);
 
@@ -669,10 +669,10 @@ void hitbox_render_init(PlayerHitbox *arg0, ModelInstance *arg1, Matrix4f *arg2,
         s6->lifetime = -1;
     }
 
-    arg0->boneBPosX = arg0->boneBPosY = arg0->boneBPosZ = 0.0f;
-    arg0->boneAPosX = arg0->boneAPosY = arg0->boneAPosZ = 0.0f;
+    trail->boneBPosX = trail->boneBPosY = trail->boneBPosZ = 0.0f;
+    trail->boneAPosX = trail->boneAPosY = trail->boneAPosZ = 0.0f;
 
-    arg0->baseColor.r = arg5->r;
-    arg0->baseColor.g = arg5->g;
-    arg0->baseColor.b = arg5->b;
+    trail->baseColor.r = arg5->r;
+    trail->baseColor.g = arg5->g;
+    trail->baseColor.b = arg5->b;
 }

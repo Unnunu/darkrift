@@ -543,7 +543,7 @@ void func_80016F6C(Object *obj) {
         gPlayers[D_8013C24C].obj->flags |= OBJ_FLAG_10000000;
     }
 
-    gPlayers[D_8013C24C].obj->flags &= ~(OBJ_FLAG_8000000 | OBJ_FLAG_800000);
+    gPlayers[D_8013C24C].obj->flags &= ~(OBJ_FLAG_UNWIND_ROOT | OBJ_FLAG_800000);
 }
 
 void func_800171EC(Object *obj) {

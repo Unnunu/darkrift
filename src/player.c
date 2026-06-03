@@ -36,8 +36,8 @@ u16 D_80080234;
 u16 D_80080236;
 TransitionRingBuffer D_80080238;
 
-void hitbox_render_init(PlayerHitbox *arg0, ModelInstance *arg1, Matrix4f *arg2, Matrix4f *arg3, Vec4i *arg4,
-                        ColorRGBA *arg5);
+void motion_trail_init(MotionTrail *arg0, ModelInstance *arg1, Matrix4f *arg2, Matrix4f *arg3, Vec4i *arg4,
+                       ColorRGBA *arg5);
 
 void create_player_obj(s16 playerId);
 void func_80003C04_unused(Object *obj);
@@ -310,7 +310,7 @@ void player_update(Object *obj) {
     s32 pad[2];
     Object *oppObj;
     u8 pad2;
-    u8 sp2E;
+    u8 showTrail;
 
     currentState = player->combatState;
     oppId = 1 - playerId;
@@ -332,15 +332,16 @@ void player_update(Object *obj) {
         player->flags &= ~PLAYER_FLAG_NOT_FACING_OPP;
     }
 
-    sp2E = (currentState->damage != 0) && (obj->frameIndex >= currentState->bodyHitboxStart) &&
-           (obj->frameIndex < currentState->bodyHitboxEnd);
+    showTrail = (currentState->damage != 0) && (obj->frameIndex >= currentState->trailStart) &&
+                (obj->frameIndex < currentState->trailEnd);
 
-    hitbox_render_update(&player->unk_DE8, (currentState->flags & CSF_40) && sp2E);
+    hitbox_render_update(&player->rightHandTrail, (currentState->flags & CSF_ATTACK_RIGHT_HAND) && showTrail);
     if (player->unk_5F4A) {
-        hitbox_render_update(&player->unk_2240, (currentState->flags & CSF_2000) && sp2E);
+        hitbox_render_update(&player->leftHandTrail, (currentState->flags & CSF_ATTACK_LEFT_HAND) && showTrail);
     }
-    hitbox_render_update(&player->unk_3698, (currentState->flags & CSF_800) && sp2E);
-    hitbox_render_update(&player->unk_4AF0, (currentState->flags & (CSF_20 | CSF_1000)) && sp2E);
+    hitbox_render_update(&player->leftLegTrail, (currentState->flags & CSF_ATTACK_LEFT_FOOT) && showTrail);
+    hitbox_render_update(&player->rightLegTrail,
+                         (currentState->flags & (CSF_ATTACK_RIGHT_FOOT_1 | CSF_ATTACK_RIGHT_FOOT_2)) && showTrail);
 
     if (player->characterId != MORPHIX) {
         func_80037E28(obj);
@@ -386,21 +387,22 @@ void player_update(Object *obj) {
     if (gPlayerDistance <= D_80080218 && !(player->combatState->flags & CSF_INVINSIBLE) && player->hitCooldown == 0 &&
         oppObj->frameIndex >= oppState->hitboxActiveStart && oppObj->frameIndex <= oppState->hitboxActiveEnd) {
 
-        if (oppState->flags & (CSF_40 | CSF_2000)) {
+        if (oppState->flags & (CSF_ATTACK_RIGHT_HAND | CSF_ATTACK_LEFT_HAND)) {
             if ((player->combatState->flags & (CSF_400 | CSF_10000 | CSF_JUGGLED)) &&
                 obj->modInst->rootTransform.world_matrix.w.y > -100.0f) {
-                check_ground_hit_1(player, opponent);
+                check_punch_ground(player, opponent);
             } else {
-                check_air_hit_1(player, opponent);
+                check_punch_air(player, opponent);
             }
         }
 
-        if (player->hitCooldown == 0 && (oppState->flags & (CSF_20 | CSF_800 | CSF_1000))) {
+        if (player->hitCooldown == 0 &&
+            (oppState->flags & (CSF_ATTACK_RIGHT_FOOT_1 | CSF_ATTACK_LEFT_FOOT | CSF_ATTACK_RIGHT_FOOT_2))) {
             if ((player->combatState->flags & (CSF_400 | CSF_10000 | CSF_JUGGLED)) &&
                 obj->modInst->rootTransform.world_matrix.w.y > -100.0f) {
-                check_ground_hit_2(player, opponent);
+                check_kick_ground(player, opponent);
             } else {
-                check_air_hit_2(player, opponent);
+                check_kick_air(player, opponent);
             }
         }
     }
@@ -591,9 +593,9 @@ void func_800045B4(s16 playerId, s16 characterId) {
             s0->maxFrame = func_80037394(modInst, s0->animationId) - 1;
         }
 
-        if (s0->bodyHitboxStart == -1 || s0->bodyHitboxEnd == -1) {
-            s0->bodyHitboxStart = s0->hitboxActiveStart + 3;
-            s0->bodyHitboxEnd = s0->hitboxActiveEnd - 1;
+        if (s0->trailStart == -1 || s0->trailEnd == -1) {
+            s0->trailStart = s0->hitboxActiveStart + 3;
+            s0->trailEnd = s0->hitboxActiveEnd - 1;
         }
     }
 
@@ -650,13 +652,13 @@ void func_80004B30(Object *obj, s16 playerId, s16 arg2) {
 
     s0 = &obj->modInst->transforms[D_8004C1D8[arg2]];
     s1 = &gPlayers[playerId].unk_750;
-    func_80012A20(s0->parent, s1, -3, -3);
+    init_transform(s0->parent, s1, -3, -3);
     s1->local_matrix.w.x = s0->local_matrix.w.x;
     s1->local_matrix.w.y = s0->local_matrix.w.y;
     s1->local_matrix.w.z = s0->local_matrix.w.z;
     func_80004AE0(s0);
     sp38 = s0->firstChild;
-    func_80012A20(s1, s0, -3, -3);
+    init_transform(s1, s0, -3, -3);
     s0->firstChild = sp38;
 
     nodeHierarchy[0].x = 0;
@@ -665,13 +667,13 @@ void func_80004B30(Object *obj, s16 playerId, s16 arg2) {
 
     s0 = &obj->modInst->transforms[0];
     s1 = &gPlayers[playerId].unk_868;
-    func_80012A20(s0->parent, s1, -3, -3);
+    init_transform(s0->parent, s1, -3, -3);
     s1->local_matrix.w.x = s0->local_matrix.w.x;
     s1->local_matrix.w.y = s0->local_matrix.w.y;
     s1->local_matrix.w.z = s0->local_matrix.w.z;
     func_80004AE0(s0);
     sp38 = s0->firstChild;
-    func_80012A20(s1, s0, -3, -3);
+    init_transform(s1, s0, -3, -3);
     s0->firstChild = sp38;
 
     D_80052D64[playerId] = D_80052D68[playerId] = D_80052D6C[playerId] = D_80052D70[playerId] = D_80052D74[playerId] =
@@ -800,7 +802,7 @@ void func_800050FC(u16 arg0, u16 arg1) {
 }
 
 void func_800052EC(s16 playerId) {
-    Object *spDC;
+    Object *obj;
     s16 v00;
     s16 i;
     s16 characterId;
@@ -838,9 +840,9 @@ void func_800052EC(s16 playerId) {
         }
     }
 
-    spDC = gPlayers[playerId].obj =
+    obj = gPlayers[playerId].obj =
         create_model_instance_with_properties(&spB4[playerId], spA4, D_8004B844[characterId].unk_04, playerId);
-    spDC->flags |= OBJ_FLAG_PLAYER;
+    obj->flags |= OBJ_FLAG_PLAYER;
 
     if (characterId == MORPHIX && !gBattleSettings[playerId].isDummy) {
         func_8002A890(gPlayers + playerId);
@@ -860,12 +862,12 @@ void func_800052EC(s16 playerId) {
         }
     }
 
-    create_shadow(spDC, spA4, playerId);
+    create_shadow(obj, spA4, playerId);
 
-    spDC->rotation.y = 0xC00 - spB0[playerId];
-    spDC->fn_render = player_update;
-    if (spDC->currentTask && spDC->currentTask) {} // @fake
-    spDC->varObj[0] = gPlayers + playerId;
+    obj->rotation.y = 0xC00 - spB0[playerId];
+    obj->fn_render = player_update;
+    if (obj->currentTask && obj->currentTask) {} // @fake
+    obj->varObj[0] = gPlayers + playerId;
 
     i = 0;
     str_copy(sp74, str2);
@@ -902,11 +904,11 @@ void func_800052EC(s16 playerId) {
 
     func_800045B4(playerId, characterId);
 
-    gPlayers[playerId].actionTask = spDC->currentTask;
-    gPlayers[playerId].animTask = task_add(spDC, task_default_func, TASK_FLAG_ENABLED);
-    gPlayers[playerId].audioTask = task_add(spDC, player_play_sounds, TASK_FLAG_ENABLED);
-    gPlayers[playerId].cameraTask = task_add(spDC, task_default_func, TASK_FLAG_ENABLED);
-    gPlayers[playerId].unk_18 = task_add(spDC, func_8003184C, TASK_FLAG_ENABLED);
+    gPlayers[playerId].actionTask = obj->currentTask;
+    gPlayers[playerId].animTask = task_add(obj, task_default_func, TASK_FLAG_ENABLED);
+    gPlayers[playerId].audioTask = task_add(obj, player_play_sounds, TASK_FLAG_ENABLED);
+    gPlayers[playerId].cameraTask = task_add(obj, task_default_func, TASK_FLAG_ENABLED);
+    gPlayers[playerId].unk_18 = task_add(obj, func_8003184C, TASK_FLAG_ENABLED);
     gPlayers[playerId].behaviorTable = D_8004C1E8;
 
     D_80080214 = D_8004A730[gBattleSettings[PLAYER_1].characterId] + D_8004A730[gBattleSettings[PLAYER_2].characterId];
@@ -914,7 +916,7 @@ void func_800052EC(s16 playerId) {
     gPlayerAngle = 0x800;
     gPlayerDistance = 1600;
 
-    gPlayerObjects[playerId] = spDC;
+    gPlayerObjects[playerId] = obj;
     D_80080238.headIndex = D_80080238.tailIndex = 0;
     D_80080238.startFrameCounter = gFrameCounter;
 
@@ -931,40 +933,41 @@ void func_800052EC(s16 playerId) {
     }
 
     gPlayers[playerId].combatState = gPlayers[playerId].combatStateTable + gPlayers[playerId].combatStateId;
-    init_player_hitboxes(&gPlayers[playerId], D_8004B844[characterId].unk_00);
+    init_player_hitboxes(&gPlayers[playerId], D_8004B844[characterId].hitZonesSetup);
 
-    spDC->playerHp = gBattleSettings[playerId].initialHp;
-    func_80004B30(spDC, playerId, characterId);
+    obj->playerHp = gBattleSettings[playerId].initialHp;
+    func_80004B30(obj, playerId, characterId);
 
     if (playerId == PLAYER_1) {
         gPlayerInput[playerId].mirrored = TRUE;
     }
 
-    hitbox_render_init(&gPlayers[playerId].unk_DE8, spDC->modInst,
-                       &spDC->modInst->transforms[D_8004B844[characterId].unk_00->boneId3].world_matrix,
-                       &gPlayers[playerId].hitboxBones.grabTransform.world_matrix, &spDC->pos,
-                       &D_8004B844[characterId].unk_08[playerId]);
+    motion_trail_init(&gPlayers[playerId].rightHandTrail, obj->modInst,
+                      &obj->modInst->transforms[D_8004B844[characterId].hitZonesSetup->rightHandId].world_matrix,
+                      &gPlayers[playerId].hitZones.rightPunchStrike.world_matrix, &obj->pos,
+                      &D_8004B844[characterId].trailColors[playerId]);
 
-    if (D_8004B844[characterId].unk_00->torsoParentBoneId >= 0) {
-        hitbox_render_init(&gPlayers[playerId].unk_2240, spDC->modInst,
-                           &spDC->modInst->transforms[D_8004B844[characterId].unk_00->boneId2].world_matrix,
-                           &gPlayers[playerId].hitboxBones.torsoTransform.world_matrix, &spDC->pos,
-                           &D_8004B844[characterId].unk_08[playerId]);
-        gPlayers[playerId].unk_5F4A = 1;
+    if (D_8004B844[characterId].hitZonesSetup->leftPunchBoneId >= 0) {
+        motion_trail_init(&gPlayers[playerId].leftHandTrail, obj->modInst,
+                          &obj->modInst->transforms[D_8004B844[characterId].hitZonesSetup->leftHandId].world_matrix,
+                          &gPlayers[playerId].hitZones.leftPunchStrike.world_matrix, &obj->pos,
+                          &D_8004B844[characterId].trailColors[playerId]);
+        gPlayers[playerId].unk_5F4A = TRUE;
     } else {
-        gPlayers[playerId].unk_5F4A = 0;
+        gPlayers[playerId].unk_5F4A = FALSE;
     }
 
-    hitbox_render_init(&gPlayers[playerId].unk_3698, spDC->modInst,
-                       &spDC->modInst->transforms[D_8004B844[characterId].unk_00->boneId6].world_matrix,
-                       &spDC->modInst->transforms[D_8004B844[characterId].unk_00->boneId4].world_matrix, &spDC->pos,
-                       &D_8004B844[characterId].unk_08[playerId]);
-    hitbox_render_init(&gPlayers[playerId].unk_4AF0, spDC->modInst,
-                       &spDC->modInst->transforms[D_8004B844[characterId].unk_00->boneId7].world_matrix,
-                       &spDC->modInst->transforms[D_8004B844[characterId].unk_00->boneId5].world_matrix, &spDC->pos,
-                       &D_8004B844[characterId].unk_08[playerId]);
+    motion_trail_init(&gPlayers[playerId].leftLegTrail, obj->modInst,
+                      &obj->modInst->transforms[D_8004B844[characterId].hitZonesSetup->leftCalfBoneId].world_matrix,
+                      &obj->modInst->transforms[D_8004B844[characterId].hitZonesSetup->leftFootBoneId].world_matrix,
+                      &obj->pos, &D_8004B844[characterId].trailColors[playerId]);
+    motion_trail_init(&gPlayers[playerId].rightLegTrail, obj->modInst,
+                      &obj->modInst->transforms[D_8004B844[characterId].hitZonesSetup->rightCalfBoneId].world_matrix,
+                      &obj->modInst->transforms[D_8004B844[characterId].hitZonesSetup->rightFootBoneId].world_matrix,
+                      &obj->pos, &D_8004B844[characterId].trailColors[playerId]);
 
     gPlayers[playerId].allowTransition = FALSE;
+
     if (gPlayMode == PLAY_MODE_PRACTICE) {
         if (playerId == gPracticingPlayer) {
             practice_init_hud();

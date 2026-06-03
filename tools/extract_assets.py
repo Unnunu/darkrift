@@ -278,8 +278,25 @@ def get_buttons(x):
 def get_move_flags(x):
     return ' | '.join(f"TF_{1<<i:x}" for i in range(16) if (x & 2**i))
 
+CSF_NAMES = {
+    0: "CROUCH",
+    1: "JUMP",
+    2: "STAND",
+    3: "HOP",
+}
+
 def get_csf_flags(x):
-    return ' | '.join(f"CSF_{1<<i:x}" for i in range(32) if (x & 2**i))
+    if x == 0:
+        return "———"
+    parts = []
+    for i in range(32):
+        if x & (1 << i):
+            name = CSF_NAMES.get(i)
+            if name:
+                parts.append(name)
+            else:
+                parts.append(f"CSF_FLAG_{i}")
+    return ','.join(parts)
 
 def read_sym(f):
     content = f.read_bytes()

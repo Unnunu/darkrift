@@ -269,7 +269,7 @@ void projectile_impact_fade_model(Object *obj, Object *arg1) {
     sp30.x = 0;
     sp30.y = 0;
     sp30.z = -obj->unk_1FC;
-    func_8001370C(&sp30, &obj->rotation);
+    math_rotate_vector(&sp30, &obj->rotation);
     sp30.x += obj->pos.x;
     sp30.z += obj->pos.z;
     obj->unk_1FC = 0;
@@ -321,7 +321,7 @@ Object *projectile_spawn(Object *obj, s32 projectileId) {
         pos.x = effect->originX;
         pos.y = effect->originY;
         pos.z = effect->originZ;
-        func_8001370C(&pos, &obj->rotation);
+        math_rotate_vector(&pos, &obj->rotation);
         pos.x += obj->pos.x;
         pos.y += obj->pos.y;
         pos.z += obj->pos.z;
@@ -383,7 +383,7 @@ Object *projectile_spawn(Object *obj, s32 projectileId) {
         effectObj->unk_040.y = 0xF00000;
         effectObj->unk_040.z = 0xF00000;
 
-        func_8001370C(&effectObj->velocity, &obj->rotation);
+        math_rotate_vector(&effectObj->velocity, &obj->rotation);
 
         effectObj->vars[8] = effect->unk_32;
         effectObj->rotation.y = player->obj->rotation.y;
@@ -538,15 +538,15 @@ void func_80022EC0(Object *obj) {
         return;
     }
 
-    sp40.x = opponent->hitboxBones.handPos->x;
-    sp40.y = opponent->hitboxBones.handPos->y;
-    sp40.z = opponent->hitboxBones.handPos->z;
+    sp40.x = opponent->hitZones.headPos->x;
+    sp40.y = opponent->hitZones.headPos->y;
+    sp40.z = opponent->hitZones.headPos->z;
 
     sp38.x = obj->pos.x;
     sp38.y = obj->pos.y;
     sp38.z = obj->pos.z;
 
-    if (is_point_in_hit_range(&sp40, &opponent->obj->pos, opponent->hitboxBones.strikeRadius + 80000, &sp38)) {
+    if (is_point_in_hit_range(&sp40, &opponent->obj->pos, opponent->hitZones.radius1 + 80000, &sp38)) {
         if (!(sp2C->flags & 0x20) && !(player->flags & PLAYER_FLAG_2000)) {
             sp30 = player->projectileTable + sp2C->unk_42;
             if (projectile_apply_damage(opponent, player, obj)) {

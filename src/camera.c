@@ -150,7 +150,7 @@ void camera_update(Object *obj) {
                 sp48.x = model->nodePosition[0].x;
                 sp48.y = model->nodePosition[0].y;
                 sp48.z = model->nodePosition[0].z;
-                func_8001370C(&sp48, &obj->rotation);
+                math_rotate_vector(&sp48, &obj->rotation);
                 gCameraTarget.x = D_8013C818.x + sp48.x;
                 gCameraTarget.y = D_8013C818.y + sp48.y;
                 gCameraTarget.z = D_8013C818.z + sp48.z;
@@ -246,15 +246,15 @@ Object *camera_create(void) {
     obj->modInst->transforms = &D_8013C6F0;
     obj->modInst->nodeAttachments = &D_8013C808;
 
-    func_80012A20(NULL, &obj->modInst->rootTransform, -1, -2);
-    func_80012A20(&obj->modInst->rootTransform, obj->modInst->transforms, 0, -1);
+    init_transform(NULL, &obj->modInst->rootTransform, -1, -2);
+    init_transform(&obj->modInst->rootTransform, obj->modInst->transforms, 0, -1);
 
     obj->modInst->baseRootPos.x = obj->modInst->baseRootPos.y = obj->modInst->baseRootPos.z = 0;
     obj->modInst->animations = D_80053030;
     D_80053030[0] = NULL;
     obj->modInst->unk_A20 = obj->modInst->unk_A1C = obj->modInst->anotherVel.z = 0;
 
-    obj->flags |= OBJ_FLAG_20000 | OBJ_FLAG_400;
+    obj->flags |= OBJ_FLAG_20000 | OBJ_FLAG_ROOT_MOTION;
     obj->flags &= ~OBJ_FLAG_8000;
 
     obj->modInst->currentAnimId = obj->modInst->previousAnimId = -3;

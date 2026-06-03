@@ -13,7 +13,7 @@ void func_800309B4(Object *);
 void func_8003088C(Object *);
 void player_trans_func_9(Object *);
 void func_80031D4C(Object *);
-void func_80031E4C(Unk_8004BA6C *, HitboxBones *, Object *);
+void func_80031E4C(Unk_8004BA6C *, HitZones *, Object *);
 
 UnkK2Def D_80052CF0 = { "dusthit.sp3", func_8002FA98, 0, 0x1100, 0, 0x2800, 0 };
 s32 D_80052D08[] = { 14, 17, 18, 21, 21, 24, 12, 15, 11, 14, 0, 0, 14, 17, 18, 21, 11, 14, 14, 17, 11, 14 };
@@ -100,8 +100,8 @@ void func_8002FBC8(Object *obj) {
     s32 dx, dz;
 
     v0 = 0;
-    dx = player->hitboxBones.thighPos->x - player->hitboxBones.headPos->x;
-    dz = player->hitboxBones.thighPos->z - player->hitboxBones.headPos->z;
+    dx = player->hitZones.leftFootPos->x - player->hitZones.rightFootPos->x;
+    dz = player->hitZones.leftFootPos->z - player->hitZones.rightFootPos->z;
 
     if (dx != 0 || dz != 0) {
         v0 = (u32) (sqrtf(SQ(dx) + SQ(dz)) + 0.5) >> 1;
@@ -110,9 +110,9 @@ void func_8002FBC8(Object *obj) {
         v0 = 150;
     }
 
-    player->hitboxBones.comboRadius = SQ(v0);
+    player->hitZones.radius2 = SQ(v0);
     v0 = (v0 * 0xE000) >> 16;
-    player->hitboxBones.strikeRadius = SQ(v0);
+    player->hitZones.radius1 = SQ(v0);
 
     if (player->combatState->flags & CSF_STANDING) {
         obj->currentTask->func = func_8002FADC;
@@ -190,7 +190,7 @@ u8 player_check_func_6(Object *obj) {
     sp34.x = 0;
     sp34.y = 0;
     sp34.z = -temp;
-    func_8001370C(&sp34, &obj->rotation);
+    math_rotate_vector(&sp34, &obj->rotation);
     (gPlayers + oppId)->obj->pos.x = obj->pos.x + sp34.x;
     (gPlayers + oppId)->obj->pos.z = obj->pos.z + sp34.z;
     (gPlayers + oppId)->obj->rotation.y = 0x400 - ((0xC00 - obj->rotation.y) & 0xFFF);
@@ -324,7 +324,7 @@ void player_trans_func_8(Object *obj) {
         sp34.x = 0;
         sp34.y = 0;
         sp34.z = -temp;
-        func_8001370C(&sp34, &obj->rotation);
+        math_rotate_vector(&sp34, &obj->rotation);
         (gPlayers + oppId)->obj->pos.x = obj->pos.x + sp34.x;
         (gPlayers + oppId)->obj->pos.z = obj->pos.z + sp34.z;
         (gPlayers + oppId)->obj->rotation.y = 0x400 - ((0xC00 - obj->rotation.y) & 0xFFF);
@@ -996,7 +996,7 @@ void func_80031D4C(Object *obj) {
 
     for (s0 = D_8004BA40[v0->characterId]; s0->unk_00 != 0; s0++) {
         if (obj->frameIndex == s0->unk_00) {
-            func_80031E4C(s0, &v0->hitboxBones, obj);
+            func_80031E4C(s0, &v0->hitZones, obj);
         }
     }
 }
@@ -1007,38 +1007,38 @@ void func_80031DCC(Object *obj) {
 
     for (s0 = D_8004BA6C[v0->characterId]; s0->unk_00 != 0; s0++) {
         if (obj->frameIndex == s0->unk_00) {
-            func_80031E4C(s0, &v0->hitboxBones, obj);
+            func_80031E4C(s0, &v0->hitZones, obj);
         }
     }
 }
 
-void func_80031E4C(Unk_8004BA6C *arg0, HitboxBones *arg1, Object *arg2) {
+void func_80031E4C(Unk_8004BA6C *arg0, HitZones *hitZones, Object *arg2) {
     Player *player = (Player *) arg2->varObj[0];
     Vec4f *v0;
     Vec3s sp18;
 
     switch (arg0->unk_02) {
         case 0:
-            v0 = arg1->headPos;
+            v0 = hitZones->rightFootPos;
             break;
         case 1:
-            v0 = arg1->thighPos;
+            v0 = hitZones->leftFootPos;
             break;
         case 2:
-            v0 = arg1->handPos;
+            v0 = hitZones->headPos;
             break;
         case 3:
-            v0 = &arg1->torsoTransform.world_matrix.w;
+            v0 = &hitZones->leftPunchStrike.world_matrix.w;
             break;
         case 4:
-            v0 = &arg1->grabTransform.world_matrix.w;
+            v0 = &hitZones->rightPunchStrike.world_matrix.w;
             break;
         case 5:
-            v0 = arg1->footPos;
+            v0 = hitZones->leftHandPos;
             break;
         case 6:
         default:
-            v0 = arg1->torsoPos;
+            v0 = hitZones->rightHandPos;
             break;
     }
 
@@ -1107,7 +1107,7 @@ void func_8003208C(Object *obj) {
     if (obj->frameIndex == v0->combatState->maxFrame - 1) {
         sp20.x = sp20.y = 0;
         sp20.z = -D_8013C3C8[v1];
-        func_8001370C(&sp20, &obj->rotation);
+        math_rotate_vector(&sp20, &obj->rotation);
         obj->pos.x += sp20.x;
         obj->pos.z += sp20.z;
         obj->currentTask->func = projectile_spawn_at_frame;

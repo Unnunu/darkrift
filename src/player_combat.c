@@ -70,7 +70,7 @@ void spawn_hit_effect(Vec4s *pos, u8 isBlocked, Object *arg2, ColorRGBA *arg3) {
         }
 
         if (arg3 == NULL) {
-            arg3 = &D_8004B844[sp1C->characterId].unk_08[sp1C->playerId];
+            arg3 = &D_8004B844[sp1C->characterId].trailColors[sp1C->playerId];
         }
         func_80023BE4(pos, arg2, arg3);
     } else {
@@ -84,80 +84,80 @@ void spawn_hit_effect(Vec4s *pos, u8 isBlocked, Object *arg2, ColorRGBA *arg3) {
     }
 }
 
-u8 is_point_in_hit_range(Vec4s *arg0, Vec4i *arg1, u32 range_squared, Vec4s *arg3) {
+u8 is_point_in_hit_range(Vec4s *arg0, Vec4i *arg1, u32 radiusSq, Vec4s *point) {
     s16 x1, z1;
 
-    if (arg3->y < arg0->y - 200 || arg1->y < arg3->y) {
+    if (point->y < arg0->y - 200 || arg1->y < point->y) {
         return FALSE;
     }
 
     x1 = (arg0->x + arg1->x) * 0.5f;
     z1 = (arg0->z + arg1->z) * 0.5f;
 
-    if (SQ(x1 - arg3->x) + SQ(z1 - arg3->z) < range_squared) {
+    if (SQ(x1 - point->x) + SQ(z1 - point->z) < radiusSq) {
         return TRUE;
     } else {
         return FALSE;
     }
 }
 
-Vec4s *find_closest_hit_point(Vec4s *attackSource, Vec4i *defenderPos, u32 radius2, Vec4s *arg3, Vec4s *arg4) {
-    s16 midX, midZ;
+Vec4s *find_collision_point(Vec4s *attPoint1, Vec4i *attPoint2, u32 radiusSq, Vec4s *defPoint1, Vec4s *defPoint2) {
+    s16 attPosX, attPosZ;
     s32 dx, dz;
     s32 pad[4];
-    s16 x2, y2, z2;
+    s16 defMidX, defMidY, defMidZ;
 
-    midX = (attackSource->x + defenderPos->x) >> 1;
-    midZ = (attackSource->z + defenderPos->z) >> 1;
+    attPosX = (attPoint1->x + attPoint2->x) >> 1;
+    attPosZ = (attPoint1->z + attPoint2->z) >> 1;
 
-    if (arg3->y > attackSource->y - 200 && defenderPos->y > arg3->y) {
-        dx = midX - arg3->x;
-        dz = midZ - arg3->z;
-        if (SQ(dx) + SQ(dz) < radius2) {
-            return arg3;
+    if (defPoint1->y > attPoint1->y - 200 && defPoint1->y < attPoint2->y) {
+        dx = attPosX - defPoint1->x;
+        dz = attPosZ - defPoint1->z;
+        if (SQ(dx) + SQ(dz) < radiusSq) {
+            return defPoint1;
         }
     }
 
-    if (arg4->y > attackSource->y - 200 && defenderPos->y > arg4->y) {
-        dx = midX - arg4->x;
-        dz = midZ - arg4->z;
-        if (SQ(dx) + SQ(dz) < radius2) {
-            return arg4;
+    if (defPoint2->y > attPoint1->y - 200 && defPoint2->y < attPoint2->y) {
+        dx = attPosX - defPoint2->x;
+        dz = attPosZ - defPoint2->z;
+        if (SQ(dx) + SQ(dz) < radiusSq) {
+            return defPoint2;
         }
     }
 
-    x2 = D_80081268.x = (arg3->x + arg4->x) >> 1;
-    y2 = D_80081268.y = (arg3->y + arg4->y) >> 1;
-    z2 = D_80081268.z = (arg3->z + arg4->z) >> 1;
+    defMidX = D_80081268.x = (defPoint1->x + defPoint2->x) >> 1;
+    defMidY = D_80081268.y = (defPoint1->y + defPoint2->y) >> 1;
+    defMidZ = D_80081268.z = (defPoint1->z + defPoint2->z) >> 1;
 
-    if (D_80081268.y > attackSource->y - 200 && defenderPos->y > D_80081268.y) {
-        dx = midX - D_80081268.x;
-        dz = midZ - D_80081268.z;
-        if (SQ(dx) + SQ(dz) < radius2) {
+    if (D_80081268.y > attPoint1->y - 200 && D_80081268.y < attPoint2->y) {
+        dx = attPosX - D_80081268.x;
+        dz = attPosZ - D_80081268.z;
+        if (SQ(dx) + SQ(dz) < radiusSq) {
             return &D_80081268;
         }
     }
 
-    D_80081268.x = (x2 + arg4->x) >> 1;
-    D_80081268.y = (y2 + arg4->y) >> 1;
-    D_80081268.z = (z2 + arg4->z) >> 1;
+    D_80081268.x = (defMidX + defPoint2->x) >> 1;
+    D_80081268.y = (defMidY + defPoint2->y) >> 1;
+    D_80081268.z = (defMidZ + defPoint2->z) >> 1;
 
-    if (D_80081268.y > attackSource->y - 200 && defenderPos->y > D_80081268.y) {
-        dx = midX - D_80081268.x;
-        dz = midZ - D_80081268.z;
-        if (SQ(dx) + SQ(dz) < radius2) {
+    if (D_80081268.y > attPoint1->y - 200 && D_80081268.y < attPoint2->y) {
+        dx = attPosX - D_80081268.x;
+        dz = attPosZ - D_80081268.z;
+        if (SQ(dx) + SQ(dz) < radiusSq) {
             return &D_80081268;
         }
     }
 
-    D_80081268.x = (x2 + arg3->x) >> 1;
-    D_80081268.y = (y2 + arg3->y) >> 1;
-    D_80081268.z = (z2 + arg3->z) >> 1;
+    D_80081268.x = (defMidX + defPoint1->x) >> 1;
+    D_80081268.y = (defMidY + defPoint1->y) >> 1;
+    D_80081268.z = (defMidZ + defPoint1->z) >> 1;
 
-    if (D_80081268.y > attackSource->y - 200 && defenderPos->y > D_80081268.y) {
-        dx = midX - D_80081268.x;
-        dz = midZ - D_80081268.z;
-        if (SQ(dx) + SQ(dz) < radius2) {
+    if (D_80081268.y > attPoint1->y - 200 && D_80081268.y < attPoint2->y) {
+        dx = attPosX - D_80081268.x;
+        dz = attPosZ - D_80081268.z;
+        if (SQ(dx) + SQ(dz) < radiusSq) {
             return &D_80081268;
         }
     }
@@ -182,7 +182,7 @@ s32 apply_damage_and_reaction(Player *defender, Player *attacker, CombatState *a
 
     if ((defenderFlags & (CSF_JUMP | CSF_HOP)) &&
         defender->obj->pos.y + defender->obj->modInst->rootTransform.local_matrix.w.y > -400.0f &&
-        defender->hitboxBones.thighPos->y - defender->hitboxBones.handPos->y > 200.0f) {
+        defender->hitZones.leftFootPos->y - defender->hitZones.headPos->y > 200.0f) {
         defenderFlags &= ~(CSF_JUMP | CSF_HOP);
         defenderFlags |= CSF_STANDING;
     }
@@ -283,482 +283,492 @@ s32 apply_damage_and_reaction(Player *arg0, Player *arg1, CombatState *arg2);
 #pragma GLOBAL_ASM("asm/nonmatchings/player_combat/apply_damage_and_reaction.s")
 #endif
 
-void process_hit(Player *defender, Player *attacker, Vec4s *arg2) {
-    s32 v0;
+void process_hit(Player *defender, Player *attacker, Vec4s *hitPos) {
+    s32 moveId;
     s16 isBlock;
     CombatState *attackerCombatState;
 
     attackerCombatState = attacker->combatState;
 
     if (!gRoundOver || gReplayActive) {
-        v0 = apply_damage_and_reaction(defender, attacker, attackerCombatState);
-        isBlock = v0 == 270 || v0 == 271;
-        if (v0 != 0) {
-            spawn_hit_effect(arg2, isBlock, defender->obj, NULL);
+        moveId = apply_damage_and_reaction(defender, attacker, attackerCombatState);
+        isBlock = moveId == 270 || moveId == 271;
+        if (moveId != 0) {
+            spawn_hit_effect(hitPos, isBlock, defender->obj, NULL);
             defender->hitCooldown = 13;
             attacker->hitCooldown = 2;
         }
     }
 }
 
-void check_air_hit_1(Player *defender, Player *attacker) {
-    Vec4i *s1;
-    Vec4s attAnotherPos;
-    Vec4s sp18C;
-    Vec4s defSomePos;
-    Vec4s attSomePos;
-    Vec4s sp174;
-    Vec4s *sp170;
+void check_punch_air(Player *defender, Player *attacker) {
+    Vec4i *defPoint1;
+    Vec4s attPoint2;
+    Vec4s somePos;
+    Vec4s defPoint2;
+    Vec4s attPoint1;
+    Vec4s attLeftHandPos;
+    Vec4s *hitPos;
     s32 pad[70];
     Transform *sp54;
-    HitboxBones *defenderBones;
-    HitboxBones *attackerBones;
+    HitZones *defZones;
+    HitZones *attZones;
     s32 pad2[6];
 
-    s1 = &defender->obj->pos;
+    defPoint1 = &defender->obj->pos;
 
-    defenderBones = &defender->hitboxBones;
-    attackerBones = &attacker->hitboxBones;
+    defZones = &defender->hitZones;
+    attZones = &attacker->hitZones;
 
-    defSomePos.x = defenderBones->handPos->x;
-    defSomePos.y = defenderBones->handPos->y;
-    defSomePos.z = defenderBones->handPos->z;
+    defPoint2.x = defZones->headPos->x;
+    defPoint2.y = defZones->headPos->y;
+    defPoint2.z = defZones->headPos->z;
 
-    attSomePos.x = attackerBones->torsoPos->x;
-    attSomePos.y = attackerBones->torsoPos->y;
-    attSomePos.z = attackerBones->torsoPos->z;
+    attPoint1.x = attZones->rightHandPos->x;
+    attPoint1.y = attZones->rightHandPos->y;
+    attPoint1.z = attZones->rightHandPos->z;
 
-    if (attackerBones->hasGrabZone) {
-        attAnotherPos.x = attackerBones->grabTransform.world_matrix.w.x;
-        attAnotherPos.y = attackerBones->grabTransform.world_matrix.w.y;
-        attAnotherPos.z = attackerBones->grabTransform.world_matrix.w.z;
+    if (attZones->hasRightPunchStrike) {
+        attPoint2.x = attZones->rightPunchStrike.world_matrix.w.x;
+        attPoint2.y = attZones->rightPunchStrike.world_matrix.w.y;
+        attPoint2.z = attZones->rightPunchStrike.world_matrix.w.z;
 
-        sp170 =
-            find_closest_hit_point(&defSomePos, s1, defenderBones->strikeRadius + 55000, &attSomePos, &attAnotherPos);
-        if (sp170 != NULL) {
-            if (sp170->y < defSomePos.y) {
-                sp170->y = defSomePos.y;
+        hitPos = find_collision_point(&defPoint2, defPoint1, defZones->radius1 + 55000, &attPoint1, &attPoint2);
+        if (hitPos != NULL) {
+            if (hitPos->y < defPoint2.y) {
+                hitPos->y = defPoint2.y;
             }
 
-            sp170->x = ((func_80012854((0xC00 - defender->obj->rotation.y) & 0xFFF) * 100) >> 12) + s1->x;
-            sp170->z = ((-func_80012854(((0xC00 - defender->obj->rotation.y) & 0xFFF) + 0x400) * 100) >> 12) + s1->z;
-            process_hit(defender, attacker, sp170);
+            hitPos->x = ((func_80012854((0xC00 - defender->obj->rotation.y) & 0xFFF) * 100) >> 12) + defPoint1->x;
+            hitPos->z =
+                ((-func_80012854(((0xC00 - defender->obj->rotation.y) & 0xFFF) + 0x400) * 100) >> 12) + defPoint1->z;
+            process_hit(defender, attacker, hitPos);
             return;
         }
-    } else if (is_point_in_hit_range(&defSomePos, s1, defenderBones->strikeRadius, &attSomePos)) {
-        if (attSomePos.y < defSomePos.y) {
-            attSomePos.y = defSomePos.y;
+    } else if (is_point_in_hit_range(&defPoint2, defPoint1, defZones->radius1, &attPoint1)) {
+        if (attPoint1.y < defPoint2.y) {
+            attPoint1.y = defPoint2.y;
         }
-        attSomePos.x = ((func_80012854((0xC00 - defender->obj->rotation.y) & 0xFFF) * 100) >> 12) + s1->x;
-        attSomePos.z = ((-func_80012854(((0xC00 - defender->obj->rotation.y) & 0xFFF) + 0x400) * 100) >> 12) + s1->z;
-        process_hit(defender, attacker, &attSomePos);
+        attPoint1.x = ((func_80012854((0xC00 - defender->obj->rotation.y) & 0xFFF) * 100) >> 12) + defPoint1->x;
+        attPoint1.z =
+            ((-func_80012854(((0xC00 - defender->obj->rotation.y) & 0xFFF) + 0x400) * 100) >> 12) + defPoint1->z;
+        process_hit(defender, attacker, &attPoint1);
         return;
     }
 
-    sp174.x = attackerBones->footPos->x;
-    sp174.y = attackerBones->footPos->y;
-    sp174.z = attackerBones->footPos->z;
+    attLeftHandPos.x = attZones->leftHandPos->x;
+    attLeftHandPos.y = attZones->leftHandPos->y;
+    attLeftHandPos.z = attZones->leftHandPos->z;
 
-    if (attackerBones->hasTorsoZone) {
-        sp54 = &attackerBones->torsoTransform;
-        sp18C.x = attackerBones->torsoTransform.world_matrix.w.x;
-        sp18C.y = attackerBones->torsoTransform.world_matrix.w.y;
-        sp18C.z = attackerBones->torsoTransform.world_matrix.w.z;
+    if (attZones->hasLeftPunchStrike) {
+        sp54 = &attZones->leftPunchStrike;
+        somePos.x = attZones->leftPunchStrike.world_matrix.w.x;
+        somePos.y = attZones->leftPunchStrike.world_matrix.w.y;
+        somePos.z = attZones->leftPunchStrike.world_matrix.w.z;
 
-        sp170 = find_closest_hit_point(&defSomePos, s1, defenderBones->strikeRadius + 55000, &sp174, &sp18C);
-        if (sp170 != NULL) {
-            if (sp170->y < defSomePos.y) {
-                sp170->y = defSomePos.y;
+        hitPos = find_collision_point(&defPoint2, defPoint1, defZones->radius1 + 55000, &attLeftHandPos, &somePos);
+        if (hitPos != NULL) {
+            if (hitPos->y < defPoint2.y) {
+                hitPos->y = defPoint2.y;
             }
 
-            sp170->x = ((func_80012854((0xC00 - defender->obj->rotation.y) & 0xFFF) * 100) >> 12) + s1->x;
-            sp170->z = ((-func_80012854(((0xC00 - defender->obj->rotation.y) & 0xFFF) + 0x400) * 100) >> 12) + s1->z;
-            process_hit(defender, attacker, sp170);
+            hitPos->x = ((func_80012854((0xC00 - defender->obj->rotation.y) & 0xFFF) * 100) >> 12) + defPoint1->x;
+            hitPos->z =
+                ((-func_80012854(((0xC00 - defender->obj->rotation.y) & 0xFFF) + 0x400) * 100) >> 12) + defPoint1->z;
+            process_hit(defender, attacker, hitPos);
             return;
         }
-    } else if (is_point_in_hit_range(&defSomePos, s1, defenderBones->strikeRadius, &sp174)) {
-        if (sp174.y < defSomePos.y) {
-            sp174.y = defSomePos.y;
+    } else if (is_point_in_hit_range(&defPoint2, defPoint1, defZones->radius1, &attLeftHandPos)) {
+        if (attLeftHandPos.y < defPoint2.y) {
+            attLeftHandPos.y = defPoint2.y;
         }
-        sp174.x = ((func_80012854((0xC00 - defender->obj->rotation.y) & 0xFFF) * 100) >> 12) + s1->x;
-        sp174.z = ((-func_80012854(((0xC00 - defender->obj->rotation.y) & 0xFFF) + 0x400) * 100) >> 12) + s1->z;
-        process_hit(defender, attacker, &sp174);
+        attLeftHandPos.x = ((func_80012854((0xC00 - defender->obj->rotation.y) & 0xFFF) * 100) >> 12) + defPoint1->x;
+        attLeftHandPos.z =
+            ((-func_80012854(((0xC00 - defender->obj->rotation.y) & 0xFFF) + 0x400) * 100) >> 12) + defPoint1->z;
+        process_hit(defender, attacker, &attLeftHandPos);
         return;
     }
 
-    if (attackerBones->hasHeadZone) {
-        if (attackerBones->hasTailZone) {
+    if (attZones->hasZone3) {
+        if (attZones->hasZone4) {
             // @bug sp54 could be uninitialized?
-            sp18C.x = sp54->world_matrix.w.x;
-            sp18C.y = sp54->world_matrix.w.y;
-            sp18C.z = sp54->world_matrix.w.z;
+            somePos.x = sp54->world_matrix.w.x;
+            somePos.y = sp54->world_matrix.w.y;
+            somePos.z = sp54->world_matrix.w.z;
         } else {
-            sp18C.x = attackerBones->extraBonePos->x;
-            sp18C.y = attackerBones->extraBonePos->y;
-            sp18C.z = attackerBones->extraBonePos->z;
+            somePos.x = attZones->pos8->x;
+            somePos.y = attZones->pos8->y;
+            somePos.z = attZones->pos8->z;
         }
 
-        if (is_point_in_hit_range(&defSomePos, s1, defenderBones->comboRadius, &sp18C)) {
-            if (sp18C.y < defSomePos.y) {
-                sp18C.y = defSomePos.y;
+        if (is_point_in_hit_range(&defPoint2, defPoint1, defZones->radius2, &somePos)) {
+            if (somePos.y < defPoint2.y) {
+                somePos.y = defPoint2.y;
             }
-            sp18C.x = ((func_80012854((0xC00 - defender->obj->rotation.y) & 0xFFF) * 100) >> 12) + s1->x;
-            sp18C.z = ((-func_80012854(((0xC00 - defender->obj->rotation.y) & 0xFFF) + 0x400) * 100) >> 12) + s1->z;
-            process_hit(defender, attacker, &sp18C);
+            somePos.x = ((func_80012854((0xC00 - defender->obj->rotation.y) & 0xFFF) * 100) >> 12) + defPoint1->x;
+            somePos.z =
+                ((-func_80012854(((0xC00 - defender->obj->rotation.y) & 0xFFF) + 0x400) * 100) >> 12) + defPoint1->z;
+            process_hit(defender, attacker, &somePos);
         }
     }
 }
 
-void check_air_hit_2(Player *arg0, Player *arg1) {
-    Vec4i *sp5C;
-    Vec4s sp54;
-    Vec4s sp4C;
-    Vec4s sp44;
-    HitboxBones *arg19;
-    HitboxBones *arg09;
-    u32 a2;
-    Vec4s *v02;
+void check_kick_air(Player *defender, Player *attacker) {
+    Vec4i *defPoint1;
+    Vec4s defHead;
+    Vec4s attPoint1;
+    Vec4s attPoint2;
+    HitZones *attZones;
+    HitZones *defZones;
+    u32 radius;
+    Vec4s *hitPos;
     u8 v0;
 
-    sp5C = &arg0->obj->pos;
+    defPoint1 = &defender->obj->pos;
 
-    arg19 = &arg1->hitboxBones;
-    arg09 = &arg0->hitboxBones;
+    attZones = &attacker->hitZones;
+    defZones = &defender->hitZones;
 
-    sp54.x = arg09->handPos->x;
-    sp54.y = arg09->handPos->y;
-    sp54.z = arg09->handPos->z;
+    defHead.x = defZones->headPos->x;
+    defHead.y = defZones->headPos->y;
+    defHead.z = defZones->headPos->z;
 
-    if (arg19->hasLegZone) {
-        sp4C.x = arg19->legTransform.world_matrix.w.x;
-        sp4C.y = arg19->legTransform.world_matrix.w.y;
-        sp4C.z = arg19->legTransform.world_matrix.w.z;
+    if (attZones->hasRightKickStrike) {
+        attPoint1.x = attZones->rightKickStrike.world_matrix.w.x;
+        attPoint1.y = attZones->rightKickStrike.world_matrix.w.y;
+        attPoint1.z = attZones->rightKickStrike.world_matrix.w.z;
     } else {
-        sp4C.x = arg19->headPos->x;
-        sp4C.y = arg19->headPos->y;
-        sp4C.z = arg19->headPos->z;
+        attPoint1.x = attZones->rightFootPos->x;
+        attPoint1.y = attZones->rightFootPos->y;
+        attPoint1.z = attZones->rightFootPos->z;
     }
 
-    sp44.x = arg19->armPos->x;
-    sp44.y = arg19->armPos->y;
-    sp44.z = arg19->armPos->z;
+    attPoint2.x = attZones->rightCalfPos->x;
+    attPoint2.y = attZones->rightCalfPos->y;
+    attPoint2.z = attZones->rightCalfPos->z;
 
-    v0 = (arg1->combatState->flags & CSF_1000) || (sp4C.y < -200);
+    v0 = (attacker->combatState->flags & CSF_ATTACK_RIGHT_FOOT_2) || (attPoint1.y < -200);
 
-    if (sp4C.y < arg09->armPos->y) {
-        a2 = arg09->strikeRadius;
+    if (attPoint1.y < defZones->rightCalfPos->y) {
+        radius = defZones->radius1;
     } else {
-        a2 = arg09->comboRadius;
+        radius = defZones->radius2;
     }
 
     if (v0) {
-        v02 = find_closest_hit_point(&sp54, sp5C, a2, &sp44, &sp4C);
-        if (v02 != NULL) {
-            process_hit(arg0, arg1, v02);
+        hitPos = find_collision_point(&defHead, defPoint1, radius, &attPoint2, &attPoint1);
+        if (hitPos != NULL) {
+            process_hit(defender, attacker, hitPos);
             return;
         }
     }
 
-    if (arg19->hasWingZone) {
-        sp4C.x = arg19->wingTransform.world_matrix.w.x;
-        sp4C.y = arg19->wingTransform.world_matrix.w.y;
-        sp4C.z = arg19->wingTransform.world_matrix.w.z;
+    if (attZones->hasLeftKickStrike) {
+        attPoint1.x = attZones->leftKickStrike.world_matrix.w.x;
+        attPoint1.y = attZones->leftKickStrike.world_matrix.w.y;
+        attPoint1.z = attZones->leftKickStrike.world_matrix.w.z;
     } else {
-        sp4C.x = arg19->thighPos->x;
-        sp4C.y = arg19->thighPos->y;
-        sp4C.z = arg19->thighPos->z;
+        attPoint1.x = attZones->leftFootPos->x;
+        attPoint1.y = attZones->leftFootPos->y;
+        attPoint1.z = attZones->leftFootPos->z;
     }
 
-    sp44.x = arg19->shinPos->x;
-    sp44.y = arg19->shinPos->y;
-    sp44.z = arg19->shinPos->z;
+    attPoint2.x = attZones->leftCalfPos->x;
+    attPoint2.y = attZones->leftCalfPos->y;
+    attPoint2.z = attZones->leftCalfPos->z;
 
-    if (sp4C.y < arg09->shinPos->y) {
-        a2 = arg09->strikeRadius;
+    if (attPoint1.y < defZones->leftCalfPos->y) {
+        radius = defZones->radius1;
     } else {
-        a2 = arg09->comboRadius;
+        radius = defZones->radius2;
     }
 
-    v0 = (arg1->combatState->flags & CSF_800) || (sp4C.y < -200);
+    v0 = (attacker->combatState->flags & CSF_ATTACK_LEFT_FOOT) || (attPoint1.y < -200);
 
     if (v0) {
-        v02 = find_closest_hit_point(&sp54, sp5C, a2, &sp44, &sp4C);
-        if (v02 != NULL) {
-            process_hit(arg0, arg1, v02);
+        hitPos = find_collision_point(&defHead, defPoint1, radius, &attPoint2, &attPoint1);
+        if (hitPos != NULL) {
+            process_hit(defender, attacker, hitPos);
         }
     }
 }
 
-void check_ground_hit_1(Player *arg0, Player *arg1) {
-    HitboxBones *arg09;
-    HitboxBones *arg19;
-    Vec4s sp50;
-    Vec4s sp48;
-    Vec4s sp40;
-    Vec4i sp30;
-    Vec4s *v03;
+void check_punch_ground(Player *defender, Player *attacker) {
+    HitZones *defZones;
+    HitZones *attZones;
+    Vec4s defPoint1;
+    Vec4s defPoint2;
+    Vec4s attPoint1;
+    Vec4i attPoint2;
+    Vec4s *hitPos;
     s32 pad;
 
-    arg09 = &arg0->hitboxBones;
-    arg19 = &arg1->hitboxBones;
+    defZones = &defender->hitZones;
+    attZones = &attacker->hitZones;
 
-    if (arg1->obj->pos.y < -20 ||
-        arg1->obj->modInst->rootTransform.local_matrix.w.y < arg1->obj->modInst->baseRootPos.y) {
+    if (attacker->obj->pos.y < -20 ||
+        attacker->obj->modInst->rootTransform.local_matrix.w.y < attacker->obj->modInst->baseRootPos.y) {
         return;
     }
 
-    sp50.x = arg09->handPos->x;
-    sp50.y = arg09->handPos->y;
-    sp50.z = arg09->handPos->z;
+    defPoint1.x = defZones->headPos->x;
+    defPoint1.y = defZones->headPos->y;
+    defPoint1.z = defZones->headPos->z;
 
-    sp48.x = arg09->headPos->x;
-    sp48.y = arg09->headPos->y;
-    sp48.z = arg09->headPos->z;
+    defPoint2.x = defZones->rightFootPos->x;
+    defPoint2.y = defZones->rightFootPos->y;
+    defPoint2.z = defZones->rightFootPos->z;
 
-    sp40.x = arg19->rootPos->x;
-    sp40.z = arg19->rootPos->z;
-    sp40.y = arg19->rootPos->y - 100.0f;
+    attPoint1.x = attZones->torsoPos->x;
+    attPoint1.z = attZones->torsoPos->z;
+    attPoint1.y = attZones->torsoPos->y - 100.0f;
 
-    sp30.x = arg19->rootPos->x;
-    sp30.z = arg19->rootPos->z;
-    sp30.y = arg19->rootPos->y;
+    attPoint2.x = attZones->torsoPos->x;
+    attPoint2.z = attZones->torsoPos->z;
+    attPoint2.y = attZones->torsoPos->y;
 
-    v03 = find_closest_hit_point(&sp40, &sp30, 80000, &sp50, &sp48);
-    if (v03 != NULL) {
-        process_hit(arg0, arg1, v03);
+    hitPos = find_collision_point(&attPoint1, &attPoint2, 80000, &defPoint1, &defPoint2);
+    if (hitPos != NULL) {
+        process_hit(defender, attacker, hitPos);
         return;
     }
 
-    if (arg19->hasGrabZone) {
-        sp40.x = arg19->grabTransform.world_matrix.w.x;
-        sp40.y = -100;
-        sp40.z = arg19->grabTransform.world_matrix.w.z;
+    if (attZones->hasRightPunchStrike) {
+        attPoint1.x = attZones->rightPunchStrike.world_matrix.w.x;
+        attPoint1.y = -100;
+        attPoint1.z = attZones->rightPunchStrike.world_matrix.w.z;
 
-        sp30.x = sp40.x;
-        sp30.y = 0;
-        sp30.z = sp40.z;
+        attPoint2.x = attPoint1.x;
+        attPoint2.y = 0;
+        attPoint2.z = attPoint1.z;
 
-        v03 = find_closest_hit_point(&sp40, &sp30, 15000, &sp50, &sp48);
-        if (v03 != NULL) {
-            process_hit(arg0, arg1, v03);
+        hitPos = find_collision_point(&attPoint1, &attPoint2, 15000, &defPoint1, &defPoint2);
+        if (hitPos != NULL) {
+            process_hit(defender, attacker, hitPos);
             return;
         }
     } else {
-        sp40.x = arg19->torsoPos->x;
-        sp40.y = -100;
-        sp40.z = arg19->torsoPos->z;
+        attPoint1.x = attZones->rightHandPos->x;
+        attPoint1.y = -100;
+        attPoint1.z = attZones->rightHandPos->z;
 
-        sp30.x = sp40.x;
-        sp30.y = 0;
-        sp30.z = sp40.z;
+        attPoint2.x = attPoint1.x;
+        attPoint2.y = 0;
+        attPoint2.z = attPoint1.z;
 
-        v03 = find_closest_hit_point(&sp40, &sp30, 15000, &sp50, &sp48);
-        if (v03 != NULL) {
-            process_hit(arg0, arg1, v03);
+        hitPos = find_collision_point(&attPoint1, &attPoint2, 15000, &defPoint1, &defPoint2);
+        if (hitPos != NULL) {
+            process_hit(defender, attacker, hitPos);
             return;
         }
     }
 
-    if (arg19->hasTorsoZone) {
-        sp40.x = arg19->torsoTransform.world_matrix.w.x;
-        sp40.y = -100;
-        sp40.z = arg19->torsoTransform.world_matrix.w.z;
+    if (attZones->hasLeftPunchStrike) {
+        attPoint1.x = attZones->leftPunchStrike.world_matrix.w.x;
+        attPoint1.y = -100;
+        attPoint1.z = attZones->leftPunchStrike.world_matrix.w.z;
 
-        sp30.x = sp40.x;
-        sp30.y = 0;
-        sp30.z = sp40.z;
+        attPoint2.x = attPoint1.x;
+        attPoint2.y = 0;
+        attPoint2.z = attPoint1.z;
 
-        v03 = find_closest_hit_point(&sp40, &sp30, 15000, &sp50, &sp48);
-        if (v03 != NULL) {
-            process_hit(arg0, arg1, v03);
+        hitPos = find_collision_point(&attPoint1, &attPoint2, 15000, &defPoint1, &defPoint2);
+        if (hitPos != NULL) {
+            process_hit(defender, attacker, hitPos);
             return;
         }
     } else {
-        sp40.x = arg19->footPos->x;
-        sp40.y = -100;
-        sp40.z = arg19->footPos->z;
+        attPoint1.x = attZones->leftHandPos->x;
+        attPoint1.y = -100;
+        attPoint1.z = attZones->leftHandPos->z;
 
-        sp30.x = sp40.x;
-        sp30.y = 0;
-        sp30.z = sp40.z;
+        attPoint2.x = attPoint1.x;
+        attPoint2.y = 0;
+        attPoint2.z = attPoint1.z;
 
-        v03 = find_closest_hit_point(&sp40, &sp30, 15000, &sp50, &sp48);
-        if (v03 != NULL) {
-            process_hit(arg0, arg1, v03);
+        hitPos = find_collision_point(&attPoint1, &attPoint2, 15000, &defPoint1, &defPoint2);
+        if (hitPos != NULL) {
+            process_hit(defender, attacker, hitPos);
             return;
         }
     }
 }
 
-void check_ground_hit_2(Player *arg0, Player *arg1) {
-    HitboxBones *arg09;
-    HitboxBones *arg19;
-    Vec4s sp50;
-    Vec4s sp48;
-    Vec4s sp40;
-    Vec4i sp30;
-    Vec4s *v03;
+void check_kick_ground(Player *defender, Player *attacker) {
+    HitZones *defZones;
+    HitZones *attZones;
+    Vec4s defPoint1;
+    Vec4s defPoint2;
+    Vec4s attPoint1;
+    Vec4i attPoint2;
+    Vec4s *hitPoint;
 
-    arg09 = &arg0->hitboxBones;
-    arg19 = &arg1->hitboxBones;
+    defZones = &defender->hitZones;
+    attZones = &attacker->hitZones;
 
-    if (arg1->obj->pos.y < -20 ||
-        arg1->obj->modInst->rootTransform.local_matrix.w.y < arg1->obj->modInst->baseRootPos.y) {
+    if (attacker->obj->pos.y < -20 ||
+        attacker->obj->modInst->rootTransform.local_matrix.w.y < attacker->obj->modInst->baseRootPos.y) {
         return;
     }
 
-    sp50.x = arg09->handPos->x;
-    sp50.y = arg09->handPos->y;
-    sp50.z = arg09->handPos->z;
+    defPoint1.x = defZones->headPos->x;
+    defPoint1.y = defZones->headPos->y;
+    defPoint1.z = defZones->headPos->z;
 
-    sp48.x = arg09->headPos->x;
-    sp48.y = arg09->headPos->y;
-    sp48.z = arg09->headPos->z;
+    defPoint2.x = defZones->rightFootPos->x;
+    defPoint2.y = defZones->rightFootPos->y;
+    defPoint2.z = defZones->rightFootPos->z;
 
-    sp40.x = arg19->rootPos->x;
-    sp40.z = arg19->rootPos->z;
-    sp40.y = arg19->rootPos->y - 100.0f;
+    attPoint1.x = attZones->torsoPos->x;
+    attPoint1.z = attZones->torsoPos->z;
+    attPoint1.y = attZones->torsoPos->y - 100.0f;
 
-    sp30.x = arg19->rootPos->x;
-    sp30.z = arg19->rootPos->z;
-    sp30.y = arg19->rootPos->y;
+    attPoint2.x = attZones->torsoPos->x;
+    attPoint2.z = attZones->torsoPos->z;
+    attPoint2.y = attZones->torsoPos->y;
 
-    v03 = find_closest_hit_point(&sp40, &sp30, 80000, &sp50, &sp48);
-    if (v03 != NULL) {
-        process_hit(arg0, arg1, v03);
+    hitPoint = find_collision_point(&attPoint1, &attPoint2, 80000, &defPoint1, &defPoint2);
+    if (hitPoint != NULL) {
+        process_hit(defender, attacker, hitPoint);
         return;
     }
 
-    if (arg19->hasWingZone) {
-        sp40.x = arg19->wingTransform.world_matrix.w.x;
-        sp40.y = -100;
-        sp40.z = arg19->wingTransform.world_matrix.w.z;
+    if (attZones->hasLeftKickStrike) {
+        attPoint1.x = attZones->leftKickStrike.world_matrix.w.x;
+        attPoint1.y = -100;
+        attPoint1.z = attZones->leftKickStrike.world_matrix.w.z;
 
-        sp30.x = sp40.x;
-        sp30.y = 0;
-        sp30.z = sp40.z;
+        attPoint2.x = attPoint1.x;
+        attPoint2.y = 0;
+        attPoint2.z = attPoint1.z;
 
-        v03 = find_closest_hit_point(&sp40, &sp30, 50000, &sp50, &sp48);
-        if (v03 != NULL) {
-            process_hit(arg0, arg1, v03);
+        hitPoint = find_collision_point(&attPoint1, &attPoint2, 50000, &defPoint1, &defPoint2);
+        if (hitPoint != NULL) {
+            process_hit(defender, attacker, hitPoint);
             return;
         }
     } else {
-        sp40.x = arg19->thighPos->x;
-        sp40.y = -100;
-        sp40.z = arg19->thighPos->z;
+        attPoint1.x = attZones->leftFootPos->x;
+        attPoint1.y = -100;
+        attPoint1.z = attZones->leftFootPos->z;
 
-        sp30.x = sp40.x;
-        sp30.y = 0;
-        sp30.z = sp40.z;
+        attPoint2.x = attPoint1.x;
+        attPoint2.y = 0;
+        attPoint2.z = attPoint1.z;
 
-        v03 = find_closest_hit_point(&sp40, &sp30, 50000, &sp50, &sp48);
-        if (v03 != NULL) {
-            process_hit(arg0, arg1, v03);
+        hitPoint = find_collision_point(&attPoint1, &attPoint2, 50000, &defPoint1, &defPoint2);
+        if (hitPoint != NULL) {
+            process_hit(defender, attacker, hitPoint);
             return;
         }
     }
 
-    if (arg19->hasLegZone) {
-        sp40.x = arg19->legTransform.world_matrix.w.x;
-        sp40.y = -100;
-        sp40.z = arg19->legTransform.world_matrix.w.z;
+    if (attZones->hasRightKickStrike) {
+        attPoint1.x = attZones->rightKickStrike.world_matrix.w.x;
+        attPoint1.y = -100;
+        attPoint1.z = attZones->rightKickStrike.world_matrix.w.z;
 
-        sp30.x = sp40.x;
-        sp30.y = 0;
-        sp30.z = sp40.z;
+        attPoint2.x = attPoint1.x;
+        attPoint2.y = 0;
+        attPoint2.z = attPoint1.z;
 
-        v03 = find_closest_hit_point(&sp40, &sp30, 50000, &sp50, &sp48);
-        if (v03 != NULL) {
-            process_hit(arg0, arg1, v03);
+        hitPoint = find_collision_point(&attPoint1, &attPoint2, 50000, &defPoint1, &defPoint2);
+        if (hitPoint != NULL) {
+            process_hit(defender, attacker, hitPoint);
             return;
         }
     } else {
-        sp40.x = arg19->headPos->x;
-        sp40.y = -100;
-        sp40.z = arg19->headPos->z;
+        attPoint1.x = attZones->rightFootPos->x;
+        attPoint1.y = -100;
+        attPoint1.z = attZones->rightFootPos->z;
 
-        sp30.x = sp40.x;
-        sp30.y = 0;
-        sp30.z = sp40.z;
+        attPoint2.x = attPoint1.x;
+        attPoint2.y = 0;
+        attPoint2.z = attPoint1.z;
 
-        v03 = find_closest_hit_point(&sp40, &sp30, 50000, &sp50, &sp48);
-        if (v03 != NULL) {
-            process_hit(arg0, arg1, v03);
+        hitPoint = find_collision_point(&attPoint1, &attPoint2, 50000, &defPoint1, &defPoint2);
+        if (hitPoint != NULL) {
+            process_hit(defender, attacker, hitPoint);
             return;
         }
     }
 }
 
-void init_player_hitboxes(Player *arg0, HitboxBoneSetup *arg1) {
-    arg0->hitboxBones.handPos = &arg0->obj->modInst->transforms[arg1->boneId1].world_matrix.w;
-    arg0->hitboxBones.footPos = &arg0->obj->modInst->transforms[arg1->boneId2].world_matrix.w;
-    arg0->hitboxBones.torsoPos = &arg0->obj->modInst->transforms[arg1->boneId3].world_matrix.w;
-    arg0->hitboxBones.thighPos = &arg0->obj->modInst->transforms[arg1->boneId4].world_matrix.w;
-    arg0->hitboxBones.headPos = &arg0->obj->modInst->transforms[arg1->boneId5].world_matrix.w;
-    arg0->hitboxBones.shinPos = &arg0->obj->modInst->transforms[arg1->boneId6].world_matrix.w;
-    arg0->hitboxBones.armPos = &arg0->obj->modInst->transforms[arg1->boneId7].world_matrix.w;
-    arg0->hitboxBones.rootPos = &arg0->obj->modInst->transforms[0].world_matrix.w;
+void init_player_hitboxes(Player *player, HitZonesSetup *hitZonesSetup) {
+    player->hitZones.headPos = &player->obj->modInst->transforms[hitZonesSetup->headBoneId].world_matrix.w;
+    player->hitZones.leftHandPos = &player->obj->modInst->transforms[hitZonesSetup->leftHandId].world_matrix.w;
+    player->hitZones.rightHandPos = &player->obj->modInst->transforms[hitZonesSetup->rightHandId].world_matrix.w;
+    player->hitZones.leftFootPos = &player->obj->modInst->transforms[hitZonesSetup->leftFootBoneId].world_matrix.w;
+    player->hitZones.rightFootPos = &player->obj->modInst->transforms[hitZonesSetup->rightFootBoneId].world_matrix.w;
+    player->hitZones.leftCalfPos = &player->obj->modInst->transforms[hitZonesSetup->leftCalfBoneId].world_matrix.w;
+    player->hitZones.rightCalfPos = &player->obj->modInst->transforms[hitZonesSetup->rightCalfBoneId].world_matrix.w;
+    player->hitZones.torsoPos = &player->obj->modInst->transforms[0].world_matrix.w;
 
-    if (arg1->headBoneId2 > 0) {
-        arg0->hitboxBones.extraBonePos = &arg0->obj->modInst->transforms[arg1->headBoneId2].world_matrix.w;
-        arg0->hitboxBones.hasHeadZone = TRUE;
+    if (hitZonesSetup->boneIdz3z4 > 0) {
+        player->hitZones.pos8 = &player->obj->modInst->transforms[hitZonesSetup->boneIdz3z4].world_matrix.w;
+        player->hitZones.hasZone3 = TRUE;
     } else {
-        arg0->hitboxBones.hasHeadZone = FALSE;
+        player->hitZones.hasZone3 = FALSE;
     }
 
-    arg0->hitboxBones.strikeRadius = arg1->strikeRadius;
-    arg0->hitboxBones.comboRadius = arg1->comboRadius;
+    player->hitZones.radius1 = hitZonesSetup->radius1;
+    player->hitZones.radius2 = hitZonesSetup->radius2;
 
-    if (arg1->grabOffset.x != 0 || arg1->grabOffset.y != 0 || arg1->grabOffset.z != 0) {
-        arg0->hitboxBones.hasGrabZone = TRUE;
-        func_80012A20(&arg0->obj->modInst->transforms[arg1->grabParentBoneId], &arg0->hitboxBones.grabTransform, -3,
-                      -3);
-        arg0->hitboxBones.grabTransform.local_matrix.w.x = arg1->grabOffset.x;
-        arg0->hitboxBones.grabTransform.local_matrix.w.y = arg1->grabOffset.y;
-        arg0->hitboxBones.grabTransform.local_matrix.w.z = arg1->grabOffset.z;
+    if (hitZonesSetup->rightPunchPos.x != 0 || hitZonesSetup->rightPunchPos.y != 0 ||
+        hitZonesSetup->rightPunchPos.z != 0) {
+        player->hitZones.hasRightPunchStrike = TRUE;
+        init_transform(&player->obj->modInst->transforms[hitZonesSetup->rightPunchBoneId],
+                       &player->hitZones.rightPunchStrike, -3, -3);
+        player->hitZones.rightPunchStrike.local_matrix.w.x = hitZonesSetup->rightPunchPos.x;
+        player->hitZones.rightPunchStrike.local_matrix.w.y = hitZonesSetup->rightPunchPos.y;
+        player->hitZones.rightPunchStrike.local_matrix.w.z = hitZonesSetup->rightPunchPos.z;
     } else {
-        arg0->hitboxBones.hasGrabZone = FALSE;
+        player->hitZones.hasRightPunchStrike = FALSE;
     }
 
-    if (arg1->torsoOffset.x != 0 || arg1->torsoOffset.y != 0 || arg1->torsoOffset.z != 0) {
-        arg0->hitboxBones.hasTorsoZone = TRUE;
-        func_80012A20(&arg0->obj->modInst->transforms[arg1->torsoParentBoneId], &arg0->hitboxBones.torsoTransform, -3,
-                      -3);
-        arg0->hitboxBones.torsoTransform.local_matrix.w.x = arg1->torsoOffset.x;
-        arg0->hitboxBones.torsoTransform.local_matrix.w.y = arg1->torsoOffset.y;
-        arg0->hitboxBones.torsoTransform.local_matrix.w.z = arg1->torsoOffset.z;
+    if (hitZonesSetup->leftPunchPos.x != 0 || hitZonesSetup->leftPunchPos.y != 0 ||
+        hitZonesSetup->leftPunchPos.z != 0) {
+        player->hitZones.hasLeftPunchStrike = TRUE;
+        init_transform(&player->obj->modInst->transforms[hitZonesSetup->leftPunchBoneId],
+                       &player->hitZones.leftPunchStrike, -3, -3);
+        player->hitZones.leftPunchStrike.local_matrix.w.x = hitZonesSetup->leftPunchPos.x;
+        player->hitZones.leftPunchStrike.local_matrix.w.y = hitZonesSetup->leftPunchPos.y;
+        player->hitZones.leftPunchStrike.local_matrix.w.z = hitZonesSetup->leftPunchPos.z;
     } else {
-        arg0->hitboxBones.hasTorsoZone = FALSE;
+        player->hitZones.hasLeftPunchStrike = FALSE;
     }
 
-    if (arg1->tailOffset.x != 0 || arg1->tailOffset.y != 0 || arg1->tailOffset.z != 0) {
-        arg0->hitboxBones.hasTailZone = TRUE;
-        func_80012A20(&arg0->obj->modInst->transforms[arg1->headBoneId2], &arg0->hitboxBones.tailTransform, -3, -3);
-        arg0->hitboxBones.tailTransform.local_matrix.w.x = arg1->tailOffset.x;
-        arg0->hitboxBones.tailTransform.local_matrix.w.y = arg1->tailOffset.y;
-        arg0->hitboxBones.tailTransform.local_matrix.w.z = arg1->tailOffset.z;
+    if (hitZonesSetup->z4offset.x != 0 || hitZonesSetup->z4offset.y != 0 || hitZonesSetup->z4offset.z != 0) {
+        player->hitZones.hasZone4 = TRUE;
+        init_transform(&player->obj->modInst->transforms[hitZonesSetup->boneIdz3z4], &player->hitZones.zone4trans, -3,
+                       -3);
+        player->hitZones.zone4trans.local_matrix.w.x = hitZonesSetup->z4offset.x;
+        player->hitZones.zone4trans.local_matrix.w.y = hitZonesSetup->z4offset.y;
+        player->hitZones.zone4trans.local_matrix.w.z = hitZonesSetup->z4offset.z;
     } else {
-        arg0->hitboxBones.hasTailZone = FALSE;
+        player->hitZones.hasZone4 = FALSE;
     }
 
-    if (arg1->legOffset.x != 0 || arg1->legOffset.y != 0 || arg1->legOffset.z != 0) {
-        arg0->hitboxBones.hasLegZone = TRUE;
-        func_80012A20(&arg0->obj->modInst->transforms[arg1->boneId5], &arg0->hitboxBones.legTransform, -3, -3);
-        arg0->hitboxBones.legTransform.local_matrix.w.x = arg1->legOffset.x;
-        arg0->hitboxBones.legTransform.local_matrix.w.y = arg1->legOffset.y;
-        arg0->hitboxBones.legTransform.local_matrix.w.z = arg1->legOffset.z;
+    if (hitZonesSetup->rightKickPos.x != 0 || hitZonesSetup->rightKickPos.y != 0 ||
+        hitZonesSetup->rightKickPos.z != 0) {
+        player->hitZones.hasRightKickStrike = TRUE;
+        init_transform(&player->obj->modInst->transforms[hitZonesSetup->rightFootBoneId],
+                       &player->hitZones.rightKickStrike, -3, -3);
+        player->hitZones.rightKickStrike.local_matrix.w.x = hitZonesSetup->rightKickPos.x;
+        player->hitZones.rightKickStrike.local_matrix.w.y = hitZonesSetup->rightKickPos.y;
+        player->hitZones.rightKickStrike.local_matrix.w.z = hitZonesSetup->rightKickPos.z;
     } else {
-        arg0->hitboxBones.hasLegZone = FALSE;
+        player->hitZones.hasRightKickStrike = FALSE;
     }
 
-    if (arg1->wingOffset.x != 0 || arg1->wingOffset.y != 0 || arg1->wingOffset.z != 0) {
-        arg0->hitboxBones.hasWingZone = TRUE;
-        func_80012A20(&arg0->obj->modInst->transforms[arg1->boneId4], &arg0->hitboxBones.wingTransform, -3, -3);
-        arg0->hitboxBones.wingTransform.local_matrix.w.x = arg1->wingOffset.x;
-        arg0->hitboxBones.wingTransform.local_matrix.w.y = arg1->wingOffset.y;
-        arg0->hitboxBones.wingTransform.local_matrix.w.z = arg1->wingOffset.z;
+    if (hitZonesSetup->leftKickPos.x != 0 || hitZonesSetup->leftKickPos.y != 0 || hitZonesSetup->leftKickPos.z != 0) {
+        player->hitZones.hasLeftKickStrike = TRUE;
+        init_transform(&player->obj->modInst->transforms[hitZonesSetup->leftFootBoneId],
+                       &player->hitZones.leftKickStrike, -3, -3);
+        player->hitZones.leftKickStrike.local_matrix.w.x = hitZonesSetup->leftKickPos.x;
+        player->hitZones.leftKickStrike.local_matrix.w.y = hitZonesSetup->leftKickPos.y;
+        player->hitZones.leftKickStrike.local_matrix.w.z = hitZonesSetup->leftKickPos.z;
     } else {
-        arg0->hitboxBones.hasWingZone = FALSE;
+        player->hitZones.hasLeftKickStrike = FALSE;
     }
 }

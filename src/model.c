@@ -740,7 +740,7 @@ void shadow_update(Object *obj) {
     s6 = D_8005BFCE * 30;
 
     for (i = 0; i < modInst->numNodes; i++) {
-        func_80014718(&sp98, &transforms[i].world_matrix, local_matrix);
+        math_mtxf_apply_parent(&sp98, &transforms[i].world_matrix, local_matrix);
         math_mtxf_mul(&sp98, &gCameraProjectionMatrix, &D_800813E0);
 
         if (D_800813E0.w.w != 0.0f) {
@@ -812,10 +812,10 @@ void model_update_animated_params(Object *obj) {
     ModelInstance *model = obj->modInst;
     s32 count;
     s32 i;
-    s16 v1;
+    s16 delta;
     u8 *nodeUpdated;
     Transform *transforms;
-    Vec4i velocity;
+    Vec4i displacement;
     s32 unused[5];
     Vec4i *nodePosition;
     Vec4s *nodeRotation;
@@ -833,7 +833,7 @@ void model_update_animated_params(Object *obj) {
     for (i = 0; i < count; i++) {
         if (nodeUpdated[i]) {
             math_rotate(&transforms[i].local_matrix, &nodeRotation[i]);
-            func_800139A0(&transforms[i].local_matrix, &nodeScale[i]);
+            math_scale(&transforms[i].local_matrix, &nodeScale[i]);
 
             transforms[i].local_matrix.w.x = attachments[i].x + nodePosition[i].x;
             transforms[i].local_matrix.w.y = attachments[i].y + nodePosition[i].y;
@@ -844,41 +844,41 @@ void model_update_animated_params(Object *obj) {
 
     if (model->rootUpdated || model->unk_132 != 0) {
         math_rotate(&model->rootTransform.local_matrix, &model->rootRotation);
-        func_800139A0(&model->rootTransform.local_matrix, &model->rootScale);
+        math_scale(&model->rootTransform.local_matrix, &model->rootScale);
         model->rootUpdated = FALSE;
     }
 
-    if (obj->flags & OBJ_FLAG_400) {
+    if (obj->flags & OBJ_FLAG_ROOT_MOTION) {
         model->rootTransform.local_matrix.w.y = model->currentRootPos.y;
-        velocity.y = 0;
+        displacement.y = 0;
 
         if (obj->flags & OBJ_FLAG_20000) {
-            velocity.x = model->currentRootPos.x - model->baseRootPos.x - model->unk_A1C;
-            v1 = velocity.x - model->velocity.x;
-            model->velocity.x = velocity.x;
-            velocity.x = v1;
+            displacement.x = model->currentRootPos.x - model->baseRootPos.x - model->unk_A1C;
+            delta = displacement.x - model->velocity.x;
+            model->velocity.x = displacement.x;
+            displacement.x = delta;
             model->rootTransform.local_matrix.w.x = model->baseRootPos.x;
         } else {
-            velocity.x = 0;
+            displacement.x = 0;
         }
 
-        velocity.z = model->currentRootPos.z - model->baseRootPos.z;
+        displacement.z = model->currentRootPos.z - model->baseRootPos.z;
 
-        if (velocity.z != 0 || velocity.x != 0) {
-            v1 = 0;
+        if (displacement.z != 0 || displacement.x != 0) {
+            delta = 0;
             if (obj->flags & OBJ_FLAG_100000) {
                 obj->flags &= ~OBJ_FLAG_100000;
             } else {
-                v1 = velocity.z - model->velocity.z;
+                delta = displacement.z - model->velocity.z;
             }
-            model->velocity.z = velocity.z;
-            velocity.z = v1;
+            model->velocity.z = displacement.z;
+            displacement.z = delta;
 
             model->rootTransform.local_matrix.w.z = model->baseRootPos.z;
-            func_8001370C(&velocity, &obj->rotation);
+            math_rotate_vector(&displacement, &obj->rotation);
             if (!(obj->flags & OBJ_FLAG_8000)) {
-                obj->pos.x += velocity.x;
-                obj->pos.z += velocity.z;
+                obj->pos.x += displacement.x;
+                obj->pos.z += displacement.z;
             }
         }
     } else {
@@ -887,29 +887,29 @@ void model_update_animated_params(Object *obj) {
         model->rootTransform.local_matrix.w.z = model->currentRootPos.z;
 
         if (model->anotherVel.z != 0) {
-            velocity.x = 0;
-            velocity.z = model->anotherVel.z - model->velocity.z;
+            displacement.x = 0;
+            displacement.z = model->anotherVel.z - model->velocity.z;
             model->velocity.z = model->anotherVel.z;
-            func_8001370C(&velocity, &obj->rotation); // @bug sp88.y undefined
-            obj->pos.x += velocity.x;
-            obj->pos.z += velocity.z;
+            math_rotate_vector(&displacement, &obj->rotation); // @bug sp88.y undefined
+            obj->pos.x += displacement.x;
+            obj->pos.z += displacement.z;
         }
 
-        if (obj->flags & OBJ_FLAG_8000000) {
+        if (obj->flags & OBJ_FLAG_UNWIND_ROOT) {
             if (obj->flags & OBJ_FLAG_800000) {
                 obj->rotation.y = 0x400 - ((0xC00 - obj->rotation.y) & 0xFFF);
                 obj->flags &= ~OBJ_FLAG_800000;
             }
 
-            obj->flags &= ~OBJ_FLAG_8000000;
+            obj->flags &= ~OBJ_FLAG_UNWIND_ROOT;
 
-            velocity.y = 0;
-            velocity.x = model->currentRootPos.x;
-            velocity.z = model->currentRootPos.z;
+            displacement.y = 0;
+            displacement.x = model->currentRootPos.x;
+            displacement.z = model->currentRootPos.z;
 
-            func_8001370C(&velocity, &obj->rotation);
-            obj->pos.x -= velocity.x;
-            obj->pos.z -= velocity.z;
+            math_rotate_vector(&displacement, &obj->rotation);
+            obj->pos.x -= displacement.x;
+            obj->pos.z -= displacement.z;
         }
     }
 }
@@ -1345,12 +1345,12 @@ void model_change_animation(Object *obj) {
     model->currentRootPos.y = model->baseRootPos.y;
     model->currentRootPos.z = model->baseRootPos.z;
 
-    if (obj->flags & OBJ_FLAG_400) {
+    if (obj->flags & OBJ_FLAG_ROOT_MOTION) {
         if (obj->flags & OBJ_FLAG_800000) {
             obj->rotation.y = 0x400 - ((0xC00 - obj->rotation.y) & 0xFFF);
             obj->flags &= ~OBJ_FLAG_800000;
         }
-        obj->flags |= OBJ_FLAG_8000000;
+        obj->flags |= OBJ_FLAG_UNWIND_ROOT;
     }
 
     if (obj->flags & OBJ_FLAG_400000) {
@@ -1447,7 +1447,7 @@ void model_update_kmd(Object *obj) {
 
     math_rotate(&s1->local_matrix, &obj->rotation);
     math_translate(&s1->local_matrix, &obj->pos);
-    func_80014974(s1);
+    math_sync_transforms(s1);
 
     D_8013C4E0 = modInst->kmodel->model.dlist;
 
@@ -1812,7 +1812,7 @@ void model_update(Object *obj) {
 
         math_rotate(&objTransform->local_matrix, &obj->rotation);
         math_translate(&objTransform->local_matrix, &obj->pos);
-        func_80014974(objTransform);
+        math_sync_transforms(objTransform);
 
         if (modInst->nodeClusters != NULL) {
             if (obj->flags & OBJ_FLAG_800) {
@@ -1858,7 +1858,7 @@ void model_update(Object *obj) {
         s0 = modInst->renderBatches;
         math_rotate(&objTransform->local_matrix, &obj->rotation);
         math_translate(&objTransform->local_matrix, &obj->pos);
-        func_80014974(objTransform);
+        math_sync_transforms(objTransform);
         math_mtxf_mul(&objTransform->local_matrix, &gCameraProjectionMatrix, &D_800813E0);
         math_mtxf2mtx(&(s0 + sp94)->transform, &D_800813E0);
         func_80035DF8(modInst->model, 0);

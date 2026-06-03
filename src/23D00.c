@@ -254,7 +254,7 @@ void func_80023628(Object *obj) {
     spA4.y = 6;
     spA4.z = 0;
 
-    func_8001370C(&spA4, &D_8013C668);
+    math_rotate_vector(&spA4, &D_8013C668);
 
     t02 = s2->unk_132C[D_8005BFCE];
     a3 = s2->unk_1334[D_8005BFCE];

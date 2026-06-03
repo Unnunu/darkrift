@@ -166,13 +166,13 @@ void player_anim_func_3(Object *obj) {
     obj->currentTask->func = anim_advance;
     obj->frameIndex++;
 
-    if (targetState->flags & CSF_10) {
-        obj->flags |= OBJ_FLAG_400;
+    if (targetState->flags & CSF_ROOT_MOTION) {
+        obj->flags |= OBJ_FLAG_ROOT_MOTION;
         if (targetState->flags & CSF_8000) {
             obj->flags |= OBJ_FLAG_20000;
         }
     } else {
-        obj->flags &= ~OBJ_FLAG_400;
+        obj->flags &= ~OBJ_FLAG_ROOT_MOTION;
     }
 
     if (targetState->flags & CSF_80) {
@@ -237,15 +237,15 @@ void anim_change_combat_state(Object *obj) {
 
     obj->currentTask->func = params[0];
 
-    if (targetState->flags & CSF_10) {
-        obj->flags |= OBJ_FLAG_400;
+    if (targetState->flags & CSF_ROOT_MOTION) {
+        obj->flags |= OBJ_FLAG_ROOT_MOTION;
         if (targetState->flags & CSF_8000) {
             obj->flags |= OBJ_FLAG_20000;
         } else {
             obj->flags &= ~OBJ_FLAG_20000;
         }
     } else {
-        obj->flags &= ~OBJ_FLAG_400;
+        obj->flags &= ~OBJ_FLAG_ROOT_MOTION;
     }
 
     if (targetState->flags & CSF_80) {

@@ -519,8 +519,8 @@ typedef struct CombatState {
     /* 0x1E */ s16 unk_1E;
     /* 0x20 */ s16 damage;
     /* 0x22 */ s16 soundTableIndex;
-    /* 0x24 */ s16 bodyHitboxStart;
-    /* 0x26 */ s16 bodyHitboxEnd;
+    /* 0x24 */ s16 trailStart;
+    /* 0x26 */ s16 trailEnd;
     /* 0x28 */ s16 projBarrage;
     /* 0x2A */ s16 unk_2A;
     /* 0x2C */ s16 cutsceneId; // combat state where animationId is for camera, not for Player.
@@ -563,7 +563,7 @@ typedef struct HitboxTrailSegment {
     /* 0x10C */ s32 unk_10C;
 } HitboxTrailSegment; // size = 0x110
 
-typedef struct PlayerHitbox {
+typedef struct MotionTrail {
     /* 0x0000 */ ModelInstance *modelInst;
     /* 0x0004 */ Matrix4f *boneMatrixA;
     /* 0x0008 */ Matrix4f *boneMatrixB;
@@ -582,35 +582,35 @@ typedef struct PlayerHitbox {
     /* 0x144C */ f32 boneAPosZ;
     /* 0x1450 */ Vec4i *refPosition;
     /* 0x1454 */ ColorRGBA baseColor;
-} PlayerHitbox; // size = 0x1458;
+} MotionTrail; // size = 0x1458;
 
-typedef struct HitboxBones {
-    /* 0x000 */ u8 hasTorsoZone;
-    /* 0x001 */ u8 hasGrabZone;
-    /* 0x002 */ u8 hasHeadZone;
-    /* 0x003 */ u8 hasTailZone;
-    /* 0x004 */ u8 hasWingZone;
-    /* 0x005 */ u8 hasLegZone;
-    /* 0x006 */ u8 hasExtraZone;
+typedef struct HitZones {
+    /* 0x000 */ u8 hasLeftPunchStrike;
+    /* 0x001 */ u8 hasRightPunchStrike;
+    /* 0x002 */ u8 hasZone3;
+    /* 0x003 */ u8 hasZone4;
+    /* 0x004 */ u8 hasLeftKickStrike;
+    /* 0x005 */ u8 hasRightKickStrike;
+    /* 0x006 */ u8 hasZone7;
     /* 0x007 */ u8 unk_07;
-    /* 0x008 */ Vec4f *handPos;
-    /* 0x00C */ Vec4f *footPos;
-    /* 0x010 */ Vec4f *torsoPos;
-    /* 0x014 */ Vec4f *thighPos;
-    /* 0x018 */ Vec4f *headPos;
-    /* 0x018 */ Vec4f *shinPos;
-    /* 0x018 */ Vec4f *armPos;
-    /* 0x018 */ Vec4f *extraBonePos;
-    /* 0x018 */ Vec4f *rootPos;
-    /* 0x02C */ s32 strikeRadius;
-    /* 0x030 */ s32 comboRadius;
+    /* 0x008 */ Vec4f *headPos;
+    /* 0x00C */ Vec4f *leftHandPos;
+    /* 0x010 */ Vec4f *rightHandPos;
+    /* 0x014 */ Vec4f *leftFootPos;
+    /* 0x018 */ Vec4f *rightFootPos;
+    /* 0x018 */ Vec4f *leftCalfPos;
+    /* 0x018 */ Vec4f *rightCalfPos;
+    /* 0x018 */ Vec4f *pos8;
+    /* 0x018 */ Vec4f *torsoPos;
+    /* 0x02C */ s32 radius1;
+    /* 0x030 */ s32 radius2;
     /* 0x034 */ s32 unk_34;
-    /* 0x038 */ Transform torsoTransform;
-    /* 0x150 */ Transform grabTransform;
-    /* 0x268 */ Transform wingTransform;
-    /* 0x380 */ Transform legTransform;
-    /* 0x498 */ Transform tailTransform;
-} HitboxBones; // size = 0x5B0
+    /* 0x038 */ Transform leftPunchStrike;
+    /* 0x150 */ Transform rightPunchStrike;
+    /* 0x268 */ Transform leftKickStrike;
+    /* 0x380 */ Transform rightKickStrike;
+    /* 0x498 */ Transform zone4trans;
+} HitZones; // size = 0x5B0
 
 typedef struct ProjectileShot {
     /* 0x00 */ u8 projectileId;
@@ -788,7 +788,7 @@ typedef struct Player {
     /* 0x018C */ s32 previousFlags;
     /* 0x0190 */ s32 unk_190;
     /* 0x0194 */ Object *projectileObj;
-    /* 0x0198 */ HitboxBones hitboxBones;
+    /* 0x0198 */ HitZones hitZones;
     /* 0x0748 */ char unk_748[8];
     /* 0x0750 */ Transform unk_750;
     /* 0x0868 */ Transform unk_868;
@@ -804,10 +804,10 @@ typedef struct Player {
     /* 0x0DBE */ s16 unk_DBE;
     /* 0x0DC0 */ Model *effectSprites[3];
     /* 0x0DCC */ Model *effectModels[6];
-    /* 0x0DE8 */ PlayerHitbox unk_DE8;
-    /* 0x2240 */ PlayerHitbox unk_2240;
-    /* 0x3698 */ PlayerHitbox unk_3698;
-    /* 0x4AF0 */ PlayerHitbox unk_4AF0;
+    /* 0x0DE8 */ MotionTrail rightHandTrail;
+    /* 0x2240 */ MotionTrail leftHandTrail;
+    /* 0x3698 */ MotionTrail leftLegTrail;
+    /* 0x4AF0 */ MotionTrail rightLegTrail;
     /* 0x5F48 */ s16 hitCooldown;
     /* 0x5F4A */ u8 unk_5F4A;
     /* 0x5F4B */ u8 unk_5F4B;
@@ -864,30 +864,30 @@ typedef struct ModelRenderSettings {
     /* 0x14 */ s32 flags;
 } ModelRenderSettings;
 
-typedef struct HitboxBoneSetup {
-    /* 0x00 */ s32 boneId1;
-    /* 0x04 */ s32 boneId2;
-    /* 0x08 */ s32 boneId3;
-    /* 0x0C */ s32 boneId4;
-    /* 0x10 */ s32 boneId5;
-    /* 0x14 */ s32 boneId6;
-    /* 0x18 */ s32 boneId7;
-    /* 0x1C */ s32 torsoParentBoneId;
-    /* 0x20 */ s32 grabParentBoneId;
-    /* 0x24 */ s32 strikeRadius;
-    /* 0x28 */ s32 comboRadius;
-    /* 0x2C */ Vec4i torsoOffset;
-    /* 0x3C */ Vec4i grabOffset;
-    /* 0x4C */ Vec4i wingOffset;
-    /* 0x5C */ Vec4i legOffset;
-    /* 0x6C */ s32 headBoneId2;
-    /* 0x70 */ Vec4i tailOffset;
-} HitboxBoneSetup;
+typedef struct HitZonesSetup {
+    /* 0x00 */ s32 headBoneId;
+    /* 0x04 */ s32 leftHandId;
+    /* 0x08 */ s32 rightHandId;
+    /* 0x0C */ s32 leftFootBoneId;
+    /* 0x10 */ s32 rightFootBoneId;
+    /* 0x14 */ s32 leftCalfBoneId;
+    /* 0x18 */ s32 rightCalfBoneId;
+    /* 0x1C */ s32 leftPunchBoneId;
+    /* 0x20 */ s32 rightPunchBoneId;
+    /* 0x24 */ s32 radius1;
+    /* 0x28 */ s32 radius2;
+    /* 0x2C */ Vec4i leftPunchPos;
+    /* 0x3C */ Vec4i rightPunchPos;
+    /* 0x4C */ Vec4i leftKickPos;
+    /* 0x5C */ Vec4i rightKickPos;
+    /* 0x6C */ s32 boneIdz3z4;
+    /* 0x70 */ Vec4i z4offset;
+} HitZonesSetup;
 
 typedef struct UnkTau {
-    /* 0x00 */ HitboxBoneSetup *unk_00;
+    /* 0x00 */ HitZonesSetup *hitZonesSetup;
     /* 0x04 */ K2Def *unk_04;
-    /* 0x08 */ ColorRGBA unk_08[2];
+    /* 0x08 */ ColorRGBA trailColors[2];
 } UnkTau; // size = 0x10
 
 typedef struct Unk_8004BA6C {

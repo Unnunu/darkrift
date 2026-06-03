@@ -92,16 +92,16 @@ extern Unk_8004BA6C D_8005287C;
 extern Unk_8004BA6C D_80052890;
 extern Unk_8004BA6C D_80052C3C;
 
-extern HitboxBoneSetup D_80052220;
-extern HitboxBoneSetup D_80052420;
-extern HitboxBoneSetup D_80052580;
-extern HitboxBoneSetup D_800526B0;
-extern HitboxBoneSetup D_80052330;
-extern HitboxBoneSetup D_800527A0;
-extern HitboxBoneSetup D_800528B0;
-extern HitboxBoneSetup D_80052990;
-extern HitboxBoneSetup D_80052A60;
-extern HitboxBoneSetup D_80052B30;
+extern HitZonesSetup D_80052220;
+extern HitZonesSetup D_80052420;
+extern HitZonesSetup D_80052580;
+extern HitZonesSetup D_800526B0;
+extern HitZonesSetup D_80052330;
+extern HitZonesSetup D_800527A0;
+extern HitZonesSetup D_800528B0;
+extern HitZonesSetup D_80052990;
+extern HitZonesSetup D_80052A60;
+extern HitZonesSetup D_80052B30;
 
 extern GlobalLighting D_8004935C;
 

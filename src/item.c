@@ -258,7 +258,7 @@ void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, Transform *arg3, void (*ta
     s16 i;
     s32 temp;
 
-    func_80012A20(arg3, &arg0->transform, -2, -3);
+    init_transform(arg3, &arg0->transform, -2, -3);
 
     arg0->unk_076 = 0;
     arg0->color.r = arg0->color.g = arg0->color.b = 160;
@@ -342,7 +342,7 @@ void init_model_node_transforms(Object *obj, Model *model) {
     numNodes = model->numNodes;
     rootTransform = &modInst->rootTransform;
 
-    func_80012A20(&obj->transform, rootTransform, -1, -2);
+    init_transform(&obj->transform, rootTransform, -1, -2);
     modInst->transforms = transforms = mem_alloc(numNodes * sizeof(Transform), "item.c", 453);
 
     hier = model->nodeHierarchy;
@@ -356,9 +356,9 @@ void init_model_node_transforms(Object *obj, Model *model) {
         hier = model->nodeHierarchy + i + 1;
         parentId = hier->parent;
         if (parentId >= 0) {
-            func_80012A20(&transforms[parentId], &transforms[i], i, parentId);
+            init_transform(&transforms[parentId], &transforms[i], i, parentId);
         } else {
-            func_80012A20(rootTransform, &transforms[i], i, parentId);
+            init_transform(rootTransform, &transforms[i], i, parentId);
         }
         math_translate(&transforms[i].local_matrix, &hier->x);
     }
@@ -560,7 +560,7 @@ Object *create_model_instance(Vec4i *pos, s32 objPriority, void (*taskFunc)(Obje
         init_model_node_transforms(obj, model);
     } else {
         obj->modInst->transforms = NULL;
-        func_80012A20(&obj->transform, &modInst->rootTransform, -1, -2);
+        init_transform(&obj->transform, &modInst->rootTransform, -1, -2);
         modInst->baseRootPos.x = 0;
         modInst->baseRootPos.y = 0;
         modInst->baseRootPos.z = 0;
