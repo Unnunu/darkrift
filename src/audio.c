@@ -105,7 +105,7 @@ OSTask gAudioOsTask = { { M_AUDTASK, 0, NULL, 0, NULL, SP_UCODE_SIZE, NULL, SP_U
 
 void func_80020D20(ALSynConfig *);
 ALDMAproc audio_dmanew(AudioDMAState **state);
-void func_800211B0(void);
+void handle_audio_dma_complete(void);
 s32 func_80020E54(UnkAudioBeta *arg0);
 void sound_set_pan(s32 arg0, u8 arg1);
 void music_set_volume(s16 arg0);
@@ -243,7 +243,7 @@ void audio_reset(void) {
     }
 
     func_80020E54(D_80081840.unk_08[D_800A45D8 % 3]);
-    func_800211B0();
+    handle_audio_dma_complete();
     alClose(&D_80081A78);
     audio_init();
     sched_wait_vretrace(FALSE);
@@ -374,7 +374,7 @@ ALDMAproc audio_dmanew(AudioDMAState **state) {
     return audio_dma;
 }
 
-void func_800211B0(void) {
+void handle_audio_dma_complete(void) {
     u32 i;
     OSMesg mesg;
     UnkAudioDelta *curr;
@@ -405,11 +405,11 @@ void func_800211B0(void) {
     D_800A45D8++;
 }
 
-void func_800212C8(void) {
+void process_audio_completion(void) {
     if (gMusicIsPlaying + gSoundIsPlaying) {
         D_800A45F4 = 0;
         if (func_80020E54(D_80081840.unk_08[D_800A45D8 % 3])) {
-            func_800211B0();
+            handle_audio_dma_complete();
         }
     }
 }

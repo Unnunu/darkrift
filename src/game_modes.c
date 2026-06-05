@@ -35,7 +35,7 @@ void func_80020670(Object *);
 void func_80019F40(Object *);
 void func_8001A158(Object *, s16);
 // s32 menu_rank_init(void);
-void func_800052EC(s16 arg0);
+void handle_controller_input(s16 arg0);
 void func_8001B5B0(char *, s32);
 void func_80029630(void);
 void camera_intro_start(Object *);
@@ -115,7 +115,7 @@ void battle_match_init(void) {
     D_80051F6C = D_80051F70 = D_8013C2A8 = D_8013C2AA = 0;
 }
 
-void battle_global_init(void) {
+void initialize_battle_globals(void) {
     u8 i, j;
 
     D_800AA480 = 0;
@@ -183,7 +183,7 @@ void wait_screen(void) {
 
     obj = create_worker(&wait_screen_update, 0x1000);
     obj->vars[0] = 6;
-    main_loop();
+    game_main_loop();
 
     D_80080110 = sp2E;
     D_80080112 = sp2C;
@@ -210,8 +210,8 @@ void battle_preload(void) {
         asset_open_folder("/bars/bars2", CONTEXT_ABAB);
     }
 
-    func_800052EC(0);
-    func_800052EC(1);
+    handle_controller_input(0);
+    handle_controller_input(1);
 
     if (D_800801F1) {
         battle_match_init();
@@ -246,7 +246,7 @@ void run_battle_gore_mode(void) {
     gCamera->currentTask->stackPos = 0;
 
     battle_round_init();
-    main_loop();
+    game_main_loop();
 
     battle_cleanup();
 }
@@ -283,7 +283,7 @@ void run_battle_aaron_mode(void) {
     gCamera->currentTask->stackPos = 0;
 
     battle_round_init();
-    main_loop();
+    game_main_loop();
     battle_cleanup();
 }
 
@@ -306,7 +306,7 @@ void run_battle_demitron_mode(void) {
     gCamera->currentTask->stackPos = 0;
 
     battle_round_init();
-    main_loop();
+    game_main_loop();
     battle_cleanup();
 }
 
@@ -329,7 +329,7 @@ void run_battle_demonica_mode(void) {
     gCamera->currentTask->stackPos = 0;
 
     battle_round_init();
-    main_loop();
+    game_main_loop();
     battle_cleanup();
 }
 
@@ -352,7 +352,7 @@ void run_battle_eve_mode(void) {
     gCamera->currentTask->stackPos = 0;
 
     battle_round_init();
-    main_loop();
+    game_main_loop();
     battle_cleanup();
 }
 
@@ -374,7 +374,7 @@ void run_battle_morphix_mode(void) {
     gCamera->currentTask->stackPos = 0;
 
     battle_round_init();
-    main_loop();
+    game_main_loop();
     battle_cleanup();
 }
 
@@ -394,7 +394,7 @@ void run_battle_niiki_mode(void) {
     gCamera->currentTask->stackPos = 0;
 
     battle_round_init();
-    main_loop();
+    game_main_loop();
     battle_cleanup();
 }
 
@@ -417,7 +417,7 @@ void run_battle_scarlet_mode(void) {
     gCamera->currentTask->stackPos = 0;
 
     battle_round_init();
-    main_loop();
+    game_main_loop();
     battle_cleanup();
 }
 
@@ -440,7 +440,7 @@ void run_battle_sonork_mode(void) {
     gCamera->currentTask->stackPos = 0;
 
     battle_round_init();
-    main_loop();
+    game_main_loop();
     battle_cleanup();
 }
 
@@ -463,7 +463,7 @@ void run_battle_zenmuron_mode(void) {
     gCamera->currentTask->stackPos = 0;
 
     battle_round_init();
-    main_loop();
+    game_main_loop();
     battle_cleanup();
 }
 
@@ -555,8 +555,8 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
         obj->vars[0] = 480;
     }
 
-    func_800052EC(0);
-    func_800052EC(1);
+    handle_controller_input(0);
+    handle_controller_input(1);
 
     gBattleSettings[PLAYER_1].initDifficulty = gBattleSettings[PLAYER_2].initDifficulty = TRUE;
 
@@ -605,7 +605,7 @@ void run_intro_gore_mode(void) {
     bg_layer_create("bg3", 0, 74, 0x2000, 0x10000, 0, temp_s0);
     bg_layer_create("bg0", 0, 15, 0x1000, 0x10000, TEX_FLAG_1, temp_s0);
     func_8001B5B0("arena", temp_s0);
-    main_loop();
+    game_main_loop();
 
     func_8002630C(0x3000);
     battle_cleanup();
@@ -624,7 +624,7 @@ void run_intro_aaron_mode(void) {
     bg_layer_create("bg2", 0, 74, 0x10000, 0x10000, 0, temp_s0);
     bg_layer_create("bg0", 0, 15, 0x8000, 0x10000, TEX_FLAG_1, temp_s0);
     func_8001B5B0("arena", temp_s0);
-    main_loop();
+    game_main_loop();
 
     func_8002630C(0x3000);
     battle_cleanup();
@@ -643,7 +643,7 @@ void run_intro_demitron_mode(void) {
     bg_layer_create("bg2", 0, -8, 0x2000, 0x10000, 0, temp_s0);
     bg_layer_create("bg0", 0, 8, 0x1000, 0x10000, TEX_FLAG_1, temp_s0);
     func_8001B5B0("arena", temp_s0);
-    main_loop();
+    game_main_loop();
     func_8002630C(0x3000);
     battle_cleanup();
     if (gPlayMode != PLAY_MODE_30) {
@@ -661,7 +661,7 @@ void run_intro_demonica_mode(void) {
     bg_layer_create("bg2", 0, 32, 0x2000, 0x10000, 0, temp_s0);
     bg_layer_create("bg0", 0, -24, 0x1000, 0x10000, TEX_FLAG_1, temp_s0);
     func_8001B5B0("arena", temp_s0);
-    main_loop();
+    game_main_loop();
     func_8002630C(0x3000);
     battle_cleanup();
     if (gPlayMode != PLAY_MODE_30) {
@@ -679,7 +679,7 @@ void run_intro_eve_mode(void) {
     bg_layer_create("bg2", 0, 52, 0x2000, 0x10000, 0, temp_s0);
     bg_layer_create("bg0", 0, 0, 0x1000, 0x10000, TEX_FLAG_1, temp_s0);
     func_8001B5B0("arena", temp_s0);
-    main_loop();
+    game_main_loop();
     func_8002630C(0x3000);
     battle_cleanup();
     if (gPlayMode != PLAY_MODE_30) {
@@ -697,7 +697,7 @@ void run_intro_morphix_mode(void) {
     bg_layer_create("bg2", 0, 96, 0x2000, 0x10000, 0, temp_s0);
     bg_layer_create("bg0", 0, 8, 0x1000, 0x10000, TEX_FLAG_1, temp_s0);
     func_8001B5B0("arena", temp_s0);
-    main_loop();
+    game_main_loop();
     func_8002630C(0x3000);
     battle_cleanup();
     if (gPlayMode != PLAY_MODE_30) {
@@ -715,7 +715,7 @@ void run_intro_niiki_mode(void) {
     bg_layer_create("bg2", 0, 94, 0x2000, 0x10000, 0, temp_s0);
     bg_layer_create("bg0", 0, -8, 0x1000, 0x10000, TEX_FLAG_1, temp_s0);
     func_8001B5B0("arena", temp_s0);
-    main_loop();
+    game_main_loop();
     func_8002630C(0x3000);
     battle_cleanup();
     if (gPlayMode != PLAY_MODE_30) {
@@ -733,7 +733,7 @@ void run_intro_scarlet_mode(void) {
     bg_layer_create("bg2", 0, 0, 0x2000, 0x10000, 0, temp_s0);
     bg_layer_create("bg0", 0, -64, 0x1000, 0x10000, TEX_FLAG_1, temp_s0);
     func_8001B5B0("arena", temp_s0);
-    main_loop();
+    game_main_loop();
     func_8002630C(0x3000);
     battle_cleanup();
     if (gPlayMode != PLAY_MODE_30) {
@@ -751,7 +751,7 @@ void run_intro_sonork_mode(void) {
     bg_layer_create("bg2", 0, 26, 0x2000, 0x10000, 0, temp_s0);
     bg_layer_create("bg0", 0, -24, 0x1000, 0x10000, TEX_FLAG_1, temp_s0);
     func_8001B5B0("arena", temp_s0);
-    main_loop();
+    game_main_loop();
     func_8002630C(0x3000);
     battle_cleanup();
     if (gPlayMode != PLAY_MODE_30) {
@@ -769,7 +769,7 @@ void run_intro_zenmuron_mode(void) {
     bg_layer_create("bg2", 0, -6, 0x2000, 0x10000, 0, temp_s0);
     bg_layer_create("bg0", 0, 4, 0x1000, 0x10000, TEX_FLAG_1, temp_s0);
     func_8001B5B0("arena", temp_s0);
-    main_loop();
+    game_main_loop();
     func_8002630C(0x3000);
     battle_cleanup();
     if (gPlayMode != PLAY_MODE_30) {
@@ -813,7 +813,7 @@ void run_29_mode(void) {
     bg = bg_layer_create("prize", 0, 100, 0, 0, BG_FLAG_OVERLAY, 0x3000);
     obj = create_worker(wait_screen_update, 0x1000);
     obj->vars[0] = 6;
-    main_loop();
+    game_main_loop();
 
     gGlobalFlags &= ~(GAME_FLAG_10 | GAME_FLAG_MODE_DONE);
     D_8008012C &= ~GFX_FLAG_20;
@@ -828,7 +828,7 @@ void run_29_mode(void) {
     relic->color.a = 80;
     create_worker(func_80008D0C, 0x1000);
     bg_layer_delete(bg);
-    main_loop();
+    game_main_loop();
 
     func_8002630C(0x3000);
     func_8002630C(0);
@@ -852,8 +852,8 @@ void run_30_mode(void) {
 
     func_8002630C(CONTEXT_ABAB);
     asset_open_folder("/demi/demiboss", CONTEXT_3000);
-    func_800052EC(0);
-    func_800052EC(1);
+    handle_controller_input(0);
+    handle_controller_input(1);
 
     a1 = gPlayers[sp42].obj;
     a1->pos.x = a1->pos.z = 0;
@@ -895,7 +895,7 @@ void run_30_mode(void) {
     bg_layer_create("bg0", 0, 8, 0x1000, 0x10000, TEX_FLAG_1, sp44);
     func_8001B5B0("arena", sp44);
     gRoundOver = TRUE;
-    main_loop();
+    game_main_loop();
     func_8002630C(0x3000);
     gNextGameMode = GAME_MODE_BATTLE_DEMITRON;
 }
@@ -929,7 +929,7 @@ void run_31_mode(void) {
     D_80081254 = bg_layer_create("passwd", 0, 205, 0, 0, TEX_FLAG_1, 0x4000);
     gGlobalFlags |= GAME_FLAG_4;
     D_8008012C |= GFX_FLAG_20;
-    main_loop();
+    game_main_loop();
     func_8002630C(0x4000);
 }
 
@@ -946,7 +946,7 @@ void run_36_mode(void) {
     D_80080129 = FALSE;
     gGlobalFlags |= GAME_FLAG_4;
     D_8008012C |= GFX_FLAG_20;
-    main_loop();
+    game_main_loop();
     func_8002630C(0x4000);
 }
 
@@ -965,7 +965,7 @@ void run_37_mode(void) {
     D_80080129 = TRUE;
     gGlobalFlags |= GAME_FLAG_4;
     D_8008012C |= GFX_FLAG_20;
-    main_loop();
+    game_main_loop();
     func_8002630C(0x4000);
     gNextGameMode = GAME_MODE_36;
 }
@@ -993,8 +993,8 @@ void func_800096D0(u8 arg0) {
     s1 = gBattleSettings[PLAYER_2].assetContext;
     t9 = 1 - s1;
     nv = s1;
-    func_800052EC(0);
-    func_800052EC(1);
+    handle_controller_input(0);
+    handle_controller_input(1);
 
     s0 = gPlayers[t9].obj;
     a3 = gPlayers[nv].obj;
@@ -1120,7 +1120,7 @@ void run_34_mode(void) {
     player_apply_move(&gPlayers[sp7E], MOVE_ID_DEMI_DEAD, 1);
     player_apply_move(&gPlayers[sp24], MOVE_ID_WIN_END_CINEMA, 1);
     create_worker(func_8001A7DC, 0x1000);
-    main_loop();
+    game_main_loop();
     func_8002630C(0x4000);
     func_8002630C(CONTEXT_ABAB);
     gNextGameMode = GAME_MODE_35;
@@ -1246,7 +1246,7 @@ void run_35_mode(void) {
         obj->flags |= OBJ_FLAG_10000000;
     }
 
-    main_loop();
+    game_main_loop();
     func_800263A8();
 }
 
@@ -1291,7 +1291,7 @@ void run_main_menu_mode(void) {
 
     create_worker(func_80020670, 0x1000);
     func_8000A298();
-    main_loop();
+    game_main_loop();
 
     func_8002630C(0x2000);
     if (gNextGameMode != GAME_MODE_PLAYER_SELECTION) {
@@ -1300,7 +1300,7 @@ void run_main_menu_mode(void) {
 }
 
 void func_8000A514(Object *obj) {
-    func_80002178(D_8005BEFC, 0);
+    draw_translucent_quad(D_8005BEFC, 0);
 
     if (D_8005BEFC - 2 > 0) {
         D_8005BEFC -= 2;
@@ -1317,7 +1317,7 @@ void func_8000A578(Object *obj) {
     Object *v0;
 
     D_80080116 = 200;
-    func_80002178(D_8005BEFC, NULL);
+    draw_translucent_quad(D_8005BEFC, NULL);
 
     if (D_8005BEFC + 32 < 255) {
         D_8005BEFC += 32;
@@ -1352,7 +1352,7 @@ void run_intro_mode(void) {
     D_80081250 = D_80081254->height;
 
     func_8000A298();
-    main_loop();
+    game_main_loop();
     func_8002630C(0x2000);
     if (gNextGameMode != GAME_MODE_PLAYER_SELECTION) {
         func_8002630C(CONTEXT_EEFF);
@@ -1362,7 +1362,7 @@ void run_intro_mode(void) {
 void func_8000A828(void) {
     asset_open_folder("/title/error", CONTEXT_2000);
     bg_layer_create("messpg", 0, 90, 0, 180, TEX_FLAG_1, CONTEXT_2000);
-    main_loop();
+    game_main_loop();
 }
 
 void run_logo_mode(void) {
@@ -1378,7 +1378,7 @@ void run_logo_mode(void) {
     bg_layer_create("vic", 0, 30, 0, 180, TEX_FLAG_1, CONTEXT_2000);
     bg_layer_create("n64lic", 0, 190, 0, 240, TEX_FLAG_1, CONTEXT_2000);
     create_worker(func_80019DE4, 0x1000);
-    main_loop();
+    game_main_loop();
     func_8002630C(0x2000);
 }
 
@@ -1452,7 +1452,7 @@ void run_options_mode(void) {
     obj = create_ui_element(&ui_exit_pos, &ui_exit, CONTEXT_2000);
     obj->vars[VAR_OPT_CTRL_CONTROLLER] = controller;
 
-    main_loop();
+    game_main_loop();
     func_8002630C(CONTEXT_2000);
 }
 
@@ -1621,7 +1621,7 @@ void run_menu_control_mode(void) {
     obj->vars[VAR_OPT_CTRL_EXIT_0] = controller_p1;
     obj->vars[VAR_OPT_CTRL_EXIT_1] = controller_p2;
 
-    main_loop();
+    game_main_loop();
     func_8002630C(CONTEXT_2000);
 }
 
@@ -1636,7 +1636,7 @@ void run_menu_rank_mode(void) {
     menu_rank_init();
     D_8008012C |= GFX_FLAG_20;
     gGlobalFlags |= GAME_FLAG_4;
-    main_loop();
+    game_main_loop();
     func_8002630C(CONTEXT_2000);
 }
 
@@ -1651,7 +1651,7 @@ void run_menu_stats_mode(void) {
     D_8008012C |= GFX_FLAG_20;
     gGlobalFlags |= GAME_FLAG_4;
     create_worker(stats_update, OBJ_PRIO_DEFAULT);
-    main_loop();
+    game_main_loop();
     func_8002630C(CONTEXT_2000);
 }
 
@@ -1669,8 +1669,8 @@ void run_17_mode(void) {
     K2Def sp2C = { "arena", task_default_func, 0, 0x1000, 0 };
 
     asset_open_folder("/bars", CONTEXT_ABAB);
-    func_800052EC(0);
-    func_800052EC(1);
+    handle_controller_input(0);
+    handle_controller_input(1);
     bg_layer_create("bg2", 0, 74, 0x2000, 0x10000, 0, sp4C);
     bg_layer_create("bg0", 0, 15, 0x1000, 0x10000, TEX_FLAG_1, sp4C);
     func_8001B5B0("arena", sp4C);
@@ -1681,5 +1681,5 @@ void run_17_mode(void) {
     gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
 
-    main_loop();
+    game_main_loop();
 }

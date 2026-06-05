@@ -159,7 +159,7 @@ void func_8002AF28(Batch *arg0) {
     for (i = 0; i < arg0->info->header.numTriangles; i++) {}
 }
 
-void func_8002AF8C(Object *obj) {
+void check_object_collisions(Object *obj) {
     u32 dxAbs, dzAbs;
     s32 temp2;
     Object *curr;
@@ -182,7 +182,7 @@ void func_8002AF8C(Object *obj) {
     }
 }
 
-void obj_update_all(void) {
+void update_all_game_objects(void) {
     Object *obj;
     Object *tempObj;
     ClusterRenderSlot *renderInfo;
@@ -197,7 +197,7 @@ void obj_update_all(void) {
     obj = gObjectList;
     while (obj != NULL) {
         if (obj->unk_07C != 0) {
-            func_8002AF8C(obj);
+            check_object_collisions(obj);
         }
 
         if ((obj->flags & OBJ_FLAG_DELETE) && !(obj->flags & OBJ_FLAG_HIDDEN)) {

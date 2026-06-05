@@ -30,17 +30,31 @@ OSMesg gSchedDPMessages[1];
 OSMesg D_8005AE7C[1];
 OSMesg gSchedSPTaskMessages[4];
 
-void thread1_idle(void *);
-void thread3_main(void *);
+void idle_thread_function(void *);
+void main_game_thread(void *);
 void sched_run(void *);
 
-void func_80000450(void) {
+/**
+ * @brief Initializes the OS and creates the idle thread (thread 1)
+ *
+ * This function sets up the operating system and creates the first thread,
+ * which is responsible for initializing other system components.
+ */
+void initialize_os_and_idle_thread(void) {
     osInitialize();
-    osCreateThread(&sThread1, 1, &thread1_idle, NULL, sThread1Stack + THREAD_1_STACK_SIZE, 10);
+    osCreateThread(&sThread1, 1, &idle_thread_function, NULL, sThread1Stack + THREAD_1_STACK_SIZE, 10);
     osStartThread(&sThread1);
 }
 
-void thread1_idle(void *arg0) {
+/**
+ * @brief IDLE thread function (thread 1)
+ *
+ * Initializes VI and PI managers, then creates and starts the main game thread (thread 3)
+ * and scheduler thread (thread 4). Runs an infinite loop after initialization.
+ *
+ * @param arg0 Unused argument (standard for thread entry points)
+ */
+void idle_thread_function(void *arg0) {
     osCreateViManager(OS_PRIORITY_VIMGR);
     if (osTvType == OS_TV_NTSC) {
         osViModeTable[OS_VI_NTSC_LAN1].comRegs.burst &= ~0xFF;
@@ -52,7 +66,7 @@ void thread1_idle(void *arg0) {
     osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON | OS_VI_GAMMA_DITHER_OFF | OS_VI_GAMMA_OFF);
     osViBlack(1);
     osCreatePiManager(OS_PRIORITY_PIMGR, &sPIcmdQ, sPIcmdBuf, ARRAY_COUNT(sPIcmdBuf));
-    osCreateThread(&sThread3, 3, &thread3_main, arg0, sThread3Stack + THREAD_3_STACK_SIZE, 10);
+    osCreateThread(&sThread3, 3, &main_game_thread, arg0, sThread3Stack + THREAD_3_STACK_SIZE, 10);
     osCreateThread(&sThread4, 4, &sched_run, arg0, sThread4Stack + THREAD_4_STACK_SIZE, 11);
     if (D_80049270 == 0) {
         osStartThread(&sThread3);
@@ -62,7 +76,15 @@ void thread1_idle(void *arg0) {
     while (1) {}
 }
 
-void thread3_main(void *arg0) {
+/**
+ * @brief Main game thread function (thread 3)
+ *
+ * Sets up all scheduler message queues and event handlers, initializes controllers,
+ * starts the scheduler thread (thread 4), then enters the main game loop.
+ *
+ * @param arg0 Unused argument (standard for thread entry points)
+ */
+void main_game_thread(void *arg0) {
     osCreateMesgQueue(&gSchedDMAQueue, gSchedDMAMessages, ARRAY_COUNT(gSchedDMAMessages));
 
     osCreateMesgQueue(&gSchedSPQueue, D_8005AE74, ARRAY_COUNT(D_8005AE74));
@@ -79,5 +101,5 @@ void thread3_main(void *arg0) {
     osCreateMesgQueue(&gSchedTaskRequestQueue, D_8005AE7C, ARRAY_COUNT(D_8005AE7C));
     osCreateMesgQueue(&gSchedSPTaskQueue, gSchedSPTaskMessages, ARRAY_COUNT(gSchedSPTaskMessages));
     osStartThread(&sThread4);
-    game_main();
+    game_mode_manager();
 }

@@ -4,7 +4,7 @@
 #include "task.h"
 #include "ld_addrs.h"
 
-void heap_init(void);
+void initialize_memory_heap(void);
 extern void *gHeapBase;
 
 extern long long int gspDarkRift3DTextStart[], gspDarkRift3DTextEnd[];
@@ -51,7 +51,7 @@ extern s32 gBgScrollY;
 extern s32 D_80081428;
 extern s32 D_80049CF0;
 
-void heap_reset(void);
+void reset_and_compact_heap(void);
 void func_80026250(void);
 void audio_reset(void);
 void func_8002AC10(void);
@@ -104,7 +104,7 @@ void set_post_render_hook(s32 (*func)(void *), void *arg) {
     }
 }
 
-void func_80002978(void) {
+void setup_zbuffer_and_clear(void) {
     gDPPipeSync(gMainGfxPos++);
     gDPSetCycleType(gMainGfxPos++, G_CYC_FILL);
 
@@ -193,7 +193,7 @@ void sched_run(void *arg0) {
     }
 }
 
-void sched_execute_tasks(void) {
+void execute_scheduled_tasks(void) {
     while (osRecvMesg(&gSchedTaskRequestQueue, NULL, OS_MESG_NOBLOCK) != -1) {}
 
     osWritebackDCacheAll();
@@ -220,7 +220,7 @@ void sched_execute_tasks(void) {
     }
 }
 
-void func_800030E4(void) {
+void sync_scheduler_tasks(void) {
     D_800801E5 = 0;
     if (D_8008011C != 0) {
         D_800801E5 = 7;
@@ -246,7 +246,7 @@ void sched_wait_vretrace(u8 arg0) {
 }
 
 #ifdef NON_EQUIVALENT
-void func_800031FC(u16 gameMode) {
+void initialize_game_mode(u16 gameMode) {
     s32 unused[18];
     u32 a3;
     s32 tmp;
@@ -263,7 +263,7 @@ void func_800031FC(u16 gameMode) {
 
     D_80080124 = D_80080120 = ((u32) main_VRAM_END + 0x40) & ~0x3F;
     gHeapBase = (void *) (((u32) D_80080120 + 0x25800 + 0x40) & ~0x3F);
-    heap_init();
+    initialize_memory_heap();
     func_80025E6C();
     func_80025EDC(D_80080124, 0x25800);
     func_80012490();
@@ -300,16 +300,16 @@ void func_800031FC(u16 gameMode) {
     func_80023200();
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/sched/func_800031FC.s")
-void func_800031FC(u16 gameMode);
+#pragma GLOBAL_ASM("asm/nonmatchings/sched/initialize_game_mode.s")
+void initialize_game_mode(u16 gameMode);
 #endif
 
-void func_80003468(u16 gameMode) {
+void reset_game_mode_systems(u16 gameMode) {
     gBgLayerList = NULL;
     gBgScrollX = 0;
     gBgScrollY = 0;
     D_80081428 = 0;
-    heap_reset();
+    reset_and_compact_heap();
     func_80026250();
     audio_reset();
     D_80080110 = gGameModes[gameMode].unk_0C;

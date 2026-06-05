@@ -872,7 +872,7 @@ void run_player_selection_mode(void) {
             break;
     }
 
-    main_loop();
+    game_main_loop();
     func_8002630C(CONTEXT_EEFF);
 }
 

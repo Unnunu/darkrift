@@ -223,7 +223,7 @@ void func_80019CC0(Object *obj) {
         D_8005BEFC -= 8;
     }
 
-    func_80002178(D_8005BEFC, D_80049BA8[D_8005BFCE]);
+    draw_translucent_quad(D_8005BEFC, D_80049BA8[D_8005BFCE]);
 }
 
 void func_80019D2C(Object *obj) {
@@ -236,7 +236,7 @@ void func_80019D2C(Object *obj) {
         obj->fn_render = func_80019CC0;
     }
 
-    func_80002178(D_8005BEFC, D_80049BA8[D_8005BFCE]);
+    draw_translucent_quad(D_8005BEFC, D_80049BA8[D_8005BFCE]);
 }
 
 void func_80019DE4(Object *obj) {

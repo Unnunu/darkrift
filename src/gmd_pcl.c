@@ -38,7 +38,7 @@ u16 *D_80081610;
 Mtx D_80081618;
 
 #ifdef NON_EQUIVALENT
-void func_8001AAE0(void) {
+void setup_pcl_projection(void) {
     Vec3s sp90;
     s32 sp84;
     s32 t1;
@@ -160,15 +160,15 @@ void func_8001AAE0(void) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/gmd_pcl/func_8001AAE0.s")
-void func_8001AAE0(void);
+#pragma GLOBAL_ASM("asm/nonmatchings/gmd_pcl/setup_pcl_projection.s")
+void setup_pcl_projection(void);
 #endif
 
-void func_8001B26C(void) {
+void update_pcl_and_render_backgrounds(void) {
     s16 i, j;
     s16 v0, a0;
 
-    func_8001AAE0();
+    setup_pcl_projection();
 
     gDPLoadTLUT_pal16(gMainGfxPos++, 0, VIRTUAL_TO_PHYSICAL(D_80081610));
     gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(&D_80081618), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);

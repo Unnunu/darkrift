@@ -79,19 +79,19 @@ Batch *gOverlayBatchPos;
 DisplayData D_8005BFF0[2];
 DisplayData *D_80080100;
 
-void func_800030E4(void);
-// void sched_execute_tasks(void);
-void func_800031FC(u16);
-void battle_global_init(void);
-void func_80003468(u16);
-void obj_update_all(void);
-void func_80002978(void);
+void sync_scheduler_tasks(void);
+// void execute_scheduled_tasks(void);
+void initialize_game_mode(u16);
+void initialize_battle_globals(void);
+void reset_game_mode_systems(u16);
+void update_all_game_objects(void);
+void setup_zbuffer_and_clear(void);
 void bg_draw_all(void);
-void func_8001B26C(void);
-void func_800212C8(void);
-void func_80002744(Object *obj);
+void update_pcl_and_render_backgrounds(void);
+void process_audio_completion(void);
+void init_fade_out_effect(Object *obj);
 
-void func_80001120(void) {
+void gfx_init_frame(void) {
     D_80080100 = &D_8005BFF0[D_8005BFCE];
     gMainGfxPos = D_80080100->gfxMain;
     gMainBatchPos = D_80080100->batchMain;
@@ -107,9 +107,9 @@ void func_80001120(void) {
     gSPEndDisplayList(gMainGfxPos++);
     gSPTriBatch(gMainBatchPos, NULL, &D_8004CD30, NULL, NULL);
     gSPTriBatch(gMainBatchPos, NULL, NULL, NULL, NULL);
-    func_800030E4();
+    sync_scheduler_tasks();
     sched_wait_vretrace(TRUE);
-    sched_execute_tasks();
+    execute_scheduled_tasks();
 
     D_80080100 = &D_8005BFF0[D_8005BFCE];
 }
@@ -140,9 +140,9 @@ void render_frame(void) {
     }
 
     gSPTriBatch(gMainBatchPos, (RenderContext *) osVirtualToPhysical(&D_8004CC20), &D_8004CCC8, NULL, NULL);
-    obj_update_all();
+    update_all_game_objects();
     gSPDisplayList(gMainGfxPos++, D_8004CA68);
-    func_80002978();
+    setup_zbuffer_and_clear();
     bg_draw_all();
 
     if (!(D_8008012C & GFX_FLAG_1)) {
@@ -156,9 +156,9 @@ void render_frame(void) {
     gDPSetFogColor(gMainGfxPos++, D_80080130, D_80080132, D_80080134, 255);
     gSPFogPosition(gMainGfxPos++, D_80080136, D_80080138);
     if (D_80049CF0 != 0) {
-        func_8001B26C();
+        update_pcl_and_render_backgrounds();
     }
-    func_800212C8();
+    process_audio_completion();
 
     for (ptr = D_80080100->batchOverlay; ptr != gOverlayBatchPos; ptr++) {
         gSPTriBatch(gMainBatchPos, ptr->context, ptr->info, ptr->vertices, ptr->triangles);
@@ -175,7 +175,7 @@ void render_frame(void) {
     gSPTriBatch(gMainBatchPos, NULL, NULL, NULL, NULL);
 
     D_8005BEE0 += osGetTime() - frameStartTime;
-    func_800030E4();
+    sync_scheduler_tasks();
 
     for (i = 0; i < ARRAY_COUNT(gPostRenderCallbacks); i++) {
         if (gPostRenderCallbacks[i] != NULL && gPostRenderCallbacks[i](gPostRenderArgs[i]) == 0) {
@@ -184,7 +184,7 @@ void render_frame(void) {
     }
 
     sched_wait_vretrace(TRUE);
-    sched_execute_tasks();
+    execute_scheduled_tasks();
 
     if (++D_8005BEF8 >= 0x100) {
         D_8005BEF8 = 0;
@@ -207,7 +207,7 @@ Object *func_8000194C(void) {
     return obj;
 }
 
-void handle_start_button(s16 whoPressed) {
+void handle_start_button_press(s16 whoPressed) {
     Object *v0;
     Object *v1;
     s16 pad;
@@ -241,7 +241,7 @@ void handle_start_button(s16 whoPressed) {
                 }
                 break;
             }
-            /* fallthrough */
+        /* fallthrough */
         default:
             v1 = create_hud_message(&gGeneralMessages[MESSAGE_ID_PAUSE], CONTEXT_ABAB);
             if (v1 != NULL) {
@@ -294,12 +294,12 @@ void handle_start_button(s16 whoPressed) {
     }
 }
 
-void unused_func_80001C6C(void) {
+void reset_to_main_menu(void) {
     gGlobalFlags = 0;
     gIsPaused = TRUE;
     gSoundVolumeFading = gMusicVolumeFading = 1800;
 
-    create_worker(func_80002744, 0x1000);
+    create_worker(init_fade_out_effect, 0x1000);
     while (!(gGlobalFlags & GAME_FLAG_MODE_DONE)) {
         render_frame();
     }
@@ -317,22 +317,22 @@ void unused_func_80001C6C(void) {
         render_frame();
     }
 
-    func_800030E4();
+    sync_scheduler_tasks();
     sched_wait_vretrace(FALSE);
 }
 
-void main_loop(void) {
+void game_main_loop(void) {
     D_8005BFCE = D_8005BEF8 = D_8005BEF0 = D_8005BEE8 = D_8005BEE0 = 0;
 
     while (!(gGlobalFlags & GAME_FLAG_MODE_DONE) || !(gGlobalFlags & GAME_FLAG_1000)) {
         if (!(gGlobalFlags & GAME_FLAG_BATTLE_FINISHED) && !(gGlobalFlags & GAME_FLAG_4) &&
             gPlayerInput[PLAYER_1].buttons == INP_START && gPlayerInput[PLAYER_1].enabled &&
             gPlayerInput[PLAYER_1].pendingInput) {
-            handle_start_button(PLAYER_1);
+            handle_start_button_press(PLAYER_1);
         } else if (!(gGlobalFlags & GAME_FLAG_BATTLE_FINISHED) && !(gGlobalFlags & GAME_FLAG_4) &&
                    gPlayerInput[PLAYER_2].buttons == INP_START && gPlayerInput[PLAYER_2].enabled &&
                    gPlayerInput[PLAYER_2].pendingInput) {
-            handle_start_button(PLAYER_2);
+            handle_start_button_press(PLAYER_2);
         }
 
         if (gGlobalFlags & GAME_FLAG_BATTLE_FINISHED) {
@@ -348,7 +348,7 @@ void main_loop(void) {
         if (!(gGlobalFlags & GAME_FLAG_20)) {
             gIsPaused = TRUE;
         }
-        create_worker(func_80002744, 0x1000);
+        create_worker(init_fade_out_effect, 0x1000);
         while (!(gGlobalFlags & GAME_FLAG_MODE_DONE)) {
             render_frame();
         }
@@ -357,18 +357,18 @@ void main_loop(void) {
 
     gGlobalFlags &= ~GAME_FLAG_2000;
 
-    func_80001120();
-    func_80001120();
+    gfx_init_frame();
+    gfx_init_frame();
 
-    func_800030E4();
+    sync_scheduler_tasks();
     sched_wait_vretrace(FALSE);
 
-    func_800030E4();
+    sync_scheduler_tasks();
     sched_wait_vretrace(FALSE);
 }
 
 #ifdef NON_MATCHING
-void func_80001FB0(s32 arg0, Vtx *arg1) {
+void draw_solid_quad(s32 arg0, Vtx *arg1) {
     if (arg1 == NULL) {
         arg1 = &D_800492B0[D_8005BFCE];
     }
@@ -404,12 +404,12 @@ void func_80001FB0(s32 arg0, Vtx *arg1) {
     gSPTriBatch(gOverlayBatchPos, NULL, &D_8005BF00, arg1, D_80049330);
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/main/func_80001FB0.s")
-void func_80001FB0(s32 arg0, Vtx *arg1);
+#pragma GLOBAL_ASM("asm/nonmatchings/main/draw_solid_quad.s")
+void draw_solid_quad(s32 arg0, Vtx *arg1);
 #endif
 
 #ifdef NON_MATCHING
-void func_80002178(s32 arg0, Vtx *vertices) {
+void draw_translucent_quad(s32 arg0, Vtx *vertices) {
     Gfx *gfx = D_8005BF58;
 
     if (vertices == NULL) {
@@ -447,11 +447,11 @@ void func_80002178(s32 arg0, Vtx *vertices) {
     gSPTriBatch(gOverlayBatchPos, NULL, &D_8005BF00, vertices, D_80049330);
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/main/func_80002178.s")
-void func_80002178(s32 arg0, Vtx *arg1);
+#pragma GLOBAL_ASM("asm/nonmatchings/main/draw_translucent_quad.s")
+void draw_translucent_quad(s32 arg0, Vtx *arg1);
 #endif
 
-void func_80002340(Object *obj) {
+void handle_fade_out_complete(Object *obj) {
     if (D_8005BEFC - 8 < D_80080118) {
         D_8008012C &= ~GFX_FLAG_10;
         obj->flags |= OBJ_FLAG_DELETE;
@@ -463,22 +463,22 @@ void func_80002340(Object *obj) {
         gGlobalFlags |= GAME_FLAG_1000;
     } else {
         D_8005BEFC -= 8;
-        func_80002178(D_8005BEFC, NULL);
+        draw_translucent_quad(D_8005BEFC, NULL);
     }
 }
 
-void func_800023E4(Object *obj) {
+void init_fade_in_effect(Object *obj) {
     obj->vars[0]++;
     if (obj->vars[0] >= 7) {
         osViBlack(0);
         D_8005BEFC = 255;
-        obj->fn_render = func_80002340;
+        obj->fn_render = handle_fade_out_complete;
     }
 
-    func_80002178(255, NULL);
+    draw_translucent_quad(255, NULL);
 }
 
-void update_transition(Object *obj) {
+void update_game_transition(Object *obj) {
     music_play(obj, 0);
     if (gGlobalFlags & GAME_FLAG_400) {
         gGlobalFlags |= GAME_FLAG_1000;
@@ -495,13 +495,13 @@ void update_transition(Object *obj) {
     gGlobalFlags |= GAME_FLAG_4;
     if (obj->flags & OBJ_FLAG_DELETE) {
         obj->flags &= ~OBJ_FLAG_DELETE;
-        obj->fn_render = func_800023E4;
+        obj->fn_render = init_fade_in_effect;
     }
-    func_80002178(255, NULL);
+    draw_translucent_quad(255, NULL);
 }
 
-void func_80002528(Object *obj) {
-    func_80001FB0(D_8005BEFC, NULL);
+void complete_fade_in(Object *obj) {
+    draw_solid_quad(D_8005BEFC, NULL);
     obj->vars[0]++;
 
     if (obj->vars[0] >= 5) {
@@ -510,82 +510,82 @@ void func_80002528(Object *obj) {
     }
 }
 
-void func_80002590(Object *obj) {
+void update_fade_in(Object *obj) {
     if (D_8005BEFC + 8 < 255) {
         D_8005BEFC += 8;
-        func_80002178(D_8005BEFC, NULL);
+        draw_translucent_quad(D_8005BEFC, NULL);
         return;
     }
 
     if (D_8005BEFC + 1 < 255) {
         D_8005BEFC++;
-        func_80002178(D_8005BEFC, NULL);
+        draw_translucent_quad(D_8005BEFC, NULL);
         return;
     }
 
-    obj->fn_render = func_80002528;
+    obj->fn_render = complete_fade_in;
     if (!(gGlobalFlags & GAME_FLAG_800)) {
         osViBlack(1);
     }
 
-    func_80001FB0(D_8005BEFC, NULL);
+    draw_solid_quad(D_8005BEFC, NULL);
     obj->vars[0] = 0;
 }
 
-void func_80002648(Object *obj) {
+void start_fade_transition(Object *obj) {
     D_8008012C |= GFX_FLAG_10;
     audio_fade_out_all(obj, 0);
 
-    if (obj->fn_render != func_80002648) {
-        obj->fn_render = func_80002590;
+    if (obj->fn_render != start_fade_transition) {
+        obj->fn_render = update_fade_in;
     }
 
     if (D_8005BEFC + 8 < 255) {
         D_8005BEFC += 8;
-        func_80002178(D_8005BEFC, NULL);
+        draw_translucent_quad(D_8005BEFC, NULL);
         return;
     }
 
     if (D_8005BEFC + 1 < 255) {
         D_8005BEFC++;
-        func_80002178(D_8005BEFC, NULL);
+        draw_translucent_quad(D_8005BEFC, NULL);
         return;
     }
 
-    obj->fn_render = func_80002528;
+    obj->fn_render = complete_fade_in;
     if (!(gGlobalFlags & GAME_FLAG_800)) {
         osViBlack(1);
     }
 
-    func_80001FB0(D_8005BEFC, NULL);
+    draw_solid_quad(D_8005BEFC, NULL);
     obj->vars[0] = 0;
 }
 
-void func_80002744(Object *obj) {
+void init_fade_out_effect(Object *obj) {
     if (!(gGlobalFlags & GAME_FLAG_80)) {
         D_8005BEFC = 0;
     }
 
     gGlobalFlags &= ~GAME_FLAG_80;
-    obj->fn_render = func_80002648;
-    func_80002178(D_8005BEFC, NULL);
+    obj->fn_render = start_fade_transition;
+    draw_translucent_quad(D_8005BEFC, NULL);
 }
 
-void game_main(void) {
+void game_mode_manager(void) {
     gNextGameMode = GAME_MODE_LOGO;
-    func_800031FC(gNextGameMode);
-    battle_global_init();
+    initialize_game_mode(gNextGameMode);
+    initialize_battle_globals();
 
     while (TRUE) {
         gCurrentGameMode = gNextGameMode;
-        create_worker(update_transition, 0x1100);
+        create_worker(update_game_transition, 0x1100);
         gGameModes[gNextGameMode].fn_run();
         if (!(gGlobalFlags & GAME_FLAG_800)) {
             osViBlack(1);
         }
-        func_800030E4();
+        sync_scheduler_tasks();
         sched_wait_vretrace(FALSE);
         gPreviousGameMode = gCurrentGameMode;
-        func_80003468(gNextGameMode);
+        reset_game_mode_systems(gNextGameMode);
     }
 }

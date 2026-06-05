@@ -801,7 +801,7 @@ void func_800050FC(u16 arg0, u16 arg1) {
     }
 }
 
-void func_800052EC(s16 playerId) {
+void handle_controller_input(s16 playerId) {
     Object *obj;
     s16 v00;
     s16 i;

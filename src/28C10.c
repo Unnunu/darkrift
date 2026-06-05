@@ -736,12 +736,12 @@ void func_80029D04(Object *obj) {
     }
 
     D_8005BEFC -= 2;
-    func_80002178(D_8005BEFC, NULL);
+    draw_translucent_quad(D_8005BEFC, NULL);
     model_update(obj);
 }
 
 void func_80029D84(Object *obj) {
-    func_80002178(D_8005BEFC, NULL);
+    draw_translucent_quad(D_8005BEFC, NULL);
     obj->flags |= OBJ_FLAG_DELETE;
 }
 
@@ -754,7 +754,7 @@ void func_80029DC0(Object *obj) {
         obj->fn_render = func_80029D84;
     }
 
-    func_80002178(D_8005BEFC, NULL);
+    draw_translucent_quad(D_8005BEFC, NULL);
     model_update(obj);
 }
 
@@ -763,7 +763,7 @@ void func_80029E5C(Object *obj) {
         obj->fn_render = func_8002A050;
     }
 
-    func_80002178(D_8005BEFC, NULL);
+    draw_translucent_quad(D_8005BEFC, NULL);
     model_update(obj);
 }
 
@@ -785,7 +785,7 @@ void func_80029EBC(Object *obj) {
         obj->fn_render = func_80029F58;
     }
 
-    func_80002178(D_8005BEFC, NULL);
+    draw_translucent_quad(D_8005BEFC, NULL);
     model_update(obj);
 }
 
@@ -807,7 +807,7 @@ void func_80029F58(Object *obj) {
         obj->fn_render = func_80029EBC;
     }
 
-    func_80002178(D_8005BEFC, NULL);
+    draw_translucent_quad(D_8005BEFC, NULL);
     model_update(obj);
 }
 
@@ -818,7 +818,7 @@ void func_80029FF4(Object *obj) {
         obj->frameIndex++;
     }
 
-    func_80002178(D_8005BEFC, NULL);
+    draw_translucent_quad(D_8005BEFC, NULL);
     model_update(obj);
 }
 
@@ -840,7 +840,7 @@ void func_8002A050(Object *obj) {
         obj->frameIndex = 58;
     }
 
-    func_80002178(D_8005BEFC, NULL);
+    draw_translucent_quad(D_8005BEFC, NULL);
     model_update(obj);
 }
 
@@ -862,7 +862,7 @@ void func_8002A0EC(Object *obj) {
         obj->frameIndex = 60;
     }
 
-    func_80002178(D_8005BEFC, NULL);
+    draw_translucent_quad(D_8005BEFC, NULL);
     model_update(obj);
 }
 
@@ -873,7 +873,7 @@ void func_8002A188(Object *obj) {
         obj->frameIndex++;
     }
     D_8005BEFC += 2;
-    func_80002178(D_8005BEFC, NULL);
+    draw_translucent_quad(D_8005BEFC, NULL);
     model_update(obj);
 }
 

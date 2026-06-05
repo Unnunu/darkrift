@@ -31,7 +31,7 @@ void func_80000710(s32 arg0, s32 arg1) {
     }
 }
 
-void heap_init(void) {
+void initialize_memory_heap(void) {
     sFreeChunksList = (ChunkHeader *) gHeapBase;
 
     sFreeChunksList->end = ((u32) (gHeapBase) + HEAP_SIZE) & ~7;
@@ -44,7 +44,7 @@ void heap_init(void) {
     sFreeSize = heap_get_free_mem(sFreeChunksList);
 }
 
-void heap_reset(void) {
+void reset_and_compact_heap(void) {
     s32 end;
     s32 last_slot_index;
     void *last_slot_data;

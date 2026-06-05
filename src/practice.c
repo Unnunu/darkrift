@@ -235,7 +235,7 @@ void func_800327D8(Object *obj) {
     playerId = obj->vars[0];
     buttons = 0;
 
-    func_80002178(160, NULL);
+    draw_translucent_quad(160, NULL);
 
     if (gPlayerInput[playerId].pendingInput) {
         buttons = gPlayerInput[playerId].raw_buttons;
