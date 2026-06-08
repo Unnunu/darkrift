@@ -355,7 +355,7 @@ void x_dbbadf22(Object *obj) {
     x_071f1bfa(s2);
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/23D00/x_dbbadf22.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/698a4622/x_dbbadf22.s")
 void x_dbbadf22(Object *);
 #endif
 

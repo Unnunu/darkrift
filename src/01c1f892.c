@@ -781,7 +781,7 @@ x_3ace60b0:
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/x_7cdfb63d.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/01c1f892/x_7cdfb63d.s")
 void x_7cdfb63d(u8);
 #endif
 

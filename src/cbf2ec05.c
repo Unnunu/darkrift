@@ -402,7 +402,7 @@ void x_b7eeb04a(s32 x_cc1d0de5, Vtx *x_84ff873b) {
     x_50746900(x_ee137e39, NULL, &D_8005BF00, x_84ff873b, D_80049330);
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/main/x_b7eeb04a.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/cbf2ec05/x_b7eeb04a.s")
 void x_b7eeb04a(s32 x_cc1d0de5, Vtx *x_84ff873b);
 #endif
 
@@ -445,7 +445,7 @@ void x_e1511bdd(s32 x_cc1d0de5, Vtx *vertices) {
     x_50746900(x_ee137e39, NULL, &D_8005BF00, vertices, D_80049330);
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/main/x_e1511bdd.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/cbf2ec05/x_e1511bdd.s")
 void x_e1511bdd(s32 x_cc1d0de5, Vtx *x_84ff873b);
 #endif
 

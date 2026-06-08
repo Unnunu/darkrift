@@ -1751,7 +1751,7 @@ void x_5ff12555(Object *obj) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/model/x_5ff12555.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/7c0f8cf9/x_5ff12555.s")
 #endif
 
 void x_0022bfc3(Object *obj) {

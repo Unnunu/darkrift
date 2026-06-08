@@ -164,7 +164,7 @@ void x_d523d906(s16 x_1b94c75c) {
     x_59ce598c[x_1b94c75c].x_33260da8 = buttons;
     do { } while (0); }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/input/x_d523d906.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/40f8a510/x_d523d906.s")
 void x_d523d906(s16 x_cc1d0de5);
 #endif
 

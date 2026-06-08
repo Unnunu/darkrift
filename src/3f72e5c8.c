@@ -160,7 +160,7 @@ void x_fc4a871b(void) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/gmd_pcl/x_fc4a871b.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/3f72e5c8/x_fc4a871b.s")
 void x_fc4a871b(void);
 #endif
 

@@ -103,7 +103,7 @@ void x_5f34c321(Player *player) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/player/x_5f34c321.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/02989789/x_5f34c321.s")
 void x_5f34c321(Player *player);
 #endif
 
@@ -163,7 +163,7 @@ void x_394387b3(Object *obj) {
     obj->x_0f4167b4[0] = 260;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/player/x_394387b3.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/02989789/x_394387b3.s")
 void x_394387b3(Object *obj);
 #endif
 

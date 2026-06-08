@@ -47,7 +47,7 @@ options:
 segments:
   - [0x000000, header, header]
   - [0x000040, bin, boot]
-  - name: main
+  - name: cbf2ec05
     type: code
     start: 0x1000
     vram: 0x80000400
@@ -56,54 +56,54 @@ segments:
       - [0x1000, hasm, entry]
 
       #game
-      - [0x1050, c, thread]
-      - [0x1310, c, heap]
-      - [0x1D20, c, main]
-      - [0x34B0, c, sched]
-      - [0x41D0, c, player]
-      - [0x76E0, c, game_modes]
-      - [0xC8F0, c, kmd]
-      - [0xF530, c, player_combat]
-      - [0x11700, c, hitbox_render]
-      - [0x13050, c, math]
-      - [0x15760, c, scroll]
-      - [0x167C0, c, hud]
-      - [0x18A10, c, menu_options]
-      - [0x1A0E0, c, main_menu]
-      - [0x1B6E0, c, gmd_pcl]
-      - [0x1C3D0, c, ai]
-      - [0x1EA10, c, plyrsel]
-      - [0x212B0, c, audio]
-      - [0x22940, c, projectile]
-      - [0x23D00, c]
-      - [0x24930, c, player_anim]
-      - [0x255B0, c, input]
-      - [0x25980, c, tables]
-      - [0x25980, c, cont]
-      - [0x25B50, c, lzhuf]
-      - [0x26380, c, lzhuf2] # splitting these files is required to match
-      - [0x26740, c, rsp]
-      - [0x26740, c, wad]
-      - [0x28C10, c]
-      - [0x2AE80, c, data_aaron]
-      - [0x2AE80, c]
-      - [0x2B490, c]
-      - [0x2B4C0, c, data_demitron]
-      - [0x2B4C0, c, data_demonica]
-      - [0x2B4C0, c, data_eve]
-      - [0x2B4C0, c, data_gore]
-      - [0x2B4C0, c, data_morphix]
-      - [0x2B4C0, c, data_niiki]
-      - [0x2B4C0, c, data_scarlet]
-      - [0x2B4C0, c, data_sonork]
-      - [0x2B4C0, c, data_zenmuron]
-      - [0x2B4C0, c, item]
-      - [0x2CF10, c, opencam]
-      - [0x305A0, c]
-      - [0x32DC0, c, practice]
-      - [0x34C90, c, model]
-      - [0x396C0, c, task]
-      - [0x39A00, c, camera]
+      - [0x1050, c, d6c43c79]
+      - [0x1310, c, a8ef58b5]
+      - [0x1D20, c, cbf2ec05]
+      - [0x34B0, c, e464307e]
+      - [0x41D0, c, 02989789]
+      - [0x76E0, c, 39e934c2]
+      - [0xC8F0, c, d53dbdfd]
+      - [0xF530, c, 5c37bf8b]
+      - [0x11700, c, 716adc37]
+      - [0x13050, c, 3b281efc]
+      - [0x15760, c, 4a248257]
+      - [0x167C0, c, 04859e8a]
+      - [0x18A10, c, 108260c9]
+      - [0x1A0E0, c, 2435583e]
+      - [0x1B6E0, c, 3f72e5c8]
+      - [0x1C3D0, c, d5fd353d]
+      - [0x1EA10, c, a7cab0a2]
+      - [0x212B0, c, cac92df6]
+      - [0x22940, c, 49be7a13]
+      - [0x23D00, c, 698a4622]
+      - [0x24930, c, 8b713856]
+      - [0x255B0, c, 40f8a510]
+      - [0x25980, c, 134911bd]
+      - [0x25980, c, 13e5c685]
+      - [0x25B50, c, 573e99f1]
+      - [0x26380, c, 274fc753] # splitting these files is required to match
+      - [0x26740, c, 1f557ef1]
+      - [0x26740, c, 38d952c0]
+      - [0x28C10, c, 992e0686]
+      - [0x2AE80, c, f5b5f599]
+      - [0x2AE80, c, 4e62f251]
+      - [0x2B490, c, 78a17f74]
+      - [0x2B4C0, c, b1eb6a03]
+      - [0x2B4C0, c, a8c9742a]
+      - [0x2B4C0, c, bd5da974]
+      - [0x2B4C0, c, cc5f71fc]
+      - [0x2B4C0, c, 6a1b262c]
+      - [0x2B4C0, c, 656c3c84]
+      - [0x2B4C0, c, 04ed7558]
+      - [0x2B4C0, c, 31382929]
+      - [0x2B4C0, c, 94a3c513]
+      - [0x2B4C0, c, 346e1e19]
+      - [0x2CF10, c, 01c1f892]
+      - [0x305A0, c, ac8d9591]
+      - [0x32DC0, c, 1b3b963c]
+      - [0x34C90, c, 7c0f8cf9]
+      - [0x396C0, c, df73244f]
+      - [0x39A00, c, a46ab948]
 
       #libultra
       - [0x3A470, c, ../ultralib/src/os/initialize]
@@ -243,50 +243,50 @@ segments:
       - [0x48590, textbin, rsp/gspDarkRift3D]
       - [0x49050, textbin, rsp/aspMain]
 
-      - [0x49E70, .data, thread]
-      - [0x49E80, .data, heap]
-      - [0x49E90, .data, main]
-      - [0x49F90, .data, player]
-      - [0x49FF0, .data, game_modes]
-      - [0x4A520, .data, kmd]
-      - [0x4A5A0, .data, player_combat]
-      - [0x4A5B0, .data, hitbox_render]
-      - [0x4A6E0, .data, scroll]
-      - [0x4A6F0, .data, hud]
-      - [0x4A740, .data, menu_options]
-      - [0x4A770, .data, main_menu]
-      - [0x4A8F0, .data, gmd_pcl]
-      - [0x4A910, .data, ai]
-      - [0x4A9F0, .data, plyrsel]
-      - [0x4B020, .data, audio]
-      - [0x4B0C0, .data, projectile]
-      - [0x4B0D0, .data, 23D00]
-      - [0x4B0F0, .data, input]
-      - [0x4B1C0, .data, tables]
-      - [0x4D350, .data, cont]
-      - [0x4D360, .data, lzhuf]
-      - [0x4D5B0, .data, rsp]
-      - [0x4D990, .data, math]
-      - [0x52B40, .data, wad]
-      - [0x52B50, .data, 28C10]
-      - [0x52E20, .data, data_aaron]
-      - [0x52F10, .data, 2AE80]
-      - [0x52F30, .data, data_demitron]
-      - [0x53020, .data, data_demonica]
-      - [0x53180, .data, data_eve]
-      - [0x532B0, .data, data_gore]
-      - [0x533A0, .data, data_morphix]
-      - [0x534B0, .data, data_niiki]
-      - [0x53590, .data, data_scarlet]
-      - [0x53660, .data, data_sonork]
-      - [0x53730, .data, data_zenmuron]
-      - [0x53850, .data, item]
-      - [0x53860, .data, opencam]
-      - [0x538F0, .data, 305A0]
-      - [0x53980, .data, practice]
-      - [0x53C10, .data, model]
-      - [0x53C20, .data, task]
-      - [0x53C30, .data, camera]
+      - [0x49E70, .data, d6c43c79]
+      - [0x49E80, .data, a8ef58b5]
+      - [0x49E90, .data, cbf2ec05]
+      - [0x49F90, .data, 02989789]
+      - [0x49FF0, .data, 39e934c2]
+      - [0x4A520, .data, d53dbdfd]
+      - [0x4A5A0, .data, 5c37bf8b]
+      - [0x4A5B0, .data, 716adc37]
+      - [0x4A6E0, .data, 4a248257]
+      - [0x4A6F0, .data, 04859e8a]
+      - [0x4A740, .data, 108260c9]
+      - [0x4A770, .data, 2435583e]
+      - [0x4A8F0, .data, 3f72e5c8]
+      - [0x4A910, .data, d5fd353d]
+      - [0x4A9F0, .data, a7cab0a2]
+      - [0x4B020, .data, cac92df6]
+      - [0x4B0C0, .data, 49be7a13]
+      - [0x4B0D0, .data, 698a4622]
+      - [0x4B0F0, .data, 40f8a510]
+      - [0x4B1C0, .data, 134911bd]
+      - [0x4D350, .data, 13e5c685]
+      - [0x4D360, .data, 573e99f1]
+      - [0x4D5B0, .data, 1f557ef1]
+      - [0x4D990, .data, 3b281efc]
+      - [0x52B40, .data, 38d952c0]
+      - [0x52B50, .data, 992e0686]
+      - [0x52E20, .data, f5b5f599]
+      - [0x52F10, .data, 4e62f251]
+      - [0x52F30, .data, b1eb6a03]
+      - [0x53020, .data, a8c9742a]
+      - [0x53180, .data, bd5da974]
+      - [0x532B0, .data, cc5f71fc]
+      - [0x533A0, .data, 6a1b262c]
+      - [0x534B0, .data, 656c3c84]
+      - [0x53590, .data, 04ed7558]
+      - [0x53660, .data, 31382929]
+      - [0x53730, .data, 94a3c513]
+      - [0x53850, .data, 346e1e19]
+      - [0x53860, .data, 01c1f892]
+      - [0x538F0, .data, ac8d9591]
+      - [0x53980, .data, 1b3b963c]
+      - [0x53C10, .data, 7c0f8cf9]
+      - [0x53C20, .data, df73244f]
+      - [0x53C30, .data, a46ab948]
 
       - [0x53C40, .data, ../ultralib/src/os/initialize]
       - [0x53C50, .data, ../ultralib/src/io/vimgr]
@@ -309,27 +309,27 @@ segments:
       - [0x54960, .data, ../ultralib/src/vimodes/vimodentsclan1]
       - [0x549B0, .data, ../ultralib/src/vimodes/vimodempallan1]
       - [0x54A00, data]
-      - [0x54A10, .rodata, player]
-      - [0x54AC0, .rodata, game_modes]
-      - [0x55330, .rodata, kmd]
-      - [0x553B0, .rodata, math]
-      - [0x553D0, .rodata, scroll]
-      - [0x553F0, .rodata, hud]
-      - [0x554B0, .rodata, menu_options]
-      - [0x554E0, .rodata, main_menu]
-      - [0x55530, .rodata, gmd_pcl]
-      - [0x55540, .rodata, ai]
-      - [0x555C0, .rodata, plyrsel]
-      - [0x55830, .rodata, audio]
-      - [0x55870, .rodata, tables]
-      - [0x55A30, .rodata, wad]
-      - [0x55B70, .rodata, 28C10]
-      - [0x55BD0, .rodata, item]
-      - [0x55C10, .rodata, opencam]
-      - [0x55C50, .rodata, 305A0]
-      - [0x55D20, .rodata, practice]
-      - [0x55DD0, .rodata, model]
-      - [0x55EE0, .rodata, camera]
+      - [0x54A10, .rodata, 02989789]
+      - [0x54AC0, .rodata, 39e934c2]
+      - [0x55330, .rodata, d53dbdfd]
+      - [0x553B0, .rodata, 3b281efc]
+      - [0x553D0, .rodata, 4a248257]
+      - [0x553F0, .rodata, 04859e8a]
+      - [0x554B0, .rodata, 108260c9]
+      - [0x554E0, .rodata, 2435583e]
+      - [0x55530, .rodata, 3f72e5c8]
+      - [0x55540, .rodata, d5fd353d]
+      - [0x555C0, .rodata, a7cab0a2]
+      - [0x55830, .rodata, cac92df6]
+      - [0x55870, .rodata, 134911bd]
+      - [0x55A30, .rodata, 38d952c0]
+      - [0x55B70, .rodata, 992e0686]
+      - [0x55BD0, .rodata, 346e1e19]
+      - [0x55C10, .rodata, 01c1f892]
+      - [0x55C50, .rodata, ac8d9591]
+      - [0x55D20, .rodata, 1b3b963c]
+      - [0x55DD0, .rodata, 7c0f8cf9]
+      - [0x55EE0, .rodata, a46ab948]
       - [0x55EF0, .rodata, ../ultralib/src/audio/seq]
       - [0x55F00, .rodata, ../ultralib/src/gt/gt]
       - [0x55F30, .rodata, ../ultralib/src/audio/seqplayer]
@@ -351,37 +351,37 @@ segments:
       - { start: 0x56C60, type: databin, name: rsp/gspDarkRift3D, linker_section_order: .rodata}
       - { start: 0x57460, type: databin, name: rsp/aspMain, linker_section_order: .rodata}
 
-      - { type: .bss, vram: 0x80056EE0, name: thread }
-      - { type: .bss, vram: 0x8005AE90, name: heap }
-      - { type: .bss, vram: 0x8005BED0, name: main }
-      - { type: .bss, vram: 0x80080110, name: sched }
-      - { type: .bss, vram: 0x800801F0, name: game_modes }
-      - { type: .bss, vram: 0x80080230, name: player }
-      - { type: .bss, vram: 0x80081250, name: main_menu }
-      - { type: .bss, vram: 0x80081260, name: player_combat }
-      - { type: .bss, vram: 0x80081280, name: hitbox_render }
-      - { type: .bss, vram: 0x800812A0, name: math }
-      - { type: .bss, vram: 0x80081420, name: scroll }
-      - { type: .bss, vram: 0x80081440, name: hud }
-      - { type: .bss, vram: 0x80081460, name: menu_options }
-      - { type: .bss, vram: 0x800814E0, name: gmd_pcl }
-      - { type: .bss, vram: 0x80081660, name: plyrsel }
-      - { type: .bss, vram: 0x80081670, name: audio }
-      - { type: .bss, vram: 0x800A4930, name: 23D00 }
-      - { type: .bss, vram: 0x800AA430, name: input }
-      - { type: .bss, vram: 0x800AA470, name: tables }
-      - { type: .bss, vram: 0x800B63A0, name: cont }
-      - { type: .bss, vram: 0x800B6400, name: lzhuf }
-      - { type: .bss, vram: 0x800B85B0, name: rsp }
-      - { type: .bss, vram: 0x80138A00, name: wad }
-      - { type: .bss, vram: 0x8013C230, name: 28C10 }
-      - { type: .bss, vram: 0x8013C2B0, name: item }
-      - { type: .bss, vram: 0x8013C2E0, name: opencam }
-      - { type: .bss, vram: 0x8013C3A0, name: 305A0 }
-      - { type: .bss, vram: 0x8013C3D0, name: practice }
-      - { type: .bss, vram: 0x8013C4A0, name: model }
-      - { type: .bss, vram: 0x8013C550, name: task }
-      - { type: .bss, vram: 0x8013C560, name: camera }
+      - { type: .bss, vram: 0x80056EE0, name: d6c43c79 }
+      - { type: .bss, vram: 0x8005AE90, name: a8ef58b5 }
+      - { type: .bss, vram: 0x8005BED0, name: cbf2ec05 }
+      - { type: .bss, vram: 0x80080110, name: e464307e }
+      - { type: .bss, vram: 0x800801F0, name: 39e934c2 }
+      - { type: .bss, vram: 0x80080230, name: 02989789 }
+      - { type: .bss, vram: 0x80081250, name: 2435583e }
+      - { type: .bss, vram: 0x80081260, name: 5c37bf8b }
+      - { type: .bss, vram: 0x80081280, name: 716adc37 }
+      - { type: .bss, vram: 0x800812A0, name: 3b281efc }
+      - { type: .bss, vram: 0x80081420, name: 4a248257 }
+      - { type: .bss, vram: 0x80081440, name: 04859e8a }
+      - { type: .bss, vram: 0x80081460, name: 108260c9 }
+      - { type: .bss, vram: 0x800814E0, name: 3f72e5c8 }
+      - { type: .bss, vram: 0x80081660, name: a7cab0a2 }
+      - { type: .bss, vram: 0x80081670, name: cac92df6 }
+      - { type: .bss, vram: 0x800A4930, name: 698a4622 }
+      - { type: .bss, vram: 0x800AA430, name: 40f8a510 }
+      - { type: .bss, vram: 0x800AA470, name: 134911bd }
+      - { type: .bss, vram: 0x800B63A0, name: 13e5c685 }
+      - { type: .bss, vram: 0x800B6400, name: 573e99f1 }
+      - { type: .bss, vram: 0x800B85B0, name: 1f557ef1 }
+      - { type: .bss, vram: 0x80138A00, name: 38d952c0 }
+      - { type: .bss, vram: 0x8013C230, name: 992e0686 }
+      - { type: .bss, vram: 0x8013C2B0, name: 346e1e19 }
+      - { type: .bss, vram: 0x8013C2E0, name: 01c1f892 }
+      - { type: .bss, vram: 0x8013C3A0, name: ac8d9591 }
+      - { type: .bss, vram: 0x8013C3D0, name: 1b3b963c }
+      - { type: .bss, vram: 0x8013C4A0, name: 7c0f8cf9 }
+      - { type: .bss, vram: 0x8013C550, name: df73244f }
+      - { type: .bss, vram: 0x8013C560, name: a46ab948 }
       - { type: .bss, vram: 0x8013C840, name: ../ultralib/src/os/initialize }
       - { type: .bss, vram: 0x8013C850, name: ../ultralib/src/io/vimgr }
       - { type: .bss, vram: 0x8013DA60, name: ../ultralib/src/io/pimgr }

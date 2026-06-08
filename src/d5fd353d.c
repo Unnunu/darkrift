@@ -231,7 +231,7 @@ u8 x_9f09065b(Player *player, x_1e5e42da *x_81570fde) {
     return FALSE;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/ai/x_9f09065b.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/d5fd353d/x_9f09065b.s")
 #endif
 
 void x_c94a154b(Player *player) {

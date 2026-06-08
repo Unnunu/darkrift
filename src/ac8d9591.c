@@ -989,7 +989,7 @@ void x_340c2137(Object *x_cc1d0de5) {
     x_948f0b9f(&x_3be4fcf3->x_022dff72.x_3fde9cd9, &x_fd09f53e);
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/305A0/x_340c2137.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/ac8d9591/x_340c2137.s")
 #endif
 
 void x_77f7ce0e(Object *obj) {

@@ -218,7 +218,7 @@ void x_cbd0f8d7(void) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/lzhuf/x_cbd0f8d7.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/573e99f1/x_cbd0f8d7.s")
 void x_cbd0f8d7(void);
 #endif
 

@@ -276,7 +276,7 @@ x_3ace60b0:
 }
 #else
 void *x_5319ff51(u32 x_cc1d0de5);
-#pragma GLOBAL_ASM("asm/nonmatchings/heap/x_5319ff51.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/a8ef58b5/x_5319ff51.s")
 #endif
 
 void x_86715543(void *ptr) {

@@ -326,7 +326,7 @@ void x_6d41c91d(Object *x_cc1d0de5, x_88f11482 *x_84ff873b, x_acccb624 *x_2092f8
     x_cc1d0de5->light = NULL;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/item/x_6d41c91d.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/346e1e19/x_6d41c91d.s")
 void x_6d41c91d(Object *x_cc1d0de5, x_88f11482 *x_84ff873b, x_acccb624 *x_2092f891, Transform *x_ee71e5cb,
                 void (*x_a0e63e9c)(Object *));
 #endif

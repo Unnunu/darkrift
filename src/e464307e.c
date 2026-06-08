@@ -300,7 +300,7 @@ void x_16b2a52b(u16 x_7cedc3fb) {
     x_38c80ca9();
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/sched/x_16b2a52b.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/e464307e/x_16b2a52b.s")
 void x_16b2a52b(u16 x_7cedc3fb);
 #endif
 

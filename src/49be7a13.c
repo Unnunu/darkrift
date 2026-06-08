@@ -511,7 +511,7 @@ u8 x_6ce73fcf(Object *obj) {
     return FALSE;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/projectile/x_6ce73fcf.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/49be7a13/x_6ce73fcf.s")
 u8 x_6ce73fcf(Object *obj);
 #endif
 

@@ -394,6 +394,6 @@ void x_23e3afdf(Object *obj) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/scroll/x_23e3afdf.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/4a248257/x_23e3afdf.s")
 void x_23e3afdf(Object *);
 #endif

@@ -576,7 +576,7 @@ s32 x_d9b20313(s16 x_cc1d0de5) {
     return 0;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/math/x_d9b20313.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/3b281efc/x_d9b20313.s")
 s32 x_d9b20313(s16 x_cc1d0de5);
 #endif
 
@@ -606,7 +606,7 @@ f32 x_2cfb7bc7(u16 x_cc1d0de5) {
     return 0.0f;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/math/x_2cfb7bc7.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/3b281efc/x_2cfb7bc7.s")
 f32 x_2cfb7bc7(u16 x_cc1d0de5);
 #endif
 

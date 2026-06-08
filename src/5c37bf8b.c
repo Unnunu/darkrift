@@ -281,7 +281,7 @@ s32 x_cc2e74aa(Player *x_7246d2b2, Player *x_e64ba38a, x_388306ba *x_0deedaaf) {
 }
 #else
 s32 x_cc2e74aa(Player *x_cc1d0de5, Player *x_84ff873b, x_388306ba *x_2092f891);
-#pragma GLOBAL_ASM("asm/nonmatchings/player_combat/x_cc2e74aa.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/5c37bf8b/x_cc2e74aa.s")
 #endif
 
 void x_54661eb1(Player *x_7246d2b2, Player *x_e64ba38a, x_2758cdab *x_c9d501a3) {

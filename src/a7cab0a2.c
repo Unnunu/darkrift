@@ -136,7 +136,7 @@ s32 x_a2f41f91(s32 x_30bbe547) {
     return v1;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/x_a2f41f91.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/a7cab0a2/x_a2f41f91.s")
 s32 x_a2f41f91(s32 x_30bbe547);
 #endif
 
@@ -188,7 +188,7 @@ u8 x_7dc12b61(u8 x_30bbe547) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/x_7dc12b61.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/a7cab0a2/x_7dc12b61.s")
 u8 x_7dc12b61(u8 x_30bbe547);
 #endif
 
