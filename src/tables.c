@@ -1,118 +1,118 @@
 #include "common.h"
 
-void run_main_menu_mode(void);
-void run_options_mode(void);
-void run_menu_control_mode(void);
-void run_menu_rank_mode(void);
-void run_menu_stats_mode(void);
-void run_player_selection_mode(void);
-void run_battle_aaron_mode(void);
-void run_battle_demitron_mode(void);
-void run_battle_demonica_mode(void);
-void run_battle_eve_mode(void);
-void run_battle_gore_mode(void);
-void run_battle_morphix_mode(void);
-void run_battle_niiki_mode(void);
-void run_battle_scarlet_mode(void);
-void run_battle_sonork_mode(void);
-void run_battle_zenmuron_mode(void);
-void run_17_mode(void);
-void run_intro_aaron_mode(void);
-void run_intro_demitron_mode(void);
-void run_intro_demonica_mode(void);
-void run_intro_eve_mode(void);
-void run_intro_gore_mode(void);
-void run_intro_morphix_mode(void);
-void run_intro_niiki_mode(void);
-void run_intro_scarlet_mode(void);
-void run_intro_sonork_mode(void);
-void run_intro_zenmuron_mode(void);
-void run_29_mode(void);
-void run_30_mode(void);
-void run_31_mode(void);
-void run_intro_mode(void);
-void run_logo_mode(void);
-void run_34_mode(void);
-void run_35_mode(void);
-void run_36_mode(void);
-void run_37_mode(void);
+void x_da1161b7(void);
+void x_3ecc4edc(void);
+void x_35ffeb22(void);
+void x_9450f821(void);
+void x_2288fd1a(void);
+void x_2c1b660c(void);
+void x_6d8e5572(void);
+void x_79c3a331(void);
+void x_ac7d3df0(void);
+void x_0f26cf14(void);
+void x_5bf0e9e5(void);
+void x_370978d4(void);
+void x_97f45a12(void);
+void x_855a469e(void);
+void x_8081616c(void);
+void x_5f5796f4(void);
+void x_64d3e54a(void);
+void x_7dc0432e(void);
+void x_075dfbb4(void);
+void x_fff9464d(void);
+void x_bdd3194d(void);
+void x_de15f6f9(void);
+void x_7e48e02a(void);
+void x_2c237ab0(void);
+void x_10209bac(void);
+void x_67466a36(void);
+void x_1b39c152(void);
+void x_d7f2443f(void);
+void x_526ab60f(void);
+void x_97d4c18e(void);
+void x_2c292a7b(void);
+void x_cbafccd1(void);
+void x_5f08f251(void);
+void x_6da0c319(void);
+void x_0f62bcb4(void);
+void x_39ec2f37(void);
 
-void func_80015D60(Object *obj);
-void func_80016144(Object *obj);
-void anim_loop(Object *);
-void player_trans_func_1(Object *);
-void player_trans_func_2(Object *);
-void player_trans_func_3(Object *);
-void player_trans_func_4(Object *);
-void player_trans_func_5(Object *);
-void player_trans_func_6(Object *);
-void player_trans_func_7(Object *);
-void player_anim_func_3(Object *);
-void player_trans_func_8(Object *);
-void player_trans_func_9(Object *);
-void player_trans_func_10(Object *);
-void player_trans_func_11(Object *);
-void anim_play_once(Object *);
-void anim_pingpong_forward(Object *);
-void player_trans_func_12(Object *);
-void action_animation_end(Object *);
-u8 player_check_func_1(Object *);
-void player_trans_func_14(Object *);
-u8 player_check_func_3(Object *);
-u8 player_check_func_4(Object *);
-void player_trans_func_15(Object *);
-void player_trans_func_16(Object *);
-u8 player_check_func_5(Object *);
-u8 player_check_func_6(Object *);
-void player_trans_func_17(Object *);
-void player_trans_func_18(Object *);
-u8 player_check_func_7(Object *);
-void player_trans_func_22(Object *);
-u8 player_check_func_8(Object *);
-void player_trans_func_19(Object *);
-void player_trans_func_20(Object *);
-void player_trans_func_21(Object *);
-void player_trans_func_23(Object *);
-void player_trans_func_24(Object *);
-void player_trans_func_25(Object *);
-void player_trans_func_27(Object *);
-void player_trans_func_26(Object *);
-void player_trans_func_28(Object *);
-void func_80015CD8(Object *);
-void func_80015E24(Object *);
-void func_8002A1F0(Object *);
+void x_ebf8a1b0(Object *obj);
+void x_fb6f79b0(Object *obj);
+void x_378d4f8e(Object *);
+void x_9891654e(Object *);
+void x_5b5c4189(Object *);
+void x_19fed2ac(Object *);
+void x_56d15e8a(Object *);
+void x_af431a0a(Object *);
+void x_df5751ad(Object *);
+void x_afe56bcd(Object *);
+void x_7c333f6c(Object *);
+void x_6098478f(Object *);
+void x_17ad7985(Object *);
+void x_aa63f018(Object *);
+void x_4a0e9b26(Object *);
+void x_fe7e2137(Object *);
+void x_d16f8fa6(Object *);
+void x_297fd9f3(Object *);
+void x_d30a20e1(Object *);
+u8 x_8c8da256(Object *);
+void x_18bd9b95(Object *);
+u8 x_5127226c(Object *);
+u8 x_a8ff9909(Object *);
+void x_efd0ce39(Object *);
+void x_602b94bb(Object *);
+u8 x_e0b539de(Object *);
+u8 x_52c80142(Object *);
+void x_23eecff5(Object *);
+void x_370c7b4f(Object *);
+u8 x_29d2787d(Object *);
+void x_6c979ff3(Object *);
+u8 x_82bfe825(Object *);
+void x_82fdb659(Object *);
+void x_bc38049f(Object *);
+void x_ca4d8099(Object *);
+void x_d87a4f6e(Object *);
+void x_02f6f8ad(Object *);
+void x_96e05dec(Object *);
+void x_fd0916cc(Object *);
+void x_e9917882(Object *);
+void x_7ef99aca(Object *);
+void x_a08bfaa4(Object *);
+void x_7705be49(Object *);
+void x_751dec03(Object *);
 
-extern Unk_8004BA6C D_800523FC;
-extern Unk_8004BA6C D_8005254C;
-extern Unk_8004BA6C D_80052560;
-extern Unk_8004BA6C D_80052664;
-extern Unk_8004BA6C D_80052688;
-extern Unk_8004BA6C D_80052788;
-extern Unk_8004BA6C D_8005287C;
-extern Unk_8004BA6C D_80052890;
-extern Unk_8004BA6C D_80052C3C;
+extern x_448872e8 D_800523FC;
+extern x_448872e8 D_8005254C;
+extern x_448872e8 D_80052560;
+extern x_448872e8 D_80052664;
+extern x_448872e8 D_80052688;
+extern x_448872e8 D_80052788;
+extern x_448872e8 D_8005287C;
+extern x_448872e8 D_80052890;
+extern x_448872e8 D_80052C3C;
 
-extern HitZonesSetup D_80052220;
-extern HitZonesSetup D_80052420;
-extern HitZonesSetup D_80052580;
-extern HitZonesSetup D_800526B0;
-extern HitZonesSetup D_80052330;
-extern HitZonesSetup D_800527A0;
-extern HitZonesSetup D_800528B0;
-extern HitZonesSetup D_80052990;
-extern HitZonesSetup D_80052A60;
-extern HitZonesSetup D_80052B30;
+extern x_87049dce D_80052220;
+extern x_87049dce D_80052420;
+extern x_87049dce D_80052580;
+extern x_87049dce D_800526B0;
+extern x_87049dce D_80052330;
+extern x_87049dce D_800527A0;
+extern x_87049dce D_800528B0;
+extern x_87049dce D_80052990;
+extern x_87049dce D_80052A60;
+extern x_87049dce D_80052B30;
 
-extern GlobalLighting D_8004935C;
+extern x_2bb4cf6f D_8004935C;
 
 s32 D_8004A5C0[] = { 0, 0, 0, 0 };
 
-Vec4i D_8004A5D0[] = {
+x_88f11482 D_8004A5D0[] = {
     { 60, 51, 0, 0 }, { 69, 51, 0, 0 }, { 69, 51, 0, 0 }, { 42, 51, 0, 0 }, { 51, 51, 0, 0 }, { 51, 51, 0, 0 },
     { 65, 51, 0, 0 }, { 47, 51, 0, 0 }, { 60, 51, 0, 0 }, { 60, 51, 0, 0 }, { 70, 51, 0, 0 },
 };
 
-Vec4i D_8004A680[] = {
+x_88f11482 D_8004A680[] = {
     { 274, 51, 0, 0 }, { 261, 51, 0, 0 }, { 261, 51, 0, 0 }, { 287, 51, 0, 0 }, { 282, 51, 0, 0 }, { 285, 51, 0, 0 },
     { 264, 51, 0, 0 }, { 285, 51, 0, 0 }, { 267, 51, 0, 0 }, { 271, 51, 0, 0 }, { 262, 51, 0, 0 },
 };
@@ -125,7 +125,7 @@ s16 D_8004A748[] = {
     400, 400, 250, 480, 550, 400, 900, 400, 400, 1000, 400,
 };
 
-ModelNodeGroup D_8004A760[] = {
+x_40f23fab D_8004A760[] = {
     { { 18, 0, -1, 0 }, -1 }, { { 1, -1, 0, 0 }, 1 },   { { 2, -1, 0, 0 }, 2 },     { { 3, -1, 0, 0 }, 3 },
     { { 4, -1, 0, 0 }, 4 },   { { 5, -1, 0, 0 }, 5 },   { { 6, -1, 0, 0 }, 6 },     { { 7, -1, 0, 0 }, 7 },
     { { 8, -1, 0, 0 }, 8 },   { { 9, -1, 0, 0 }, 9 },   { { 10, -1, 0, 0 }, 10 },   { { 11, -1, 0, 0 }, 11 },
@@ -133,7 +133,7 @@ ModelNodeGroup D_8004A760[] = {
     { { 16, -1, 0, 0 }, 16 }, { { 17, -1, 0, 0 }, 17 }, { { -1, -1, -1, -1 }, -1 },
 };
 
-ModelNodeGroup D_8004A8DC[] = {
+x_40f23fab D_8004A8DC[] = {
     { { 22, 0, -1, 0 }, -1 }, { { 1, -1, 0, 0 }, 1 },   { { 2, -1, 0, 0 }, 2 },     { { 3, -1, 0, 0 }, 3 },
     { { 4, -1, 0, 0 }, 4 },   { { 5, -1, 0, 0 }, 5 },   { { 6, -1, 0, 0 }, 6 },     { { 7, -1, 0, 0 }, 7 },
     { { 8, -1, 0, 0 }, 8 },   { { 9, -1, 0, 0 }, 9 },   { { 10, -1, 0, 0 }, 10 },   { { 11, -1, 0, 0 }, 11 },
@@ -142,7 +142,7 @@ ModelNodeGroup D_8004A8DC[] = {
     { { 20, -1, 0, 0 }, 20 }, { { 21, -1, 0, 0 }, 21 }, { { -1, -1, -1, -1 }, -1 },
 };
 
-ModelNodeGroup D_8004AAA8[] = {
+x_40f23fab D_8004AAA8[] = {
     { { 25, 0, -1, 0 }, -1 }, { { 1, -1, 0, 0 }, 1 },     { { 2, -1, 0, 0 }, 2 },   { { 3, -1, 0, 0 }, 3 },
     { { 4, -1, 0, 0 }, 4 },   { { 5, -1, 0, 0 }, 5 },     { { 6, -1, 0, 0 }, 6 },   { { 7, -1, 0, 0 }, 7 },
     { { 8, -1, 0, 0 }, 8 },   { { 9, -1, 0, 0 }, 9 },     { { 10, -1, 0, 0 }, 10 }, { { 11, -1, 0, 0 }, 11 },
@@ -152,7 +152,7 @@ ModelNodeGroup D_8004AAA8[] = {
     { { 24, -1, 0, 0 }, 24 }, { { -1, -1, -1, -1 }, -1 },
 };
 
-ModelNodeGroup D_8004ACB0[] = {
+x_40f23fab D_8004ACB0[] = {
     { { 16, 0, -1, 0 }, -1 },   { { 1, -1, 0, 0 }, 1 },   { { 2, -1, 0, 0 }, 2 },   { { 3, -1, 0, 0 }, 3 },
     { { 4, -1, 0, 0 }, 4 },     { { 5, -1, 0, 0 }, 5 },   { { 6, -1, 0, 0 }, 6 },   { { 7, -1, 0, 0 }, 7 },
     { { 8, -1, 0, 0 }, 8 },     { { 9, -1, 0, 0 }, 9 },   { { 10, -1, 0, 0 }, 10 }, { { 11, -1, 0, 0 }, 11 },
@@ -160,13 +160,13 @@ ModelNodeGroup D_8004ACB0[] = {
     { { -1, -1, -1, -1 }, -1 },
 };
 
-ModelNodeGroup D_8004AE04[] = {
+x_40f23fab D_8004AE04[] = {
     { { 15, 0, -1, 0 }, -1 },  { { 1, -1, 0, 0 }, -1 },    { { 2, -1, 0, 0 }, -2 }, { { 4, 3, -1, 0 }, 3 },
     { { 5, -1, 0, 0 }, 5 },    { { 6, -1, 0, 0 }, 6 },     { { 7, -1, 0, 0 }, 7 },  { { 8, -1, 0, 0 }, 8 },
     { { 11, 10, 9, -1 }, 11 }, { { 14, 13, 12, -1 }, 14 }, { { -1, -1, 0, 0 }, 0 },
 };
 
-ModelNodeGroup D_8004AEE0[] = {
+x_40f23fab D_8004AEE0[] = {
     { { 18, 0, -1, 0 }, -1 }, { { 1, -1, 0, 0 }, 1 },   { { 2, -1, 0, 0 }, 2 },     { { 3, -1, 0, 0 }, 3 },
     { { 4, -1, 0, 0 }, 4 },   { { 5, -1, 0, 0 }, 5 },   { { 6, -1, 0, 0 }, 6 },     { { 7, -1, 0, 0 }, 7 },
     { { 8, -1, 0, 0 }, 8 },   { { 9, -1, 0, 0 }, 9 },   { { 10, -1, 0, 0 }, 10 },   { { 11, -1, 0, 0 }, 11 },
@@ -174,7 +174,7 @@ ModelNodeGroup D_8004AEE0[] = {
     { { 16, -1, 0, 0 }, 16 }, { { 17, -1, 0, 0 }, 17 }, { { -1, -1, -1, -1 }, -1 },
 };
 
-ModelNodeGroup D_8004B05C[] = {
+x_40f23fab D_8004B05C[] = {
     { { 22, 0, -1, 0 }, -1 }, { { 1, -1, 0, 0 }, 1 },   { { 2, -1, 0, 0 }, 2 },     { { 3, -1, 0, 0 }, 3 },
     { { 4, -1, 0, 0 }, 4 },   { { 5, -1, 0, 0 }, 5 },   { { 6, -1, 0, 0 }, 6 },     { { 7, -1, 0, 0 }, 7 },
     { { 8, -1, 0, 0 }, 8 },   { { 9, -1, 0, 0 }, 9 },   { { 10, -1, 0, 0 }, 10 },   { { 11, -1, 0, 0 }, 11 },
@@ -183,14 +183,14 @@ ModelNodeGroup D_8004B05C[] = {
     { { 20, -1, 0, 0 }, 20 }, { { 21, -1, 0, 0 }, 21 }, { { -1, -1, -1, -1 }, -1 },
 };
 
-ModelNodeGroup D_8004B228[] = {
+x_40f23fab D_8004B228[] = {
     { { 15, 0, -1, 0 }, -1 }, { { 1, -1, 0, 0 }, 1 },   { { 2, -1, 0, 0 }, 2 },   { { 3, -1, 0, 0 }, 3 },
     { { 4, -1, 0, 0 }, 4 },   { { 5, -1, 0, 0 }, 5 },   { { 6, -1, 0, 0 }, 6 },   { { 7, -1, 0, 0 }, 7 },
     { { 8, -1, 0, 0 }, 8 },   { { 9, -1, 0, 0 }, 9 },   { { 10, -1, 0, 0 }, 10 }, { { 11, -1, 0, 0 }, 11 },
     { { 12, -1, 0, 0 }, 12 }, { { 13, -1, 0, 0 }, 13 }, { { 14, -1, 0, 0 }, 14 }, { { -1, -1, -1, -1 }, -1 },
 };
 
-ModelNodeGroup D_8004B368[] = {
+x_40f23fab D_8004B368[] = {
     { { 18, 0, -1, 0 }, -1 }, { { 1, -1, 0, 0 }, 1 },   { { 2, -1, 0, 0 }, 2 },     { { 3, -1, 0, 0 }, 3 },
     { { 4, -1, 0, 0 }, 4 },   { { 5, -1, 0, 0 }, 5 },   { { 6, -1, 0, 0 }, 6 },     { { 7, -1, 0, 0 }, 7 },
     { { 8, -1, 0, 0 }, 8 },   { { 9, -1, 0, 0 }, 9 },   { { 10, -1, 0, 0 }, 10 },   { { 11, -1, 0, 0 }, 11 },
@@ -198,38 +198,38 @@ ModelNodeGroup D_8004B368[] = {
     { { 16, -1, 0, 0 }, 16 }, { { 17, -1, 0, 0 }, 17 }, { { -1, -1, -1, -1 }, -1 },
 };
 
-ModelNodeGroup D_8004B4E4[] = {
+x_40f23fab D_8004B4E4[] = {
     { { 15, 0, -1, 0 }, -1 }, { { 1, -1, 0, 0 }, 1 },   { { 2, -1, 0, 0 }, 2 },   { { 3, -1, 0, 0 }, 3 },
     { { 4, -1, 0, 0 }, 4 },   { { 5, -1, 0, 0 }, 5 },   { { 6, -1, 0, 0 }, 6 },   { { 7, -1, 0, 0 }, 7 },
     { { 8, -1, 0, 0 }, 8 },   { { 9, -1, 0, 0 }, 9 },   { { 10, -1, 0, 0 }, 10 }, { { 11, -1, 0, 0 }, 11 },
     { { 12, -1, 0, 0 }, 12 }, { { 13, -1, 0, 0 }, 13 }, { { 14, -1, 0, 0 }, 14 }, { { -1, -1, -1, -1 }, -1 },
 };
 
-GlobalLighting D_8004B624 = { { { { 255, 255, 255, 255 }, 0, -101, -126 }, { { 0, 0, 0, 0 }, 73, -73, -73 } } };
-GlobalLighting D_8004B644 = { { { { 255, 254, 254, 255 }, 0, -126, -86 }, { { 255, 59, 27, 0 }, 20, 126, 0 } } };
-GlobalLighting D_8004B664 = { { { { 191, 112, 96, 255 }, -1, -126, -55 }, { { 30, 255, 132, 0 }, 5, 127, 191 } } };
-GlobalLighting D_8004B684 = { { { { 255, 255, 255, 255 }, -1, -127, -128 }, { { 91, 73, 112, 0 }, 0, 127, 63 } } };
-GlobalLighting D_8004B6A4 = { { { { 255, 255, 255, 255 }, 0, -123, -107 }, { { 76, 60, 98, 0 }, 16, 127, -32 } } };
-GlobalLighting D_8004B6C4 = { { { { 255, 210, 255, 0 }, 11, -115, 117 }, { { 100, 120, 150, 0 }, -126, -121, 88 } } };
-GlobalLighting D_8004B6E4 = { { { { 255, 228, 213, 0 }, 6, -125, -127 }, { { 33, 36, 68, 0 }, 44, 91, 98 } } };
-GlobalLighting D_8004B704 = { { { { 255, 213, 186, 0 }, 6, -125, -127 }, { { 51, 42, 83, 0 }, 44, 91, 98 } } };
-GlobalLighting D_8004B724 = { { { { 255, 255, 255, 0 }, 6, -127, -128 }, { { 82, 50, 40, 0 }, -107, 123, 53 } } };
-GlobalLighting D_8004B744 = { { { { 219, 228, 255, 0 }, 11, -115, -117 }, { { 231, 39, 22, 0 }, -126, -121, 88 } } };
-GlobalLighting D_8004B764 = { { { { 255, 254, 254, 255 }, 0, -126, -86 }, { { 255, 59, 27, 0 }, 20, 126, 0 } } };
-GlobalLighting D_8004B784 = { { { { 191, 112, 96, 255 }, -1, -126, -55 }, { { 30, 255, 132, 0 }, 5, 127, 191 } } };
+x_2bb4cf6f D_8004B624 = { { { { 255, 255, 255, 255 }, 0, -101, -126 }, { { 0, 0, 0, 0 }, 73, -73, -73 } } };
+x_2bb4cf6f D_8004B644 = { { { { 255, 254, 254, 255 }, 0, -126, -86 }, { { 255, 59, 27, 0 }, 20, 126, 0 } } };
+x_2bb4cf6f D_8004B664 = { { { { 191, 112, 96, 255 }, -1, -126, -55 }, { { 30, 255, 132, 0 }, 5, 127, 191 } } };
+x_2bb4cf6f D_8004B684 = { { { { 255, 255, 255, 255 }, -1, -127, -128 }, { { 91, 73, 112, 0 }, 0, 127, 63 } } };
+x_2bb4cf6f D_8004B6A4 = { { { { 255, 255, 255, 255 }, 0, -123, -107 }, { { 76, 60, 98, 0 }, 16, 127, -32 } } };
+x_2bb4cf6f D_8004B6C4 = { { { { 255, 210, 255, 0 }, 11, -115, 117 }, { { 100, 120, 150, 0 }, -126, -121, 88 } } };
+x_2bb4cf6f D_8004B6E4 = { { { { 255, 228, 213, 0 }, 6, -125, -127 }, { { 33, 36, 68, 0 }, 44, 91, 98 } } };
+x_2bb4cf6f D_8004B704 = { { { { 255, 213, 186, 0 }, 6, -125, -127 }, { { 51, 42, 83, 0 }, 44, 91, 98 } } };
+x_2bb4cf6f D_8004B724 = { { { { 255, 255, 255, 0 }, 6, -127, -128 }, { { 82, 50, 40, 0 }, -107, 123, 53 } } };
+x_2bb4cf6f D_8004B744 = { { { { 219, 228, 255, 0 }, 11, -115, -117 }, { { 231, 39, 22, 0 }, -126, -121, 88 } } };
+x_2bb4cf6f D_8004B764 = { { { { 255, 254, 254, 255 }, 0, -126, -86 }, { { 255, 59, 27, 0 }, 20, 126, 0 } } };
+x_2bb4cf6f D_8004B784 = { { { { 191, 112, 96, 255 }, -1, -126, -55 }, { { 30, 255, 132, 0 }, 5, 127, 191 } } };
 
-K2Def D_8004B7A4 = { "aaro", NULL, 0, OBJ_PRIO_DEFAULT, D_8004A760 };
-K2Def D_8004B7B4 = { "demi", NULL, 0, OBJ_PRIO_DEFAULT, D_8004A8DC };
-K2Def D_8004B7C4 = { "demo", NULL, 0, OBJ_PRIO_DEFAULT, D_8004AAA8 };
-K2Def D_8004B7D4 = { "eve", NULL, 0, OBJ_PRIO_DEFAULT, D_8004ACB0 };
-K2Def D_8004B7E4 = { "gore", NULL, 0, OBJ_PRIO_DEFAULT, D_8004AE04 };
-K2Def D_8004B7F4 = { "morp", NULL, 0, OBJ_PRIO_DEFAULT, D_8004AEE0 };
-K2Def D_8004B804 = { "niik", NULL, 0, OBJ_PRIO_DEFAULT, D_8004B05C };
-K2Def D_8004B814 = { "scar", NULL, 0, OBJ_PRIO_DEFAULT, D_8004B228 };
-K2Def D_8004B824 = { "sono", NULL, 0, OBJ_PRIO_DEFAULT, D_8004B368 };
-K2Def D_8004B834 = { "zenm", NULL, 0, OBJ_PRIO_DEFAULT, D_8004B4E4 };
+x_aece7675 D_8004B7A4 = { "aaro", NULL, 0, x_9d442987, D_8004A760 };
+x_aece7675 D_8004B7B4 = { "demi", NULL, 0, x_9d442987, D_8004A8DC };
+x_aece7675 D_8004B7C4 = { "demo", NULL, 0, x_9d442987, D_8004AAA8 };
+x_aece7675 D_8004B7D4 = { "eve", NULL, 0, x_9d442987, D_8004ACB0 };
+x_aece7675 D_8004B7E4 = { "gore", NULL, 0, x_9d442987, D_8004AE04 };
+x_aece7675 D_8004B7F4 = { "morp", NULL, 0, x_9d442987, D_8004AEE0 };
+x_aece7675 D_8004B804 = { "niik", NULL, 0, x_9d442987, D_8004B05C };
+x_aece7675 D_8004B814 = { "scar", NULL, 0, x_9d442987, D_8004B228 };
+x_aece7675 D_8004B824 = { "sono", NULL, 0, x_9d442987, D_8004B368 };
+x_aece7675 D_8004B834 = { "zenm", NULL, 0, x_9d442987, D_8004B4E4 };
 
-UnkTau D_8004B844[] = {
+x_e630c828 D_8004B844[] = {
     { &D_80052220, &D_8004B7A4, { { 99, 185, 255, 0 }, { 255, 124, 46, 0 } } },
     { &D_80052420, &D_8004B7B4, { { 21, 255, 193, 0 }, { 255, 112, 26, 0 } } },
     { &D_80052580, &D_8004B7C4, { { 255, 32, 0, 0 }, { 0, 197, 120, 0 } } },
@@ -243,21 +243,21 @@ UnkTau D_8004B844[] = {
     { &D_80052B30, &D_8004B834, { { 105, 255, 69, 0 }, { 255, 38, 106, 0 } } },
 };
 
-UnkVec2s D_8004B8F4[] = {
-    { 347, MOVE_ID_GRABBED_BY_AAR_226 }, { 550, MOVE_ID_GRABBED_BY_DEM_227 }, { 400, MOVE_ID_GRABBED_BY_DEM_228 },
-    { 430, MOVE_ID_GRABBED_BY_EVE },     { 360, MOVE_ID_GRABBED_BY_GOR },     { 430, MOVE_ID_IDLE_068 },
-    { 393, MOVE_ID_GRABBED_BY_MOR },     { 487, MOVE_ID_GRABBED_BY_NII },     { 430, MOVE_ID_GRABBED_BY_SCA },
-    { 400, MOVE_ID_GRABBED_BY_SON },     { 430, MOVE_ID_GRABBED_BY_ZEN },
+x_f1ef2747 D_8004B8F4[] = {
+    { 347, x_e63530c1 }, { 550, x_694e40b6 }, { 400, x_b2b1b96e },
+    { 430, x_3c7302ce },     { 360, x_35aace93 },     { 430, x_ee946ac0 },
+    { 393, x_2b743d6c },     { 487, x_f756fc7a },     { 430, x_e2a97731 },
+    { 400, x_386c4125 },     { 430, x_7d1ece0c },
 };
 
-UnkVec2s D_8004B920[] = { { 171, MOVE_ID_COGRABBED_BY_A_253 }, { 250, MOVE_ID_COGRABBED_BY_D_254 },
-                          { 369, MOVE_ID_COGRABBED_BY_D_255 }, { 400, MOVE_ID_COGRABBED_BY_E_256 },
-                          { 488, MOVE_ID_COGRABBED_BY_G_257 }, { 400, MOVE_ID_COGRABBED_BY_G_257 },
-                          { 483, MOVE_ID_COGRABBED_BY_M_258 }, { 400, MOVE_ID_COGRABBED_BY_N_259 },
-                          { 422, MOVE_ID_COGRABBED_BY_S_260 }, { 400, MOVE_ID_COGRABBED_BY_S_261 },
-                          { 400, MOVE_ID_COGRABBED_BY_Z_262 } };
+x_f1ef2747 D_8004B920[] = { { 171, x_5e459866 }, { 250, x_43a34e27 },
+                          { 369, x_6fb95bb3 }, { 400, x_d55dddfa },
+                          { 488, x_df2f05e7 }, { 400, x_df2f05e7 },
+                          { 483, x_03639beb }, { 400, x_3aacdec1 },
+                          { 422, x_87d80e6c }, { 400, x_7408302b },
+                          { 400, x_c55d4b86 } };
 
-UnkQwe D_8004B94C[] = {
+x_6dac5499 D_8004B94C[] = {
     { 167, "AR_GR1" }, { 168, "DM_GR1" }, { 169, "DO_GR1" }, { 170, "EV_GR1" }, { 171, "GE_GR1" }, { 171, "GO_GR1" },
     { 172, "MO_GR1" }, { 173, "NI_GR1" }, { 174, "SC_GR1" }, { 175, "SO_GR1" }, { 176, "ZE_GR1" }, { 177, "ARCGR1" },
     { 178, "DMCGR1" }, { 179, "DOCGR1" }, { 180, "EVCGR1" }, { 181, "GECGR1" }, { 181, "GOCGR1" }, { 182, "MOCGR1" },
@@ -266,17 +266,17 @@ UnkQwe D_8004B94C[] = {
 
 s16 D_8004B9FC[] = { 187, 188, 189, 190, 191, 191, 192, 193, 194, 195, 196 };
 
-ColorRGBA D_8004BA14[] = { { 255, 0, 0, 0 }, { 255, 0, 0, 0 }, { 255, 0, 0, 0 }, { 255, 0, 0, 0 },
+x_6751d717 D_8004BA14[] = { { 255, 0, 0, 0 }, { 255, 0, 0, 0 }, { 255, 0, 0, 0 }, { 255, 0, 0, 0 },
                            { 255, 0, 0, 0 }, { 255, 0, 0, 0 }, { 255, 0, 0, 0 }, { 255, 0, 0, 0 },
                            { 255, 0, 0, 0 }, { 255, 0, 0, 0 }, { 255, 0, 0, 0 } };
 
-Unk_8004BA6C *D_8004BA40[] = { NULL,        &D_8005254C, &D_80052688, &D_80052788, NULL,       NULL,
+x_448872e8 *D_8004BA40[] = { NULL,        &D_8005254C, &D_80052688, &D_80052788, NULL,       NULL,
                                &D_8005287C, NULL,        NULL,        NULL,        &D_80052C3C };
 
-Unk_8004BA6C *D_8004BA6C[] = { NULL,        &D_80052560, &D_80052664, NULL, &D_800523FC, NULL,
+x_448872e8 *D_8004BA6C[] = { NULL,        &D_80052560, &D_80052664, NULL, &D_800523FC, NULL,
                                &D_80052890, NULL,        NULL,        NULL, NULL };
 
-Vec4s D_8004BA98[] = {
+x_2758cdab D_8004BA98[] = {
     { 0, 0, 27 },  // Aaron
     { 0, 0, 58 },  // Demitron
     { 0, 0, 100 }, // Demonica
@@ -290,7 +290,7 @@ Vec4s D_8004BA98[] = {
     { -3, 0, -3 }, // Zenmuron
 };
 
-Vec4s D_8004BAF0[] = {
+x_2758cdab D_8004BAF0[] = {
     { 0, 0, 0 },    // Aaron
     { 0, 0, 21 },   // Demitron
     { 31, 0, 140 }, // Demonica
@@ -304,151 +304,151 @@ Vec4s D_8004BAF0[] = {
     { -3, 0, -3 },  // Zenmuron
 };
 
-GameMode gGameModes[] = {
-    { run_main_menu_mode, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
-    { run_options_mode, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
-    { run_menu_control_mode, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
-    { run_menu_rank_mode, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
-    { run_menu_stats_mode, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
-    { run_player_selection_mode, 2, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
-    { run_battle_aaron_mode, 11, 0, 0, 0, 0, 0, 113, 108, 97, 0, 945, 1000, &D_8004B624, { 69, 55, 88, 0 } },
-    { run_battle_demitron_mode, 11, 0, 113, 65, 59, 0, 234, 89, 69, 0, 850, 1000, &D_8004B644, { 84, 26, 25, 0 } },
-    { run_battle_demonica_mode, 11, 0, 19, 32, 28, 0, 4, 4, 14, 0, 945, 1000, &D_8004B664, { 36, 77, 54, 0 } },
-    { run_battle_eve_mode, 11, 0, 84, 124, 190, 0, 27, 62, 21, 0, 945, 1000, &D_8004B684, { 23, 25, 27, 0 } },
-    { run_battle_gore_mode, 11, 0, 67, 107, 186, 0, 40, 32, 40, 0, 945, 1000, &D_8004B6A4, { 62, 52, 74, 0 } },
-    { run_battle_aaron_mode, 11, 0, 61, 105, 194, 0, 40, 32, 40, 0, 945, 1000, &D_8004B624, { 50, 60, 70, 0 } },
-    { run_battle_morphix_mode, 11, 0, 42, 31, 70, 0, 56, 43, 85, 0, 945, 1000, &D_8004B6C4, { 50, 60, 70, 0 } },
-    { run_battle_niiki_mode, 11, 0, 13, 14, 14, 0, 26, 20, 18, 0, 850, 1000, &D_8004B6E4, { 63, 29, 33, 0 } },
-    { run_battle_scarlet_mode, 11, 0, 36, 32, 30, 0, 123, 94, 69, 0, 945, 1000, &D_8004B704, { 53, 43, 52, 0 } },
-    { run_battle_sonork_mode, 11, 0, 112, 105, 109, 0, 114, 101, 81, 0, 945, 1000, &D_8004B724, { 56, 46, 34, 0 } },
-    { run_battle_zenmuron_mode, 11, 0, 2, 7, 16, 0, 1, 6, 14, 0, 945, 1000, &D_8004B744, { 8, 16, 69, 0 } },
-    { run_17_mode, 11, 0, 61, 105, 194, 0, 40, 32, 40, 0, 945, 1000, &D_8004935C, { 192, 192, 192, 0 } },
-    { run_intro_aaron_mode, 11, 0, 0, 0, 0, 0, 113, 108, 97, 0, 945, 1000, &D_8004B624, { 69, 55, 88, 0 } },
-    { run_intro_demitron_mode, 11, 0, 113, 65, 59, 0, 234, 89, 69, 0, 850, 1000, &D_8004B644, { 84, 26, 25, 0 } },
-    { run_intro_demonica_mode, 11, 0, 19, 32, 28, 0, 4, 4, 14, 0, 945, 1000, &D_8004B664, { 36, 77, 54, 0 } },
-    { run_intro_eve_mode, 11, 0, 84, 124, 190, 0, 27, 62, 21, 0, 945, 1000, &D_8004B684, { 23, 25, 27, 0 } },
-    { run_intro_gore_mode, 11, 0, 61, 105, 194, 0, 40, 32, 40, 0, 945, 1000, &D_8004B6A4, { 62, 52, 74, 0 } },
-    { run_intro_gore_mode, 11, 0, 67, 107, 186, 0, 40, 32, 40, 0, 945, 1000, &D_8004B624, { 50, 60, 70, 0 } },
-    { run_intro_morphix_mode, 11, 0, 42, 31, 70, 0, 56, 43, 85, 0, 945, 1000, &D_8004B6C4, { 50, 60, 70, 0 } },
-    { run_intro_niiki_mode, 11, 0, 13, 14, 14, 0, 26, 20, 18, 0, 850, 1000, &D_8004B6E4, { 63, 29, 33, 0 } },
-    { run_intro_scarlet_mode, 11, 0, 36, 32, 30, 0, 123, 94, 69, 0, 945, 1000, &D_8004B704, { 53, 43, 52, 0 } },
-    { run_intro_sonork_mode, 11, 0, 112, 105, 109, 0, 114, 101, 81, 0, 945, 1000, &D_8004B724, { 56, 46, 34, 0 } },
-    { run_intro_zenmuron_mode, 11, 0, 2, 7, 16, 0, 1, 6, 14, 0, 945, 1000, &D_8004B744, { 8, 16, 69, 0 } },
-    { run_29_mode, 11, 0, 112, 105, 109, 0, 114, 101, 81, 0, 945, 1000, &D_8004B724, { 56, 46, 34, 0 } },
-    { run_30_mode, 11, 0, 113, 65, 59, 0, 234, 89, 69, 0, 850, 1000, &D_8004B644, { 84, 26, 25, 0 } },
-    { run_31_mode, 11, 0, 0, 0, 0, 0, 0, 4, 10, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
-    { run_intro_mode, 11, 0, 0, 0, 0, 0, 0, 4, 10, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
-    { run_logo_mode, 11, 0, 0, 0, 0, 0, 0, 4, 10, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
-    { run_34_mode, 11, 0, 113, 65, 59, 0, 234, 89, 69, 0, 850, 1000, &D_8004B644, { 84, 26, 25, 0 } },
-    { run_35_mode, 11, 0, 113, 65, 59, 0, 234, 89, 69, 0, 850, 1000, &D_8004B644, { 84, 26, 25, 0 } },
-    { run_36_mode, 11, 0, 0, 0, 0, 0, 0, 4, 10, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
-    { run_37_mode, 11, 0, 0, 0, 0, 0, 0, 4, 10, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } }
+x_d0fba50a x_4540c33c[] = {
+    { x_da1161b7, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
+    { x_3ecc4edc, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
+    { x_35ffeb22, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
+    { x_9450f821, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
+    { x_2288fd1a, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
+    { x_2c1b660c, 2, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
+    { x_6d8e5572, 11, 0, 0, 0, 0, 0, 113, 108, 97, 0, 945, 1000, &D_8004B624, { 69, 55, 88, 0 } },
+    { x_79c3a331, 11, 0, 113, 65, 59, 0, 234, 89, 69, 0, 850, 1000, &D_8004B644, { 84, 26, 25, 0 } },
+    { x_ac7d3df0, 11, 0, 19, 32, 28, 0, 4, 4, 14, 0, 945, 1000, &D_8004B664, { 36, 77, 54, 0 } },
+    { x_0f26cf14, 11, 0, 84, 124, 190, 0, 27, 62, 21, 0, 945, 1000, &D_8004B684, { 23, 25, 27, 0 } },
+    { x_5bf0e9e5, 11, 0, 67, 107, 186, 0, 40, 32, 40, 0, 945, 1000, &D_8004B6A4, { 62, 52, 74, 0 } },
+    { x_6d8e5572, 11, 0, 61, 105, 194, 0, 40, 32, 40, 0, 945, 1000, &D_8004B624, { 50, 60, 70, 0 } },
+    { x_370978d4, 11, 0, 42, 31, 70, 0, 56, 43, 85, 0, 945, 1000, &D_8004B6C4, { 50, 60, 70, 0 } },
+    { x_97f45a12, 11, 0, 13, 14, 14, 0, 26, 20, 18, 0, 850, 1000, &D_8004B6E4, { 63, 29, 33, 0 } },
+    { x_855a469e, 11, 0, 36, 32, 30, 0, 123, 94, 69, 0, 945, 1000, &D_8004B704, { 53, 43, 52, 0 } },
+    { x_8081616c, 11, 0, 112, 105, 109, 0, 114, 101, 81, 0, 945, 1000, &D_8004B724, { 56, 46, 34, 0 } },
+    { x_5f5796f4, 11, 0, 2, 7, 16, 0, 1, 6, 14, 0, 945, 1000, &D_8004B744, { 8, 16, 69, 0 } },
+    { x_64d3e54a, 11, 0, 61, 105, 194, 0, 40, 32, 40, 0, 945, 1000, &D_8004935C, { 192, 192, 192, 0 } },
+    { x_7dc0432e, 11, 0, 0, 0, 0, 0, 113, 108, 97, 0, 945, 1000, &D_8004B624, { 69, 55, 88, 0 } },
+    { x_075dfbb4, 11, 0, 113, 65, 59, 0, 234, 89, 69, 0, 850, 1000, &D_8004B644, { 84, 26, 25, 0 } },
+    { x_fff9464d, 11, 0, 19, 32, 28, 0, 4, 4, 14, 0, 945, 1000, &D_8004B664, { 36, 77, 54, 0 } },
+    { x_bdd3194d, 11, 0, 84, 124, 190, 0, 27, 62, 21, 0, 945, 1000, &D_8004B684, { 23, 25, 27, 0 } },
+    { x_de15f6f9, 11, 0, 61, 105, 194, 0, 40, 32, 40, 0, 945, 1000, &D_8004B6A4, { 62, 52, 74, 0 } },
+    { x_de15f6f9, 11, 0, 67, 107, 186, 0, 40, 32, 40, 0, 945, 1000, &D_8004B624, { 50, 60, 70, 0 } },
+    { x_7e48e02a, 11, 0, 42, 31, 70, 0, 56, 43, 85, 0, 945, 1000, &D_8004B6C4, { 50, 60, 70, 0 } },
+    { x_2c237ab0, 11, 0, 13, 14, 14, 0, 26, 20, 18, 0, 850, 1000, &D_8004B6E4, { 63, 29, 33, 0 } },
+    { x_10209bac, 11, 0, 36, 32, 30, 0, 123, 94, 69, 0, 945, 1000, &D_8004B704, { 53, 43, 52, 0 } },
+    { x_67466a36, 11, 0, 112, 105, 109, 0, 114, 101, 81, 0, 945, 1000, &D_8004B724, { 56, 46, 34, 0 } },
+    { x_1b39c152, 11, 0, 2, 7, 16, 0, 1, 6, 14, 0, 945, 1000, &D_8004B744, { 8, 16, 69, 0 } },
+    { x_d7f2443f, 11, 0, 112, 105, 109, 0, 114, 101, 81, 0, 945, 1000, &D_8004B724, { 56, 46, 34, 0 } },
+    { x_526ab60f, 11, 0, 113, 65, 59, 0, 234, 89, 69, 0, 850, 1000, &D_8004B644, { 84, 26, 25, 0 } },
+    { x_97d4c18e, 11, 0, 0, 0, 0, 0, 0, 4, 10, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
+    { x_2c292a7b, 11, 0, 0, 0, 0, 0, 0, 4, 10, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
+    { x_cbafccd1, 11, 0, 0, 0, 0, 0, 0, 4, 10, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
+    { x_5f08f251, 11, 0, 113, 65, 59, 0, 234, 89, 69, 0, 850, 1000, &D_8004B644, { 84, 26, 25, 0 } },
+    { x_6da0c319, 11, 0, 113, 65, 59, 0, 234, 89, 69, 0, 850, 1000, &D_8004B644, { 84, 26, 25, 0 } },
+    { x_0f62bcb4, 11, 0, 0, 0, 0, 0, 0, 4, 10, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } },
+    { x_39ec2f37, 11, 0, 0, 0, 0, 0, 0, 4, 10, 0, 630, 1000, &D_8004935C, { 192, 192, 192, 0 } }
 };
 
-HudMessage gGeneralMessages[] = {
-    { "battle", 10, 20, func_80015D60, 0 },   { "chal", 60, 20, func_80015D60, 3 },
-    { "cont", 240, 20, func_80015D60, 1 },    { "ctdown", 0, 255, func_80016144, -1 },
-    { "draw", 0, 20, func_80015CD8, 4 },      { "finalrd", 30, 20, func_80015D60, -1 },
-    { "round", 30, 20, func_80015E24, -1 },   { "gameover", 0, 20, func_80015CD8, 2 },
-    { "cont", 240, 20, func_80015D60, 1 },    { "pause", 0, 20, func_8002A1F0, -1 },
-    { "timeover", 0, 20, func_80015D60, -1 }, { "perfect", 0, 80, func_80015D60, 6 },
+x_3da8fdd8 x_dd2c4e91[] = {
+    { "battle", 10, 20, x_ebf8a1b0, 0 },   { "chal", 60, 20, x_ebf8a1b0, 3 },
+    { "cont", 240, 20, x_ebf8a1b0, 1 },    { "ctdown", 0, 255, x_fb6f79b0, -1 },
+    { "draw", 0, 20, x_a08bfaa4, 4 },      { "finalrd", 30, 20, x_ebf8a1b0, -1 },
+    { "round", 30, 20, x_7705be49, -1 },   { "gameover", 0, 20, x_a08bfaa4, 2 },
+    { "cont", 240, 20, x_ebf8a1b0, 1 },    { "pause", 0, 20, x_751dec03, -1 },
+    { "timeover", 0, 20, x_ebf8a1b0, -1 }, { "perfect", 0, 80, x_ebf8a1b0, 6 },
 };
 
-HudMessage gWinMessages[] = {
-    { "aarowin", 110, 20, func_80015CD8, 5 }, { "demiwin", 110, 20, func_80015CD8, 5 },
-    { "demowin", 110, 20, func_80015CD8, 5 }, { "evewin", 110, 20, func_80015CD8, 5 },
-    { "gorewin", 110, 20, func_80015CD8, 5 }, { "gorewin", 110, 20, func_80015CD8, 5 },
-    { "morpwin", 100, 20, func_80015CD8, 5 }, { "niikwin", 110, 20, func_80015CD8, 5 },
-    { "scarwin", 110, 20, func_80015CD8, 5 }, { "sonowin", 110, 20, func_80015CD8, 5 },
-    { "zenmwin", 110, 20, func_80015CD8, 5 },
+x_3da8fdd8 x_c2354b9b[] = {
+    { "aarowin", 110, 20, x_a08bfaa4, 5 }, { "demiwin", 110, 20, x_a08bfaa4, 5 },
+    { "demowin", 110, 20, x_a08bfaa4, 5 }, { "evewin", 110, 20, x_a08bfaa4, 5 },
+    { "gorewin", 110, 20, x_a08bfaa4, 5 }, { "gorewin", 110, 20, x_a08bfaa4, 5 },
+    { "morpwin", 100, 20, x_a08bfaa4, 5 }, { "niikwin", 110, 20, x_a08bfaa4, 5 },
+    { "scarwin", 110, 20, x_a08bfaa4, 5 }, { "sonowin", 110, 20, x_a08bfaa4, 5 },
+    { "zenmwin", 110, 20, x_a08bfaa4, 5 },
 };
 
 u32 D_8004C178[] = { 430, 430, 430, 430, 430, 430, 430, 530, 470, 430, 430 };
 u32 D_8004C1A4[] = { 500, 450, 450, 450, 450, 450, 450, 370, 370, 450, 450 };
 
-s16 gMaxRounds = 3;
-s16 gBattleDuration = 2;
+s16 x_adcfd05c = 3;
+s16 x_c8356c60 = 2;
 
 u8 D_8004C1D8[] = { 6, 7, 9, 6, 5, 5, 6, 8, 5, 8, 5 };
 
-s16 gDifficulty = DIFFICULTY_NORMAL;
+s16 x_028e5846 = x_c74743bd;
 
-Behavior D_8004C1E8[] = {
-    /* idle */ { 0x0040010, anim_loop, player_trans_func_1, NULL, 0x2700208 },
-    /* unknown step */ { 0x0041010, task_default_func, player_trans_func_2, NULL, 0x2700208 },
-    /* dash */ { 0x0001010, anim_advance, player_trans_func_3, NULL, 0x2700208 },
-    /* step */ { 0x0040010, anim_loop, player_trans_func_4, NULL, 0x2F00208 },
-    /* ----- */ { 0x0040000, anim_loop, task_default_func, NULL, 0x2700208 },
-    /* run */ { 0x0040000, anim_loop, player_trans_func_5, NULL, 0x2700208 },
-    /* jump */ { 0x0001010, anim_advance, player_trans_func_6, NULL, 0x2700208 },
-    /* crouch */ { 0x0040010, anim_loop, player_trans_func_7, NULL, 0x2F00208 },
-    /* crouch exit*/ { 0x0001810, anim_reverse, task_default_func, NULL, 0x2F00208 },
-    /* crouch restart */ { 0x0001010, player_anim_func_3, task_default_func, NULL, 0x2700208 },
-    /* stand block */ { 0x0801010, anim_advance, task_default_func, NULL, 0x2700208 },
-    /* crouch abort */ { 0x0005000, anim_reverse, task_default_func, NULL, 0x2F00208 },
-    /* SB reabort */ { 0x0000000, player_anim_func_3, task_default_func, NULL, 0x2700208 },
-    /* grab */ { 0x0000010, anim_advance, player_trans_func_8, NULL, 0x2700208 },
-    /* grabbed */ { 0x1003090, anim_advance, player_trans_func_9, NULL, 0x2700208 },
-    /* co-grabbed */ { 0x0000000, anim_advance, task_default_func, NULL, 0x2700208 },
-    /* intro */ { 0x0040000, anim_loop, task_default_func, NULL, 0x2700208 },
-    /* key up */ { 0x0040000, anim_loop, task_default_func, NULL, 0x2700208 },
-    /* various SP */ { 0x0000000, anim_advance, player_trans_func_10, NULL, 0x2700208 },
-    /* damaged */ { 0x0003010, anim_advance, player_trans_func_11, NULL, 0x2700208 },
-    /* end */ { 0x0041000, anim_play_once, task_default_func, NULL, 0x2700208 },
-    /* lying down */ { 0x0040090, anim_loop, task_default_func, NULL, 0x2700208 },
-    { 0x0040000, anim_pingpong_forward, task_default_func, NULL, 0x2700208 },
-    /* dmg jump */ { 0x0003000, anim_play_once, player_trans_func_12, NULL, 0x2700208 },
-    /* timeout to idle */ { 0x0000000, task_default_func, action_animation_end, NULL, 0x2700208 },
-    /* body slam */ { 0x0001000, anim_advance, task_default_func, player_check_func_1, 0x2700208 },
-    { 0x0003000, anim_advance, task_default_func, NULL, 0x2700208 },
-    /* turn to opponent */ { 0x0001018, anim_advance, task_default_func, player_check_func_2, 0x2700208 },
-    { 0x0000010, anim_advance, player_action_init_projectiles, NULL, 0x2700208 },
-    /* intro projecti */ { 0x0001000, anim_advance, task_default_func, NULL, 0x2700208 },
-    /* various */ { 0x0001010, anim_advance, player_trans_func_14, player_check_func_3, 0x2700208 },
-    /* roll */ { 0x0001010, anim_advance, player_trans_func_14, player_check_func_4, 0x2700208 },
-    /* roll 2*/ { 0x0000010, anim_advance, player_trans_func_14, player_check_func_3, 0x2700208 },
-    /* side step */ { 0x0000010, anim_advance, player_trans_func_14, player_check_func_4, 0x2700208 },
-    /* side step 2 */ { 0x0000010, anim_advance, player_trans_func_15, player_check_func_2, 0x2700208 },
-    /* turn around */ { 0x0008010, anim_advance, player_trans_func_10, NULL, 0x2700208 },
-    { 0x0000010, anim_advance, task_default_func, NULL, 0x2700208 },
-    { 0x0040010, anim_pingpong_forward, task_default_func, NULL, 0x2700208 },
-    { 0x0040010, anim_loop, task_default_func, NULL, 0x2700208 },
-    { 0x0008010, anim_advance, player_trans_func_16, player_check_func_5, 0x2700208 },
-    /* Aaron specific */ { 0x1013090, anim_advance, player_trans_func_22, player_check_func_6, 0x2700208 },
-    { 0x0000010, anim_advance, player_trans_func_17, player_check_func_5, 0x2700208 },
-    { 0x0000080, anim_advance, task_default_func, NULL, 0x2700208 },
-    { 0x0003000, anim_advance, task_default_func, NULL, 0x2700208 },
-    { 0x0040090, anim_play_once, task_default_func, NULL, 0x2700208 },
-    { 0x0008000, anim_advance, task_default_func, NULL, 0x2700208 },
-    { 0x0029010, anim_advance, task_default_func, NULL, 0x2700208 },
-    { 0x0068010, anim_loop, task_default_func, NULL, 0x2700208 },
-    { 0x0029010, anim_advance, player_trans_func_18, NULL, 0x2700208 },
-    { 0x0003090, anim_advance, player_trans_func_9, NULL, 0x2700208 },
-    { 0x0041000, anim_play_once, task_default_func, NULL, 0x2700208 },
-    { 0x0000010, anim_advance, player_trans_func_14, NULL, 0x2700208 },
-    { 0x0041010, anim_advance, task_default_func, player_check_func_7, 0x2700208 },
-    { 0x0001000, anim_advance, player_action_init_projectiles, player_check_func_8, 0x2F00208 },
-    { 0x1000010, anim_advance, player_trans_func_19, NULL, 0x2700208 },
-    { 0x1021000, anim_advance, player_trans_func_20, NULL, 0x2700208 },
-    { 0x0000010, anim_play_once, player_action_init_projectiles, NULL, 0x2700208 },
-    { 0x0001000, anim_advance, player_trans_func_21, player_check_func_3, 0x2700208 },
-    { 0x0001000, anim_advance, player_trans_func_21, player_check_func_4, 0x2700208 },
-    { 0x1003090, anim_advance, player_trans_func_22, NULL, 0x2700208 },
-    { 0x1013090, anim_advance, task_default_func, player_check_func_6, 0x2700208 },
-    { 0x0008010, anim_advance, player_trans_func_14, NULL, 0x2700208 },
-    { 0x0000000, anim_advance, player_trans_func_23, NULL, 0x2700208 },
-    { 0x0061010, anim_advance, player_trans_func_24, NULL, 0x2700208 },
-    { 0x0008000, anim_loop, player_trans_func_25, NULL, 0x2700208 },
-    { 0x0000000, anim_play_once, player_trans_func_26, NULL, 0x2700208 },
-    { 0x0000000, anim_loop, player_trans_func_27, NULL, 0x2700208 },
-    { 0x0001000, anim_advance, player_trans_func_28, NULL, 0x2700208 },
-    { 0x8005000, anim_reverse, task_default_func, NULL, 0x2F00208 },
+x_edf8d3f1 D_8004C1E8[] = {
+    /* idle */ { 0x0040010, x_378d4f8e, x_9891654e, NULL, 0x2700208 },
+    /* unknown step */ { 0x0041010, x_0ae6735d, x_5b5c4189, NULL, 0x2700208 },
+    /* dash */ { 0x0001010, x_d18c17c2, x_19fed2ac, NULL, 0x2700208 },
+    /* step */ { 0x0040010, x_378d4f8e, x_56d15e8a, NULL, 0x2F00208 },
+    /* ----- */ { 0x0040000, x_378d4f8e, x_0ae6735d, NULL, 0x2700208 },
+    /* run */ { 0x0040000, x_378d4f8e, x_af431a0a, NULL, 0x2700208 },
+    /* jump */ { 0x0001010, x_d18c17c2, x_df5751ad, NULL, 0x2700208 },
+    /* crouch */ { 0x0040010, x_378d4f8e, x_afe56bcd, NULL, 0x2F00208 },
+    /* crouch exit*/ { 0x0001810, x_55af5110, x_0ae6735d, NULL, 0x2F00208 },
+    /* crouch restart */ { 0x0001010, x_7c333f6c, x_0ae6735d, NULL, 0x2700208 },
+    /* stand block */ { 0x0801010, x_d18c17c2, x_0ae6735d, NULL, 0x2700208 },
+    /* crouch abort */ { 0x0005000, x_55af5110, x_0ae6735d, NULL, 0x2F00208 },
+    /* SB reabort */ { 0x0000000, x_7c333f6c, x_0ae6735d, NULL, 0x2700208 },
+    /* grab */ { 0x0000010, x_d18c17c2, x_6098478f, NULL, 0x2700208 },
+    /* grabbed */ { 0x1003090, x_d18c17c2, x_17ad7985, NULL, 0x2700208 },
+    /* co-grabbed */ { 0x0000000, x_d18c17c2, x_0ae6735d, NULL, 0x2700208 },
+    /* intro */ { 0x0040000, x_378d4f8e, x_0ae6735d, NULL, 0x2700208 },
+    /* key up */ { 0x0040000, x_378d4f8e, x_0ae6735d, NULL, 0x2700208 },
+    /* various SP */ { 0x0000000, x_d18c17c2, x_aa63f018, NULL, 0x2700208 },
+    /* damaged */ { 0x0003010, x_d18c17c2, x_4a0e9b26, NULL, 0x2700208 },
+    /* end */ { 0x0041000, x_fe7e2137, x_0ae6735d, NULL, 0x2700208 },
+    /* lying down */ { 0x0040090, x_378d4f8e, x_0ae6735d, NULL, 0x2700208 },
+    { 0x0040000, x_d16f8fa6, x_0ae6735d, NULL, 0x2700208 },
+    /* dmg jump */ { 0x0003000, x_fe7e2137, x_297fd9f3, NULL, 0x2700208 },
+    /* timeout to idle */ { 0x0000000, x_0ae6735d, x_d30a20e1, NULL, 0x2700208 },
+    /* body slam */ { 0x0001000, x_d18c17c2, x_0ae6735d, x_8c8da256, 0x2700208 },
+    { 0x0003000, x_d18c17c2, x_0ae6735d, NULL, 0x2700208 },
+    /* turn to opponent */ { 0x0001018, x_d18c17c2, x_0ae6735d, x_af5ccc8a, 0x2700208 },
+    { 0x0000010, x_d18c17c2, x_cfb419a2, NULL, 0x2700208 },
+    /* intro projecti */ { 0x0001000, x_d18c17c2, x_0ae6735d, NULL, 0x2700208 },
+    /* various */ { 0x0001010, x_d18c17c2, x_18bd9b95, x_5127226c, 0x2700208 },
+    /* roll */ { 0x0001010, x_d18c17c2, x_18bd9b95, x_a8ff9909, 0x2700208 },
+    /* roll 2*/ { 0x0000010, x_d18c17c2, x_18bd9b95, x_5127226c, 0x2700208 },
+    /* side step */ { 0x0000010, x_d18c17c2, x_18bd9b95, x_a8ff9909, 0x2700208 },
+    /* side step 2 */ { 0x0000010, x_d18c17c2, x_efd0ce39, x_af5ccc8a, 0x2700208 },
+    /* turn around */ { 0x0008010, x_d18c17c2, x_aa63f018, NULL, 0x2700208 },
+    { 0x0000010, x_d18c17c2, x_0ae6735d, NULL, 0x2700208 },
+    { 0x0040010, x_d16f8fa6, x_0ae6735d, NULL, 0x2700208 },
+    { 0x0040010, x_378d4f8e, x_0ae6735d, NULL, 0x2700208 },
+    { 0x0008010, x_d18c17c2, x_602b94bb, x_e0b539de, 0x2700208 },
+    /* Aaron specific */ { 0x1013090, x_d18c17c2, x_6c979ff3, x_52c80142, 0x2700208 },
+    { 0x0000010, x_d18c17c2, x_23eecff5, x_e0b539de, 0x2700208 },
+    { 0x0000080, x_d18c17c2, x_0ae6735d, NULL, 0x2700208 },
+    { 0x0003000, x_d18c17c2, x_0ae6735d, NULL, 0x2700208 },
+    { 0x0040090, x_fe7e2137, x_0ae6735d, NULL, 0x2700208 },
+    { 0x0008000, x_d18c17c2, x_0ae6735d, NULL, 0x2700208 },
+    { 0x0029010, x_d18c17c2, x_0ae6735d, NULL, 0x2700208 },
+    { 0x0068010, x_378d4f8e, x_0ae6735d, NULL, 0x2700208 },
+    { 0x0029010, x_d18c17c2, x_370c7b4f, NULL, 0x2700208 },
+    { 0x0003090, x_d18c17c2, x_17ad7985, NULL, 0x2700208 },
+    { 0x0041000, x_fe7e2137, x_0ae6735d, NULL, 0x2700208 },
+    { 0x0000010, x_d18c17c2, x_18bd9b95, NULL, 0x2700208 },
+    { 0x0041010, x_d18c17c2, x_0ae6735d, x_29d2787d, 0x2700208 },
+    { 0x0001000, x_d18c17c2, x_cfb419a2, x_82bfe825, 0x2F00208 },
+    { 0x1000010, x_d18c17c2, x_82fdb659, NULL, 0x2700208 },
+    { 0x1021000, x_d18c17c2, x_bc38049f, NULL, 0x2700208 },
+    { 0x0000010, x_fe7e2137, x_cfb419a2, NULL, 0x2700208 },
+    { 0x0001000, x_d18c17c2, x_ca4d8099, x_5127226c, 0x2700208 },
+    { 0x0001000, x_d18c17c2, x_ca4d8099, x_a8ff9909, 0x2700208 },
+    { 0x1003090, x_d18c17c2, x_6c979ff3, NULL, 0x2700208 },
+    { 0x1013090, x_d18c17c2, x_0ae6735d, x_52c80142, 0x2700208 },
+    { 0x0008010, x_d18c17c2, x_18bd9b95, NULL, 0x2700208 },
+    { 0x0000000, x_d18c17c2, x_d87a4f6e, NULL, 0x2700208 },
+    { 0x0061010, x_d18c17c2, x_02f6f8ad, NULL, 0x2700208 },
+    { 0x0008000, x_378d4f8e, x_96e05dec, NULL, 0x2700208 },
+    { 0x0000000, x_fe7e2137, x_e9917882, NULL, 0x2700208 },
+    { 0x0000000, x_378d4f8e, x_fd0916cc, NULL, 0x2700208 },
+    { 0x0001000, x_d18c17c2, x_7ef99aca, NULL, 0x2700208 },
+    { 0x8005000, x_55af5110, x_0ae6735d, NULL, 0x2F00208 },
 };
 
 /* .bss */
 s32 D_800AA470[4];
 s32 D_800AA480;
-Player gPlayers[2];
-Player12 gBattleSettings[2];
+Player x_824b9544[2];
+x_7bac7836 x_77831b2c[2];
 u8 D_800B6350[2][11];
-CharacterStats D_800B6368[NUM_CHARACTERS];
+x_79eacfe1 D_800B6368[x_edb381f3];

@@ -2,367 +2,367 @@
 #include "camera.h"
 #include "task.h"
 
-u8 ai_select_transition(Player *);
+u8 x_fb0d2e6c(Player *);
 
-void anim_pingpong_forward(Object *);
+void x_d16f8fa6(Object *);
 
-void action_animation_end(Object *obj) {
-    Player *player = (Player *) obj->varObj[0];
-    u16 playerId = player->playerId;
-    s32 stateFlags;
+void x_d30a20e1(Object *obj) {
+    Player *player = (Player *) obj->x_e2f64c57[0];
+    u16 x_30bbe547 = player->x_30bbe547;
+    s32 x_76041836;
 
-    if (gBattleSettings[playerId].isCpu && !gRoundOver) {
-        if (ai_advance_step(player) || ai_decide(player, TRUE)) {
+    if (x_77831b2c[x_30bbe547].x_03604d94 && !x_9df63a90) {
+        if (x_12c88671(player) || x_bed222e0(player, TRUE)) {
             return;
         }
 
-        ai_end_tactic(player);
+        x_5587ad5e(player);
 
-        if (player->lookupLogicTable >= 0 && (player->flags & PLAYER_FLAG_1000)) {
-            if (ai_select_transition(player)) {
-                player->aiState.aiFlags |= AIF_ACTION_IN_PROGRESS;
+        if (player->x_0a8e33d7 >= 0 && (player->flags & x_f6191783)) {
+            if (x_fb0d2e6c(player)) {
+                player->x_81570fde.x_b2c79d6e |= x_096af79a;
                 return;
             }
         }
-    } else if (!(player->flags & PLAYER_FLAG_TRANSITION_LOCKED) &&
-               (gPlayerInput[playerId].pendingInput || (player->flags & PLAYER_FLAG_1000)) &&
-               player->lookupLogicTable >= 0 && !(player->animTask->flags & TASK_FLAG_TRIGGER_FRAME)) {
-        if (player_select_transition(player, TRUE)) {
+    } else if (!(player->flags & x_030d2322) &&
+               (x_59ce598c[x_30bbe547].x_c4397934 || (player->flags & x_f6191783)) &&
+               player->x_0a8e33d7 >= 0 && !(player->x_b9252303->flags & x_09809fad)) {
+        if (x_253cc396(player, TRUE)) {
             return;
         }
     }
 
     D_80080236 = TRUE;
-    stateFlags = player->combatState->flags;
-    if (player->flags & PLAYER_FLAG_8000000) {
-        player->flags &= ~PLAYER_FLAG_8000000;
-        stateFlags ^= CSF_CROUCH | CSF_STANDING;
+    x_76041836 = player->x_7f68c36b->flags;
+    if (player->flags & x_ebfbeab4) {
+        player->flags &= ~x_ebfbeab4;
+        x_76041836 ^= x_037894c1 | x_ff05097f;
     }
 
-    if (stateFlags & CSF_CROUCH) {
-        player_apply_move(player, MOVE_ID_CROUCH_IDLE, FALSE);
+    if (x_76041836 & x_037894c1) {
+        x_e914de48(player, x_26778114, FALSE);
     } else {
-        player_apply_move(player, MOVE_ID_IDLE_068, FALSE);
+        x_e914de48(player, x_ee946ac0, FALSE);
     }
 
     D_80080236 = FALSE;
-    player->flags |= PLAYER_FLAG_TRANSITION_LOCKED;
+    player->flags |= x_030d2322;
 }
 
-void anim_reverse(Object *obj) {
-    Player *player = (Player *) obj->varObj[0];
+void x_55af5110(Object *obj) {
+    Player *player = (Player *) obj->x_e2f64c57[0];
 
-    if (obj->frameIndex > player->combatState->minFrame + 1) {
-        obj->frameIndex--;
+    if (obj->x_5fcb1654 > player->x_7f68c36b->x_887b6be9 + 1) {
+        obj->x_5fcb1654--;
     } else {
-        obj->frameIndex--;
-        action_animation_end(obj);
+        obj->x_5fcb1654--;
+        x_d30a20e1(obj);
     }
 }
 
-void anim_pingpong_backward(Object *obj) {
-    if (obj->frameIndex != 0) {
-        obj->frameIndex--;
+void x_209f3063(Object *obj) {
+    if (obj->x_5fcb1654 != 0) {
+        obj->x_5fcb1654--;
     } else {
-        obj->frameIndex++;
-        obj->currentTask->func = anim_pingpong_forward;
+        obj->x_5fcb1654++;
+        obj->x_64946db0->x_f6382727 = x_d16f8fa6;
     }
 }
 
-void anim_pingpong_forward(Object *obj) {
-    if (obj->frameIndex < obj->modInst->numAnimFrames - 1) {
-        obj->frameIndex++;
+void x_d16f8fa6(Object *obj) {
+    if (obj->x_5fcb1654 < obj->x_20d20338->x_8e601526 - 1) {
+        obj->x_5fcb1654++;
     } else {
-        obj->frameIndex--;
-        obj->currentTask->func = anim_pingpong_backward;
+        obj->x_5fcb1654--;
+        obj->x_64946db0->x_f6382727 = x_209f3063;
     }
 }
 
-void anim_play_once(Object *obj) {
-    if (obj->frameIndex < obj->modInst->numAnimFrames - 1) {
-        obj->frameIndex++;
+void x_fe7e2137(Object *obj) {
+    if (obj->x_5fcb1654 < obj->x_20d20338->x_8e601526 - 1) {
+        obj->x_5fcb1654++;
     } else {
-        TASK_END(obj->currentTask);
+        x_5e6f40dd(obj->x_64946db0);
     }
 }
 
-void anim_loop(Object *obj) {
+void x_378d4f8e(Object *obj) {
     Player *player;
-    s16 characterId;
+    s16 x_eb1fe45b;
 
-    if (obj->frameIndex < ((Player *) obj->varObj[0])->combatState->maxFrame) {
-        obj->frameIndex++;
+    if (obj->x_5fcb1654 < ((Player *) obj->x_e2f64c57[0])->x_7f68c36b->x_bab9966d) {
+        obj->x_5fcb1654++;
         return;
     } else {
-        obj->frameIndex = 0;
-        player = (Player *) obj->varObj[0];
-        characterId = player->characterId;
+        obj->x_5fcb1654 = 0;
+        player = (Player *) obj->x_e2f64c57[0];
+        x_eb1fe45b = player->x_eb1fe45b;
 
-        if (obj->modInst->velocity.z != 0) {
-            if (player->combatState->flags & CSF_STANDING) {
-                obj->modInst->velocity.z = D_8004BA98[characterId].z;
+        if (obj->x_20d20338->velocity.z != 0) {
+            if (player->x_7f68c36b->flags & x_ff05097f) {
+                obj->x_20d20338->velocity.z = D_8004BA98[x_eb1fe45b].z;
             } else {
-                obj->modInst->velocity.z = D_8004BAF0[characterId].z;
+                obj->x_20d20338->velocity.z = D_8004BAF0[x_eb1fe45b].z;
             }
-            obj->modInst->currentRootPos.z = obj->modInst->baseRootPos.z;
+            obj->x_20d20338->x_6689336b.z = obj->x_20d20338->x_9cfd7bb4.z;
         } else {
-            obj->modInst->previousAnimId = -1;
+            obj->x_20d20338->x_2f4c4ce1 = -1;
         }
     }
 }
 
-void anim_advance(Object *obj) {
-    if (obj->frameIndex < ((Player *) obj->varObj[0])->combatState->maxFrame - 1) {
-        obj->frameIndex++;
+void x_d18c17c2(Object *obj) {
+    if (obj->x_5fcb1654 < ((Player *) obj->x_e2f64c57[0])->x_7f68c36b->x_bab9966d - 1) {
+        obj->x_5fcb1654++;
     } else {
-        obj->frameIndex++;
-        action_animation_end(obj);
+        obj->x_5fcb1654++;
+        x_d30a20e1(obj);
     }
 }
 
-void player_anim_func_3_sub(Object *obj) {
-    Player *player = (Player *) obj->varObj[0];
-    Vec4i sp2C;
+void x_330375dc(Object *obj) {
+    Player *player = (Player *) obj->x_e2f64c57[0];
+    x_88f11482 x_32f1d6e2;
 
-    if (player->combatState->cutsceneId < 0) {
-        TASK_END(obj->currentTask);
-    } else if (obj->frameIndex >= player->combatState->custsceneDelay) {
-        camera_save_state();
+    if (player->x_7f68c36b->x_016911c1 < 0) {
+        x_5e6f40dd(obj->x_64946db0);
+    } else if (obj->x_5fcb1654 >= player->x_7f68c36b->x_71e17346) {
+        x_7d4d6609();
 
-        sp2C.x = (gPlayers[PLAYER_1].obj->pos.x + gPlayers[PLAYER_2].obj->pos.x) >> 1;
-        sp2C.z = (gPlayers[PLAYER_1].obj->pos.z + gPlayers[PLAYER_2].obj->pos.z) >> 1;
-        sp2C.y = 0;
-        func_80038E8C(gCamera, &sp2C, obj->rotation.y,
-                      obj->modInst->animations[player->combatStateTable[player->combatState->cutsceneId].animationId]);
+        x_32f1d6e2.x = (x_824b9544[x_83106b21].obj->pos.x + x_824b9544[x_6f0b3be3].obj->pos.x) >> 1;
+        x_32f1d6e2.z = (x_824b9544[x_83106b21].obj->pos.z + x_824b9544[x_6f0b3be3].obj->pos.z) >> 1;
+        x_32f1d6e2.y = 0;
+        x_434424a1(x_f4bce728, &x_32f1d6e2, obj->x_224610f1.y,
+                      obj->x_20d20338->x_50771dcd[player->x_68a6b5cd[player->x_7f68c36b->x_016911c1].x_43d35340]);
 
-        gCamera->currentTask->func = camera_cutscene_playback;
-        gCamera->currentTask->start_delay = 0;
-        gCamera->currentTask->flags = TASK_FLAG_ENABLED;
-        gCamera->currentTask->start_delay = 1;
-        TASK_END(obj->currentTask);
+        x_f4bce728->x_64946db0->x_f6382727 = x_e5f3a418;
+        x_f4bce728->x_64946db0->x_c7f843c2 = 0;
+        x_f4bce728->x_64946db0->flags = x_0fb55613;
+        x_f4bce728->x_64946db0->x_c7f843c2 = 1;
+        x_5e6f40dd(obj->x_64946db0);
     }
 }
 
-void player_anim_func_3(Object *obj) {
-    Player *player = (Player *) obj->varObj[0];
+void x_7c333f6c(Object *obj) {
+    Player *player = (Player *) obj->x_e2f64c57[0];
     s32 unused[2];
-    CombatState *targetState;
+    x_388306ba *x_fc58f0f1;
 
-    targetState = player->combatStateTable + player->combatStateId;
-    player->combatState = targetState;
+    x_fc58f0f1 = player->x_68a6b5cd + player->x_cd14c741;
+    player->x_7f68c36b = x_fc58f0f1;
 
-    if (targetState->cutsceneId >= 0 && targetState->custsceneDelay != -1) {
-        player->cameraTask->func = player_anim_func_3_sub;
-        player->cameraTask->start_delay = 0;
-        player->cameraTask->flags = TASK_FLAG_ENABLED;
+    if (x_fc58f0f1->x_016911c1 >= 0 && x_fc58f0f1->x_71e17346 != -1) {
+        player->x_cdb23d89->x_f6382727 = x_330375dc;
+        player->x_cdb23d89->x_c7f843c2 = 0;
+        player->x_cdb23d89->flags = x_0fb55613;
     }
 
-    if (targetState->unk_30 != -1) {
-        func_80034C18(obj, player->unk_68 + targetState->unk_30 * obj->modInst->numNodes);
+    if (x_fc58f0f1->x_49e4c93e != -1) {
+        x_049b184b(obj, player->x_c42e3970 + x_fc58f0f1->x_49e4c93e * obj->x_20d20338->x_6dcce206);
     } else {
-        func_80034A58(obj);
+        x_64394ce4(obj);
     }
 
-    obj->currentTask->func = anim_advance;
-    obj->frameIndex++;
+    obj->x_64946db0->x_f6382727 = x_d18c17c2;
+    obj->x_5fcb1654++;
 
-    if (targetState->flags & CSF_ROOT_MOTION) {
-        obj->flags |= OBJ_FLAG_ROOT_MOTION;
-        if (targetState->flags & CSF_8000) {
-            obj->flags |= OBJ_FLAG_20000;
+    if (x_fc58f0f1->flags & x_c979afe4) {
+        obj->flags |= x_9ee447da;
+        if (x_fc58f0f1->flags & x_1befc3ad) {
+            obj->flags |= x_03ae0e9e;
         }
     } else {
-        obj->flags &= ~OBJ_FLAG_ROOT_MOTION;
+        obj->flags &= ~x_9ee447da;
     }
 
-    if (targetState->flags & CSF_80) {
-        obj->flags |= OBJ_FLAG_800000;
+    if (x_fc58f0f1->flags & x_cdcff2e1) {
+        obj->flags |= x_da584e3c;
     }
 
-    if (targetState->flags & CSF_200000) {
-        obj->flags |= OBJ_FLAG_100000;
+    if (x_fc58f0f1->flags & x_41efdde7) {
+        obj->flags |= x_d645b406;
     }
 }
 
-void anim_change_combat_state(Object *obj) {
+void x_73e8f926(Object *obj) {
     s32 *params;
-    Player *player = (Player *) obj->varObj[0];
-    CombatState *targetState;
+    Player *player = (Player *) obj->x_e2f64c57[0];
+    x_388306ba *x_fc58f0f1;
 
-    targetState = player->combatState;
-    params = obj->currentTask->params;
+    x_fc58f0f1 = player->x_7f68c36b;
+    params = obj->x_64946db0->params;
 
-    if (player->combatStateId >= 0) {
-        targetState = player->combatStateTable + player->combatStateId;
+    if (player->x_cd14c741 >= 0) {
+        x_fc58f0f1 = player->x_68a6b5cd + player->x_cd14c741;
 
-        if (targetState->animationId == obj->modInst->currentAnimId && obj->frameIndex + 1 < targetState->minFrame) {
-            obj->frameIndex++;
-            player->animTask->flags |= TASK_FLAG_TRIGGER_FRAME;
-            player->animTask->triggerAt = targetState->minFrame - 2;
-            player->animTask->triggerSlot.flags = TASK_FLAG_ENABLED;
-            player->animTask->triggerSlot.func = player_anim_func_3;
-            obj->currentTask->func = anim_advance;
+        if (x_fc58f0f1->x_43d35340 == obj->x_20d20338->x_ee205ef9 && obj->x_5fcb1654 + 1 < x_fc58f0f1->x_887b6be9) {
+            obj->x_5fcb1654++;
+            player->x_b9252303->flags |= x_09809fad;
+            player->x_b9252303->x_8a242a5a = x_fc58f0f1->x_887b6be9 - 2;
+            player->x_b9252303->x_bda3dc45.flags = x_0fb55613;
+            player->x_b9252303->x_bda3dc45.x_f6382727 = x_7c333f6c;
+            obj->x_64946db0->x_f6382727 = x_d18c17c2;
             return;
         }
 
-        if (targetState->animationId == obj->modInst->currentAnimId && obj->frameIndex == targetState->minFrame - 1) {
-            player_anim_func_3(obj);
+        if (x_fc58f0f1->x_43d35340 == obj->x_20d20338->x_ee205ef9 && obj->x_5fcb1654 == x_fc58f0f1->x_887b6be9 - 1) {
+            x_7c333f6c(obj);
             return;
         }
 
-        if (targetState->cutsceneId >= 0 && targetState->custsceneDelay != -1) {
-            player->cameraTask->func = player_anim_func_3_sub;
-            player->cameraTask->start_delay = 0;
-            player->cameraTask->flags = TASK_FLAG_ENABLED;
+        if (x_fc58f0f1->x_016911c1 >= 0 && x_fc58f0f1->x_71e17346 != -1) {
+            player->x_cdb23d89->x_f6382727 = x_330375dc;
+            player->x_cdb23d89->x_c7f843c2 = 0;
+            player->x_cdb23d89->flags = x_0fb55613;
         }
 
-        if (targetState->unk_30 != -1) {
-            func_80034C18(obj, player->unk_68 + targetState->unk_30 * obj->modInst->numNodes);
+        if (x_fc58f0f1->x_49e4c93e != -1) {
+            x_049b184b(obj, player->x_c42e3970 + x_fc58f0f1->x_49e4c93e * obj->x_20d20338->x_6dcce206);
         } else {
-            func_80034A58(obj);
+            x_64394ce4(obj);
         }
 
-        player->combatState = targetState;
+        player->x_7f68c36b = x_fc58f0f1;
 
-        if (player->flags & PLAYER_FLAG_800) {
-            obj->frameIndex = targetState->maxFrame;
+        if (player->flags & x_d7755e38) {
+            obj->x_5fcb1654 = x_fc58f0f1->x_bab9966d;
         } else {
-            obj->frameIndex = MAX(targetState->minFrame, params[2]);
+            obj->x_5fcb1654 = MAX(x_fc58f0f1->x_887b6be9, params[2]);
         }
 
-        obj->modInst->currentAnimId = targetState->animationId;
+        obj->x_20d20338->x_ee205ef9 = x_fc58f0f1->x_43d35340;
         // trigger animation change code in model_update
-        obj->modInst->previousAnimId = -1;
+        obj->x_20d20338->x_2f4c4ce1 = -1;
     }
 
-    obj->currentTask->func = params[0];
+    obj->x_64946db0->x_f6382727 = params[0];
 
-    if (targetState->flags & CSF_ROOT_MOTION) {
-        obj->flags |= OBJ_FLAG_ROOT_MOTION;
-        if (targetState->flags & CSF_8000) {
-            obj->flags |= OBJ_FLAG_20000;
+    if (x_fc58f0f1->flags & x_c979afe4) {
+        obj->flags |= x_9ee447da;
+        if (x_fc58f0f1->flags & x_1befc3ad) {
+            obj->flags |= x_03ae0e9e;
         } else {
-            obj->flags &= ~OBJ_FLAG_20000;
+            obj->flags &= ~x_03ae0e9e;
         }
     } else {
-        obj->flags &= ~OBJ_FLAG_ROOT_MOTION;
+        obj->flags &= ~x_9ee447da;
     }
 
-    if (targetState->flags & CSF_80) {
-        obj->flags |= OBJ_FLAG_400000;
+    if (x_fc58f0f1->flags & x_cdcff2e1) {
+        obj->flags |= x_977143b5;
     }
 
-    if (targetState->flags & CSF_200000) {
-        obj->flags |= OBJ_FLAG_100000;
+    if (x_fc58f0f1->flags & x_41efdde7) {
+        obj->flags |= x_d645b406;
     }
 }
 
-void func_80024640(Object *obj) {
-    Player *player = (Player *) obj->varObj[0];
+void x_6ac04b7a(Object *obj) {
+    Player *player = (Player *) obj->x_e2f64c57[0];
     s32 i;
     s32 s2;
     s32 *v0;
 
-    if (obj->frameIndex < player->combatState->maxFrame) {
-        obj->frameIndex++;
+    if (obj->x_5fcb1654 < player->x_7f68c36b->x_bab9966d) {
+        obj->x_5fcb1654++;
         return;
     }
 
-    player->flags &= ~PLAYER_FLAG_TRANSITION_LOCKED;
-    v0 = obj->currentTask->params;
-    player->actionTask->func = v0[4];
-    player->actionTask->start_delay = 0;
-    player->actionTask->flags = TASK_FLAG_ENABLED;
-    anim_change_combat_state(obj);
+    player->flags &= ~x_030d2322;
+    v0 = obj->x_64946db0->params;
+    player->x_147ade82->x_f6382727 = v0[4];
+    player->x_147ade82->x_c7f843c2 = 0;
+    player->x_147ade82->flags = x_0fb55613;
+    x_73e8f926(obj);
 
-    if (obj->frameIndex >= 2) {
-        model_change_animation(obj);
-        obj->modInst->previousAnimId = obj->modInst->currentAnimId;
-        obj->flags |= OBJ_FLAG_8000;
+    if (obj->x_5fcb1654 >= 2) {
+        x_0f2c2c2a(obj);
+        obj->x_20d20338->x_2f4c4ce1 = obj->x_20d20338->x_ee205ef9;
+        obj->flags |= x_56bbd9b2;
 
-        s2 = obj->frameIndex;
+        s2 = obj->x_5fcb1654;
         for (i = 0; i < s2; i += 2) {
-            obj->frameIndex = i;
-            model_process_animation(obj);
+            obj->x_5fcb1654 = i;
+            x_b6e96a17(obj);
         }
 
-        obj->flags &= ~OBJ_FLAG_8000;
-        obj->frameIndex = s2;
+        obj->flags &= ~x_56bbd9b2;
+        obj->x_5fcb1654 = s2;
     }
 
-    player->aiState.aiFlags &= ~AIF_AI_DISABLED;
+    player->x_81570fde.x_b2c79d6e &= ~x_c74d666c;
 }
 
-void func_80024764(Object *obj) {
-    Player *player = (Player *) obj->varObj[0];
-    CombatState *temp;
+void x_46bebbb5(Object *obj) {
+    Player *player = (Player *) obj->x_e2f64c57[0];
+    x_388306ba *temp;
 
-    obj->currentTask->func = func_80024640;
-    obj->frameIndex = 1;
-    temp = obj->currentTask->params[3] + player->combatStateTable; // required to match
-    player->combatState = temp;
-    obj->modInst->currentAnimId = temp->animationId;
-    player->flags |= PLAYER_FLAG_TRANSITION_LOCKED;
-    player->aiState.aiFlags |= AIF_AI_DISABLED;
+    obj->x_64946db0->x_f6382727 = x_6ac04b7a;
+    obj->x_5fcb1654 = 1;
+    temp = obj->x_64946db0->params[3] + player->x_68a6b5cd; // required to match
+    player->x_7f68c36b = temp;
+    obj->x_20d20338->x_ee205ef9 = temp->x_43d35340;
+    player->flags |= x_030d2322;
+    player->x_81570fde.x_b2c79d6e |= x_c74d666c;
 }
 
-void func_800247CC(Object *obj) {
-    Player *player = (Player *) obj->varObj[0];
-    ObjectTask *v0;
+void x_8126b2af(Object *obj) {
+    Player *player = (Player *) obj->x_e2f64c57[0];
+    x_41a0e1e6 *v0;
     s32 pad2;
-    s16 moveId;
-    s16 *transitionTable;
-    TaskContext *stack;
-    ObjectTask *currentTask;
+    s16 x_0f12118c;
+    s16 *x_554ac37d;
+    x_c305712a *stack;
+    x_41a0e1e6 *x_64946db0;
 
-    v0 = player->animTask;
-    moveId = v0->params[0];
-    transitionTable = player->logicStateTable;
-    currentTask = obj->currentTask;
-    obj->frameIndex++;
+    v0 = player->x_b9252303;
+    x_0f12118c = v0->params[0];
+    x_554ac37d = player->x_b8b27276;
+    x_64946db0 = obj->x_64946db0;
+    obj->x_5fcb1654++;
 
-    if (player_make_transition(player, TRUE, moveId)) {
-        player->lookupLogicTable = transitionTable[moveId + 1];
-        player->allowTransition = FALSE;
-        currentTask->stackPos--;
+    if (x_9d4a1d61(player, TRUE, x_0f12118c)) {
+        player->x_0a8e33d7 = x_554ac37d[x_0f12118c + 1];
+        player->x_cadf184a = FALSE;
+        x_64946db0->x_116c9ff3--;
     } else {
-        stack = currentTask->stack + (--currentTask->stackPos);
-        currentTask->func = stack->func;
-        currentTask->flags = stack->flags;
-        currentTask->start_delay = stack->start_delay;
+        stack = x_64946db0->stack + (--x_64946db0->x_116c9ff3);
+        x_64946db0->x_f6382727 = stack->x_f6382727;
+        x_64946db0->flags = stack->flags;
+        x_64946db0->x_c7f843c2 = stack->x_c7f843c2;
 
-        if (currentTask->start_delay != 0) {
-            currentTask->start_delay--;
+        if (x_64946db0->x_c7f843c2 != 0) {
+            x_64946db0->x_c7f843c2--;
         } else {
-            currentTask->func(obj);
+            x_64946db0->x_f6382727(obj);
         }
     }
 }
 
-void player_play_sounds(Object *obj) {
-    Player *player = (Player *) obj->varObj[0];
-    s16 soundTableIndex = player->combatState->soundTableIndex;
-    AnimationSoundTriggers *soundTable = player->soundTable;
-    s16 playerId = player->playerId;
+void x_9a2e218f(Object *obj) {
+    Player *player = (Player *) obj->x_e2f64c57[0];
+    s16 x_9e993e2f = player->x_7f68c36b->x_9e993e2f;
+    x_c8184673 *x_429c730a = player->x_429c730a;
+    s16 x_30bbe547 = player->x_30bbe547;
 
-    if (soundTableIndex != -1) {
-        soundTable += soundTableIndex;
-        if (obj->frameIndex != 0) {
-            if (obj->frameIndex == soundTable->frame1) {
-                sound_play(playerId, soundTable->soundId1);
+    if (x_9e993e2f != -1) {
+        x_429c730a += x_9e993e2f;
+        if (obj->x_5fcb1654 != 0) {
+            if (obj->x_5fcb1654 == x_429c730a->x_70149fad) {
+                x_7e194d55(x_30bbe547, x_429c730a->x_6c6074c0);
             }
-            if (obj->frameIndex == soundTable->frame2) {
-                sound_play(playerId, soundTable->soundId2);
+            if (obj->x_5fcb1654 == x_429c730a->x_bf6039d8) {
+                x_7e194d55(x_30bbe547, x_429c730a->x_a1942e25);
             }
-            if (obj->frameIndex == soundTable->frame3) {
-                sound_play(playerId, soundTable->soundId3);
+            if (obj->x_5fcb1654 == x_429c730a->x_8c856b1f) {
+                x_7e194d55(x_30bbe547, x_429c730a->x_94e185f0);
             }
-            if (obj->frameIndex == soundTable->frame4) {
-                sound_play(playerId, soundTable->soundId4);
+            if (obj->x_5fcb1654 == x_429c730a->x_851b801d) {
+                x_7e194d55(x_30bbe547, x_429c730a->x_155a7631);
             }
         }
     }
 }
 
-void func_800249A4(Object *obj) {
+void x_cdd4d8f3(Object *obj) {
 }

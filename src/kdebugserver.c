@@ -7,16 +7,16 @@ s32 D_80053D44 = 0;
 s32 D_80053D48 = 0;
 
 u8 D_8013EE00[256];
-OSThread __osThreadSave;
+OSThread x_961e4375;
 
-void u32_to_string(u32 i, u8 *str) {
+void x_25bb0b8f(u32 i, u8 *str) {
     str[0] = (i >> 24) & 0xFF;
     str[1] = (i >> 16) & 0xFF;
     str[2] = (i >> 8) & 0xFF;
     str[3] = i & 0xFF;
 }
 
-u32 func_800450E0(u8 *str) {
+u32 x_fdb61714(u8 *str) {
     u32 i;
     i = (str[0] & 0xff) << 0x18;
     i |= (str[1] & 0xff) << 0x10;
@@ -25,7 +25,7 @@ u32 func_800450E0(u8 *str) {
     return i;
 }
 
-void func_80045138(u8 *s, s32 n) {
+void x_ab02c8b5(u8 *s, s32 n) {
     rdbPacket packet;
     s32 i;
 
@@ -44,7 +44,7 @@ void func_80045138(u8 *s, s32 n) {
     *(vu32 *) RDB_READ_INTR_REG = 0;
 }
 
-void func_800451F8(u8 *buff, s32 len) {
+void x_e1293f81(u8 *x_048b41bf, s32 len) {
     s32 i;
     s32 end;
     s32 rem;
@@ -60,27 +60,27 @@ void func_800451F8(u8 *buff, s32 len) {
     rem = len % 3;
     end = len - rem;
     for (i = 0; i < end; i += 3) {
-        func_80045138(&buff[i], 3);
+        x_ab02c8b5(&x_048b41bf[i], 3);
     }
     if (rem > 0) {
-        func_80045138(&buff[end], rem);
+        x_ab02c8b5(&x_048b41bf[end], rem);
     }
 }
 
-void func_800452D0(void) {
+void x_b7d3fa81(void) {
     u8 *addr;
     s32 length;
 
-    addr = (u8 *) func_800450E0(&D_8013EE00[1]);
-    length = func_800450E0(&D_8013EE00[5]);
-    func_800451F8(addr, length);
+    addr = (u8 *) x_fdb61714(&D_8013EE00[1]);
+    length = x_fdb61714(&D_8013EE00[5]);
+    x_e1293f81(addr, length);
 }
 
-void func_8004531C(void) {
-    func_800451F8((u8 *) &__osThreadSave.context, sizeof(__OSThreadContext));
+void x_64fe7b2e(void) {
+    x_e1293f81((u8 *) &x_961e4375.context, sizeof(__OSThreadContext));
 }
 
-void kdebugserver(u32 arg) {
+void x_10ebd190(u32 arg) {
     u32 i;
     rdbPacket packet;
 
@@ -100,7 +100,7 @@ void kdebugserver(u32 arg) {
                     D_80053D48 = 9 - packet.length;
                     break;
                 case 2:
-                    func_8004531C();
+                    x_64fe7b2e();
                     D_80053D40 = 0;
                     D_80053D44 = 0;
                     D_80053D48 = 0;
@@ -115,7 +115,7 @@ void kdebugserver(u32 arg) {
         case 1:
             if (D_80053D48 <= 0) {
                 if (D_8013EE00[0] == 1) {
-                    func_800452D0();
+                    x_b7d3fa81();
                     D_80053D40 = 0;
                     D_80053D44 = 0;
                     D_80053D48 = 0;

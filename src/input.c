@@ -3,28 +3,28 @@
 // R_CBUTTONS, L_CBUTTONS, D_CBUTTONS, U_CBUTTONS
 s32 D_8004A4F0[] = {
     0,
-    INP_CRIGHT,                                  // R_CBUTTONS
-    INP_CLEFT,                                   // L_CBUTTONS
-    INP_CRIGHT | INP_CLEFT,                      // R_CBUTTONS + L_CBUTTONS
-    INP_CDOWN,                                   // D_CBUTTONS
-    INP_CDOWN | INP_CRIGHT,                      // D_CBUTTONS + R_CBUTTONS
-    INP_CDOWN | INP_CLEFT,                       // D_CBUTTONS + L_CBUTTONS
-    INP_CDOWN | INP_CLEFT | INP_CRIGHT,          // D_CBUTTONS + L_CBUTTONS + R_CBUTTONS
-    INP_CUP,                                     // U_CBUTTONS
-    INP_CUP | INP_CRIGHT,                        // U_CBUTTONS + R_CBUTTONS
-    INP_CUP | INP_CLEFT,                         // U_CBUTTONS + L_CBUTTONS
-    INP_CUP | INP_CRIGHT | INP_CLEFT,            // U_CBUTTONS + L_CBUTTONS + R_CBUTTONS
-    INP_CUP | INP_CDOWN,                         // U_CBUTTONS + D_CBUTTONS
-    INP_CUP | INP_CDOWN | INP_CRIGHT,            // U_CBUTTONS + D_CBUTTONS + R_CBUTTONS
-    INP_CUP | INP_CDOWN | INP_CLEFT,             // U_CBUTTONS + D_CBUTTONS + L_CBUTTONS
-    INP_CUP | INP_CDOWN | INP_CRIGHT | INP_CLEFT // U_CBUTTONS + D_CBUTTONS + L_CBUTTONS + R_CBUTTONS
+    x_37f8540c,                                  // R_CBUTTONS
+    x_ffe9ce36,                                   // L_CBUTTONS
+    x_37f8540c | x_ffe9ce36,                      // R_CBUTTONS + L_CBUTTONS
+    x_b2ae561b,                                   // D_CBUTTONS
+    x_b2ae561b | x_37f8540c,                      // D_CBUTTONS + R_CBUTTONS
+    x_b2ae561b | x_ffe9ce36,                       // D_CBUTTONS + L_CBUTTONS
+    x_b2ae561b | x_ffe9ce36 | x_37f8540c,          // D_CBUTTONS + L_CBUTTONS + R_CBUTTONS
+    x_84d0a51b,                                     // U_CBUTTONS
+    x_84d0a51b | x_37f8540c,                        // U_CBUTTONS + R_CBUTTONS
+    x_84d0a51b | x_ffe9ce36,                         // U_CBUTTONS + L_CBUTTONS
+    x_84d0a51b | x_37f8540c | x_ffe9ce36,            // U_CBUTTONS + L_CBUTTONS + R_CBUTTONS
+    x_84d0a51b | x_b2ae561b,                         // U_CBUTTONS + D_CBUTTONS
+    x_84d0a51b | x_b2ae561b | x_37f8540c,            // U_CBUTTONS + D_CBUTTONS + R_CBUTTONS
+    x_84d0a51b | x_b2ae561b | x_ffe9ce36,             // U_CBUTTONS + D_CBUTTONS + L_CBUTTONS
+    x_84d0a51b | x_b2ae561b | x_37f8540c | x_ffe9ce36 // U_CBUTTONS + D_CBUTTONS + L_CBUTTONS + R_CBUTTONS
 };
 
 // R_TRIG, L_TRIG
 s32 D_8004A530[] = { 0,
-                     INP_R,         // R_TRIG
-                     INP_L,         // L_TRIG
-                     INP_L | INP_R, // R_TRIG + L_TRIG
+                     x_64a28e7d,         // R_TRIG
+                     x_af0e0a9f,         // L_TRIG
+                     x_af0e0a9f | x_64a28e7d, // R_TRIG + L_TRIG
                      0,
                      0,
                      0,
@@ -34,45 +34,45 @@ s32 D_8004A530[] = { 0,
 // R_JPAD, L_JPAD, D_JPAD, U_JPAD
 s32 D_8004A554[] = {
     0,
-    INP_RIGHT,                       // R_JPAD
-    INP_LEFT,                        // L_JPAD
-    INP_RIGHT | INP_LEFT,            // R_JPAD + L_JPAD
-    INP_DOWN,                        // D_JPAD
-    INP_RIGHT | INP_DOWN,            // R_JPAD + D_JPAD
-    INP_DOWN | INP_LEFT,             // L_JPAD + D_JPAD
-    INP_RIGHT | INP_DOWN | INP_LEFT, // R_JPAD + L_JPAD + D_JPAD
-    INP_UP,                          // U_JPAD
-    INP_UP | INP_RIGHT,              // R_JPAD + U_JPAD
-    INP_UP | INP_LEFT                // L_JPAD + U_JPAD
+    x_fc4a9735,                       // R_JPAD
+    x_ad1aebe6,                        // L_JPAD
+    x_fc4a9735 | x_ad1aebe6,            // R_JPAD + L_JPAD
+    x_b8c91680,                        // D_JPAD
+    x_fc4a9735 | x_b8c91680,            // R_JPAD + D_JPAD
+    x_b8c91680 | x_ad1aebe6,             // L_JPAD + D_JPAD
+    x_fc4a9735 | x_b8c91680 | x_ad1aebe6, // R_JPAD + L_JPAD + D_JPAD
+    x_f7763ed8,                          // U_JPAD
+    x_f7763ed8 | x_fc4a9735,              // R_JPAD + U_JPAD
+    x_f7763ed8 | x_ad1aebe6                // L_JPAD + U_JPAD
 };
 // START_BUTTON, Z_TRIG, B_BUTTON, A_BUTTON
 s32 D_8004A580[] = {
     0,
-    INP_START,             // START_BUTTON
-    INP_L,                 // Z_TRIG
-    INP_ZTRIG | INP_START, // START_BUTTON + Z_TRIG
-    INP_B,                 // B_BUTTON
+    x_9cefe76c,             // START_BUTTON
+    x_af0e0a9f,                 // Z_TRIG
+    x_1c9950cc | x_9cefe76c, // START_BUTTON + Z_TRIG
+    x_c7089780,                 // B_BUTTON
     0,                     // START_BUTTON + B_BUTTON
-    INP_ZTRIG | INP_B,     // Z_TRIG + B_BUTTON
+    x_1c9950cc | x_c7089780,     // Z_TRIG + B_BUTTON
     0,                     // START_BUTTON + Z_TRIG + B_BUTTON
-    INP_A,                 // A_BUTTON
+    x_29dbff14,                 // A_BUTTON
     0,                     // START_BUTTON + A_BUTTON
-    INP_ZTRIG | INP_A,     // Z_TRIG + A_BUTTON
+    x_1c9950cc | x_29dbff14,     // Z_TRIG + A_BUTTON
     0,                     // START_BUTTON + Z_TRIG + A_BUTTON
-    INP_B | INP_A,         // B_BUTTON + A_BUTTON
+    x_c7089780 | x_29dbff14,         // B_BUTTON + A_BUTTON
     0,                     // START_BUTTON + B_BUTTON + A_BUTTON
     0,                     // Z_TRIG + B_BUTTON + A_BUTTON
     0                      // START_BUTTON + Z_TRIG + B_BUTTON + A_BUTTON
 };
 
-PlayerInput gPlayerInput[2];
-u16 gButtonsMap[2][8];
+x_23580eef x_59ce598c[2];
+u16 x_013307ec[2][8];
 
-u16 func_800249B0(u16 contId, u16 buttons) {
+u16 x_90d8784d(u16 x_1b94c75c, u16 buttons) {
     u16 i;
     u16 mask;
     u16 v1;
-    u16 *ptr = gButtonsMap[contId];
+    u16 *ptr = x_013307ec[x_1b94c75c];
 
     mask = 1;
     v1 = 0;
@@ -87,10 +87,10 @@ u16 func_800249B0(u16 contId, u16 buttons) {
     return v1 | (buttons & 0xFF00);
 }
 
-void func_80024A38(u16 contId) {
+void x_15468514(u16 x_1b94c75c) {
     s32 i;
     s32 mask;
-    u16 *ptr = gButtonsMap[contId];
+    u16 *ptr = x_013307ec[x_1b94c75c];
 
     mask = 1;
     for (i = 0; i < 8; i++) {
@@ -99,98 +99,98 @@ void func_80024A38(u16 contId) {
     }
 }
 
-#ifdef NON_MATCHING
-void func_80024A90(s16 contId) {
+#ifdef x_26a627fb
+void x_d523d906(s16 x_1b94c75c) {
     s32 temp;
     u16 v1;
     u16 buttons;
     u16 v0;
 
-    v1 = gContData[contId]->button;
+    v1 = x_f72c20e6[x_1b94c75c]->button;
     buttons = D_8004A4F0[v1 & 0xF];
     buttons |= D_8004A530[(v1 >> 4) & 0xF];
     buttons |= D_8004A554[(v1 >> 8) & 0xF];
     buttons |= D_8004A580[(v1 >> 12) & 0xF];
 
-    if (!(gPlayerInput + contId)->disableStick && !(buttons & INP_DIRECTION)) {
-        if (gContData[contId]->stick_x > 40) {
-            buttons |= INP_RIGHT;
-        } else if (gContData[contId]->stick_x < -40) {
-            buttons |= INP_LEFT;
+    if (!(x_59ce598c + x_1b94c75c)->x_40ccbb76 && !(buttons & x_0684c746)) {
+        if (x_f72c20e6[x_1b94c75c]->stick_x > 40) {
+            buttons |= x_fc4a9735;
+        } else if (x_f72c20e6[x_1b94c75c]->stick_x < -40) {
+            buttons |= x_ad1aebe6;
         }
 
-        if (gContData[contId]->stick_y > 40) {
-            buttons |= INP_UP;
-        } else if (gContData[contId]->stick_y < -40) {
-            buttons |= INP_DOWN;
+        if (x_f72c20e6[x_1b94c75c]->stick_y > 40) {
+            buttons |= x_f7763ed8;
+        } else if (x_f72c20e6[x_1b94c75c]->stick_y < -40) {
+            buttons |= x_b8c91680;
         }
     }
 
-    (gPlayerInput + contId)->raw_buttons = buttons;
+    (x_59ce598c + x_1b94c75c)->x_f3756179 = buttons;
 
-    if ((gPlayerInput + contId)->remapped) {
-        buttons = func_800249B0(contId, buttons);
+    if ((x_59ce598c + x_1b94c75c)->x_3fb684fe) {
+        buttons = x_90d8784d(x_1b94c75c, buttons);
     }
 
-    if (gPlayerInput[contId].mirrored) {
+    if (x_59ce598c[x_1b94c75c].x_d93bcabf) {
         v0 = buttons;
         buttons = buttons & 0x5FFF;
         if (buttons) {}
-        if (v0 & INP_LEFT) {
-            buttons |= INP_RIGHT;
+        if (v0 & x_ad1aebe6) {
+            buttons |= x_fc4a9735;
         }
-        if (v0 & INP_RIGHT) {
-            buttons |= INP_LEFT;
+        if (v0 & x_fc4a9735) {
+            buttons |= x_ad1aebe6;
         }
     }
 
-    if (!gPlayerInput[contId].pendingInput) {
-        gPlayerInput[contId].held_buttons = gPlayerInput[contId].prev_buttons;
+    if (!x_59ce598c[x_1b94c75c].x_c4397934) {
+        x_59ce598c[x_1b94c75c].x_245d87f4 = x_59ce598c[x_1b94c75c].x_33260da8;
     } else {
-        gPlayerInput[contId].held_buttons = gPlayerInput[contId].held_buttons & gPlayerInput[contId].prev_buttons;
+        x_59ce598c[x_1b94c75c].x_245d87f4 = x_59ce598c[x_1b94c75c].x_245d87f4 & x_59ce598c[x_1b94c75c].x_33260da8;
     }
 
-    temp = ~(INP_START | INP_ZTRIG | INP_CLEFT | INP_CDOWN | INP_CUP | INP_B | INP_R | INP_L);
-    temp |= (u16) ~gPlayerInput[contId].prev_buttons;
-    temp |= (u16) ~gPlayerInput[contId].held_buttons;
+    temp = ~(x_9cefe76c | x_1c9950cc | x_ffe9ce36 | x_b2ae561b | x_84d0a51b | x_c7089780 | x_64a28e7d | x_af0e0a9f);
+    temp |= (u16) ~x_59ce598c[x_1b94c75c].x_33260da8;
+    temp |= (u16) ~x_59ce598c[x_1b94c75c].x_245d87f4;
 
-    gPlayerInput[contId].buttons = temp & buttons;
-    v0 = gPlayerInput[contId].prev_buttons;
+    x_59ce598c[x_1b94c75c].buttons = temp & buttons;
+    v0 = x_59ce598c[x_1b94c75c].x_33260da8;
     if (buttons != v0 ||
-        (buttons & (INP_CRIGHT | INP_LEFT | INP_DOWN | INP_RIGHT)) && !(buttons & (INP_CLEFT | INP_CDOWN | INP_CUP))) {
-        gPlayerInput[contId].pendingInput = TRUE;
+        (buttons & (x_37f8540c | x_ad1aebe6 | x_b8c91680 | x_fc4a9735)) && !(buttons & (x_ffe9ce36 | x_b2ae561b | x_84d0a51b))) {
+        x_59ce598c[x_1b94c75c].x_c4397934 = TRUE;
     }
 
-    gPlayerInput[contId].prev_buttons = buttons;
+    x_59ce598c[x_1b94c75c].x_33260da8 = buttons;
     do { } while (0); }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/input/func_80024A90.s")
-void func_80024A90(s16 arg0);
+#pragma x_eda6f9e3("asm/nonmatchings/input/func_80024A90.s")
+void x_d523d906(s16 x_cc1d0de5);
 #endif
 
-void input_update(void) {
-    gFrameCounter++;
-    cont_read();
+void x_0dd43bb1(void) {
+    x_e3a9f332++;
+    x_bb61051c();
 
-    if (gPlayerInput[PLAYER_1].enabled && gPlayerInput[PLAYER_1].connected) {
-        func_80024A90(PLAYER_1);
+    if (x_59ce598c[x_83106b21].enabled && x_59ce598c[x_83106b21].x_12a7bd86) {
+        x_d523d906(x_83106b21);
     } else {
-        gPlayerInput[PLAYER_1].buttons = 0;
+        x_59ce598c[x_83106b21].buttons = 0;
     }
 
-    if (gPlayerInput[PLAYER_2].enabled && gPlayerInput[PLAYER_2].connected) {
-        func_80024A90(PLAYER_2);
+    if (x_59ce598c[x_6f0b3be3].enabled && x_59ce598c[x_6f0b3be3].x_12a7bd86) {
+        x_d523d906(x_6f0b3be3);
     } else {
-        gPlayerInput[PLAYER_2].buttons = 0;
+        x_59ce598c[x_6f0b3be3].buttons = 0;
     }
 }
 
-void func_80024D2C(void) {
-    gPlayerInput[PLAYER_1].pendingInput = gPlayerInput[PLAYER_2].pendingInput = FALSE;
-    gPlayerInput[PLAYER_1].buttons = gPlayerInput[PLAYER_2].buttons = 0;
-    gPlayerInput[PLAYER_1].mirrored = gPlayerInput[PLAYER_2].mirrored = FALSE;
-    gPlayerInput[PLAYER_2].enabled = gPlayerInput[PLAYER_1].enabled = TRUE;
-    gPlayerInput[PLAYER_2].prev_buttons = gPlayerInput[PLAYER_1].prev_buttons = 0;
-    gPlayerInput[PLAYER_2].remapped = gPlayerInput[PLAYER_1].remapped = TRUE;
-    gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = FALSE;
+void x_14384217(void) {
+    x_59ce598c[x_83106b21].x_c4397934 = x_59ce598c[x_6f0b3be3].x_c4397934 = FALSE;
+    x_59ce598c[x_83106b21].buttons = x_59ce598c[x_6f0b3be3].buttons = 0;
+    x_59ce598c[x_83106b21].x_d93bcabf = x_59ce598c[x_6f0b3be3].x_d93bcabf = FALSE;
+    x_59ce598c[x_6f0b3be3].enabled = x_59ce598c[x_83106b21].enabled = TRUE;
+    x_59ce598c[x_6f0b3be3].x_33260da8 = x_59ce598c[x_83106b21].x_33260da8 = 0;
+    x_59ce598c[x_6f0b3be3].x_3fb684fe = x_59ce598c[x_83106b21].x_3fb684fe = TRUE;
+    x_59ce598c[x_83106b21].x_40ccbb76 = x_59ce598c[x_6f0b3be3].x_40ccbb76 = FALSE;
 }

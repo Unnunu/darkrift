@@ -2,254 +2,254 @@
 #include "camera.h"
 #include "task.h"
 
-s32 sCamDeadZone = 170;
-s32 sCamZoomDeadZone = 500;
-s32 D_80052C68_unused[] = { 0, 0xFFFFFE20, 0xFFFFF704, 0 };
-s32 sZoomDecelThreshold = 0x400;
-s32 sZoomSpeedMaxAccum = 0x480000;
-s32 sZoomAccel = 0x1C000;
-s32 sZoomDecel = 0x20000;
-s32 sZoomMomentumMin = 0x100000;
-s32 sZoomMomentumCur = 0;
-s32 sPanDeadZone = 200;
-s32 sPanSpeedMaxAccum = 0x240000;
-s32 sPanAccel = 0x2000;
-s32 sPanDecel = 0xE000;
-s32 sPanMomentumMin = 0x40000;
-s32 sPanMomentumCur = 0;
-s32 D_80052CA8_unused = 0;
-s32 sRotStep = 0x400;
-s8 sRotDeltaCur = 0;
-u8 sZoomSettled = FALSE;
-s32 sHitZoomAccum = 0;
-s32 sHitHeightAdj = 0;
-s32 sHitScrollTimer = 0;
-s32 sHitScrollStep = 0x8000;
-s32 sHitScrollAccum = 0;
-char *sCutsceneFilename = "opencamX.oc";
+s32 x_e3ea1dcb = 170;
+s32 x_e700b1a3 = 500;
+s32 x_789112b4[] = { 0, 0xFFFFFE20, 0xFFFFF704, 0 };
+s32 x_63e0d71b = 0x400;
+s32 x_fef2140c = 0x480000;
+s32 x_452e0082 = 0x1C000;
+s32 x_c2f1d98b = 0x20000;
+s32 x_15bf92fd = 0x100000;
+s32 x_b8d38fc7 = 0;
+s32 x_7eb21652 = 200;
+s32 x_1c1ecf0d = 0x240000;
+s32 x_79389416 = 0x2000;
+s32 x_e21927eb = 0xE000;
+s32 x_e4130b8b = 0x40000;
+s32 x_08b122d8 = 0;
+s32 x_824d63ed = 0;
+s32 x_19369121 = 0x400;
+s8 x_e1e12448 = 0;
+u8 x_9991d607 = FALSE;
+s32 x_b64f16b7 = 0;
+s32 x_881ee8c3 = 0;
+s32 x_1e5afea8 = 0;
+s32 x_b221ddda = 0x8000;
+s32 x_7450a2d3 = 0;
+char *x_9f3b452d = "opencamX.oc";
 
-Vec4i sSavedCamPos;
-Vec4i sSavedCamTarget;
+x_88f11482 x_f8a5b34e;
+x_88f11482 x_84e6adae;
 s16 D_8013C300;
 s16 D_8013C302;
 s16 D_8013C304;
 f32 D_8013C308;
-s32 D_8013C30C_unused;
-Vec4i D_8013C310;
-Vec4i D_8013C320;
-s16 D_8013C330_unused;
+s32 x_2c039205;
+x_88f11482 D_8013C310;
+x_88f11482 D_8013C320;
+s16 x_c4fec3a7;
 s16 D_8013C332;
 s16 D_8013C334;
 s16 D_8013C336;
 f32 D_8013C338;
 s16 D_8013C33C;
 s16 D_8013C33E;
-s32 sOrbitAngle;
-s32 sOrbitHeightMul;
-s32 sOrbitRadiusMul;
-s32 sOrbitRadius;
-s32 sOrbitMaxZoomOut;
-s32 sZoomFromDistRatio;
-s32 sZoomYOffsetMul;
-s32 sCamBaseY;
-s32 sCamHeightMul;
-s32 sBgScrollYmul;
-s32 D_8013C368_unused;
-s32 D_8013C36C_unused;
+s32 x_987ae9dc;
+s32 x_d86fab4d;
+s32 x_49bdae1a;
+s32 x_22f06603;
+s32 x_6db70595;
+s32 x_fb93483b;
+s32 x_992054e2;
+s32 x_d85eefcc;
+s32 x_6d4a1d2c;
+s32 x_143af627;
+s32 x_4809c47c;
+s32 x_aa9e3546;
 s32 D_8013C370;
-s32 D_8013C374_unused;
-s32 D_8013C378_unused;
-s32 sRotVelCap;
-s32 sRotAccum;
-s32 sRotDecelTimer;
-s16 D_8013C388_unused;
-s16 sShakeSpeed;
-s16 sShakeHeightDelta;
-s16 sShakeDistDelta;
-s32 D_8013C390_unused;
+s32 x_93ff7118;
+s32 x_7411f494;
+s32 x_c7298ffb;
+s32 x_f6ef18bf;
+s32 x_db28d0d1;
+s16 x_01fe5b5c;
+s16 x_0525ed93;
+s16 x_aba11848;
+s16 x_b227e464;
+s32 x_e5ea8fea;
 
-s32 func_80012854(s32 arg0);
+s32 x_d9b20313(s32 x_cc1d0de5);
 
-void camera_battle_update(Object *obj);
-void camera_orbit_update(Object *obj, u8 arg1);
-void camera_push_players_apart(u8 arg0);
+void x_31bdfdc5(Object *obj);
+void x_076ece50(Object *obj, u8 x_84ff873b);
+void x_7cdfb63d(u8 x_cc1d0de5);
 
-s32 abs(s32 arg0) {
-    return arg0 < 0 ? -arg0 : arg0;
+s32 abs(s32 x_cc1d0de5) {
+    return x_cc1d0de5 < 0 ? -x_cc1d0de5 : x_cc1d0de5;
 }
 
-s32 abs2(s32 arg0) {
-    return arg0 < 0 ? -arg0 : arg0;
+s32 x_67ffc48b(s32 x_cc1d0de5) {
+    return x_cc1d0de5 < 0 ? -x_cc1d0de5 : x_cc1d0de5;
 }
 
-void camera_save_state(void) {
-    D_8013C320.x = gCameraTarget.x;
-    D_8013C320.y = gCameraTarget.y;
-    D_8013C320.z = gCameraTarget.z;
+void x_7d4d6609(void) {
+    D_8013C320.x = x_435c561d.x;
+    D_8013C320.y = x_435c561d.y;
+    D_8013C320.z = x_435c561d.z;
 
-    D_8013C310.x = gCamera->pos.x;
-    D_8013C310.y = gCamera->pos.y;
-    D_8013C310.z = gCamera->pos.z;
+    D_8013C310.x = x_f4bce728->pos.x;
+    D_8013C310.y = x_f4bce728->pos.y;
+    D_8013C310.z = x_f4bce728->pos.z;
 
-    D_8013C332 = gBgScrollX;
-    D_8013C334 = gBgScrollY;
+    D_8013C332 = x_e74df613;
+    D_8013C334 = x_6c647b3a;
     D_8013C336 = D_8013C828;
     D_8013C338 = D_8013C5A0;
 
-    if (gCurrentGameMode <= GAME_MODE_17) {
-        D_8008012C |= GFX_FLAG_1;
+    if (x_f71086e0 <= x_cc464edc) {
+        D_8008012C |= x_f846a903;
     }
 }
 
-void camera_save_target_pos(void) {
-    D_8013C302 = gBgScrollX;
+void x_36ef4518(void) {
+    D_8013C302 = x_e74df613;
 
-    sSavedCamTarget.x = gCameraTarget.x;
-    sSavedCamTarget.y = gCameraTarget.y;
-    sSavedCamTarget.z = gCameraTarget.z;
+    x_84e6adae.x = x_435c561d.x;
+    x_84e6adae.y = x_435c561d.y;
+    x_84e6adae.z = x_435c561d.z;
 
-    sSavedCamPos.x = gCamera->pos.x;
-    sSavedCamPos.y = gCamera->pos.y;
-    sSavedCamPos.z = gCamera->pos.z;
+    x_f8a5b34e.x = x_f4bce728->pos.x;
+    x_f8a5b34e.y = x_f4bce728->pos.y;
+    x_f8a5b34e.z = x_f4bce728->pos.z;
 
-    D_8013C300 = gBgScrollY;
+    D_8013C300 = x_6c647b3a;
     D_8013C304 = D_8013C828;
     D_8013C308 = D_8013C5A0;
 }
 
-void camera_cutscene_playback(Object *obj) {
+void x_e5f3a418(Object *obj) {
 
-    camera_save_target_pos();
+    x_36ef4518();
 
     obj->pos.x = D_8013C310.x;
     obj->pos.y = D_8013C310.y;
     obj->pos.z = D_8013C310.z;
 
-    gCameraTarget.x = D_8013C320.x;
-    gCameraTarget.y = D_8013C320.y;
-    gCameraTarget.z = D_8013C320.z;
+    x_435c561d.x = D_8013C320.x;
+    x_435c561d.y = D_8013C320.y;
+    x_435c561d.z = D_8013C320.z;
 
-    gBgScrollX = D_8013C332;
-    gBgScrollY = D_8013C334;
+    x_e74df613 = D_8013C332;
+    x_6c647b3a = D_8013C334;
     D_8013C828 = D_8013C336;
     D_8013C5A0 = D_8013C338;
 
-    camera_orbit_update(obj, FALSE);
-    camera_save_state();
+    x_076ece50(obj, FALSE);
+    x_7d4d6609();
 
-    if (obj->modInst->animations[0] != NULL) {
-        obj->frameIndex++;
-        if (obj->frameIndex >= obj->modInst->numAnimFrames - 1) {
-            obj->modInst->animations[0] = NULL;
-            if (!gRoundOver || D_80080234 == 0) {
-                obj->currentTask->func = camera_battle_update;
-                obj->currentTask->start_delay = 1;
-                D_8008012C &= ~GFX_FLAG_1;
-                gPlayers[PLAYER_1].obj->flags &= ~OBJ_FLAG_200000;
-                gPlayers[PLAYER_2].obj->flags &= ~OBJ_FLAG_200000;
+    if (obj->x_20d20338->x_50771dcd[0] != NULL) {
+        obj->x_5fcb1654++;
+        if (obj->x_5fcb1654 >= obj->x_20d20338->x_8e601526 - 1) {
+            obj->x_20d20338->x_50771dcd[0] = NULL;
+            if (!x_9df63a90 || D_80080234 == 0) {
+                obj->x_64946db0->x_f6382727 = x_31bdfdc5;
+                obj->x_64946db0->x_c7f843c2 = 1;
+                D_8008012C &= ~x_f846a903;
+                x_824b9544[x_83106b21].obj->flags &= ~x_060adf1c;
+                x_824b9544[x_6f0b3be3].obj->flags &= ~x_060adf1c;
                 return;
             }
-            sCutsceneAnimDone = TRUE;
+            x_6f8aa7af = TRUE;
         }
     }
 
-    D_8008012C &= ~GFX_FLAG_20;
+    D_8008012C &= ~x_8df87377;
 
-    obj->pos.x = sSavedCamPos.x;
-    obj->pos.y = sSavedCamPos.y;
-    obj->pos.z = sSavedCamPos.z;
+    obj->pos.x = x_f8a5b34e.x;
+    obj->pos.y = x_f8a5b34e.y;
+    obj->pos.z = x_f8a5b34e.z;
 
-    gCameraTarget.x = sSavedCamTarget.x;
-    gCameraTarget.y = sSavedCamTarget.y;
-    gCameraTarget.z = sSavedCamTarget.z;
+    x_435c561d.x = x_84e6adae.x;
+    x_435c561d.y = x_84e6adae.y;
+    x_435c561d.z = x_84e6adae.z;
 
-    gBgScrollY = D_8013C300 - (s32) (sPostCutsceneZoom * 0.2f);
-    gBgScrollX = 0;
+    x_6c647b3a = D_8013C300 - (s32) (x_cf60a652 * 0.2f);
+    x_e74df613 = 0;
     D_8013C828 = D_8013C304;
     D_8013C5A0 = D_8013C308;
 }
 
-void camera_outro_playback(Object *obj) {
+void x_394dcce8(Object *obj) {
 
-    camera_cutscene_playback(obj);
+    x_e5f3a418(obj);
 
-    if (obj->frameIndex >= obj->modInst->numAnimFrames - 1 || (gPlayerInput[PLAYER_1].buttons & INP_START) ||
-        (gPlayerInput[PLAYER_2].buttons & INP_START)) {
-        if (gPlayMode != PLAY_MODE_PRACTICE) {
-            func_80017CA8();
+    if (obj->x_5fcb1654 >= obj->x_20d20338->x_8e601526 - 1 || (x_59ce598c[x_83106b21].buttons & x_9cefe76c) ||
+        (x_59ce598c[x_6f0b3be3].buttons & x_9cefe76c)) {
+        if (x_5e4e2788 != x_79c2dc5b) {
+            x_b372f4dd();
         } else {
-            gPlayers[PLAYER_1].flags &= ~PLAYER_FLAG_100000;
-            gPlayers[PLAYER_2].flags &= ~PLAYER_FLAG_100000;
-            gGlobalFlags &= ~GAME_FLAG_4;
+            x_824b9544[x_83106b21].flags &= ~x_4d950171;
+            x_824b9544[x_6f0b3be3].flags &= ~x_4d950171;
+            x_e30d50d2 &= ~x_86c5bc33;
         }
 
-        gBgScrollX = 0;
+        x_e74df613 = 0;
         D_8013C828 = D_8013C304;
         D_8013C5A0 = D_8013C308;
 
-        camera_orbit_update(obj, FALSE);
+        x_076ece50(obj, FALSE);
 
-        obj->currentTask->func = camera_battle_update;
-        obj->modInst->animations[0] = NULL;
-        gPlayerInput[PLAYER_1].pendingInput = gPlayerInput[PLAYER_2].pendingInput = FALSE;
-        D_8008012C &= ~(GFX_FLAG_1 | GFX_FLAG_10);
+        obj->x_64946db0->x_f6382727 = x_31bdfdc5;
+        obj->x_20d20338->x_50771dcd[0] = NULL;
+        x_59ce598c[x_83106b21].x_c4397934 = x_59ce598c[x_6f0b3be3].x_c4397934 = FALSE;
+        D_8008012C &= ~(x_f846a903 | x_c626209d);
     }
 
-    gPlayers[PLAYER_1].obj->flags |= OBJ_FLAG_200000;
-    gPlayers[PLAYER_2].obj->flags |= OBJ_FLAG_200000;
+    x_824b9544[x_83106b21].obj->flags |= x_060adf1c;
+    x_824b9544[x_6f0b3be3].obj->flags |= x_060adf1c;
 }
 
-void camera_debug_control(Object *obj) {
+void x_275dc194(Object *obj) {
     u32 v0;
 
-    v0 = gPlayerInput[PLAYER_1].buttons;
+    v0 = x_59ce598c[x_83106b21].buttons;
 
-    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
-    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
+    x_824b9544[x_83106b21].flags |= x_4d950171;
+    x_824b9544[x_6f0b3be3].flags |= x_4d950171;
 
-    if (v0 & INP_R) {
+    if (v0 & x_64a28e7d) {
         D_8013C588 -= 10;
-    } else if (v0 & INP_CUP) {
-        gCameraTarget.y -= 10;
-    } else if (v0 & INP_CDOWN) {
-        gCameraTarget.y += 10;
-    } else if (v0 & INP_CLEFT) {
+    } else if (v0 & x_84d0a51b) {
+        x_435c561d.y -= 10;
+    } else if (v0 & x_b2ae561b) {
+        x_435c561d.y += 10;
+    } else if (v0 & x_ffe9ce36) {
         obj->pos.z -= 10;
-    } else if (v0 & INP_CRIGHT) {
+    } else if (v0 & x_37f8540c) {
         obj->pos.z += 10;
-    } else if (v0 & INP_L) {
+    } else if (v0 & x_af0e0a9f) {
         D_8013C588 += 10;
-    } else if (v0 & INP_UP) {
+    } else if (v0 & x_f7763ed8) {
         obj->pos.y += 10;
-    } else if (v0 & INP_DOWN) {
+    } else if (v0 & x_b8c91680) {
         obj->pos.y -= 10;
-    } else if (v0 & INP_B) {
+    } else if (v0 & x_c7089780) {
         obj->pos.z += 10;
-    } else if (v0 & INP_A) {
+    } else if (v0 & x_29dbff14) {
         obj->pos.z -= 10;
-    } else if (v0 & INP_R) {
-        gPlayers[PLAYER_1].obj->pos.x = -1600;
-        gPlayers[PLAYER_2].obj->pos.x = 1600;
-    } else if (v0 & INP_L) {
-        gPlayers[PLAYER_1].obj->pos.x = -400;
-        gPlayers[PLAYER_2].obj->pos.x = 400;
+    } else if (v0 & x_64a28e7d) {
+        x_824b9544[x_83106b21].obj->pos.x = -1600;
+        x_824b9544[x_6f0b3be3].obj->pos.x = 1600;
+    } else if (v0 & x_af0e0a9f) {
+        x_824b9544[x_83106b21].obj->pos.x = -400;
+        x_824b9544[x_6f0b3be3].obj->pos.x = 400;
     }
 }
 
-void camera_debug_light_control(Object *obj) {
-    u32 temp1;
+void x_5232700e(Object *obj) {
+    u32 x_8c5f8c03;
     u32 v1;
     u32 a1;
-    GlobalLighting *v0;
+    x_2bb4cf6f *v0;
 
-    v0 = gGameModes[gCurrentGameMode].unk_18;
-    temp1 = gPlayerInput[PLAYER_1].buttons;
-    v1 = temp1 & 0xFFFF;
-    a1 = temp1 >> 16;
-    temp1 = v1;
+    v0 = x_4540c33c[x_f71086e0].x_08b62e4f;
+    x_8c5f8c03 = x_59ce598c[x_83106b21].buttons;
+    v1 = x_8c5f8c03 & 0xFFFF;
+    a1 = x_8c5f8c03 >> 16;
+    x_8c5f8c03 = v1;
 
-    if (temp1 != 0 || a1 != 0) {
-        switch (temp1) {
+    if (x_8c5f8c03 != 0 || a1 != 0) {
+        switch (x_8c5f8c03) {
             case 0x80:
                 obj->pos.x = -2000;
                 obj->pos.z = 0;
@@ -271,105 +271,105 @@ void camera_debug_light_control(Object *obj) {
 
         switch (a1) {
             case 0x80:
-                v0->lights[0].dir_x = -127;
-                v0->lights[0].dir_z = 0;
+                v0->lights[0].x_5962f1cd = -127;
+                v0->lights[0].x_a18bc2e0 = 0;
                 break;
             case 0x20:
-                v0->lights[0].dir_x = 127;
-                v0->lights[0].dir_z = 0;
+                v0->lights[0].x_5962f1cd = 127;
+                v0->lights[0].x_a18bc2e0 = 0;
                 break;
             case 0x10:
-                v0->lights[0].dir_x = 0;
-                v0->lights[0].dir_z = 127;
+                v0->lights[0].x_5962f1cd = 0;
+                v0->lights[0].x_a18bc2e0 = 127;
                 break;
             case 0x40:
-                v0->lights[0].dir_x = 0;
-                v0->lights[0].dir_z = -127;
+                v0->lights[0].x_5962f1cd = 0;
+                v0->lights[0].x_a18bc2e0 = -127;
                 break;
         }
     }
 }
 
-void camera_debug_init(Object *obj) {
+void x_b2473ec5(Object *obj) {
     obj->pos.x = 0;
     obj->pos.y = -480;
     obj->pos.z = -2300;
-    gCameraTarget.y = -480;
+    x_435c561d.y = -480;
     D_8013C588 = 597;
-    obj->currentTask->func = camera_debug_control;
+    obj->x_64946db0->x_f6382727 = x_275dc194;
 }
 
-void camera_update_player_facing(void) {
-    Object *player1;
-    Object *player2;
-    s16 sp26;
+void x_052b2310(void) {
+    Object *x_13d65ace;
+    Object *x_c48d15e0;
+    s16 x_434431dd;
 
-    player1 = gPlayerObjects[PLAYER_1];
-    player2 = gPlayerObjects[PLAYER_2];
-    D_8013C33C = (0xC00 - player1->rotation.y) & 0xFFF;
-    D_8013C33E = (0xC00 - player2->rotation.y) & 0xFFF;
+    x_13d65ace = x_3ac11521[x_83106b21];
+    x_c48d15e0 = x_3ac11521[x_6f0b3be3];
+    D_8013C33C = (0xC00 - x_13d65ace->x_224610f1.y) & 0xFFF;
+    D_8013C33E = (0xC00 - x_c48d15e0->x_224610f1.y) & 0xFFF;
 
-    if (abs(angle_diff(gPlayerAngle, D_8013C33C)) < 0x400) {
-        ((Player *) player1->varObj[0])->flags |= PLAYER_FLAG_NOT_FACING_OPP;
-        ((Player *) player1->varObj[0])->flags &= ~PLAYER_FLAG_200;
+    if (abs(x_39970af2(x_09a33777, D_8013C33C)) < 0x400) {
+        ((Player *) x_13d65ace->x_e2f64c57[0])->flags |= x_9298c772;
+        ((Player *) x_13d65ace->x_e2f64c57[0])->flags &= ~x_67e702ae;
     } else {
-        sp26 = angle_diff(gPlayerAngle - 0x800, D_8013C33C);
-        if (abs(sp26) > 140) {
-            if (sp26 < 0) {
-                sp26 = -140;
+        x_434431dd = x_39970af2(x_09a33777 - 0x800, D_8013C33C);
+        if (abs(x_434431dd) > 140) {
+            if (x_434431dd < 0) {
+                x_434431dd = -140;
             } else {
-                sp26 = 140;
+                x_434431dd = 140;
             }
         }
 
-        if (!(((Player *) player1->varObj[0])->flags & (PLAYER_FLAG_10 | PLAYER_FLAG_20000 | PLAYER_FLAG_400000))) {
-            player1->rotation.y = 0xC00 - D_8013C33C - sp26;
+        if (!(((Player *) x_13d65ace->x_e2f64c57[0])->flags & (x_188f9cec | x_faf494e7 | x_c865be3f))) {
+            x_13d65ace->x_224610f1.y = 0xC00 - D_8013C33C - x_434431dd;
         }
 
-        if ((gPlayers[PLAYER_1].unk_DBC = abs(sp26)) < 8) {
-            ((Player *) player1->varObj[0])->flags |= PLAYER_FLAG_200;
+        if ((x_824b9544[x_83106b21].x_101ebc50 = abs(x_434431dd)) < 8) {
+            ((Player *) x_13d65ace->x_e2f64c57[0])->flags |= x_67e702ae;
         } else {
-            ((Player *) player1->varObj[0])->flags &= ~PLAYER_FLAG_200;
+            ((Player *) x_13d65ace->x_e2f64c57[0])->flags &= ~x_67e702ae;
         }
-        ((Player *) player1->varObj[0])->flags &= ~PLAYER_FLAG_NOT_FACING_OPP;
+        ((Player *) x_13d65ace->x_e2f64c57[0])->flags &= ~x_9298c772;
     }
 
-    if (abs(angle_diff(gPlayerAngle, D_8013C33E)) < 0x400) {
-        sp26 = angle_diff(gPlayerAngle, D_8013C33E);
-        if (abs(sp26) > 140) {
-            if (sp26 < 0) {
-                sp26 = -140;
+    if (abs(x_39970af2(x_09a33777, D_8013C33E)) < 0x400) {
+        x_434431dd = x_39970af2(x_09a33777, D_8013C33E);
+        if (abs(x_434431dd) > 140) {
+            if (x_434431dd < 0) {
+                x_434431dd = -140;
             } else {
-                sp26 = 140;
+                x_434431dd = 140;
             }
         }
 
-        if (!(((Player *) player2->varObj[0])->flags & (PLAYER_FLAG_10 | PLAYER_FLAG_20000 | PLAYER_FLAG_400000))) {
-            player2->rotation.y = 0xC00 - D_8013C33E - sp26;
+        if (!(((Player *) x_c48d15e0->x_e2f64c57[0])->flags & (x_188f9cec | x_faf494e7 | x_c865be3f))) {
+            x_c48d15e0->x_224610f1.y = 0xC00 - D_8013C33E - x_434431dd;
         }
 
-        if ((gPlayers[PLAYER_2].unk_DBC = abs(sp26)) < 8) {
-            ((Player *) player2->varObj[0])->flags |= PLAYER_FLAG_200;
+        if ((x_824b9544[x_6f0b3be3].x_101ebc50 = abs(x_434431dd)) < 8) {
+            ((Player *) x_c48d15e0->x_e2f64c57[0])->flags |= x_67e702ae;
         } else {
-            ((Player *) player2->varObj[0])->flags &= ~PLAYER_FLAG_200;
+            ((Player *) x_c48d15e0->x_e2f64c57[0])->flags &= ~x_67e702ae;
         }
-        ((Player *) player2->varObj[0])->flags &= ~PLAYER_FLAG_NOT_FACING_OPP;
+        ((Player *) x_c48d15e0->x_e2f64c57[0])->flags &= ~x_9298c772;
     } else {
-        ((Player *) player2->varObj[0])->flags |= PLAYER_FLAG_NOT_FACING_OPP;
-        ((Player *) player2->varObj[0])->flags &= ~PLAYER_FLAG_200;
+        ((Player *) x_c48d15e0->x_e2f64c57[0])->flags |= x_9298c772;
+        ((Player *) x_c48d15e0->x_e2f64c57[0])->flags &= ~x_67e702ae;
     }
 }
 
-s32 lerp16(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    arg0 -= arg1;
-    arg0 = (arg0 * arg3) >> 16;
-    return arg2 + arg0;
+s32 x_0cdda050(s32 x_cc1d0de5, s32 x_84ff873b, s32 x_2092f891, s32 x_ee71e5cb) {
+    x_cc1d0de5 -= x_84ff873b;
+    x_cc1d0de5 = (x_cc1d0de5 * x_ee71e5cb) >> 16;
+    return x_2092f891 + x_cc1d0de5;
 }
 
-s16 angle_diff(s16 arg0, s16 arg1) {
+s16 x_39970af2(s16 x_cc1d0de5, s16 x_84ff873b) {
     s16 v1;
 
-    v1 = (arg0 & 0xFFF) - (arg1 & 0xFFF);
+    v1 = (x_cc1d0de5 & 0xFFF) - (x_84ff873b & 0xFFF);
     if (v1 > 0x800) {
         v1 -= 0x1000;
     }
@@ -379,313 +379,313 @@ s16 angle_diff(s16 arg0, s16 arg1) {
     return v1;
 }
 
-void camera_shift_world(s32 arg0, s32 arg1) {
+void x_19d34654(s32 x_cc1d0de5, s32 x_84ff873b) {
     Object *obj;
 
-    for (obj = gObjectList; obj != NULL; obj = obj->nextObject) {
-        if (!(obj->flags & OBJ_FLAG_UIELEMENT)) {
-            obj->pos.x += arg0;
-            obj->pos.z += arg1;
-            math_sync_transforms(&obj->transform);
+    for (obj = x_8cdb365e; obj != NULL; obj = obj->x_2d5f3fbd) {
+        if (!(obj->flags & x_3d723236)) {
+            obj->pos.x += x_cc1d0de5;
+            obj->pos.z += x_84ff873b;
+            x_44a54e96(&obj->transform);
         }
     }
 
-    gPlayers[PLAYER_1].rightHandTrail.segmentCount = gPlayers[PLAYER_1].leftHandTrail.segmentCount =
-        gPlayers[PLAYER_1].leftLegTrail.segmentCount = gPlayers[PLAYER_1].rightLegTrail.segmentCount =
-            gPlayers[PLAYER_2].rightHandTrail.segmentCount = gPlayers[PLAYER_2].leftHandTrail.segmentCount =
-                gPlayers[PLAYER_2].leftLegTrail.segmentCount = gPlayers[PLAYER_2].rightLegTrail.segmentCount = 0;
+    x_824b9544[x_83106b21].x_d8a19723.x_b1f57d55 = x_824b9544[x_83106b21].x_238ba16f.x_b1f57d55 =
+        x_824b9544[x_83106b21].x_29c9094f.x_b1f57d55 = x_824b9544[x_83106b21].x_a241ea2a.x_b1f57d55 =
+            x_824b9544[x_6f0b3be3].x_d8a19723.x_b1f57d55 = x_824b9544[x_6f0b3be3].x_238ba16f.x_b1f57d55 =
+                x_824b9544[x_6f0b3be3].x_29c9094f.x_b1f57d55 = x_824b9544[x_6f0b3be3].x_a241ea2a.x_b1f57d55 = 0;
 
-    spline_interpolator_init(&gPlayers[PLAYER_1].rightHandTrail.splineB);
-    spline_interpolator_init(&gPlayers[PLAYER_1].rightHandTrail.splineA);
-    spline_interpolator_init(&gPlayers[PLAYER_1].leftHandTrail.splineB);
-    spline_interpolator_init(&gPlayers[PLAYER_1].leftHandTrail.splineA);
-    spline_interpolator_init(&gPlayers[PLAYER_1].leftLegTrail.splineB);
-    spline_interpolator_init(&gPlayers[PLAYER_1].leftLegTrail.splineA);
-    spline_interpolator_init(&gPlayers[PLAYER_1].rightLegTrail.splineB);
-    spline_interpolator_init(&gPlayers[PLAYER_1].rightLegTrail.splineA);
-    spline_interpolator_init(&gPlayers[PLAYER_2].rightHandTrail.splineB);
-    spline_interpolator_init(&gPlayers[PLAYER_2].rightHandTrail.splineA);
-    spline_interpolator_init(&gPlayers[PLAYER_2].leftHandTrail.splineB);
-    spline_interpolator_init(&gPlayers[PLAYER_2].leftHandTrail.splineA);
-    spline_interpolator_init(&gPlayers[PLAYER_2].leftLegTrail.splineB);
-    spline_interpolator_init(&gPlayers[PLAYER_2].leftLegTrail.splineA);
-    spline_interpolator_init(&gPlayers[PLAYER_2].rightLegTrail.splineB);
-    spline_interpolator_init(&gPlayers[PLAYER_2].rightLegTrail.splineA);
+    x_3c2e0c67(&x_824b9544[x_83106b21].x_d8a19723.x_1091fcc6);
+    x_3c2e0c67(&x_824b9544[x_83106b21].x_d8a19723.x_60635a2d);
+    x_3c2e0c67(&x_824b9544[x_83106b21].x_238ba16f.x_1091fcc6);
+    x_3c2e0c67(&x_824b9544[x_83106b21].x_238ba16f.x_60635a2d);
+    x_3c2e0c67(&x_824b9544[x_83106b21].x_29c9094f.x_1091fcc6);
+    x_3c2e0c67(&x_824b9544[x_83106b21].x_29c9094f.x_60635a2d);
+    x_3c2e0c67(&x_824b9544[x_83106b21].x_a241ea2a.x_1091fcc6);
+    x_3c2e0c67(&x_824b9544[x_83106b21].x_a241ea2a.x_60635a2d);
+    x_3c2e0c67(&x_824b9544[x_6f0b3be3].x_d8a19723.x_1091fcc6);
+    x_3c2e0c67(&x_824b9544[x_6f0b3be3].x_d8a19723.x_60635a2d);
+    x_3c2e0c67(&x_824b9544[x_6f0b3be3].x_238ba16f.x_1091fcc6);
+    x_3c2e0c67(&x_824b9544[x_6f0b3be3].x_238ba16f.x_60635a2d);
+    x_3c2e0c67(&x_824b9544[x_6f0b3be3].x_29c9094f.x_1091fcc6);
+    x_3c2e0c67(&x_824b9544[x_6f0b3be3].x_29c9094f.x_60635a2d);
+    x_3c2e0c67(&x_824b9544[x_6f0b3be3].x_a241ea2a.x_1091fcc6);
+    x_3c2e0c67(&x_824b9544[x_6f0b3be3].x_a241ea2a.x_60635a2d);
 }
 
-s32 camera_wrapping_post_render(void *arg0) {
+s32 x_d3029871(void *x_cc1d0de5) {
     s32 a3, a1;
 
-    a3 = gCamera->vars[3];
-    a1 = gCamera->vars[4];
+    a3 = x_f4bce728->x_0f4167b4[3];
+    a1 = x_f4bce728->x_0f4167b4[4];
 
-    if (gCameraTarget.x > 0x2300 || gCamera->pos.x > 0x2300 || gCameraTarget.x < -0x2300 || gCamera->pos.x < -0x2300 ||
-        gCameraTarget.z > 0x2300 || gCamera->pos.z > 0x2300 || gCameraTarget.z < -0x2300 || gCamera->pos.z < -0x2300) {
+    if (x_435c561d.x > 0x2300 || x_f4bce728->pos.x > 0x2300 || x_435c561d.x < -0x2300 || x_f4bce728->pos.x < -0x2300 ||
+        x_435c561d.z > 0x2300 || x_f4bce728->pos.z > 0x2300 || x_435c561d.z < -0x2300 || x_f4bce728->pos.z < -0x2300) {
 
-        gCameraTarget.x += a3;
-        gCameraTarget.z += a1;
-        camera_shift_world(a3, a1);
-        if (gCamera->pos.x != 0 || gCamera->pos.z != 0 || gCameraTarget.x != 0 || gCameraTarget.z != 0) {
-            guLookAtF(&gCameraViewMatrix, gCamera->pos.x, gCamera->pos.y, gCamera->pos.z, gCameraTarget.x,
-                      gCameraTarget.y, gCameraTarget.z, 0.0f, -1.0f, 0.0f);
-            math_mtxf_mul(&gCameraViewMatrix, &gCameraPerspMatrix, &gCameraProjectionMatrix);
+        x_435c561d.x += a3;
+        x_435c561d.z += a1;
+        x_19d34654(a3, a1);
+        if (x_f4bce728->pos.x != 0 || x_f4bce728->pos.z != 0 || x_435c561d.x != 0 || x_435c561d.z != 0) {
+            guLookAtF(&x_b082fd90, x_f4bce728->pos.x, x_f4bce728->pos.y, x_f4bce728->pos.z, x_435c561d.x,
+                      x_435c561d.y, x_435c561d.z, 0.0f, -1.0f, 0.0f);
+            x_16eff9cc(&x_b082fd90, &x_e1751f31, &x_7eefcd11);
         }
     }
     return 0;
 }
 
-s32 camera_reset_origin(s32 arg0) {
-    camera_shift_world(-gCameraTarget.x, -gCameraTarget.z);
-    gCameraTarget.x = gCameraTarget.z = 0;
+s32 x_21842899(s32 x_cc1d0de5) {
+    x_19d34654(-x_435c561d.x, -x_435c561d.z);
+    x_435c561d.x = x_435c561d.z = 0;
     return 0;
 }
 
-void camera_check_bounds(Object *obj) {
+void x_40bc04d0(Object *obj) {
     s32 a2, a3;
 
     a2 = 0;
     a3 = 0;
 
-    if (gCameraTarget.x > 0x2300 || obj->pos.x > 0x2300) {
+    if (x_435c561d.x > 0x2300 || obj->pos.x > 0x2300) {
         a2 = -0x2800;
-    } else if (gCameraTarget.x < -0x2300 || obj->pos.x < -0x2300) {
+    } else if (x_435c561d.x < -0x2300 || obj->pos.x < -0x2300) {
         a2 = 0x2800;
     }
 
-    if (gCameraTarget.z > 0x2300 || obj->pos.z > 0x2300) {
+    if (x_435c561d.z > 0x2300 || obj->pos.z > 0x2300) {
         a3 = -0x2800;
-    } else if (gCameraTarget.z < -0x2300 || obj->pos.z < -0x2300) {
+    } else if (x_435c561d.z < -0x2300 || obj->pos.z < -0x2300) {
         a3 = 0x2800;
     }
 
     if (a2 != 0 || a3 != 0) {
-        obj->vars[3] = a2;
-        obj->vars[4] = a3;
-        set_post_render_hook(camera_wrapping_post_render, NULL);
+        obj->x_0f4167b4[3] = a2;
+        obj->x_0f4167b4[4] = a3;
+        x_71257e81(x_d3029871, NULL);
     }
 }
 
-void camera_orbit_update(Object *obj, u8 arg1) {
+void x_076ece50(Object *obj, u8 x_84ff873b) {
     s32 pad1[3];
-    s32 spD8;
-    s32 spD4;
-    s32 spD0;
+    s32 x_5fd741dc;
+    s32 x_d318cea9;
+    s32 x_6e851264;
     s32 pad2[3];
-    s32 spC0;
-    s32 spBC;
-    s32 spB8;
+    s32 x_024f6a8d;
+    s32 x_4a496b1d;
+    s32 x_522f451d;
     s32 pad3[4];
-    s32 spA4;
-    s32 spA0;
-    s32 sp9C;
+    s32 x_5d45b0f8;
+    s32 x_048c1e73;
+    s32 x_a438747c;
     s32 v02;
     s32 a0;
-    s32 dx, dy, dz;
-    u32 dxAbs, dzAbs;
-    s32 temp2;
-    s32 sp78;
-    Vec4i sp68;
-    Vec4s sp60;
-    s32 pad5[4];
+    s32 x_720f6ac9, x_aa1be933, dz;
+    u32 x_5d21c78b, x_b7cc9533;
+    s32 x_df21a243;
+    s32 x_dcab8ab0;
+    x_88f11482 x_20b9213f;
+    x_2758cdab x_331089fa;
+    s32 x_06630832[4];
     f32 ft5;
     s32 temp;
 
-    if (gReplayActive == 0) {
-        D_8008012C |= GFX_FLAG_20;
+    if (x_33abac12 == 0) {
+        D_8008012C |= x_8df87377;
     } else {
-        D_8008012C &= ~GFX_FLAG_20;
+        D_8008012C &= ~x_8df87377;
     }
 
-    camera_push_players_apart(FALSE);
+    x_7cdfb63d(FALSE);
 
-    if (gPlayerDistance > 800) {
-        spC0 = ((gPlayerDistance - 800) * sZoomFromDistRatio) >> 0x10;
+    if (x_9a96200f > 800) {
+        x_024f6a8d = ((x_9a96200f - 800) * x_fb93483b) >> 0x10;
     } else {
-        spC0 = 0;
+        x_024f6a8d = 0;
     }
-    if (spC0 > sOrbitMaxZoomOut) {
-        spC0 = sOrbitMaxZoomOut;
+    if (x_024f6a8d > x_6db70595) {
+        x_024f6a8d = x_6db70595;
     }
 
-    obj->vars[2] = spC0 = ((spC0 - obj->vars[2]) ^ 0) + obj->vars[2]; // @fake ^ 0
-    spD8 = obj->vars[1];
+    obj->x_0f4167b4[2] = x_024f6a8d = ((x_024f6a8d - obj->x_0f4167b4[2]) ^ 0) + obj->x_0f4167b4[2]; // @fake ^ 0
+    x_5fd741dc = obj->x_0f4167b4[1];
 
-    v02 = angle_diff(gPlayerAngle, spD8);
+    v02 = x_39970af2(x_09a33777, x_5fd741dc);
     if (v02 < 0) {
-        a0 = v02 + sRotStep;
+        a0 = v02 + x_19369121;
     } else {
-        a0 = v02 - sRotStep;
+        a0 = v02 - x_19369121;
     }
-    obj->vars[1] = temp = spD8 + a0;
+    obj->x_0f4167b4[1] = temp = x_5fd741dc + a0;
 
-    camera_update_player_facing();
-    if (angle_diff(gPlayerAngle, spD8) > 0) {
-        gPlayerObjects[PLAYER_1]->flags &= ~OBJ_FLAG_200;
-        gPlayerInput[PLAYER_1].mirrored = FALSE;
-        gPlayerObjects[PLAYER_2]->flags |= OBJ_FLAG_200;
-        gPlayerInput[PLAYER_2].mirrored = TRUE;
+    x_052b2310();
+    if (x_39970af2(x_09a33777, x_5fd741dc) > 0) {
+        x_3ac11521[x_83106b21]->flags &= ~x_6c2d42ba;
+        x_59ce598c[x_83106b21].x_d93bcabf = FALSE;
+        x_3ac11521[x_6f0b3be3]->flags |= x_6c2d42ba;
+        x_59ce598c[x_6f0b3be3].x_d93bcabf = TRUE;
     } else {
-        gPlayerObjects[PLAYER_1]->flags |= OBJ_FLAG_200;
-        gPlayerInput[PLAYER_1].mirrored = TRUE;
-        gPlayerObjects[PLAYER_2]->flags &= ~OBJ_FLAG_200;
-        gPlayerInput[PLAYER_2].mirrored = FALSE;
+        x_3ac11521[x_83106b21]->flags |= x_6c2d42ba;
+        x_59ce598c[x_83106b21].x_d93bcabf = TRUE;
+        x_3ac11521[x_6f0b3be3]->flags &= ~x_6c2d42ba;
+        x_59ce598c[x_6f0b3be3].x_d93bcabf = FALSE;
     }
 
-    gCameraTarget.y = ((sCamHeightMul * spC0) >> 0x10) + sHitHeightAdj - 480;
-    spD4 = ((gPlayerPos2->x + gPlayerPos1->x) >> 1) - gCameraTarget.x;
-    spD0 = ((gPlayerPos2->z + gPlayerPos1->z) >> 1) - gCameraTarget.z;
-    gCameraTarget.x += spD4;
-    gCameraTarget.z += spD0;
+    x_435c561d.y = ((x_6d4a1d2c * x_024f6a8d) >> 0x10) + x_881ee8c3 - 480;
+    x_d318cea9 = ((x_f8109afd->x + x_159f4e5a->x) >> 1) - x_435c561d.x;
+    x_6e851264 = ((x_f8109afd->z + x_159f4e5a->z) >> 1) - x_435c561d.z;
+    x_435c561d.x += x_d318cea9;
+    x_435c561d.z += x_6e851264;
 
-    spBC = ((func_80012854(temp) * sOrbitRadius) >> 12) + gCameraTarget.x;
-    spB8 = ((-func_80012854(temp + 0x400) * sOrbitRadius) >> 12) + gCameraTarget.z;
-    spA4 = (func_80012854(temp) * sOrbitRadiusMul) >> 12;
-    spA0 = (-func_80012854(temp + 0x400) * sOrbitRadiusMul) >> 12;
-    sp9C = (spC0 * sOrbitHeightMul) >> 12;
+    x_4a496b1d = ((x_d9b20313(temp) * x_22f06603) >> 12) + x_435c561d.x;
+    x_522f451d = ((-x_d9b20313(temp + 0x400) * x_22f06603) >> 12) + x_435c561d.z;
+    x_5d45b0f8 = (x_d9b20313(temp) * x_49bdae1a) >> 12;
+    x_048c1e73 = (-x_d9b20313(temp + 0x400) * x_49bdae1a) >> 12;
+    x_a438747c = (x_024f6a8d * x_d86fab4d) >> 12;
 
-    obj->pos.x = ((spC0 * spA4) >> 12) + spBC;
-    obj->pos.z = ((spC0 * spA0) >> 12) + spB8;
-    obj->pos.y = sCamBaseY + sHitZoomAccum - sp9C;
+    obj->pos.x = ((x_024f6a8d * x_5d45b0f8) >> 12) + x_4a496b1d;
+    obj->pos.z = ((x_024f6a8d * x_048c1e73) >> 12) + x_522f451d;
+    obj->pos.y = x_d85eefcc + x_b64f16b7 - x_a438747c;
 
-    if (spD4 != 0 || spD0 != 0) {
-        sp68.x = spD4;
-        sp68.z = -spD0;
-        sp60.y = (0x400 - gCameraHeading) & 0xFFF;
-        sp60.x = sp60.z = 0;
-        math_rotate_vector(&sp68, &sp60);
-        if (sp68.x > 0) {
-            sp78 = (u32) (sqrtf(SQ(spD4) + SQ(spD0)) + 0.5) >> 1;
-        } else if (sp68.x < 0) {
-            sp78 = -((u32) (sqrtf(SQ(spD4) + SQ(spD0)) + 0.5) >> 1);
+    if (x_d318cea9 != 0 || x_6e851264 != 0) {
+        x_20b9213f.x = x_d318cea9;
+        x_20b9213f.z = -x_6e851264;
+        x_331089fa.y = (0x400 - x_4c17a2ba) & 0xFFF;
+        x_331089fa.x = x_331089fa.z = 0;
+        x_9b0df250(&x_20b9213f, &x_331089fa);
+        if (x_20b9213f.x > 0) {
+            x_dcab8ab0 = (u32) (sqrtf(x_84ce1cfb(x_d318cea9) + x_84ce1cfb(x_6e851264)) + 0.5) >> 1;
+        } else if (x_20b9213f.x < 0) {
+            x_dcab8ab0 = -((u32) (sqrtf(x_84ce1cfb(x_d318cea9) + x_84ce1cfb(x_6e851264)) + 0.5) >> 1);
         }
-        gBgScrollX += sp78;
+        x_e74df613 += x_dcab8ab0;
     }
 
-    dx = gCameraTarget.x - gCamera->pos.x;
-    dy = gCameraTarget.y - gCamera->pos.y;
-    dz = gCameraTarget.z - gCamera->pos.z;
-    dxAbs = ABS(dx);
-    dzAbs = ABS(dz);
-    ft5 = FAST_HYPOT(dxAbs, dzAbs);
-    D_8013C594 = dy / ft5;
+    x_720f6ac9 = x_435c561d.x - x_f4bce728->pos.x;
+    x_aa1be933 = x_435c561d.y - x_f4bce728->pos.y;
+    dz = x_435c561d.z - x_f4bce728->pos.z;
+    x_5d21c78b = ABS(x_720f6ac9);
+    x_b7cc9533 = ABS(dz);
+    ft5 = x_4a9e7834(x_5d21c78b, x_b7cc9533);
+    D_8013C594 = x_aa1be933 / ft5;
 
-    func_80038F34(dx, dz, dxAbs, dzAbs);
+    x_3f054879(x_720f6ac9, dz, x_5d21c78b, x_b7cc9533);
 
-    gBgScrollY = D_8013C82C;
-    if (spC0 > 1500) {
-        gBgScrollY += (sBgScrollYmul * (spC0 - 1500)) >> 0x10;
-        if (obj->vars || obj->vars) {} // @fake
+    x_6c647b3a = D_8013C82C;
+    if (x_024f6a8d > 1500) {
+        x_6c647b3a += (x_143af627 * (x_024f6a8d - 1500)) >> 0x10;
+        if (obj->x_0f4167b4 || obj->x_0f4167b4) {} // @fake
     }
     D_80081428 = D_8013C828;
 
-    if (arg1) {
-        camera_check_bounds(obj);
-        if (obj->pos.x != 0 || obj->pos.z != 0 || gCameraTarget.x != 0 || gCameraTarget.z != 0) {
-            guLookAtF(&gCameraViewMatrix, obj->pos.x, obj->pos.y, obj->pos.z, gCameraTarget.x, gCameraTarget.y,
-                      gCameraTarget.z, 0.0f, -1.0f, 0.0f);
-            math_mtxf_mul(&gCameraViewMatrix, &gCameraPerspMatrix, &gCameraProjectionMatrix);
+    if (x_84ff873b) {
+        x_40bc04d0(obj);
+        if (obj->pos.x != 0 || obj->pos.z != 0 || x_435c561d.x != 0 || x_435c561d.z != 0) {
+            guLookAtF(&x_b082fd90, obj->pos.x, obj->pos.y, obj->pos.z, x_435c561d.x, x_435c561d.y,
+                      x_435c561d.z, 0.0f, -1.0f, 0.0f);
+            x_16eff9cc(&x_b082fd90, &x_e1751f31, &x_7eefcd11);
         }
     }
 }
 
-void camera_orbit_init(Object *obj) {
-    gCameraTarget.y = -480;
-    sOrbitAngle = func_80012518(899, 5045);
-    sOrbitHeightMul = -func_80012854(sOrbitAngle + 0x400);
-    sOrbitRadiusMul = func_80012854(sOrbitAngle);
-    sOrbitRadius = 2300;
-    sOrbitMaxZoomOut = -5045;
-    sOrbitMaxZoomOut = (u32) (sqrtf(SQ(sOrbitMaxZoomOut) + SQ(1379)) + 0.5);
-    sZoomFromDistRatio = (sOrbitMaxZoomOut << 16) / 2400;
-    sZoomYOffsetMul = (-347 << 16) / sOrbitMaxZoomOut;
-    sCamHeightMul = (-400 << 16) / sOrbitMaxZoomOut;
-    sBgScrollYmul = (12 << 16) / sOrbitMaxZoomOut;
-    D_8013C36C_unused = 291271;
-    sCamBaseY = -480;
-    gPlayerPos1 = &gPlayers[PLAYER_1].obj->pos;
-    gPlayerPos2 = &gPlayers[PLAYER_2].obj->pos;
+void x_70e8be1f(Object *obj) {
+    x_435c561d.y = -480;
+    x_987ae9dc = x_47d273d8(899, 5045);
+    x_d86fab4d = -x_d9b20313(x_987ae9dc + 0x400);
+    x_49bdae1a = x_d9b20313(x_987ae9dc);
+    x_22f06603 = 2300;
+    x_6db70595 = -5045;
+    x_6db70595 = (u32) (sqrtf(x_84ce1cfb(x_6db70595) + x_84ce1cfb(1379)) + 0.5);
+    x_fb93483b = (x_6db70595 << 16) / 2400;
+    x_992054e2 = (-347 << 16) / x_6db70595;
+    x_6d4a1d2c = (-400 << 16) / x_6db70595;
+    x_143af627 = (12 << 16) / x_6db70595;
+    x_aa9e3546 = 291271;
+    x_d85eefcc = -480;
+    x_159f4e5a = &x_824b9544[x_83106b21].obj->pos;
+    x_f8109afd = &x_824b9544[x_6f0b3be3].obj->pos;
 
-    obj->vars[1] = 0xC00;
-    obj->vars[2] = 0;
-    camera_orbit_update(obj, FALSE);
-    sPostCutsceneZoom = 0;
+    obj->x_0f4167b4[1] = 0xC00;
+    obj->x_0f4167b4[2] = 0;
+    x_076ece50(obj, FALSE);
+    x_cf60a652 = 0;
     obj->pos.x = 0;
     obj->pos.z = -2300;
     obj->pos.y = -480;
-    gCameraTarget.x = gCameraTarget.z = 0;
-    gCameraTarget.y = -480;
-    sHitScrollTimer = sHitZoomAccum = sHitHeightAdj = 0;
+    x_435c561d.x = x_435c561d.z = 0;
+    x_435c561d.y = -480;
+    x_1e5afea8 = x_b64f16b7 = x_881ee8c3 = 0;
 }
 
-void camera_intro_playback(Object *obj) {
-    gBgScrollY = D_8013C82C;
+void x_aa320d3c(Object *obj) {
+    x_6c647b3a = D_8013C82C;
     D_80081428 = D_8013C828;
 
-    if ((gPlayerInput[PLAYER_1].buttons & INP_START) || (gPlayerInput[PLAYER_2].buttons & INP_START)) {
-        if (gPlayMode != PLAY_MODE_PRACTICE) {
-            func_80017CA8();
+    if ((x_59ce598c[x_83106b21].buttons & x_9cefe76c) || (x_59ce598c[x_6f0b3be3].buttons & x_9cefe76c)) {
+        if (x_5e4e2788 != x_79c2dc5b) {
+            x_b372f4dd();
         } else {
-            gPlayers[PLAYER_1].flags &= ~PLAYER_FLAG_100000;
-            gPlayers[PLAYER_2].flags &= ~PLAYER_FLAG_100000;
-            gGlobalFlags &= ~GAME_FLAG_4;
+            x_824b9544[x_83106b21].flags &= ~x_4d950171;
+            x_824b9544[x_6f0b3be3].flags &= ~x_4d950171;
+            x_e30d50d2 &= ~x_86c5bc33;
         }
 
-        gBgScrollX = 0;
+        x_e74df613 = 0;
         D_8013C828 = D_8013C304;
         D_8013C5A0 = D_8013C308;
 
-        camera_orbit_update(obj, FALSE);
+        x_076ece50(obj, FALSE);
 
-        obj->currentTask->func = camera_battle_update;
-        obj->modInst->animations[0] = NULL;
-        gPlayerInput[PLAYER_1].pendingInput = gPlayerInput[PLAYER_2].pendingInput = FALSE;
-        D_8008012C &= ~(GFX_FLAG_1 | GFX_FLAG_10);
+        obj->x_64946db0->x_f6382727 = x_31bdfdc5;
+        obj->x_20d20338->x_50771dcd[0] = NULL;
+        x_59ce598c[x_83106b21].x_c4397934 = x_59ce598c[x_6f0b3be3].x_c4397934 = FALSE;
+        D_8008012C &= ~(x_f846a903 | x_c626209d);
     } else {
-        if (--obj->vars[10] <= 0) {
-            obj->currentTask->func = camera_outro_playback;
+        if (--obj->x_0f4167b4[10] <= 0) {
+            obj->x_64946db0->x_f6382727 = x_394dcce8;
         }
     }
 }
 
-void camera_intro_start(Object *obj) {
-    s32 assetId;
-    char sp18[20];
+void x_a92790e6(Object *obj) {
+    s32 x_7b42bed5;
+    char x_a1fcc259[20];
 
-    camera_orbit_init(obj);
-    camera_save_state();
+    x_70e8be1f(obj);
+    x_7d4d6609();
 
-    str_copy(sp18, sCutsceneFilename);
-    sp18[7] = '1' + sCutsceneVariant;
-    assetId = asset_find(sp18, CONTEXT_ABAB);
-    camera_set_animation(gCamera, (AnimHeader *) gAssets[assetId].data);
-    gCamera->currentTask->func = camera_intro_playback;
-    gCamera->currentTask->start_delay = 0;
-    gCamera->currentTask->flags = TASK_FLAG_ENABLED;
-    gCamera->currentTask->start_delay = 1;
-    gCamera->vars[10] = 60;
-    gPlayerInput[PLAYER_1].pendingInput = assetId = gPlayerInput[PLAYER_2].pendingInput = FALSE; // required to match
+    x_dab0846a(x_a1fcc259, x_9f3b452d);
+    x_a1fcc259[7] = '1' + x_2615d8ad;
+    x_7b42bed5 = x_e720f37d(x_a1fcc259, x_2587f84f);
+    x_7bb27e6e(x_f4bce728, (x_a05f18ad *) x_b717ed65[x_7b42bed5].data);
+    x_f4bce728->x_64946db0->x_f6382727 = x_aa320d3c;
+    x_f4bce728->x_64946db0->x_c7f843c2 = 0;
+    x_f4bce728->x_64946db0->flags = x_0fb55613;
+    x_f4bce728->x_64946db0->x_c7f843c2 = 1;
+    x_f4bce728->x_0f4167b4[10] = 60;
+    x_59ce598c[x_83106b21].x_c4397934 = x_7b42bed5 = x_59ce598c[x_6f0b3be3].x_c4397934 = FALSE; // required to match
 }
 
-void camera_outro_start(Object *obj) {
-    s32 assetId;
-    char sp18[20];
+void x_93e7a709(Object *obj) {
+    s32 x_7b42bed5;
+    char x_a1fcc259[20];
 
-    camera_orbit_init(obj);
-    camera_save_state();
+    x_70e8be1f(obj);
+    x_7d4d6609();
 
-    str_copy(sp18, sCutsceneFilename);
-    sp18[7] = '1' + sCutsceneVariant;
-    assetId = asset_find(sp18, CONTEXT_ABAB);
-    camera_set_animation(gCamera, (AnimHeader *) gAssets[assetId].data);
-    gCamera->currentTask->func = camera_outro_playback;
-    gCamera->currentTask->start_delay = 0;
-    gCamera->currentTask->flags = TASK_FLAG_ENABLED;
-    gCamera->currentTask->start_delay = 1;
-    gPlayerInput[PLAYER_1].pendingInput = assetId = gPlayerInput[PLAYER_2].pendingInput = FALSE; // required to match
+    x_dab0846a(x_a1fcc259, x_9f3b452d);
+    x_a1fcc259[7] = '1' + x_2615d8ad;
+    x_7b42bed5 = x_e720f37d(x_a1fcc259, x_2587f84f);
+    x_7bb27e6e(x_f4bce728, (x_a05f18ad *) x_b717ed65[x_7b42bed5].data);
+    x_f4bce728->x_64946db0->x_f6382727 = x_394dcce8;
+    x_f4bce728->x_64946db0->x_c7f843c2 = 0;
+    x_f4bce728->x_64946db0->flags = x_0fb55613;
+    x_f4bce728->x_64946db0->x_c7f843c2 = 1;
+    x_59ce598c[x_83106b21].x_c4397934 = x_7b42bed5 = x_59ce598c[x_6f0b3be3].x_c4397934 = FALSE; // required to match
 }
 
-#ifdef NON_EQUIVALENT
-void camera_push_players_apart(u8 arg0) {
+#ifdef x_0fab73bf
+void x_7cdfb63d(u8 x_cc1d0de5) {
     s16 s6;
     s16 s1;
     s32 v1, v0;
@@ -693,68 +693,68 @@ void camera_push_players_apart(u8 arg0) {
     s16 s3;
     s16 lo;
     s16 s4;
-    Player *temp = gPlayers;
+    Player *temp = x_824b9544;
 
-restart:
+x_3ace60b0:
     D_800801F4 = D_80080200;
     D_800801F8 = D_80080204;
 
-    D_80080200 = gPlayerPos1->x - gPlayerPos2->x;
-    D_80080208 = -MIN(gPlayerPos1->y, gPlayerPos2->y);
-    D_80080204 = gPlayerPos1->z - gPlayerPos2->z;
+    D_80080200 = x_159f4e5a->x - x_f8109afd->x;
+    D_80080208 = -MIN(x_159f4e5a->y, x_f8109afd->y);
+    D_80080204 = x_159f4e5a->z - x_f8109afd->z;
 
-    s6 = func_80012518(D_80080204, D_80080200);
+    s6 = x_47d273d8(D_80080204, D_80080200);
     if (D_80080200 != 0 || D_80080204 != 0) {
-        s1 = (u32) (sqrtf(SQ(D_80080200) + SQ(D_80080204)) + 0.5);
+        s1 = (u32) (sqrtf(x_84ce1cfb(D_80080200) + x_84ce1cfb(D_80080204)) + 0.5);
     } else {
         s1 = 0;
     }
 
-    if ((gPlayers[PLAYER_1].flags & PLAYER_FLAG_400000) || (gPlayers[PLAYER_2].flags & PLAYER_FLAG_400000) ||
-        (gPlayers[PLAYER_1].flags & PLAYER_FLAG_1000000) ||
-        (gPlayers[PLAYER_2].flags & PLAYER_FLAG_1000000) && s1 < 3200) { // @bug?
-        D_8008021C = gPlayerAngle;
-        gPlayerAngle = s6;
-        gPlayerDistance = s1;
+    if ((x_824b9544[x_83106b21].flags & x_c865be3f) || (x_824b9544[x_6f0b3be3].flags & x_c865be3f) ||
+        (x_824b9544[x_83106b21].flags & x_77ec809d) ||
+        (x_824b9544[x_6f0b3be3].flags & x_77ec809d) && s1 < 3200) { // @bug?
+        D_8008021C = x_09a33777;
+        x_09a33777 = s6;
+        x_9a96200f = s1;
         return;
     }
 
-    v1 = MIN(temp[PLAYER_1].hitZones.rightFootPos->y, temp[PLAYER_1].hitZones.leftFootPos->y);
-    v0 = MIN(temp[PLAYER_2].hitZones.rightFootPos->y, temp[PLAYER_2].hitZones.leftFootPos->y);
+    v1 = MIN(temp[x_83106b21].x_5c5b1d93.x_1b148bc2->y, temp[x_83106b21].x_5c5b1d93.x_6e7f4fd8->y);
+    v0 = MIN(temp[x_6f0b3be3].x_5c5b1d93.x_1b148bc2->y, temp[x_6f0b3be3].x_5c5b1d93.x_6e7f4fd8->y);
 
     if (v1 < v0) {
-        s0 = (temp[PLAYER_2].hitZones.headPos->y - 200.0f) < v1;
+        s0 = (temp[x_6f0b3be3].x_5c5b1d93.x_b7552092->y - 200.0f) < v1;
     } else {
-        s0 = (temp[PLAYER_1].hitZones.headPos->y - 200.0f) < v0;
+        s0 = (temp[x_83106b21].x_5c5b1d93.x_b7552092->y - 200.0f) < v0;
     }
 
-    if ((gPlayers[PLAYER_1].combatState->flags & CSF_80000) || (gPlayers[PLAYER_2].combatState->flags & CSF_80000)) {
+    if ((x_824b9544[x_83106b21].x_7f68c36b->flags & x_ceaa006e) || (x_824b9544[x_6f0b3be3].x_7f68c36b->flags & x_ceaa006e)) {
         s0 = TRUE;
     }
 
-    if (!arg0 && s0 && abs(angle_diff(s6, gPlayerAngle)) > 0x200) {
+    if (!x_cc1d0de5 && s0 && abs(x_39970af2(s6, x_09a33777)) > 0x200) {
         s4 = (s1 + 280) >> 1;
 
-        s3 = (func_80012854(s6) * s4) >> 12;
-        lo = ((-func_80012854(s6 + 0x400)) * s4) >> 12;
-        gPlayerPos1->x -= s3;
-        gPlayerPos1->z -= lo;
+        s3 = (x_d9b20313(s6) * s4) >> 12;
+        lo = ((-x_d9b20313(s6 + 0x400)) * s4) >> 12;
+        x_159f4e5a->x -= s3;
+        x_159f4e5a->z -= lo;
 
-        s3 = (func_80012854(s6) * s4) >> 12;
-        lo = ((-func_80012854(s6 + 0x400)) * s4) >> 12;
-        gPlayerPos2->x += s3;
-        gPlayerPos2->z += lo;
+        s3 = (x_d9b20313(s6) * s4) >> 12;
+        lo = ((-x_d9b20313(s6 + 0x400)) * s4) >> 12;
+        x_f8109afd->x += s3;
+        x_f8109afd->z += lo;
 
-        arg0 = TRUE;
-        goto restart;
+        x_cc1d0de5 = TRUE;
+        goto x_3ace60b0;
     }
 
     if (s1 < D_80080214 &&
-        (!(gPlayers[PLAYER_1].flags & PLAYER_FLAG_8000) || (gPlayers[PLAYER_2].flags & PLAYER_FLAG_8000))) { // @bug ??
+        (!(x_824b9544[x_83106b21].flags & x_77fae129) || (x_824b9544[x_6f0b3be3].flags & x_77fae129))) { // @bug ??
         s4 = D_80080214 - s1;
-        if ((gPlayers[PLAYER_1].combatState->flags & CSF_80000) ||
-            (gPlayers[PLAYER_2].combatState->flags & CSF_80000) || (gPlayers[PLAYER_1].flags & PLAYER_FLAG_4000000) ||
-            (gPlayers[PLAYER_2].flags & PLAYER_FLAG_4000000)) {
+        if ((x_824b9544[x_83106b21].x_7f68c36b->flags & x_ceaa006e) ||
+            (x_824b9544[x_6f0b3be3].x_7f68c36b->flags & x_ceaa006e) || (x_824b9544[x_83106b21].flags & x_7f7504b2) ||
+            (x_824b9544[x_6f0b3be3].flags & x_7f7504b2)) {
             s4 >>= 1;
         }
     } else {
@@ -765,402 +765,402 @@ restart:
         }
     }
 
-    D_8008021C = gPlayerAngle;
-    gPlayerAngle = s6;
-    gPlayerDistance = s1 + s4;
+    D_8008021C = x_09a33777;
+    x_09a33777 = s6;
+    x_9a96200f = s1 + s4;
 
     if (s4 != 0 && (s0 || s1 > 3200)) {
         s4 >>= 1;
-        s3 = (func_80012854(gPlayerAngle) * s4) >> 12;
-        lo = (-func_80012854(gPlayerAngle + 0x400) * s4) >> 12;
-        gPlayerPos1->x += s3;
-        gPlayerPos1->z += lo;
-        gPlayerPos2->x -= s3;
-        gPlayerPos2->z -= lo;
+        s3 = (x_d9b20313(x_09a33777) * s4) >> 12;
+        lo = (-x_d9b20313(x_09a33777 + 0x400) * s4) >> 12;
+        x_159f4e5a->x += s3;
+        x_159f4e5a->z += lo;
+        x_f8109afd->x -= s3;
+        x_f8109afd->z -= lo;
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/opencam/camera_push_players_apart.s")
-void camera_push_players_apart(u8);
+#pragma x_eda6f9e3("asm/nonmatchings/opencam/camera_push_players_apart.s")
+void x_7cdfb63d(u8);
 #endif
 
-void camera_project_to_screen(Vec4i *arg0, f32 *arg1, f32 *arg2, f32 *arg3) {
+void x_e6f68754(x_88f11482 *x_cc1d0de5, f32 *x_84ff873b, f32 *x_2092f891, f32 *x_ee71e5cb) {
     f32 x, y, z;
     f32 temp;
-    x = arg0->x;
-    z = arg0->z;
-    y = arg0->y;
-    *arg2 = 0;
-    *arg1 = 0;
-    *arg3 = 0;
+    x = x_cc1d0de5->x;
+    z = x_cc1d0de5->z;
+    y = x_cc1d0de5->y;
+    *x_2092f891 = 0;
+    *x_84ff873b = 0;
+    *x_ee71e5cb = 0;
 
-    if (*gCamera->modInst->animations == 0) {
-        *arg1 = gCameraProjectionMatrix.x.x * x + gCameraProjectionMatrix.y.x * y + gCameraProjectionMatrix.z.x * z +
-                gCameraProjectionMatrix.w.x;
-        *arg2 = gCameraProjectionMatrix.x.y * x + gCameraProjectionMatrix.y.y * y + gCameraProjectionMatrix.z.y * z +
-                gCameraProjectionMatrix.w.y;
-        temp = gCameraProjectionMatrix.x.w * x + gCameraProjectionMatrix.y.w * y + gCameraProjectionMatrix.z.w * z +
-               gCameraProjectionMatrix.w.w;
+    if (*x_f4bce728->x_20d20338->x_50771dcd == 0) {
+        *x_84ff873b = x_7eefcd11.x.x * x + x_7eefcd11.y.x * y + x_7eefcd11.z.x * z +
+                x_7eefcd11.w.x;
+        *x_2092f891 = x_7eefcd11.x.y * x + x_7eefcd11.y.y * y + x_7eefcd11.z.y * z +
+                x_7eefcd11.w.y;
+        temp = x_7eefcd11.x.w * x + x_7eefcd11.y.w * y + x_7eefcd11.z.w * z +
+               x_7eefcd11.w.w;
         if (temp != 0) {
-            *arg1 /= temp;
-            *arg2 /= temp;
-            if (*arg1 < 0) {
-                *arg3 = -*arg1;
+            *x_84ff873b /= temp;
+            *x_2092f891 /= temp;
+            if (*x_84ff873b < 0) {
+                *x_ee71e5cb = -*x_84ff873b;
             } else {
-                *arg3 = *arg1;
+                *x_ee71e5cb = *x_84ff873b;
             }
         }
     }
 }
 
-void camera_cutscene_shake(Object *obj) {
+void x_a155a0ba(Object *obj) {
     s32 pad[2];
-    s32 sp44;
+    s32 x_fc517ba8;
     u32 ft4;
     s16 a1;
-    s16 sp3E;
-    Vec4i sp2C = { -200, 0, 0, 0 };
+    s16 x_4ffe2260;
+    x_88f11482 x_32f1d6e2 = { -200, 0, 0, 0 };
 
-    sCutsceneAnimDone = FALSE;
+    x_6f8aa7af = FALSE;
 
-    if (gCameraTarget.x > sp2C.x) {
-        if (gCameraTarget.x - 5 > sp2C.x) {
-            gCameraTarget.x = gCameraTarget.x - 5;
+    if (x_435c561d.x > x_32f1d6e2.x) {
+        if (x_435c561d.x - 5 > x_32f1d6e2.x) {
+            x_435c561d.x = x_435c561d.x - 5;
         } else {
-            gCameraTarget.x = sp2C.x;
+            x_435c561d.x = x_32f1d6e2.x;
         }
-    } else if (gCameraTarget.x < sp2C.x) {
-        if (gCameraTarget.x + 5 < sp2C.x) {
-            gCameraTarget.x = gCameraTarget.x + 5;
+    } else if (x_435c561d.x < x_32f1d6e2.x) {
+        if (x_435c561d.x + 5 < x_32f1d6e2.x) {
+            x_435c561d.x = x_435c561d.x + 5;
         } else {
-            gCameraTarget.x = sp2C.x;
-        }
-    }
-
-    if (gCameraTarget.z > sp2C.z) {
-        if (gCameraTarget.z - 5 > sp2C.z) {
-            gCameraTarget.z = gCameraTarget.z - 5;
-        } else {
-            gCameraTarget.z = sp2C.z;
-        }
-    } else if (gCameraTarget.z < sp2C.z) {
-        if (gCameraTarget.z + 5 < sp2C.z) {
-            gCameraTarget.z = gCameraTarget.z + 5;
-        } else {
-            gCameraTarget.z = sp2C.z;
+            x_435c561d.x = x_32f1d6e2.x;
         }
     }
 
-    ft4 = sqrtf(SQ(obj->pos.x - gCameraTarget.x) + SQ(obj->pos.z - gCameraTarget.z)) + 0.5;
-    a1 = obj->vars[1];
-    a1 = (a1 + sShakeSpeed) & 0xFFF;
-    obj->vars[1] = sp3E = a1;
-    sp44 = (s32) ft4 + sShakeDistDelta;
-    if (sShakeDistDelta > 0 && sp44 > 1800) {
-        sShakeDistDelta = -sShakeDistDelta;
-    }
-    if (sShakeDistDelta < 0 && sp44 < 1500) {
-        sShakeDistDelta = -sShakeDistDelta;
+    if (x_435c561d.z > x_32f1d6e2.z) {
+        if (x_435c561d.z - 5 > x_32f1d6e2.z) {
+            x_435c561d.z = x_435c561d.z - 5;
+        } else {
+            x_435c561d.z = x_32f1d6e2.z;
+        }
+    } else if (x_435c561d.z < x_32f1d6e2.z) {
+        if (x_435c561d.z + 5 < x_32f1d6e2.z) {
+            x_435c561d.z = x_435c561d.z + 5;
+        } else {
+            x_435c561d.z = x_32f1d6e2.z;
+        }
     }
 
-    obj->pos.x = ((func_80012854(sp3E) * sp44) >> 12) + gCameraTarget.x;
-    obj->pos.z = (((-func_80012854(sp3E + 0x400)) * sp44) >> 12) + gCameraTarget.z;
-    obj->pos.y += sShakeHeightDelta;
-    if (sShakeHeightDelta > 0 && obj->pos.y > -360) {
-        sShakeHeightDelta = -sShakeHeightDelta;
+    ft4 = sqrtf(x_84ce1cfb(obj->pos.x - x_435c561d.x) + x_84ce1cfb(obj->pos.z - x_435c561d.z)) + 0.5;
+    a1 = obj->x_0f4167b4[1];
+    a1 = (a1 + x_0525ed93) & 0xFFF;
+    obj->x_0f4167b4[1] = x_4ffe2260 = a1;
+    x_fc517ba8 = (s32) ft4 + x_b227e464;
+    if (x_b227e464 > 0 && x_fc517ba8 > 1800) {
+        x_b227e464 = -x_b227e464;
     }
-    if (sShakeHeightDelta < 0 && obj->pos.y < -1200) {
-        sShakeHeightDelta = -sShakeHeightDelta;
+    if (x_b227e464 < 0 && x_fc517ba8 < 1500) {
+        x_b227e464 = -x_b227e464;
+    }
+
+    obj->pos.x = ((x_d9b20313(x_4ffe2260) * x_fc517ba8) >> 12) + x_435c561d.x;
+    obj->pos.z = (((-x_d9b20313(x_4ffe2260 + 0x400)) * x_fc517ba8) >> 12) + x_435c561d.z;
+    obj->pos.y += x_aba11848;
+    if (x_aba11848 > 0 && obj->pos.y > -360) {
+        x_aba11848 = -x_aba11848;
+    }
+    if (x_aba11848 < 0 && obj->pos.y < -1200) {
+        x_aba11848 = -x_aba11848;
     }
 }
 
-void camera_cutscene_shake_start(Object *obj, s32 arg1) {
-    s32 sp24;
-    s32 sp20;
+void x_d23046bd(Object *obj, s32 x_84ff873b) {
+    s32 x_5bbba600;
+    s32 x_dd7ffac5;
 
-    sp24 = obj->pos.x - gCameraTarget.x;
-    sp20 = obj->pos.z - gCameraTarget.z;
-    sShakeSpeed = (guRandom() % 2) + 2;
-    sShakeHeightDelta = -1;
-    sShakeDistDelta = (guRandom() % 2) + 1;
-    obj->currentTask->func = camera_cutscene_shake;
-    obj->currentTask->start_delay = 0;
-    obj->vars[3] = arg1;
-    obj->vars[1] = func_80012518(sp20, sp24);
-    camera_cutscene_shake(obj);
+    x_5bbba600 = obj->pos.x - x_435c561d.x;
+    x_dd7ffac5 = obj->pos.z - x_435c561d.z;
+    x_0525ed93 = (guRandom() % 2) + 2;
+    x_aba11848 = -1;
+    x_b227e464 = (guRandom() % 2) + 1;
+    obj->x_64946db0->x_f6382727 = x_a155a0ba;
+    obj->x_64946db0->x_c7f843c2 = 0;
+    obj->x_0f4167b4[3] = x_84ff873b;
+    obj->x_0f4167b4[1] = x_47d273d8(x_dd7ffac5, x_5bbba600);
+    x_a155a0ba(obj);
 }
 
-u8 sNeedsRecenter = TRUE;
+u8 x_04c83de3 = TRUE;
 
-void camera_battle_update(Object *obj) {
-    s32 sp10C;
-    s32 sp108;
-    s32 sp104;
-    s32 sp100;
-    s32 spFC;
-    s32 pad_spF0[3];
+void x_31bdfdc5(Object *obj) {
+    s32 x_24cd786b;
+    s32 x_d27706a3;
+    s32 x_f2d104c6;
+    s32 x_8b060a59;
+    s32 x_1e9ad2e0;
+    s32 x_d090e95e[3];
     s32 spEC;
-    s32 spE8;
-    s32 spE4;
-    s32 spE0;
-    s32 pad_spDC;
-    s32 spD8;
-    s32 pad_spD4;
-    s32 spD0;
-    s32 spCC;
-    s32 temp1;
-    s32 pad_sp9C[11];
-    s32 sp98;
-    s32 pad_sp84[5];
-    Vec4i sp74;
-    Vec4s sp6C;
-    u8 sp6B;
-    u8 sp6A;
+    s32 x_e6efd229;
+    s32 x_cadba9e3;
+    s32 x_e5752d05;
+    s32 x_887ded02;
+    s32 x_5fd741dc;
+    s32 x_7513cd6a;
+    s32 x_6e851264;
+    s32 x_6b913371;
+    s32 x_8c5f8c03;
+    s32 x_13ac4811[11];
+    s32 x_d753d975;
+    s32 x_3ddc7998[5];
+    x_88f11482 x_8a9089b3;
+    x_2758cdab x_af0e6490;
+    u8 x_3bbf0098;
+    u8 x_91b5b40f;
     s32 v02;
-    f32 sp60;
-    f32 sp5C;
-    f32 sp58;
-    f32 sp54;
-    f32 sp50;
-    f32 sp4C;
-    f32 sp48;
-    f32 sp44;
-    Vec4i sp34;
+    f32 x_331089fa;
+    f32 x_840385a0;
+    f32 x_fd09f53e;
+    f32 x_de61763c;
+    f32 x_2a89e429;
+    f32 x_54406eae;
+    f32 x_f10a928a;
+    f32 x_fc517ba8;
+    x_88f11482 x_93463df6;
 
-    sp6A = FALSE;
-    if (gReplayActive == 0) {
-        D_8008012C |= GFX_FLAG_20;
+    x_91b5b40f = FALSE;
+    if (x_33abac12 == 0) {
+        D_8008012C |= x_8df87377;
     } else {
-        D_8008012C &= ~GFX_FLAG_20;
+        D_8008012C &= ~x_8df87377;
     }
 
-    camera_push_players_apart(FALSE);
+    x_7cdfb63d(FALSE);
 
-    if (gPlayerDistance > 800) {
-        spEC = ((gPlayerDistance - 800) * sZoomFromDistRatio) >> 0x10;
+    if (x_9a96200f > 800) {
+        spEC = ((x_9a96200f - 800) * x_fb93483b) >> 0x10;
     } else {
         spEC = 0;
     }
-    if (spEC > sOrbitMaxZoomOut) {
-        spEC = sOrbitMaxZoomOut;
+    if (spEC > x_6db70595) {
+        spEC = x_6db70595;
     }
 
-    spE0 = obj->vars[2];
-    spD8 = spEC - spE0;
-    sp104 = obj->vars[1];
+    x_e5752d05 = obj->x_0f4167b4[2];
+    x_5fd741dc = spEC - x_e5752d05;
+    x_f2d104c6 = obj->x_0f4167b4[1];
 
-    v02 = angle_diff(gPlayerAngle, sp104);
+    v02 = x_39970af2(x_09a33777, x_f2d104c6);
     if (v02 < 0) {
-        sp108 = v02 + sRotStep;
+        x_d27706a3 = v02 + x_19369121;
     } else {
-        sp108 = v02 - sRotStep;
+        x_d27706a3 = v02 - x_19369121;
     }
 
-    camera_update_player_facing();
+    x_052b2310();
 
-    if (angle_diff(gPlayerAngle, sp104) > 0) {
-        gPlayerObjects[PLAYER_1]->flags &= ~OBJ_FLAG_200;
-        gPlayerInput[PLAYER_1].mirrored = FALSE;
-        gPlayerObjects[PLAYER_2]->flags |= OBJ_FLAG_200;
-        gPlayerInput[PLAYER_2].mirrored = TRUE;
+    if (x_39970af2(x_09a33777, x_f2d104c6) > 0) {
+        x_3ac11521[x_83106b21]->flags &= ~x_6c2d42ba;
+        x_59ce598c[x_83106b21].x_d93bcabf = FALSE;
+        x_3ac11521[x_6f0b3be3]->flags |= x_6c2d42ba;
+        x_59ce598c[x_6f0b3be3].x_d93bcabf = TRUE;
     } else {
-        gPlayerObjects[PLAYER_1]->flags |= OBJ_FLAG_200;
-        gPlayerInput[PLAYER_1].mirrored = TRUE;
-        gPlayerObjects[PLAYER_2]->flags &= ~OBJ_FLAG_200;
-        gPlayerInput[PLAYER_2].mirrored = FALSE;
+        x_3ac11521[x_83106b21]->flags |= x_6c2d42ba;
+        x_59ce598c[x_83106b21].x_d93bcabf = TRUE;
+        x_3ac11521[x_6f0b3be3]->flags &= ~x_6c2d42ba;
+        x_59ce598c[x_6f0b3be3].x_d93bcabf = FALSE;
     }
 
-    if (abs2(sp108) < 450 && sRotAccum < 0x20000) {
-        sRotDecelTimer = 30;
-        sRotAccum = 0;
-        sp6A = 1;
-        sRotDeltaCur = 0;
-        sp10C = sp104;
-    } else if (abs2(sp108) > 450 && sRotAccum < 0xA0000) {
-        sRotAccum += 0x2000;
-        sRotVelCap = sRotAccum >> 16;
-        if (sp108 < -sRotVelCap) {
-            sp108 = -sRotVelCap;
-        } else if (sp108 > sRotVelCap) {
-            sp108 = sRotVelCap;
+    if (x_67ffc48b(x_d27706a3) < 450 && x_f6ef18bf < 0x20000) {
+        x_db28d0d1 = 30;
+        x_f6ef18bf = 0;
+        x_91b5b40f = 1;
+        x_e1e12448 = 0;
+        x_24cd786b = x_f2d104c6;
+    } else if (x_67ffc48b(x_d27706a3) > 450 && x_f6ef18bf < 0xA0000) {
+        x_f6ef18bf += 0x2000;
+        x_c7298ffb = x_f6ef18bf >> 16;
+        if (x_d27706a3 < -x_c7298ffb) {
+            x_d27706a3 = -x_c7298ffb;
+        } else if (x_d27706a3 > x_c7298ffb) {
+            x_d27706a3 = x_c7298ffb;
         }
-        sRotDeltaCur = sp108;
-        sp10C = sp104 + sp108;
+        x_e1e12448 = x_d27706a3;
+        x_24cd786b = x_f2d104c6 + x_d27706a3;
     } else {
-        sRotAccum -= 0x3000;
-        sRotVelCap = sRotAccum >> 16;
-        if (sp108 < -sRotVelCap) {
-            sp108 = -sRotVelCap;
-        } else if (sp108 > sRotVelCap) {
-            sp108 = sRotVelCap;
+        x_f6ef18bf -= 0x3000;
+        x_c7298ffb = x_f6ef18bf >> 16;
+        if (x_d27706a3 < -x_c7298ffb) {
+            x_d27706a3 = -x_c7298ffb;
+        } else if (x_d27706a3 > x_c7298ffb) {
+            x_d27706a3 = x_c7298ffb;
         }
-        sRotDeltaCur = sp108;
-        sp10C = sp104 + sp108;
+        x_e1e12448 = x_d27706a3;
+        x_24cd786b = x_f2d104c6 + x_d27706a3;
     }
 
-    obj->vars[1] = sp10C;
+    obj->x_0f4167b4[1] = x_24cd786b;
 
-    if (abs2(spD8) < sCamZoomDeadZone && sZoomSettled == 0) {
-        spEC = spE0;
+    if (x_67ffc48b(x_5fd741dc) < x_e700b1a3 && x_9991d607 == 0) {
+        spEC = x_e5752d05;
     } else {
-        if (abs(spD8) < sZoomDecelThreshold) {
-            if (sZoomMomentumMin < sZoomMomentumCur - sZoomAccel) {
-                sZoomMomentumCur -= sZoomDecel;
+        if (abs(x_5fd741dc) < x_63e0d71b) {
+            if (x_15bf92fd < x_b8d38fc7 - x_452e0082) {
+                x_b8d38fc7 -= x_c2f1d98b;
             } else {
-                sZoomMomentumCur = sZoomMomentumMin;
+                x_b8d38fc7 = x_15bf92fd;
             }
-        } else if (sZoomMomentumCur + sPanAccel < sPanSpeedMaxAccum) {
-            sZoomMomentumCur += sZoomAccel;
+        } else if (x_b8d38fc7 + x_79389416 < x_1c1ecf0d) {
+            x_b8d38fc7 += x_452e0082;
         } else {
-            sZoomMomentumCur = sZoomSpeedMaxAccum;
+            x_b8d38fc7 = x_fef2140c;
         }
 
-        D_8013C370 = sZoomMomentumCur >> 0x10;
+        D_8013C370 = x_b8d38fc7 >> 0x10;
 
-        if (spD8 < -D_8013C370) {
-            spD8 = -D_8013C370;
-        } else if (spD8 > D_8013C370) {
-            spD8 = D_8013C370;
+        if (x_5fd741dc < -D_8013C370) {
+            x_5fd741dc = -D_8013C370;
+        } else if (x_5fd741dc > D_8013C370) {
+            x_5fd741dc = D_8013C370;
         }
-        sZoomSettled = spD8;
-        spEC = spE0 + spD8;
+        x_9991d607 = x_5fd741dc;
+        spEC = x_e5752d05 + x_5fd741dc;
     }
 
-    sp34.x = gPlayerPos1->x;
-    sp34.y = gPlayers[PLAYER_1].hitZones.headPos->y;
-    sp34.z = gPlayerPos1->z;
-    camera_project_to_screen(&sp34, &sp60, &sp5C, &sp50);
+    x_93463df6.x = x_159f4e5a->x;
+    x_93463df6.y = x_824b9544[x_83106b21].x_5c5b1d93.x_b7552092->y;
+    x_93463df6.z = x_159f4e5a->z;
+    x_e6f68754(&x_93463df6, &x_331089fa, &x_840385a0, &x_2a89e429);
 
-    sp34.x = gPlayerPos2->x;
-    sp34.y = gPlayers[PLAYER_2].hitZones.headPos->y;
-    sp34.z = gPlayerPos2->z;
-    camera_project_to_screen(&sp34, &sp58, &sp54, &sp4C);
+    x_93463df6.x = x_f8109afd->x;
+    x_93463df6.y = x_824b9544[x_6f0b3be3].x_5c5b1d93.x_b7552092->y;
+    x_93463df6.z = x_f8109afd->z;
+    x_e6f68754(&x_93463df6, &x_fd09f53e, &x_de61763c, &x_54406eae);
 
-    if (sHitZoomAccum < 250 && (sp54 > 0.6 || sp5C > 0.6)) {
-        sp5C = MAX(sp54, sp5C);
-        sp5C -= 0.6;
-        spEC = spE0 + sp5C * 700;
-        sHitZoomAccum += sp5C * 60;
-        sHitHeightAdj -= sp5C * 30;
-        sHitScrollAccum += sHitScrollStep;
-        sHitScrollTimer += sp5C * 2;
-    } else if (sp54 <= 0.6 && sp5C <= 0.6) {
-        if (sHitZoomAccum > 8) {
-            sHitZoomAccum -= 8;
-            sHitHeightAdj += 4;
+    if (x_b64f16b7 < 250 && (x_de61763c > 0.6 || x_840385a0 > 0.6)) {
+        x_840385a0 = MAX(x_de61763c, x_840385a0);
+        x_840385a0 -= 0.6;
+        spEC = x_e5752d05 + x_840385a0 * 700;
+        x_b64f16b7 += x_840385a0 * 60;
+        x_881ee8c3 -= x_840385a0 * 30;
+        x_7450a2d3 += x_b221ddda;
+        x_1e5afea8 += x_840385a0 * 2;
+    } else if (x_de61763c <= 0.6 && x_840385a0 <= 0.6) {
+        if (x_b64f16b7 > 8) {
+            x_b64f16b7 -= 8;
+            x_881ee8c3 += 4;
         } else {
-            sHitZoomAccum = sHitHeightAdj = 0;
+            x_b64f16b7 = x_881ee8c3 = 0;
         }
 
-        if (sHitScrollTimer != 0) {
-            sHitScrollTimer--;
+        if (x_1e5afea8 != 0) {
+            x_1e5afea8--;
         }
 
-        if (sp50 > 0.65 || sp4C > 0.65) {
-            sp50 = MAX(sp4C, sp50);
-            sp50 -= 0.65;
-            if (sp50 < 0.55) {
-                spEC = spE0 + sp50 * 600;
+        if (x_2a89e429 > 0.65 || x_54406eae > 0.65) {
+            x_2a89e429 = MAX(x_54406eae, x_2a89e429);
+            x_2a89e429 -= 0.65;
+            if (x_2a89e429 < 0.55) {
+                spEC = x_e5752d05 + x_2a89e429 * 600;
             }
         }
     } else {
-        spEC = spE0;
+        spEC = x_e5752d05;
     }
 
     if (spEC > 6500) {
         spEC = 6500;
     }
-    obj->vars[2] = spEC;
+    obj->x_0f4167b4[2] = spEC;
 
-    gBgScrollY = D_8013C82C + sHitScrollTimer - (s32) (sPostCutsceneZoom * 0.2f);
-    if (spEC > 1500 && gBgScrollY < -24) {
-        gBgScrollY = -24;
+    x_6c647b3a = D_8013C82C + x_1e5afea8 - (s32) (x_cf60a652 * 0.2f);
+    if (spEC > 1500 && x_6c647b3a < -24) {
+        x_6c647b3a = -24;
     }
 
-    gCameraTarget.y = ((sCamHeightMul * spEC) >> 16) + sHitHeightAdj - 480;
+    x_435c561d.y = ((x_6d4a1d2c * spEC) >> 16) + x_881ee8c3 - 480;
 
-    sp34.x = (gPlayerPos2->x + gPlayerPos1->x) >> 1;
-    sp34.z = (gPlayerPos2->z + gPlayerPos1->z) >> 1;
-    sp34.y = -480;
-    camera_project_to_screen(&sp34, &sp48, &sp44, &sp50);
+    x_93463df6.x = (x_f8109afd->x + x_159f4e5a->x) >> 1;
+    x_93463df6.z = (x_f8109afd->z + x_159f4e5a->z) >> 1;
+    x_93463df6.y = -480;
+    x_e6f68754(&x_93463df6, &x_f10a928a, &x_fc517ba8, &x_2a89e429);
 
-    sp6B = sp50 > 0.2f;
-    sp100 = ((gPlayerPos2->x + gPlayerPos1->x) >> 1) - gCameraTarget.x;
-    spFC = ((gPlayerPos2->z + gPlayerPos1->z) >> 1) - gCameraTarget.z;
+    x_3bbf0098 = x_2a89e429 > 0.2f;
+    x_8b060a59 = ((x_f8109afd->x + x_159f4e5a->x) >> 1) - x_435c561d.x;
+    x_1e9ad2e0 = ((x_f8109afd->z + x_159f4e5a->z) >> 1) - x_435c561d.z;
 
-    if (abs2(sp100) > sCamDeadZone || abs2(spFC) > sCamDeadZone || sNeedsRecenter) {
-        if (abs(sp100) < sPanDeadZone && abs(spFC) < sPanDeadZone) {
-            if (sPanMomentumCur - sPanAccel > sPanMomentumMin) {
-                sPanMomentumCur -= sPanDecel; // @bug ??
+    if (x_67ffc48b(x_8b060a59) > x_e3ea1dcb || x_67ffc48b(x_1e9ad2e0) > x_e3ea1dcb || x_04c83de3) {
+        if (abs(x_8b060a59) < x_7eb21652 && abs(x_1e9ad2e0) < x_7eb21652) {
+            if (x_08b122d8 - x_79389416 > x_e4130b8b) {
+                x_08b122d8 -= x_e21927eb; // @bug ??
             } else {
-                sPanMomentumCur = sPanMomentumMin;
+                x_08b122d8 = x_e4130b8b;
             }
         } else {
-            if (sPanMomentumCur + sPanAccel < sPanSpeedMaxAccum) {
-                sPanMomentumCur += sPanAccel;
+            if (x_08b122d8 + x_79389416 < x_1c1ecf0d) {
+                x_08b122d8 += x_79389416;
             } else {
-                sPanMomentumCur = sPanSpeedMaxAccum;
+                x_08b122d8 = x_1c1ecf0d;
             }
         }
 
-        D_8013C370 = sPanMomentumCur >> 16;
+        D_8013C370 = x_08b122d8 >> 16;
 
-        if (sp100 < -D_8013C370) {
-            sp100 = -D_8013C370;
-        } else if (sp100 > D_8013C370) {
-            sp100 = D_8013C370;
+        if (x_8b060a59 < -D_8013C370) {
+            x_8b060a59 = -D_8013C370;
+        } else if (x_8b060a59 > D_8013C370) {
+            x_8b060a59 = D_8013C370;
         }
 
-        if (spFC < -D_8013C370) {
-            spFC = -D_8013C370;
-        } else if (spFC > D_8013C370) {
-            spFC = D_8013C370;
+        if (x_1e9ad2e0 < -D_8013C370) {
+            x_1e9ad2e0 = -D_8013C370;
+        } else if (x_1e9ad2e0 > D_8013C370) {
+            x_1e9ad2e0 = D_8013C370;
         }
 
-        sNeedsRecenter = ((sp100 != 0) || (spFC != 0));
+        x_04c83de3 = ((x_8b060a59 != 0) || (x_1e9ad2e0 != 0));
 
-        gCameraTarget.x += sp100;
-        gCameraTarget.z += spFC;
+        x_435c561d.x += x_8b060a59;
+        x_435c561d.z += x_1e9ad2e0;
 
-        if (sp6A && sp6B && (spFC != 0 || sp100 != 0)) {
-            sp74.x = sp100;
-            sp74.z = -spFC;
+        if (x_91b5b40f && x_3bbf0098 && (x_1e9ad2e0 != 0 || x_8b060a59 != 0)) {
+            x_8a9089b3.x = x_8b060a59;
+            x_8a9089b3.z = -x_1e9ad2e0;
 
-            sp6C.y = (0x400 - gCameraHeading) & 0xFFF;
-            sp6C.x = sp6C.z = 0;
-            math_rotate_vector(&sp74, &sp6C);
+            x_af0e6490.y = (0x400 - x_4c17a2ba) & 0xFFF;
+            x_af0e6490.x = x_af0e6490.z = 0;
+            x_9b0df250(&x_8a9089b3, &x_af0e6490);
 
-            if (sp74.x > 0) {
-                sp98 = (u32) (sqrtf(sp100 * sp100 + spFC * spFC) + 0.5) >> 1;
-            } else if (sp74.x < 0) {
-                sp98 = -((u32) (sqrtf(sp100 * sp100 + spFC * spFC) + 0.5) >> 1);
+            if (x_8a9089b3.x > 0) {
+                x_d753d975 = (u32) (sqrtf(x_8b060a59 * x_8b060a59 + x_1e9ad2e0 * x_1e9ad2e0) + 0.5) >> 1;
+            } else if (x_8a9089b3.x < 0) {
+                x_d753d975 = -((u32) (sqrtf(x_8b060a59 * x_8b060a59 + x_1e9ad2e0 * x_1e9ad2e0) + 0.5) >> 1);
             }
 
-            if (sp98 > 2) {
-                sp98 = 2;
+            if (x_d753d975 > 2) {
+                x_d753d975 = 2;
             }
-            if (sp98 < -2) {
-                sp98 = -2;
+            if (x_d753d975 < -2) {
+                x_d753d975 = -2;
             }
-            gBgScrollX += sp98;
+            x_e74df613 += x_d753d975;
         }
     }
 
-    spE8 = ((func_80012854(sp10C) * sOrbitRadius) >> 12) + gCameraTarget.x;
-    spE4 = ((-func_80012854(sp10C + 0x400) * sOrbitRadius) >> 12) + gCameraTarget.z;
-    spD0 = (func_80012854(sp10C) * sOrbitRadiusMul) >> 12;
-    spCC = (-func_80012854(sp10C + 0x400) * sOrbitRadiusMul) >> 12;
-    temp1 = (spEC * sOrbitHeightMul) >> 12;
+    x_e6efd229 = ((x_d9b20313(x_24cd786b) * x_22f06603) >> 12) + x_435c561d.x;
+    x_cadba9e3 = ((-x_d9b20313(x_24cd786b + 0x400) * x_22f06603) >> 12) + x_435c561d.z;
+    x_6e851264 = (x_d9b20313(x_24cd786b) * x_49bdae1a) >> 12;
+    x_6b913371 = (-x_d9b20313(x_24cd786b + 0x400) * x_49bdae1a) >> 12;
+    x_8c5f8c03 = (spEC * x_d86fab4d) >> 12;
 
-    obj->pos.x = ((spEC * spD0) >> 12) + spE8;
-    obj->pos.z = ((spEC * spCC) >> 12) + spE4;
-    obj->pos.y = sCamBaseY + sHitZoomAccum - temp1;
+    obj->pos.x = ((spEC * x_6e851264) >> 12) + x_e6efd229;
+    obj->pos.z = ((spEC * x_6b913371) >> 12) + x_cadba9e3;
+    obj->pos.y = x_d85eefcc + x_b64f16b7 - x_8c5f8c03;
 
     D_80081428 = D_8013C828;
 
-    if (*gCamera->modInst->animations == NULL && !(gPlayers[PLAYER_1].flags & PLAYER_FLAG_400000) &&
-            !(gPlayers[PLAYER_2].flags & PLAYER_FLAG_400000) ||
-        gReplayActive != 0) {
-        camera_check_bounds(obj);
+    if (*x_f4bce728->x_20d20338->x_50771dcd == NULL && !(x_824b9544[x_83106b21].flags & x_c865be3f) &&
+            !(x_824b9544[x_6f0b3be3].flags & x_c865be3f) ||
+        x_33abac12 != 0) {
+        x_40bc04d0(obj);
     }
 }

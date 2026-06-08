@@ -11,8 +11,8 @@ OSTask D_801389B8;
 
 Vp D_8004C9B0 = {
     {
-        { (SCREEN_WIDTH / 2) << 2, (SCREEN_HEIGHT / 2) << 2, G_MAXZ / 2, 0 },
-        { (SCREEN_WIDTH / 2) << 2, (SCREEN_HEIGHT / 2) << 2, G_MAXZ / 2, 0 },
+        { (x_56e08f29 / 2) << 2, (x_84e8ddf2 / 2) << 2, G_MAXZ / 2, 0 },
+        { (x_56e08f29 / 2) << 2, (x_84e8ddf2 / 2) << 2, G_MAXZ / 2, 0 },
     },
 };
 
@@ -28,7 +28,7 @@ Gfx D_8004C9C0[] = {
 Gfx D_8004C9E8[] = {
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsDPPipelineMode(G_PM_1PRIMITIVE),
-    gsDPSetScissor(G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT),
+    gsDPSetScissor(G_SC_NON_INTERLACE, 0, 0, x_56e08f29, x_84e8ddf2),
     gsDPSetTextureLOD(G_TL_TILE),
     gsDPSetTextureLUT(G_TT_RGBA16),
     gsDPSetTextureDetail(G_TD_CLAMP),
@@ -48,7 +48,7 @@ Gfx D_8004CA68[] = {
     gsSPSegment(0x00, 0x00000000),
     gsDPSetCycleType(G_CYC_COPY),
     gsDPPipelineMode(G_PM_NPRIMITIVE),
-    gsDPSetScissor(G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT),
+    gsDPSetScissor(G_SC_NON_INTERLACE, 0, 0, x_56e08f29, x_84e8ddf2),
     gsDPSetTextureLOD(G_TL_TILE),
     gsDPSetTextureLUT(G_TT_RGBA16),
     gsDPSetTextureDetail(G_TD_CLAMP),
@@ -75,7 +75,7 @@ Gfx D_8004CB00[] = {
     gsSPClipRatio(FRUSTRATIO_6),
     gsDPSetCycleType(G_CYC_1CYCLE),
     gsDPPipelineMode(G_PM_NPRIMITIVE),
-    gsDPSetScissor(G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT),
+    gsDPSetScissor(G_SC_NON_INTERLACE, 0, 0, x_56e08f29, x_84e8ddf2),
     gsDPSetTextureLOD(G_TL_TILE),
     gsDPSetTextureLUT(G_TT_RGBA16),
     gsDPSetTextureDetail(G_TD_CLAMP),
@@ -103,14 +103,14 @@ Gfx D_8004CC08[] = {
     gsSPNoOp(),
 };
 
-RenderContext D_8004CC20 = {
+x_3e2f9cf1 D_8004CC20 = {
     -1,
     { 0, 0, 0, 0, 0, 0 },
     gsDPSetOtherMode(0, 0),
     { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL },
     { {
-        { (SCREEN_WIDTH / 2) << 2, (SCREEN_HEIGHT / 2) << 2, G_MAXZ / 2, 0 },
-        { (SCREEN_WIDTH / 2) << 2, (SCREEN_HEIGHT / 2) << 2, G_MAXZ / 2, 0 },
+        { (x_56e08f29 / 2) << 2, (x_84e8ddf2 / 2) << 2, G_MAXZ / 2, 0 },
+        { (x_56e08f29 / 2) << 2, (x_84e8ddf2 / 2) << 2, G_MAXZ / 2, 0 },
     } },
     D_8004CC08,
 };
@@ -126,7 +126,7 @@ OSTask D_8004CC88 = {
     NULL,      0,
 };
 
-BatchInfo D_8004CCC8 = {
+x_c1cedf06 D_8004CCC8 = {
     { 0, 0, 0, 0, 0, 0, NULL, gsDPSetOtherMode(0, 0) },
     { {
         { 0x00010000, 0x00000000, 0x00000001, 0x00000000 },
@@ -141,7 +141,7 @@ Gfx D_8004CD20[] = {
     gsSPNoOp(),
 };
 
-BatchInfo D_8004CD30 = {
+x_c1cedf06 D_8004CD30 = {
     { 0, 0, 0, 0, 0, 0, D_8004CD20, gsDPSetOtherMode(0, 0) },
     { {
         { 0x00010000, 0x00000000, 0x00000001, 0x00000000 },

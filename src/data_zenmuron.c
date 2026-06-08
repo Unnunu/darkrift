@@ -1,6 +1,6 @@
 #include "common.h"
 
-HitZonesSetup D_80052B30 = {
+x_87049dce D_80052B30 = {
     5,
     8,
     3,
@@ -20,35 +20,35 @@ HitZonesSetup D_80052B30 = {
     { 0, 0, 0, 0 },
 };
 
-s16 D_80052BB0[] = { MOVE_ID_BS_COMBO_1_P1, MOVE_ID_BS_COMBO_1_P2, MOVE_ID_BS_COMBO_1_P3, 0 };
-s16 D_80052BB8[] = { MOVE_ID_HS_COMBO_1_P1, MOVE_ID_HS_COMBO_1_P2, MOVE_ID_HS_COMBO_1_P3, 0 };
-s16 D_80052BC0[] = { MOVE_ID_RK_COMBO_1_P1, MOVE_ID_RK_COMBO_1_P2, MOVE_ID_RK_COMBO_1_P3, 0 };
-s16 D_80052BC8[] = { MOVE_ID_BS_COMBO_1_P1,
-                     MOVE_ID_BS_COMBO_1_P2,
-                     MOVE_ID_COCOMBO_1_P1,
-                     MOVE_ID_COCOMBO_1_P2,
-                     MOVE_ID_COCOMBO_1_P3,
-                     MOVE_ID_COCOMBO_1_P4,
+s16 D_80052BB0[] = { x_89bd7f51, x_0259aa31, x_42786438, 0 };
+s16 D_80052BB8[] = { x_2d2ae732, x_84625073, x_dbd7fb68, 0 };
+s16 D_80052BC0[] = { x_51ee0576, x_ec4f2792, x_b72448b3, 0 };
+s16 D_80052BC8[] = { x_89bd7f51,
+                     x_0259aa31,
+                     x_6a3715eb,
+                     x_9efec86a,
+                     x_afcef681,
+                     x_da8c2fe3,
                      0 };
-s16 D_80052BD8[] = { MOVE_ID_BS_COMBO_1_P1, MOVE_ID_BS_COMBO_1_P2, MOVE_ID_COCOMBO_1_P1,
-                     MOVE_ID_COCOMBO_1_P2,  MOVE_ID_COCOMBO_2_P1,  MOVE_ID_COCOMBO_2_P2,
-                     MOVE_ID_COCOMBO_2_P3,  MOVE_ID_COCOMBO_2_P4,  0 };
-s16 D_80052BEC[] = { MOVE_ID_HS_COMBO_1_P1, MOVE_ID_HS_COMBO_1_P2, MOVE_ID_COCOMBO_1_P1,
-                     MOVE_ID_COCOMBO_1_P2,  MOVE_ID_COCOMBO_1_P3,  0 };
-s16 D_80052BF8[] = { MOVE_ID_HS_COMBO_1_P1, MOVE_ID_HS_COMBO_1_P2, MOVE_ID_COCOMBO_1_P1, MOVE_ID_COCOMBO_1_P2,
-                     MOVE_ID_COCOMBO_2_P1,  MOVE_ID_COCOMBO_2_P2,  MOVE_ID_COCOMBO_2_P3, 0 };
-s16 D_80052C08[] = { MOVE_ID_RK_COMBO_1_P1,
-                     MOVE_ID_RK_COMBO_1_P2,
-                     MOVE_ID_RK_FOREVER,
-                     MOVE_ID_COCOMBO_1_P1,
-                     MOVE_ID_COCOMBO_1_P2,
-                     MOVE_ID_COCOMBO_1_P3,
+s16 D_80052BD8[] = { x_89bd7f51, x_0259aa31, x_6a3715eb,
+                     x_9efec86a,  x_a1422c65,  x_618f64b1,
+                     x_55e6a23a,  x_3b36e7f6,  0 };
+s16 D_80052BEC[] = { x_2d2ae732, x_84625073, x_6a3715eb,
+                     x_9efec86a,  x_afcef681,  0 };
+s16 D_80052BF8[] = { x_2d2ae732, x_84625073, x_6a3715eb, x_9efec86a,
+                     x_a1422c65,  x_618f64b1,  x_55e6a23a, 0 };
+s16 D_80052C08[] = { x_51ee0576,
+                     x_ec4f2792,
+                     x_c7f97bab,
+                     x_6a3715eb,
+                     x_9efec86a,
+                     x_afcef681,
                      0 };
 s16 *D_80052C18[] = {
     D_80052BB0, D_80052BB8, D_80052BC0, D_80052BC8, D_80052BD8, D_80052BEC, D_80052BF8, D_80052C08, NULL,
 };
 
-Unk_8004BA6C D_80052C3C[] = {
+x_448872e8 D_80052C3C[] = {
     { 15, 0, 0 },
     { 0, 0, 0 },
 };

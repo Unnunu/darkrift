@@ -2,114 +2,114 @@
 #include "task.h"
 #include "string.h"
 
-Object *gObjectList = NULL;
+Object *x_8cdb365e = NULL;
 s32 D_80052C54 = 0;
 
-ItemPool gObjectPool;
-ItemPool gModelInstancePool;
-s32 D_8013C2D0_unused;
+x_b57dc591 x_11f3efb0;
+x_b57dc591 x_5c163218;
+s32 x_f1d278c5;
 
-void func_8002A8C0(ItemPool *arg0, u32 count, u32 element_size) {
+void x_7824740c(x_b57dc591 *x_cc1d0de5, u32 count, u32 x_52f03926) {
     s16 i;
     u8 *buffer;
 
-    arg0->elements = (u8 **) mem_alloc(count * 4, "item.c", 23);
-    arg0->buffer = (u8 *) mem_alloc(element_size * count, "item.c", 24);
-    mem_fill(arg0->buffer, 0, count * element_size);
-    arg0->count = count;
-    arg0->unk_0C = count - 1;
+    x_cc1d0de5->elements = (u8 **) x_56c3086a(count * 4, "item.c", 23);
+    x_cc1d0de5->buffer = (u8 *) x_56c3086a(x_52f03926 * count, "item.c", 24);
+    x_ad92c136(x_cc1d0de5->buffer, 0, count * x_52f03926);
+    x_cc1d0de5->count = count;
+    x_cc1d0de5->x_b8173ab8 = count - 1;
 
-    buffer = arg0->buffer;
+    buffer = x_cc1d0de5->buffer;
     for (i = 0; i < count; i++) {
-        arg0->elements[i] = buffer + i * element_size;
+        x_cc1d0de5->elements[i] = buffer + i * x_52f03926;
     }
 }
 
-void func_8002A994(ItemPool *arg0, u32 count, u32 element_size) {
+void x_24bc1a84(x_b57dc591 *x_cc1d0de5, u32 count, u32 x_52f03926) {
     u32 i;
     u32 j;
-    u32 old_count;
-    u32 new_count;
+    u32 x_9d95bf71;
+    u32 x_55e411ea;
     void *buffer;
-    u8 **new_elements;
+    u8 **x_ed0d2d7a;
 
-    old_count = arg0->count;
-    new_count = old_count + count;
+    x_9d95bf71 = x_cc1d0de5->count;
+    x_55e411ea = x_9d95bf71 + count;
 
-    new_elements = (u8 **) mem_alloc(new_count * 4, "item.c", 45);
-    buffer = mem_alloc(count * element_size, "item.c", 46);
+    x_ed0d2d7a = (u8 **) x_56c3086a(x_55e411ea * 4, "item.c", 45);
+    buffer = x_56c3086a(count * x_52f03926, "item.c", 46);
 
-    for (i = 0; i < old_count; i++) {
-        new_elements[i] = arg0->elements[i];
+    for (i = 0; i < x_9d95bf71; i++) {
+        x_ed0d2d7a[i] = x_cc1d0de5->elements[i];
     }
 
-    for (j = i; j < new_count; j++) {
-        new_elements[j] = (u8 *) buffer + (j - i) * element_size;
+    for (j = i; j < x_55e411ea; j++) {
+        x_ed0d2d7a[j] = (u8 *) buffer + (j - i) * x_52f03926;
     }
 
-    mem_free(arg0->elements);
+    x_86715543(x_cc1d0de5->elements);
 
-    arg0->elements = new_elements;
-    arg0->count = new_count;
-    arg0->unk_0C = new_count - 1;
+    x_cc1d0de5->elements = x_ed0d2d7a;
+    x_cc1d0de5->count = x_55e411ea;
+    x_cc1d0de5->x_b8173ab8 = x_55e411ea - 1;
 }
 
-void func_8002ABCC(s32 count) {
-    func_8002A994(&gObjectPool, count, sizeof(Object));
-    func_8002A994(&gTaskPool, count, sizeof(ObjectTask));
+void x_8e6b5db0(s32 count) {
+    x_24bc1a84(&x_11f3efb0, count, sizeof(Object));
+    x_24bc1a84(&x_30839b82, count, sizeof(x_41a0e1e6));
 }
 
-void func_8002AC10(void) {
-    func_8002A8C0(&gObjectPool, 50, sizeof(Object));
-    func_8002A8C0(&gModelInstancePool, 16, sizeof(ModelInstance));
-    gObjectList = NULL;
+void x_3c16ed51(void) {
+    x_7824740c(&x_11f3efb0, 50, sizeof(Object));
+    x_7824740c(&x_5c163218, 16, sizeof(x_6fcfcf46));
+    x_8cdb365e = NULL;
     D_80052C54 = 0;
 }
 
-Object *obj_allocate(s16 priority) {
+Object *x_5283664d(s16 priority) {
     Object *obj;
-    Object *prev_obj;
+    Object *x_5ad2b76c;
 
     D_80052C54++;
-    if (gObjectPool.unk_0C <= 0) {
+    if (x_11f3efb0.x_b8173ab8 <= 0) {
         return NULL;
     }
 
-    if (gObjectList == NULL) {
-        obj = gObjectList = (Object *) GET_ITEM(gObjectPool);
+    if (x_8cdb365e == NULL) {
+        obj = x_8cdb365e = (Object *) x_6d619dce(x_11f3efb0);
 
-        obj->prevObject = NULL;
-        obj->nextObject = NULL;
+        obj->x_d0268c0d = NULL;
+        obj->x_2d5f3fbd = NULL;
     } else {
-        obj = gObjectList;
+        obj = x_8cdb365e;
 
         while (obj != NULL && obj->priority >= priority) {
-            prev_obj = obj;
-            obj = obj->nextObject;
+            x_5ad2b76c = obj;
+            obj = obj->x_2d5f3fbd;
         }
 
         if (obj == NULL) {
-            prev_obj->nextObject = (Object *) GET_ITEM(gObjectPool);
+            x_5ad2b76c->x_2d5f3fbd = (Object *) x_6d619dce(x_11f3efb0);
 
-            obj = prev_obj->nextObject;
-            obj->prevObject = prev_obj;
-            obj->nextObject = NULL;
-        } else if (obj->prevObject == NULL) {
-            obj = (Object *) GET_ITEM(gObjectPool);
+            obj = x_5ad2b76c->x_2d5f3fbd;
+            obj->x_d0268c0d = x_5ad2b76c;
+            obj->x_2d5f3fbd = NULL;
+        } else if (obj->x_d0268c0d == NULL) {
+            obj = (Object *) x_6d619dce(x_11f3efb0);
 
-            obj->nextObject = gObjectList;
-            gObjectList->prevObject = obj;
-            gObjectList = obj;
-            obj->prevObject = NULL;
+            obj->x_2d5f3fbd = x_8cdb365e;
+            x_8cdb365e->x_d0268c0d = obj;
+            x_8cdb365e = obj;
+            obj->x_d0268c0d = NULL;
         } else {
-            if ((!obj->nextObject) != 0) {} // required to match
-            prev_obj = (Object *) GET_ITEM(gObjectPool);
+            if ((!obj->x_2d5f3fbd) != 0) {} // required to match
+            x_5ad2b76c = (Object *) x_6d619dce(x_11f3efb0);
 
-            obj->prevObject->nextObject = prev_obj;
-            prev_obj->nextObject = obj;
-            prev_obj->prevObject = obj->prevObject;
-            obj->prevObject = prev_obj;
-            obj = prev_obj;
+            obj->x_d0268c0d->x_2d5f3fbd = x_5ad2b76c;
+            x_5ad2b76c->x_2d5f3fbd = obj;
+            x_5ad2b76c->x_d0268c0d = obj->x_d0268c0d;
+            obj->x_d0268c0d = x_5ad2b76c;
+            obj = x_5ad2b76c;
         }
     }
 
@@ -117,64 +117,64 @@ Object *obj_allocate(s16 priority) {
     return obj;
 }
 
-void obj_delete(Object *obj) {
+void x_63b616bf(Object *obj) {
     D_80052C54--;
-    if (obj->prevObject == NULL) {
-        obj->nextObject->prevObject = NULL;
-        gObjectList = obj->nextObject;
-    } else if (obj->nextObject == NULL) {
-        obj->prevObject->nextObject = NULL;
+    if (obj->x_d0268c0d == NULL) {
+        obj->x_2d5f3fbd->x_d0268c0d = NULL;
+        x_8cdb365e = obj->x_2d5f3fbd;
+    } else if (obj->x_2d5f3fbd == NULL) {
+        obj->x_d0268c0d->x_2d5f3fbd = NULL;
     } else {
-        obj->prevObject->nextObject = obj->nextObject;
-        obj->nextObject->prevObject = obj->prevObject;
+        obj->x_d0268c0d->x_2d5f3fbd = obj->x_2d5f3fbd;
+        obj->x_2d5f3fbd->x_d0268c0d = obj->x_d0268c0d;
     }
 
-    if (obj->flags & OBJ_FLAG_MODEL) {
-        gModelInstancePool.unk_0C++;
-        gModelInstancePool.elements[gModelInstancePool.unk_0C] = obj->modInst;
-        gModelInstancePool.count++;
+    if (obj->flags & x_3434f870) {
+        x_5c163218.x_b8173ab8++;
+        x_5c163218.elements[x_5c163218.x_b8173ab8] = obj->x_20d20338;
+        x_5c163218.count++;
 
-        if (obj->modInst->transforms != NULL) {
-            mem_free(obj->modInst->transforms);
+        if (obj->x_20d20338->transforms != NULL) {
+            x_86715543(obj->x_20d20338->transforms);
         }
     }
 
-    gObjectPool.unk_0C++;
-    gObjectPool.elements[gObjectPool.unk_0C] = obj;
-    gObjectPool.count++;
+    x_11f3efb0.x_b8173ab8++;
+    x_11f3efb0.elements[x_11f3efb0.x_b8173ab8] = obj;
+    x_11f3efb0.count++;
 }
 
 // unused
-void func_8002AF08(BatchInfo *arg0) {
-    func_80012450(&arg0->transform);
+void x_f8781320(x_c1cedf06 *x_cc1d0de5) {
+    x_9b85c792(&x_cc1d0de5->transform);
 }
 
 // unused
-void func_8002AF28(Batch *arg0) {
+void x_454a13ef(x_320b5d80 *x_cc1d0de5) {
     u32 i;
 
-    func_8002AF08(arg0->info);
+    x_f8781320(x_cc1d0de5->info);
 
-    for (i = 0; i < arg0->info->header.vtxNum; i++) {}
-    for (i = 0; i < arg0->info->header.numTriangles; i++) {}
+    for (i = 0; i < x_cc1d0de5->info->header.x_4c5e05f8; i++) {}
+    for (i = 0; i < x_cc1d0de5->info->header.x_8a54e96a; i++) {}
 }
 
-void check_object_collisions(Object *obj) {
-    u32 dxAbs, dzAbs;
-    s32 temp2;
-    Object *curr;
+void x_581070ad(Object *obj) {
+    u32 x_5d21c78b, x_b7cc9533;
+    s32 x_df21a243;
+    Object *x_7cdc2f34;
 
-    for (curr = gObjectList; curr != NULL; curr = curr->nextObject) {
-        if (curr != obj && (obj->unk_07C & curr->unk_07A)) {
-            dxAbs = ABS(obj->pos.x - curr->pos.x);
-            dzAbs = ABS(obj->pos.z - curr->pos.z);
-            temp2 = FAST_HYPOT(dxAbs, dzAbs) - obj->unk_1FC - curr->unk_1FC;
-            if (temp2 <= 0) {
-                if (obj->unk_076 & 2) {
-                    obj->unk_1E8(obj, curr);
+    for (x_7cdc2f34 = x_8cdb365e; x_7cdc2f34 != NULL; x_7cdc2f34 = x_7cdc2f34->x_2d5f3fbd) {
+        if (x_7cdc2f34 != obj && (obj->x_b1e624ba & x_7cdc2f34->x_e4466eca)) {
+            x_5d21c78b = ABS(obj->pos.x - x_7cdc2f34->pos.x);
+            x_b7cc9533 = ABS(obj->pos.z - x_7cdc2f34->pos.z);
+            x_df21a243 = x_4a9e7834(x_5d21c78b, x_b7cc9533) - obj->x_de73d1d5 - x_7cdc2f34->x_de73d1d5;
+            if (x_df21a243 <= 0) {
+                if (obj->x_61f772e7 & 2) {
+                    obj->x_450fdcd0(obj, x_7cdc2f34);
                 }
-                if (curr->unk_076 & 2) {
-                    curr->unk_1E8(curr, obj);
+                if (x_7cdc2f34->x_61f772e7 & 2) {
+                    x_7cdc2f34->x_450fdcd0(x_7cdc2f34, obj);
                 }
                 break;
             }
@@ -182,61 +182,61 @@ void check_object_collisions(Object *obj) {
     }
 }
 
-void update_all_game_objects(void) {
+void x_efb29a7d(void) {
     Object *obj;
-    Object *tempObj;
-    ClusterRenderSlot *renderInfo;
+    Object *x_a58b9b64;
+    x_f752bb53 *x_dfa11b27;
     s32 s1;
     u32 i;
     u32 j;
-    Batch *v0;
+    x_320b5d80 *v0;
     u32 t2;
-    s32 temp2;
+    s32 x_df21a243;
 
     D_8013C4E8 = NULL;
-    obj = gObjectList;
+    obj = x_8cdb365e;
     while (obj != NULL) {
-        if (obj->unk_07C != 0) {
-            check_object_collisions(obj);
+        if (obj->x_b1e624ba != 0) {
+            x_581070ad(obj);
         }
 
-        if ((obj->flags & OBJ_FLAG_DELETE) && !(obj->flags & OBJ_FLAG_HIDDEN)) {
-            obj->flags |= OBJ_FLAG_HIDDEN;
-        } else if (obj->flags & OBJ_FLAG_DELETE) {
-            if (obj->unk_076 & 8) {
-                obj->unk_078 |= 8;
-                obj->unk_1E8(obj, NULL);
+        if ((obj->flags & x_f51cb721) && !(obj->flags & x_c537cafa)) {
+            obj->flags |= x_c537cafa;
+        } else if (obj->flags & x_f51cb721) {
+            if (obj->x_61f772e7 & 8) {
+                obj->x_1b0e7aa2 |= 8;
+                obj->x_450fdcd0(obj, NULL);
             }
-            if (obj->flags & OBJ_FLAG_20000000) {
-                delete_light(obj->light);
+            if (obj->flags & x_28b57b50) {
+                x_1760d24f(obj->light);
             }
-            task_clear(obj->taskList);
-            obj->taskList = NULL;
-            tempObj = obj;
-            obj = obj->nextObject;
-            obj_delete(tempObj);
+            x_bbe35044(obj->x_d178c88f);
+            obj->x_d178c88f = NULL;
+            x_a58b9b64 = obj;
+            obj = obj->x_2d5f3fbd;
+            x_63b616bf(x_a58b9b64);
         } else {
-            obj->fn_render(obj);
-            obj = obj->nextObject;
+            obj->x_0232396f(obj);
+            obj = obj->x_2d5f3fbd;
         }
     }
 
-    for (renderInfo = D_8013C4E8; renderInfo != NULL; renderInfo = renderInfo->next) {
-        s1 = renderInfo->cluster->groupSize;
-        if (renderInfo->cluster->unk_00) {
+    for (x_dfa11b27 = D_8013C4E8; x_dfa11b27 != NULL; x_dfa11b27 = x_dfa11b27->next) {
+        s1 = x_dfa11b27->x_164cf1ca->x_ceaf196d;
+        if (x_dfa11b27->x_164cf1ca->x_af0aa1f8) {
             for (i = 0; i < s1; i++) {
-                if (renderInfo->flags & 1) {
+                if (x_dfa11b27->flags & 1) {
                     continue;
                 }
-                v0 = renderInfo->cluster->transforms[i];
-                t2 = renderInfo->cluster->batchCounts[i];
+                v0 = x_dfa11b27->x_164cf1ca->transforms[i];
+                t2 = x_dfa11b27->x_164cf1ca->x_c246f31f[i];
                 for (j = 0; j < t2; j++) {
-                    if (renderInfo->flags & 2) {
-                        gSPTriBatch(gOverlayBatchPos, NULL, (j != 0) ? v0->info : renderInfo->unk_08[i], v0->vertices,
+                    if (x_dfa11b27->flags & 2) {
+                        x_50746900(x_ee137e39, NULL, (j != 0) ? v0->info : x_dfa11b27->x_415ed9d6[i], v0->vertices,
                                     v0->triangles);
                         v0++;
                     } else {
-                        gSPTriBatch(gMainBatchPos, NULL, (j != 0) ? v0->info : renderInfo->unk_08[i], v0->vertices,
+                        x_50746900(x_8a79b283, NULL, (j != 0) ? v0->info : x_dfa11b27->x_415ed9d6[i], v0->vertices,
                                     v0->triangles);
                         v0++;
                     }
@@ -245,371 +245,371 @@ void update_all_game_objects(void) {
         } else {
             s32 temp = D_8005BFCE * s1;
             for (i = 0; i < s1; i++) {
-                gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(renderInfo->cluster->transforms[i + temp]),
+                gSPMatrix(x_9a3c07b8++, x_c485761a(x_dfa11b27->x_164cf1ca->transforms[i + temp]),
                           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-                gSPDisplayList(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(renderInfo->cluster->dlists[i]));
+                gSPDisplayList(x_9a3c07b8++, x_c485761a(x_dfa11b27->x_164cf1ca->x_1aae351f[i]));
             }
         }
     }
 }
 
-#ifdef NON_EQUIVALENT
-void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, Transform *arg3, void (*taskFunc)(Object *)) {
+#ifdef x_0fab73bf
+void x_6d41c91d(Object *x_cc1d0de5, x_88f11482 *x_84ff873b, x_acccb624 *x_2092f891, Transform *x_ee71e5cb, void (*x_08ae3bb4)(Object *)) {
     s16 i;
     s32 temp;
 
-    init_transform(arg3, &arg0->transform, -2, -3);
+    x_f2c7456d(x_ee71e5cb, &x_cc1d0de5->transform, -2, -3);
 
-    arg0->unk_076 = 0;
-    arg0->color.r = arg0->color.g = arg0->color.b = 160;
+    x_cc1d0de5->x_61f772e7 = 0;
+    x_cc1d0de5->color.r = x_cc1d0de5->color.g = x_cc1d0de5->color.b = 160;
 
-    arg0->acceleration.x = 0;
-    arg0->acceleration.y = 0;
-    arg0->acceleration.z = 0;
+    x_cc1d0de5->x_8da078cc.x = 0;
+    x_cc1d0de5->x_8da078cc.y = 0;
+    x_cc1d0de5->x_8da078cc.z = 0;
 
-    arg0->velocity.x = 0;
-    arg0->velocity.y = 0;
-    arg0->velocity.z = 0;
+    x_cc1d0de5->velocity.x = 0;
+    x_cc1d0de5->velocity.y = 0;
+    x_cc1d0de5->velocity.z = 0;
 
-    arg0->unk_08C = arg0->unk_076;
+    x_cc1d0de5->x_f9866d50 = x_cc1d0de5->x_61f772e7;
 
-    arg0->pos.x = arg1->x;
-    arg0->pos.y = arg1->y;
-    arg0->pos.z = arg1->z;
+    x_cc1d0de5->pos.x = x_84ff873b->x;
+    x_cc1d0de5->pos.y = x_84ff873b->y;
+    x_cc1d0de5->pos.z = x_84ff873b->z;
 
-    arg0->rotation.x = arg2->x;
-    arg0->rotation.y = arg2->y;
-    arg0->rotation.z = arg2->z;
+    x_cc1d0de5->x_224610f1.x = x_2092f891->x;
+    x_cc1d0de5->x_224610f1.y = x_2092f891->y;
+    x_cc1d0de5->x_224610f1.z = x_2092f891->z;
 
-    arg0->unk_07A = 0;
-    arg0->unk_07C = 0;
-    arg0->unk_1FC = 0;
+    x_cc1d0de5->x_e4466eca = 0;
+    x_cc1d0de5->x_b1e624ba = 0;
+    x_cc1d0de5->x_de73d1d5 = 0;
 
-    arg0->unk_058 = 0x100;
-    arg0->unk_05C = 0x100;
-    arg0->unk_060 = 0x100;
+    x_cc1d0de5->x_860b579a = 0x100;
+    x_cc1d0de5->x_2fa0bbed = 0x100;
+    x_cc1d0de5->x_3e400065 = 0x100;
 
-    arg0->unk_078 = 0;
-    arg0->frameIndex = 0;
-    arg0->previousFrameIndex = -1;
-    arg0->color.a = 128;
-    arg0->unk_1F8 = 0;
-    arg0->unk_1FA = 0;
+    x_cc1d0de5->x_1b0e7aa2 = 0;
+    x_cc1d0de5->x_5fcb1654 = 0;
+    x_cc1d0de5->x_2b06a023 = -1;
+    x_cc1d0de5->color.a = 128;
+    x_cc1d0de5->x_8f6ab396 = 0;
+    x_cc1d0de5->x_9112b8b9 = 0;
 
-    arg0->taskList = (ObjectTask *) GET_ITEM(gTaskPool);
-    arg0->currentTask = arg0->taskList;
-    if (taskFunc != NULL) {
-        arg0->currentTask->start_delay = 0;
-        arg0->currentTask->flags = TASK_FLAG_ENABLED;
-        arg0->currentTask->func = taskFunc;
-        arg0->currentTask->stackPos = 0;
+    x_cc1d0de5->x_d178c88f = (x_41a0e1e6 *) x_6d619dce(x_30839b82);
+    x_cc1d0de5->x_64946db0 = x_cc1d0de5->x_d178c88f;
+    if (x_08ae3bb4 != NULL) {
+        x_cc1d0de5->x_64946db0->x_c7f843c2 = 0;
+        x_cc1d0de5->x_64946db0->flags = x_0fb55613;
+        x_cc1d0de5->x_64946db0->x_f6382727 = x_08ae3bb4;
+        x_cc1d0de5->x_64946db0->x_116c9ff3 = 0;
     } else {
-        arg0->currentTask->start_delay = 0;
-        arg0->currentTask->flags = TASK_FLAG_ENABLED;
-        arg0->currentTask->func = task_default_func;
-        arg0->currentTask->stackPos = 0;
+        x_cc1d0de5->x_64946db0->x_c7f843c2 = 0;
+        x_cc1d0de5->x_64946db0->flags = x_0fb55613;
+        x_cc1d0de5->x_64946db0->x_f6382727 = x_0ae6735d;
+        x_cc1d0de5->x_64946db0->x_116c9ff3 = 0;
     }
 
-    arg0->currentTask->next = NULL;
-    arg0->currentTask->stackPos = 0;
+    x_cc1d0de5->x_64946db0->next = NULL;
+    x_cc1d0de5->x_64946db0->x_116c9ff3 = 0;
 
-    math_rotate(&arg0->transform.local_matrix, arg2);
-    math_translate(&arg0->transform.local_matrix, arg1);
+    x_948f0b9f(&x_cc1d0de5->transform.x_3fde9cd9, x_2092f891);
+    x_fc6adb04(&x_cc1d0de5->transform.x_3fde9cd9, x_84ff873b);
 
     for (i = 0; i < 13; i++) {
-        arg0->vars[i] = 0;
+        x_cc1d0de5->x_0f4167b4[i] = 0;
     }
 
-    arg0->unk_200.r = arg0->unk_200.g = arg0->unk_200.b = 255;
-    arg0->unk_204.r = arg0->unk_204.g = arg0->unk_204.b = arg0->unk_204.a = 0;
-    arg0->light = NULL;
+    x_cc1d0de5->x_47e6a04c.r = x_cc1d0de5->x_47e6a04c.g = x_cc1d0de5->x_47e6a04c.b = 255;
+    x_cc1d0de5->x_da940449.r = x_cc1d0de5->x_da940449.g = x_cc1d0de5->x_da940449.b = x_cc1d0de5->x_da940449.a = 0;
+    x_cc1d0de5->light = NULL;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/item/obj_init.s")
-void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, Transform *arg3, void (*arg4)(Object *));
+#pragma x_eda6f9e3("asm/nonmatchings/item/obj_init.s")
+void x_6d41c91d(Object *x_cc1d0de5, x_88f11482 *x_84ff873b, x_acccb624 *x_2092f891, Transform *x_ee71e5cb, void (*x_a0e63e9c)(Object *));
 #endif
 
-void init_model_node_transforms(Object *obj, Model *model) {
-    ModelInstance *modInst;
-    u32 numNodes;
-    Transform *rootTransform;
+void x_9c540986(Object *obj, Model *model) {
+    x_6fcfcf46 *x_20d20338;
+    u32 x_6dcce206;
+    Transform *x_abd7b3c4;
     Transform *transforms;
-    NodeAttachment *hier;
+    x_43bd08ed *x_529cbc8f;
     u32 i;
-    s32 parentId;
+    s32 x_eb290249;
 
-    modInst = obj->modInst;
-    numNodes = model->numNodes;
-    rootTransform = &modInst->rootTransform;
+    x_20d20338 = obj->x_20d20338;
+    x_6dcce206 = model->x_6dcce206;
+    x_abd7b3c4 = &x_20d20338->x_abd7b3c4;
 
-    init_transform(&obj->transform, rootTransform, -1, -2);
-    modInst->transforms = transforms = mem_alloc(numNodes * sizeof(Transform), "item.c", 453);
+    x_f2c7456d(&obj->transform, x_abd7b3c4, -1, -2);
+    x_20d20338->transforms = transforms = x_56c3086a(x_6dcce206 * sizeof(Transform), "item.c", 453);
 
-    hier = model->nodeHierarchy;
-    modInst->nodeAttachments = &hier[1];
-    modInst->baseRootPos.x = hier->x;
-    modInst->baseRootPos.y = hier->y;
-    modInst->baseRootPos.z = hier->z;
-    math_translate(&modInst->rootTransform.local_matrix, &modInst->baseRootPos);
+    x_529cbc8f = model->x_e7962160;
+    x_20d20338->x_0094fc88 = &x_529cbc8f[1];
+    x_20d20338->x_9cfd7bb4.x = x_529cbc8f->x;
+    x_20d20338->x_9cfd7bb4.y = x_529cbc8f->y;
+    x_20d20338->x_9cfd7bb4.z = x_529cbc8f->z;
+    x_fc6adb04(&x_20d20338->x_abd7b3c4.x_3fde9cd9, &x_20d20338->x_9cfd7bb4);
 
-    for (i = 0; i < numNodes; i++) {
-        hier = model->nodeHierarchy + i + 1;
-        parentId = hier->parent;
-        if (parentId >= 0) {
-            init_transform(&transforms[parentId], &transforms[i], i, parentId);
+    for (i = 0; i < x_6dcce206; i++) {
+        x_529cbc8f = model->x_e7962160 + i + 1;
+        x_eb290249 = x_529cbc8f->x_e4712596;
+        if (x_eb290249 >= 0) {
+            x_f2c7456d(&transforms[x_eb290249], &transforms[i], i, x_eb290249);
         } else {
-            init_transform(rootTransform, &transforms[i], i, parentId);
+            x_f2c7456d(x_abd7b3c4, &transforms[i], i, x_eb290249);
         }
-        math_translate(&transforms[i].local_matrix, &hier->x);
+        x_fc6adb04(&transforms[i].x_3fde9cd9, &x_529cbc8f->x);
     }
 }
 
-Object *create_kmd_object(Vec4i *arg0, char *arg1, K2Def *properties, s32 arg3) {
+Object *x_745c5ce2(x_88f11482 *x_cc1d0de5, char *x_84ff873b, x_aece7675 *properties, s32 x_ee71e5cb) {
     Object *obj;
-    char sp78[20];
-    ModelInstance *modInst;
-    KModel *s5;
+    char x_dcab8ab0[20];
+    x_6fcfcf46 *x_20d20338;
+    x_82e80914 *s5;
 
-    if (arg1 == NULL) {
-        obj = obj_allocate(properties->objPriority);
-        str_copy(sp78, properties->name);
-        obj_init(obj, arg0, &gZeroRotation, NULL, properties->taskFunc);
+    if (x_84ff873b == NULL) {
+        obj = x_5283664d(properties->x_95ee18a8);
+        x_dab0846a(x_dcab8ab0, properties->name);
+        x_6d41c91d(obj, x_cc1d0de5, &x_acab9952, NULL, properties->x_08ae3bb4);
     } else {
-        str_copy(sp78, arg1);
+        x_dab0846a(x_dcab8ab0, x_84ff873b);
         if (properties != NULL) {
-            obj = obj_allocate(properties->objPriority);
-            obj_init(obj, arg0, &gZeroRotation, NULL, properties->taskFunc);
+            obj = x_5283664d(properties->x_95ee18a8);
+            x_6d41c91d(obj, x_cc1d0de5, &x_acab9952, NULL, properties->x_08ae3bb4);
         } else {
-            obj = obj_allocate(0x1000);
-            obj_init(obj, arg0, &gZeroRotation, NULL, NULL);
+            obj = x_5283664d(0x1000);
+            x_6d41c91d(obj, x_cc1d0de5, &x_acab9952, NULL, NULL);
         }
     }
 
-    obj->fn_render = model_update_kmd;
-    obj->flags = OBJ_FLAG_MODEL;
-    modInst = obj->modInst = mem_alloc(sizeof(ModelInstance), "item.c", 523);
+    obj->x_0232396f = x_9f1f8050;
+    obj->flags = x_3434f870;
+    x_20d20338 = obj->x_20d20338 = x_56c3086a(sizeof(x_6fcfcf46), "item.c", 523);
 
-    str_concat(sp78, ".kmd");
-    s5 = modInst->kmodel = gAssets[asset_find(sp78, arg3)].aux_data;
-    modInst->model = NULL;
-    modInst->numNodes = s5->model.numNodes;
+    x_8c518b47(x_dcab8ab0, ".kmd");
+    s5 = x_20d20338->x_305a60f8 = x_b717ed65[x_e720f37d(x_dcab8ab0, x_ee71e5cb)].x_4962fc73;
+    x_20d20338->model = NULL;
+    x_20d20338->x_6dcce206 = s5->model.x_6dcce206;
 
-    if (s5->model.nodeHierarchy != NULL) {
-        init_model_node_transforms(obj, &s5->model);
+    if (s5->model.x_e7962160 != NULL) {
+        x_9c540986(obj, &s5->model);
     } else {
-        obj->modInst->transforms = NULL;
+        obj->x_20d20338->transforms = NULL;
     }
 
-    modInst->animations = s5->model.animations;
-    modInst->unk_A2C = s5->unk_A64;
+    x_20d20338->x_50771dcd = s5->model.x_50771dcd;
+    x_20d20338->x_1d0c1660 = s5->x_2640873a;
 
-    if (properties != NULL && properties->unk_0C != NULL) {
-        func_800352FC(modInst, properties->unk_0C);
+    if (properties != NULL && properties->x_b8173ab8 != NULL) {
+        x_549030bf(x_20d20338, properties->x_b8173ab8);
     } else {
-        modInst->nodeClusters = NULL;
+        x_20d20338->x_9a3e80ff = NULL;
     }
 
     return obj;
 }
 
-Object *create_worker(void (*fn_render)(Object *), s16 arg1) {
+Object *x_4495b42c(void (*x_0232396f)(Object *), s16 x_84ff873b) {
     Object *obj;
 
-    obj = obj_allocate(arg1);
-    obj_init(obj, &gZeroPosition, &gZeroRotation, NULL, NULL);
-    obj->fn_render = fn_render;
-    obj->flags = OBJ_FLAG_WORKER;
+    obj = x_5283664d(x_84ff873b);
+    x_6d41c91d(obj, &x_c787d34b, &x_acab9952, NULL, NULL);
+    obj->x_0232396f = x_0232396f;
+    obj->flags = x_f2c38774;
     return obj;
 }
 
-Object *create_ui_element(Vec4i *pos, UIElement *def, s32 context) {
+Object *x_12014163(x_88f11482 *pos, x_f0d7e70f *def, s32 context) {
     Object *obj;
 
-    obj = obj_allocate(def->objPriority);
-    obj_init(obj, pos, &gZeroRotation, NULL, def->func);
-    obj->fn_render = func_80015724;
+    obj = x_5283664d(def->x_95ee18a8);
+    x_6d41c91d(obj, pos, &x_acab9952, NULL, def->x_f6382727);
+    obj->x_0232396f = x_23e3afdf;
     obj->flags = def->flags;
-    obj->flags |= OBJ_FLAG_UIELEMENT;
-    obj->frameIndex = def->spriteID;
-    obj->sprite_map = gAssets[asset_find(def->map_name, context)].data;
+    obj->flags |= x_3d723236;
+    obj->x_5fcb1654 = def->x_f85f1359;
+    obj->x_904eaf67 = x_b717ed65[x_e720f37d(def->x_6870fa4a, context)].data;
 
     return obj;
 }
 
-Object *create_model_instance_with_properties(Vec4i *pos, char *name, K2Def *properties, u32 context) {
+Object *x_8e3c7e83(x_88f11482 *pos, char *name, x_aece7675 *properties, u32 context) {
     Object *obj;
-    char modelName[20];
-    ModelInstance *modInst;
+    char x_c02b5734[20];
+    x_6fcfcf46 *x_20d20338;
     Model *model;
-    u32 numNodes;
+    u32 x_6dcce206;
     s32 i;
 
     if (name == NULL) {
-        obj = obj_allocate(properties->objPriority);
-        str_copy(modelName, properties->name);
-        obj_init(obj, pos, &gZeroRotation, NULL, properties->taskFunc);
+        obj = x_5283664d(properties->x_95ee18a8);
+        x_dab0846a(x_c02b5734, properties->name);
+        x_6d41c91d(obj, pos, &x_acab9952, NULL, properties->x_08ae3bb4);
     } else {
-        str_copy(modelName, name);
+        x_dab0846a(x_c02b5734, name);
         if (properties != NULL) {
-            obj = obj_allocate(properties->objPriority);
-            obj_init(obj, pos, &gZeroRotation, NULL, properties->taskFunc);
+            obj = x_5283664d(properties->x_95ee18a8);
+            x_6d41c91d(obj, pos, &x_acab9952, NULL, properties->x_08ae3bb4);
         } else {
-            obj = obj_allocate(OBJ_PRIO_DEFAULT);
-            obj_init(obj, pos, &gZeroRotation, NULL, NULL);
+            obj = x_5283664d(x_9d442987);
+            x_6d41c91d(obj, pos, &x_acab9952, NULL, NULL);
         }
     }
 
-    obj->fn_render = model_update;
-    obj->flags = OBJ_FLAG_MODEL;
-    obj->modInst = (ModelInstance *) GET_ITEM(gModelInstancePool);
+    obj->x_0232396f = x_0022bfc3;
+    obj->flags = x_3434f870;
+    obj->x_20d20338 = (x_6fcfcf46 *) x_6d619dce(x_5c163218);
 
-    modInst = obj->modInst;
-    model = modInst->model = gAssets[asset_find(modelName, context)].aux_data;
-    modInst->kmodel = NULL;
-    numNodes = modInst->numNodes = model->numNodes;
+    x_20d20338 = obj->x_20d20338;
+    model = x_20d20338->model = x_b717ed65[x_e720f37d(x_c02b5734, context)].x_4962fc73;
+    x_20d20338->x_305a60f8 = NULL;
+    x_6dcce206 = x_20d20338->x_6dcce206 = model->x_6dcce206;
 
-    for (i = 0; i < numNodes; i++) {
-        memcpy(&modInst->renderBatches[i].header, model->batchInfos[i], sizeof(BatchHeader));
-        memcpy(&modInst->renderBatches[30 + i].header, model->batchInfos[i], sizeof(BatchHeader));
-        modInst->nodeOpaque[i] = modInst->nodeOpaquePrev[i] = FALSE;
+    for (i = 0; i < x_6dcce206; i++) {
+        memcpy(&x_20d20338->x_78526b81[i].header, model->x_d6eac39a[i], sizeof(x_c32f9ed9));
+        memcpy(&x_20d20338->x_78526b81[30 + i].header, model->x_d6eac39a[i], sizeof(x_c32f9ed9));
+        x_20d20338->x_c8099ad6[i] = x_20d20338->x_8f151cd3[i] = FALSE;
     }
 
-    if (model->nodeHierarchy != NULL) {
-        init_model_node_transforms(obj, model);
+    if (model->x_e7962160 != NULL) {
+        x_9c540986(obj, model);
     } else {
-        obj->modInst->transforms = NULL;
+        obj->x_20d20338->transforms = NULL;
     }
 
-    modInst->animations = model->animations;
-    modInst->unk_A2C = model->unk_234;
-    modInst->previousAnimId = -1;
+    x_20d20338->x_50771dcd = model->x_50771dcd;
+    x_20d20338->x_1d0c1660 = model->x_cb6af9da;
+    x_20d20338->x_2f4c4ce1 = -1;
 
-    if (properties != NULL && properties->unk_0C != NULL) {
-        func_800359E4(modInst, properties->unk_0C);
+    if (properties != NULL && properties->x_b8173ab8 != NULL) {
+        x_5ff45842(x_20d20338, properties->x_b8173ab8);
     } else {
-        modInst->nodeClusters = NULL;
+        x_20d20338->x_9a3e80ff = NULL;
     }
 
-    obj->flags |= OBJ_FLAG_40000;
-    modInst->unk_A1C = modInst->unk_A20 = 0;
+    obj->flags |= x_dd3a53e4;
+    x_20d20338->x_3aefae96 = x_20d20338->x_713417ac = 0;
     return obj;
 }
 
-Object *create_3dsprite_with_properties(Vec4i *pos, UnkK2Def *properties, s32 context) {
+Object *x_1d5cf6e2(x_88f11482 *pos, x_8b39d614 *properties, s32 context) {
     Object *obj;
-    NodeCluster *new_var;
+    x_257b53b4 *x_23b71842;
 
-    if (gModelInstancePool.count >= 2) {
-        obj = create_model_instance_with_properties(pos, NULL, &properties->base, context);
-        obj->fn_render = sprite3d_update;
-        obj->frameIndex = properties->startingFrame;
-        obj->flags |= properties->flags | OBJ_FLAG_3DSPRITE;
+    if (x_5c163218.count >= 2) {
+        obj = x_8e3c7e83(pos, NULL, &properties->base, context);
+        obj->x_0232396f = x_3a85c5a8;
+        obj->x_5fcb1654 = properties->x_14033586;
+        obj->flags |= properties->flags | x_0b94e8d0;
         obj->color.a = 128;
 
-        new_var = &obj->modInst->unk_A50;
-        new_var->unk_00 = 1;
-        new_var->groupSize = 1;
-        obj->modInst->unk_A30.cluster = new_var;
-        if (obj->flags & OBJ_FLAG_800) {
-            obj->modInst->unk_A30.zOrder = -0x80000000;
+        x_23b71842 = &obj->x_20d20338->x_8b36595a;
+        x_23b71842->x_af0aa1f8 = 1;
+        x_23b71842->x_ceaf196d = 1;
+        obj->x_20d20338->x_da66be9b.x_164cf1ca = x_23b71842;
+        if (obj->flags & x_d13a68b5) {
+            obj->x_20d20338->x_da66be9b.x_9dca29cd = -0x80000000;
         } else {
-            obj->modInst->unk_A30.zOrder = 0x7FFFFFFF;
+            obj->x_20d20338->x_da66be9b.x_9dca29cd = 0x7FFFFFFF;
         }
-        obj->modInst->unk_A30.flags = 0;
+        obj->x_20d20338->x_da66be9b.flags = 0;
         return obj;
     } else {
         return NULL;
     }
 }
 
-Object *create_model_instance(Vec4i *pos, s32 objPriority, void (*taskFunc)(Object *), Model *model) {
-    u32 numNodes;
+Object *x_572f827d(x_88f11482 *pos, s32 x_95ee18a8, void (*x_08ae3bb4)(Object *), Model *model) {
+    u32 x_6dcce206;
     Object *obj;
-    ModelInstance *modInst;
+    x_6fcfcf46 *x_20d20338;
     u32 i;
     s32 unused[5];
 
-    obj = obj_allocate(objPriority);
-    obj_init(obj, pos, &gZeroRotation, NULL, taskFunc);
+    obj = x_5283664d(x_95ee18a8);
+    x_6d41c91d(obj, pos, &x_acab9952, NULL, x_08ae3bb4);
 
-    obj->fn_render = model_update;
-    obj->flags = OBJ_FLAG_MODEL;
+    obj->x_0232396f = x_0022bfc3;
+    obj->flags = x_3434f870;
 
-    if (gModelInstancePool.count == 0) {
-        obj->fn_render = task_default_func;
-        obj->flags = OBJ_FLAG_DELETE;
-        obj->modInst = NULL;
+    if (x_5c163218.count == 0) {
+        obj->x_0232396f = x_0ae6735d;
+        obj->flags = x_f51cb721;
+        obj->x_20d20338 = NULL;
         return NULL;
     }
 
-    obj->modInst = (ModelInstance *) GET_ITEM(gModelInstancePool);
+    obj->x_20d20338 = (x_6fcfcf46 *) x_6d619dce(x_5c163218);
 
-    modInst = obj->modInst;
-    modInst->model = model;
-    modInst->kmodel = NULL;
-    numNodes = modInst->numNodes = model->numNodes;
+    x_20d20338 = obj->x_20d20338;
+    x_20d20338->model = model;
+    x_20d20338->x_305a60f8 = NULL;
+    x_6dcce206 = x_20d20338->x_6dcce206 = model->x_6dcce206;
 
-    for (i = 0; i < numNodes; i++) {
-        memcpy(&modInst->renderBatches[i].header, model->batchInfos[i], sizeof(BatchHeader));
-        memcpy(&modInst->renderBatches[30 + i].header, model->batchInfos[i], sizeof(BatchHeader));
-        modInst->nodeOpaquePrev[i] = modInst->nodeUpdated[i] = FALSE;
-        modInst->nodeOpaque[i] = FALSE;
+    for (i = 0; i < x_6dcce206; i++) {
+        memcpy(&x_20d20338->x_78526b81[i].header, model->x_d6eac39a[i], sizeof(x_c32f9ed9));
+        memcpy(&x_20d20338->x_78526b81[30 + i].header, model->x_d6eac39a[i], sizeof(x_c32f9ed9));
+        x_20d20338->x_8f151cd3[i] = x_20d20338->x_07bd45a3[i] = FALSE;
+        x_20d20338->x_c8099ad6[i] = FALSE;
     }
 
-    if (model->nodeHierarchy != NULL) {
-        init_model_node_transforms(obj, model);
+    if (model->x_e7962160 != NULL) {
+        x_9c540986(obj, model);
     } else {
-        obj->modInst->transforms = NULL;
-        init_transform(&obj->transform, &modInst->rootTransform, -1, -2);
-        modInst->baseRootPos.x = 0;
-        modInst->baseRootPos.y = 0;
-        modInst->baseRootPos.z = 0;
-        math_translate(&modInst->rootTransform.local_matrix, &modInst->baseRootPos);
+        obj->x_20d20338->transforms = NULL;
+        x_f2c7456d(&obj->transform, &x_20d20338->x_abd7b3c4, -1, -2);
+        x_20d20338->x_9cfd7bb4.x = 0;
+        x_20d20338->x_9cfd7bb4.y = 0;
+        x_20d20338->x_9cfd7bb4.z = 0;
+        x_fc6adb04(&x_20d20338->x_abd7b3c4.x_3fde9cd9, &x_20d20338->x_9cfd7bb4);
     }
 
-    modInst->animations = model->animations;
-    modInst->unk_A2C = model->unk_234;
-    obj->flags |= OBJ_FLAG_40000 | OBJ_FLAG_4000;
-    modInst->unk_9C8 = numNodes;
-    modInst->nodeClusters = model->unk_31C;
+    x_20d20338->x_50771dcd = model->x_50771dcd;
+    x_20d20338->x_1d0c1660 = model->x_cb6af9da;
+    obj->flags |= x_dd3a53e4 | x_215d3747;
+    x_20d20338->x_88c9004e = x_6dcce206;
+    x_20d20338->x_9a3e80ff = model->x_761a0268;
 
-    for (i = 0; i < modInst->unk_9C8; i++) {
-        modInst->unk_608[i].cluster = &model->unk_31C[i];
+    for (i = 0; i < x_20d20338->x_88c9004e; i++) {
+        x_20d20338->x_61b49b7b[i].x_164cf1ca = &model->x_761a0268[i];
     }
 
-    modInst->currentAnimId = 0;
-    modInst->unk_A1C = modInst->unk_A20 = 0;
+    x_20d20338->x_ee205ef9 = 0;
+    x_20d20338->x_3aefae96 = x_20d20338->x_713417ac = 0;
 
-    if (modInst->animations != NULL) {
-        model_change_animation(obj);
+    if (x_20d20338->x_50771dcd != NULL) {
+        x_0f2c2c2a(obj);
     }
 
-    if (model->unk_3CC & 1) {
-        obj->flags |= OBJ_FLAG_80000000;
+    if (model->x_8ac8f967 & 1) {
+        obj->flags |= x_f465a0fc;
     }
 
     return obj;
 }
 
-Object *create_3dsprite(Vec4i *pos, s32 objPriority, void (*taskFunc)(Object *), Model *model) {
+Object *x_6f2f6fab(x_88f11482 *pos, s32 x_95ee18a8, void (*x_08ae3bb4)(Object *), Model *model) {
     Object *obj;
-    NodeCluster *new_var;
+    x_257b53b4 *x_23b71842;
 
-    if (gModelInstancePool.count == 0) {
+    if (x_5c163218.count == 0) {
         return NULL;
     }
 
-    obj = create_model_instance(pos, objPriority, taskFunc, model);
-    obj->fn_render = sprite3d_update;
-    obj->frameIndex = 0;
-    obj->flags |= OBJ_FLAG_4000 | OBJ_FLAG_TRANSPARENT | OBJ_FLAG_3DSPRITE;
+    obj = x_572f827d(pos, x_95ee18a8, x_08ae3bb4, model);
+    obj->x_0232396f = x_3a85c5a8;
+    obj->x_5fcb1654 = 0;
+    obj->flags |= x_215d3747 | x_b6789b80 | x_0b94e8d0;
     obj->color.a = 128;
 
-    new_var = &obj->modInst->unk_A50;
-    new_var->unk_00 = 1;
-    new_var->groupSize = 1;
-    obj->modInst->unk_A30.cluster = new_var;
-    obj->modInst->unk_A30.zOrder = -9000;
-    obj->modInst->unk_A30.flags = 0;
+    x_23b71842 = &obj->x_20d20338->x_8b36595a;
+    x_23b71842->x_af0aa1f8 = 1;
+    x_23b71842->x_ceaf196d = 1;
+    obj->x_20d20338->x_da66be9b.x_164cf1ca = x_23b71842;
+    obj->x_20d20338->x_da66be9b.x_9dca29cd = -9000;
+    obj->x_20d20338->x_da66be9b.flags = 0;
     return obj;
 }

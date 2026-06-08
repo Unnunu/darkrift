@@ -1,17 +1,17 @@
 #include "common.h"
 #include "camera.h"
 
-typedef struct PclAsset {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s32 unk_04;
-    /* 0x08 */ s32 unk_08;
-    /* 0x0C */ s32 unk_0C;
-} PclAsset;
+typedef struct x_80bba465 {
+    /* 0x00 */ s32 x_af0aa1f8;
+    /* 0x04 */ s32 x_1256da71;
+    /* 0x08 */ s32 x_415ed9d6;
+    /* 0x0C */ s32 x_b8173ab8;
+} x_80bba465;
 
 Gfx **D_80049CF0 = NULL;
 
-Vec4i D_800814E0[8];
-Vec4i D_80081560[8];
+x_88f11482 D_800814E0[8];
+x_88f11482 D_80081560[8];
 s16 D_800815E0;
 s16 D_800815E2;
 s16 D_800815E4;
@@ -33,34 +33,34 @@ s16 D_80081602;
 s16 D_80081604;
 s16 D_80081606;
 s16 D_80081608;
-KModel *D_8008160C;
+x_82e80914 *D_8008160C;
 u16 *D_80081610;
 Mtx D_80081618;
 
-#ifdef NON_EQUIVALENT
-void setup_pcl_projection(void) {
-    Vec3s sp90;
-    s32 sp84;
+#ifdef x_0fab73bf
+void x_fc4a871b(void) {
+    x_acccb624 x_c188a78e;
+    s32 x_81bfdb41;
     s32 t1;
     s32 t5;
-    s16 dx, dy, dz;
-    s16 dxAbs, dyAbs, dzAbs;
+    s16 x_720f6ac9, x_aa1be933, dz;
+    s16 x_5d21c78b, x_2dc9f256, x_b7cc9533;
     s16 i;
     s32 x1, y1, z1;
     s32 x2, y2, z2;
 
-    dx = gCameraTarget.x - gCamera->pos.x;
-    dy = gCameraTarget.y - gCamera->pos.y;
-    dz = gCameraTarget.z - gCamera->pos.z;
+    x_720f6ac9 = x_435c561d.x - x_f4bce728->pos.x;
+    x_aa1be933 = x_435c561d.y - x_f4bce728->pos.y;
+    dz = x_435c561d.z - x_f4bce728->pos.z;
 
-    dxAbs = ABS(dx);
-    dzAbs = ABS(dz);
-    dyAbs = ABS(dy);
-    sp84 = FAST_HYPOT(dxAbs, dzAbs);
-    t1 = -FAST_HYPOT(sp84, dyAbs);
+    x_5d21c78b = ABS(x_720f6ac9);
+    x_b7cc9533 = ABS(dz);
+    x_2dc9f256 = ABS(x_aa1be933);
+    x_81bfdb41 = x_4a9e7834(x_5d21c78b, x_b7cc9533);
+    t1 = -x_4a9e7834(x_81bfdb41, x_2dc9f256);
     t5 = 7500 - t1;
 
-    x1 = ((gScreenWidth * (D_8013C588 + 1000) / D_8013C588) >> 1);
+    x1 = ((x_c84980f9 * (D_8013C588 + 1000) / D_8013C588) >> 1);
     D_800814E0[0].x = x1;
     D_800814E0[1].x = -x1;
     D_800814E0[2].x = x1;
@@ -72,15 +72,15 @@ void setup_pcl_projection(void) {
     D_800814E0[2].y = y1;
     D_800814E0[3].y = y1;
 
-    z1 = ((gScreenHeight * (D_8013C588 + 1000) / D_8013C588) >> 1);
+    z1 = ((x_a4f5fb93 * (D_8013C588 + 1000) / D_8013C588) >> 1);
     D_800814E0[0].z = z1;
     D_800814E0[1].z = z1;
     D_800814E0[2].z = -z1;
     D_800814E0[3].z = -z1;
 
-    x2 = ((gScreenWidth * t5 / D_8013C588) >> 1);
+    x2 = ((x_c84980f9 * t5 / D_8013C588) >> 1);
     y2 = 7500;
-    z2 = ((gScreenHeight * t5 / D_8013C588) >> 1);
+    z2 = ((x_a4f5fb93 * t5 / D_8013C588) >> 1);
 
     D_800814E0[4].x = x2;
     D_800814E0[4].y = y2;
@@ -98,29 +98,29 @@ void setup_pcl_projection(void) {
     D_800814E0[7].y = y2;
     D_800814E0[7].z = -z2;
 
-    sp90.x = func_80012518(sp84, dy);
-    sp90.y = func_80012518(dx, dz);
-    sp90.z = 0;
+    x_c188a78e.x = x_47d273d8(x_81bfdb41, x_aa1be933);
+    x_c188a78e.y = x_47d273d8(x_720f6ac9, dz);
+    x_c188a78e.z = 0;
 
-    math_rotate(&D_800813E0, &sp90);
-    func_8001386C(&D_800814E0[0], &D_80081560[0], &D_800813E0);
-    func_8001386C(&D_800814E0[1], &D_80081560[1], &D_800813E0);
-    func_8001386C(&D_800814E0[2], &D_80081560[2], &D_800813E0);
-    func_8001386C(&D_800814E0[3], &D_80081560[3], &D_800813E0);
-    func_8001386C(&D_800814E0[4], &D_80081560[4], &D_800813E0);
-    func_8001386C(&D_800814E0[5], &D_80081560[5], &D_800813E0);
-    func_8001386C(&D_800814E0[6], &D_80081560[6], &D_800813E0);
-    func_8001386C(&D_800814E0[7], &D_80081560[7], &D_800813E0);
+    x_948f0b9f(&D_800813E0, &x_c188a78e);
+    x_f3b449e2(&D_800814E0[0], &D_80081560[0], &D_800813E0);
+    x_f3b449e2(&D_800814E0[1], &D_80081560[1], &D_800813E0);
+    x_f3b449e2(&D_800814E0[2], &D_80081560[2], &D_800813E0);
+    x_f3b449e2(&D_800814E0[3], &D_80081560[3], &D_800813E0);
+    x_f3b449e2(&D_800814E0[4], &D_80081560[4], &D_800813E0);
+    x_f3b449e2(&D_800814E0[5], &D_80081560[5], &D_800813E0);
+    x_f3b449e2(&D_800814E0[6], &D_80081560[6], &D_800813E0);
+    x_f3b449e2(&D_800814E0[7], &D_80081560[7], &D_800813E0);
 
-    D_80081560[0].x += gCameraTarget.x;
-    D_80081560[0].z += gCameraTarget.z;
+    D_80081560[0].x += x_435c561d.x;
+    D_80081560[0].z += x_435c561d.z;
     D_800815E2 = D_800815E0 = D_80081560[0].x;
     D_800815E6 = D_800815E4 = D_80081560[0].z;
 
     for (i = 1; i < 8; i++) {
-        D_80081560[i].x += gCameraTarget.x;
-        D_80081560[i].y += gCameraTarget.y;
-        D_80081560[i].z += gCameraTarget.z;
+        D_80081560[i].x += x_435c561d.x;
+        D_80081560[i].y += x_435c561d.y;
+        D_80081560[i].z += x_435c561d.z;
 
         if (D_800815E0 > D_80081560[i].x) {
             D_800815E0 = D_80081560[i].x;
@@ -160,18 +160,18 @@ void setup_pcl_projection(void) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/gmd_pcl/setup_pcl_projection.s")
-void setup_pcl_projection(void);
+#pragma x_eda6f9e3("asm/nonmatchings/gmd_pcl/setup_pcl_projection.s")
+void x_fc4a871b(void);
 #endif
 
-void update_pcl_and_render_backgrounds(void) {
+void x_ff4031b5(void) {
     s16 i, j;
     s16 v0, a0;
 
-    setup_pcl_projection();
+    x_fc4a871b();
 
-    gDPLoadTLUT_pal16(gMainGfxPos++, 0, VIRTUAL_TO_PHYSICAL(D_80081610));
-    gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(&D_80081618), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gDPLoadTLUT_pal16(x_9a3c07b8++, 0, x_c485761a(D_80081610));
+    gSPMatrix(x_9a3c07b8++, x_c485761a(&D_80081618), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     for (i = D_80081602 - 1; i < D_80081604 + 1; i++) {
         for (j = D_800815FE; j < D_80081600 + 1; j++) {
@@ -193,44 +193,44 @@ void update_pcl_and_render_backgrounds(void) {
                 }
             }
 
-            gSPDisplayList(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(D_80049CF0[v0 * D_800815E8 + a0]));
+            gSPDisplayList(x_9a3c07b8++, x_c485761a(D_80049CF0[v0 * D_800815E8 + a0]));
         }
     }
 }
 
-void func_8001B5B0(char *name, s32 arg1) {
-    PclAsset *sp74;
-    ModelNodeAsset *sub2;
-    char sp5C[20];
-    char sp48[20];
-    Vec3s sp40;
+void x_7a8b20f2(char *name, s32 x_84ff873b) {
+    x_80bba465 *x_8a9089b3;
+    x_c3c252eb *x_94b671c9;
+    char x_840385a0[20];
+    char x_f10a928a[20];
+    x_acccb624 x_081c4eef;
     s32 unused;
-    TextureAsset *a3;
-    BatchAsset *sub1;
-    Vec4i sp24 = { 0, 0, 6000, 0 };
+    x_3b6b80ec *a3;
+    x_36123519 *x_9a110419;
+    x_88f11482 x_5bbba600 = { 0, 0, 6000, 0 };
 
-    str_copy(sp5C, name);
-    str_concat(sp5C, ".pcl");
-    sp74 = gAssets[asset_find(sp5C, arg1)].data;
+    x_dab0846a(x_840385a0, name);
+    x_8c518b47(x_840385a0, ".pcl");
+    x_8a9089b3 = x_b717ed65[x_e720f37d(x_840385a0, x_84ff873b)].data;
 
-    str_copy(sp48, name);
-    str_concat(sp48, ".GMD");
-    D_8008160C = gAssets[asset_find(sp48, arg1)].aux_data;
-    D_80049CF0 = &D_8008160C->model.dlist;
+    x_dab0846a(x_f10a928a, name);
+    x_8c518b47(x_f10a928a, ".GMD");
+    D_8008160C = x_b717ed65[x_e720f37d(x_f10a928a, x_84ff873b)].x_4962fc73;
+    D_80049CF0 = &D_8008160C->model.x_bde24317;
 
-    sub2 = D_8008160C->model.modelAsset->nodes;
-    sub1 = sub2->batchAssets;
-    a3 = sub1->texture;
+    x_94b671c9 = D_8008160C->model.x_3bfb7219->x_45978ecb;
+    x_9a110419 = x_94b671c9->x_063bc6a1;
+    a3 = x_9a110419->texture;
     if (a3->format == 4) {
-        D_80081610 = D_8008160C->model.modelAsset->palettes16 + a3->palIndex * 0x20; // TODO: type
+        D_80081610 = D_8008160C->model.x_3bfb7219->x_1dbd7f4a + a3->x_3f981ea3 * 0x20; // TODO: type
     } else {
-        D_80081610 = D_8008160C->model.modelAsset->palettes256 + a3->palIndex * 0x200; // TODO: type
+        D_80081610 = D_8008160C->model.x_3bfb7219->x_d38574ae + a3->x_3f981ea3 * 0x200; // TODO: type
     }
 
-    D_800815E8 = sp74->unk_00;
-    D_800815EA = sp74->unk_04;
-    D_800815EC = sp74->unk_08;
-    D_800815EE = sp74->unk_0C;
+    D_800815E8 = x_8a9089b3->x_af0aa1f8;
+    D_800815EA = x_8a9089b3->x_1256da71;
+    D_800815EC = x_8a9089b3->x_415ed9d6;
+    D_800815EE = x_8a9089b3->x_b8173ab8;
 
     D_800815F0 = D_800815E8 * D_800815EA;
     D_80081606 = D_800815E8 * D_800815EC;
@@ -239,9 +239,9 @@ void func_8001B5B0(char *name, s32 arg1) {
     D_800815F2 = D_800815E8 / 2;
     D_800815F4 = D_800815E8 / 2;
 
-    func_80012AA8(&D_800813E0);
-    sp40.y = sp40.z = 0;
-    sp40.x = -0x400;
-    math_rotate(&D_800813E0, &sp40);
-    math_mtxf2mtx(&D_80081618, &D_800813E0);
+    x_3004a565(&D_800813E0);
+    x_081c4eef.y = x_081c4eef.z = 0;
+    x_081c4eef.x = -0x400;
+    x_948f0b9f(&D_800813E0, &x_081c4eef);
+    x_ba58a12b(&D_80081618, &D_800813E0);
 }

@@ -2,13 +2,13 @@
 
 #define N 4096 /* buffer size */
 #define F 60   /* lookahead buffer size */
-#define THRESHOLD 2
+#define x_b7847da5 2
 
-#define N_CHAR (256 - THRESHOLD + F)
+#define x_a0981260 (256 - x_b7847da5 + F)
 /* kinds of characters (character code = 0..N_CHAR-1) */
-#define T (N_CHAR * 2 - 1) /* size of table */
+#define T (x_a0981260 * 2 - 1) /* size of table */
 #define R (T - 1)          /* position of root */
-#define MAX_FREQ 0x8000    /* updates tree when the */
+#define x_c02b3433 0x8000    /* updates tree when the */
 
 u8 D_8004C760[] = { 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
                     0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
@@ -36,7 +36,7 @@ s16 D_8004C968[] = {
 }; // @bug 15-th element should be 0x7FFF, though it doesn't affect anything
 s16 D_8004C98C[] = { 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 
-s32 D_800B6400_unused[4];
+s32 x_0930c581[4];
 u8 *D_800B6410[2];
 u8 *D_800B6418;
 u8 *D_800B641C;
@@ -46,31 +46,31 @@ s32 D_800B6428;
 s32 D_800B642C;
 s32 D_800B6430;
 u8 D_800B6434;
-Asset *D_800B6438;
+x_80d298c9 *D_800B6438;
 u8 D_800B6440[4160];
-u16 gHuffmanFreq[628];
-s16 gHuffmanParent[944];
-s16 gHuffmanSon[628];
+u16 x_c50dcc97[628];
+s16 x_18069a64[944];
+s16 x_e9b1c821[628];
 
-void func_80024F50(void) {
+void x_1041b8d9(void) {
     if (D_800B6434 == 0) {
         D_800B6428 = 1 - D_800B6428;
         D_800B6418 = D_800B6410[D_800B6428];
 
-        while (osRecvMesg(&gSchedDMAQueue, NULL, OS_MESG_NOBLOCK)) {}
+        while (osRecvMesg(&x_0c7f0f6c, NULL, OS_MESG_NOBLOCK)) {}
 
         if ((u32) D_800B6430 < (u32) D_800B6420) {
-            dma_read_noblock(D_800B6438->romAddr + D_800B6424 * D_800B6430, D_800B6410[1 - D_800B6428], D_800B6430);
+            x_2add4a13(D_800B6438->romAddr + D_800B6424 * D_800B6430, D_800B6410[1 - D_800B6428], D_800B6430);
         } else {
-            dma_read_noblock(D_800B6438->romAddr + D_800B6424 * D_800B6430, D_800B6410[1 - D_800B6428], D_800B6420);
+            x_2add4a13(D_800B6438->romAddr + D_800B6424 * D_800B6430, D_800B6410[1 - D_800B6428], D_800B6420);
         }
         D_800B6420 -= D_800B6430;
     }
 }
 
-u8 func_800250A8(void) {
+u8 x_86fda831(void) {
     if ((u32) D_800B6430 <= (u32) D_800B642C) {
-        func_80024F50();
+        x_1041b8d9();
         D_800B642C = 0;
         D_800B6424++;
     }
@@ -78,14 +78,14 @@ u8 func_800250A8(void) {
     return D_800B6418[D_800B642C++];
 }
 
-s16 func_80025120(void) {
+s16 x_dbb46089(void) {
     u16 bits;
     u16 a0;
     s32 ret;
 
     bits = D_8004C960;
     if (D_8004C964 < 9) {
-        a0 = func_800250A8();
+        a0 = x_86fda831();
         if ((s16) a0 < 0) {
             a0 = 0;
         }
@@ -105,14 +105,14 @@ s16 func_80025120(void) {
     return ret;
 }
 
-s16 func_800251D4(void) {
+s16 x_13af1d38(void) {
     u16 bits;
     u16 a0;
     s32 ret;
 
     bits = D_8004C960;
     if (D_8004C964 < 9) {
-        a0 = func_800250A8();
+        a0 = x_86fda831();
         if ((s16) a0 < 0) {
             a0 = 0;
         }
@@ -126,14 +126,14 @@ s16 func_800251D4(void) {
     return (bits >> 8) & 0xFF;
 }
 
-s16 func_80025278(u16 arg0) {
+s16 x_472e02c2(u16 x_cc1d0de5) {
     u16 bits;
     u16 a0;
     s32 ret;
 
     bits = D_8004C960;
     if (D_8004C964 < 9) {
-        a0 = func_800250A8();
+        a0 = x_86fda831();
         if ((s16) a0 < 0) {
             a0 = 0;
         }
@@ -142,35 +142,35 @@ s16 func_80025278(u16 arg0) {
         D_8004C964 += 8;
     }
 
-    D_8004C960 = bits << arg0;
-    D_8004C964 -= arg0;
-    return (bits >> D_8004C98C[arg0]) & D_8004C968[arg0];
+    D_8004C960 = bits << x_cc1d0de5;
+    D_8004C964 -= x_cc1d0de5;
+    return (bits >> D_8004C98C[x_cc1d0de5]) & D_8004C968[x_cc1d0de5];
 }
 
-void func_80025344(void) {
+void x_42b39ea8(void) {
     s16 i, j;
 
-    for (i = 0; i < N_CHAR; i++) {
-        gHuffmanFreq[i] = 1;
-        gHuffmanSon[i] = i + T;
-        gHuffmanParent[i + T] = i;
+    for (i = 0; i < x_a0981260; i++) {
+        x_c50dcc97[i] = 1;
+        x_e9b1c821[i] = i + T;
+        x_18069a64[i + T] = i;
     }
 
-    for (i = 0, j = N_CHAR; j <= R; i += 2, j++) { // why <= ??
-        gHuffmanFreq[j] = gHuffmanFreq[i] + gHuffmanFreq[i + 1];
-        gHuffmanSon[j] = i;
-        gHuffmanParent[i] = gHuffmanParent[i + 1] = j;
+    for (i = 0, j = x_a0981260; j <= R; i += 2, j++) { // why <= ??
+        x_c50dcc97[j] = x_c50dcc97[i] + x_c50dcc97[i + 1];
+        x_e9b1c821[j] = i;
+        x_18069a64[i] = x_18069a64[i + 1] = j;
     }
 
-    gHuffmanFreq[T] = 0xFFFF;
-    gHuffmanParent[R] = 0;
+    x_c50dcc97[T] = 0xFFFF;
+    x_18069a64[R] = 0;
 
     D_8004C964 = 0;
     D_8004C960 = 0;
 }
 
-#ifdef NON_EQUIVALENT
-void func_8002541C(void) {
+#ifdef x_0fab73bf
+void x_cbd0f8d7(void) {
     s16 i; // v0
     s16 j;
     s16 k;
@@ -180,49 +180,49 @@ void func_8002541C(void) {
 
     j = 0;
     for (i = 0; i < T; i++) {
-        if (gHuffmanSon[i] >= T) {
-            gHuffmanFreq[j] = (gHuffmanFreq[i] + 1) / 2;
-            gHuffmanSon[j] = gHuffmanSon[i];
+        if (x_e9b1c821[i] >= T) {
+            x_c50dcc97[j] = (x_c50dcc97[i] + 1) / 2;
+            x_e9b1c821[j] = x_e9b1c821[i];
             j++;
         }
     }
 
-    for (i = 0, j = N_CHAR; j < T; i += 2, j++) {
+    for (i = 0, j = x_a0981260; j < T; i += 2, j++) {
         k = i + 1;
-        f = gHuffmanFreq[j] = gHuffmanFreq[i] + gHuffmanFreq[k];
+        f = x_c50dcc97[j] = x_c50dcc97[i] + x_c50dcc97[k];
 
-        for (k = j - 1; f < gHuffmanFreq[k]; k--)
+        for (k = j - 1; f < x_c50dcc97[k]; k--)
             ;
 
         k++;
         l = (j - k) * 2;
 
         for (m = l; m > 0; m--) {
-            gHuffmanFreq[k + m] = gHuffmanFreq[k + m - 1];
+            x_c50dcc97[k + m] = x_c50dcc97[k + m - 1];
         }
-        gHuffmanFreq[k] = f;
+        x_c50dcc97[k] = f;
 
         for (m = l; m > 0; m--) {
-            gHuffmanSon[k + m] = gHuffmanSon[k + m - 1];
+            x_e9b1c821[k + m] = x_e9b1c821[k + m - 1];
         }
 
-        gHuffmanSon[k] = i;
+        x_e9b1c821[k] = i;
     }
 
     for (i = 0; i < T; i++) {
-        if ((k = gHuffmanSon[i]) >= T) {
-            gHuffmanParent[k] = i;
+        if ((k = x_e9b1c821[i]) >= T) {
+            x_18069a64[k] = i;
         } else {
-            gHuffmanParent[k] = gHuffmanParent[k + 1] = i;
+            x_18069a64[k] = x_18069a64[k + 1] = i;
         }
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/lzhuf/func_8002541C.s")
-void func_8002541C(void);
+#pragma x_eda6f9e3("asm/nonmatchings/lzhuf/func_8002541C.s")
+void x_cbd0f8d7(void);
 #endif
 
-void lzhuf_update(u16 c) {
+void x_a8ae0481(u16 c) {
     s16 j, k, l;
     s32 n;
     s16 m;
@@ -230,46 +230,46 @@ void lzhuf_update(u16 c) {
     u16 *ptr;
 
     // Check if frequency root reached max
-    if (gHuffmanFreq[R] == MAX_FREQ) {
-        func_8002541C();
+    if (x_c50dcc97[R] == x_c02b3433) {
+        x_cbd0f8d7();
     }
 
     // Get parent of the current node
-    c = gHuffmanParent[c + T];
+    c = x_18069a64[c + T];
 
     do {
         // Increment frequency
-        k = ++gHuffmanFreq[c];
+        k = ++x_c50dcc97[c];
         m = c + 1;
         // If frequency order is disturbed, reorder nodes
-        if (k > gHuffmanFreq[(u32) m]) {
-            ptr = &gHuffmanFreq[m + 2];
+        if (k > x_c50dcc97[(u32) m]) {
+            ptr = &x_c50dcc97[m + 2];
 
             while (n = k > ptr[-1]) {
                 ptr++;
             }
-            l = ptr - gHuffmanFreq - 2;
+            l = ptr - x_c50dcc97 - 2;
 
             // Swap frequencies
-            gHuffmanFreq[c] = ptr[-2];
+            x_c50dcc97[c] = ptr[-2];
             ptr[-2] = k;
 
             // Update parent and child relationships
-            i = gHuffmanSon[c];
-            gHuffmanParent[i] = l;
+            i = x_e9b1c821[c];
+            x_18069a64[i] = l;
             if (i < T)
-                gHuffmanParent[i + 1] = l;
+                x_18069a64[i + 1] = l;
 
-            j = gHuffmanSon[l];
-            gHuffmanSon[l] = i;
+            j = x_e9b1c821[l];
+            x_e9b1c821[l] = i;
 
-            gHuffmanParent[j] = c;
+            x_18069a64[j] = c;
             if (j < T)
-                gHuffmanParent[j + 1] = c;
+                x_18069a64[j + 1] = c;
 
-            gHuffmanSon[c] = j;
+            x_e9b1c821[c] = j;
 
             c = l;
         }
-    } while ((c = gHuffmanParent[c]) != 0); // Repeat until reaching the root
+    } while ((c = x_18069a64[c]) != 0); // Repeat until reaching the root
 }

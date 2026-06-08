@@ -5,174 +5,174 @@
 #include "PR/gt.h"
 
 // .data
-K2Def gShadowProps = { "xxxxxxxxx", NULL, 0, 0xF9C, NULL };
+x_aece7675 x_eca45bf8 = { "xxxxxxxxx", NULL, 0, 0xF9C, NULL };
 
 // .bss
 Mtx D_8013C4A0;
 Gfx **D_8013C4E0;
-s32 D_8013C4E4_unused;
-ClusterRenderSlot *D_8013C4E8;
-GlobalObjD *D_8013C4EC;
-ItemPool D_8013C4F0;
-TextureAsset *gScrollableTextures[16];
-u32 gScrollableTextureCount;
+s32 x_da19fe64;
+x_f752bb53 *D_8013C4E8;
+x_a8b4b5ce *D_8013C4EC;
+x_b57dc591 D_8013C4F0;
+x_3b6b80ec *x_94611282[16];
+u32 x_ef5084ad;
 
-void register_texture_for_scrolling(TextureAsset *texture) {
+void x_e3b18298(x_3b6b80ec *texture) {
     u32 i;
 
-    for (i = 0; i < gScrollableTextureCount; i++) {
-        if (gScrollableTextures[i] == texture) {
+    for (i = 0; i < x_ef5084ad; i++) {
+        if (x_94611282[i] == texture) {
             return;
         }
     }
 
-    gScrollableTextures[gScrollableTextureCount++] = texture;
+    x_94611282[x_ef5084ad++] = texture;
 }
 
-s32 scroll_textures_global_mode(void *unused) {
+s32 x_d3d2755f(void *unused) {
     u32 i, j;
-    TextureAsset *texture;
-    u32 num_words;
-    u32 first_pixel_word;
-    u32 *word_ptr;
-    u32 next_pixel;
+    x_3b6b80ec *texture;
+    u32 x_70b0b43c;
+    u32 x_b16b10e1;
+    u32 *x_eb7790f7;
+    u32 x_5b96ee3f;
 
-    for (i = 0; i < gScrollableTextureCount; i++) {
-        texture = gScrollableTextures[i];
-        num_words = (texture->width * texture->height) / 8;
-        word_ptr = texture->data;
-        first_pixel_word = ((u32 *) texture->data)[0];
+    for (i = 0; i < x_ef5084ad; i++) {
+        texture = x_94611282[i];
+        x_70b0b43c = (texture->width * texture->height) / 8;
+        x_eb7790f7 = texture->data;
+        x_b16b10e1 = ((u32 *) texture->data)[0];
 
-        for (j = 0; j < num_words - 1; j++, word_ptr++) {
-            *word_ptr <<= 4;
-            next_pixel = word_ptr[1];
-            next_pixel = (next_pixel & 0xF0000000) >> 28;
-            *word_ptr |= next_pixel;
+        for (j = 0; j < x_70b0b43c - 1; j++, x_eb7790f7++) {
+            *x_eb7790f7 <<= 4;
+            x_5b96ee3f = x_eb7790f7[1];
+            x_5b96ee3f = (x_5b96ee3f & 0xF0000000) >> 28;
+            *x_eb7790f7 |= x_5b96ee3f;
         }
 
-        *word_ptr <<= 4;
-        first_pixel_word = (first_pixel_word & 0xF0000000) >> 28;
-        *word_ptr |= first_pixel_word;
+        *x_eb7790f7 <<= 4;
+        x_b16b10e1 = (x_b16b10e1 & 0xF0000000) >> 28;
+        *x_eb7790f7 |= x_b16b10e1;
     }
 
     return 1;
 }
 
-s32 scroll_textures_row_by_row_mode(void *unused) {
+s32 x_8b037ea8(void *unused) {
     u32 i, j, k;
-    TextureAsset *v1;
-    u32 words_per_row;
-    u32 first_pixel_of_row;
-    u32 *word_ptr;
-    u32 next_pixel;
+    x_3b6b80ec *v1;
+    u32 x_92cb1df0;
+    u32 x_021bc5e0;
+    u32 *x_eb7790f7;
+    u32 x_5b96ee3f;
 
-    if (gFrameCounter & 1) {
+    if (x_e3a9f332 & 1) {
         return 1;
     }
 
-    for (i = 0; i < gScrollableTextureCount; i++) {
-        v1 = gScrollableTextures[i];
-        words_per_row = v1->width / 8;
-        word_ptr = v1->data;
+    for (i = 0; i < x_ef5084ad; i++) {
+        v1 = x_94611282[i];
+        x_92cb1df0 = v1->width / 8;
+        x_eb7790f7 = v1->data;
 
         for (j = 0; j < v1->height; j++) {
-            first_pixel_of_row = *word_ptr;
-            for (k = 0; k < words_per_row - 1; k++, word_ptr++) {
-                *word_ptr <<= 4;
-                next_pixel = word_ptr[1];
-                next_pixel = (next_pixel & 0xF0000000) >> 28;
-                *word_ptr |= next_pixel;
+            x_021bc5e0 = *x_eb7790f7;
+            for (k = 0; k < x_92cb1df0 - 1; k++, x_eb7790f7++) {
+                *x_eb7790f7 <<= 4;
+                x_5b96ee3f = x_eb7790f7[1];
+                x_5b96ee3f = (x_5b96ee3f & 0xF0000000) >> 28;
+                *x_eb7790f7 |= x_5b96ee3f;
             }
-            *word_ptr <<= 4;
-            first_pixel_of_row = (first_pixel_of_row & 0xF0000000) >> 28;
-            *word_ptr |= first_pixel_of_row;
+            *x_eb7790f7 <<= 4;
+            x_021bc5e0 = (x_021bc5e0 & 0xF0000000) >> 28;
+            *x_eb7790f7 |= x_021bc5e0;
         }
     }
 
     return 1;
 }
 
-void reset_scrollable_textures(void) {
-    gScrollableTextureCount = 0;
+void x_13905dd7(void) {
+    x_ef5084ad = 0;
 }
 
-void enable_texture_scrolling_for_object(Object *obj, u8 mode_is_global) {
-    ModelInstance *modelInstance = obj->modInst;
-    Model *model = modelInstance->model;
-    s32 numNodes = modelInstance->numNodes;
+void x_78476cbd(Object *obj, u8 x_44c2855d) {
+    x_6fcfcf46 *x_b802b7b5 = obj->x_20d20338;
+    Model *model = x_b802b7b5->model;
+    s32 x_6dcce206 = x_b802b7b5->x_6dcce206;
     u32 i, j;
-    ModelNodeAsset *node;
-    s32 numBatches;
-    BatchAsset *batchAsset;
+    x_c3c252eb *node;
+    s32 x_5a8a4e18;
+    x_36123519 *x_e44b1739;
 
-    if (gScrollableTextureCount == 0) {
-        if (mode_is_global) {
-            set_post_render_hook(scroll_textures_global_mode, NULL);
+    if (x_ef5084ad == 0) {
+        if (x_44c2855d) {
+            x_71257e81(x_d3d2755f, NULL);
         } else {
-            set_post_render_hook(scroll_textures_row_by_row_mode, NULL);
+            x_71257e81(x_8b037ea8, NULL);
         }
     }
 
-    for (i = 0; i < numNodes; i++) {
-        node = &model->modelAsset->nodes[i];
-        numBatches = node->numBatches;
-        for (j = 0; j < numBatches; j++) {
-            batchAsset = node->batchAssets + j;
-            if ((u8) (batchAsset->texIndex >= 0)) {
-                register_texture_for_scrolling(batchAsset->texture);
+    for (i = 0; i < x_6dcce206; i++) {
+        node = &model->x_3bfb7219->x_45978ecb[i];
+        x_5a8a4e18 = node->x_5a8a4e18;
+        for (j = 0; j < x_5a8a4e18; j++) {
+            x_e44b1739 = node->x_063bc6a1 + j;
+            if ((u8) (x_e44b1739->x_cb2a5131 >= 0)) {
+                x_e3b18298(x_e44b1739->texture);
             }
         }
     }
 
-    obj->flags |= OBJ_FLAG_TRANSPARENT;
+    obj->flags |= x_b6789b80;
 }
 
-void reset_lights(void) {
+void x_6491559d(void) {
     D_8013C4EC = NULL;
-    func_8002A8C0(&D_8013C4F0, 5, sizeof(GlobalObjD));
+    x_7824740c(&D_8013C4F0, 5, sizeof(x_a8b4b5ce));
 }
 
-void create_light(Object *obj, ColorRGBA *arg1) {
-    GlobalObjD *objD;
+void x_371376ba(Object *obj, x_6751d717 *x_84ff873b) {
+    x_a8b4b5ce *x_8413ad49;
 
     if (D_8013C4F0.count == 0) {
         return;
     }
 
-    objD = (GlobalObjD *) GET_ITEM(D_8013C4F0);
-    obj->flags |= OBJ_FLAG_20000000;
+    x_8413ad49 = (x_a8b4b5ce *) x_6d619dce(D_8013C4F0);
+    obj->flags |= x_28b57b50;
 
-    objD->next = D_8013C4EC;
-    objD->previous = NULL;
+    x_8413ad49->next = D_8013C4EC;
+    x_8413ad49->previous = NULL;
     if (D_8013C4EC != NULL) {
-        D_8013C4EC->previous = objD;
+        D_8013C4EC->previous = x_8413ad49;
     }
-    D_8013C4EC = objD;
+    D_8013C4EC = x_8413ad49;
 
-    objD->object = obj;
-    objD->red = arg1->r;
-    objD->green = arg1->g;
-    objD->blue = arg1->b;
-    obj->light = objD;
+    x_8413ad49->object = obj;
+    x_8413ad49->red = x_84ff873b->r;
+    x_8413ad49->green = x_84ff873b->g;
+    x_8413ad49->blue = x_84ff873b->b;
+    obj->light = x_8413ad49;
 }
 
-void delete_light(GlobalObjD *arg0) {
-    if (arg0->previous != NULL) {
-        arg0->previous->next = arg0->next;
+void x_1760d24f(x_a8b4b5ce *x_cc1d0de5) {
+    if (x_cc1d0de5->previous != NULL) {
+        x_cc1d0de5->previous->next = x_cc1d0de5->next;
     } else {
-        D_8013C4EC = arg0->next;
+        D_8013C4EC = x_cc1d0de5->next;
     }
-    if (arg0->next != NULL) {
-        arg0->next->previous = arg0->previous;
+    if (x_cc1d0de5->next != NULL) {
+        x_cc1d0de5->next->previous = x_cc1d0de5->previous;
     }
 
-    RELEASE_ITEM(D_8013C4F0, arg0);
+    x_48825d30(D_8013C4F0, x_cc1d0de5);
 }
 
-void batch_set_zb_on(BatchInfo *arg0, s32 transparent) {
-    Gfx *gfx = &arg0->header.otherMode;
+void x_adf22b2a(x_c1cedf06 *x_cc1d0de5, s32 transparent) {
+    Gfx *gfx = &x_cc1d0de5->header.otherMode;
 
-    mem_fill(gfx, 0, sizeof(Gfx));
+    x_ad92c136(gfx, 0, sizeof(Gfx));
 
     gtStateSetOthermode(gfx, GT_RENDERMODE, G_RM_AA_ZB_OPA_SURF | G_RM_AA_ZB_OPA_SURF2);
     gtStateSetOthermode(gfx, GT_CYCLETYPE, G_CYC_1CYCLE);
@@ -182,20 +182,20 @@ void batch_set_zb_on(BatchInfo *arg0, s32 transparent) {
     gtStateSetOthermode(gfx, GT_TEXTLUT, G_TT_RGBA16);
     gtStateSetOthermode(gfx, GT_PIPELINE, G_PM_NPRIMITIVE);
 
-    arg0->header.triMask |= G_RDP_TRI_ZBUFF_MASK;
+    x_cc1d0de5->header.x_09cf7a45 |= G_RDP_TRI_ZBUFF_MASK;
 }
 
-void batch_set_zb_off(BatchInfo *arg0, s32 noAntiAliasing, s32 transparent) {
-    Gfx *gfx = &arg0->header.otherMode;
+void x_9d41c1a0(x_c1cedf06 *x_cc1d0de5, s32 x_3af6d8f2, s32 transparent) {
+    Gfx *gfx = &x_cc1d0de5->header.otherMode;
 
-    mem_fill(gfx, 0, sizeof(Gfx));
-    if (noAntiAliasing && !transparent) {
+    x_ad92c136(gfx, 0, sizeof(Gfx));
+    if (x_3af6d8f2 && !transparent) {
         gtStateSetOthermode(gfx, GT_RENDERMODE, G_RM_OPA_SURF | G_RM_OPA_SURF2);
-    } else if (!noAntiAliasing && !transparent) {
+    } else if (!x_3af6d8f2 && !transparent) {
         gtStateSetOthermode(gfx, GT_RENDERMODE, G_RM_AA_OPA_SURF | G_RM_AA_OPA_SURF2);
-    } else if (noAntiAliasing && transparent) {
+    } else if (x_3af6d8f2 && transparent) {
         gtStateSetOthermode(gfx, GT_RENDERMODE, G_RM_XLU_SURF | G_RM_XLU_SURF2);
-    } else if (!noAntiAliasing && transparent) {
+    } else if (!x_3af6d8f2 && transparent) {
         gtStateSetOthermode(gfx, GT_RENDERMODE, G_RM_AA_XLU_SURF | G_RM_AA_XLU_SURF2);
     }
 
@@ -206,50 +206,50 @@ void batch_set_zb_off(BatchInfo *arg0, s32 noAntiAliasing, s32 transparent) {
     gtStateSetOthermode(gfx, GT_TEXTLUT, G_TT_RGBA16);
     gtStateSetOthermode(gfx, GT_PIPELINE, G_PM_NPRIMITIVE);
 
-    arg0->header.triMask &= ~G_RDP_TRI_ZBUFF_MASK;
+    x_cc1d0de5->header.x_09cf7a45 &= ~G_RDP_TRI_ZBUFF_MASK;
 }
 
-s32 func_80034860(Object *obj) {
-    ModelInstance *modInst;
+s32 x_817c4151(Object *obj) {
+    x_6fcfcf46 *x_20d20338;
     u32 j;
-    BatchInfo *batchInfo;
+    x_c1cedf06 *x_3ab7202f;
     Model *model;
     u32 i;
     s32 count;
-    BatchInfo *batches1;
-    BatchInfo *batches2;
+    x_c1cedf06 *x_67f2cdea;
+    x_c1cedf06 *x_cc6990d0;
     s32 flags;
-    s32 noAA;
+    s32 x_1652bbb1;
     s32 transparent;
-    u8 *nodeOpaque;
+    u8 *x_c8099ad6;
 
     flags = obj->flags;
-    modInst = obj->modInst;
-    model = modInst->model;
-    count = modInst->numNodes;
-    batches1 = modInst->renderBatches;
-    batches2 = modInst->renderBatches + 30;
-    noAA = obj->flags & OBJ_FLAG_40000000;
-    transparent = flags & OBJ_FLAG_TRANSPARENT;
-    nodeOpaque = modInst->nodeOpaque;
+    x_20d20338 = obj->x_20d20338;
+    model = x_20d20338->model;
+    count = x_20d20338->x_6dcce206;
+    x_67f2cdea = x_20d20338->x_78526b81;
+    x_cc6990d0 = x_20d20338->x_78526b81 + 30;
+    x_1652bbb1 = obj->flags & x_0488a75b;
+    transparent = flags & x_b6789b80;
+    x_c8099ad6 = x_20d20338->x_c8099ad6;
 
-    for (i = 0; i < count; batches1++, batches2++, i++) {
-        s32 isOpaque = nodeOpaque[i];
+    for (i = 0; i < count; x_67f2cdea++, x_cc6990d0++, i++) {
+        s32 x_773702e7 = x_c8099ad6[i];
 
-        if (isOpaque && !D_800801E2) {
-            batch_set_zb_on(batches1, transparent);
-            batch_set_zb_on(batches2, transparent);
+        if (x_773702e7 && !D_800801E2) {
+            x_adf22b2a(x_67f2cdea, transparent);
+            x_adf22b2a(x_cc6990d0, transparent);
         } else {
-            batch_set_zb_off(batches1, noAA, transparent);
-            batch_set_zb_off(batches2, noAA, transparent);
+            x_9d41c1a0(x_67f2cdea, x_1652bbb1, transparent);
+            x_9d41c1a0(x_cc6990d0, x_1652bbb1, transparent);
         }
 
-        batchInfo = model->batchInfos[i];
-        for (j = 1; j < model->batchCounts[i]; j++) {
-            if (isOpaque && !D_800801E2) {
-                batch_set_zb_on(&batchInfo[j], transparent);
+        x_3ab7202f = model->x_d6eac39a[i];
+        for (j = 1; j < model->x_c246f31f[i]; j++) {
+            if (x_773702e7 && !D_800801E2) {
+                x_adf22b2a(&x_3ab7202f[j], transparent);
             } else {
-                batch_set_zb_off(&batchInfo[j], noAA, transparent);
+                x_9d41c1a0(&x_3ab7202f[j], x_1652bbb1, transparent);
             }
         }
     }
@@ -257,101 +257,101 @@ s32 func_80034860(Object *obj) {
     return 0;
 }
 
-void func_800349F0(Object *obj) {
+void x_a345f1a1(Object *obj) {
     u32 i;
-    ModelInstance *model = obj->modInst;
-    s32 numNodes = model->numNodes;
-    u8 *nodeOpaque = model->nodeOpaque;
+    x_6fcfcf46 *model = obj->x_20d20338;
+    s32 x_6dcce206 = model->x_6dcce206;
+    u8 *x_c8099ad6 = model->x_c8099ad6;
 
-    for (i = 0; i < numNodes; i++) {
-        nodeOpaque[i] = TRUE;
+    for (i = 0; i < x_6dcce206; i++) {
+        x_c8099ad6[i] = TRUE;
     }
 }
 
-void func_80034A58(Object *obj) {
-    ModelInstance *model = obj->modInst;
+void x_64394ce4(Object *obj) {
+    x_6fcfcf46 *model = obj->x_20d20338;
     u32 i;
-    s32 numNodes = model->numNodes;
-    u8 *nodeOpaque = model->nodeOpaque;
+    s32 x_6dcce206 = model->x_6dcce206;
+    u8 *x_c8099ad6 = model->x_c8099ad6;
 
-    for (i = 0; i < numNodes; i++) {
-        nodeOpaque[i] = FALSE;
+    for (i = 0; i < x_6dcce206; i++) {
+        x_c8099ad6[i] = FALSE;
     }
 }
 
-void func_80034AB8(Object *obj) {
-    ModelInstance *model = obj->modInst;
+void x_cc8ffe65(Object *obj) {
+    x_6fcfcf46 *model = obj->x_20d20338;
     u32 i;
-    s32 numNodes = model->numNodes;
-    u8 *ptr1;
-    u8 *ptr2;
+    s32 x_6dcce206 = model->x_6dcce206;
+    u8 *x_d8f5cfb2;
+    u8 *x_4cf2fcb6;
 
-    ptr2 = model->nodeOpaque;
-    ptr1 = model->nodeOpaquePrev;
+    x_4cf2fcb6 = model->x_c8099ad6;
+    x_d8f5cfb2 = model->x_8f151cd3;
 
-    if (D_8008012C & GFX_FLAG_10) {
-        if (!(obj->flags & OBJ_FLAG_40000000)) {
-            memcpy(ptr1, ptr2, numNodes);
-            func_80034A58(obj);
-            set_post_render_hook(func_80034860, obj);
-            obj->flags |= OBJ_FLAG_40000000;
-            D_8008012C |= GFX_FLAG_ZBUFFER;
+    if (D_8008012C & x_c626209d) {
+        if (!(obj->flags & x_0488a75b)) {
+            memcpy(x_d8f5cfb2, x_4cf2fcb6, x_6dcce206);
+            x_64394ce4(obj);
+            x_71257e81(x_817c4151, obj);
+            obj->flags |= x_0488a75b;
+            D_8008012C |= x_666c9508;
         }
         return;
     }
 
-    if (!(D_8008012C & GFX_FLAG_10) && (obj->flags & OBJ_FLAG_40000000)) {
+    if (!(D_8008012C & x_c626209d) && (obj->flags & x_0488a75b)) {
         if (D_800801E2) {
-            D_8008012C &= ~GFX_FLAG_ZBUFFER;
+            D_8008012C &= ~x_666c9508;
         } else {
-            memcpy(ptr2, ptr1, numNodes);
-            set_post_render_hook(func_80034860, obj);
-            obj->flags &= ~OBJ_FLAG_40000000;
+            memcpy(x_4cf2fcb6, x_d8f5cfb2, x_6dcce206);
+            x_71257e81(x_817c4151, obj);
+            obj->flags &= ~x_0488a75b;
         }
         return;
     }
 
-    for (i = 0; i < numNodes; i++) {
-        if (ptr1[i] != ptr2[i]) {
-            memcpy(ptr1, ptr2, numNodes);
-            set_post_render_hook(func_80034860, obj);
+    for (i = 0; i < x_6dcce206; i++) {
+        if (x_d8f5cfb2[i] != x_4cf2fcb6[i]) {
+            memcpy(x_d8f5cfb2, x_4cf2fcb6, x_6dcce206);
+            x_71257e81(x_817c4151, obj);
             break;
         }
     }
 }
 
-void func_80034C18(Object *obj, u8 *arg1) {
-    ModelInstance *model = obj->modInst;
-    s32 count = model->numNodes;
+void x_049b184b(Object *obj, u8 *x_84ff873b) {
+    x_6fcfcf46 *model = obj->x_20d20338;
+    s32 count = model->x_6dcce206;
     u32 i;
-    u8 *ptr1 = model->nodeOpaquePrev;
-    u8 *ptr2 = model->nodeOpaque;
+    u8 *x_d8f5cfb2 = model->x_8f151cd3;
+    u8 *x_4cf2fcb6 = model->x_c8099ad6;
 
-    if (D_8008012C & GFX_FLAG_10) {
+    if (D_8008012C & x_c626209d) {
         for (i = 0; i < count; i++) {
-            ptr1[i] = ptr2[i] = arg1[i];
+            x_d8f5cfb2[i] = x_4cf2fcb6[i] = x_84ff873b[i];
         }
     } else {
         for (i = 0; i < count; i++) {
-            ptr2[i] = arg1[i];
+            x_4cf2fcb6[i] = x_84ff873b[i];
         }
     }
 }
 
-s32 func_80034D54(Object *obj) {
-    ModelInstance *modInst = obj->modInst;
-    ColorRGBA *color;
+s32 x_2657bff1(Object *obj) {
+    x_6fcfcf46 *x_20d20338 = obj->x_20d20338;
+    x_6751d717 *color;
     u8 v1 = obj->color.a;
     u32 i;
-    u32 count = modInst->numNodes;
-    Model *model = modInst->model;
-    Batch *disp;
+    u32 count = x_20d20338->x_6dcce206;
+    Model *model = x_20d20338->model;
+    x_320b5d80 *x_53a2c1d5;
     Gfx *gfx;
 
     for (i = 0; i < count; i++) {
-        disp = model->batches[i];
-        gfx = disp->info->header.texGfx;
-        color = &obj->unk_200;
+        x_53a2c1d5 = model->x_467629e6[i];
+        gfx = x_53a2c1d5->info->header.x_b7ba6d35;
+        color = &obj->x_47e6a04c;
         if (gfx->words.w0 == _SHIFTL(G_SETPRIMCOLOR, 24, 8)) {
             gDPSetPrimColor(gfx, 0, 0, color->r, color->g, color->b, v1);
         }
@@ -360,195 +360,195 @@ s32 func_80034D54(Object *obj) {
     return 0;
 }
 
-void func_80034F34(Object *obj) {
-    ColorRGBA *color1 = &obj->unk_200;
-    ColorRGBA *color2 = &obj->unk_204;
+void x_9742b98c(Object *obj) {
+    x_6751d717 *x_5086c3f0 = &obj->x_47e6a04c;
+    x_6751d717 *x_bd706c81 = &obj->x_da940449;
 
-    color1->a = obj->color.a;
+    x_5086c3f0->a = obj->color.a;
 
-    if (color2->r != color1->r || color2->g != color1->g || color2->b != color1->b || color2->a != color1->a) {
-        set_post_render_hook(func_80034D54, obj);
-        memcpy(&obj->unk_204, &obj->unk_200, sizeof(ColorRGBA));
+    if (x_bd706c81->r != x_5086c3f0->r || x_bd706c81->g != x_5086c3f0->g || x_bd706c81->b != x_5086c3f0->b || x_bd706c81->a != x_5086c3f0->a) {
+        x_71257e81(x_2657bff1, obj);
+        memcpy(&obj->x_da940449, &obj->x_47e6a04c, sizeof(x_6751d717));
     }
 }
 
-void model_node_centroid(ModelInstance *modInst, s32 nodeId, Vec4i *centroid) {
-    ModelNodeAsset *node;
+void x_b98f03bf(x_6fcfcf46 *x_20d20338, s32 x_7b79be4b, x_88f11482 *x_b6669964) {
+    x_c3c252eb *node;
     s32 x, y, z;
-    s32 i, numVertices;
+    s32 i, x_9d9b2b65;
     Vtx *vertices;
 
     x = 0;
     y = 0;
     z = 0;
 
-    if (modInst->kmodel != NULL) {
-        node = &modInst->kmodel->model.modelAsset->nodes[nodeId];
+    if (x_20d20338->x_305a60f8 != NULL) {
+        node = &x_20d20338->x_305a60f8->model.x_3bfb7219->x_45978ecb[x_7b79be4b];
     } else {
-        node = &modInst->model->modelAsset->nodes[nodeId];
+        node = &x_20d20338->model->x_3bfb7219->x_45978ecb[x_7b79be4b];
     }
 
-    numVertices = node->numVertices;
+    x_9d9b2b65 = node->x_9d9b2b65;
     vertices = node->vertices;
 
-    for (i = 0; i < numVertices; i++) {
+    for (i = 0; i < x_9d9b2b65; i++) {
         x += vertices[i].v.ob[0];
         y += vertices[i].v.ob[1];
         z += vertices[i].v.ob[2];
     }
 
-    centroid->x = x / numVertices;
-    centroid->y = y / numVertices;
-    centroid->z = z / numVertices;
+    x_b6669964->x = x / x_9d9b2b65;
+    x_b6669964->y = y / x_9d9b2b65;
+    x_b6669964->z = z / x_9d9b2b65;
 }
 
-void model_node_centroid_2(Model *model, s32 nodeId, Vec4i *centroid) {
-    ModelNodeAsset *node;
+void x_df70f098(Model *model, s32 x_7b79be4b, x_88f11482 *x_b6669964) {
+    x_c3c252eb *node;
     s32 x, y, z;
-    s32 i, numVertices;
+    s32 i, x_9d9b2b65;
     Vtx *vertices;
 
     x = 0;
     y = 0;
     z = 0;
 
-    node = &model->modelAsset->nodes[nodeId];
+    node = &model->x_3bfb7219->x_45978ecb[x_7b79be4b];
 
-    numVertices = node->numVertices;
+    x_9d9b2b65 = node->x_9d9b2b65;
     vertices = node->vertices;
 
-    for (i = 0; i < numVertices; i++) {
+    for (i = 0; i < x_9d9b2b65; i++) {
         x += vertices[i].v.ob[0];
         y += vertices[i].v.ob[1];
         z += vertices[i].v.ob[2];
     }
 
-    centroid->x = x / numVertices;
-    centroid->y = y / numVertices;
-    centroid->z = z / numVertices;
+    x_b6669964->x = x / x_9d9b2b65;
+    x_b6669964->y = y / x_9d9b2b65;
+    x_b6669964->z = z / x_9d9b2b65;
 }
 
-void func_800352FC(ModelInstance *modInst, ModelNodeGroup *nodeGroups) {
+void x_549030bf(x_6fcfcf46 *x_20d20338, x_40f23fab *x_a092cc8e) {
     u32 j;
     s32 z, y, x;
     u32 count;
     u32 i;
     s32 k;
-    s32 nodeId;
-    s32 nodeInGroup;
-    ModelNodeGroup *ptr;
-    Vec4i centroid;
-    NodeCluster *s7;
+    s32 x_7b79be4b;
+    s32 x_37d63f99;
+    x_40f23fab *ptr;
+    x_88f11482 x_b6669964;
+    x_257b53b4 *s7;
     Transform *transforms;
-    Gfx **dlists;
+    Gfx **x_1aae351f;
 
-    transforms = modInst->transforms;
-    dlists = modInst->kmodel->model.batches;
+    transforms = x_20d20338->transforms;
+    x_1aae351f = x_20d20338->x_305a60f8->model.x_467629e6;
 
     if (s7) {}
 
     count = 0;
-    ptr = nodeGroups;
-    while (ptr->idInGroup[0] >= 0) {
+    ptr = x_a092cc8e;
+    while (ptr->x_67091bea[0] >= 0) {
         ptr++;
         count++;
     }
-    modInst->unk_9C8 = count;
+    x_20d20338->x_88c9004e = count;
 
-    modInst->nodeClusters = s7 = mem_alloc(count * sizeof(NodeCluster), "model.c", 0x21C);
+    x_20d20338->x_9a3e80ff = s7 = x_56c3086a(count * sizeof(x_257b53b4), "model.c", 0x21C);
 
     for (i = 0; i < count; i++) {
-        if (nodeGroups->singleNode >= 0) {
-            model_node_centroid(modInst, nodeId = nodeGroups->singleNode, &centroid);
-            s7->centroid.x = centroid.x;
-            s7->centroid.y = centroid.y;
-            s7->centroid.z = centroid.z;
+        if (x_a092cc8e->x_0c9f73ee >= 0) {
+            x_b98f03bf(x_20d20338, x_7b79be4b = x_a092cc8e->x_0c9f73ee, &x_b6669964);
+            s7->x_b6669964.x = x_b6669964.x;
+            s7->x_b6669964.y = x_b6669964.y;
+            s7->x_b6669964.z = x_b6669964.z;
         } else {
             x = y = z = 0;
             for (j = 0; j < 4; j++) {
-                if (nodeGroups->idInGroup[j] >= 0) {
-                    model_node_centroid(modInst, nodeId = nodeGroups->idInGroup[j], &centroid);
-                    x += centroid.x;
-                    y += centroid.y;
-                    z += centroid.z;
+                if (x_a092cc8e->x_67091bea[j] >= 0) {
+                    x_b98f03bf(x_20d20338, x_7b79be4b = x_a092cc8e->x_67091bea[j], &x_b6669964);
+                    x += x_b6669964.x;
+                    y += x_b6669964.y;
+                    z += x_b6669964.z;
                 } else {
                     break;
                 }
             }
-            s7->centroid.x = x / (s32) j;
-            s7->centroid.y = y / (s32) j;
-            s7->centroid.z = z / (s32) j;
+            s7->x_b6669964.x = x / (s32) j;
+            s7->x_b6669964.y = y / (s32) j;
+            s7->x_b6669964.z = z / (s32) j;
         }
 
         for (j = 0; j < 4; j++) {
-            nodeId = s7->group[j] = nodeGroups->idInGroup[j];
-            if (nodeId < 0) {
+            x_7b79be4b = s7->group[j] = x_a092cc8e->x_67091bea[j];
+            if (x_7b79be4b < 0) {
                 break;
             }
         }
 
-        s7->singleNode = nodeGroups->singleNode;
-        s7->groupSize = j;
+        s7->x_0c9f73ee = x_a092cc8e->x_0c9f73ee;
+        s7->x_ceaf196d = j;
 
         for (k = 0; k < j; k++) {
-            nodeInGroup = s7->group[k];
-            s7->transforms[k] = transforms[nodeInGroup].mtx + 0;
-            s7->transforms[j + k] = transforms[nodeInGroup].mtx + 1;
-            s7->dlists[k] = dlists[nodeInGroup];
+            x_37d63f99 = s7->group[k];
+            s7->transforms[k] = transforms[x_37d63f99].mtx + 0;
+            s7->transforms[j + k] = transforms[x_37d63f99].mtx + 1;
+            s7->x_1aae351f[k] = x_1aae351f[x_37d63f99];
         }
 
-        s7->unk_00 = 0;
+        s7->x_af0aa1f8 = 0;
         s7++;
-        nodeGroups++;
+        x_a092cc8e++;
     }
 
-    for (j = 0; j < modInst->unk_9C8; j++) {
-        modInst->unk_608[j].cluster = modInst->nodeClusters + j;
+    for (j = 0; j < x_20d20338->x_88c9004e; j++) {
+        x_20d20338->x_61b49b7b[j].x_164cf1ca = x_20d20338->x_9a3e80ff + j;
     }
 }
 
-void func_8003561C(Object *obj, s32 arg1) {
-    ModelInstance *model;
-    Matrix4f *projMatrix;
+void x_8487d43a(Object *obj, s32 x_84ff873b) {
+    x_6fcfcf46 *model;
+    x_f9704fd6 *x_bf6199df;
     u32 i;
-    ClusterRenderSlot *s6;
-    s32 sp74;
+    x_f752bb53 *s6;
+    s32 x_8a9089b3;
     Transform *transforms;
-    NodeCluster *s1;
+    x_257b53b4 *s1;
     f32 x, y, z, w;
     u32 a00;
     s32 a1, a3;
-    NodeCluster *a2;
+    x_257b53b4 *a2;
     u32 flags;
 
-    model = obj->modInst;
-    s6 = model->unk_608;
-    sp74 = model->unk_9C8;
+    model = obj->x_20d20338;
+    s6 = model->x_61b49b7b;
+    x_8a9089b3 = model->x_88c9004e;
     transforms = model->transforms;
 
-    if (obj->flags & OBJ_FLAG_1000000) {
-        projMatrix = &D_8013C6B0;
+    if (obj->flags & x_a816b63b) {
+        x_bf6199df = &D_8013C6B0;
     } else {
-        projMatrix = &gCameraProjectionMatrix;
+        x_bf6199df = &x_7eefcd11;
     }
 
-    for (i = 0; i < sp74; i++) {
-        s1 = s6[i].cluster;
+    for (i = 0; i < x_8a9089b3; i++) {
+        s1 = s6[i].x_164cf1ca;
         if (transforms != NULL) {
-            Matrix4f *mtx = (s1->singleNode >= 0) ? &transforms[s1->singleNode].world_matrix
-                                                  : &transforms[s1->group[0]].world_matrix;
-            math_mtxf_mul(mtx, projMatrix, &D_800813E0);
+            x_f9704fd6 *mtx = (s1->x_0c9f73ee >= 0) ? &transforms[s1->x_0c9f73ee].x_0c1a9bdd
+                                                  : &transforms[s1->group[0]].x_0c1a9bdd;
+            x_16eff9cc(mtx, x_bf6199df, &D_800813E0);
         } else {
-            math_mtxf_mul(&model->rootTransform.world_matrix, projMatrix, &D_800813E0);
+            x_16eff9cc(&model->x_abd7b3c4.x_0c1a9bdd, x_bf6199df, &D_800813E0);
         }
 
-        x = D_800813E0.x.x * s1->centroid.x + D_800813E0.y.x * s1->centroid.y + D_800813E0.z.x * s1->centroid.z +
+        x = D_800813E0.x.x * s1->x_b6669964.x + D_800813E0.y.x * s1->x_b6669964.y + D_800813E0.z.x * s1->x_b6669964.z +
             D_800813E0.w.x;
-        y = D_800813E0.x.y * s1->centroid.x + D_800813E0.y.y * s1->centroid.y + D_800813E0.z.y * s1->centroid.z +
+        y = D_800813E0.x.y * s1->x_b6669964.x + D_800813E0.y.y * s1->x_b6669964.y + D_800813E0.z.y * s1->x_b6669964.z +
             D_800813E0.w.y;
-        z = D_800813E0.x.z * s1->centroid.x + D_800813E0.y.z * s1->centroid.y + D_800813E0.z.z * s1->centroid.z +
+        z = D_800813E0.x.z * s1->x_b6669964.x + D_800813E0.y.z * s1->x_b6669964.y + D_800813E0.z.z * s1->x_b6669964.z +
             D_800813E0.w.z;
-        w = D_800813E0.x.w * s1->centroid.x + D_800813E0.y.w * s1->centroid.y + D_800813E0.z.w * s1->centroid.z +
+        w = D_800813E0.x.w * s1->x_b6669964.x + D_800813E0.y.w * s1->x_b6669964.y + D_800813E0.z.w * s1->x_b6669964.z +
             D_800813E0.w.w;
 
         if (w != 0.0f) {
@@ -558,190 +558,190 @@ void func_8003561C(Object *obj, s32 arg1) {
             x = y = z = 2.0f;
         }
 
-        if (!(obj->flags & OBJ_FLAG_200000)) {
+        if (!(obj->flags & x_060adf1c)) {
             s6[i].flags = (x > 1.2 || x < -1.2 || y > 1.2 || y < -1.2);
         } else {
             s6[i].flags &= ~1;
         }
 
-        s6[i].zOrder = arg1 + z;
+        s6[i].x_9dca29cd = x_84ff873b + z;
     }
 
-    for (i = 1; i < sp74; i++) {
-        a2 = s6[i].cluster;
-        a1 = s6[i].zOrder;
+    for (i = 1; i < x_8a9089b3; i++) {
+        a2 = s6[i].x_164cf1ca;
+        a1 = s6[i].x_9dca29cd;
         a3 = s6[i].flags;
         a00 = i;
-        for (a00 = i; a00 != 0 && s6[a00 - 1].zOrder < a1; a00--) {
-            s6[a00].cluster = s6[a00 - 1].cluster;
-            s6[a00].zOrder = s6[a00 - 1].zOrder;
+        for (a00 = i; a00 != 0 && s6[a00 - 1].x_9dca29cd < a1; a00--) {
+            s6[a00].x_164cf1ca = s6[a00 - 1].x_164cf1ca;
+            s6[a00].x_9dca29cd = s6[a00 - 1].x_9dca29cd;
             s6[a00].flags = s6[a00 - 1].flags;
         }
 
-        s6[a00].cluster = a2;
-        s6[a00].zOrder = a1;
+        s6[a00].x_164cf1ca = a2;
+        s6[a00].x_9dca29cd = a1;
         s6[a00].flags = a3;
     }
 }
 
-void func_800359E4(ModelInstance *modInst, ModelNodeGroup *arg1) {
+void x_5ff45842(x_6fcfcf46 *x_20d20338, x_40f23fab *x_84ff873b) {
     u32 s1;
     s32 s2, s3, s4;
-    u32 sp7C;
-    u32 sp78;
+    u32 x_5c787447;
+    u32 x_dcab8ab0;
     s32 s5;
-    s32 tmp;
-    s32 tmp2;
+    s32 x_cf10d3eb;
+    s32 x_6e3cc34e;
     s32 pad3;
-    Vec4i sp58;
-    ModelNodeGroup *ptr;
-    NodeCluster *s7;
-    Batch **batches;
+    x_88f11482 x_fd09f53e;
+    x_40f23fab *ptr;
+    x_257b53b4 *s7;
+    x_320b5d80 **x_467629e6;
     u32 pad2;
 
-    batches = modInst->model->batches;
+    x_467629e6 = x_20d20338->model->x_467629e6;
 
-    sp7C = 0;
-    ptr = arg1;
-    while (ptr->idInGroup[0] >= 0) {
+    x_5c787447 = 0;
+    ptr = x_84ff873b;
+    while (ptr->x_67091bea[0] >= 0) {
         ptr++;
-        sp7C++;
+        x_5c787447++;
     }
-    modInst->unk_9C8 = sp7C;
+    x_20d20338->x_88c9004e = x_5c787447;
 
-    modInst->nodeClusters = s7 = mem_alloc(sp7C * sizeof(NodeCluster), "model.c", 693);
+    x_20d20338->x_9a3e80ff = s7 = x_56c3086a(x_5c787447 * sizeof(x_257b53b4), "model.c", 693);
 
-    for (sp78 = 0; sp78 < sp7C; sp78++) {
-        s7->unk_00 = 1;
-        if (arg1->singleNode >= 0) {
-            model_node_centroid(modInst, tmp = arg1->singleNode, &sp58);
-            s7->centroid.x = sp58.x;
-            s7->centroid.y = sp58.y;
-            s7->centroid.z = sp58.z;
+    for (x_dcab8ab0 = 0; x_dcab8ab0 < x_5c787447; x_dcab8ab0++) {
+        s7->x_af0aa1f8 = 1;
+        if (x_84ff873b->x_0c9f73ee >= 0) {
+            x_b98f03bf(x_20d20338, x_cf10d3eb = x_84ff873b->x_0c9f73ee, &x_fd09f53e);
+            s7->x_b6669964.x = x_fd09f53e.x;
+            s7->x_b6669964.y = x_fd09f53e.y;
+            s7->x_b6669964.z = x_fd09f53e.z;
         } else {
             s4 = s3 = s2 = 0;
             for (s1 = 0; s1 < 4; s1++) {
-                if (arg1->idInGroup[s1] >= 0) {
-                    model_node_centroid(modInst, tmp2 = arg1->idInGroup[s1], &sp58);
-                    s4 += sp58.x;
-                    s3 += sp58.y;
-                    s2 += sp58.z;
+                if (x_84ff873b->x_67091bea[s1] >= 0) {
+                    x_b98f03bf(x_20d20338, x_6e3cc34e = x_84ff873b->x_67091bea[s1], &x_fd09f53e);
+                    s4 += x_fd09f53e.x;
+                    s3 += x_fd09f53e.y;
+                    s2 += x_fd09f53e.z;
                 } else {
                     break;
                 }
             }
-            s7->centroid.x = s4 / (s32) s1;
-            s7->centroid.y = s3 / (s32) s1;
-            s7->centroid.z = s2 / (s32) s1;
+            s7->x_b6669964.x = s4 / (s32) s1;
+            s7->x_b6669964.y = s3 / (s32) s1;
+            s7->x_b6669964.z = s2 / (s32) s1;
         }
 
         for (s1 = 0; s1 < 4; s1++) {
-            if ((s7->group[s1] = arg1->idInGroup[s1]) < 0) {
+            if ((s7->group[s1] = x_84ff873b->x_67091bea[s1]) < 0) {
                 break;
             }
         }
 
-        s7->singleNode = arg1->singleNode;
-        s7->groupSize = s1;
+        s7->x_0c9f73ee = x_84ff873b->x_0c9f73ee;
+        s7->x_ceaf196d = s1;
 
         pad2 = s1;
         for (s5 = 0; s5 < pad2; s5++) {
-            s32 tmp2 = s7->group[s5];
-            s7->transforms[s5] = batches[tmp2];
-            s7->batchCounts[s5] = modInst->model->batchCounts[tmp2];
+            s32 x_6e3cc34e = s7->group[s5];
+            s7->transforms[s5] = x_467629e6[x_6e3cc34e];
+            s7->x_c246f31f[s5] = x_20d20338->model->x_c246f31f[x_6e3cc34e];
         }
 
-        arg1++;
+        x_84ff873b++;
         s7++;
     }
 
-    for (s1 = 0; s1 < modInst->unk_9C8; s1++) {
-        modInst->unk_608[s1].cluster = modInst->nodeClusters + s1;
+    for (s1 = 0; s1 < x_20d20338->x_88c9004e; s1++) {
+        x_20d20338->x_61b49b7b[s1].x_164cf1ca = x_20d20338->x_9a3e80ff + s1;
     }
 }
 
-void func_80035CCC(Model *arg0) {
+void x_aced8439(Model *x_cc1d0de5) {
     s32 count;
     u32 i;
-    NodeCluster *s1;
+    x_257b53b4 *s1;
     s32 unused[4];
     u32 j;
-    Batch **var1;
+    x_320b5d80 **x_4c3c4684;
     s32 temp;
-    Vec4i sp58;
-    s32 temp2;
+    x_88f11482 x_fd09f53e;
+    s32 x_df21a243;
 
-    count = arg0->numNodes;
-    s1 = arg0->unk_31C = (NodeCluster *) mem_alloc(count * sizeof(NodeCluster), "model.c", 766);
+    count = x_cc1d0de5->x_6dcce206;
+    s1 = x_cc1d0de5->x_761a0268 = (x_257b53b4 *) x_56c3086a(count * sizeof(x_257b53b4), "model.c", 766);
     temp = 1; // required to match
-    var1 = arg0->batches;
+    x_4c3c4684 = x_cc1d0de5->x_467629e6;
     for (i = 0; i < count; i++, s1++) {
-        s1->unk_00 = temp;
+        s1->x_af0aa1f8 = temp;
 
-        model_node_centroid_2(arg0, i, &sp58);
-        s1->centroid.x = sp58.x;
-        s1->centroid.y = sp58.y;
-        s1->centroid.z = sp58.z;
+        x_df70f098(x_cc1d0de5, i, &x_fd09f53e);
+        s1->x_b6669964.x = x_fd09f53e.x;
+        s1->x_b6669964.y = x_fd09f53e.y;
+        s1->x_b6669964.z = x_fd09f53e.z;
 
         s1->group[0] = i;
         s1->group[1] = -1;
-        s1->singleNode = i;
-        s1->groupSize = temp;
+        s1->x_0c9f73ee = i;
+        s1->x_ceaf196d = temp;
 
-        temp2 = 1; // required to match
-        for (j = 0; j < temp2; j++) {
+        x_df21a243 = 1; // required to match
+        for (j = 0; j < x_df21a243; j++) {
             s32 v0 = s1->group[j];
-            s1->transforms[j] = var1[v0];
-            s1->batchCounts[j] = arg0->batchCounts[v0];
+            s1->transforms[j] = x_4c3c4684[v0];
+            s1->x_c246f31f[j] = x_cc1d0de5->x_c246f31f[v0];
         }
     }
 }
 
-void func_80035DF8(Model *arg0, s32 batchIndex) {
+void x_5ac08b4e(Model *x_cc1d0de5, s32 x_a1c9c44b) {
     u32 i;
     s32 count;
-    Batch *batch;
+    x_320b5d80 *x_4bb24efc;
 
-    batch = arg0->batches[batchIndex];
-    count = arg0->batchCounts[batchIndex];
+    x_4bb24efc = x_cc1d0de5->x_467629e6[x_a1c9c44b];
+    count = x_cc1d0de5->x_c246f31f[x_a1c9c44b];
 
     for (i = 0; i < count; i++) {
-        gSPTriBatch(gMainBatchPos, NULL, batch->info, batch->vertices, batch->triangles);
-        batch++;
+        x_50746900(x_8a79b283, NULL, x_4bb24efc->info, x_4bb24efc->vertices, x_4bb24efc->triangles);
+        x_4bb24efc++;
     }
 }
 
-void shadow_update(Object *obj) {
-    ModelInstance *modInst;
-    Object *parent;
+void x_15e53a46(Object *obj) {
+    x_6fcfcf46 *x_20d20338;
+    Object *x_e4712596;
     s16 j;
     s16 i;
     s16 s6;
-    Matrix4f sp98;
+    x_f9704fd6 x_d753d975;
     f32 v1, a0;
-    BatchInfo *batchInfo;
+    x_c1cedf06 *x_3ab7202f;
     Transform *transforms;
     s32 unused[4];
-    Batch **batches;
-    Matrix4f *local_matrix;
+    x_320b5d80 **x_467629e6;
+    x_f9704fd6 *x_3fde9cd9;
 
-    modInst = obj->modInst;
-    transforms = modInst->transforms;
-    parent = (Object *) obj->vars[1];
-    local_matrix = &obj->transform.local_matrix;
-    batches = modInst->model->batches;
+    x_20d20338 = obj->x_20d20338;
+    transforms = x_20d20338->transforms;
+    x_e4712596 = (Object *) obj->x_0f4167b4[1];
+    x_3fde9cd9 = &obj->transform.x_3fde9cd9;
+    x_467629e6 = x_20d20338->model->x_467629e6;
 
-    if (parent->flags & OBJ_FLAG_HIDDEN) {
+    if (x_e4712596->flags & x_c537cafa) {
         return;
     }
 
-    D_8013C4E0 = modInst->kmodel->model.dlist;
-    func_80012AA8(&sp98);
+    D_8013C4E0 = x_20d20338->x_305a60f8->model.x_bde24317;
+    x_3004a565(&x_d753d975);
     s6 = D_8005BFCE * 30;
 
-    for (i = 0; i < modInst->numNodes; i++) {
-        math_mtxf_apply_parent(&sp98, &transforms[i].world_matrix, local_matrix);
-        math_mtxf_mul(&sp98, &gCameraProjectionMatrix, &D_800813E0);
+    for (i = 0; i < x_20d20338->x_6dcce206; i++) {
+        x_903494af(&x_d753d975, &transforms[i].x_0c1a9bdd, x_3fde9cd9);
+        x_16eff9cc(&x_d753d975, &x_7eefcd11, &D_800813E0);
 
         if (D_800813E0.w.w != 0.0f) {
             v1 = D_800813E0.w.x / D_800813E0.w.w;
@@ -756,648 +756,648 @@ void shadow_update(Object *obj) {
 
         j = i + s6;
 
-        batchInfo = j + modInst->renderBatches;
+        x_3ab7202f = j + x_20d20338->x_78526b81;
         if (&D_800813E0 && &D_800813E0) {} // required to match
 
-        math_mtxf2mtx(&batchInfo->transform, &D_800813E0);
-        batches[i]->info = batchInfo;
-        func_80035DF8(modInst->model, i);
+        x_ba58a12b(&x_3ab7202f->transform, &D_800813E0);
+        x_467629e6[i]->info = x_3ab7202f;
+        x_5ac08b4e(x_20d20338->model, i);
     }
 }
 
-void create_shadow(Object *baseObject, char *asset_name, u32 context) {
+void x_77cc77b6(Object *x_4a65b74c, char *x_15887b2b, u32 context) {
     Object *shadow;
 
-    str_copy(gShadowProps.name, asset_name);
-    shadow = create_model_instance_with_properties(&gZeroPosition, NULL, &gShadowProps, context);
+    x_dab0846a(x_eca45bf8.name, x_15887b2b);
+    shadow = x_8e3c7e83(&x_c787d34b, NULL, &x_eca45bf8, context);
 
-    shadow->vars[0] = shadow->modInst->transforms;
-    shadow->vars[1] = baseObject;
-    shadow->modInst->transforms = baseObject->modInst->transforms;
-    shadow->fn_render = shadow_update;
+    shadow->x_0f4167b4[0] = shadow->x_20d20338->transforms;
+    shadow->x_0f4167b4[1] = x_4a65b74c;
+    shadow->x_20d20338->transforms = x_4a65b74c->x_20d20338->transforms;
+    shadow->x_0232396f = x_15e53a46;
 
-    shadow->transform.local_matrix.y.x = 0.0f;
-    shadow->transform.local_matrix.x.y = 0.0f;
-    shadow->transform.local_matrix.y.y = 0.0f;
-    shadow->transform.local_matrix.z.y = 0.0f;
-    shadow->transform.local_matrix.y.z = -1.5f;
+    shadow->transform.x_3fde9cd9.y.x = 0.0f;
+    shadow->transform.x_3fde9cd9.x.y = 0.0f;
+    shadow->transform.x_3fde9cd9.y.y = 0.0f;
+    shadow->transform.x_3fde9cd9.z.y = 0.0f;
+    shadow->transform.x_3fde9cd9.y.z = -1.5f;
 }
 
-void func_80036228(Transform *arg0, Transform *arg1) {
+void x_e6326385(Transform *x_cc1d0de5, Transform *x_84ff873b) {
     Mtx *s0;
-    Transform *iter;
+    Transform *x_82439cbe;
 
-    s0 = &arg1->mtx[D_8005BFCE];
-    math_mtxf2mtx(s0, &arg1->world_matrix);
-    arg1->unk_94 = &s0->m[1][2];
+    s0 = &x_84ff873b->mtx[D_8005BFCE];
+    x_ba58a12b(s0, &x_84ff873b->x_0c1a9bdd);
+    x_84ff873b->x_834cdf4f = &s0->m[1][2];
 
-    if (arg0 != NULL) {
-        gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(s0), G_MTX_PUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    if (x_cc1d0de5 != NULL) {
+        gSPMatrix(x_9a3c07b8++, x_c485761a(s0), G_MTX_PUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     } else {
-        gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(s0), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gSPMatrix(x_9a3c07b8++, x_c485761a(s0), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     }
 
-    for (iter = arg1->firstChild; iter != NULL; iter = iter->nextSibling) {
-        func_80036228(arg1, iter);
+    for (x_82439cbe = x_84ff873b->x_171183e4; x_82439cbe != NULL; x_82439cbe = x_82439cbe->x_fda6b96a) {
+        x_e6326385(x_84ff873b, x_82439cbe);
     }
 
-    if (arg1->id >= 0) {
-        gSPDisplayList(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(D_8013C4E0[arg1->id]));
+    if (x_84ff873b->id >= 0) {
+        gSPDisplayList(x_9a3c07b8++, x_c485761a(D_8013C4E0[x_84ff873b->id]));
     }
 
-    gSPPopMatrix(gMainGfxPos++, G_MTX_MODELVIEW);
+    gSPPopMatrix(x_9a3c07b8++, G_MTX_MODELVIEW);
 }
 
-void model_update_animated_params(Object *obj) {
-    ModelInstance *model = obj->modInst;
+void x_2a8d0730(Object *obj) {
+    x_6fcfcf46 *model = obj->x_20d20338;
     s32 count;
     s32 i;
     s16 delta;
-    u8 *nodeUpdated;
+    u8 *x_07bd45a3;
     Transform *transforms;
-    Vec4i displacement;
+    x_88f11482 x_dcd2d24e;
     s32 unused[5];
-    Vec4i *nodePosition;
-    Vec4s *nodeRotation;
-    NodeAttachment *attachments;
-    Vec4i *nodeScale;
+    x_88f11482 *x_5d0e77f6;
+    x_2758cdab *x_b3db7eeb;
+    x_43bd08ed *x_3930e671;
+    x_88f11482 *x_d6354d00;
 
-    nodeScale = model->nodeScale;
-    nodeUpdated = model->nodeUpdated;
-    attachments = model->nodeAttachments;
-    nodePosition = model->nodePosition;
-    nodeRotation = model->nodeRotation;
-    count = model->numNodes;
+    x_d6354d00 = model->x_d6354d00;
+    x_07bd45a3 = model->x_07bd45a3;
+    x_3930e671 = model->x_0094fc88;
+    x_5d0e77f6 = model->x_5d0e77f6;
+    x_b3db7eeb = model->x_b3db7eeb;
+    count = model->x_6dcce206;
     transforms = model->transforms;
 
     for (i = 0; i < count; i++) {
-        if (nodeUpdated[i]) {
-            math_rotate(&transforms[i].local_matrix, &nodeRotation[i]);
-            math_scale(&transforms[i].local_matrix, &nodeScale[i]);
+        if (x_07bd45a3[i]) {
+            x_948f0b9f(&transforms[i].x_3fde9cd9, &x_b3db7eeb[i]);
+            x_40fe131d(&transforms[i].x_3fde9cd9, &x_d6354d00[i]);
 
-            transforms[i].local_matrix.w.x = attachments[i].x + nodePosition[i].x;
-            transforms[i].local_matrix.w.y = attachments[i].y + nodePosition[i].y;
-            transforms[i].local_matrix.w.z = attachments[i].z + nodePosition[i].z;
-            nodeUpdated[i] = FALSE;
+            transforms[i].x_3fde9cd9.w.x = x_3930e671[i].x + x_5d0e77f6[i].x;
+            transforms[i].x_3fde9cd9.w.y = x_3930e671[i].y + x_5d0e77f6[i].y;
+            transforms[i].x_3fde9cd9.w.z = x_3930e671[i].z + x_5d0e77f6[i].z;
+            x_07bd45a3[i] = FALSE;
         }
     }
 
-    if (model->rootUpdated || model->unk_132 != 0) {
-        math_rotate(&model->rootTransform.local_matrix, &model->rootRotation);
-        math_scale(&model->rootTransform.local_matrix, &model->rootScale);
-        model->rootUpdated = FALSE;
+    if (model->x_898495c5 || model->x_766c2c4d != 0) {
+        x_948f0b9f(&model->x_abd7b3c4.x_3fde9cd9, &model->x_08d6ba0b);
+        x_40fe131d(&model->x_abd7b3c4.x_3fde9cd9, &model->x_4e599cb3);
+        model->x_898495c5 = FALSE;
     }
 
-    if (obj->flags & OBJ_FLAG_ROOT_MOTION) {
-        model->rootTransform.local_matrix.w.y = model->currentRootPos.y;
-        displacement.y = 0;
+    if (obj->flags & x_9ee447da) {
+        model->x_abd7b3c4.x_3fde9cd9.w.y = model->x_6689336b.y;
+        x_dcd2d24e.y = 0;
 
-        if (obj->flags & OBJ_FLAG_20000) {
-            displacement.x = model->currentRootPos.x - model->baseRootPos.x - model->unk_A1C;
-            delta = displacement.x - model->velocity.x;
-            model->velocity.x = displacement.x;
-            displacement.x = delta;
-            model->rootTransform.local_matrix.w.x = model->baseRootPos.x;
+        if (obj->flags & x_03ae0e9e) {
+            x_dcd2d24e.x = model->x_6689336b.x - model->x_9cfd7bb4.x - model->x_3aefae96;
+            delta = x_dcd2d24e.x - model->velocity.x;
+            model->velocity.x = x_dcd2d24e.x;
+            x_dcd2d24e.x = delta;
+            model->x_abd7b3c4.x_3fde9cd9.w.x = model->x_9cfd7bb4.x;
         } else {
-            displacement.x = 0;
+            x_dcd2d24e.x = 0;
         }
 
-        displacement.z = model->currentRootPos.z - model->baseRootPos.z;
+        x_dcd2d24e.z = model->x_6689336b.z - model->x_9cfd7bb4.z;
 
-        if (displacement.z != 0 || displacement.x != 0) {
+        if (x_dcd2d24e.z != 0 || x_dcd2d24e.x != 0) {
             delta = 0;
-            if (obj->flags & OBJ_FLAG_100000) {
-                obj->flags &= ~OBJ_FLAG_100000;
+            if (obj->flags & x_d645b406) {
+                obj->flags &= ~x_d645b406;
             } else {
-                delta = displacement.z - model->velocity.z;
+                delta = x_dcd2d24e.z - model->velocity.z;
             }
-            model->velocity.z = displacement.z;
-            displacement.z = delta;
+            model->velocity.z = x_dcd2d24e.z;
+            x_dcd2d24e.z = delta;
 
-            model->rootTransform.local_matrix.w.z = model->baseRootPos.z;
-            math_rotate_vector(&displacement, &obj->rotation);
-            if (!(obj->flags & OBJ_FLAG_8000)) {
-                obj->pos.x += displacement.x;
-                obj->pos.z += displacement.z;
+            model->x_abd7b3c4.x_3fde9cd9.w.z = model->x_9cfd7bb4.z;
+            x_9b0df250(&x_dcd2d24e, &obj->x_224610f1);
+            if (!(obj->flags & x_56bbd9b2)) {
+                obj->pos.x += x_dcd2d24e.x;
+                obj->pos.z += x_dcd2d24e.z;
             }
         }
     } else {
-        model->rootTransform.local_matrix.w.x = model->currentRootPos.x;
-        model->rootTransform.local_matrix.w.y = model->currentRootPos.y;
-        model->rootTransform.local_matrix.w.z = model->currentRootPos.z;
+        model->x_abd7b3c4.x_3fde9cd9.w.x = model->x_6689336b.x;
+        model->x_abd7b3c4.x_3fde9cd9.w.y = model->x_6689336b.y;
+        model->x_abd7b3c4.x_3fde9cd9.w.z = model->x_6689336b.z;
 
-        if (model->anotherVel.z != 0) {
-            displacement.x = 0;
-            displacement.z = model->anotherVel.z - model->velocity.z;
-            model->velocity.z = model->anotherVel.z;
-            math_rotate_vector(&displacement, &obj->rotation); // @bug sp88.y undefined
-            obj->pos.x += displacement.x;
-            obj->pos.z += displacement.z;
+        if (model->x_6786034d.z != 0) {
+            x_dcd2d24e.x = 0;
+            x_dcd2d24e.z = model->x_6786034d.z - model->velocity.z;
+            model->velocity.z = model->x_6786034d.z;
+            x_9b0df250(&x_dcd2d24e, &obj->x_224610f1); // @bug sp88.y undefined
+            obj->pos.x += x_dcd2d24e.x;
+            obj->pos.z += x_dcd2d24e.z;
         }
 
-        if (obj->flags & OBJ_FLAG_UNWIND_ROOT) {
-            if (obj->flags & OBJ_FLAG_800000) {
-                obj->rotation.y = 0x400 - ((0xC00 - obj->rotation.y) & 0xFFF);
-                obj->flags &= ~OBJ_FLAG_800000;
+        if (obj->flags & x_da021b29) {
+            if (obj->flags & x_da584e3c) {
+                obj->x_224610f1.y = 0x400 - ((0xC00 - obj->x_224610f1.y) & 0xFFF);
+                obj->flags &= ~x_da584e3c;
             }
 
-            obj->flags &= ~OBJ_FLAG_UNWIND_ROOT;
+            obj->flags &= ~x_da021b29;
 
-            displacement.y = 0;
-            displacement.x = model->currentRootPos.x;
-            displacement.z = model->currentRootPos.z;
+            x_dcd2d24e.y = 0;
+            x_dcd2d24e.x = model->x_6689336b.x;
+            x_dcd2d24e.z = model->x_6689336b.z;
 
-            math_rotate_vector(&displacement, &obj->rotation);
-            obj->pos.x -= displacement.x;
-            obj->pos.z -= displacement.z;
+            x_9b0df250(&x_dcd2d24e, &obj->x_224610f1);
+            obj->pos.x -= x_dcd2d24e.x;
+            obj->pos.z -= x_dcd2d24e.z;
         }
     }
 }
 
-void model_anim_param_lerp(u8 *script, s16 *value, Object *obj) {
-    s32 nodeId;
-    ModelInstance *model;
+void x_c0cb3394(u8 *x_21a0270b, s16 *value, Object *obj) {
+    s32 x_7b79be4b;
+    x_6fcfcf46 *model;
 
-    nodeId = script[2];
-    model = obj->modInst;
+    x_7b79be4b = x_21a0270b[2];
+    model = obj->x_20d20338;
 
-    if (nodeId == 0xFF) {
-        switch (script[3] & 0xF) {
+    if (x_7b79be4b == 0xFF) {
+        switch (x_21a0270b[3] & 0xF) {
             case 1:
-                model->rootRotation.x = (*value + model->rootRotation.x) >> 1;
-                model->rootUpdated = TRUE;
+                model->x_08d6ba0b.x = (*value + model->x_08d6ba0b.x) >> 1;
+                model->x_898495c5 = TRUE;
                 break;
             case 2:
-                model->rootRotation.y = (*value + model->rootRotation.y) >> 1;
-                model->rootUpdated = TRUE;
+                model->x_08d6ba0b.y = (*value + model->x_08d6ba0b.y) >> 1;
+                model->x_898495c5 = TRUE;
                 break;
             case 3:
-                model->rootRotation.z = (*value + model->rootRotation.z) >> 1;
-                model->rootUpdated = TRUE;
+                model->x_08d6ba0b.z = (*value + model->x_08d6ba0b.z) >> 1;
+                model->x_898495c5 = TRUE;
                 break;
             case 4:
-                model->currentRootPos.x =
-                    ((*value + model->currentRootPos.x - model->baseRootPos.x) >> 1) + model->baseRootPos.x;
+                model->x_6689336b.x =
+                    ((*value + model->x_6689336b.x - model->x_9cfd7bb4.x) >> 1) + model->x_9cfd7bb4.x;
                 break;
             case 5:
-                model->currentRootPos.y =
-                    ((*value + model->currentRootPos.y - model->baseRootPos.y) >> 1) + model->baseRootPos.y;
+                model->x_6689336b.y =
+                    ((*value + model->x_6689336b.y - model->x_9cfd7bb4.y) >> 1) + model->x_9cfd7bb4.y;
                 break;
             case 6:
-                model->currentRootPos.z =
-                    ((*value + model->currentRootPos.z - model->baseRootPos.z) >> 1) + model->baseRootPos.z;
+                model->x_6689336b.z =
+                    ((*value + model->x_6689336b.z - model->x_9cfd7bb4.z) >> 1) + model->x_9cfd7bb4.z;
                 break;
             case 7:
-                model->rootScale.x = (*value + model->rootScale.x) >> 1;
-                model->rootUpdated = TRUE;
+                model->x_4e599cb3.x = (*value + model->x_4e599cb3.x) >> 1;
+                model->x_898495c5 = TRUE;
                 break;
             case 8:
-                model->rootScale.y = (*value + model->rootScale.y) >> 1;
-                model->rootUpdated = TRUE;
+                model->x_4e599cb3.y = (*value + model->x_4e599cb3.y) >> 1;
+                model->x_898495c5 = TRUE;
                 break;
             case 9:
-                model->rootScale.z = (*value + model->rootScale.z) >> 1;
-                model->rootUpdated = TRUE;
+                model->x_4e599cb3.z = (*value + model->x_4e599cb3.z) >> 1;
+                model->x_898495c5 = TRUE;
                 break;
         }
-    } else if (nodeId == 0xFE) {
-        switch (script[3] & 0xF) {
+    } else if (x_7b79be4b == 0xFE) {
+        switch (x_21a0270b[3] & 0xF) {
             case 5:
                 obj->pos.y = (*value + obj->pos.y) >> 1;
                 break;
             case 6:
-                model->anotherVel.z = (*value * obj->velocity.z + model->anotherVel.z) >> 1;
+                model->x_6786034d.z = (*value * obj->velocity.z + model->x_6786034d.z) >> 1;
                 break;
             case 2:
-                model->unk_132 = (*value + model->unk_132) >> 1;
+                model->x_766c2c4d = (*value + model->x_766c2c4d) >> 1;
                 break;
         }
     } else {
-        Vec4s *temp = &model->nodeRotation[nodeId];
-        switch (script[3] & 0xF) {
+        x_2758cdab *temp = &model->x_b3db7eeb[x_7b79be4b];
+        switch (x_21a0270b[3] & 0xF) {
             case 1:
                 temp->x = (*value + temp->x) >> 1;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 2:
                 temp->y = (*value + temp->y) >> 1;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 3:
                 temp->z = (*value + temp->z) >> 1;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 4:
-                model->nodePosition[nodeId].x = (f32) ((model->nodePosition[nodeId].x + *value) >> 1);
-                model->nodeUpdated[nodeId] = 1;
+                model->x_5d0e77f6[x_7b79be4b].x = (f32) ((model->x_5d0e77f6[x_7b79be4b].x + *value) >> 1);
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 5:
-                model->nodePosition[nodeId].y = (f32) ((model->nodePosition[nodeId].y + *value) >> 1);
-                model->nodeUpdated[nodeId] = 1;
+                model->x_5d0e77f6[x_7b79be4b].y = (f32) ((model->x_5d0e77f6[x_7b79be4b].y + *value) >> 1);
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 6:
-                model->nodePosition[nodeId].z = (f32) ((model->nodePosition[nodeId].z + *value) >> 1);
-                model->nodeUpdated[nodeId] = 1;
+                model->x_5d0e77f6[x_7b79be4b].z = (f32) ((model->x_5d0e77f6[x_7b79be4b].z + *value) >> 1);
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 7:
-                model->nodeScale[nodeId].x = (*value + model->nodeScale[nodeId].x) >> 1;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_d6354d00[x_7b79be4b].x = (*value + model->x_d6354d00[x_7b79be4b].x) >> 1;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 8:
-                model->nodeScale[nodeId].y = (*value + model->nodeScale[nodeId].y) >> 1;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_d6354d00[x_7b79be4b].y = (*value + model->x_d6354d00[x_7b79be4b].y) >> 1;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 9:
-                model->nodeScale[nodeId].z = (*value + model->nodeScale[nodeId].z) >> 1;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_d6354d00[x_7b79be4b].z = (*value + model->x_d6354d00[x_7b79be4b].z) >> 1;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
         }
     }
 }
 
-void model_anim_param_set(u8 *script, s16 *value, Object *obj) {
-    s32 nodeId;
-    ModelInstance *model;
+void x_29670268(u8 *x_21a0270b, s16 *value, Object *obj) {
+    s32 x_7b79be4b;
+    x_6fcfcf46 *model;
 
-    nodeId = script[2];
-    model = obj->modInst;
+    x_7b79be4b = x_21a0270b[2];
+    model = obj->x_20d20338;
 
-    if (nodeId == 0xFF) {
-        switch (script[3] & 0xF) {
+    if (x_7b79be4b == 0xFF) {
+        switch (x_21a0270b[3] & 0xF) {
             case 1:
-                model->rootRotation.x = *value;
-                model->rootUpdated = TRUE;
+                model->x_08d6ba0b.x = *value;
+                model->x_898495c5 = TRUE;
                 break;
             case 2:
-                model->rootRotation.y = *value;
-                model->rootUpdated = TRUE;
+                model->x_08d6ba0b.y = *value;
+                model->x_898495c5 = TRUE;
                 break;
             case 3:
-                model->rootRotation.z = *value;
-                model->rootUpdated = TRUE;
+                model->x_08d6ba0b.z = *value;
+                model->x_898495c5 = TRUE;
                 break;
             case 4:
-                model->currentRootPos.x = *value + model->baseRootPos.x;
+                model->x_6689336b.x = *value + model->x_9cfd7bb4.x;
                 break;
             case 5:
-                model->currentRootPos.y = *value + model->baseRootPos.y;
+                model->x_6689336b.y = *value + model->x_9cfd7bb4.y;
                 break;
             case 6:
-                model->currentRootPos.z = *value + model->baseRootPos.z;
+                model->x_6689336b.z = *value + model->x_9cfd7bb4.z;
                 break;
             case 7:
-                model->rootScale.x = *value;
-                model->rootUpdated = TRUE;
+                model->x_4e599cb3.x = *value;
+                model->x_898495c5 = TRUE;
                 break;
             case 8:
-                model->rootScale.y = *value;
-                model->rootUpdated = TRUE;
+                model->x_4e599cb3.y = *value;
+                model->x_898495c5 = TRUE;
                 break;
             case 9:
-                model->rootScale.z = *value;
-                model->rootUpdated = TRUE;
+                model->x_4e599cb3.z = *value;
+                model->x_898495c5 = TRUE;
                 break;
         }
-    } else if (nodeId == 0xFE) {
-        switch (script[3] & 0xF) {
+    } else if (x_7b79be4b == 0xFE) {
+        switch (x_21a0270b[3] & 0xF) {
             case 5:
                 obj->pos.y = *value;
                 break;
             case 6:
-                model->anotherVel.z = *value * obj->velocity.z;
+                model->x_6786034d.z = *value * obj->velocity.z;
                 break;
             case 2:
-                model->unk_132 = *value;
+                model->x_766c2c4d = *value;
                 break;
         }
     } else {
-        switch (script[3] & 0xF) {
+        switch (x_21a0270b[3] & 0xF) {
             case 1:
-                model->nodeRotation[nodeId].x = *value;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_b3db7eeb[x_7b79be4b].x = *value;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 2:
-                model->nodeRotation[nodeId].y = *value;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_b3db7eeb[x_7b79be4b].y = *value;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 3:
-                model->nodeRotation[nodeId].z = *value;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_b3db7eeb[x_7b79be4b].z = *value;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 4:
-                model->nodePosition[nodeId].x = (f32) *value;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_5d0e77f6[x_7b79be4b].x = (f32) *value;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 5:
-                model->nodePosition[nodeId].y = (f32) *value;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_5d0e77f6[x_7b79be4b].y = (f32) *value;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 6:
-                model->nodePosition[nodeId].z = (f32) *value;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_5d0e77f6[x_7b79be4b].z = (f32) *value;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 7:
-                model->nodeScale[nodeId].x = *value;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_d6354d00[x_7b79be4b].x = *value;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 8:
-                model->nodeScale[nodeId].y = *value;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_d6354d00[x_7b79be4b].y = *value;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 9:
-                model->nodeScale[nodeId].z = *value;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_d6354d00[x_7b79be4b].z = *value;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
         }
     }
 }
 
-void model_anim_param_add(u8 *arg0, u8 *arg1, Object *obj) {
+void x_1acdd7f1(u8 *x_cc1d0de5, u8 *x_84ff873b, Object *obj) {
     s32 value;
-    s32 nodeId;
-    ModelInstance *model;
-    Vec4s *temp;
+    s32 x_7b79be4b;
+    x_6fcfcf46 *model;
+    x_2758cdab *temp;
 
-    nodeId = arg0[2];
-    model = obj->modInst;
-    value = *arg1;
+    x_7b79be4b = x_cc1d0de5[2];
+    model = obj->x_20d20338;
+    value = *x_84ff873b;
 
     if (value & 0x80) {
         value |= 0xFFFFFF00; // sign extend
     }
 
-    if (nodeId == 0xFF) {
-        switch ((arg0[3] & 0xF0) >> 4) {
+    if (x_7b79be4b == 0xFF) {
+        switch ((x_cc1d0de5[3] & 0xF0) >> 4) {
             case 1:
-                model->rootRotation.x += value;
-                model->rootUpdated = TRUE;
+                model->x_08d6ba0b.x += value;
+                model->x_898495c5 = TRUE;
                 break;
             case 2:
-                model->rootRotation.y += value;
-                model->rootUpdated = TRUE;
+                model->x_08d6ba0b.y += value;
+                model->x_898495c5 = TRUE;
                 break;
             case 3:
-                model->rootRotation.z += value;
-                model->rootUpdated = TRUE;
+                model->x_08d6ba0b.z += value;
+                model->x_898495c5 = TRUE;
                 break;
             case 4:
-                model->currentRootPos.x += value;
+                model->x_6689336b.x += value;
                 break;
             case 5:
-                model->currentRootPos.y += value;
+                model->x_6689336b.y += value;
                 break;
             case 6:
-                model->currentRootPos.z += value;
+                model->x_6689336b.z += value;
                 break;
             case 7:
-                model->rootScale.x += value;
-                model->rootUpdated = TRUE;
+                model->x_4e599cb3.x += value;
+                model->x_898495c5 = TRUE;
                 break;
             case 8:
-                model->rootScale.y += value;
-                model->rootUpdated = TRUE;
+                model->x_4e599cb3.y += value;
+                model->x_898495c5 = TRUE;
                 break;
             case 9:
-                model->rootScale.z += value;
-                model->rootUpdated = TRUE;
+                model->x_4e599cb3.z += value;
+                model->x_898495c5 = TRUE;
                 break;
         }
-    } else if (nodeId == 0xFE) {
-        switch ((arg0[3] & 0xF0) >> 4) {
+    } else if (x_7b79be4b == 0xFE) {
+        switch ((x_cc1d0de5[3] & 0xF0) >> 4) {
             case 5:
                 obj->pos.y += value;
                 break;
             case 6:
-                model->anotherVel.z += value * obj->velocity.z;
+                model->x_6786034d.z += value * obj->velocity.z;
                 break;
             case 2:
-                model->unk_132 += value;
+                model->x_766c2c4d += value;
                 break;
         }
     } else {
-        temp = model->nodeRotation + nodeId;
-        switch ((arg0[3] & 0xF0) >> 4) {
+        temp = model->x_b3db7eeb + x_7b79be4b;
+        switch ((x_cc1d0de5[3] & 0xF0) >> 4) {
             case 1:
                 temp->x += value;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 2:
                 temp->y += value;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 3:
                 temp->z += value;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 4:
-                model->nodePosition[nodeId].x += (f32) value;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_5d0e77f6[x_7b79be4b].x += (f32) value;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 5:
-                model->nodePosition[nodeId].y += (f32) value;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_5d0e77f6[x_7b79be4b].y += (f32) value;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 6:
-                model->nodePosition[nodeId].z += (f32) value;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_5d0e77f6[x_7b79be4b].z += (f32) value;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 7:
-                model->nodeScale[nodeId].x += value;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_d6354d00[x_7b79be4b].x += value;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 8:
-                model->nodeScale[nodeId].y += value;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_d6354d00[x_7b79be4b].y += value;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
             case 9:
-                model->nodeScale[nodeId].z += value;
-                model->nodeUpdated[nodeId] = 1;
+                model->x_d6354d00[x_7b79be4b].z += value;
+                model->x_07bd45a3[x_7b79be4b] = 1;
                 break;
         }
     }
 }
 
-void model_process_animation(Object *obj) {
-    u8 *script;
-    s16 animFrame;
-    ModelInstance *model = obj->modInst;
-    s32 lerp = FALSE;
+void x_b6e96a17(Object *obj) {
+    u8 *x_21a0270b;
+    s16 x_14f49e74;
+    x_6fcfcf46 *model = obj->x_20d20338;
+    s32 x_9ef67445 = FALSE;
 
-    if (obj->frameIndex & 1) {
-        lerp = TRUE;
+    if (obj->x_5fcb1654 & 1) {
+        x_9ef67445 = TRUE;
     }
-    animFrame = (obj->frameIndex + 1) >> 1;
+    x_14f49e74 = (obj->x_5fcb1654 + 1) >> 1;
 
-    script = model->unk_A14;
-    while (*(s32 *) script != -1) {
-        s32 firstFrame = script[0];
-        s32 lastFrame = script[1];
+    x_21a0270b = model->x_924433d2;
+    while (*(s32 *) x_21a0270b != -1) {
+        s32 x_a6aa2fc2 = x_21a0270b[0];
+        s32 x_c4562d54 = x_21a0270b[1];
 
-        if (animFrame > lastFrame || animFrame < firstFrame) {
-            if (script[3] & 0xF) {
-                script += lastFrame * 2 - firstFrame * 2 + 6;
-                if ((s32) script & 3) {
-                    script += 2;
+        if (x_14f49e74 > x_c4562d54 || x_14f49e74 < x_a6aa2fc2) {
+            if (x_21a0270b[3] & 0xF) {
+                x_21a0270b += x_c4562d54 * 2 - x_a6aa2fc2 * 2 + 6;
+                if ((s32) x_21a0270b & 3) {
+                    x_21a0270b += 2;
                 }
             } else {
-                script += lastFrame - firstFrame + 5;
-                while ((s32) script & 3) {
-                    script++;
+                x_21a0270b += x_c4562d54 - x_a6aa2fc2 + 5;
+                while ((s32) x_21a0270b & 3) {
+                    x_21a0270b++;
                 }
             }
         } else {
-            if (script[3] & 0xF) {
-                if (lerp) {
-                    model_anim_param_lerp(script, script + 4 + animFrame * 2 - firstFrame * 2, obj);
+            if (x_21a0270b[3] & 0xF) {
+                if (x_9ef67445) {
+                    x_c0cb3394(x_21a0270b, x_21a0270b + 4 + x_14f49e74 * 2 - x_a6aa2fc2 * 2, obj);
                 } else {
-                    model_anim_param_set(script, script + 4 + animFrame * 2 - firstFrame * 2, obj);
+                    x_29670268(x_21a0270b, x_21a0270b + 4 + x_14f49e74 * 2 - x_a6aa2fc2 * 2, obj);
                 }
-                script += lastFrame * 2 - firstFrame * 2 + 6;
-                if ((s32) script & 3) {
-                    script += 2;
+                x_21a0270b += x_c4562d54 * 2 - x_a6aa2fc2 * 2 + 6;
+                if ((s32) x_21a0270b & 3) {
+                    x_21a0270b += 2;
                 }
             } else {
-                model_anim_param_add(script, script + 4 + animFrame - firstFrame, obj);
-                script += lastFrame - firstFrame + 5;
-                while ((s32) script & 3) {
-                    script++;
+                x_1acdd7f1(x_21a0270b, x_21a0270b + 4 + x_14f49e74 - x_a6aa2fc2, obj);
+                x_21a0270b += x_c4562d54 - x_a6aa2fc2 + 5;
+                while ((s32) x_21a0270b & 3) {
+                    x_21a0270b++;
                 }
             }
         }
     }
 }
 
-u16 func_80037394(ModelInstance *model, s16 arg1) {
-    AnimEntry *firstEntry;
+u16 x_d8998bf6(x_6fcfcf46 *model, s16 x_84ff873b) {
+    x_4aeb64bb *x_533c59a1;
 
-    firstEntry = model->animations[arg1]->entries;
+    x_533c59a1 = model->x_50771dcd[x_84ff873b]->entries;
 
-    if ((firstEntry->b3 & 0xF0) != 0 && (firstEntry->b3 & 0x0F) != 0) {
-        model->numAnimFrames = model->animations[arg1]->b3 * ((firstEntry->b3 & 0xF0) >> 4);
+    if ((x_533c59a1->b3 & 0xF0) != 0 && (x_533c59a1->b3 & 0x0F) != 0) {
+        model->x_8e601526 = model->x_50771dcd[x_84ff873b]->b3 * ((x_533c59a1->b3 & 0xF0) >> 4);
     } else {
-        model->numAnimFrames = model->animations[arg1]->b3 * 2;
+        model->x_8e601526 = model->x_50771dcd[x_84ff873b]->b3 * 2;
     }
 
-    return model->numAnimFrames;
+    return model->x_8e601526;
 }
 
-void func_800373FC(Object *obj) {
-    ModelInstance *model = obj->modInst;
-    Vec4i *temp = model->nodePosition;
+void x_19f63df9(Object *obj) {
+    x_6fcfcf46 *model = obj->x_20d20338;
+    x_88f11482 *temp = model->x_5d0e77f6;
     Transform *transforms = model->transforms;
     s16 i;
 
     if (transforms != NULL) {
-        for (i = 0; i < model->numNodes; i++) {
-            func_80012AF4(&transforms[i].local_matrix);
+        for (i = 0; i < model->x_6dcce206; i++) {
+            x_e5c4361f(&transforms[i].x_3fde9cd9);
             temp[i].x = 0;
             temp[i].y = 0;
             temp[i].z = 0;
         }
     }
 
-    for (i = 0; i < model->numNodes; i++) {
-        model->nodeRotation[i].x = model->nodeRotation[i].y = model->nodeRotation[i].z = model->nodeUpdated[i] = 0;
-        model->nodeScale[i].x = model->nodeScale[i].y = model->nodeScale[i].z = 0x100;
+    for (i = 0; i < model->x_6dcce206; i++) {
+        model->x_b3db7eeb[i].x = model->x_b3db7eeb[i].y = model->x_b3db7eeb[i].z = model->x_07bd45a3[i] = 0;
+        model->x_d6354d00[i].x = model->x_d6354d00[i].y = model->x_d6354d00[i].z = 0x100;
     }
 }
 
-void model_change_animation(Object *obj) {
-    ModelInstance *model = obj->modInst;
+void x_0f2c2c2a(Object *obj) {
+    x_6fcfcf46 *model = obj->x_20d20338;
     s32 v1;
     u32 i;
     u32 j;
     s32 v12;
 
-    model->anotherVel.z = 0;
-    model->unk_A14 = model->animations[model->currentAnimId]->entries;
-    v1 = model->unk_A14->b3;
+    model->x_6786034d.z = 0;
+    model->x_924433d2 = model->x_50771dcd[model->x_ee205ef9]->entries;
+    v1 = model->x_924433d2->b3;
     if ((v1 & 0xF0) != 0 && (v1 & 0x0F) != 0) {
-        model->numAnimFrames = model->animations[model->currentAnimId]->b3 * ((v1 & 0xF0) >> 4);
+        model->x_8e601526 = model->x_50771dcd[model->x_ee205ef9]->b3 * ((v1 & 0xF0) >> 4);
     } else {
-        model->numAnimFrames = model->animations[model->currentAnimId]->b3 * 2;
+        model->x_8e601526 = model->x_50771dcd[model->x_ee205ef9]->b3 * 2;
     }
 
     if (model->transforms != NULL) {
-        Vec4i *temp = model->nodePosition;
+        x_88f11482 *temp = model->x_5d0e77f6;
         Transform *transforms = model->transforms;
-        for (i = 0; i < model->numNodes; i++) {
-            func_80012AF4(&transforms[i].local_matrix);
+        for (i = 0; i < model->x_6dcce206; i++) {
+            x_e5c4361f(&transforms[i].x_3fde9cd9);
             temp[i].x = 0;
             temp[i].y = 0;
             temp[i].z = 0;
         }
     }
 
-    for (i = 0; i < model->numNodes; i++) {
-        model->nodeRotation[i].x = model->nodeRotation[i].y = model->nodeRotation[i].z = model->nodeUpdated[i] = 0;
-        model->nodeScale[i].x = 0x100;
-        model->nodeScale[i].y = 0x100;
-        model->nodeScale[i].z = 0x100;
+    for (i = 0; i < model->x_6dcce206; i++) {
+        model->x_b3db7eeb[i].x = model->x_b3db7eeb[i].y = model->x_b3db7eeb[i].z = model->x_07bd45a3[i] = 0;
+        model->x_d6354d00[i].x = 0x100;
+        model->x_d6354d00[i].y = 0x100;
+        model->x_d6354d00[i].z = 0x100;
     }
 
-    func_80012AF4(&model->rootTransform.local_matrix);
+    x_e5c4361f(&model->x_abd7b3c4.x_3fde9cd9);
 
-    obj->previousFrameIndex = -1;
+    obj->x_2b06a023 = -1;
     model->velocity.x = model->velocity.z = 0;
-    model->unk_130 = model->unk_132 = 0;
-    model->currentRootPos.x = model->baseRootPos.x;
-    model->currentRootPos.y = model->baseRootPos.y;
-    model->currentRootPos.z = model->baseRootPos.z;
+    model->x_85b6be0b = model->x_766c2c4d = 0;
+    model->x_6689336b.x = model->x_9cfd7bb4.x;
+    model->x_6689336b.y = model->x_9cfd7bb4.y;
+    model->x_6689336b.z = model->x_9cfd7bb4.z;
 
-    if (obj->flags & OBJ_FLAG_ROOT_MOTION) {
-        if (obj->flags & OBJ_FLAG_800000) {
-            obj->rotation.y = 0x400 - ((0xC00 - obj->rotation.y) & 0xFFF);
-            obj->flags &= ~OBJ_FLAG_800000;
+    if (obj->flags & x_9ee447da) {
+        if (obj->flags & x_da584e3c) {
+            obj->x_224610f1.y = 0x400 - ((0xC00 - obj->x_224610f1.y) & 0xFFF);
+            obj->flags &= ~x_da584e3c;
         }
-        obj->flags |= OBJ_FLAG_UNWIND_ROOT;
+        obj->flags |= x_da021b29;
     }
 
-    if (obj->flags & OBJ_FLAG_400000) {
-        obj->flags &= ~OBJ_FLAG_400000;
-        obj->flags |= OBJ_FLAG_800000;
+    if (obj->flags & x_977143b5) {
+        obj->flags &= ~x_977143b5;
+        obj->flags |= x_da584e3c;
     }
 
-    model->rootRotation.x = model->rootRotation.y = model->rootRotation.z = 0;
-    model->rootScale.x = model->rootScale.y = model->rootScale.z = 0x100;
-    obj->flags &= ~OBJ_FLAG_8000;
+    model->x_08d6ba0b.x = model->x_08d6ba0b.y = model->x_08d6ba0b.z = 0;
+    model->x_4e599cb3.x = model->x_4e599cb3.y = model->x_4e599cb3.z = 0x100;
+    obj->flags &= ~x_56bbd9b2;
 
-    if (obj->frameIndex != 0) {
-        v12 = obj->frameIndex;
+    if (obj->x_5fcb1654 != 0) {
+        v12 = obj->x_5fcb1654;
         for (j = 0; j < v12; j++) {
-            obj->frameIndex = j;
-            model_process_animation(obj);
+            obj->x_5fcb1654 = j;
+            x_b6e96a17(obj);
             if (j == 0) {
-                model_process_animation(obj);
+                x_b6e96a17(obj);
             }
         }
-        obj->frameIndex = v12;
+        obj->x_5fcb1654 = v12;
     } else {
-        model_process_animation(obj);
+        x_b6e96a17(obj);
     }
 }
 
-void func_80037788(ClusterRenderSlot *nodeList, s32 numNodes) {
+void x_da847953(x_f752bb53 *x_e3226490, s32 x_6dcce206) {
     u32 i, j;
-    ClusterRenderSlot *v1;
-    ClusterRenderSlot *a1;
+    x_f752bb53 *v1;
+    x_f752bb53 *a1;
 
     if (D_8013C4E8 != NULL) {
         v1 = D_8013C4E8;
 
-        if (D_8013C4E8->zOrder < nodeList->zOrder) {
+        if (D_8013C4E8->x_9dca29cd < x_e3226490->x_9dca29cd) {
             i = 1;
-            a1 = D_8013C4E8 = nodeList;
+            a1 = D_8013C4E8 = x_e3226490;
         } else {
             i = 0;
             a1 = D_8013C4E8 = v1;
             v1 = v1->next;
         }
 
-        while (v1 != NULL && i < numNodes) {
-            if (v1->zOrder < nodeList[i].zOrder) {
-                a1->next = &nodeList[i];
-                a1 = &nodeList[i];
+        while (v1 != NULL && i < x_6dcce206) {
+            if (v1->x_9dca29cd < x_e3226490[i].x_9dca29cd) {
+                a1->next = &x_e3226490[i];
+                a1 = &x_e3226490[i];
                 i++;
             } else {
                 a1->next = v1;
@@ -1412,337 +1412,337 @@ void func_80037788(ClusterRenderSlot *nodeList, s32 numNodes) {
             v1 = v1->next;
         }
 
-        for (j = i; j < numNodes; j++) {
-            a1->next = &nodeList[j];
-            a1 = &nodeList[j];
+        for (j = i; j < x_6dcce206; j++) {
+            a1->next = &x_e3226490[j];
+            a1 = &x_e3226490[j];
         }
 
         a1->next = NULL;
     } else {
-        a1 = D_8013C4E8 = nodeList;
-        for (j = 1; j < numNodes; j++) {
-            a1->next = &nodeList[j];
-            a1 = &nodeList[j];
+        a1 = D_8013C4E8 = x_e3226490;
+        for (j = 1; j < x_6dcce206; j++) {
+            a1->next = &x_e3226490[j];
+            a1 = &x_e3226490[j];
         }
         a1->next = NULL;
     }
 }
 
-void model_update_kmd(Object *obj) {
-    ModelInstance *modInst;
+void x_9f1f8050(Object *obj) {
+    x_6fcfcf46 *x_20d20338;
     Transform *s5;
     Transform *s1;
     u32 i;
     Mtx *s6;
     s32 pad2;
-    s32 sp6C;
+    s32 x_af0e6490;
     s32 pad[3];
 
-    modInst = obj->modInst;
-    sp6C = modInst->numNodes;
-    s5 = modInst->transforms;
+    x_20d20338 = obj->x_20d20338;
+    x_af0e6490 = x_20d20338->x_6dcce206;
+    s5 = x_20d20338->transforms;
     s1 = &obj->transform;
 
-    task_execute(obj);
+    x_c0a431f7(obj);
 
-    math_rotate(&s1->local_matrix, &obj->rotation);
-    math_translate(&s1->local_matrix, &obj->pos);
-    math_sync_transforms(s1);
+    x_948f0b9f(&s1->x_3fde9cd9, &obj->x_224610f1);
+    x_fc6adb04(&s1->x_3fde9cd9, &obj->pos);
+    x_44a54e96(s1);
 
-    D_8013C4E0 = modInst->kmodel->model.dlist;
+    D_8013C4E0 = x_20d20338->x_305a60f8->model.x_bde24317;
 
-    if (modInst->animations != NULL) {
-        if (modInst->currentAnimId != modInst->previousAnimId) {
-            model_change_animation(obj);
-            modInst->previousAnimId = modInst->currentAnimId;
+    if (x_20d20338->x_50771dcd != NULL) {
+        if (x_20d20338->x_ee205ef9 != x_20d20338->x_2f4c4ce1) {
+            x_0f2c2c2a(obj);
+            x_20d20338->x_2f4c4ce1 = x_20d20338->x_ee205ef9;
         }
 
-        if (obj->frameIndex != obj->previousFrameIndex) {
-            model_process_animation(obj);
-            model_update_animated_params(obj);
-            obj->previousFrameIndex = obj->frameIndex;
+        if (obj->x_5fcb1654 != obj->x_2b06a023) {
+            x_b6e96a17(obj);
+            x_2a8d0730(obj);
+            obj->x_2b06a023 = obj->x_5fcb1654;
         }
 
-        if (modInst->nodeClusters != NULL) {
-            func_8003561C(obj, 0);
+        if (x_20d20338->x_9a3e80ff != NULL) {
+            x_8487d43a(obj, 0);
 
-            for (i = 0; i < sp6C; i++) {
-                math_mtxf2mtx(&s5[i].mtx[D_8005BFCE], &s5[i].world_matrix);
+            for (i = 0; i < x_af0e6490; i++) {
+                x_ba58a12b(&s5[i].mtx[D_8005BFCE], &s5[i].x_0c1a9bdd);
             }
 
-            func_80037788(modInst->unk_608, modInst->unk_9C8);
+            x_da847953(x_20d20338->x_61b49b7b, x_20d20338->x_88c9004e);
         } else {
-            for (i = 0; i < sp6C; i++) {
+            for (i = 0; i < x_af0e6490; i++) {
                 s6 = &s5[i].mtx[D_8005BFCE];
-                math_mtxf2mtx(s6, &s5[i].world_matrix);
-                gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(s6), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-                gSPDisplayList(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(D_8013C4E0[i]));
+                x_ba58a12b(s6, &s5[i].x_0c1a9bdd);
+                gSPMatrix(x_9a3c07b8++, x_c485761a(s6), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                gSPDisplayList(x_9a3c07b8++, x_c485761a(D_8013C4E0[i]));
             }
         }
     } else {
         s6 = &s1->mtx[D_8005BFCE];
-        math_mtxf2mtx(s6, &s1->world_matrix);
-        gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(s6), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        for (i = 0; i < sp6C; i++) {
-            gSPDisplayList(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(D_8013C4E0[i]));
+        x_ba58a12b(s6, &s1->x_0c1a9bdd);
+        gSPMatrix(x_9a3c07b8++, x_c485761a(s6), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        for (i = 0; i < x_af0e6490; i++) {
+            gSPDisplayList(x_9a3c07b8++, x_c485761a(D_8013C4E0[i]));
         }
     }
 }
 
-void sprite3d_update(Object *obj) {
-    ModelInstance *modInst;
-    Transform *mu;
-    Model *sub2;
+void x_3a85c5a8(Object *obj) {
+    x_6fcfcf46 *x_20d20338;
+    Transform *x_19503ea6;
+    Model *x_94b671c9;
     s32 index;
-    NodeCluster *sub6;
-    Batch *newvar;
-    s32 batchIndex;
-    s32 nv2;
-    BatchInfo *sub;
+    x_257b53b4 *x_b3b1a6c0;
+    x_320b5d80 *x_24aca5c4;
+    s32 x_a1c9c44b;
+    s32 x_82a08606;
+    x_c1cedf06 *sub;
     s32 unused[5];
-    BatchInfo *renderBatches;
+    x_c1cedf06 *x_78526b81;
     int temp;
 
-    temp = obj->flags & OBJ_FLAG_HIDDEN; // required to match
+    temp = obj->flags & x_c537cafa; // required to match
 
-    index = obj->frameIndex;
-    modInst = obj->modInst;
-    sub2 = modInst->model;
-    newvar = sub2->batches[index];
-    batchIndex = D_8005BFCE * 30 + index;
+    index = obj->x_5fcb1654;
+    x_20d20338 = obj->x_20d20338;
+    x_94b671c9 = x_20d20338->model;
+    x_24aca5c4 = x_94b671c9->x_467629e6[index];
+    x_a1c9c44b = D_8005BFCE * 30 + index;
 
-    task_execute(obj);
+    x_c0a431f7(obj);
 
-    if (obj->flags & OBJ_FLAG_HIDDEN) {
+    if (obj->flags & x_c537cafa) {
         return;
     }
 
-    mu = &obj->transform;
-    renderBatches = modInst->renderBatches;
+    x_19503ea6 = &obj->transform;
+    x_78526b81 = x_20d20338->x_78526b81;
 
-    if (obj->flags & OBJ_FLAG_TRANSPARENT) {
-        func_80034F34(obj);
+    if (obj->flags & x_b6789b80) {
+        x_9742b98c(obj);
     }
 
-    if (!(obj->flags & OBJ_FLAG_80000)) {
-        obj->rotation.x = D_8013C668.x;
-        obj->rotation.y = D_8013C668.y;
+    if (!(obj->flags & x_f25de720)) {
+        obj->x_224610f1.x = D_8013C668.x;
+        obj->x_224610f1.y = D_8013C668.y;
     }
 
-    math_rotate(&mu->local_matrix, &obj->rotation);
-    math_translate(&mu->local_matrix, &obj->pos);
-    math_mtxf_mul(&mu->local_matrix, &gCameraProjectionMatrix, &D_800813E0);
+    x_948f0b9f(&x_19503ea6->x_3fde9cd9, &obj->x_224610f1);
+    x_fc6adb04(&x_19503ea6->x_3fde9cd9, &obj->pos);
+    x_16eff9cc(&x_19503ea6->x_3fde9cd9, &x_7eefcd11, &D_800813E0);
 
-    sub = renderBatches + batchIndex;
-    sub6 = &modInst->unk_A50;
-    math_mtxf2mtx(&sub->transform, &D_800813E0);
-    nv2 = sub2->batchCounts[index];
-    modInst->unk_A30.unk_08[0] = sub;
+    sub = x_78526b81 + x_a1c9c44b;
+    x_b3b1a6c0 = &x_20d20338->x_8b36595a;
+    x_ba58a12b(&sub->transform, &D_800813E0);
+    x_82a08606 = x_94b671c9->x_c246f31f[index];
+    x_20d20338->x_da66be9b.x_415ed9d6[0] = sub;
 
-    sub6->transforms[0] = newvar;
-    sub6->batchCounts[0] = nv2;
-    modInst->unk_A30.next = D_8013C4E8;
-    D_8013C4E8 = &modInst->unk_A30;
+    x_b3b1a6c0->transforms[0] = x_24aca5c4;
+    x_b3b1a6c0->x_c246f31f[0] = x_82a08606;
+    x_20d20338->x_da66be9b.next = D_8013C4E8;
+    D_8013C4E8 = &x_20d20338->x_da66be9b;
 }
 
-#ifdef NON_EQUIVALENT
-void func_80037E28(Object *obj) {
-    GameMode *a2;
-    ModelInstance *v1;
-    GlobalLighting *v0;
+#ifdef x_0fab73bf
+void x_5ff12555(Object *obj) {
+    x_d0fba50a *a2;
+    x_6fcfcf46 *v1;
+    x_2bb4cf6f *v0;
     u32 t6;    // sp160
     Model *t0; // sp168
     u32 t2;    // sp158
-    s32 sp154;
-    GlobalObjD *a1;
-    VertexPositionGroup *s0;
-    Matrix4f *t4;
+    s32 x_959ea381;
+    x_a8b4b5ce *a1;
+    x_81d7569b *s0;
+    x_f9704fd6 *t4;
     u32 s7;
-    s32 deltaX, deltaY, deltaZ;
-    s32 absDeltaX, absDeltaY, absDeltaZ;
+    s32 x_2bef91d9, x_86fee161, x_2dffbf44;
+    s32 x_f5463fa4, x_e31ee89a, x_98e2dc09;
     s32 a22;
-    s32 v05;
-    s32 s00, s11, s22;
-    s32 v06;
-    ColorRGBA *ambient_color;
-    s32 a33, t00, t11;
-    s32 temp1;
-    s32 vv0, vv1, tt4;
-    s32 vertId;
+    s32 x_9b6a774b;
+    s32 x_65cbb149, x_568db421, x_f4f7b3d7;
+    s32 x_4b500ba0;
+    x_6751d717 *x_389f2997;
+    s32 a33, x_3d164c28, x_7f7ef9c9;
+    s32 x_8c5f8c03;
+    s32 x_1cc81ccd, x_f534bdd3, x_a822276e;
+    s32 x_0dd5e275;
     s32 padding[12];
-    s32 v07;
-    s32 v08;
-    s32 kek;
-    ColorRGBA *col;
+    s32 x_b25f9b0d;
+    s32 x_3c1df98f;
+    s32 x_b794385f;
+    x_6751d717 *col;
     u8 a;
-    Vec4i *pos;
+    x_88f11482 *pos;
     s32 v12;
     s32 v02;
-    Vtx *vert;
-    s32 sp90;
-    s32 sp8C;
-    s32 sp88;
-    s32 sp84;
-    s32 sp80;
-    s32 sp7C;
-    s32 sp78;
-    s32 sp74;
-    s32 sp70;
-    s32 sp6C;
-    s32 sp68;
-    s32 sp64;
-    s32 sp60;
-    s32 sp5C;
-    s32 sp58;
-    s32 sp54;
-    s32 sp50;
-    s32 sp4C;
-    s32 sp48;
-    s32 sp44;
-    s32 sp40;
+    Vtx *x_6a103aec;
+    s32 x_c188a78e;
+    s32 x_5b215acc;
+    s32 x_3def65ec;
+    s32 x_81bfdb41;
+    s32 x_dcccc364;
+    s32 x_5c787447;
+    s32 x_dcab8ab0;
+    s32 x_8a9089b3;
+    s32 x_4a1fd4d1;
+    s32 x_af0e6490;
+    s32 x_20b9213f;
+    s32 x_7d0aaee0;
+    s32 x_331089fa;
+    s32 x_840385a0;
+    s32 x_fd09f53e;
+    s32 x_de61763c;
+    s32 x_2a89e429;
+    s32 x_54406eae;
+    s32 x_f10a928a;
+    s32 x_fc517ba8;
+    s32 x_081c4eef;
 
-    v1 = obj->modInst;
-    t6 = gFrameCounter & 7;
-    a2 = &gGameModes[gCurrentGameMode];
+    v1 = obj->x_20d20338;
+    t6 = x_e3a9f332 & 7;
+    a2 = &x_4540c33c[x_f71086e0];
 
-    t2 = v1->numNodes;
+    t2 = v1->x_6dcce206;
     t0 = v1->model;
-    ambient_color = &a2->ambient_color;
+    x_389f2997 = &a2->x_389f2997;
 
-    v0 = a2->unk_18;
-    sp6C = v0->lights[0].color.r;
-    sp68 = v0->lights[0].color.g;
-    sp64 = v0->lights[0].color.b;
-    sp54 = v0->lights[0].dir_x;
-    sp50 = v0->lights[0].dir_y;
-    sp4C = v0->lights[0].dir_z;
-    sp60 = v0->lights[1].color.r;
-    sp5C = v0->lights[1].color.g;
-    sp58 = v0->lights[1].color.b;
-    sp48 = v0->lights[1].dir_x;
-    sp44 = v0->lights[1].dir_y;
-    sp40 = v0->lights[1].dir_z;
+    v0 = a2->x_08b62e4f;
+    x_af0e6490 = v0->lights[0].color.r;
+    x_20b9213f = v0->lights[0].color.g;
+    x_7d0aaee0 = v0->lights[0].color.b;
+    x_de61763c = v0->lights[0].x_5962f1cd;
+    x_2a89e429 = v0->lights[0].x_f9f5d537;
+    x_54406eae = v0->lights[0].x_a18bc2e0;
+    x_331089fa = v0->lights[1].color.r;
+    x_840385a0 = v0->lights[1].color.g;
+    x_fd09f53e = v0->lights[1].color.b;
+    x_f10a928a = v0->lights[1].x_5962f1cd;
+    x_fc517ba8 = v0->lights[1].x_f9f5d537;
+    x_081c4eef = v0->lights[1].x_a18bc2e0;
 
     for (a1 = D_8013C4EC; a1 != NULL; a1 = a1->next) {
         a = a1->object->color.a;
-        a1->unk_1C = (a1->red * a) / 256;
-        a1->unk_20 = (a1->green * a) / 256;
-        a1->unk_24 = (a1->blue * a) / 256;
+        a1->x_2c79259e = (a1->red * a) / 256;
+        a1->x_034f3eb1 = (a1->green * a) / 256;
+        a1->x_817784f2 = (a1->blue * a) / 256;
     }
 
     for (; t6 < t2; t6 += 8) {
-        sp154 = t0->num_vertex_position_groups[t6];
-        s0 = t0->vertex_position_groups[t6];
-        t4 = &v1->transforms[t6].world_matrix;
+        x_959ea381 = t0->x_810b9a68[t6];
+        s0 = t0->x_5b386c41[t6];
+        t4 = &v1->transforms[t6].x_0c1a9bdd;
 
-        sp90 = (s32) (v1->transforms[t6].world_matrix.x.x * 1024.0f);
-        sp8C = (s32) (v1->transforms[t6].world_matrix.x.y * 1024.0f);
-        sp88 = (s32) (v1->transforms[t6].world_matrix.x.z * 1024.0f);
-        sp84 = (s32) (v1->transforms[t6].world_matrix.y.x * 1024.0f);
-        sp80 = (s32) (v1->transforms[t6].world_matrix.y.y * 1024.0f);
-        sp7C = (s32) (v1->transforms[t6].world_matrix.y.z * 1024.0f);
-        sp78 = (s32) (v1->transforms[t6].world_matrix.z.x * 1024.0f);
-        sp74 = (s32) (v1->transforms[t6].world_matrix.z.y * 1024.0f);
-        sp70 = (s32) (v1->transforms[t6].world_matrix.z.z * 1024.0f);
+        x_c188a78e = (s32) (v1->transforms[t6].x_0c1a9bdd.x.x * 1024.0f);
+        x_5b215acc = (s32) (v1->transforms[t6].x_0c1a9bdd.x.y * 1024.0f);
+        x_3def65ec = (s32) (v1->transforms[t6].x_0c1a9bdd.x.z * 1024.0f);
+        x_81bfdb41 = (s32) (v1->transforms[t6].x_0c1a9bdd.y.x * 1024.0f);
+        x_dcccc364 = (s32) (v1->transforms[t6].x_0c1a9bdd.y.y * 1024.0f);
+        x_5c787447 = (s32) (v1->transforms[t6].x_0c1a9bdd.y.z * 1024.0f);
+        x_dcab8ab0 = (s32) (v1->transforms[t6].x_0c1a9bdd.z.x * 1024.0f);
+        x_8a9089b3 = (s32) (v1->transforms[t6].x_0c1a9bdd.z.y * 1024.0f);
+        x_4a1fd4d1 = (s32) (v1->transforms[t6].x_0c1a9bdd.z.z * 1024.0f);
 
         for (a1 = D_8013C4EC; a1 != NULL; a1 = a1->next) {
             pos = &a1->object->pos;
-            absDeltaX = deltaX = pos->x - t4->w.x;
-            absDeltaY = deltaY = pos->y - t4->w.y;
-            absDeltaZ = deltaZ = pos->z - t4->w.z;
+            x_f5463fa4 = x_2bef91d9 = pos->x - t4->w.x;
+            x_e31ee89a = x_86fee161 = pos->y - t4->w.y;
+            x_98e2dc09 = x_2dffbf44 = pos->z - t4->w.z;
 
-            if (deltaX < 0) {
-                absDeltaX = -deltaX;
+            if (x_2bef91d9 < 0) {
+                x_f5463fa4 = -x_2bef91d9;
             }
-            if (deltaY < 0) {
-                absDeltaY = -deltaY;
+            if (x_86fee161 < 0) {
+                x_e31ee89a = -x_86fee161;
             }
-            if (deltaZ < 0) {
-                absDeltaZ = -deltaZ;
+            if (x_2dffbf44 < 0) {
+                x_98e2dc09 = -x_2dffbf44;
             }
 
-            v05 = FAST_HYPOT(absDeltaX, absDeltaZ);
-            temp1 = FAST_HYPOT(v05, absDeltaY) * 128;
+            x_9b6a774b = x_4a9e7834(x_f5463fa4, x_98e2dc09);
+            x_8c5f8c03 = x_4a9e7834(x_9b6a774b, x_e31ee89a) * 128;
 
-            a1->unk_0C = deltaX;
-            a1->unk_10 = deltaY;
-            a1->unk_14 = deltaZ;
-            a1->unk_18 = temp1;
+            a1->x_b8173ab8 = x_2bef91d9;
+            a1->x_60c27ea9 = x_86fee161;
+            a1->x_d23de2ad = x_2dffbf44;
+            a1->x_08b62e4f = x_8c5f8c03;
         }
 
-        for (s7 = 0; s7 < sp154; s7++) {
-            vv0 = s0[s7].normal_x;
-            vv1 = s0[s7].normal_y;
-            tt4 = s0[s7].normal_z;
+        for (s7 = 0; s7 < x_959ea381; s7++) {
+            x_1cc81ccd = s0[s7].x_fb9d51cc;
+            x_f534bdd3 = s0[s7].x_c7f5b137;
+            x_a822276e = s0[s7].x_a546469c;
 
-            a33 = ambient_color->r;
-            t00 = ambient_color->g;
-            t11 = ambient_color->b;
+            a33 = x_389f2997->r;
+            x_3d164c28 = x_389f2997->g;
+            x_7f7ef9c9 = x_389f2997->b;
 
-            if (vv0 & 0x80) {
-                vv0 |= ~0xFF;
+            if (x_1cc81ccd & 0x80) {
+                x_1cc81ccd |= ~0xFF;
             }
-            if (vv1 & 0x80) {
-                vv1 |= ~0xFF;
+            if (x_f534bdd3 & 0x80) {
+                x_f534bdd3 |= ~0xFF;
             }
-            if (tt4 & 0x80) {
-                tt4 |= ~0xFF;
-            }
-
-            s00 = ((sp90 * vv0) >> 10) + ((sp84 * vv1) >> 10) + ((sp78 * tt4) >> 10);
-            s11 = ((sp8C * vv0) >> 10) + ((sp80 * vv1) >> 10) + ((sp74 * tt4) >> 10);
-            s22 = ((sp88 * vv0) >> 10) + ((sp7C * vv1) >> 10) + ((sp70 * tt4) >> 10);
-
-            v06 = sp54 * s00 + sp50 * s11 + sp4C * s22;
-            if (v06 > 0) {
-                a33 += (sp6C * v06) >> 14;
-                t00 += (sp68 * v06) >> 14;
-                t11 += (sp64 * v06) >> 14;
+            if (x_a822276e & 0x80) {
+                x_a822276e |= ~0xFF;
             }
 
-            v06 = sp48 * s00 + sp44 * s11 + sp40 * s22;
-            if (v06 > 0) {
-                a33 += (sp60 * v06) >> 14;
-                t00 += (sp5C * v06) >> 14;
-                t11 += (sp58 * v06) >> 14;
+            x_65cbb149 = ((x_c188a78e * x_1cc81ccd) >> 10) + ((x_81bfdb41 * x_f534bdd3) >> 10) + ((x_dcab8ab0 * x_a822276e) >> 10);
+            x_568db421 = ((x_5b215acc * x_1cc81ccd) >> 10) + ((x_dcccc364 * x_f534bdd3) >> 10) + ((x_8a9089b3 * x_a822276e) >> 10);
+            x_f4f7b3d7 = ((x_3def65ec * x_1cc81ccd) >> 10) + ((x_5c787447 * x_f534bdd3) >> 10) + ((x_4a1fd4d1 * x_a822276e) >> 10);
+
+            x_4b500ba0 = x_de61763c * x_65cbb149 + x_2a89e429 * x_568db421 + x_54406eae * x_f4f7b3d7;
+            if (x_4b500ba0 > 0) {
+                a33 += (x_af0e6490 * x_4b500ba0) >> 14;
+                x_3d164c28 += (x_20b9213f * x_4b500ba0) >> 14;
+                x_7f7ef9c9 += (x_7d0aaee0 * x_4b500ba0) >> 14;
+            }
+
+            x_4b500ba0 = x_f10a928a * x_65cbb149 + x_fc517ba8 * x_568db421 + x_081c4eef * x_f4f7b3d7;
+            if (x_4b500ba0 > 0) {
+                a33 += (x_331089fa * x_4b500ba0) >> 14;
+                x_3d164c28 += (x_840385a0 * x_4b500ba0) >> 14;
+                x_7f7ef9c9 += (x_fd09f53e * x_4b500ba0) >> 14;
             }
 
             for (a1 = D_8013C4EC; a1 != NULL; a1 = a1->next) {
-                v12 = a1->unk_18;
-                v06 = a1->unk_0C * s00 + a1->unk_10 * s11 + a1->unk_14 * s22;
-                if (v06 > 0) {
-                    a33 += (a1->unk_1C * v06) / v12 * 2;
-                    t00 += (a1->unk_20 * v06) / v12 * 2;
-                    t11 += (a1->unk_24 * v06) / v12 * 2;
+                v12 = a1->x_08b62e4f;
+                x_4b500ba0 = a1->x_b8173ab8 * x_65cbb149 + a1->x_60c27ea9 * x_568db421 + a1->x_d23de2ad * x_f4f7b3d7;
+                if (x_4b500ba0 > 0) {
+                    a33 += (a1->x_2c79259e * x_4b500ba0) / v12 * 2;
+                    x_3d164c28 += (a1->x_034f3eb1 * x_4b500ba0) / v12 * 2;
+                    x_7f7ef9c9 += (a1->x_817784f2 * x_4b500ba0) / v12 * 2;
                 }
             }
 
-            if (a33 > 255 || t00 > 255 || t11 > 255) {
+            if (a33 > 255 || x_3d164c28 > 255 || x_7f7ef9c9 > 255) {
                 v02 = 0;
                 if (v02 < a33) {
                     v02 = a33;
                 }
-                if (v02 < t00) {
-                    v02 = t00;
+                if (v02 < x_3d164c28) {
+                    v02 = x_3d164c28;
                 }
-                if (v02 < t11) {
-                    v02 = t11;
+                if (v02 < x_7f7ef9c9) {
+                    v02 = x_7f7ef9c9;
                 }
 
                 a33 = a33 * 255 / v02;
-                t00 = t00 * 255 / v02;
-                t11 = t11 * 255 / v02;
+                x_3d164c28 = x_3d164c28 * 255 / v02;
+                x_7f7ef9c9 = x_7f7ef9c9 * 255 / v02;
             }
             a22 = 0;
-            while ((kek = s0[s7].vertex_indices[a22]) >= 0) {
-                vert = &t0->modelAsset->nodes[t6].vertices[kek];
-                col = &s0[s7].original_colors[a22];
+            while ((x_b794385f = s0[s7].x_d0dadb00[a22]) >= 0) {
+                x_6a103aec = &t0->x_3bfb7219->x_45978ecb[t6].vertices[x_b794385f];
+                col = &s0[s7].x_b21a405e[a22];
                 if (col->r != 255 || col->g != 255 || col->b != 255) {
                     a22++;
                 } else {
-                    vert->v.cn[0] = a33;
-                    vert->v.cn[1] = t00;
-                    vert->v.cn[2] = t11;
+                    x_6a103aec->v.cn[0] = a33;
+                    x_6a103aec->v.cn[1] = x_3d164c28;
+                    x_6a103aec->v.cn[2] = x_7f7ef9c9;
                     a22++;
                 }
             }
@@ -1750,118 +1750,118 @@ void func_80037E28(Object *obj) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/model/func_80037E28.s")
+#pragma x_eda6f9e3("asm/nonmatchings/model/func_80037E28.s")
 #endif
 
-void model_update(Object *obj) {
-    Batch **s2;
-    ModelInstance *modInst;
-    Transform *spAC;
+void x_0022bfc3(Object *obj) {
+    x_320b5d80 **s2;
+    x_6fcfcf46 *x_20d20338;
+    Transform *x_30a44af1;
     s32 j;
     u32 i;
-    NodeCluster *new_var;
-    Matrix4f *a1;
-    BatchInfo *s0;
-    s32 sp94;
-    ClusterRenderSlot *renderInfo;
+    x_257b53b4 *x_23b71842;
+    x_f9704fd6 *a1;
+    x_c1cedf06 *s0;
+    s32 x_dd9604d9;
+    x_f752bb53 *x_dfa11b27;
     s32 s6;
-    Transform *objTransform;
-    Matrix4f *nu;
-    BatchInfo *s7;
+    Transform *x_7642845a;
+    x_f9704fd6 *x_3086cf46;
+    x_c1cedf06 *s7;
     s32 unused[8];
 
-    modInst = obj->modInst;
-    spAC = modInst->transforms;
-    s2 = modInst->model->batches;
-    sp94 = 30 * D_8005BFCE;
+    x_20d20338 = obj->x_20d20338;
+    x_30a44af1 = x_20d20338->transforms;
+    s2 = x_20d20338->model->x_467629e6;
+    x_dd9604d9 = 30 * D_8005BFCE;
 
-    task_execute(obj);
+    x_c0a431f7(obj);
 
-    if (obj->flags & OBJ_FLAG_HIDDEN) {
+    if (obj->flags & x_c537cafa) {
         return;
     }
 
-    objTransform = &obj->transform;
+    x_7642845a = &obj->transform;
 
-    if (obj->flags & OBJ_FLAG_10000000) {
-        func_800349F0(obj);
+    if (obj->flags & x_3e24eba7) {
+        x_a345f1a1(obj);
     }
 
-    if ((!(obj->flags & OBJ_FLAG_4000)) || (obj->flags & OBJ_FLAG_10000000)) {
-        func_80034AB8(obj);
+    if ((!(obj->flags & x_215d3747)) || (obj->flags & x_3e24eba7)) {
+        x_cc8ffe65(obj);
     }
 
-    func_80034F34(obj);
+    x_9742b98c(obj);
 
-    if (obj->flags & OBJ_FLAG_80000000) {
-        obj->rotation.y = D_8013C668.y;
-        obj->rotation.x = D_8013C668.x;
+    if (obj->flags & x_f465a0fc) {
+        obj->x_224610f1.y = D_8013C668.y;
+        obj->x_224610f1.x = D_8013C668.x;
     }
 
-    if (modInst->animations != NULL) {
-        if (modInst->currentAnimId != modInst->previousAnimId) {
-            model_change_animation(obj);
-            modInst->previousAnimId = modInst->currentAnimId;
+    if (x_20d20338->x_50771dcd != NULL) {
+        if (x_20d20338->x_ee205ef9 != x_20d20338->x_2f4c4ce1) {
+            x_0f2c2c2a(obj);
+            x_20d20338->x_2f4c4ce1 = x_20d20338->x_ee205ef9;
         }
 
-        if (obj->frameIndex != obj->previousFrameIndex) {
-            model_process_animation(obj);
-            model_update_animated_params(obj);
-            obj->previousFrameIndex = obj->frameIndex;
+        if (obj->x_5fcb1654 != obj->x_2b06a023) {
+            x_b6e96a17(obj);
+            x_2a8d0730(obj);
+            obj->x_2b06a023 = obj->x_5fcb1654;
         }
 
-        math_rotate(&objTransform->local_matrix, &obj->rotation);
-        math_translate(&objTransform->local_matrix, &obj->pos);
-        math_sync_transforms(objTransform);
+        x_948f0b9f(&x_7642845a->x_3fde9cd9, &obj->x_224610f1);
+        x_fc6adb04(&x_7642845a->x_3fde9cd9, &obj->pos);
+        x_44a54e96(x_7642845a);
 
-        if (modInst->nodeClusters != NULL) {
-            if (obj->flags & OBJ_FLAG_800) {
-                func_8003561C(obj, -10000);
+        if (x_20d20338->x_9a3e80ff != NULL) {
+            if (obj->flags & x_d13a68b5) {
+                x_8487d43a(obj, -10000);
             } else {
-                func_8003561C(obj, 0);
+                x_8487d43a(obj, 0);
             }
 
-            renderInfo = modInst->unk_608;
-            for (i = 0; i < modInst->unk_9C8; i++) {
-                new_var = renderInfo[i].cluster;
-                if (obj->flags & OBJ_FLAG_2000000) {
-                    renderInfo[i].flags |= 2;
+            x_dfa11b27 = x_20d20338->x_61b49b7b;
+            for (i = 0; i < x_20d20338->x_88c9004e; i++) {
+                x_23b71842 = x_dfa11b27[i].x_164cf1ca;
+                if (obj->flags & x_e411fefb) {
+                    x_dfa11b27[i].flags |= 2;
                 }
 
-                s6 = new_var->groupSize;
-                s7 = modInst->renderBatches;
+                s6 = x_23b71842->x_ceaf196d;
+                s7 = x_20d20338->x_78526b81;
 
                 for (j = 0; j < s6; j++) {
-                    s32 s1 = new_var->group[j];
+                    s32 s1 = x_23b71842->group[j];
 
-                    if (obj->flags & OBJ_FLAG_1000000) {
+                    if (obj->flags & x_a816b63b) {
                         a1 = &D_8013C6B0;
                     } else {
-                        a1 = &gCameraProjectionMatrix;
+                        a1 = &x_7eefcd11;
                     }
 
-                    if (spAC != NULL) {
-                        math_mtxf_mul(&spAC[s1].world_matrix, a1, &D_800813E0);
+                    if (x_30a44af1 != NULL) {
+                        x_16eff9cc(&x_30a44af1[s1].x_0c1a9bdd, a1, &D_800813E0);
                     } else {
-                        math_mtxf_mul(&modInst->rootTransform.world_matrix, a1, &D_800813E0);
+                        x_16eff9cc(&x_20d20338->x_abd7b3c4.x_0c1a9bdd, a1, &D_800813E0);
                     }
 
-                    s0 = &s7[s1 + sp94];
-                    math_mtxf2mtx(&s0->transform, &D_800813E0);
-                    renderInfo[i].unk_08[j] = s0;
+                    s0 = &s7[s1 + x_dd9604d9];
+                    x_ba58a12b(&s0->transform, &D_800813E0);
+                    x_dfa11b27[i].x_415ed9d6[j] = s0;
                 }
             }
 
-            func_80037788(renderInfo, modInst->unk_9C8);
+            x_da847953(x_dfa11b27, x_20d20338->x_88c9004e);
         }
     } else {
-        s0 = modInst->renderBatches;
-        math_rotate(&objTransform->local_matrix, &obj->rotation);
-        math_translate(&objTransform->local_matrix, &obj->pos);
-        math_sync_transforms(objTransform);
-        math_mtxf_mul(&objTransform->local_matrix, &gCameraProjectionMatrix, &D_800813E0);
-        math_mtxf2mtx(&(s0 + sp94)->transform, &D_800813E0);
-        func_80035DF8(modInst->model, 0);
-        (*s2)->info = s0 + sp94;
+        s0 = x_20d20338->x_78526b81;
+        x_948f0b9f(&x_7642845a->x_3fde9cd9, &obj->x_224610f1);
+        x_fc6adb04(&x_7642845a->x_3fde9cd9, &obj->pos);
+        x_44a54e96(x_7642845a);
+        x_16eff9cc(&x_7642845a->x_3fde9cd9, &x_7eefcd11, &D_800813E0);
+        x_ba58a12b(&(s0 + x_dd9604d9)->transform, &D_800813E0);
+        x_5ac08b4e(x_20d20338->model, 0);
+        (*s2)->info = s0 + x_dd9604d9;
     }
 }

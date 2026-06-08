@@ -1,5 +1,5 @@
-#ifndef _COMMON_H
-#define _COMMON_H
+#ifndef x_8162492e
+#define x_8162492e
 
 #include "ultra64.h"
 #include "macros.h"

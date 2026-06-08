@@ -1,163 +1,163 @@
 #include "common.h"
 #include "task.h"
 
-ColorRGBA sRedColor = { 255, 0, 0, 0 };
-ColorRGBA sBlueColor = { 0, 0, 255, 0 };
+x_6751d717 x_3ce5d264 = { 255, 0, 0, 0 };
+x_6751d717 x_05b570bb = { 0, 0, 255, 0 };
 
 /* .bss */
 s32 D_80081260[2];
-Vec4s D_80081268;
+x_2758cdab D_80081268;
 s32 D_80081270;
-Model *gHitSparkModel;
-Model *gBlockSparkModel;
+Model *x_158622fa;
+Model *x_14a060ce;
 
-void hit_spark_update(Object *obj) {
-    if (obj->frameIndex < obj->modInst->numAnimFrames) {
-        D_8008012C |= GFX_FLAG_10;
-        obj->frameIndex++;
-        if (obj->frameIndex > 12) {
-            if (obj->color.a > obj->vars[0]) {
-                obj->color.a -= obj->vars[0];
+void x_747e1955(Object *obj) {
+    if (obj->x_5fcb1654 < obj->x_20d20338->x_8e601526) {
+        D_8008012C |= x_c626209d;
+        obj->x_5fcb1654++;
+        if (obj->x_5fcb1654 > 12) {
+            if (obj->color.a > obj->x_0f4167b4[0]) {
+                obj->color.a -= obj->x_0f4167b4[0];
             } else {
                 obj->color.a = 0;
             }
         }
     } else {
-        obj->flags |= OBJ_FLAG_DELETE;
-        D_8008012C &= ~GFX_FLAG_10;
-        TASK_END(obj->currentTask);
+        obj->flags |= x_f51cb721;
+        D_8008012C &= ~x_c626209d;
+        x_5e6f40dd(obj->x_64946db0);
     }
 }
 
-void block_spark_update(Object *obj) {
-    if (obj->frameIndex < obj->modInst->numAnimFrames) {
-        D_8008012C |= GFX_FLAG_10;
-        obj->frameIndex++;
-        if (obj->frameIndex > 2) {
-            if (obj->color.a > obj->vars[0]) {
-                obj->color.a -= obj->vars[0];
+void x_1b1336fe(Object *obj) {
+    if (obj->x_5fcb1654 < obj->x_20d20338->x_8e601526) {
+        D_8008012C |= x_c626209d;
+        obj->x_5fcb1654++;
+        if (obj->x_5fcb1654 > 2) {
+            if (obj->color.a > obj->x_0f4167b4[0]) {
+                obj->color.a -= obj->x_0f4167b4[0];
             } else {
                 obj->color.a = 0;
             }
         }
     } else {
-        D_8008012C &= ~GFX_FLAG_10;
-        obj->flags |= OBJ_FLAG_DELETE;
-        TASK_END(obj->currentTask);
+        D_8008012C &= ~x_c626209d;
+        obj->flags |= x_f51cb721;
+        x_5e6f40dd(obj->x_64946db0);
     }
 }
 
-void spawn_hit_effect(Vec4s *pos, u8 isBlocked, Object *arg2, ColorRGBA *arg3) {
+void x_801c8e55(x_2758cdab *pos, u8 x_0328a4c8, Object *x_2092f891, x_6751d717 *x_ee71e5cb) {
     Object *v0;
-    Vec4i sp24;
-    Player *sp20;
-    Player *sp1C;
+    x_88f11482 x_5bbba600;
+    Player *x_dd7ffac5;
+    Player *x_4346f5cb;
 
-    sp20 = (Player *) arg2->varObj[0];
-    sp1C = gPlayers + (1 - sp20->playerId);
+    x_dd7ffac5 = (Player *) x_2092f891->x_e2f64c57[0];
+    x_4346f5cb = x_824b9544 + (1 - x_dd7ffac5->x_30bbe547);
 
-    sp24.x = pos->x;
-    sp24.y = pos->y;
-    sp24.z = pos->z;
+    x_5bbba600.x = pos->x;
+    x_5bbba600.y = pos->y;
+    x_5bbba600.z = pos->z;
 
-    if (isBlocked) {
-        v0 = create_model_instance(&sp24, OBJ_PRIO_DEFAULT, block_spark_update, gBlockSparkModel);
+    if (x_0328a4c8) {
+        v0 = x_572f827d(&x_5bbba600, x_9d442987, x_1b1336fe, x_14a060ce);
         if (v0 != NULL) {
-            v0->vars[0] = 255 / (v0->modInst->numAnimFrames - 2);
-            v0->flags |= OBJ_FLAG_TRANSPARENT;
-            create_light(v0, &sBlueColor);
+            v0->x_0f4167b4[0] = 255 / (v0->x_20d20338->x_8e601526 - 2);
+            v0->flags |= x_b6789b80;
+            x_371376ba(v0, &x_05b570bb);
             v0->color.a = 255;
         }
 
-        if (arg3 == NULL) {
-            arg3 = &D_8004B844[sp1C->characterId].trailColors[sp1C->playerId];
+        if (x_ee71e5cb == NULL) {
+            x_ee71e5cb = &D_8004B844[x_4346f5cb->x_eb1fe45b].x_732aef72[x_4346f5cb->x_30bbe547];
         }
-        func_80023BE4(pos, arg2, arg3);
+        x_ae0d8704(pos, x_2092f891, x_ee71e5cb);
     } else {
-        v0 = create_model_instance(&sp24, OBJ_PRIO_DEFAULT, hit_spark_update, gHitSparkModel);
+        v0 = x_572f827d(&x_5bbba600, x_9d442987, x_747e1955, x_158622fa);
         if (v0 != NULL) {
-            v0->vars[0] = 255 / (v0->modInst->numAnimFrames - 12);
-            v0->flags |= OBJ_FLAG_TRANSPARENT;
-            create_light(v0, &sRedColor);
+            v0->x_0f4167b4[0] = 255 / (v0->x_20d20338->x_8e601526 - 12);
+            v0->flags |= x_b6789b80;
+            x_371376ba(v0, &x_3ce5d264);
             v0->color.a = 255;
         }
     }
 }
 
-u8 is_point_in_hit_range(Vec4s *arg0, Vec4i *arg1, u32 radiusSq, Vec4s *point) {
+u8 x_81c2909d(x_2758cdab *x_cc1d0de5, x_88f11482 *x_84ff873b, u32 x_72eb45b1, x_2758cdab *point) {
     s16 x1, z1;
 
-    if (point->y < arg0->y - 200 || arg1->y < point->y) {
+    if (point->y < x_cc1d0de5->y - 200 || x_84ff873b->y < point->y) {
         return FALSE;
     }
 
-    x1 = (arg0->x + arg1->x) * 0.5f;
-    z1 = (arg0->z + arg1->z) * 0.5f;
+    x1 = (x_cc1d0de5->x + x_84ff873b->x) * 0.5f;
+    z1 = (x_cc1d0de5->z + x_84ff873b->z) * 0.5f;
 
-    if (SQ(x1 - point->x) + SQ(z1 - point->z) < radiusSq) {
+    if (x_84ce1cfb(x1 - point->x) + x_84ce1cfb(z1 - point->z) < x_72eb45b1) {
         return TRUE;
     } else {
         return FALSE;
     }
 }
 
-Vec4s *find_collision_point(Vec4s *attPoint1, Vec4i *attPoint2, u32 radiusSq, Vec4s *defPoint1, Vec4s *defPoint2) {
-    s16 attPosX, attPosZ;
-    s32 dx, dz;
+x_2758cdab *x_9f5c9f25(x_2758cdab *x_65d81f5e, x_88f11482 *x_6530585f, u32 x_72eb45b1, x_2758cdab *x_c593269c, x_2758cdab *x_dedb5b95) {
+    s16 x_2ec7c161, x_ef312970;
+    s32 x_720f6ac9, dz;
     s32 pad[4];
-    s16 defMidX, defMidY, defMidZ;
+    s16 x_b6150ad6, x_753494c4, x_71984ce4;
 
-    attPosX = (attPoint1->x + attPoint2->x) >> 1;
-    attPosZ = (attPoint1->z + attPoint2->z) >> 1;
+    x_2ec7c161 = (x_65d81f5e->x + x_6530585f->x) >> 1;
+    x_ef312970 = (x_65d81f5e->z + x_6530585f->z) >> 1;
 
-    if (defPoint1->y > attPoint1->y - 200 && defPoint1->y < attPoint2->y) {
-        dx = attPosX - defPoint1->x;
-        dz = attPosZ - defPoint1->z;
-        if (SQ(dx) + SQ(dz) < radiusSq) {
-            return defPoint1;
+    if (x_c593269c->y > x_65d81f5e->y - 200 && x_c593269c->y < x_6530585f->y) {
+        x_720f6ac9 = x_2ec7c161 - x_c593269c->x;
+        dz = x_ef312970 - x_c593269c->z;
+        if (x_84ce1cfb(x_720f6ac9) + x_84ce1cfb(dz) < x_72eb45b1) {
+            return x_c593269c;
         }
     }
 
-    if (defPoint2->y > attPoint1->y - 200 && defPoint2->y < attPoint2->y) {
-        dx = attPosX - defPoint2->x;
-        dz = attPosZ - defPoint2->z;
-        if (SQ(dx) + SQ(dz) < radiusSq) {
-            return defPoint2;
+    if (x_dedb5b95->y > x_65d81f5e->y - 200 && x_dedb5b95->y < x_6530585f->y) {
+        x_720f6ac9 = x_2ec7c161 - x_dedb5b95->x;
+        dz = x_ef312970 - x_dedb5b95->z;
+        if (x_84ce1cfb(x_720f6ac9) + x_84ce1cfb(dz) < x_72eb45b1) {
+            return x_dedb5b95;
         }
     }
 
-    defMidX = D_80081268.x = (defPoint1->x + defPoint2->x) >> 1;
-    defMidY = D_80081268.y = (defPoint1->y + defPoint2->y) >> 1;
-    defMidZ = D_80081268.z = (defPoint1->z + defPoint2->z) >> 1;
+    x_b6150ad6 = D_80081268.x = (x_c593269c->x + x_dedb5b95->x) >> 1;
+    x_753494c4 = D_80081268.y = (x_c593269c->y + x_dedb5b95->y) >> 1;
+    x_71984ce4 = D_80081268.z = (x_c593269c->z + x_dedb5b95->z) >> 1;
 
-    if (D_80081268.y > attPoint1->y - 200 && D_80081268.y < attPoint2->y) {
-        dx = attPosX - D_80081268.x;
-        dz = attPosZ - D_80081268.z;
-        if (SQ(dx) + SQ(dz) < radiusSq) {
+    if (D_80081268.y > x_65d81f5e->y - 200 && D_80081268.y < x_6530585f->y) {
+        x_720f6ac9 = x_2ec7c161 - D_80081268.x;
+        dz = x_ef312970 - D_80081268.z;
+        if (x_84ce1cfb(x_720f6ac9) + x_84ce1cfb(dz) < x_72eb45b1) {
             return &D_80081268;
         }
     }
 
-    D_80081268.x = (defMidX + defPoint2->x) >> 1;
-    D_80081268.y = (defMidY + defPoint2->y) >> 1;
-    D_80081268.z = (defMidZ + defPoint2->z) >> 1;
+    D_80081268.x = (x_b6150ad6 + x_dedb5b95->x) >> 1;
+    D_80081268.y = (x_753494c4 + x_dedb5b95->y) >> 1;
+    D_80081268.z = (x_71984ce4 + x_dedb5b95->z) >> 1;
 
-    if (D_80081268.y > attPoint1->y - 200 && D_80081268.y < attPoint2->y) {
-        dx = attPosX - D_80081268.x;
-        dz = attPosZ - D_80081268.z;
-        if (SQ(dx) + SQ(dz) < radiusSq) {
+    if (D_80081268.y > x_65d81f5e->y - 200 && D_80081268.y < x_6530585f->y) {
+        x_720f6ac9 = x_2ec7c161 - D_80081268.x;
+        dz = x_ef312970 - D_80081268.z;
+        if (x_84ce1cfb(x_720f6ac9) + x_84ce1cfb(dz) < x_72eb45b1) {
             return &D_80081268;
         }
     }
 
-    D_80081268.x = (defMidX + defPoint1->x) >> 1;
-    D_80081268.y = (defMidY + defPoint1->y) >> 1;
-    D_80081268.z = (defMidZ + defPoint1->z) >> 1;
+    D_80081268.x = (x_b6150ad6 + x_c593269c->x) >> 1;
+    D_80081268.y = (x_753494c4 + x_c593269c->y) >> 1;
+    D_80081268.z = (x_71984ce4 + x_c593269c->z) >> 1;
 
-    if (D_80081268.y > attPoint1->y - 200 && D_80081268.y < attPoint2->y) {
-        dx = attPosX - D_80081268.x;
-        dz = attPosZ - D_80081268.z;
-        if (SQ(dx) + SQ(dz) < radiusSq) {
+    if (D_80081268.y > x_65d81f5e->y - 200 && D_80081268.y < x_6530585f->y) {
+        x_720f6ac9 = x_2ec7c161 - D_80081268.x;
+        dz = x_ef312970 - D_80081268.z;
+        if (x_84ce1cfb(x_720f6ac9) + x_84ce1cfb(dz) < x_72eb45b1) {
             return &D_80081268;
         }
     }
@@ -165,610 +165,610 @@ Vec4s *find_collision_point(Vec4s *attPoint1, Vec4i *attPoint2, u32 radiusSq, Ve
     return NULL;
 }
 
-#ifdef NON_MATCHING
-s32 apply_damage_and_reaction(Player *defender, Player *attacker, CombatState *attackerStateDef) {
-    CombatState *defenderState;
+#ifdef x_26a627fb
+s32 x_cc2e74aa(Player *x_7246d2b2, Player *x_e64ba38a, x_388306ba *x_0deedaaf) {
+    x_388306ba *x_cd232430;
     s32 hp;
     s32 pad;
     s16 pad2;
-    s16 moveId;
+    s16 x_0f12118c;
     u8 v1;
     u8 v12;
-    s32 defenderFlags;
+    s32 x_b0a612ba;
 
-    moveId = 0;
-    defenderState = defender->combatState;
-    defenderFlags = defenderState->flags;
+    x_0f12118c = 0;
+    x_cd232430 = x_7246d2b2->x_7f68c36b;
+    x_b0a612ba = x_cd232430->flags;
 
-    if ((defenderFlags & (CSF_JUMP | CSF_HOP)) &&
-        defender->obj->pos.y + defender->obj->modInst->rootTransform.local_matrix.w.y > -400.0f &&
-        defender->hitZones.leftFootPos->y - defender->hitZones.headPos->y > 200.0f) {
-        defenderFlags &= ~(CSF_JUMP | CSF_HOP);
-        defenderFlags |= CSF_STANDING;
+    if ((x_b0a612ba & (x_025a12b8 | x_36377d70)) &&
+        x_7246d2b2->obj->pos.y + x_7246d2b2->obj->x_20d20338->x_abd7b3c4.x_3fde9cd9.w.y > -400.0f &&
+        x_7246d2b2->x_5c5b1d93.x_6e7f4fd8->y - x_7246d2b2->x_5c5b1d93.x_b7552092->y > 200.0f) {
+        x_b0a612ba &= ~(x_025a12b8 | x_36377d70);
+        x_b0a612ba |= x_ff05097f;
     }
 
-    v1 = (defenderFlags & CSF_80) && (defender->obj->frameIndex >= 12);
+    v1 = (x_b0a612ba & x_cdcff2e1) && (x_7246d2b2->obj->x_5fcb1654 >= 12);
 
-    if (defenderFlags & CSF_BLOCK) {
-        if (defenderFlags & CSF_STANDING) {
-            moveId = attackerStateDef->blockStanding;
+    if (x_b0a612ba & x_f79587cb) {
+        if (x_b0a612ba & x_ff05097f) {
+            x_0f12118c = x_0deedaaf->x_40be83c8;
         } else {
-            moveId = attackerStateDef->blockCrouch;
+            x_0f12118c = x_0deedaaf->x_b033c680;
         }
-    } else if (defenderFlags & CSF_10000) {
-        moveId = attackerStateDef->hitMove10;
-    } else if (defenderFlags & CSF_JUGGLED) {
-        moveId = attackerStateDef->hitJuggle;
-    } else if ((defenderFlags & CSF_400) && attackerStateDef->unk_1E != 0) {
-        if (defenderFlags & CSF_200) {
-            moveId = MOVE_ID_SLAMMED_FACE_D; // slammed face down
+    } else if (x_b0a612ba & x_8b64a078) {
+        x_0f12118c = x_0deedaaf->x_6290ef5a;
+    } else if (x_b0a612ba & x_c1df43e1) {
+        x_0f12118c = x_0deedaaf->x_2955cef8;
+    } else if ((x_b0a612ba & x_eac5209f) && x_0deedaaf->x_fbb09ed1 != 0) {
+        if (x_b0a612ba & x_7507aa4b) {
+            x_0f12118c = x_caa30513; // slammed face down
         } else {
-            moveId = MOVE_ID_SLAMMED_FACE_U; // slammed face up
+            x_0f12118c = x_dba71d7e; // slammed face up
         }
-    } else if (player_check_func_2(defender->obj) && !v1) {
-        if (defenderFlags & (CSF_JUMP | CSF_STANDING | CSF_HOP)) {
-            moveId = attackerStateDef->hitBackStanding;
-        } else if (defenderFlags & CSF_CROUCH) {
-            moveId = attackerStateDef->hitBackCrouch;
-        }
-
-        if (defenderFlags & (CSF_JUMP | CSF_HOP)) {
-            moveId = attackerStateDef->hitBackAirborne;
-        } else {
-            defender->obj->pos.y = 0;
+    } else if (x_af5ccc8a(x_7246d2b2->obj) && !v1) {
+        if (x_b0a612ba & (x_025a12b8 | x_ff05097f | x_36377d70)) {
+            x_0f12118c = x_0deedaaf->x_c33946bb;
+        } else if (x_b0a612ba & x_037894c1) {
+            x_0f12118c = x_0deedaaf->x_cdc30d39;
         }
 
-        defender->obj->flags &= ~OBJ_FLAG_800000;
+        if (x_b0a612ba & (x_025a12b8 | x_36377d70)) {
+            x_0f12118c = x_0deedaaf->x_dc90c3b6;
+        } else {
+            x_7246d2b2->obj->pos.y = 0;
+        }
+
+        x_7246d2b2->obj->flags &= ~x_da584e3c;
     } else {
-        if (defenderFlags & (CSF_JUMP | CSF_STANDING | CSF_HOP)) {
-            moveId = attackerStateDef->hitStanding;
-        } else if (defenderFlags & CSF_CROUCH) {
-            moveId = attackerStateDef->hitCrouch;
+        if (x_b0a612ba & (x_025a12b8 | x_ff05097f | x_36377d70)) {
+            x_0f12118c = x_0deedaaf->x_237b8772;
+        } else if (x_b0a612ba & x_037894c1) {
+            x_0f12118c = x_0deedaaf->x_71357e64;
         }
 
-        if (defenderFlags & (CSF_JUMP | CSF_HOP)) {
-            moveId = attackerStateDef->hitAirborne;
+        if (x_b0a612ba & (x_025a12b8 | x_36377d70)) {
+            x_0f12118c = x_0deedaaf->x_d3699524;
         } else {
-            defender->obj->pos.y = 0;
+            x_7246d2b2->obj->pos.y = 0;
         }
     }
 
-    v12 = (moveId == MOVE_ID_STANDING_BLOCK_270) || (moveId == MOVE_ID_CROUCH_BLOCK_I);
+    v12 = (x_0f12118c == x_3cc3613b) || (x_0f12118c == x_5a136108);
 
-    if (moveId != 0 && !gReplayActive) {
-        attacker->damage = attackerStateDef->damage;
-        if (attacker->obj->vars[3] < 0) {
-            attacker->total_damage += attacker->damage;
+    if (x_0f12118c != 0 && !x_33abac12) {
+        x_e64ba38a->x_6f5a5c61 = x_0deedaaf->x_6f5a5c61;
+        if (x_e64ba38a->obj->x_0f4167b4[3] < 0) {
+            x_e64ba38a->x_95a50856 += x_e64ba38a->x_6f5a5c61;
         } else {
-            attacker->total_damage = attacker->damage;
-            attacker->obj->vars[3] = -1;
+            x_e64ba38a->x_95a50856 = x_e64ba38a->x_6f5a5c61;
+            x_e64ba38a->obj->x_0f4167b4[3] = -1;
         }
 
-        if (moveId >= MOVE_ID_COGRABBED_BY_A_236 && moveId <= MOVE_ID_COGRABBED_BY_Z_245) {
+        if (x_0f12118c >= x_fcce1abe && x_0f12118c <= x_0ba1d6d3) {
             // CoGrabbed
-            defender->obj->vars[2] = attackerStateDef->damage;
-        } else if (!v12 && gPlayMode != PLAY_MODE_PRACTICE) {
-            defender->obj->playerHp -= attackerStateDef->damage;
+            x_7246d2b2->obj->x_0f4167b4[2] = x_0deedaaf->x_6f5a5c61;
+        } else if (!v12 && x_5e4e2788 != x_79c2dc5b) {
+            x_7246d2b2->obj->x_9200c538 -= x_0deedaaf->x_6f5a5c61;
         }
 
-        hp = defender->obj->playerHp;
+        hp = x_7246d2b2->obj->x_9200c538;
         if (hp < 0) {
-            hp = defender->obj->playerHp = 0;
+            hp = x_7246d2b2->obj->x_9200c538 = 0;
         }
 
         if (hp == 0) {
-            gGlobalFlags |= GAME_FLAG_BATTLE_FINISHED;
-            if (defender->flags & PLAYER_FLAG_NOT_FACING_OPP) {
-                if (defenderFlags & CSF_STANDING) {
-                    moveId = MOVE_ID_KD_FALL_FORWAR_118;
-                } else if (defenderFlags & CSF_CROUCH) {
-                    moveId = MOVE_ID_KD_FALL_FORWAR_081;
+            x_e30d50d2 |= x_dd99cbfb;
+            if (x_7246d2b2->flags & x_9298c772) {
+                if (x_b0a612ba & x_ff05097f) {
+                    x_0f12118c = x_235050ce;
+                } else if (x_b0a612ba & x_037894c1) {
+                    x_0f12118c = x_f959531a;
                 }
             } else {
-                if (defenderFlags & CSF_STANDING) {
-                    moveId = MOVE_ID_KD_UPPER_CUT;
-                } else if (defenderFlags & CSF_CROUCH) {
-                    moveId = MOVE_ID_KD_FALL_BACK_C;
+                if (x_b0a612ba & x_ff05097f) {
+                    x_0f12118c = x_8a72e76c;
+                } else if (x_b0a612ba & x_037894c1) {
+                    x_0f12118c = x_13b6becb;
                 }
             }
         }
 
-        player_force_move(defender, moveId, TRUE);
+        x_c05bfb58(x_7246d2b2, x_0f12118c, TRUE);
     }
 
-    return moveId;
+    return x_0f12118c;
 }
 #else
-s32 apply_damage_and_reaction(Player *arg0, Player *arg1, CombatState *arg2);
-#pragma GLOBAL_ASM("asm/nonmatchings/player_combat/apply_damage_and_reaction.s")
+s32 x_cc2e74aa(Player *x_cc1d0de5, Player *x_84ff873b, x_388306ba *x_2092f891);
+#pragma x_eda6f9e3("asm/nonmatchings/player_combat/apply_damage_and_reaction.s")
 #endif
 
-void process_hit(Player *defender, Player *attacker, Vec4s *hitPos) {
-    s32 moveId;
-    s16 isBlock;
-    CombatState *attackerCombatState;
+void x_54661eb1(Player *x_7246d2b2, Player *x_e64ba38a, x_2758cdab *x_c9d501a3) {
+    s32 x_0f12118c;
+    s16 x_2a9ef16e;
+    x_388306ba *x_ed035b81;
 
-    attackerCombatState = attacker->combatState;
+    x_ed035b81 = x_e64ba38a->x_7f68c36b;
 
-    if (!gRoundOver || gReplayActive) {
-        moveId = apply_damage_and_reaction(defender, attacker, attackerCombatState);
-        isBlock = moveId == 270 || moveId == 271;
-        if (moveId != 0) {
-            spawn_hit_effect(hitPos, isBlock, defender->obj, NULL);
-            defender->hitCooldown = 13;
-            attacker->hitCooldown = 2;
+    if (!x_9df63a90 || x_33abac12) {
+        x_0f12118c = x_cc2e74aa(x_7246d2b2, x_e64ba38a, x_ed035b81);
+        x_2a9ef16e = x_0f12118c == 270 || x_0f12118c == 271;
+        if (x_0f12118c != 0) {
+            x_801c8e55(x_c9d501a3, x_2a9ef16e, x_7246d2b2->obj, NULL);
+            x_7246d2b2->x_381817ae = 13;
+            x_e64ba38a->x_381817ae = 2;
         }
     }
 }
 
-void check_punch_air(Player *defender, Player *attacker) {
-    Vec4i *defPoint1;
-    Vec4s attPoint2;
-    Vec4s somePos;
-    Vec4s defPoint2;
-    Vec4s attPoint1;
-    Vec4s attLeftHandPos;
-    Vec4s *hitPos;
+void x_a617fc50(Player *x_7246d2b2, Player *x_e64ba38a) {
+    x_88f11482 *x_c593269c;
+    x_2758cdab x_6530585f;
+    x_2758cdab x_a76dcbae;
+    x_2758cdab x_dedb5b95;
+    x_2758cdab x_65d81f5e;
+    x_2758cdab x_7bbf202d;
+    x_2758cdab *x_c9d501a3;
     s32 pad[70];
-    Transform *sp54;
-    HitZones *defZones;
-    HitZones *attZones;
+    Transform *x_de61763c;
+    x_998ccc48 *x_681b4659;
+    x_998ccc48 *x_2972e837;
     s32 pad2[6];
 
-    defPoint1 = &defender->obj->pos;
+    x_c593269c = &x_7246d2b2->obj->pos;
 
-    defZones = &defender->hitZones;
-    attZones = &attacker->hitZones;
+    x_681b4659 = &x_7246d2b2->x_5c5b1d93;
+    x_2972e837 = &x_e64ba38a->x_5c5b1d93;
 
-    defPoint2.x = defZones->headPos->x;
-    defPoint2.y = defZones->headPos->y;
-    defPoint2.z = defZones->headPos->z;
+    x_dedb5b95.x = x_681b4659->x_b7552092->x;
+    x_dedb5b95.y = x_681b4659->x_b7552092->y;
+    x_dedb5b95.z = x_681b4659->x_b7552092->z;
 
-    attPoint1.x = attZones->rightHandPos->x;
-    attPoint1.y = attZones->rightHandPos->y;
-    attPoint1.z = attZones->rightHandPos->z;
+    x_65d81f5e.x = x_2972e837->x_55f532bb->x;
+    x_65d81f5e.y = x_2972e837->x_55f532bb->y;
+    x_65d81f5e.z = x_2972e837->x_55f532bb->z;
 
-    if (attZones->hasRightPunchStrike) {
-        attPoint2.x = attZones->rightPunchStrike.world_matrix.w.x;
-        attPoint2.y = attZones->rightPunchStrike.world_matrix.w.y;
-        attPoint2.z = attZones->rightPunchStrike.world_matrix.w.z;
+    if (x_2972e837->x_c01445c3) {
+        x_6530585f.x = x_2972e837->x_cc2c17a6.x_0c1a9bdd.w.x;
+        x_6530585f.y = x_2972e837->x_cc2c17a6.x_0c1a9bdd.w.y;
+        x_6530585f.z = x_2972e837->x_cc2c17a6.x_0c1a9bdd.w.z;
 
-        hitPos = find_collision_point(&defPoint2, defPoint1, defZones->radius1 + 55000, &attPoint1, &attPoint2);
-        if (hitPos != NULL) {
-            if (hitPos->y < defPoint2.y) {
-                hitPos->y = defPoint2.y;
+        x_c9d501a3 = x_9f5c9f25(&x_dedb5b95, x_c593269c, x_681b4659->x_62706fff + 55000, &x_65d81f5e, &x_6530585f);
+        if (x_c9d501a3 != NULL) {
+            if (x_c9d501a3->y < x_dedb5b95.y) {
+                x_c9d501a3->y = x_dedb5b95.y;
             }
 
-            hitPos->x = ((func_80012854((0xC00 - defender->obj->rotation.y) & 0xFFF) * 100) >> 12) + defPoint1->x;
-            hitPos->z =
-                ((-func_80012854(((0xC00 - defender->obj->rotation.y) & 0xFFF) + 0x400) * 100) >> 12) + defPoint1->z;
-            process_hit(defender, attacker, hitPos);
+            x_c9d501a3->x = ((x_d9b20313((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) * 100) >> 12) + x_c593269c->x;
+            x_c9d501a3->z =
+                ((-x_d9b20313(((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) + 0x400) * 100) >> 12) + x_c593269c->z;
+            x_54661eb1(x_7246d2b2, x_e64ba38a, x_c9d501a3);
             return;
         }
-    } else if (is_point_in_hit_range(&defPoint2, defPoint1, defZones->radius1, &attPoint1)) {
-        if (attPoint1.y < defPoint2.y) {
-            attPoint1.y = defPoint2.y;
+    } else if (x_81c2909d(&x_dedb5b95, x_c593269c, x_681b4659->x_62706fff, &x_65d81f5e)) {
+        if (x_65d81f5e.y < x_dedb5b95.y) {
+            x_65d81f5e.y = x_dedb5b95.y;
         }
-        attPoint1.x = ((func_80012854((0xC00 - defender->obj->rotation.y) & 0xFFF) * 100) >> 12) + defPoint1->x;
-        attPoint1.z =
-            ((-func_80012854(((0xC00 - defender->obj->rotation.y) & 0xFFF) + 0x400) * 100) >> 12) + defPoint1->z;
-        process_hit(defender, attacker, &attPoint1);
+        x_65d81f5e.x = ((x_d9b20313((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) * 100) >> 12) + x_c593269c->x;
+        x_65d81f5e.z =
+            ((-x_d9b20313(((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) + 0x400) * 100) >> 12) + x_c593269c->z;
+        x_54661eb1(x_7246d2b2, x_e64ba38a, &x_65d81f5e);
         return;
     }
 
-    attLeftHandPos.x = attZones->leftHandPos->x;
-    attLeftHandPos.y = attZones->leftHandPos->y;
-    attLeftHandPos.z = attZones->leftHandPos->z;
+    x_7bbf202d.x = x_2972e837->x_3b24b185->x;
+    x_7bbf202d.y = x_2972e837->x_3b24b185->y;
+    x_7bbf202d.z = x_2972e837->x_3b24b185->z;
 
-    if (attZones->hasLeftPunchStrike) {
-        sp54 = &attZones->leftPunchStrike;
-        somePos.x = attZones->leftPunchStrike.world_matrix.w.x;
-        somePos.y = attZones->leftPunchStrike.world_matrix.w.y;
-        somePos.z = attZones->leftPunchStrike.world_matrix.w.z;
+    if (x_2972e837->x_a1c57a3b) {
+        x_de61763c = &x_2972e837->x_0548cec6;
+        x_a76dcbae.x = x_2972e837->x_0548cec6.x_0c1a9bdd.w.x;
+        x_a76dcbae.y = x_2972e837->x_0548cec6.x_0c1a9bdd.w.y;
+        x_a76dcbae.z = x_2972e837->x_0548cec6.x_0c1a9bdd.w.z;
 
-        hitPos = find_collision_point(&defPoint2, defPoint1, defZones->radius1 + 55000, &attLeftHandPos, &somePos);
-        if (hitPos != NULL) {
-            if (hitPos->y < defPoint2.y) {
-                hitPos->y = defPoint2.y;
+        x_c9d501a3 = x_9f5c9f25(&x_dedb5b95, x_c593269c, x_681b4659->x_62706fff + 55000, &x_7bbf202d, &x_a76dcbae);
+        if (x_c9d501a3 != NULL) {
+            if (x_c9d501a3->y < x_dedb5b95.y) {
+                x_c9d501a3->y = x_dedb5b95.y;
             }
 
-            hitPos->x = ((func_80012854((0xC00 - defender->obj->rotation.y) & 0xFFF) * 100) >> 12) + defPoint1->x;
-            hitPos->z =
-                ((-func_80012854(((0xC00 - defender->obj->rotation.y) & 0xFFF) + 0x400) * 100) >> 12) + defPoint1->z;
-            process_hit(defender, attacker, hitPos);
+            x_c9d501a3->x = ((x_d9b20313((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) * 100) >> 12) + x_c593269c->x;
+            x_c9d501a3->z =
+                ((-x_d9b20313(((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) + 0x400) * 100) >> 12) + x_c593269c->z;
+            x_54661eb1(x_7246d2b2, x_e64ba38a, x_c9d501a3);
             return;
         }
-    } else if (is_point_in_hit_range(&defPoint2, defPoint1, defZones->radius1, &attLeftHandPos)) {
-        if (attLeftHandPos.y < defPoint2.y) {
-            attLeftHandPos.y = defPoint2.y;
+    } else if (x_81c2909d(&x_dedb5b95, x_c593269c, x_681b4659->x_62706fff, &x_7bbf202d)) {
+        if (x_7bbf202d.y < x_dedb5b95.y) {
+            x_7bbf202d.y = x_dedb5b95.y;
         }
-        attLeftHandPos.x = ((func_80012854((0xC00 - defender->obj->rotation.y) & 0xFFF) * 100) >> 12) + defPoint1->x;
-        attLeftHandPos.z =
-            ((-func_80012854(((0xC00 - defender->obj->rotation.y) & 0xFFF) + 0x400) * 100) >> 12) + defPoint1->z;
-        process_hit(defender, attacker, &attLeftHandPos);
+        x_7bbf202d.x = ((x_d9b20313((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) * 100) >> 12) + x_c593269c->x;
+        x_7bbf202d.z =
+            ((-x_d9b20313(((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) + 0x400) * 100) >> 12) + x_c593269c->z;
+        x_54661eb1(x_7246d2b2, x_e64ba38a, &x_7bbf202d);
         return;
     }
 
-    if (attZones->hasZone3) {
-        if (attZones->hasZone4) {
+    if (x_2972e837->x_b7aa4e8a) {
+        if (x_2972e837->x_d8ede1db) {
             // @bug sp54 could be uninitialized?
-            somePos.x = sp54->world_matrix.w.x;
-            somePos.y = sp54->world_matrix.w.y;
-            somePos.z = sp54->world_matrix.w.z;
+            x_a76dcbae.x = x_de61763c->x_0c1a9bdd.w.x;
+            x_a76dcbae.y = x_de61763c->x_0c1a9bdd.w.y;
+            x_a76dcbae.z = x_de61763c->x_0c1a9bdd.w.z;
         } else {
-            somePos.x = attZones->pos8->x;
-            somePos.y = attZones->pos8->y;
-            somePos.z = attZones->pos8->z;
+            x_a76dcbae.x = x_2972e837->x_9829da43->x;
+            x_a76dcbae.y = x_2972e837->x_9829da43->y;
+            x_a76dcbae.z = x_2972e837->x_9829da43->z;
         }
 
-        if (is_point_in_hit_range(&defPoint2, defPoint1, defZones->radius2, &somePos)) {
-            if (somePos.y < defPoint2.y) {
-                somePos.y = defPoint2.y;
+        if (x_81c2909d(&x_dedb5b95, x_c593269c, x_681b4659->x_38ae036c, &x_a76dcbae)) {
+            if (x_a76dcbae.y < x_dedb5b95.y) {
+                x_a76dcbae.y = x_dedb5b95.y;
             }
-            somePos.x = ((func_80012854((0xC00 - defender->obj->rotation.y) & 0xFFF) * 100) >> 12) + defPoint1->x;
-            somePos.z =
-                ((-func_80012854(((0xC00 - defender->obj->rotation.y) & 0xFFF) + 0x400) * 100) >> 12) + defPoint1->z;
-            process_hit(defender, attacker, &somePos);
+            x_a76dcbae.x = ((x_d9b20313((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) * 100) >> 12) + x_c593269c->x;
+            x_a76dcbae.z =
+                ((-x_d9b20313(((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) + 0x400) * 100) >> 12) + x_c593269c->z;
+            x_54661eb1(x_7246d2b2, x_e64ba38a, &x_a76dcbae);
         }
     }
 }
 
-void check_kick_air(Player *defender, Player *attacker) {
-    Vec4i *defPoint1;
-    Vec4s defHead;
-    Vec4s attPoint1;
-    Vec4s attPoint2;
-    HitZones *attZones;
-    HitZones *defZones;
+void x_ec2ec20a(Player *x_7246d2b2, Player *x_e64ba38a) {
+    x_88f11482 *x_c593269c;
+    x_2758cdab x_319ebd5a;
+    x_2758cdab x_65d81f5e;
+    x_2758cdab x_6530585f;
+    x_998ccc48 *x_2972e837;
+    x_998ccc48 *x_681b4659;
     u32 radius;
-    Vec4s *hitPos;
+    x_2758cdab *x_c9d501a3;
     u8 v0;
 
-    defPoint1 = &defender->obj->pos;
+    x_c593269c = &x_7246d2b2->obj->pos;
 
-    attZones = &attacker->hitZones;
-    defZones = &defender->hitZones;
+    x_2972e837 = &x_e64ba38a->x_5c5b1d93;
+    x_681b4659 = &x_7246d2b2->x_5c5b1d93;
 
-    defHead.x = defZones->headPos->x;
-    defHead.y = defZones->headPos->y;
-    defHead.z = defZones->headPos->z;
+    x_319ebd5a.x = x_681b4659->x_b7552092->x;
+    x_319ebd5a.y = x_681b4659->x_b7552092->y;
+    x_319ebd5a.z = x_681b4659->x_b7552092->z;
 
-    if (attZones->hasRightKickStrike) {
-        attPoint1.x = attZones->rightKickStrike.world_matrix.w.x;
-        attPoint1.y = attZones->rightKickStrike.world_matrix.w.y;
-        attPoint1.z = attZones->rightKickStrike.world_matrix.w.z;
+    if (x_2972e837->x_22014d8c) {
+        x_65d81f5e.x = x_2972e837->x_45875993.x_0c1a9bdd.w.x;
+        x_65d81f5e.y = x_2972e837->x_45875993.x_0c1a9bdd.w.y;
+        x_65d81f5e.z = x_2972e837->x_45875993.x_0c1a9bdd.w.z;
     } else {
-        attPoint1.x = attZones->rightFootPos->x;
-        attPoint1.y = attZones->rightFootPos->y;
-        attPoint1.z = attZones->rightFootPos->z;
+        x_65d81f5e.x = x_2972e837->x_1b148bc2->x;
+        x_65d81f5e.y = x_2972e837->x_1b148bc2->y;
+        x_65d81f5e.z = x_2972e837->x_1b148bc2->z;
     }
 
-    attPoint2.x = attZones->rightCalfPos->x;
-    attPoint2.y = attZones->rightCalfPos->y;
-    attPoint2.z = attZones->rightCalfPos->z;
+    x_6530585f.x = x_2972e837->x_ef41f475->x;
+    x_6530585f.y = x_2972e837->x_ef41f475->y;
+    x_6530585f.z = x_2972e837->x_ef41f475->z;
 
-    v0 = (attacker->combatState->flags & CSF_ATTACK_RIGHT_FOOT_2) || (attPoint1.y < -200);
+    v0 = (x_e64ba38a->x_7f68c36b->flags & x_bd969186) || (x_65d81f5e.y < -200);
 
-    if (attPoint1.y < defZones->rightCalfPos->y) {
-        radius = defZones->radius1;
+    if (x_65d81f5e.y < x_681b4659->x_ef41f475->y) {
+        radius = x_681b4659->x_62706fff;
     } else {
-        radius = defZones->radius2;
+        radius = x_681b4659->x_38ae036c;
     }
 
     if (v0) {
-        hitPos = find_collision_point(&defHead, defPoint1, radius, &attPoint2, &attPoint1);
-        if (hitPos != NULL) {
-            process_hit(defender, attacker, hitPos);
+        x_c9d501a3 = x_9f5c9f25(&x_319ebd5a, x_c593269c, radius, &x_6530585f, &x_65d81f5e);
+        if (x_c9d501a3 != NULL) {
+            x_54661eb1(x_7246d2b2, x_e64ba38a, x_c9d501a3);
             return;
         }
     }
 
-    if (attZones->hasLeftKickStrike) {
-        attPoint1.x = attZones->leftKickStrike.world_matrix.w.x;
-        attPoint1.y = attZones->leftKickStrike.world_matrix.w.y;
-        attPoint1.z = attZones->leftKickStrike.world_matrix.w.z;
+    if (x_2972e837->x_6216b7a1) {
+        x_65d81f5e.x = x_2972e837->x_20d81af7.x_0c1a9bdd.w.x;
+        x_65d81f5e.y = x_2972e837->x_20d81af7.x_0c1a9bdd.w.y;
+        x_65d81f5e.z = x_2972e837->x_20d81af7.x_0c1a9bdd.w.z;
     } else {
-        attPoint1.x = attZones->leftFootPos->x;
-        attPoint1.y = attZones->leftFootPos->y;
-        attPoint1.z = attZones->leftFootPos->z;
+        x_65d81f5e.x = x_2972e837->x_6e7f4fd8->x;
+        x_65d81f5e.y = x_2972e837->x_6e7f4fd8->y;
+        x_65d81f5e.z = x_2972e837->x_6e7f4fd8->z;
     }
 
-    attPoint2.x = attZones->leftCalfPos->x;
-    attPoint2.y = attZones->leftCalfPos->y;
-    attPoint2.z = attZones->leftCalfPos->z;
+    x_6530585f.x = x_2972e837->x_4c227952->x;
+    x_6530585f.y = x_2972e837->x_4c227952->y;
+    x_6530585f.z = x_2972e837->x_4c227952->z;
 
-    if (attPoint1.y < defZones->leftCalfPos->y) {
-        radius = defZones->radius1;
+    if (x_65d81f5e.y < x_681b4659->x_4c227952->y) {
+        radius = x_681b4659->x_62706fff;
     } else {
-        radius = defZones->radius2;
+        radius = x_681b4659->x_38ae036c;
     }
 
-    v0 = (attacker->combatState->flags & CSF_ATTACK_LEFT_FOOT) || (attPoint1.y < -200);
+    v0 = (x_e64ba38a->x_7f68c36b->flags & x_0fe9e7f2) || (x_65d81f5e.y < -200);
 
     if (v0) {
-        hitPos = find_collision_point(&defHead, defPoint1, radius, &attPoint2, &attPoint1);
-        if (hitPos != NULL) {
-            process_hit(defender, attacker, hitPos);
+        x_c9d501a3 = x_9f5c9f25(&x_319ebd5a, x_c593269c, radius, &x_6530585f, &x_65d81f5e);
+        if (x_c9d501a3 != NULL) {
+            x_54661eb1(x_7246d2b2, x_e64ba38a, x_c9d501a3);
         }
     }
 }
 
-void check_punch_ground(Player *defender, Player *attacker) {
-    HitZones *defZones;
-    HitZones *attZones;
-    Vec4s defPoint1;
-    Vec4s defPoint2;
-    Vec4s attPoint1;
-    Vec4i attPoint2;
-    Vec4s *hitPos;
+void x_3fe0a5ec(Player *x_7246d2b2, Player *x_e64ba38a) {
+    x_998ccc48 *x_681b4659;
+    x_998ccc48 *x_2972e837;
+    x_2758cdab x_c593269c;
+    x_2758cdab x_dedb5b95;
+    x_2758cdab x_65d81f5e;
+    x_88f11482 x_6530585f;
+    x_2758cdab *x_c9d501a3;
     s32 pad;
 
-    defZones = &defender->hitZones;
-    attZones = &attacker->hitZones;
+    x_681b4659 = &x_7246d2b2->x_5c5b1d93;
+    x_2972e837 = &x_e64ba38a->x_5c5b1d93;
 
-    if (attacker->obj->pos.y < -20 ||
-        attacker->obj->modInst->rootTransform.local_matrix.w.y < attacker->obj->modInst->baseRootPos.y) {
+    if (x_e64ba38a->obj->pos.y < -20 ||
+        x_e64ba38a->obj->x_20d20338->x_abd7b3c4.x_3fde9cd9.w.y < x_e64ba38a->obj->x_20d20338->x_9cfd7bb4.y) {
         return;
     }
 
-    defPoint1.x = defZones->headPos->x;
-    defPoint1.y = defZones->headPos->y;
-    defPoint1.z = defZones->headPos->z;
+    x_c593269c.x = x_681b4659->x_b7552092->x;
+    x_c593269c.y = x_681b4659->x_b7552092->y;
+    x_c593269c.z = x_681b4659->x_b7552092->z;
 
-    defPoint2.x = defZones->rightFootPos->x;
-    defPoint2.y = defZones->rightFootPos->y;
-    defPoint2.z = defZones->rightFootPos->z;
+    x_dedb5b95.x = x_681b4659->x_1b148bc2->x;
+    x_dedb5b95.y = x_681b4659->x_1b148bc2->y;
+    x_dedb5b95.z = x_681b4659->x_1b148bc2->z;
 
-    attPoint1.x = attZones->torsoPos->x;
-    attPoint1.z = attZones->torsoPos->z;
-    attPoint1.y = attZones->torsoPos->y - 100.0f;
+    x_65d81f5e.x = x_2972e837->x_82e589d5->x;
+    x_65d81f5e.z = x_2972e837->x_82e589d5->z;
+    x_65d81f5e.y = x_2972e837->x_82e589d5->y - 100.0f;
 
-    attPoint2.x = attZones->torsoPos->x;
-    attPoint2.z = attZones->torsoPos->z;
-    attPoint2.y = attZones->torsoPos->y;
+    x_6530585f.x = x_2972e837->x_82e589d5->x;
+    x_6530585f.z = x_2972e837->x_82e589d5->z;
+    x_6530585f.y = x_2972e837->x_82e589d5->y;
 
-    hitPos = find_collision_point(&attPoint1, &attPoint2, 80000, &defPoint1, &defPoint2);
-    if (hitPos != NULL) {
-        process_hit(defender, attacker, hitPos);
+    x_c9d501a3 = x_9f5c9f25(&x_65d81f5e, &x_6530585f, 80000, &x_c593269c, &x_dedb5b95);
+    if (x_c9d501a3 != NULL) {
+        x_54661eb1(x_7246d2b2, x_e64ba38a, x_c9d501a3);
         return;
     }
 
-    if (attZones->hasRightPunchStrike) {
-        attPoint1.x = attZones->rightPunchStrike.world_matrix.w.x;
-        attPoint1.y = -100;
-        attPoint1.z = attZones->rightPunchStrike.world_matrix.w.z;
+    if (x_2972e837->x_c01445c3) {
+        x_65d81f5e.x = x_2972e837->x_cc2c17a6.x_0c1a9bdd.w.x;
+        x_65d81f5e.y = -100;
+        x_65d81f5e.z = x_2972e837->x_cc2c17a6.x_0c1a9bdd.w.z;
 
-        attPoint2.x = attPoint1.x;
-        attPoint2.y = 0;
-        attPoint2.z = attPoint1.z;
+        x_6530585f.x = x_65d81f5e.x;
+        x_6530585f.y = 0;
+        x_6530585f.z = x_65d81f5e.z;
 
-        hitPos = find_collision_point(&attPoint1, &attPoint2, 15000, &defPoint1, &defPoint2);
-        if (hitPos != NULL) {
-            process_hit(defender, attacker, hitPos);
+        x_c9d501a3 = x_9f5c9f25(&x_65d81f5e, &x_6530585f, 15000, &x_c593269c, &x_dedb5b95);
+        if (x_c9d501a3 != NULL) {
+            x_54661eb1(x_7246d2b2, x_e64ba38a, x_c9d501a3);
             return;
         }
     } else {
-        attPoint1.x = attZones->rightHandPos->x;
-        attPoint1.y = -100;
-        attPoint1.z = attZones->rightHandPos->z;
+        x_65d81f5e.x = x_2972e837->x_55f532bb->x;
+        x_65d81f5e.y = -100;
+        x_65d81f5e.z = x_2972e837->x_55f532bb->z;
 
-        attPoint2.x = attPoint1.x;
-        attPoint2.y = 0;
-        attPoint2.z = attPoint1.z;
+        x_6530585f.x = x_65d81f5e.x;
+        x_6530585f.y = 0;
+        x_6530585f.z = x_65d81f5e.z;
 
-        hitPos = find_collision_point(&attPoint1, &attPoint2, 15000, &defPoint1, &defPoint2);
-        if (hitPos != NULL) {
-            process_hit(defender, attacker, hitPos);
+        x_c9d501a3 = x_9f5c9f25(&x_65d81f5e, &x_6530585f, 15000, &x_c593269c, &x_dedb5b95);
+        if (x_c9d501a3 != NULL) {
+            x_54661eb1(x_7246d2b2, x_e64ba38a, x_c9d501a3);
             return;
         }
     }
 
-    if (attZones->hasLeftPunchStrike) {
-        attPoint1.x = attZones->leftPunchStrike.world_matrix.w.x;
-        attPoint1.y = -100;
-        attPoint1.z = attZones->leftPunchStrike.world_matrix.w.z;
+    if (x_2972e837->x_a1c57a3b) {
+        x_65d81f5e.x = x_2972e837->x_0548cec6.x_0c1a9bdd.w.x;
+        x_65d81f5e.y = -100;
+        x_65d81f5e.z = x_2972e837->x_0548cec6.x_0c1a9bdd.w.z;
 
-        attPoint2.x = attPoint1.x;
-        attPoint2.y = 0;
-        attPoint2.z = attPoint1.z;
+        x_6530585f.x = x_65d81f5e.x;
+        x_6530585f.y = 0;
+        x_6530585f.z = x_65d81f5e.z;
 
-        hitPos = find_collision_point(&attPoint1, &attPoint2, 15000, &defPoint1, &defPoint2);
-        if (hitPos != NULL) {
-            process_hit(defender, attacker, hitPos);
+        x_c9d501a3 = x_9f5c9f25(&x_65d81f5e, &x_6530585f, 15000, &x_c593269c, &x_dedb5b95);
+        if (x_c9d501a3 != NULL) {
+            x_54661eb1(x_7246d2b2, x_e64ba38a, x_c9d501a3);
             return;
         }
     } else {
-        attPoint1.x = attZones->leftHandPos->x;
-        attPoint1.y = -100;
-        attPoint1.z = attZones->leftHandPos->z;
+        x_65d81f5e.x = x_2972e837->x_3b24b185->x;
+        x_65d81f5e.y = -100;
+        x_65d81f5e.z = x_2972e837->x_3b24b185->z;
 
-        attPoint2.x = attPoint1.x;
-        attPoint2.y = 0;
-        attPoint2.z = attPoint1.z;
+        x_6530585f.x = x_65d81f5e.x;
+        x_6530585f.y = 0;
+        x_6530585f.z = x_65d81f5e.z;
 
-        hitPos = find_collision_point(&attPoint1, &attPoint2, 15000, &defPoint1, &defPoint2);
-        if (hitPos != NULL) {
-            process_hit(defender, attacker, hitPos);
+        x_c9d501a3 = x_9f5c9f25(&x_65d81f5e, &x_6530585f, 15000, &x_c593269c, &x_dedb5b95);
+        if (x_c9d501a3 != NULL) {
+            x_54661eb1(x_7246d2b2, x_e64ba38a, x_c9d501a3);
             return;
         }
     }
 }
 
-void check_kick_ground(Player *defender, Player *attacker) {
-    HitZones *defZones;
-    HitZones *attZones;
-    Vec4s defPoint1;
-    Vec4s defPoint2;
-    Vec4s attPoint1;
-    Vec4i attPoint2;
-    Vec4s *hitPoint;
+void x_5a643f96(Player *x_7246d2b2, Player *x_e64ba38a) {
+    x_998ccc48 *x_681b4659;
+    x_998ccc48 *x_2972e837;
+    x_2758cdab x_c593269c;
+    x_2758cdab x_dedb5b95;
+    x_2758cdab x_65d81f5e;
+    x_88f11482 x_6530585f;
+    x_2758cdab *x_c3f1d391;
 
-    defZones = &defender->hitZones;
-    attZones = &attacker->hitZones;
+    x_681b4659 = &x_7246d2b2->x_5c5b1d93;
+    x_2972e837 = &x_e64ba38a->x_5c5b1d93;
 
-    if (attacker->obj->pos.y < -20 ||
-        attacker->obj->modInst->rootTransform.local_matrix.w.y < attacker->obj->modInst->baseRootPos.y) {
+    if (x_e64ba38a->obj->pos.y < -20 ||
+        x_e64ba38a->obj->x_20d20338->x_abd7b3c4.x_3fde9cd9.w.y < x_e64ba38a->obj->x_20d20338->x_9cfd7bb4.y) {
         return;
     }
 
-    defPoint1.x = defZones->headPos->x;
-    defPoint1.y = defZones->headPos->y;
-    defPoint1.z = defZones->headPos->z;
+    x_c593269c.x = x_681b4659->x_b7552092->x;
+    x_c593269c.y = x_681b4659->x_b7552092->y;
+    x_c593269c.z = x_681b4659->x_b7552092->z;
 
-    defPoint2.x = defZones->rightFootPos->x;
-    defPoint2.y = defZones->rightFootPos->y;
-    defPoint2.z = defZones->rightFootPos->z;
+    x_dedb5b95.x = x_681b4659->x_1b148bc2->x;
+    x_dedb5b95.y = x_681b4659->x_1b148bc2->y;
+    x_dedb5b95.z = x_681b4659->x_1b148bc2->z;
 
-    attPoint1.x = attZones->torsoPos->x;
-    attPoint1.z = attZones->torsoPos->z;
-    attPoint1.y = attZones->torsoPos->y - 100.0f;
+    x_65d81f5e.x = x_2972e837->x_82e589d5->x;
+    x_65d81f5e.z = x_2972e837->x_82e589d5->z;
+    x_65d81f5e.y = x_2972e837->x_82e589d5->y - 100.0f;
 
-    attPoint2.x = attZones->torsoPos->x;
-    attPoint2.z = attZones->torsoPos->z;
-    attPoint2.y = attZones->torsoPos->y;
+    x_6530585f.x = x_2972e837->x_82e589d5->x;
+    x_6530585f.z = x_2972e837->x_82e589d5->z;
+    x_6530585f.y = x_2972e837->x_82e589d5->y;
 
-    hitPoint = find_collision_point(&attPoint1, &attPoint2, 80000, &defPoint1, &defPoint2);
-    if (hitPoint != NULL) {
-        process_hit(defender, attacker, hitPoint);
+    x_c3f1d391 = x_9f5c9f25(&x_65d81f5e, &x_6530585f, 80000, &x_c593269c, &x_dedb5b95);
+    if (x_c3f1d391 != NULL) {
+        x_54661eb1(x_7246d2b2, x_e64ba38a, x_c3f1d391);
         return;
     }
 
-    if (attZones->hasLeftKickStrike) {
-        attPoint1.x = attZones->leftKickStrike.world_matrix.w.x;
-        attPoint1.y = -100;
-        attPoint1.z = attZones->leftKickStrike.world_matrix.w.z;
+    if (x_2972e837->x_6216b7a1) {
+        x_65d81f5e.x = x_2972e837->x_20d81af7.x_0c1a9bdd.w.x;
+        x_65d81f5e.y = -100;
+        x_65d81f5e.z = x_2972e837->x_20d81af7.x_0c1a9bdd.w.z;
 
-        attPoint2.x = attPoint1.x;
-        attPoint2.y = 0;
-        attPoint2.z = attPoint1.z;
+        x_6530585f.x = x_65d81f5e.x;
+        x_6530585f.y = 0;
+        x_6530585f.z = x_65d81f5e.z;
 
-        hitPoint = find_collision_point(&attPoint1, &attPoint2, 50000, &defPoint1, &defPoint2);
-        if (hitPoint != NULL) {
-            process_hit(defender, attacker, hitPoint);
+        x_c3f1d391 = x_9f5c9f25(&x_65d81f5e, &x_6530585f, 50000, &x_c593269c, &x_dedb5b95);
+        if (x_c3f1d391 != NULL) {
+            x_54661eb1(x_7246d2b2, x_e64ba38a, x_c3f1d391);
             return;
         }
     } else {
-        attPoint1.x = attZones->leftFootPos->x;
-        attPoint1.y = -100;
-        attPoint1.z = attZones->leftFootPos->z;
+        x_65d81f5e.x = x_2972e837->x_6e7f4fd8->x;
+        x_65d81f5e.y = -100;
+        x_65d81f5e.z = x_2972e837->x_6e7f4fd8->z;
 
-        attPoint2.x = attPoint1.x;
-        attPoint2.y = 0;
-        attPoint2.z = attPoint1.z;
+        x_6530585f.x = x_65d81f5e.x;
+        x_6530585f.y = 0;
+        x_6530585f.z = x_65d81f5e.z;
 
-        hitPoint = find_collision_point(&attPoint1, &attPoint2, 50000, &defPoint1, &defPoint2);
-        if (hitPoint != NULL) {
-            process_hit(defender, attacker, hitPoint);
+        x_c3f1d391 = x_9f5c9f25(&x_65d81f5e, &x_6530585f, 50000, &x_c593269c, &x_dedb5b95);
+        if (x_c3f1d391 != NULL) {
+            x_54661eb1(x_7246d2b2, x_e64ba38a, x_c3f1d391);
             return;
         }
     }
 
-    if (attZones->hasRightKickStrike) {
-        attPoint1.x = attZones->rightKickStrike.world_matrix.w.x;
-        attPoint1.y = -100;
-        attPoint1.z = attZones->rightKickStrike.world_matrix.w.z;
+    if (x_2972e837->x_22014d8c) {
+        x_65d81f5e.x = x_2972e837->x_45875993.x_0c1a9bdd.w.x;
+        x_65d81f5e.y = -100;
+        x_65d81f5e.z = x_2972e837->x_45875993.x_0c1a9bdd.w.z;
 
-        attPoint2.x = attPoint1.x;
-        attPoint2.y = 0;
-        attPoint2.z = attPoint1.z;
+        x_6530585f.x = x_65d81f5e.x;
+        x_6530585f.y = 0;
+        x_6530585f.z = x_65d81f5e.z;
 
-        hitPoint = find_collision_point(&attPoint1, &attPoint2, 50000, &defPoint1, &defPoint2);
-        if (hitPoint != NULL) {
-            process_hit(defender, attacker, hitPoint);
+        x_c3f1d391 = x_9f5c9f25(&x_65d81f5e, &x_6530585f, 50000, &x_c593269c, &x_dedb5b95);
+        if (x_c3f1d391 != NULL) {
+            x_54661eb1(x_7246d2b2, x_e64ba38a, x_c3f1d391);
             return;
         }
     } else {
-        attPoint1.x = attZones->rightFootPos->x;
-        attPoint1.y = -100;
-        attPoint1.z = attZones->rightFootPos->z;
+        x_65d81f5e.x = x_2972e837->x_1b148bc2->x;
+        x_65d81f5e.y = -100;
+        x_65d81f5e.z = x_2972e837->x_1b148bc2->z;
 
-        attPoint2.x = attPoint1.x;
-        attPoint2.y = 0;
-        attPoint2.z = attPoint1.z;
+        x_6530585f.x = x_65d81f5e.x;
+        x_6530585f.y = 0;
+        x_6530585f.z = x_65d81f5e.z;
 
-        hitPoint = find_collision_point(&attPoint1, &attPoint2, 50000, &defPoint1, &defPoint2);
-        if (hitPoint != NULL) {
-            process_hit(defender, attacker, hitPoint);
+        x_c3f1d391 = x_9f5c9f25(&x_65d81f5e, &x_6530585f, 50000, &x_c593269c, &x_dedb5b95);
+        if (x_c3f1d391 != NULL) {
+            x_54661eb1(x_7246d2b2, x_e64ba38a, x_c3f1d391);
             return;
         }
     }
 }
 
-void init_player_hitboxes(Player *player, HitZonesSetup *hitZonesSetup) {
-    player->hitZones.headPos = &player->obj->modInst->transforms[hitZonesSetup->headBoneId].world_matrix.w;
-    player->hitZones.leftHandPos = &player->obj->modInst->transforms[hitZonesSetup->leftHandId].world_matrix.w;
-    player->hitZones.rightHandPos = &player->obj->modInst->transforms[hitZonesSetup->rightHandId].world_matrix.w;
-    player->hitZones.leftFootPos = &player->obj->modInst->transforms[hitZonesSetup->leftFootBoneId].world_matrix.w;
-    player->hitZones.rightFootPos = &player->obj->modInst->transforms[hitZonesSetup->rightFootBoneId].world_matrix.w;
-    player->hitZones.leftCalfPos = &player->obj->modInst->transforms[hitZonesSetup->leftCalfBoneId].world_matrix.w;
-    player->hitZones.rightCalfPos = &player->obj->modInst->transforms[hitZonesSetup->rightCalfBoneId].world_matrix.w;
-    player->hitZones.torsoPos = &player->obj->modInst->transforms[0].world_matrix.w;
+void x_4f2b827a(Player *player, x_87049dce *x_46ce35c8) {
+    player->x_5c5b1d93.x_b7552092 = &player->obj->x_20d20338->transforms[x_46ce35c8->x_283c5e35].x_0c1a9bdd.w;
+    player->x_5c5b1d93.x_3b24b185 = &player->obj->x_20d20338->transforms[x_46ce35c8->x_41b5ccd6].x_0c1a9bdd.w;
+    player->x_5c5b1d93.x_55f532bb = &player->obj->x_20d20338->transforms[x_46ce35c8->x_8680658c].x_0c1a9bdd.w;
+    player->x_5c5b1d93.x_6e7f4fd8 = &player->obj->x_20d20338->transforms[x_46ce35c8->x_cc509e17].x_0c1a9bdd.w;
+    player->x_5c5b1d93.x_1b148bc2 = &player->obj->x_20d20338->transforms[x_46ce35c8->x_df4167c9].x_0c1a9bdd.w;
+    player->x_5c5b1d93.x_4c227952 = &player->obj->x_20d20338->transforms[x_46ce35c8->x_35b6f6e0].x_0c1a9bdd.w;
+    player->x_5c5b1d93.x_ef41f475 = &player->obj->x_20d20338->transforms[x_46ce35c8->x_71801879].x_0c1a9bdd.w;
+    player->x_5c5b1d93.x_82e589d5 = &player->obj->x_20d20338->transforms[0].x_0c1a9bdd.w;
 
-    if (hitZonesSetup->boneIdz3z4 > 0) {
-        player->hitZones.pos8 = &player->obj->modInst->transforms[hitZonesSetup->boneIdz3z4].world_matrix.w;
-        player->hitZones.hasZone3 = TRUE;
+    if (x_46ce35c8->x_baea923a > 0) {
+        player->x_5c5b1d93.x_9829da43 = &player->obj->x_20d20338->transforms[x_46ce35c8->x_baea923a].x_0c1a9bdd.w;
+        player->x_5c5b1d93.x_b7aa4e8a = TRUE;
     } else {
-        player->hitZones.hasZone3 = FALSE;
+        player->x_5c5b1d93.x_b7aa4e8a = FALSE;
     }
 
-    player->hitZones.radius1 = hitZonesSetup->radius1;
-    player->hitZones.radius2 = hitZonesSetup->radius2;
+    player->x_5c5b1d93.x_62706fff = x_46ce35c8->x_62706fff;
+    player->x_5c5b1d93.x_38ae036c = x_46ce35c8->x_38ae036c;
 
-    if (hitZonesSetup->rightPunchPos.x != 0 || hitZonesSetup->rightPunchPos.y != 0 ||
-        hitZonesSetup->rightPunchPos.z != 0) {
-        player->hitZones.hasRightPunchStrike = TRUE;
-        init_transform(&player->obj->modInst->transforms[hitZonesSetup->rightPunchBoneId],
-                       &player->hitZones.rightPunchStrike, -3, -3);
-        player->hitZones.rightPunchStrike.local_matrix.w.x = hitZonesSetup->rightPunchPos.x;
-        player->hitZones.rightPunchStrike.local_matrix.w.y = hitZonesSetup->rightPunchPos.y;
-        player->hitZones.rightPunchStrike.local_matrix.w.z = hitZonesSetup->rightPunchPos.z;
+    if (x_46ce35c8->x_3bf3046a.x != 0 || x_46ce35c8->x_3bf3046a.y != 0 ||
+        x_46ce35c8->x_3bf3046a.z != 0) {
+        player->x_5c5b1d93.x_c01445c3 = TRUE;
+        x_f2c7456d(&player->obj->x_20d20338->transforms[x_46ce35c8->x_e888d5ae],
+                       &player->x_5c5b1d93.x_cc2c17a6, -3, -3);
+        player->x_5c5b1d93.x_cc2c17a6.x_3fde9cd9.w.x = x_46ce35c8->x_3bf3046a.x;
+        player->x_5c5b1d93.x_cc2c17a6.x_3fde9cd9.w.y = x_46ce35c8->x_3bf3046a.y;
+        player->x_5c5b1d93.x_cc2c17a6.x_3fde9cd9.w.z = x_46ce35c8->x_3bf3046a.z;
     } else {
-        player->hitZones.hasRightPunchStrike = FALSE;
+        player->x_5c5b1d93.x_c01445c3 = FALSE;
     }
 
-    if (hitZonesSetup->leftPunchPos.x != 0 || hitZonesSetup->leftPunchPos.y != 0 ||
-        hitZonesSetup->leftPunchPos.z != 0) {
-        player->hitZones.hasLeftPunchStrike = TRUE;
-        init_transform(&player->obj->modInst->transforms[hitZonesSetup->leftPunchBoneId],
-                       &player->hitZones.leftPunchStrike, -3, -3);
-        player->hitZones.leftPunchStrike.local_matrix.w.x = hitZonesSetup->leftPunchPos.x;
-        player->hitZones.leftPunchStrike.local_matrix.w.y = hitZonesSetup->leftPunchPos.y;
-        player->hitZones.leftPunchStrike.local_matrix.w.z = hitZonesSetup->leftPunchPos.z;
+    if (x_46ce35c8->x_f95a218e.x != 0 || x_46ce35c8->x_f95a218e.y != 0 ||
+        x_46ce35c8->x_f95a218e.z != 0) {
+        player->x_5c5b1d93.x_a1c57a3b = TRUE;
+        x_f2c7456d(&player->obj->x_20d20338->transforms[x_46ce35c8->x_1ffa33d9],
+                       &player->x_5c5b1d93.x_0548cec6, -3, -3);
+        player->x_5c5b1d93.x_0548cec6.x_3fde9cd9.w.x = x_46ce35c8->x_f95a218e.x;
+        player->x_5c5b1d93.x_0548cec6.x_3fde9cd9.w.y = x_46ce35c8->x_f95a218e.y;
+        player->x_5c5b1d93.x_0548cec6.x_3fde9cd9.w.z = x_46ce35c8->x_f95a218e.z;
     } else {
-        player->hitZones.hasLeftPunchStrike = FALSE;
+        player->x_5c5b1d93.x_a1c57a3b = FALSE;
     }
 
-    if (hitZonesSetup->z4offset.x != 0 || hitZonesSetup->z4offset.y != 0 || hitZonesSetup->z4offset.z != 0) {
-        player->hitZones.hasZone4 = TRUE;
-        init_transform(&player->obj->modInst->transforms[hitZonesSetup->boneIdz3z4], &player->hitZones.zone4trans, -3,
+    if (x_46ce35c8->x_8f7663b3.x != 0 || x_46ce35c8->x_8f7663b3.y != 0 || x_46ce35c8->x_8f7663b3.z != 0) {
+        player->x_5c5b1d93.x_d8ede1db = TRUE;
+        x_f2c7456d(&player->obj->x_20d20338->transforms[x_46ce35c8->x_baea923a], &player->x_5c5b1d93.x_6057c67e, -3,
                        -3);
-        player->hitZones.zone4trans.local_matrix.w.x = hitZonesSetup->z4offset.x;
-        player->hitZones.zone4trans.local_matrix.w.y = hitZonesSetup->z4offset.y;
-        player->hitZones.zone4trans.local_matrix.w.z = hitZonesSetup->z4offset.z;
+        player->x_5c5b1d93.x_6057c67e.x_3fde9cd9.w.x = x_46ce35c8->x_8f7663b3.x;
+        player->x_5c5b1d93.x_6057c67e.x_3fde9cd9.w.y = x_46ce35c8->x_8f7663b3.y;
+        player->x_5c5b1d93.x_6057c67e.x_3fde9cd9.w.z = x_46ce35c8->x_8f7663b3.z;
     } else {
-        player->hitZones.hasZone4 = FALSE;
+        player->x_5c5b1d93.x_d8ede1db = FALSE;
     }
 
-    if (hitZonesSetup->rightKickPos.x != 0 || hitZonesSetup->rightKickPos.y != 0 ||
-        hitZonesSetup->rightKickPos.z != 0) {
-        player->hitZones.hasRightKickStrike = TRUE;
-        init_transform(&player->obj->modInst->transforms[hitZonesSetup->rightFootBoneId],
-                       &player->hitZones.rightKickStrike, -3, -3);
-        player->hitZones.rightKickStrike.local_matrix.w.x = hitZonesSetup->rightKickPos.x;
-        player->hitZones.rightKickStrike.local_matrix.w.y = hitZonesSetup->rightKickPos.y;
-        player->hitZones.rightKickStrike.local_matrix.w.z = hitZonesSetup->rightKickPos.z;
+    if (x_46ce35c8->x_150bdca9.x != 0 || x_46ce35c8->x_150bdca9.y != 0 ||
+        x_46ce35c8->x_150bdca9.z != 0) {
+        player->x_5c5b1d93.x_22014d8c = TRUE;
+        x_f2c7456d(&player->obj->x_20d20338->transforms[x_46ce35c8->x_df4167c9],
+                       &player->x_5c5b1d93.x_45875993, -3, -3);
+        player->x_5c5b1d93.x_45875993.x_3fde9cd9.w.x = x_46ce35c8->x_150bdca9.x;
+        player->x_5c5b1d93.x_45875993.x_3fde9cd9.w.y = x_46ce35c8->x_150bdca9.y;
+        player->x_5c5b1d93.x_45875993.x_3fde9cd9.w.z = x_46ce35c8->x_150bdca9.z;
     } else {
-        player->hitZones.hasRightKickStrike = FALSE;
+        player->x_5c5b1d93.x_22014d8c = FALSE;
     }
 
-    if (hitZonesSetup->leftKickPos.x != 0 || hitZonesSetup->leftKickPos.y != 0 || hitZonesSetup->leftKickPos.z != 0) {
-        player->hitZones.hasLeftKickStrike = TRUE;
-        init_transform(&player->obj->modInst->transforms[hitZonesSetup->leftFootBoneId],
-                       &player->hitZones.leftKickStrike, -3, -3);
-        player->hitZones.leftKickStrike.local_matrix.w.x = hitZonesSetup->leftKickPos.x;
-        player->hitZones.leftKickStrike.local_matrix.w.y = hitZonesSetup->leftKickPos.y;
-        player->hitZones.leftKickStrike.local_matrix.w.z = hitZonesSetup->leftKickPos.z;
+    if (x_46ce35c8->x_495dd749.x != 0 || x_46ce35c8->x_495dd749.y != 0 || x_46ce35c8->x_495dd749.z != 0) {
+        player->x_5c5b1d93.x_6216b7a1 = TRUE;
+        x_f2c7456d(&player->obj->x_20d20338->transforms[x_46ce35c8->x_cc509e17],
+                       &player->x_5c5b1d93.x_20d81af7, -3, -3);
+        player->x_5c5b1d93.x_20d81af7.x_3fde9cd9.w.x = x_46ce35c8->x_495dd749.x;
+        player->x_5c5b1d93.x_20d81af7.x_3fde9cd9.w.y = x_46ce35c8->x_495dd749.y;
+        player->x_5c5b1d93.x_20d81af7.x_3fde9cd9.w.z = x_46ce35c8->x_495dd749.z;
     } else {
-        player->hitZones.hasLeftKickStrike = FALSE;
+        player->x_5c5b1d93.x_6216b7a1 = FALSE;
     }
 }

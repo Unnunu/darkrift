@@ -1,6 +1,6 @@
 #include "common.h"
 
-HitZonesSetup D_80052A60 = {
+x_87049dce D_80052A60 = {
     8,
     11,
     3,
@@ -20,18 +20,18 @@ HitZonesSetup D_80052A60 = {
     { 0, 0, 0, 0 },
 };
 
-s16 D_80052AE0[] = { MOVE_ID_BS_COMBO_1_P1, MOVE_ID_BS_COMBO_1_P2, MOVE_ID_BS_COMBO_1_P3, 0 };
-s16 D_80052AE8[] = { MOVE_ID_HS_COMBO_1_P1, MOVE_ID_HS_COMBO_1_P2, MOVE_ID_HS_COMBO_1_P3, 0 };
-s16 D_80052AF0[] = { MOVE_ID_BS_COMBO_1_P1, MOVE_ID_BS_COMBO_1_P2, MOVE_ID_COCOMBO_1_P1,
-                     MOVE_ID_COCOMBO_1_P2,  MOVE_ID_COCOMBO_1_P3,  0 };
-s16 D_80052AFC[] = { MOVE_ID_BS_COMBO_1_P1,
-                     MOVE_ID_BS_COMBO_1_P2,
-                     MOVE_ID_COCOMBO_1_P1,
-                     MOVE_ID_COCOMBO_2_P1,
-                     MOVE_ID_COCOMBO_2_P2,
-                     MOVE_ID_COCOMBO_2_P3,
+s16 D_80052AE0[] = { x_89bd7f51, x_0259aa31, x_42786438, 0 };
+s16 D_80052AE8[] = { x_2d2ae732, x_84625073, x_dbd7fb68, 0 };
+s16 D_80052AF0[] = { x_89bd7f51, x_0259aa31, x_6a3715eb,
+                     x_9efec86a,  x_afcef681,  0 };
+s16 D_80052AFC[] = { x_89bd7f51,
+                     x_0259aa31,
+                     x_6a3715eb,
+                     x_a1422c65,
+                     x_618f64b1,
+                     x_55e6a23a,
                      0 };
-s16 D_80052B0C[] = { MOVE_ID_HS_COMBO_1_P1, MOVE_ID_HS_COMBO_1_P2, MOVE_ID_COCOMBO_1_P1, MOVE_ID_COCOMBO_1_P2, 0 };
+s16 D_80052B0C[] = { x_2d2ae732, x_84625073, x_6a3715eb, x_9efec86a, 0 };
 s16 *D_80052B18[] = {
     D_80052AE0, D_80052AE8, D_80052AF0, D_80052AFC, D_80052B0C, NULL,
 };

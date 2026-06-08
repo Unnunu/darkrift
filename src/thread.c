@@ -1,38 +1,38 @@
 #include "common.h"
 
-#define THREAD_1_STACK_SIZE 0x400
-#define THREAD_3_STACK_SIZE 0x2000
-#define THREAD_4_STACK_SIZE 0x400
+#define x_d84e55d1 0x400
+#define x_b7a8fb33 0x2000
+#define x_a819b0ad 0x400
 
 s32 D_80049270 = 0;
 
-u8 sThread1Stack[THREAD_1_STACK_SIZE];
-OSThread sThread1;
-OSThread sThread3;
-u8 sThread3Stack[THREAD_3_STACK_SIZE];
-OSThread sThread4;
-u8 sThread4Stack[THREAD_4_STACK_SIZE];
+u8 x_607bed22[x_d84e55d1];
+OSThread x_12856845;
+OSThread x_e5e2fe89;
+u8 x_4882e498[x_b7a8fb33];
+OSThread x_5cb83de5;
+u8 x_2923a40b[x_a819b0ad];
 
-u8 unknown_buffer[0x15b0 - 0x400];
+u8 x_d7e5a3b9[0x15b0 - 0x400];
 
-OSMesg sPIcmdBuf[8];
-OSMesgQueue sPIcmdQ;
-OSMesgQueue gSchedVRetraceQueue;
-OSMesg gSchedVRetraceMessages[1];
-OSMesgQueue gSchedDMAQueue;
-OSMesgQueue gSchedSPQueue;
-OSMesgQueue gSchedDPQueue;
-OSMesgQueue gSchedTaskRequestQueue;
-OSMesgQueue gSchedSPTaskQueue;
-OSMesg gSchedDMAMessages[1];
+OSMesg x_2c62e827[8];
+OSMesgQueue x_5eac317e;
+OSMesgQueue x_76074a65;
+OSMesg x_c35756dd[1];
+OSMesgQueue x_0c7f0f6c;
+OSMesgQueue x_a4cdf342;
+OSMesgQueue x_9e70b6be;
+OSMesgQueue x_c0f7aef0;
+OSMesgQueue x_72d58a77;
+OSMesg x_4af5dc00[1];
 OSMesg D_8005AE74[1];
-OSMesg gSchedDPMessages[1];
+OSMesg x_76886650[1];
 OSMesg D_8005AE7C[1];
-OSMesg gSchedSPTaskMessages[4];
+OSMesg x_ae4dbfde[4];
 
-void idle_thread_function(void *);
-void main_game_thread(void *);
-void sched_run(void *);
+void x_9bc493d4(void *);
+void x_e090ae0b(void *);
+void x_0ab76ff1(void *);
 
 /**
  * @brief Initializes the OS and creates the idle thread (thread 1)
@@ -40,10 +40,10 @@ void sched_run(void *);
  * This function sets up the operating system and creates the first thread,
  * which is responsible for initializing other system components.
  */
-void initialize_os_and_idle_thread(void) {
+void x_74dda22f(void) {
     osInitialize();
-    osCreateThread(&sThread1, 1, &idle_thread_function, NULL, sThread1Stack + THREAD_1_STACK_SIZE, 10);
-    osStartThread(&sThread1);
+    osCreateThread(&x_12856845, 1, &x_9bc493d4, NULL, x_607bed22 + x_d84e55d1, 10);
+    osStartThread(&x_12856845);
 }
 
 /**
@@ -54,7 +54,7 @@ void initialize_os_and_idle_thread(void) {
  *
  * @param arg0 Unused argument (standard for thread entry points)
  */
-void idle_thread_function(void *arg0) {
+void x_9bc493d4(void *x_cc1d0de5) {
     osCreateViManager(OS_PRIORITY_VIMGR);
     if (osTvType == OS_TV_NTSC) {
         osViModeTable[OS_VI_NTSC_LAN1].comRegs.burst &= ~0xFF;
@@ -65,11 +65,11 @@ void idle_thread_function(void *arg0) {
     }
     osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON | OS_VI_GAMMA_DITHER_OFF | OS_VI_GAMMA_OFF);
     osViBlack(1);
-    osCreatePiManager(OS_PRIORITY_PIMGR, &sPIcmdQ, sPIcmdBuf, ARRAY_COUNT(sPIcmdBuf));
-    osCreateThread(&sThread3, 3, &main_game_thread, arg0, sThread3Stack + THREAD_3_STACK_SIZE, 10);
-    osCreateThread(&sThread4, 4, &sched_run, arg0, sThread4Stack + THREAD_4_STACK_SIZE, 11);
+    osCreatePiManager(OS_PRIORITY_PIMGR, &x_5eac317e, x_2c62e827, x_e286d4b7(x_2c62e827));
+    osCreateThread(&x_e5e2fe89, 3, &x_e090ae0b, x_cc1d0de5, x_4882e498 + x_b7a8fb33, 10);
+    osCreateThread(&x_5cb83de5, 4, &x_0ab76ff1, x_cc1d0de5, x_2923a40b + x_a819b0ad, 11);
     if (D_80049270 == 0) {
-        osStartThread(&sThread3);
+        osStartThread(&x_e5e2fe89);
     }
     osSetThreadPri(NULL, 0);
 
@@ -84,22 +84,22 @@ void idle_thread_function(void *arg0) {
  *
  * @param arg0 Unused argument (standard for thread entry points)
  */
-void main_game_thread(void *arg0) {
-    osCreateMesgQueue(&gSchedDMAQueue, gSchedDMAMessages, ARRAY_COUNT(gSchedDMAMessages));
+void x_e090ae0b(void *x_cc1d0de5) {
+    osCreateMesgQueue(&x_0c7f0f6c, x_4af5dc00, x_e286d4b7(x_4af5dc00));
 
-    osCreateMesgQueue(&gSchedSPQueue, D_8005AE74, ARRAY_COUNT(D_8005AE74));
-    osSetEventMesg(OS_EVENT_SP, &gSchedSPQueue, 0);
+    osCreateMesgQueue(&x_a4cdf342, D_8005AE74, x_e286d4b7(D_8005AE74));
+    osSetEventMesg(OS_EVENT_SP, &x_a4cdf342, 0);
 
-    osCreateMesgQueue(&gSchedDPQueue, gSchedDPMessages, ARRAY_COUNT(gSchedDPMessages));
-    osSetEventMesg(OS_EVENT_DP, &gSchedDPQueue, 0);
+    osCreateMesgQueue(&x_9e70b6be, x_76886650, x_e286d4b7(x_76886650));
+    osSetEventMesg(OS_EVENT_DP, &x_9e70b6be, 0);
 
-    osCreateMesgQueue(&gSchedVRetraceQueue, gSchedVRetraceMessages, ARRAY_COUNT(gSchedVRetraceMessages));
-    osViSetEvent(&gSchedVRetraceQueue, 0, 1);
+    osCreateMesgQueue(&x_76074a65, x_c35756dd, x_e286d4b7(x_c35756dd));
+    osViSetEvent(&x_76074a65, 0, 1);
 
-    cont_init(MAXCONTROLLERS);
+    x_083782bc(MAXCONTROLLERS);
 
-    osCreateMesgQueue(&gSchedTaskRequestQueue, D_8005AE7C, ARRAY_COUNT(D_8005AE7C));
-    osCreateMesgQueue(&gSchedSPTaskQueue, gSchedSPTaskMessages, ARRAY_COUNT(gSchedSPTaskMessages));
-    osStartThread(&sThread4);
-    game_mode_manager();
+    osCreateMesgQueue(&x_c0f7aef0, D_8005AE7C, x_e286d4b7(D_8005AE7C));
+    osCreateMesgQueue(&x_72d58a77, x_ae4dbfde, x_e286d4b7(x_ae4dbfde));
+    osStartThread(&x_5cb83de5);
+    x_14ae77a0();
 }

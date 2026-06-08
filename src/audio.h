@@ -1,4 +1,4 @@
-#ifndef _AUDIO_H
-#define _AUDIO_H
+#ifndef x_e304e645
+#define x_e304e645
 
 #endif

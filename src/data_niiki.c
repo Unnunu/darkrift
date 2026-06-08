@@ -1,6 +1,6 @@
 #include "common.h"
 
-HitZonesSetup D_800528B0 = {
+x_87049dce D_800528B0 = {
     8,
     11,
     3,
@@ -20,24 +20,24 @@ HitZonesSetup D_800528B0 = {
     { 0, 0, 0, 0 },
 };
 
-s16 D_80052930[] = { MOVE_ID_BS_COMBO_1_P1, MOVE_ID_BS_COMBO_1_P2, MOVE_ID_BS_COMBO_1_P3, 0 };
-s16 D_80052938[] = { MOVE_ID_BS_COMBO_1_P1, MOVE_ID_BS_COMBO_1_P2, MOVE_ID_COCOMBO_1_P1,
-                     MOVE_ID_COCOMBO_2_P1,  MOVE_ID_COCOMBO_2_P2,  0 };
-s16 D_80052944[] = { MOVE_ID_BS_COMBO_1_P1,
-                     MOVE_ID_BS_COMBO_1_P2,
-                     MOVE_ID_COCOMBO_1_P1,
-                     MOVE_ID_COCOMBO_2_P1,
-                     MOVE_ID_COCOMBO_3_P1,
-                     MOVE_ID_COCOMBO_3_P2,
+s16 D_80052930[] = { x_89bd7f51, x_0259aa31, x_42786438, 0 };
+s16 D_80052938[] = { x_89bd7f51, x_0259aa31, x_6a3715eb,
+                     x_a1422c65,  x_618f64b1,  0 };
+s16 D_80052944[] = { x_89bd7f51,
+                     x_0259aa31,
+                     x_6a3715eb,
+                     x_a1422c65,
+                     x_4f064f79,
+                     x_ac92c20e,
                      0 };
-s16 D_80052954[] = { MOVE_ID_RK_COMBO_1_P1,
-                     MOVE_ID_RK_COMBO_1_P2,
-                     MOVE_ID_COCOMBO_1_P1,
-                     MOVE_ID_COCOMBO_2_P1,
-                     MOVE_ID_COCOMBO_3_P1,
-                     MOVE_ID_COCOMBO_4_P1,
+s16 D_80052954[] = { x_51ee0576,
+                     x_ec4f2792,
+                     x_6a3715eb,
+                     x_a1422c65,
+                     x_4f064f79,
+                     x_f6306c80,
                      0 };
-s16 D_80052964[] = { MOVE_ID_RK_COMBO_1_P1, MOVE_ID_RK_COMBO_1_P2, MOVE_ID_RK_COMBO_1_P3, 0 };
+s16 D_80052964[] = { x_51ee0576, x_ec4f2792, x_b72448b3, 0 };
 s16 *D_8005296C[] = {
     D_80052930, D_80052938, D_80052944, D_80052954, D_80052964, NULL,
 };

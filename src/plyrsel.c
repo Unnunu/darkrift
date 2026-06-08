@@ -2,133 +2,133 @@
 #include "sprite_ids.h"
 #include "task.h"
 
-#define VAR_PLAYER_ID 0
-#define VAR_SPRITE_ID_SUM 1
-#define VAR_COUNTER 2
+#define x_0140ad12 0
+#define x_82e2e1db 1
+#define x_a44625a6 2
 
-#define CHEAT_END 0xFFFF
+#define x_d0d35cc6 0xFFFF
 
-typedef struct CheatCode {
+typedef struct x_64b038aa {
     /* 0x00 */ u16 *sequence;
     /* 0x04 */ void (*handler)(s16, u16, u16);
-    /* 0x08 */ s16 param1;
-    /* 0x0A */ s16 param2;
-} CheatCode; // size = 0xC
+    /* 0x08 */ s16 x_273c58c6;
+    /* 0x0A */ s16 x_08455b9a;
+} x_64b038aa; // size = 0xC
 
-typedef struct CheatCodeState {
-    /* 0x00 */ CheatCode *cheat;
-    /* 0x04 */ s32 numValid;
-    /* 0x08 */ s32 current_buttons;
-} CheatCodeState;
+typedef struct x_5aaa1a5b {
+    /* 0x00 */ x_64b038aa *x_3a1b45d4;
+    /* 0x04 */ s32 x_e4b35e9b;
+    /* 0x08 */ s32 x_30f758ad;
+} x_5aaa1a5b;
 
-extern s16 gPlayMode;
+extern s16 x_5e4e2788;
 extern s16 D_80049390;
-extern AssetSP2Sub3 *D_8013C234;
-extern AssetSP2Sub3 *D_8013C238;
+extern x_425d6ed3 *D_8013C234;
+extern x_425d6ed3 *D_8013C238;
 
-u8 gSonorkUnlocked = FALSE;
-u8 gDemitronUnlocked = FALSE;
+u8 x_5c207a56 = FALSE;
+u8 x_aee302fc = FALSE;
 
-Object *gCharacterPortrait[2];
-u32 gTournamentOpponentId;
+Object *x_696804c5[2];
+u32 x_6db66fc3;
 
-void func_8001E540(Object *obj, Object *arg1);
+void x_35e81a03(Object *obj, Object *x_84ff873b);
 
-void func_8001DE10(Object *obj) {
+void x_eb293927(Object *obj) {
     s16 a3;
     s16 v0;
-    s16 prev_buttons;
+    s16 x_33260da8;
     s16 buttons;
-    s16 playerId;
+    s16 x_30bbe547;
 
-    playerId = obj->vars[0];
-    prev_buttons = obj->vars[1];
-    obj->vars[1] = buttons = gPlayerInput[playerId].buttons;
-    a3 = obj->vars[2]--;
+    x_30bbe547 = obj->x_0f4167b4[0];
+    x_33260da8 = obj->x_0f4167b4[1];
+    obj->x_0f4167b4[1] = buttons = x_59ce598c[x_30bbe547].buttons;
+    a3 = obj->x_0f4167b4[2]--;
 
-    if (buttons & INP_START) {
+    if (buttons & x_9cefe76c) {
         if (a3 <= 0) {
-            obj->vars[2] = 10;
+            obj->x_0f4167b4[2] = 10;
         } else {
             return;
         }
     }
-    if (buttons & INP_ZTRIG) {
-        if (a3 <= 0 || buttons != prev_buttons) {
-            obj->vars[2] = 10;
+    if (buttons & x_1c9950cc) {
+        if (a3 <= 0 || buttons != x_33260da8) {
+            obj->x_0f4167b4[2] = 10;
         } else {
             return;
         }
     }
 
-    v0 = obj->frameIndex;
+    v0 = obj->x_5fcb1654;
 
-    if (buttons & (INP_LEFT | INP_RIGHT)) {
-        if (buttons & INP_LEFT) {
+    if (buttons & (x_ad1aebe6 | x_fc4a9735)) {
+        if (buttons & x_ad1aebe6) {
             obj->pos.x--;
         } else {
             obj->pos.x++;
         }
     }
-    if (buttons & (INP_UP | INP_DOWN)) {
-        if (buttons & INP_UP) {
+    if (buttons & (x_f7763ed8 | x_b8c91680)) {
+        if (buttons & x_f7763ed8) {
             obj->pos.y--;
         } else {
             obj->pos.y++;
         }
     }
-    if (buttons & (INP_R | INP_L)) {
-        if (buttons & INP_R) {
+    if (buttons & (x_64a28e7d | x_af0e0a9f)) {
+        if (buttons & x_64a28e7d) {
             obj->pos.z--;
         } else {
             obj->pos.z++;
         }
     }
-    if (buttons & (INP_B | INP_A)) {
-        if (buttons & INP_B) {
+    if (buttons & (x_c7089780 | x_29dbff14)) {
+        if (buttons & x_c7089780) {
             v0--;
         } else {
             v0++;
         }
     }
-    if (buttons & (INP_CRIGHT | INP_CLEFT)) {
-        if (buttons & INP_CRIGHT) {
-            obj->unk_058 += 0x10;
+    if (buttons & (x_37f8540c | x_ffe9ce36)) {
+        if (buttons & x_37f8540c) {
+            obj->x_860b579a += 0x10;
         } else {
-            obj->unk_058 -= 0x10;
+            obj->x_860b579a -= 0x10;
         }
     }
-    if (buttons & (INP_CUP | INP_CDOWN)) {
-        if (buttons & INP_CUP) {
-            obj->unk_05C += 0x10;
+    if (buttons & (x_84d0a51b | x_b2ae561b)) {
+        if (buttons & x_84d0a51b) {
+            obj->x_2fa0bbed += 0x10;
         } else {
-            obj->unk_05C -= 0x10;
+            obj->x_2fa0bbed -= 0x10;
         }
     }
 
     if (v0 < 0) {
-        v0 = obj->sprite_map->numSprites - 1;
+        v0 = obj->x_904eaf67->x_5b30c492 - 1;
     }
-    if (v0 > obj->sprite_map->numSprites - 1) {
+    if (v0 > obj->x_904eaf67->x_5b30c492 - 1) {
         v0 = 0;
     }
-    obj->frameIndex = v0;
+    obj->x_5fcb1654 = v0;
 }
 
-#ifdef NON_MATCHING
-s32 func_8001DFE4(s32 playerId) {
+#ifdef x_26a627fb
+s32 x_a2f41f91(s32 x_30bbe547) {
     s32 v1;
     u32 i;
     u32 j;
 
     v1 = 0;
-    for (i = AARON; i < NUM_CHARACTERS; i++) {
+    for (i = x_c4ddde6d; i < x_edb381f3; i++) {
         j = i;
-        if (j == DEMITRON || j == CHARACTER_5 || j == SONORK) {
+        if (j == x_ff5073d4 || j == x_e235676f || j == x_968cc9a2) {
             continue;
         }
         if (FALSE) {}
-        if (!D_800B6350[playerId][i]) {
+        if (!D_800B6350[x_30bbe547][i]) {
             v1++;
         }
     }
@@ -136,462 +136,462 @@ s32 func_8001DFE4(s32 playerId) {
     return v1;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001DFE4.s")
-s32 func_8001DFE4(s32 playerId);
+#pragma x_eda6f9e3("asm/nonmatchings/plyrsel/func_8001DFE4.s")
+s32 x_a2f41f91(s32 x_30bbe547);
 #endif
 
-#ifdef NON_EQUIVALENT
-u8 func_8001E188(u8 playerId) {
-    u8 sp14[NUM_CHARACTERS];
+#ifdef x_0fab73bf
+u8 x_7dc12b61(u8 x_30bbe547) {
+    u8 x_1be999e5[x_edb381f3];
     s32 pad;
-    u8 characterId;
+    u8 x_eb1fe45b;
     u8 v1;
     u8 i;
 
     v1 = 0;
-    characterId = gBattleSettings[1 - playerId].characterId;
+    x_eb1fe45b = x_77831b2c[1 - x_30bbe547].x_eb1fe45b;
 
-    if (D_80049390 != -1 && characterId != D_80049390 && D_80049390 != SONORK && D_80049390 != DEMITRON) {
-        characterId = D_80049390;
+    if (D_80049390 != -1 && x_eb1fe45b != D_80049390 && D_80049390 != x_968cc9a2 && D_80049390 != x_ff5073d4) {
+        x_eb1fe45b = D_80049390;
         D_80049390 = -1;
-        return characterId;
+        return x_eb1fe45b;
     }
 
     while (TRUE) {
-        for (i = 0; i < NUM_CHARACTERS; i++) {
-            if (characterId != i || characterId == DEMITRON || characterId == SONORK) {
-                if (i == DEMITRON || i == CHARACTER_5 || i == SONORK) {
+        for (i = 0; i < x_edb381f3; i++) {
+            if (x_eb1fe45b != i || x_eb1fe45b == x_ff5073d4 || x_eb1fe45b == x_968cc9a2) {
+                if (i == x_ff5073d4 || i == x_e235676f || i == x_968cc9a2) {
                     continue;
                 }
                 if (FALSE) {}
-                if (!D_800B6350[playerId][i]) {
-                    sp14[v1++] = i;
+                if (!D_800B6350[x_30bbe547][i]) {
+                    x_1be999e5[v1++] = i;
                 }
             }
         }
 
         if (v1 == 0) {
-            if (!D_800B6350[playerId][characterId] && characterId != DEMITRON) {
-                return characterId;
-            } else if (!D_800B6350[playerId][SONORK]) {
-                return SONORK;
-            } else if (!D_800B6350[playerId][DEMITRON] && gDifficulty >= DIFFICULTY_NORMAL) {
-                return DEMITRON;
+            if (!D_800B6350[x_30bbe547][x_eb1fe45b] && x_eb1fe45b != x_ff5073d4) {
+                return x_eb1fe45b;
+            } else if (!D_800B6350[x_30bbe547][x_968cc9a2]) {
+                return x_968cc9a2;
+            } else if (!D_800B6350[x_30bbe547][x_ff5073d4] && x_028e5846 >= x_c74743bd) {
+                return x_ff5073d4;
             } else {
                 return -1;
             }
         }
 
         if (v1 != 0) {
-            return sp14[gFrameCounter % v1];
+            return x_1be999e5[x_e3a9f332 % v1];
         }
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001E188.s")
-u8 func_8001E188(u8 playerId);
+#pragma x_eda6f9e3("asm/nonmatchings/plyrsel/func_8001E188.s")
+u8 x_7dc12b61(u8 x_30bbe547);
 #endif
 
-void func_8001E378(Object *obj) {
+void x_8aee6708(Object *obj) {
     Object *a1;
-    Object *sp3C[2];
-    Object *sp38;
-    s16 tmp;
-    s16 sp34;
-    u8 tens;
-    u8 ones;
+    Object *x_d16311d7[2];
+    Object *x_49781937;
+    s16 x_cf10d3eb;
+    s16 x_93463df6;
+    u8 x_523c079f;
+    u8 x_d413f652;
 
-    a1 = obj->varObj[1];
+    a1 = obj->x_e2f64c57[1];
 
-    tmp = obj->vars[2]--;
-    if (tmp < 0) {
-        sp3C[PLAYER_1] = gCharacterPortrait[PLAYER_1]->varObj[4];
-        sp3C[PLAYER_2] = gCharacterPortrait[PLAYER_2]->varObj[4];
-        sp38 = gCharacterPortrait[PLAYER_1]->varObj[5];
+    x_cf10d3eb = obj->x_0f4167b4[2]--;
+    if (x_cf10d3eb < 0) {
+        x_d16311d7[x_83106b21] = x_696804c5[x_83106b21]->x_e2f64c57[4];
+        x_d16311d7[x_6f0b3be3] = x_696804c5[x_6f0b3be3]->x_e2f64c57[4];
+        x_49781937 = x_696804c5[x_83106b21]->x_e2f64c57[5];
 
-        if (gPlayMode == PLAY_MODE_TOURNAMENT_P1 || gPlayMode == PLAY_MODE_TOURNAMENT_P2) {
-            sp34 = (gPlayMode == PLAY_MODE_TOURNAMENT_P2);
-            TASK_END(gCharacterPortrait[sp34]->currentTask);
-            sp3C[sp34]->vars[7] = 20;
-            func_8001E540(gCharacterPortrait[sp34], sp38);
-            gCharacterPortrait[1 - sp34]->vars[6] = func_8001E188(1 - sp34);
+        if (x_5e4e2788 == x_e483bf48 || x_5e4e2788 == x_557d3dd6) {
+            x_93463df6 = (x_5e4e2788 == x_557d3dd6);
+            x_5e6f40dd(x_696804c5[x_93463df6]->x_64946db0);
+            x_d16311d7[x_93463df6]->x_0f4167b4[7] = 20;
+            x_35e81a03(x_696804c5[x_93463df6], x_49781937);
+            x_696804c5[1 - x_93463df6]->x_0f4167b4[6] = x_7dc12b61(1 - x_93463df6);
         } else {
-            TASK_END(gCharacterPortrait[PLAYER_1]->currentTask);
-            TASK_END(gCharacterPortrait[PLAYER_2]->currentTask);
-            sp3C[PLAYER_1]->vars[7] = 20;
-            sp3C[PLAYER_2]->vars[7] = 20;
-            func_8001E540(gCharacterPortrait[PLAYER_1], sp38);
-            func_8001E540(gCharacterPortrait[PLAYER_2], sp38);
+            x_5e6f40dd(x_696804c5[x_83106b21]->x_64946db0);
+            x_5e6f40dd(x_696804c5[x_6f0b3be3]->x_64946db0);
+            x_d16311d7[x_83106b21]->x_0f4167b4[7] = 20;
+            x_d16311d7[x_6f0b3be3]->x_0f4167b4[7] = 20;
+            x_35e81a03(x_696804c5[x_83106b21], x_49781937);
+            x_35e81a03(x_696804c5[x_6f0b3be3], x_49781937);
         }
 
-        TASK_END(obj->currentTask);
+        x_5e6f40dd(obj->x_64946db0);
         return;
     }
 
-    tens = tmp / 10;
-    ones = tmp - tens * 10;
-    obj->frameIndex = ones;
-    a1->frameIndex = tens;
-    obj->currentTask->start_delay = 60;
+    x_523c079f = x_cf10d3eb / 10;
+    x_d413f652 = x_cf10d3eb - x_523c079f * 10;
+    obj->x_5fcb1654 = x_d413f652;
+    a1->x_5fcb1654 = x_523c079f;
+    obj->x_64946db0->x_c7f843c2 = 60;
 }
 
-void func_8001E540(Object *obj, Object *arg1) {
-    s16 playerId;
+void x_35e81a03(Object *obj, Object *x_84ff873b) {
+    s16 x_30bbe547;
 
-    playerId = obj->vars[0];
-    arg1->vars[8]++;
+    x_30bbe547 = obj->x_0f4167b4[0];
+    x_84ff873b->x_0f4167b4[8]++;
 
-    if (obj->frameIndex >= 5) {
-        arg1->vars[9 + playerId] = gBattleSettings[playerId].characterId = obj->frameIndex + 1;
+    if (obj->x_5fcb1654 >= 5) {
+        x_84ff873b->x_0f4167b4[9 + x_30bbe547] = x_77831b2c[x_30bbe547].x_eb1fe45b = obj->x_5fcb1654 + 1;
     } else {
-        arg1->vars[9 + playerId] = gBattleSettings[playerId].characterId = obj->frameIndex;
+        x_84ff873b->x_0f4167b4[9 + x_30bbe547] = x_77831b2c[x_30bbe547].x_eb1fe45b = obj->x_5fcb1654;
     }
 
-    if (arg1->vars[11] == -1) {
-        arg1->vars[11] = playerId;
+    if (x_84ff873b->x_0f4167b4[11] == -1) {
+        x_84ff873b->x_0f4167b4[11] = x_30bbe547;
     }
 }
 
-s16 func_8001E5D8(s16 playerId) {
-    return (u32) (gBattleSettings[playerId].initialHp * 80 * 0x10000) / 400 / 0x10000;
+s16 x_ff9be353(s16 x_30bbe547) {
+    return (u32) (x_77831b2c[x_30bbe547].x_c35c64af * 80 * 0x10000) / 400 / 0x10000;
 }
 
-void func_8001E624(Object *obj) {
-    s16 playerId;
+void x_6aa7260b(Object *obj) {
+    s16 x_30bbe547;
     s16 buttons;
     Object *a0;
-    s16 v03;
+    s16 x_464d68e5;
 
-    playerId = obj->vars[0];
-    obj->vars[1] = buttons = gPlayerInput[playerId].buttons;
+    x_30bbe547 = obj->x_0f4167b4[0];
+    obj->x_0f4167b4[1] = buttons = x_59ce598c[x_30bbe547].buttons;
 
-    if (buttons & INP_START) {
-        sound_play(2, gAudioMono != 0 ? 0 : playerId + 4);
-        func_8001E540(obj, obj->varObj[5]);
-        TASK_END(obj->currentTask);
-    } else if (buttons & (INP_LEFT | INP_RIGHT)) {
-        a0 = obj->varObj[9];
-        if (playerId == PLAYER_1 && (buttons & INP_LEFT) || playerId == PLAYER_2 && (buttons & INP_RIGHT)) {
-            gBattleSettings[playerId].initialHp += obj->vars[7];
-            if (gBattleSettings[playerId].initialHp > 400) {
-                gBattleSettings[playerId].initialHp = 400;
-                a0->vars[2] = 15;
+    if (buttons & x_9cefe76c) {
+        x_7e194d55(2, x_a7d9a1e8 != 0 ? 0 : x_30bbe547 + 4);
+        x_35e81a03(obj, obj->x_e2f64c57[5]);
+        x_5e6f40dd(obj->x_64946db0);
+    } else if (buttons & (x_ad1aebe6 | x_fc4a9735)) {
+        a0 = obj->x_e2f64c57[9];
+        if (x_30bbe547 == x_83106b21 && (buttons & x_ad1aebe6) || x_30bbe547 == x_6f0b3be3 && (buttons & x_fc4a9735)) {
+            x_77831b2c[x_30bbe547].x_c35c64af += obj->x_0f4167b4[7];
+            if (x_77831b2c[x_30bbe547].x_c35c64af > 400) {
+                x_77831b2c[x_30bbe547].x_c35c64af = 400;
+                a0->x_0f4167b4[2] = 15;
             }
         } else {
-            gBattleSettings[playerId].initialHp -= obj->vars[7];
-            if (gBattleSettings[playerId].initialHp < 40) {
-                gBattleSettings[playerId].initialHp = 40;
-                a0->vars[2] = 15;
+            x_77831b2c[x_30bbe547].x_c35c64af -= obj->x_0f4167b4[7];
+            if (x_77831b2c[x_30bbe547].x_c35c64af < 40) {
+                x_77831b2c[x_30bbe547].x_c35c64af = 40;
+                a0->x_0f4167b4[2] = 15;
             }
         }
 
-        v03 = func_8001E5D8(playerId);
-        if (playerId == PLAYER_1) {
-            D_8013C234->offsetX = D_8013C234->offsetX - D_8013C234->leftS + D_8013C234->rightS - v03 - 8;
-            D_8013C234->leftS = D_8013C234->rightS - v03 - 8;
+        x_464d68e5 = x_ff9be353(x_30bbe547);
+        if (x_30bbe547 == x_83106b21) {
+            D_8013C234->x_e7f1952a = D_8013C234->x_e7f1952a - D_8013C234->x_b88b3756 + D_8013C234->rightS - x_464d68e5 - 8;
+            D_8013C234->x_b88b3756 = D_8013C234->rightS - x_464d68e5 - 8;
         } else {
-            D_8013C238->rightS = D_8013C238->leftS + v03;
+            D_8013C238->rightS = D_8013C238->x_b88b3756 + x_464d68e5;
         }
 
-        if (obj->vars[8]-- < 1) {
-            obj->vars[8] = 1;
-            if (++obj->vars[7] > 28) {
-                obj->vars[7] = 28;
+        if (obj->x_0f4167b4[8]-- < 1) {
+            obj->x_0f4167b4[8] = 1;
+            if (++obj->x_0f4167b4[7] > 28) {
+                obj->x_0f4167b4[7] = 28;
             }
         }
     } else {
-        obj->vars[7] = 1;
+        obj->x_0f4167b4[7] = 1;
     }
 }
 
-void func_8001E834(Object *obj, Object *arg1, Object *arg2) {
+void x_a70125d9(Object *obj, Object *x_84ff873b, Object *x_2092f891) {
     s16 v0;
-    s16 tmp;
-    u8 hundreds;
-    u8 tens;
-    u8 ones;
-    s32 tmp2;
+    s16 x_cf10d3eb;
+    u8 x_a8677df7;
+    u8 x_523c079f;
+    u8 x_d413f652;
+    s32 x_6e3cc34e;
 
-    v0 = obj->vars[0];
+    v0 = obj->x_0f4167b4[0];
 
-    if (obj->vars[2] > 0) {
-        obj->vars[2]--;
-        obj->frameIndex = 0x29 + (gBattleSettings[v0].initialHp == 400);
-        arg2->flags |= OBJ_FLAG_HIDDEN;
-        arg1->flags |= OBJ_FLAG_HIDDEN;
-        obj->flags &= ~OBJ_FLAG_HIDDEN;
+    if (obj->x_0f4167b4[2] > 0) {
+        obj->x_0f4167b4[2]--;
+        obj->x_5fcb1654 = 0x29 + (x_77831b2c[v0].x_c35c64af == 400);
+        x_2092f891->flags |= x_c537cafa;
+        x_84ff873b->flags |= x_c537cafa;
+        obj->flags &= ~x_c537cafa;
         return;
     }
 
-    tmp = gBattleSettings[v0].initialHp * 100 / 400;
-    hundreds = tmp / 100;
-    tmp -= hundreds * 100;
-    tens = tmp / 10;
-    ones = tmp - tens * 10;
+    x_cf10d3eb = x_77831b2c[v0].x_c35c64af * 100 / 400;
+    x_a8677df7 = x_cf10d3eb / 100;
+    x_cf10d3eb -= x_a8677df7 * 100;
+    x_523c079f = x_cf10d3eb / 10;
+    x_d413f652 = x_cf10d3eb - x_523c079f * 10;
 
-    arg2->flags &= ~OBJ_FLAG_HIDDEN;
-    arg1->flags &= ~OBJ_FLAG_HIDDEN;
-    obj->flags &= ~OBJ_FLAG_HIDDEN;
+    x_2092f891->flags &= ~x_c537cafa;
+    x_84ff873b->flags &= ~x_c537cafa;
+    obj->flags &= ~x_c537cafa;
 
-    if (!hundreds) {
-        arg2->flags |= OBJ_FLAG_HIDDEN;
-        if (tens == 0) {
-            arg1->flags |= OBJ_FLAG_HIDDEN;
+    if (!x_a8677df7) {
+        x_2092f891->flags |= x_c537cafa;
+        if (x_523c079f == 0) {
+            x_84ff873b->flags |= x_c537cafa;
         }
     }
 
-    if (!obj->vars[1]) {
-        arg2->flags |= OBJ_FLAG_HIDDEN;
-        arg1->flags |= OBJ_FLAG_HIDDEN;
-        obj->flags |= OBJ_FLAG_HIDDEN;
+    if (!obj->x_0f4167b4[1]) {
+        x_2092f891->flags |= x_c537cafa;
+        x_84ff873b->flags |= x_c537cafa;
+        obj->flags |= x_c537cafa;
     }
 
-    if ((gFrameCounter % 15) == 0) {
-        tmp2 = ((gFrameCounter % 30) == 0);
-        obj->vars[1] = tmp2;
+    if ((x_e3a9f332 % 15) == 0) {
+        x_6e3cc34e = ((x_e3a9f332 % 30) == 0);
+        obj->x_0f4167b4[1] = x_6e3cc34e;
     }
 
-    obj->frameIndex = 0x1C + ones;
-    arg1->frameIndex = 0x1C + tens;
-    arg2->frameIndex = 0x1C + hundreds;
+    obj->x_5fcb1654 = 0x1C + x_d413f652;
+    x_84ff873b->x_5fcb1654 = 0x1C + x_523c079f;
+    x_2092f891->x_5fcb1654 = 0x1C + x_a8677df7;
 }
 
-void func_8001EA24(Object *obj) {
-    s16 sp36;
+void x_6e0d3e38(Object *obj) {
+    s16 x_b2bb447b;
     Object *v0;
-    Object *sp2C;
-    Object *sp28;
-    Object *sp24;
+    Object *x_32f1d6e2;
+    Object *x_5aee6615;
+    Object *x_5bbba600;
     s32 v02;
 
-    sp2C = obj->varObj[5];
-    sp28 = obj->varObj[6];
-    sp24 = obj->varObj[7];
-    func_8001E834(sp2C, sp28, sp24);
+    x_32f1d6e2 = obj->x_e2f64c57[5];
+    x_5aee6615 = obj->x_e2f64c57[6];
+    x_5bbba600 = obj->x_e2f64c57[7];
+    x_a70125d9(x_32f1d6e2, x_5aee6615, x_5bbba600);
 
-    sp36 = obj->vars[0];
-    v02 = obj->vars[2]--; // reuse required to match
+    x_b2bb447b = obj->x_0f4167b4[0];
+    v02 = obj->x_0f4167b4[2]--; // reuse required to match
     if (v02 < 0) {
-        obj->vars[2] = 15;
-        obj->frameIndex = 0x4f - obj->frameIndex;
+        obj->x_0f4167b4[2] = 15;
+        obj->x_5fcb1654 = 0x4f - obj->x_5fcb1654;
     }
 
-    if (gCharacterPortrait[sp36]->vars[1] & INP_START) {
-        v0 = obj->varObj[3];
-        v0->flags |= OBJ_FLAG_DELETE;
-        v0 = obj->varObj[4];
-        v0->flags |= OBJ_FLAG_DELETE;
-        sp2C->flags |= OBJ_FLAG_DELETE;
-        sp28->flags |= OBJ_FLAG_DELETE;
-        sp24->flags |= OBJ_FLAG_DELETE;
-        obj->flags |= OBJ_FLAG_DELETE;
+    if (x_696804c5[x_b2bb447b]->x_0f4167b4[1] & x_9cefe76c) {
+        v0 = obj->x_e2f64c57[3];
+        v0->flags |= x_f51cb721;
+        v0 = obj->x_e2f64c57[4];
+        v0->flags |= x_f51cb721;
+        x_32f1d6e2->flags |= x_f51cb721;
+        x_5aee6615->flags |= x_f51cb721;
+        x_5bbba600->flags |= x_f51cb721;
+        obj->flags |= x_f51cb721;
     }
 
-    v02 = func_8001E5D8(sp36);
-    if (sp36 == PLAYER_1) {
-        obj->pos.x = obj->vars[1] - v02;
+    v02 = x_ff9be353(x_b2bb447b);
+    if (x_b2bb447b == x_83106b21) {
+        obj->pos.x = obj->x_0f4167b4[1] - v02;
     } else {
-        obj->pos.x = obj->vars[1] + v02;
+        obj->pos.x = obj->x_0f4167b4[1] + v02;
     }
 }
 
-void func_8001EB58(Object *obj) {
+void x_0362e0e0(Object *obj) {
     s16 s1;
-    s16 v03;
-    UIElement empty_bar = { 11, NULL, 0, 0x1000, "bars.sp2" };
-    UIElement two_triangles = { 39, func_8001EA24, 0, 0x1000, "bars.sp2" };
-    UIElement digit_zero = { 28, NULL, 0, 0x1000, "bars.sp2" };
-    Vec4i spB8[] = { { 78, 220, 0, 0 }, { 248, 220, 0, 0 } };
-    Vec4i sp98[] = { { 77, 220, 0, 0 }, { 248, 220, 0, 0 } };
-    Vec4i sp78[] = { { 39, 216, 0, 0 }, { 289, 216, 0, 0 } };
-    Vec4i sp58[] = { { 60, 203, 0, 0 }, { 229, 203, 0, 0 } };
+    s16 x_464d68e5;
+    x_f0d7e70f x_d65a2f4e = { 11, NULL, 0, 0x1000, "bars.sp2" };
+    x_f0d7e70f x_15702e8a = { 39, x_6e0d3e38, 0, 0x1000, "bars.sp2" };
+    x_f0d7e70f x_f4254db5 = { 28, NULL, 0, 0x1000, "bars.sp2" };
+    x_88f11482 x_522f451d[] = { { 78, 220, 0, 0 }, { 248, 220, 0, 0 } };
+    x_88f11482 x_d753d975[] = { { 77, 220, 0, 0 }, { 248, 220, 0, 0 } };
+    x_88f11482 x_dcab8ab0[] = { { 39, 216, 0, 0 }, { 289, 216, 0, 0 } };
+    x_88f11482 x_fd09f53e[] = { { 60, 203, 0, 0 }, { 229, 203, 0, 0 } };
     Object *s2;
-    Object *s2a;
-    Object *s2b;
+    Object *x_2bf9ce78;
+    Object *x_7f4af95e;
     Object *s3;
     Object *v0;
 
-    s1 = obj->vars[0];
+    s1 = obj->x_0f4167b4[0];
 
-    s3 = create_ui_element(&spB8[s1], &empty_bar, CONTEXT_EEFF);
-    v0 = create_ui_element(&sp78[s1], &two_triangles, CONTEXT_EEFF);
-    v0->vars[0] = s1;
-    v0->vars[3] = s3;
-    s3 = create_ui_element(&sp98[s1], &empty_bar, CONTEXT_EEFF);
-    s3->frameIndex = 15 - s1;
-    v0->vars[4] = s3;
+    s3 = x_12014163(&x_522f451d[s1], &x_d65a2f4e, x_24b231d4);
+    v0 = x_12014163(&x_dcab8ab0[s1], &x_15702e8a, x_24b231d4);
+    v0->x_0f4167b4[0] = s1;
+    v0->x_0f4167b4[3] = s3;
+    s3 = x_12014163(&x_d753d975[s1], &x_d65a2f4e, x_24b231d4);
+    s3->x_5fcb1654 = 15 - s1;
+    v0->x_0f4167b4[4] = s3;
 
-    v03 = func_8001E5D8(s1);
+    x_464d68e5 = x_ff9be353(s1);
     if (s1 == 0) {
-        D_8013C234 = s3->sprite_map->sprites[15].parts;
-        D_8013C234->offsetX = D_8013C234->offsetX - D_8013C234->leftS + D_8013C234->rightS - v03 - 8;
-        D_8013C234->leftS = D_8013C234->rightS - v03 - 8;
-        v0->vars[1] = 119;
-        v0->pos.x = 119 - v03;
+        D_8013C234 = s3->x_904eaf67->x_a34b89cc[15].parts;
+        D_8013C234->x_e7f1952a = D_8013C234->x_e7f1952a - D_8013C234->x_b88b3756 + D_8013C234->rightS - x_464d68e5 - 8;
+        D_8013C234->x_b88b3756 = D_8013C234->rightS - x_464d68e5 - 8;
+        v0->x_0f4167b4[1] = 119;
+        v0->pos.x = 119 - x_464d68e5;
     } else {
-        D_8013C238 = s3->sprite_map->sprites[14].parts;
-        D_8013C238->rightS = D_8013C238->leftS + v03;
-        v0->vars[1] = 0xD1;
-        v0->pos.x = 0xD1 + v03;
+        D_8013C238 = s3->x_904eaf67->x_a34b89cc[14].parts;
+        D_8013C238->rightS = D_8013C238->x_b88b3756 + x_464d68e5;
+        v0->x_0f4167b4[1] = 0xD1;
+        v0->pos.x = 0xD1 + x_464d68e5;
     }
 
-    s2 = create_ui_element(&sp58[s1], &digit_zero, CONTEXT_EEFF);
-    sp58[s1].x += 10;
-    s2a = create_ui_element(&sp58[s1], &digit_zero, CONTEXT_EEFF);
-    sp58[s1].x += 10;
-    s2b = create_ui_element(&sp58[s1], &digit_zero, CONTEXT_EEFF);
-    s2b->vars[0] = s1;
+    s2 = x_12014163(&x_fd09f53e[s1], &x_f4254db5, x_24b231d4);
+    x_fd09f53e[s1].x += 10;
+    x_2bf9ce78 = x_12014163(&x_fd09f53e[s1], &x_f4254db5, x_24b231d4);
+    x_fd09f53e[s1].x += 10;
+    x_7f4af95e = x_12014163(&x_fd09f53e[s1], &x_f4254db5, x_24b231d4);
+    x_7f4af95e->x_0f4167b4[0] = s1;
 
-    func_8001E834(s2b, s2a, s2);
+    x_a70125d9(x_7f4af95e, x_2bf9ce78, s2);
 
-    v0->vars[5] = s2b;
-    v0->vars[6] = s2a;
-    v0->vars[7] = s2;
+    v0->x_0f4167b4[5] = x_7f4af95e;
+    v0->x_0f4167b4[6] = x_2bf9ce78;
+    v0->x_0f4167b4[7] = s2;
 
-    obj->vars[1] = 0;
-    obj->vars[9] = s2b;
-    obj->currentTask->func = func_8001E624;
-    obj->currentTask->start_delay = 20;
+    obj->x_0f4167b4[1] = 0;
+    obj->x_0f4167b4[9] = x_7f4af95e;
+    obj->x_64946db0->x_f6382727 = x_6aa7260b;
+    obj->x_64946db0->x_c7f843c2 = 20;
 }
 
-void plyrsel_portrait_update_2(Object *obj) {
-    Object *unkObj;
+void x_0f87e747(Object *obj) {
+    Object *x_aaadc3e8;
     s16 v1;
-    s16 playerId;
+    s16 x_30bbe547;
 
-    if (!(gGlobalFlags & GAME_FLAG_1000)) {
+    if (!(x_e30d50d2 & x_e3ff543d)) {
         return;
     }
 
-    playerId = obj->vars[0];
-    unkObj = obj->varObj[5];
+    x_30bbe547 = obj->x_0f4167b4[0];
+    x_aaadc3e8 = obj->x_e2f64c57[5];
 
-    if (!gBattleSettings[1 - playerId].isCpu && unkObj->vars[8] == 0) {
+    if (!x_77831b2c[1 - x_30bbe547].x_03604d94 && x_aaadc3e8->x_0f4167b4[8] == 0) {
         return;
     }
 
-    if (obj->vars[2]-- > 0) {
+    if (obj->x_0f4167b4[2]-- > 0) {
         return;
     }
 
-    obj->vars[2] = 15;
-    if (obj->frameIndex >= 5) {
-        v1 = obj->frameIndex + 1;
+    obj->x_0f4167b4[2] = 15;
+    if (obj->x_5fcb1654 >= 5) {
+        v1 = obj->x_5fcb1654 + 1;
     } else {
-        v1 = obj->frameIndex;
+        v1 = obj->x_5fcb1654;
     }
 
-    if (obj->vars[6] == 9 || obj->vars[6] == 1) {
-        v1 = obj->vars[6];
-        obj->frameIndex = v1 - (v1 == SONORK);
+    if (obj->x_0f4167b4[6] == 9 || obj->x_0f4167b4[6] == 1) {
+        v1 = obj->x_0f4167b4[6];
+        obj->x_5fcb1654 = v1 - (v1 == x_968cc9a2);
     }
 
-    if (v1 == obj->vars[6]) {
-        sound_play(2, gAudioMono != 0 ? 0 : playerId + 4);
-        func_8001E540(obj, unkObj);
-        unkObj = obj->varObj[4];
-        unkObj->vars[7] = 20;
-        TASK_END(obj->currentTask);
+    if (v1 == obj->x_0f4167b4[6]) {
+        x_7e194d55(2, x_a7d9a1e8 != 0 ? 0 : x_30bbe547 + 4);
+        x_35e81a03(obj, x_aaadc3e8);
+        x_aaadc3e8 = obj->x_e2f64c57[4];
+        x_aaadc3e8->x_0f4167b4[7] = 20;
+        x_5e6f40dd(obj->x_64946db0);
         return;
     }
 
-    sound_play(2, 6 + playerId);
+    x_7e194d55(2, 6 + x_30bbe547);
 
-    if (abs(v1 - obj->vars[6]) <= 5) {
-        if (v1 < obj->vars[6]) {
+    if (abs(v1 - obj->x_0f4167b4[6]) <= 5) {
+        if (v1 < obj->x_0f4167b4[6]) {
             v1++;
-            if (v1 == CHARACTER_5 || v1 == SONORK || v1 == DEMITRON) {
+            if (v1 == x_e235676f || v1 == x_968cc9a2 || v1 == x_ff5073d4) {
                 v1++;
             }
         } else {
             v1--;
-            if (v1 == CHARACTER_5 || v1 == SONORK || v1 == DEMITRON) {
+            if (v1 == x_e235676f || v1 == x_968cc9a2 || v1 == x_ff5073d4) {
                 v1--;
             }
         }
     } else {
-        if (v1 < obj->vars[6]) {
+        if (v1 < obj->x_0f4167b4[6]) {
             v1--;
-            if (v1 == CHARACTER_5 || v1 == SONORK || v1 == DEMITRON) {
+            if (v1 == x_e235676f || v1 == x_968cc9a2 || v1 == x_ff5073d4) {
                 v1--;
             }
         } else {
             v1++;
-            if (v1 == CHARACTER_5 || v1 == SONORK || v1 == DEMITRON) {
+            if (v1 == x_e235676f || v1 == x_968cc9a2 || v1 == x_ff5073d4) {
                 v1++;
             }
         }
     }
 
-    if (v1 < AARON) {
-        v1 = ZENMURON;
-    } else if (v1 > ZENMURON) {
-        v1 = AARON;
+    if (v1 < x_c4ddde6d) {
+        v1 = x_379149a4;
+    } else if (v1 > x_379149a4) {
+        v1 = x_c4ddde6d;
     }
 
-    if (v1 >= CHARACTER_5) {
-        obj->frameIndex = v1 - 1;
+    if (v1 >= x_e235676f) {
+        obj->x_5fcb1654 = v1 - 1;
     } else {
-        obj->frameIndex = v1;
+        obj->x_5fcb1654 = v1;
     }
 }
 
-void plyrsel_portrait_update(Object *obj) {
+void x_34648a7a(Object *obj) {
     s16 a1;
     s16 v0;
     s16 v1;
-    s32 tmp2;
+    s32 x_6e3cc34e;
     s16 a3;
-    s16 tmp;
+    s16 x_cf10d3eb;
 
-    a3 = obj->vars[0];
-    a1 = obj->vars[1];
+    a3 = obj->x_0f4167b4[0];
+    a1 = obj->x_0f4167b4[1];
 
-    if (gPlayMode == PLAY_MODE_PRACTICE) {
-        Object *unkObj = obj->varObj[5];
-        if (a3 != gPracticingPlayer) {
-            if (unkObj->vars[8] == 0) {
-                obj->vars[1] = 0x800;
-                obj->vars[2] = 60;
+    if (x_5e4e2788 == x_79c2dc5b) {
+        Object *x_aaadc3e8 = obj->x_e2f64c57[5];
+        if (a3 != x_08051143) {
+            if (x_aaadc3e8->x_0f4167b4[8] == 0) {
+                obj->x_0f4167b4[1] = 0x800;
+                obj->x_0f4167b4[2] = 60;
                 return;
             }
         }
-        tmp2 = gPracticingPlayer;
-        obj->vars[1] = v1 = gPlayerInput[tmp2].buttons;
+        x_6e3cc34e = x_08051143;
+        obj->x_0f4167b4[1] = v1 = x_59ce598c[x_6e3cc34e].buttons;
     } else {
-        obj->vars[1] = v1 = gPlayerInput[a3].buttons;
+        obj->x_0f4167b4[1] = v1 = x_59ce598c[a3].buttons;
     }
 
-    tmp = obj->vars[2]--;
-    if (tmp <= 0 || v1 != a1) {
-        obj->vars[2] = 15;
-        if (v1 & INP_START) {
-            Object *unkObj;
-            sound_play(2, gAudioMono != 0 ? 0 : a3 + 4);
-            unkObj = obj->varObj[4];
-            unkObj->vars[7] = 20;
+    x_cf10d3eb = obj->x_0f4167b4[2]--;
+    if (x_cf10d3eb <= 0 || v1 != a1) {
+        obj->x_0f4167b4[2] = 15;
+        if (v1 & x_9cefe76c) {
+            Object *x_aaadc3e8;
+            x_7e194d55(2, x_a7d9a1e8 != 0 ? 0 : a3 + 4);
+            x_aaadc3e8 = obj->x_e2f64c57[4];
+            x_aaadc3e8->x_0f4167b4[7] = 20;
 
-            if (gPlayMode == PLAY_MODE_2_PLAYERS) {
-                func_8001EB58(obj);
+            if (x_5e4e2788 == x_96f25e0a) {
+                x_0362e0e0(obj);
             } else {
-                func_8001E540(obj, obj->varObj[5]);
-                if (gPlayMode == PLAY_MODE_TOURNAMENT_P1 || gPlayMode == PLAY_MODE_TOURNAMENT_P2) {
-                    gCharacterPortrait[1 - a3]->vars[6] = func_8001E188(1 - a3);
+                x_35e81a03(obj, obj->x_e2f64c57[5]);
+                if (x_5e4e2788 == x_e483bf48 || x_5e4e2788 == x_557d3dd6) {
+                    x_696804c5[1 - a3]->x_0f4167b4[6] = x_7dc12b61(1 - a3);
                 }
-                TASK_END(obj->currentTask);
+                x_5e6f40dd(obj->x_64946db0);
             }
-        } else if (v1 & (INP_LEFT | INP_RIGHT)) {
-            sound_play(2, 6 + a3);
+        } else if (v1 & (x_ad1aebe6 | x_fc4a9735)) {
+            x_7e194d55(2, 6 + a3);
 
-            v0 = obj->frameIndex;
-            if (v1 & INP_LEFT) {
+            v0 = obj->x_5fcb1654;
+            if (v1 & x_ad1aebe6) {
                 v0--;
             } else {
                 v0++;
             }
 
-            if (!gSonorkUnlocked && v0 == 8 || !gDemitronUnlocked && v0 == 1) {
-                if (v1 & INP_LEFT) {
+            if (!x_5c207a56 && v0 == 8 || !x_aee302fc && v0 == 1) {
+                if (v1 & x_ad1aebe6) {
                     v0--;
                 } else {
                     v0++;
@@ -604,493 +604,493 @@ void plyrsel_portrait_update(Object *obj) {
                 v0 = 0;
             }
 
-            obj->frameIndex = v0;
+            obj->x_5fcb1654 = v0;
         }
     }
 }
 
-void plyrsel_player_label_update(Object *obj) {
-    if (obj->vars[7] != 0) {
-        if (obj->vars[8]-- == 0) {
-            obj->frameIndex = obj->vars[0] * 4 - obj->frameIndex + 171;
-            obj->vars[8] = -254 - (obj->vars[0] * 2 - obj->frameIndex) * 3;
+void x_044d3222(Object *obj) {
+    if (obj->x_0f4167b4[7] != 0) {
+        if (obj->x_0f4167b4[8]-- == 0) {
+            obj->x_5fcb1654 = obj->x_0f4167b4[0] * 4 - obj->x_5fcb1654 + 171;
+            obj->x_0f4167b4[8] = -254 - (obj->x_0f4167b4[0] * 2 - obj->x_5fcb1654) * 3;
         }
 
-        if (--obj->vars[7] == 0) {
-            obj->frameIndex = obj->vars[0] * 2 + 86;
-            TASK_END(obj->currentTask);
+        if (--obj->x_0f4167b4[7] == 0) {
+            obj->x_5fcb1654 = obj->x_0f4167b4[0] * 2 + 86;
+            x_5e6f40dd(obj->x_64946db0);
         }
     }
 }
 
-void plyrsel_image_vs_update(Object *obj) {
-    if (obj->vars[8] < 2) {
+void x_6fa3f96e(Object *obj) {
+    if (obj->x_0f4167b4[8] < 2) {
         return;
     }
 
-    if (obj->vars[8] == 2) {
-        obj->vars[8] = 3;
-        obj->currentTask->start_delay = 10;
-        gCharacterPortrait[0]->flags |= OBJ_FLAG_4000000;
-        gCharacterPortrait[1]->flags |= OBJ_FLAG_4000000;
+    if (obj->x_0f4167b4[8] == 2) {
+        obj->x_0f4167b4[8] = 3;
+        obj->x_64946db0->x_c7f843c2 = 10;
+        x_696804c5[0]->flags |= x_5a44854c;
+        x_696804c5[1]->flags |= x_5a44854c;
         return;
     }
 
-    if (obj->vars[8] == 3) {
-        obj->vars[8] = 4;
-        gCharacterPortrait[0]->flags |= OBJ_FLAG_4000000;
-        gCharacterPortrait[1]->flags |= OBJ_FLAG_4000000;
-        obj->flags &= ~OBJ_FLAG_HIDDEN;
-        obj->currentTask->start_delay = 20;
+    if (obj->x_0f4167b4[8] == 3) {
+        obj->x_0f4167b4[8] = 4;
+        x_696804c5[0]->flags |= x_5a44854c;
+        x_696804c5[1]->flags |= x_5a44854c;
+        obj->flags &= ~x_c537cafa;
+        obj->x_64946db0->x_c7f843c2 = 20;
         return;
     }
 
-    gBattleSettings[PLAYER_1].assetContext = gBattleSettings[PLAYER_2].assetContext = 0;
-    gBattleSettings[PLAYER_1].characterId = obj->vars[9];
-    gBattleSettings[PLAYER_2].characterId = obj->vars[10];
-    gBattleSettings[PLAYER_1].roundsWon = gBattleSettings[PLAYER_2].roundsWon = 0;
-    gBattleSettings[PLAYER_1].initialHp &= ~3;
-    gBattleSettings[PLAYER_2].initialHp &= ~3;
+    x_77831b2c[x_83106b21].x_fb21ca8c = x_77831b2c[x_6f0b3be3].x_fb21ca8c = 0;
+    x_77831b2c[x_83106b21].x_eb1fe45b = obj->x_0f4167b4[9];
+    x_77831b2c[x_6f0b3be3].x_eb1fe45b = obj->x_0f4167b4[10];
+    x_77831b2c[x_83106b21].x_b2b764b3 = x_77831b2c[x_6f0b3be3].x_b2b764b3 = 0;
+    x_77831b2c[x_83106b21].x_c35c64af &= ~3;
+    x_77831b2c[x_6f0b3be3].x_c35c64af &= ~3;
     if (0) {} // required to match
-    gGlobalFlags |= GAME_FLAG_MODE_DONE;
+    x_e30d50d2 |= x_bee364e0;
 
-    if (gPlayMode == PLAY_MODE_TOURNAMENT_P1 || gPlayMode == PLAY_MODE_TOURNAMENT_P2) {
-        gNextGameMode = gBattleSettings[gTournamentOpponentId].characterId + GAME_MODE_BATTLE_AARON;
-        if (gBattleSettings[PLAYER_1].consecutiveWins + gBattleSettings[PLAYER_2].consecutiveWins == 0) {
-            gNextGameMode = gBattleSettings[1 - gTournamentOpponentId].characterId + GAME_MODE_INTRO_AARON;
-            gBattleSettings[1 - gTournamentOpponentId].assetContext = 1;
+    if (x_5e4e2788 == x_e483bf48 || x_5e4e2788 == x_557d3dd6) {
+        x_e38a6e19 = x_77831b2c[x_6db66fc3].x_eb1fe45b + x_a98e3fb7;
+        if (x_77831b2c[x_83106b21].x_7d8e7a6f + x_77831b2c[x_6f0b3be3].x_7d8e7a6f == 0) {
+            x_e38a6e19 = x_77831b2c[1 - x_6db66fc3].x_eb1fe45b + x_d61e86e9;
+            x_77831b2c[1 - x_6db66fc3].x_fb21ca8c = 1;
         } else {
-            gBattleSettings[gTournamentOpponentId].assetContext = 1;
+            x_77831b2c[x_6db66fc3].x_fb21ca8c = 1;
         }
-        if (gBattleSettings[gTournamentOpponentId].characterId == DEMITRON) {
-            gNextGameMode = GAME_MODE_30;
+        if (x_77831b2c[x_6db66fc3].x_eb1fe45b == x_ff5073d4) {
+            x_e38a6e19 = x_3509e8f6;
         }
     } else {
-        gNextGameMode = gBattleSettings[obj->vars[11]].characterId + GAME_MODE_BATTLE_AARON;
-        gBattleSettings[obj->vars[11]].assetContext++;
+        x_e38a6e19 = x_77831b2c[obj->x_0f4167b4[11]].x_eb1fe45b + x_a98e3fb7;
+        x_77831b2c[obj->x_0f4167b4[11]].x_fb21ca8c++;
     }
 
-    TASK_END(obj->currentTask);
+    x_5e6f40dd(obj->x_64946db0);
 }
 
-void plyrsel_practice_cpu_update(Object *obj) {
-    s16 playerId;
-    Object *playerLabel;
+void x_7447fdfb(Object *obj) {
+    s16 x_30bbe547;
+    Object *x_e9508efc;
 
-    if (obj->vars[2]-- < 0) {
-        obj->vars[2] = 15;
-        obj->frameIndex = obj->vars[1] - obj->frameIndex;
+    if (obj->x_0f4167b4[2]-- < 0) {
+        obj->x_0f4167b4[2] = 15;
+        obj->x_5fcb1654 = obj->x_0f4167b4[1] - obj->x_5fcb1654;
     }
 
-    playerId = obj->vars[0];
-    playerLabel = gCharacterPortrait[playerId]->varObj[4];
-    if (playerLabel->vars[7]) {
-        obj->flags |= OBJ_FLAG_DELETE;
-    }
-}
-
-void plyrsel_practice_user_update(Object *obj) {
-    if (obj->vars[VAR_COUNTER]-- < 0) {
-        obj->vars[VAR_COUNTER] = 15;
-        obj->frameIndex = obj->vars[VAR_SPRITE_ID_SUM] - obj->frameIndex;
-    }
-
-    if (gPlayerInput[obj->vars[VAR_PLAYER_ID]].buttons & INP_START) {
-        obj->frameIndex = SPR_PRA_P2_CPU - 2 * obj->vars[0];
-        obj->vars[VAR_SPRITE_ID_SUM] = obj->frameIndex * 2 + 1;
-        obj->pos.x = 245 - obj->vars[VAR_PLAYER_ID] * 167;
-
-        obj->vars[VAR_PLAYER_ID] = 1 - obj->vars[VAR_PLAYER_ID];
-        obj->currentTask->func = plyrsel_practice_cpu_update;
+    x_30bbe547 = obj->x_0f4167b4[0];
+    x_e9508efc = x_696804c5[x_30bbe547]->x_e2f64c57[4];
+    if (x_e9508efc->x_0f4167b4[7]) {
+        obj->flags |= x_f51cb721;
     }
 }
 
-void run_player_selection_mode(void) {
-    Object *player_labels[2];
-    Object *image_vs_obj;
+void x_95e711cc(Object *obj) {
+    if (obj->x_0f4167b4[x_a44625a6]-- < 0) {
+        obj->x_0f4167b4[x_a44625a6] = 15;
+        obj->x_5fcb1654 = obj->x_0f4167b4[x_82e2e1db] - obj->x_5fcb1654;
+    }
+
+    if (x_59ce598c[obj->x_0f4167b4[x_0140ad12]].buttons & x_9cefe76c) {
+        obj->x_5fcb1654 = x_aaa2c518 - 2 * obj->x_0f4167b4[0];
+        obj->x_0f4167b4[x_82e2e1db] = obj->x_5fcb1654 * 2 + 1;
+        obj->pos.x = 245 - obj->x_0f4167b4[x_0140ad12] * 167;
+
+        obj->x_0f4167b4[x_0140ad12] = 1 - obj->x_0f4167b4[x_0140ad12];
+        obj->x_64946db0->x_f6382727 = x_7447fdfb;
+    }
+}
+
+void x_2c1b660c(void) {
+    Object *x_523933cc[2];
+    Object *x_fd096fa8;
     Object *obj;
-    s16 player1;
-    Object *tens_obj;
-    UIElement portrait_p1 = { GROUP1_AARON, plyrsel_portrait_update, 0, 0x1000, "grpp1.sp2" };
-    UIElement portrait_p2 = { GROUP2_AARON, plyrsel_portrait_update, 0, 0x1000, "grpp2.sp2" };
-    UIElement label_player1 = { OPTIONS_PLAYER_1, plyrsel_player_label_update, 0, 0x1000, "options2.sp2" };
-    UIElement label_player2 = { OPTIONS_PLAYER_2, plyrsel_player_label_update, 0, 0x1000, "options2.sp2" };
-    UIElement image_vs = { 26, plyrsel_image_vs_update, 0, 0x1000, "bars.sp2" };
-    UIElement counter_ones = { 0, func_8001E378, 0, 0x1000, "bars.sp2" };
-    UIElement counter_tens = { 6, NULL, 0, 0x1000, "bars.sp2" };
-    UIElement label_press_start = { OPTIONS_PRESS_START, plyrsel_practice_cpu_update, 0, 0x1000, "options2.sp2" };
-    UIElement p1_user = { SPR_PRA_P1_USER, plyrsel_practice_user_update, 0, 0x1000, "practice.sp2" };
-    UIElement p2_user = { SPR_PRA_P2_USER, plyrsel_practice_user_update, 0, 0x1000, "practice.sp2" };
-    Vec4i portrait_p1_pos = { 84, 129, 0, 0 };
-    Vec4i portrait_p2_pos = { 252, 129, 0, 0 };
-    Vec4i label_player1_pos = { 56, 60, 0, 0 };
-    Vec4i label_player2_pos = { 224, 60, 0, 0 };
-    Vec4i image_vs_pos = { 162, 130, 0, 0 };
-    Vec4i counter_ones_pos = { 171, 75, 0, 0 };
-    Vec4i counter_tens_pos = { 158, 75, 0, 0 };
-    Vec4i sp70 = { 82, 217, 0, 0 };
-    Vec4i sp60 = { 251, 217, 0, 0 };
-    Vec4i sp50 = { 78, 217, 0, 0 };
-    Vec4i sp40 = { 245, 217, 0, 0 };
-    s16 char_p1, char_p2;
+    s16 x_13d65ace;
+    Object *x_994c79b3;
+    x_f0d7e70f x_c3be5f96 = { x_0857a6f7, x_34648a7a, 0, 0x1000, "grpp1.sp2" };
+    x_f0d7e70f x_a8ee65ba = { x_fa2a4086, x_34648a7a, 0, 0x1000, "grpp2.sp2" };
+    x_f0d7e70f x_37539a8c = { x_bdf6d812, x_044d3222, 0, 0x1000, "options2.sp2" };
+    x_f0d7e70f x_b610af55 = { x_76b8b516, x_044d3222, 0, 0x1000, "options2.sp2" };
+    x_f0d7e70f x_5601faec = { 26, x_6fa3f96e, 0, 0x1000, "bars.sp2" };
+    x_f0d7e70f x_652f5000 = { 0, x_8aee6708, 0, 0x1000, "bars.sp2" };
+    x_f0d7e70f x_4fea1147 = { 6, NULL, 0, 0x1000, "bars.sp2" };
+    x_f0d7e70f x_8fcab22c = { x_35414b8d, x_7447fdfb, 0, 0x1000, "options2.sp2" };
+    x_f0d7e70f x_3bfdbaa4 = { x_b4568ba1, x_95e711cc, 0, 0x1000, "practice.sp2" };
+    x_f0d7e70f x_93121a84 = { x_823ba8a7, x_95e711cc, 0, 0x1000, "practice.sp2" };
+    x_88f11482 x_5c2a3a42 = { 84, 129, 0, 0 };
+    x_88f11482 x_0cbc7c1c = { 252, 129, 0, 0 };
+    x_88f11482 x_a3f0c785 = { 56, 60, 0, 0 };
+    x_88f11482 x_3dfff383 = { 224, 60, 0, 0 };
+    x_88f11482 x_3eeec712 = { 162, 130, 0, 0 };
+    x_88f11482 x_9d69f44f = { 171, 75, 0, 0 };
+    x_88f11482 x_9e7fdb6b = { 158, 75, 0, 0 };
+    x_88f11482 x_4a1fd4d1 = { 82, 217, 0, 0 };
+    x_88f11482 x_331089fa = { 251, 217, 0, 0 };
+    x_88f11482 x_2a89e429 = { 78, 217, 0, 0 };
+    x_88f11482 x_081c4eef = { 245, 217, 0, 0 };
+    s16 x_c16a42f3, x_fb97b65c;
     s32 unused;
 
-    char_p1 = gBattleSettings[PLAYER_1].characterId;
-    char_p2 = gBattleSettings[PLAYER_2].characterId;
+    x_c16a42f3 = x_77831b2c[x_83106b21].x_eb1fe45b;
+    x_fb97b65c = x_77831b2c[x_6f0b3be3].x_eb1fe45b;
 
-    if (char_p1 == DEMITRON && gDemitronUnlocked == 0) {
-        char_p1 = GORE;
+    if (x_c16a42f3 == x_ff5073d4 && x_aee302fc == 0) {
+        x_c16a42f3 = x_537ef8a7;
     }
-    if (char_p2 == DEMITRON && gDemitronUnlocked == 0) {
-        char_p2 = GORE;
+    if (x_fb97b65c == x_ff5073d4 && x_aee302fc == 0) {
+        x_fb97b65c = x_537ef8a7;
     }
-    if (char_p1 == SONORK && !gSonorkUnlocked) {
-        char_p1 = AARON;
+    if (x_c16a42f3 == x_968cc9a2 && !x_5c207a56) {
+        x_c16a42f3 = x_c4ddde6d;
     }
-    if (char_p2 == SONORK && !gSonorkUnlocked) {
-        char_p2 = AARON;
-    }
-
-    if (char_p1 >= CHARACTER_5) {
-        char_p1--;
-    }
-    if (char_p2 >= CHARACTER_5) {
-        char_p2--;
+    if (x_fb97b65c == x_968cc9a2 && !x_5c207a56) {
+        x_fb97b65c = x_c4ddde6d;
     }
 
-    gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = TRUE;
-    D_8008012C |= GFX_FLAG_20;
-    gGlobalFlags |= GAME_FLAG_4;
+    if (x_c16a42f3 >= x_e235676f) {
+        x_c16a42f3--;
+    }
+    if (x_fb97b65c >= x_e235676f) {
+        x_fb97b65c--;
+    }
 
-    asset_open_folder("/plyrsel/plyrsel", CONTEXT_EEFF);
-    asset_open_folder("/plyrsel/music", CONTEXT_EEFF);
+    x_59ce598c[x_83106b21].x_40ccbb76 = x_59ce598c[x_6f0b3be3].x_40ccbb76 = TRUE;
+    D_8008012C |= x_8df87377;
+    x_e30d50d2 |= x_86c5bc33;
 
-    gGlobalFlags |= GAME_FLAG_800;
+    x_0928eec2("/plyrsel/plyrsel", x_24b231d4);
+    x_0928eec2("/plyrsel/music", x_24b231d4);
 
-    switch (gPlayMode) {
-        case PLAY_MODE_TOURNAMENT_P1:
-            obj = create_ui_element(&sp70, &label_press_start, CONTEXT_EEFF);
-            obj->vars[0] = PLAYER_1;
-            obj->vars[1] = 167;
-            asset_open_folder("/plyrsel/select", CONTEXT_EEFF);
+    x_e30d50d2 |= x_3b812e44;
+
+    switch (x_5e4e2788) {
+        case x_e483bf48:
+            obj = x_12014163(&x_4a1fd4d1, &x_8fcab22c, x_24b231d4);
+            obj->x_0f4167b4[0] = x_83106b21;
+            obj->x_0f4167b4[1] = 167;
+            x_0928eec2("/plyrsel/select", x_24b231d4);
             break;
-        case PLAY_MODE_TOURNAMENT_P2:
-            obj = create_ui_element(&sp60, &label_press_start, CONTEXT_EEFF);
-            obj->vars[0] = PLAYER_2;
-            obj->vars[1] = 167;
-            asset_open_folder("/plyrsel/select", CONTEXT_EEFF);
+        case x_557d3dd6:
+            obj = x_12014163(&x_331089fa, &x_8fcab22c, x_24b231d4);
+            obj->x_0f4167b4[0] = x_6f0b3be3;
+            obj->x_0f4167b4[1] = 167;
+            x_0928eec2("/plyrsel/select", x_24b231d4);
             break;
-        case PLAY_MODE_2_PLAYERS:
-        case PLAY_MODE_30:
-        case PLAY_MODE_50:
-            obj = create_ui_element(&sp70, &label_press_start, CONTEXT_EEFF);
-            obj->vars[0] = 0;
-            obj->vars[1] = 167;
-            obj = create_ui_element(&sp60, &label_press_start, CONTEXT_EEFF);
-            obj->vars[0] = 1;
-            obj->vars[1] = 167;
-            asset_open_folder("/plyrsel/select2", CONTEXT_EEFF);
+        case x_96f25e0a:
+        case x_3658fb97:
+        case x_a5f164ca:
+            obj = x_12014163(&x_4a1fd4d1, &x_8fcab22c, x_24b231d4);
+            obj->x_0f4167b4[0] = 0;
+            obj->x_0f4167b4[1] = 167;
+            obj = x_12014163(&x_331089fa, &x_8fcab22c, x_24b231d4);
+            obj->x_0f4167b4[0] = 1;
+            obj->x_0f4167b4[1] = 167;
+            x_0928eec2("/plyrsel/select2", x_24b231d4);
             break;
-        case PLAY_MODE_PRACTICE:
-            if (gPracticingPlayer == PLAYER_1) {
-                obj = create_ui_element(&sp50, &p1_user, CONTEXT_EEFF);
-                obj->vars[VAR_PLAYER_ID] = PLAYER_1;
-                obj->vars[VAR_SPRITE_ID_SUM] = SPR_PRA_P1_USER * 2 + 1;
+        case x_79c2dc5b:
+            if (x_08051143 == x_83106b21) {
+                obj = x_12014163(&x_2a89e429, &x_3bfdbaa4, x_24b231d4);
+                obj->x_0f4167b4[x_0140ad12] = x_83106b21;
+                obj->x_0f4167b4[x_82e2e1db] = x_b4568ba1 * 2 + 1;
             } else {
-                obj = create_ui_element(&sp40, &p2_user, CONTEXT_EEFF);
-                obj->vars[VAR_PLAYER_ID] = PLAYER_2;
-                obj->vars[VAR_SPRITE_ID_SUM] = SPR_PRA_P2_USER * 2 + 1;
+                obj = x_12014163(&x_081c4eef, &x_93121a84, x_24b231d4);
+                obj->x_0f4167b4[x_0140ad12] = x_6f0b3be3;
+                obj->x_0f4167b4[x_82e2e1db] = x_823ba8a7 * 2 + 1;
             }
-            asset_open_folder("/plyrsel/select3", CONTEXT_EEFF);
+            x_0928eec2("/plyrsel/select3", x_24b231d4);
             break;
     }
 
-    bg_layer_create("select", 0, 8, 0, 0, TEX_FLAG_1, CONTEXT_EEFF);
+    x_a0e73601("select", 0, 8, 0, 0, x_96186256, x_24b231d4);
 
-    gCharacterPortrait[0] = create_ui_element(&portrait_p1_pos, &portrait_p1, CONTEXT_EEFF);
-    gCharacterPortrait[0]->vars[0] = PLAYER_1;
-    gCharacterPortrait[0]->frameIndex = char_p1;
-    gCharacterPortrait[0]->currentTask->start_delay = 20;
+    x_696804c5[0] = x_12014163(&x_5c2a3a42, &x_c3be5f96, x_24b231d4);
+    x_696804c5[0]->x_0f4167b4[0] = x_83106b21;
+    x_696804c5[0]->x_5fcb1654 = x_c16a42f3;
+    x_696804c5[0]->x_64946db0->x_c7f843c2 = 20;
 
-    gCharacterPortrait[1] = create_ui_element(&portrait_p2_pos, &portrait_p2, CONTEXT_EEFF);
-    gCharacterPortrait[1]->vars[0] = PLAYER_2;
-    gCharacterPortrait[1]->frameIndex = char_p2;
-    gCharacterPortrait[1]->currentTask->start_delay = 20;
+    x_696804c5[1] = x_12014163(&x_0cbc7c1c, &x_a8ee65ba, x_24b231d4);
+    x_696804c5[1]->x_0f4167b4[0] = x_6f0b3be3;
+    x_696804c5[1]->x_5fcb1654 = x_fb97b65c;
+    x_696804c5[1]->x_64946db0->x_c7f843c2 = 20;
 
-    player_labels[0] = create_ui_element(&label_player1_pos, &label_player1, CONTEXT_EEFF);
-    player_labels[0]->vars[0] = PLAYER_1;
+    x_523933cc[0] = x_12014163(&x_a3f0c785, &x_37539a8c, x_24b231d4);
+    x_523933cc[0]->x_0f4167b4[0] = x_83106b21;
 
-    player_labels[1] = create_ui_element(&label_player2_pos, &label_player2, CONTEXT_EEFF);
-    player_labels[1]->vars[0] = PLAYER_2;
+    x_523933cc[1] = x_12014163(&x_3dfff383, &x_b610af55, x_24b231d4);
+    x_523933cc[1]->x_0f4167b4[0] = x_6f0b3be3;
 
-    image_vs_obj = create_ui_element(&image_vs_pos, &image_vs, CONTEXT_EEFF);
-    image_vs_obj->flags |= OBJ_FLAG_HIDDEN;
-    image_vs_obj->vars[11] = -1;
-    image_vs_obj->flags |= OBJ_FLAG_4000000;
+    x_fd096fa8 = x_12014163(&x_3eeec712, &x_5601faec, x_24b231d4);
+    x_fd096fa8->flags |= x_c537cafa;
+    x_fd096fa8->x_0f4167b4[11] = -1;
+    x_fd096fa8->flags |= x_5a44854c;
 
-    tens_obj = create_ui_element(&counter_tens_pos, &counter_tens, CONTEXT_EEFF);
-    obj = create_ui_element(&counter_ones_pos, &counter_ones, CONTEXT_EEFF);
-    obj->vars[2] = 60;
-    obj->varObj[1] = tens_obj;
-    obj->varObj[5] = image_vs_obj;
+    x_994c79b3 = x_12014163(&x_9e7fdb6b, &x_4fea1147, x_24b231d4);
+    obj = x_12014163(&x_9d69f44f, &x_652f5000, x_24b231d4);
+    obj->x_0f4167b4[2] = 60;
+    obj->x_e2f64c57[1] = x_994c79b3;
+    obj->x_e2f64c57[5] = x_fd096fa8;
 
-    gCharacterPortrait[0]->varObj[4] = player_labels[0];
-    gCharacterPortrait[0]->varObj[5] = image_vs_obj;
-    gCharacterPortrait[1]->varObj[4] = player_labels[1];
-    gCharacterPortrait[1]->varObj[5] = image_vs_obj;
+    x_696804c5[0]->x_e2f64c57[4] = x_523933cc[0];
+    x_696804c5[0]->x_e2f64c57[5] = x_fd096fa8;
+    x_696804c5[1]->x_e2f64c57[4] = x_523933cc[1];
+    x_696804c5[1]->x_e2f64c57[5] = x_fd096fa8;
 
-    switch (gPlayMode) {
-        case PLAY_MODE_TOURNAMENT_P1:
-        case PLAY_MODE_TOURNAMENT_P2:
-            player1 = (gPlayMode == PLAY_MODE_TOURNAMENT_P2);
-            gCharacterPortrait[1 - player1]->currentTask->func = plyrsel_portrait_update_2;
-            gCharacterPortrait[1 - player1]->currentTask->start_delay = 0;
-            gCharacterPortrait[1 - player1]->currentTask->flags = TASK_FLAG_ENABLED;
+    switch (x_5e4e2788) {
+        case x_e483bf48:
+        case x_557d3dd6:
+            x_13d65ace = (x_5e4e2788 == x_557d3dd6);
+            x_696804c5[1 - x_13d65ace]->x_64946db0->x_f6382727 = x_0f87e747;
+            x_696804c5[1 - x_13d65ace]->x_64946db0->x_c7f843c2 = 0;
+            x_696804c5[1 - x_13d65ace]->x_64946db0->flags = x_0fb55613;
 
-            if (gBattleSettings[player1].roundsWon != 0) {
-                gCharacterPortrait[1 - player1]->vars[6] = func_8001E188(1 - player1);
-                TASK_END(gCharacterPortrait[player1]->currentTask);
-                player_labels[player1]->vars[7] = 20;
-                image_vs_obj->vars[8] = 1;
-                image_vs_obj->vars[9 + player1] = gBattleSettings[player1].characterId;
+            if (x_77831b2c[x_13d65ace].x_b2b764b3 != 0) {
+                x_696804c5[1 - x_13d65ace]->x_0f4167b4[6] = x_7dc12b61(1 - x_13d65ace);
+                x_5e6f40dd(x_696804c5[x_13d65ace]->x_64946db0);
+                x_523933cc[x_13d65ace]->x_0f4167b4[7] = 20;
+                x_fd096fa8->x_0f4167b4[8] = 1;
+                x_fd096fa8->x_0f4167b4[9 + x_13d65ace] = x_77831b2c[x_13d65ace].x_eb1fe45b;
             }
             break;
-        case PLAY_MODE_30:
-            gCharacterPortrait[0]->currentTask->func = plyrsel_portrait_update_2;
-            gCharacterPortrait[0]->currentTask->start_delay = 0;
-            gCharacterPortrait[0]->currentTask->flags = TASK_FLAG_ENABLED;
-            gCharacterPortrait[0]->vars[6] = func_8001E188(0);
+        case x_3658fb97:
+            x_696804c5[0]->x_64946db0->x_f6382727 = x_0f87e747;
+            x_696804c5[0]->x_64946db0->x_c7f843c2 = 0;
+            x_696804c5[0]->x_64946db0->flags = x_0fb55613;
+            x_696804c5[0]->x_0f4167b4[6] = x_7dc12b61(0);
 
-            gCharacterPortrait[1]->currentTask->func = plyrsel_portrait_update_2;
-            gCharacterPortrait[1]->currentTask->start_delay = 0;
-            gCharacterPortrait[1]->currentTask->flags = TASK_FLAG_ENABLED;
-            gCharacterPortrait[1]->vars[6] = func_8001E188(1);
+            x_696804c5[1]->x_64946db0->x_f6382727 = x_0f87e747;
+            x_696804c5[1]->x_64946db0->x_c7f843c2 = 0;
+            x_696804c5[1]->x_64946db0->flags = x_0fb55613;
+            x_696804c5[1]->x_0f4167b4[6] = x_7dc12b61(1);
             break;
-        case PLAY_MODE_2_PLAYERS:
-        case PLAY_MODE_PRACTICE:
-        case PLAY_MODE_50:
+        case x_96f25e0a:
+        case x_79c2dc5b:
+        case x_a5f164ca:
             break;
     }
 
-    game_main_loop();
-    func_8002630C(CONTEXT_EEFF);
+    x_82df7d23();
+    x_ad9889cf(x_24b231d4);
 }
 
-void unlock_sonork_demitron(s16 playerId, u16 sonork, u16 demitron) {
-    gSonorkUnlocked = sonork;
-    gDemitronUnlocked = demitron;
+void x_d74e99e0(s16 x_30bbe547, u16 x_1819574a, u16 x_6388adb6) {
+    x_5c207a56 = x_1819574a;
+    x_aee302fc = x_6388adb6;
 }
 
-void func_800201C4(s16 charId, s16 playerId) {
-    gGlobalFlags |= GAME_FLAG_MODE_DONE;
-    gNextGameMode = GAME_MODE_34;
+void x_9f82ca8d(s16 x_05e00b01, s16 x_30bbe547) {
+    x_e30d50d2 |= x_bee364e0;
+    x_e38a6e19 = x_fa31c524;
 
-    gBattleSettings[playerId].characterId = charId;
-    gBattleSettings[playerId].isCpu = FALSE;
-    gBattleSettings[playerId].assetContext = 0;
+    x_77831b2c[x_30bbe547].x_eb1fe45b = x_05e00b01;
+    x_77831b2c[x_30bbe547].x_03604d94 = FALSE;
+    x_77831b2c[x_30bbe547].x_fb21ca8c = 0;
 
-    gBattleSettings[1 - playerId].characterId = DEMITRON;
-    gBattleSettings[1 - playerId].isCpu = TRUE;
-    gBattleSettings[1 - playerId].assetContext = 1;
+    x_77831b2c[1 - x_30bbe547].x_eb1fe45b = x_ff5073d4;
+    x_77831b2c[1 - x_30bbe547].x_03604d94 = TRUE;
+    x_77831b2c[1 - x_30bbe547].x_fb21ca8c = 1;
 
-    func_800194E0(playerId + PLAY_MODE_TOURNAMENT_P1);
+    x_49d7310c(x_30bbe547 + x_e483bf48);
 }
 
-void cheat_character_ending(s16 playerId, u16 charId, u16 arg2) {
-    func_800201C4(charId, playerId);
+void x_47955556(s16 x_30bbe547, u16 x_05e00b01, u16 x_2092f891) {
+    x_9f82ca8d(x_05e00b01, x_30bbe547);
 }
 
-void func_80020298(s16 playerId, u16 arg1, u16 arg2) {
-    func_800201C4(DEMITRON, playerId);
-    gNextGameMode = GAME_MODE_30;
+void x_5b38dd2f(s16 x_30bbe547, u16 x_84ff873b, u16 x_2092f891) {
+    x_9f82ca8d(x_ff5073d4, x_30bbe547);
+    x_e38a6e19 = x_3509e8f6;
 }
 
-void func_800202D0(s16 playerId, u16 arg1, u16 arg2) {
-    gBattleSettings[PLAYER_1].aiDifficulty = gBattleSettings[PLAYER_2].aiDifficulty = arg1;
+void x_2cd57f74(s16 x_30bbe547, u16 x_84ff873b, u16 x_2092f891) {
+    x_77831b2c[x_83106b21].x_cc57155e = x_77831b2c[x_6f0b3be3].x_cc57155e = x_84ff873b;
 }
 
-void func_800202F0(s16 playerId, u16 arg1, u16 arg2) {
+void x_7caf7d71(s16 x_30bbe547, u16 x_84ff873b, u16 x_2092f891) {
     s16 i;
 
-    gBattleSettings[1 - playerId].assetContext = 1;
-    gBattleSettings[playerId].assetContext = 0;
-    gBattleSettings[playerId].isCpu = FALSE;
-    gBattleSettings[1 - playerId].isCpu = TRUE;
+    x_77831b2c[1 - x_30bbe547].x_fb21ca8c = 1;
+    x_77831b2c[x_30bbe547].x_fb21ca8c = 0;
+    x_77831b2c[x_30bbe547].x_03604d94 = FALSE;
+    x_77831b2c[1 - x_30bbe547].x_03604d94 = TRUE;
     D_800801F1 = TRUE;
 
     for (i = 0; i < 11; i++) {
         D_800B6350[0][i] = D_800B6350[1][i] = 0;
     }
 
-    gGlobalFlags |= GAME_FLAG_MODE_DONE;
-    func_800194E0(playerId + PLAY_MODE_TOURNAMENT_P1);
+    x_e30d50d2 |= x_bee364e0;
+    x_49d7310c(x_30bbe547 + x_e483bf48);
 }
 
-void func_800203A8(s16 playerId, u16 charId, u16 gameMode) {
-    gBattleSettings[1 - playerId].characterId = charId;
-    gBattleSettings[1 - playerId].isCpu = TRUE;
-    gNextGameMode = gameMode;
+void x_d8d91897(s16 x_30bbe547, u16 x_05e00b01, u16 x_7cedc3fb) {
+    x_77831b2c[1 - x_30bbe547].x_eb1fe45b = x_05e00b01;
+    x_77831b2c[1 - x_30bbe547].x_03604d94 = TRUE;
+    x_e38a6e19 = x_7cedc3fb;
 }
 
-u16 cheat_code_play_as_sonork[] = { INP_L, INP_R, INP_CUP, INP_CDOWN, INP_CLEFT, INP_CRIGHT, CHEAT_END };
-u16 cheat_code_play_as_sonork_or_demitron[] = { INP_A, INP_B, INP_R, INP_L, INP_CDOWN, INP_CUP, CHEAT_END };
+u16 x_872278ef[] = { x_af0e0a9f, x_64a28e7d, x_84d0a51b, x_b2ae561b, x_ffe9ce36, x_37f8540c, x_d0d35cc6 };
+u16 x_af558c92[] = { x_29dbff14, x_c7089780, x_64a28e7d, x_af0e0a9f, x_b2ae561b, x_84d0a51b, x_d0d35cc6 };
 
-u16 cheat_code_ending_aaron[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_R, INP_R, INP_CLEFT, CHEAT_END };
-u16 cheat_code_ending_demonica[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_R, INP_R, INP_CUP, CHEAT_END };
-u16 cheat_code_ending_eve[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_R, INP_R, INP_CRIGHT, CHEAT_END };
-u16 cheat_code_ending_gore[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_R, INP_R, INP_CDOWN, CHEAT_END };
-u16 cheat_code_ending_morphix[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_R, INP_R, INP_B, CHEAT_END };
-u16 cheat_code_ending_niiki[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_R, INP_R, INP_A, CHEAT_END };
-u16 cheat_code_ending_scarlet[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_L, INP_L, INP_CLEFT, CHEAT_END };
-u16 cheat_code_ending_sonork[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_L, INP_L, INP_CUP, CHEAT_END };
-u16 cheat_code_ending_zenmuron[] = {
-    INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_L, INP_L, INP_CRIGHT, CHEAT_END
+u16 x_da3e5ada[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_64a28e7d, x_64a28e7d, x_ffe9ce36, x_d0d35cc6 };
+u16 x_2b6f9733[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_d0d35cc6 };
+u16 x_7eaa6bad[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_64a28e7d, x_64a28e7d, x_37f8540c, x_d0d35cc6 };
+u16 x_e694052f[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_64a28e7d, x_64a28e7d, x_b2ae561b, x_d0d35cc6 };
+u16 x_49a7f1c5[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_64a28e7d, x_64a28e7d, x_c7089780, x_d0d35cc6 };
+u16 x_0f81075a[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_64a28e7d, x_64a28e7d, x_29dbff14, x_d0d35cc6 };
+u16 x_42d5a2ea[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_af0e0a9f, x_af0e0a9f, x_ffe9ce36, x_d0d35cc6 };
+u16 x_b6970c24[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_af0e0a9f, x_af0e0a9f, x_84d0a51b, x_d0d35cc6 };
+u16 x_f9cc0201[] = {
+    x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_af0e0a9f, x_af0e0a9f, x_37f8540c, x_d0d35cc6
 };
-u16 cheat_code_ending_demitron[] = {
-    INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_L, INP_L, INP_CDOWN, CHEAT_END
+u16 x_a8689ca4[] = {
+    x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_af0e0a9f, x_af0e0a9f, x_b2ae561b, x_d0d35cc6
 };
 
-u16 D_8004A114[] = { INP_UP, INP_CLEFT, INP_R, INP_RIGHT, INP_DOWN, INP_B, INP_B, INP_B, INP_CUP, CHEAT_END };
+u16 D_8004A114[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_c7089780, x_c7089780, x_c7089780, x_84d0a51b, x_d0d35cc6 };
 
-u16 D_8004A128[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_B, INP_B, INP_B, INP_B, CHEAT_END };
-u16 D_8004A13C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_CLEFT, CHEAT_END };
-u16 D_8004A14C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_CUP, CHEAT_END };
-u16 D_8004A15C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_CRIGHT, CHEAT_END };
-u16 D_8004A16C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_CDOWN, CHEAT_END };
-u16 D_8004A17C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_A, INP_CLEFT, CHEAT_END };
-u16 D_8004A18C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_A, INP_CUP, CHEAT_END };
-u16 D_8004A19C[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_A, INP_CRIGHT, CHEAT_END };
-u16 D_8004A1AC[] = { INP_LEFT, INP_CUP, INP_CLEFT, INP_CUP, INP_A, INP_A, INP_CDOWN, CHEAT_END };
+u16 D_8004A128[] = { x_ad1aebe6, x_84d0a51b, x_ffe9ce36, x_84d0a51b, x_c7089780, x_c7089780, x_c7089780, x_c7089780, x_d0d35cc6 };
+u16 D_8004A13C[] = { x_ad1aebe6, x_84d0a51b, x_ffe9ce36, x_84d0a51b, x_29dbff14, x_ffe9ce36, x_d0d35cc6 };
+u16 D_8004A14C[] = { x_ad1aebe6, x_84d0a51b, x_ffe9ce36, x_84d0a51b, x_29dbff14, x_84d0a51b, x_d0d35cc6 };
+u16 D_8004A15C[] = { x_ad1aebe6, x_84d0a51b, x_ffe9ce36, x_84d0a51b, x_29dbff14, x_37f8540c, x_d0d35cc6 };
+u16 D_8004A16C[] = { x_ad1aebe6, x_84d0a51b, x_ffe9ce36, x_84d0a51b, x_29dbff14, x_b2ae561b, x_d0d35cc6 };
+u16 D_8004A17C[] = { x_ad1aebe6, x_84d0a51b, x_ffe9ce36, x_84d0a51b, x_29dbff14, x_29dbff14, x_ffe9ce36, x_d0d35cc6 };
+u16 D_8004A18C[] = { x_ad1aebe6, x_84d0a51b, x_ffe9ce36, x_84d0a51b, x_29dbff14, x_29dbff14, x_84d0a51b, x_d0d35cc6 };
+u16 D_8004A19C[] = { x_ad1aebe6, x_84d0a51b, x_ffe9ce36, x_84d0a51b, x_29dbff14, x_29dbff14, x_37f8540c, x_d0d35cc6 };
+u16 D_8004A1AC[] = { x_ad1aebe6, x_84d0a51b, x_ffe9ce36, x_84d0a51b, x_29dbff14, x_29dbff14, x_b2ae561b, x_d0d35cc6 };
 
-u16 D_8004A1BC[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_CLEFT, CHEAT_END };
-u16 D_8004A1CC[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_CUP, CHEAT_END };
-u16 D_8004A1E0[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_CRIGHT, CHEAT_END };
-u16 D_8004A1F4[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_CDOWN, CHEAT_END };
-u16 D_8004A208[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_A, CHEAT_END };
-u16 D_8004A21C[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_B, INP_CLEFT, CHEAT_END };
-u16 D_8004A230[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_B, INP_CUP, CHEAT_END };
-u16 D_8004A244[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_B, INP_CRIGHT, CHEAT_END };
-u16 D_8004A258[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_B, INP_B, INP_CDOWN, CHEAT_END };
-u16 D_8004A270[] = { INP_B, INP_CUP, INP_R, INP_R, INP_CUP, INP_B, INP_B, INP_B, INP_B, INP_A, CHEAT_END };
+u16 D_8004A1BC[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780, x_ffe9ce36, x_d0d35cc6 };
+u16 D_8004A1CC[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780, x_c7089780, x_84d0a51b, x_d0d35cc6 };
+u16 D_8004A1E0[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780, x_c7089780, x_37f8540c, x_d0d35cc6 };
+u16 D_8004A1F4[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780, x_c7089780, x_b2ae561b, x_d0d35cc6 };
+u16 D_8004A208[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780, x_c7089780, x_29dbff14, x_d0d35cc6 };
+u16 D_8004A21C[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780, x_c7089780, x_c7089780, x_ffe9ce36, x_d0d35cc6 };
+u16 D_8004A230[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780, x_c7089780, x_c7089780, x_84d0a51b, x_d0d35cc6 };
+u16 D_8004A244[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780, x_c7089780, x_c7089780, x_37f8540c, x_d0d35cc6 };
+u16 D_8004A258[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780, x_c7089780, x_c7089780, x_c7089780, x_b2ae561b, x_d0d35cc6 };
+u16 D_8004A270[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780, x_c7089780, x_c7089780, x_c7089780, x_29dbff14, x_d0d35cc6 };
 
-CheatCode gCheatCodes[] = { { D_8004A114, func_80020298, 0, 0 },
-                            { cheat_code_play_as_sonork, unlock_sonork_demitron, TRUE, FALSE },
-                            { cheat_code_play_as_sonork_or_demitron, unlock_sonork_demitron, TRUE, TRUE },
-                            { cheat_code_ending_aaron, cheat_character_ending, 0, 0 },
-                            { cheat_code_ending_demonica, cheat_character_ending, 2, 0 },
-                            { cheat_code_ending_eve, cheat_character_ending, 3, 0 },
-                            { cheat_code_ending_gore, cheat_character_ending, 4, 0 },
-                            { cheat_code_ending_morphix, cheat_character_ending, 6, 0 },
-                            { cheat_code_ending_niiki, cheat_character_ending, 7, 0 },
-                            { cheat_code_ending_scarlet, cheat_character_ending, 8, 0 },
-                            { cheat_code_ending_sonork, cheat_character_ending, 9, 0 },
-                            { cheat_code_ending_zenmuron, cheat_character_ending, 10, 0 },
-                            { cheat_code_ending_demitron, cheat_character_ending, 1, 0 },
-                            { D_8004A13C, func_800202D0, 0, 0 },
-                            { D_8004A14C, func_800202D0, 1, 0 },
-                            { D_8004A15C, func_800202D0, 2, 0 },
-                            { D_8004A16C, func_800202D0, 3, 0 },
-                            { D_8004A17C, func_800202D0, 4, 0 },
-                            { D_8004A18C, func_800202D0, 5, 0 },
-                            { D_8004A19C, func_800202D0, 6, 0 },
-                            { D_8004A1AC, func_800202D0, 7, 0 },
-                            { D_8004A1BC, func_800203A8, AARON, GAME_MODE_BATTLE_AARON },
-                            { D_8004A1CC, func_800203A8, DEMITRON, GAME_MODE_BATTLE_DEMITRON },
-                            { D_8004A1E0, func_800203A8, DEMONICA, GAME_MODE_BATTLE_DEMONICA },
-                            { D_8004A1F4, func_800203A8, EVE, GAME_MODE_BATTLE_EVE },
-                            { D_8004A208, func_800203A8, GORE, GAME_MODE_BATTLE_GORE },
-                            { D_8004A21C, func_800203A8, MORPHIX, GAME_MODE_BATTLE_MORHIX },
-                            { D_8004A230, func_800203A8, NIIKI, GAME_MODE_BATTLE_NIIKI },
-                            { D_8004A244, func_800203A8, SCARLET, GAME_MODE_BATTLE_SCARLET },
-                            { D_8004A258, func_800203A8, SONORK, GAME_MODE_BATTLE_SONORK },
-                            { D_8004A270, func_800203A8, ZENMURON, GAME_MODE_BATTLE_ZENMURON },
-                            { D_8004A128, func_800202F0, 0, 0 },
+x_64b038aa x_e521e2f2[] = { { D_8004A114, x_5b38dd2f, 0, 0 },
+                            { x_872278ef, x_d74e99e0, TRUE, FALSE },
+                            { x_af558c92, x_d74e99e0, TRUE, TRUE },
+                            { x_da3e5ada, x_47955556, 0, 0 },
+                            { x_2b6f9733, x_47955556, 2, 0 },
+                            { x_7eaa6bad, x_47955556, 3, 0 },
+                            { x_e694052f, x_47955556, 4, 0 },
+                            { x_49a7f1c5, x_47955556, 6, 0 },
+                            { x_0f81075a, x_47955556, 7, 0 },
+                            { x_42d5a2ea, x_47955556, 8, 0 },
+                            { x_b6970c24, x_47955556, 9, 0 },
+                            { x_f9cc0201, x_47955556, 10, 0 },
+                            { x_a8689ca4, x_47955556, 1, 0 },
+                            { D_8004A13C, x_2cd57f74, 0, 0 },
+                            { D_8004A14C, x_2cd57f74, 1, 0 },
+                            { D_8004A15C, x_2cd57f74, 2, 0 },
+                            { D_8004A16C, x_2cd57f74, 3, 0 },
+                            { D_8004A17C, x_2cd57f74, 4, 0 },
+                            { D_8004A18C, x_2cd57f74, 5, 0 },
+                            { D_8004A19C, x_2cd57f74, 6, 0 },
+                            { D_8004A1AC, x_2cd57f74, 7, 0 },
+                            { D_8004A1BC, x_d8d91897, x_c4ddde6d, x_a98e3fb7 },
+                            { D_8004A1CC, x_d8d91897, x_ff5073d4, x_1a4de9e0 },
+                            { D_8004A1E0, x_d8d91897, x_73cf9ceb, x_3b539526 },
+                            { D_8004A1F4, x_d8d91897, x_6a049984, x_8774b75f },
+                            { D_8004A208, x_d8d91897, x_537ef8a7, x_04d94c4d },
+                            { D_8004A21C, x_d8d91897, x_b52da315, x_2a9c0615 },
+                            { D_8004A230, x_d8d91897, x_13ed828f, x_9cb4f0a0 },
+                            { D_8004A244, x_d8d91897, x_12e7e1dc, x_ed0b2237 },
+                            { D_8004A258, x_d8d91897, x_968cc9a2, x_4ad48df4 },
+                            { D_8004A270, x_d8d91897, x_379149a4, x_b2483e0d },
+                            { D_8004A128, x_7caf7d71, 0, 0 },
                             { NULL, NULL, 0, 0 } };
 
-s16 cheat_common_length(u16 *seq1, u16 *seq2) {
+s16 x_da6f2a83(u16 *x_2bb7a7fd, u16 *x_04faa85c) {
     s16 length = 0;
 
-    while (*seq1 == *seq2) {
-        if (*seq2 == CHEAT_END || *seq1 == CHEAT_END) {
+    while (*x_2bb7a7fd == *x_04faa85c) {
+        if (*x_04faa85c == x_d0d35cc6 || *x_2bb7a7fd == x_d0d35cc6) {
             break;
         }
-        seq1++;
-        seq2++;
+        x_2bb7a7fd++;
+        x_04faa85c++;
         length++;
     }
 
     return length;
 }
 
-void func_80020438(CheatCodeState *state, s16 playerId) {
-    CheatCode *cheat = state->cheat;
+void x_81cbe10a(x_5aaa1a5b *state, s16 x_30bbe547) {
+    x_64b038aa *x_3a1b45d4 = state->x_3a1b45d4;
 
-    state->numValid++;
-    if (cheat->sequence[state->numValid] == CHEAT_END) {
-        sound_play(2, 9);
-        cheat->handler(playerId, cheat->param1, cheat->param2);
-        state->cheat = NULL;
-        state->numValid = 0;
+    state->x_e4b35e9b++;
+    if (x_3a1b45d4->sequence[state->x_e4b35e9b] == x_d0d35cc6) {
+        x_7e194d55(2, 9);
+        x_3a1b45d4->handler(x_30bbe547, x_3a1b45d4->x_273c58c6, x_3a1b45d4->x_08455b9a);
+        state->x_3a1b45d4 = NULL;
+        state->x_e4b35e9b = 0;
     }
 }
 
-void func_800204C0(CheatCodeState *state, s16 playerId) {
-    u16 raw_buttons;
-    CheatCode *current_cheat;
-    CheatCode *ptr;
+void x_778bd81c(x_5aaa1a5b *state, s16 x_30bbe547) {
+    u16 x_f3756179;
+    x_64b038aa *x_9eaf6155;
+    x_64b038aa *ptr;
     s32 unused;
 
-    if (!gPlayerInput[playerId].pendingInput) {
+    if (!x_59ce598c[x_30bbe547].x_c4397934) {
         return;
     }
-    raw_buttons = gPlayerInput[playerId].raw_buttons;
-    if (!raw_buttons) {
+    x_f3756179 = x_59ce598c[x_30bbe547].x_f3756179;
+    if (!x_f3756179) {
         return;
     }
 
-    if (raw_buttons & (INP_UP | INP_DOWN | INP_LEFT | INP_RIGHT | INP_CRIGHT)) {
-        if (state->current_buttons == raw_buttons) {
-            gPlayerInput[playerId].pendingInput = FALSE;
+    if (x_f3756179 & (x_f7763ed8 | x_b8c91680 | x_ad1aebe6 | x_fc4a9735 | x_37f8540c)) {
+        if (state->x_30f758ad == x_f3756179) {
+            x_59ce598c[x_30bbe547].x_c4397934 = FALSE;
             return;
         }
-        state->current_buttons = raw_buttons;
+        state->x_30f758ad = x_f3756179;
     }
 
-    gPlayerInput[playerId].pendingInput = FALSE;
-    current_cheat = state->cheat;
-    if (current_cheat != NULL) {
-        if (raw_buttons == current_cheat->sequence[state->numValid]) {
-            func_80020438(state, playerId);
+    x_59ce598c[x_30bbe547].x_c4397934 = FALSE;
+    x_9eaf6155 = state->x_3a1b45d4;
+    if (x_9eaf6155 != NULL) {
+        if (x_f3756179 == x_9eaf6155->sequence[state->x_e4b35e9b]) {
+            x_81cbe10a(state, x_30bbe547);
             return;
         }
 
-        for (ptr = current_cheat + 1; ptr->sequence != NULL; ptr++) {
-            if (cheat_common_length(current_cheat->sequence, ptr->sequence) == state->numValid &&
-                raw_buttons == ptr->sequence[state->numValid]) {
-                state->cheat = ptr;
-                func_80020438(state, playerId);
+        for (ptr = x_9eaf6155 + 1; ptr->sequence != NULL; ptr++) {
+            if (x_da6f2a83(x_9eaf6155->sequence, ptr->sequence) == state->x_e4b35e9b &&
+                x_f3756179 == ptr->sequence[state->x_e4b35e9b]) {
+                state->x_3a1b45d4 = ptr;
+                x_81cbe10a(state, x_30bbe547);
                 return;
             }
         }
-        gPlayerInput[playerId].pendingInput = TRUE;
+        x_59ce598c[x_30bbe547].x_c4397934 = TRUE;
         if (0) {} // required to match
 
-        state->cheat = NULL;
-        state->numValid = FALSE;
-        state->current_buttons = 0;
+        state->x_3a1b45d4 = NULL;
+        state->x_e4b35e9b = FALSE;
+        state->x_30f758ad = 0;
         return;
     }
 
-    for (current_cheat = gCheatCodes; current_cheat->sequence != NULL; current_cheat++) {
-        if (current_cheat->sequence[0] == raw_buttons) {
-            state->cheat = current_cheat;
-            state->numValid = 1;
+    for (x_9eaf6155 = x_e521e2f2; x_9eaf6155->sequence != NULL; x_9eaf6155++) {
+        if (x_9eaf6155->sequence[0] == x_f3756179) {
+            state->x_3a1b45d4 = x_9eaf6155;
+            state->x_e4b35e9b = 1;
             return;
         }
     }
 }
 
-void func_80020670(Object *obj) {
-    func_800204C0((CheatCodeState *) &obj->vars[0], PLAYER_1);
-    func_800204C0((CheatCodeState *) &obj->vars[8], PLAYER_2);
+void x_8daf2444(Object *obj) {
+    x_778bd81c((x_5aaa1a5b *) &obj->x_0f4167b4[0], x_83106b21);
+    x_778bd81c((x_5aaa1a5b *) &obj->x_0f4167b4[8], x_6f0b3be3);
 }

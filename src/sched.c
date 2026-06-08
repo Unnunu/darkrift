@@ -4,17 +4,17 @@
 #include "task.h"
 #include "ld_addrs.h"
 
-void initialize_memory_heap(void);
-extern void *gHeapBase;
+void x_82b801fe(void);
+extern void *x_40c4fc96;
 
 extern long long int gspDarkRift3DTextStart[], gspDarkRift3DTextEnd[];
 extern long long int gspDarkRift3DDataStart[], gspDarkRift3DDataEnd[];
 
-extern OSMesgQueue gSchedTaskRequestQueue;
-extern OSMesgQueue gSchedSPTaskQueue;
-extern OSMesgQueue gSchedSPQueue;
-extern OSMesgQueue gSchedDPQueue;
-extern OSMesgQueue gSchedVRetraceQueue;
+extern OSMesgQueue x_c0f7aef0;
+extern OSMesgQueue x_72d58a77;
+extern OSMesgQueue x_a4cdf342;
+extern OSMesgQueue x_9e70b6be;
+extern OSMesgQueue x_76074a65;
 
 extern OSTime D_8005BEE8;
 extern OSTime D_8005BEF0;
@@ -22,41 +22,41 @@ extern OSTime D_8005BEF0;
 extern OSTask D_8004CBC8;
 extern OSTask D_8004CC88;
 extern OSTask D_801389B8;
-extern DisplayData *D_80080100;
-extern Gfx *gMainGfxPos;
-extern Gfx *gOverlayGfxPos;
-extern Batch *gMainBatchPos;
-extern u8 *gFramebuffers[];
+extern x_ee01e8c6 *D_80080100;
+extern Gfx *x_9a3c07b8;
+extern Gfx *x_d8cbce84;
+extern x_320b5d80 *x_8a79b283;
+extern u8 *x_96f79785[];
 extern u16 D_8005BFCE;
-extern u16 gScreenHeight;
+extern u16 x_a4f5fb93;
 extern s32 D_8013F0B0;
-extern DisplayData D_8005BFF0[2];
+extern x_ee01e8c6 D_8005BFF0[2];
 
-extern UnkStruct800031FC D_8004937C;
-extern UnkStruct800031FC D_80049384;
-void func_80025E6C(void);
-void func_80025EDC(s32 arg0, s32 arg1);
-void func_80012490(void);
-void func_80024D2C(void);
-void audio_init(void);
-Object *camera_create(void);
-void reset_lights(void);
-void func_80024A38(s32);
-void reset_scrollable_textures(void);
-void func_80023200(void);
+extern x_cc16c016 D_8004937C;
+extern x_cc16c016 D_80049384;
+void x_43d722ac(void);
+void x_ab4a6fed(s32 x_cc1d0de5, s32 x_84ff873b);
+void x_342bc581(void);
+void x_14384217(void);
+void x_3ef429e1(void);
+Object *x_7b6cfabc(void);
+void x_6491559d(void);
+void x_15468514(s32);
+void x_13905dd7(void);
+void x_38c80ca9(void);
 extern s16 D_800800FA;
 
-extern s32 gBgScrollX;
-extern s32 gBgScrollY;
+extern s32 x_e74df613;
+extern s32 x_6c647b3a;
 extern s32 D_80081428;
 extern s32 D_80049CF0;
 
-void reset_and_compact_heap(void);
-void func_80026250(void);
-void audio_reset(void);
-void func_8002AC10(void);
+void x_fd701d0e(void);
+void x_29f4699a(void);
+void x_1e7c754d(void);
+void x_3c16ed51(void);
 
-s32 func_80021338(void);
+s32 x_1790ee2a(void);
 
 /* .bss */
 s16 D_80080110;
@@ -75,8 +75,8 @@ s16 D_80080132;
 s16 D_80080134;
 s16 D_80080136;
 s16 D_80080138;
-DISPCB gPostRenderCallbacks[20];
-s32 gPostRenderArgs[20];
+x_1c3c0f22 x_9d6e6e5f[20];
+s32 x_ba260e1b[20];
 s16 D_800801E0;
 u8 D_800801E2;
 u8 D_800801E3;
@@ -84,59 +84,59 @@ s8 D_800801E4;
 s8 D_800801E5;
 s32 D_800801E8;
 
-void reset_post_render_hooks(void) {
+void x_46665fe1(void) {
     s32 i;
 
-    for (i = 0; i < ARRAY_COUNT(gPostRenderCallbacks); i++) {
-        gPostRenderCallbacks[i] = NULL;
+    for (i = 0; i < x_e286d4b7(x_9d6e6e5f); i++) {
+        x_9d6e6e5f[i] = NULL;
     }
 }
 
-void set_post_render_hook(s32 (*func)(void *), void *arg) {
+void x_71257e81(s32 (*x_f6382727)(void *), void *arg) {
     s32 i;
 
-    for (i = 0; i < ARRAY_COUNT(gPostRenderCallbacks); i++) {
-        if (gPostRenderCallbacks[i] == 0) {
-            gPostRenderCallbacks[i] = func;
-            gPostRenderArgs[i] = arg;
+    for (i = 0; i < x_e286d4b7(x_9d6e6e5f); i++) {
+        if (x_9d6e6e5f[i] == 0) {
+            x_9d6e6e5f[i] = x_f6382727;
+            x_ba260e1b[i] = arg;
             return;
         }
     }
 }
 
-void setup_zbuffer_and_clear(void) {
-    gDPPipeSync(gMainGfxPos++);
-    gDPSetCycleType(gMainGfxPos++, G_CYC_FILL);
+void x_bdf191dd(void) {
+    gDPPipeSync(x_9a3c07b8++);
+    gDPSetCycleType(x_9a3c07b8++, G_CYC_FILL);
 
-    if (!(D_8008012C & GFX_FLAG_ZBUFFER)) {
-        gDPSetDepthImage(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(D_80080120));
-        gDPSetColorImage(gMainGfxPos++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, VIRTUAL_TO_PHYSICAL(D_80080120));
-        gDPSetFillColor(gMainGfxPos++, GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0));
-        gDPFillRectangle(gMainGfxPos++, 0, 0, gScreenWidth - 1, gScreenHeight - 1);
+    if (!(D_8008012C & x_666c9508)) {
+        gDPSetDepthImage(x_9a3c07b8++, x_c485761a(D_80080120));
+        gDPSetColorImage(x_9a3c07b8++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, x_c485761a(D_80080120));
+        gDPSetFillColor(x_9a3c07b8++, GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0));
+        gDPFillRectangle(x_9a3c07b8++, 0, 0, x_c84980f9 - 1, x_a4f5fb93 - 1);
         D_800801E2 = FALSE;
     } else {
         D_800801E2 = TRUE;
     }
 
-    gDPSetColorImage(gMainGfxPos++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, 0x01000000);
+    gDPSetColorImage(x_9a3c07b8++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, 0x01000000);
 
     if (D_80080129) {
-        if (gBgScrollY > 0) {
-            gDPSetFillColor(gMainGfxPos++, (GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1) << 16) |
-                                               GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1));
-            gDPFillRectangle(gMainGfxPos++, 0, 0, gScreenWidth - 1, gBgScrollY + 20);
+        if (x_6c647b3a > 0) {
+            gDPSetFillColor(x_9a3c07b8++, (GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1) << 16) |
+                                              GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1));
+            gDPFillRectangle(x_9a3c07b8++, 0, 0, x_c84980f9 - 1, x_6c647b3a + 20);
         }
     } else {
-        gDPSetFillColor(gMainGfxPos++, (GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1) << 16) |
-                                           GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1));
-        gDPFillRectangle(gMainGfxPos++, 0, 0, gScreenWidth - 1, gScreenHeight - 1);
+        gDPSetFillColor(x_9a3c07b8++, (GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1) << 16) |
+                                          GPACK_RGBA5551(D_80080110, D_80080112, D_80080114, 1));
+        gDPFillRectangle(x_9a3c07b8++, 0, 0, x_c84980f9 - 1, x_a4f5fb93 - 1);
     }
 
-    gDPPipeSync(gMainGfxPos++);
-    gDPSetCycleType(gMainGfxPos++, G_CYC_COPY);
+    gDPPipeSync(x_9a3c07b8++);
+    gDPSetCycleType(x_9a3c07b8++, G_CYC_COPY);
 }
 
-void func_80002C54(void) {
+void x_596c5c60(void) {
     D_8004CBC8.t.ucode_boot = rspbootTextStart;
     D_8004CBC8.t.ucode_boot_size = (u32) rspbootTextEnd - (u32) rspbootTextStart;
     D_8004CBC8.t.ucode = gspFast3DTextStart;
@@ -154,186 +154,186 @@ void func_80002C54(void) {
     D_8008011C = 0;
 }
 
-void sched_run(void *arg0) {
+void x_0ab76ff1(void *x_cc1d0de5) {
     OSMesg task;
-    OSTime task_start;
+    OSTime x_a8947c6a;
 
     while (TRUE) {
         // receive task from task queue
-        if (osRecvMesg(&gSchedSPTaskQueue, &task, OS_MESG_NOBLOCK) == -1) {
+        if (osRecvMesg(&x_72d58a77, &task, OS_MESG_NOBLOCK) == -1) {
             // no pending tasks
             D_800801E4 = 0;
             // notify the other threads that RCP is idle
-            osSendMesg(&gSchedTaskRequestQueue, (OSMesg) 0x7777, OS_MESG_NOBLOCK);
+            osSendMesg(&x_c0f7aef0, (OSMesg) 0x7777, OS_MESG_NOBLOCK);
             // wait until at least one task appears
-            osRecvMesg(&gSchedSPTaskQueue, &task, OS_MESG_BLOCK);
+            osRecvMesg(&x_72d58a77, &task, OS_MESG_BLOCK);
         }
 
         // clear sp and dp queues
-        while (osRecvMesg(&gSchedSPQueue, NULL, OS_MESG_NOBLOCK) != -1) {}
-        while (osRecvMesg(&gSchedDPQueue, NULL, OS_MESG_NOBLOCK) != -1) {}
+        while (osRecvMesg(&x_a4cdf342, NULL, OS_MESG_NOBLOCK) != -1) {}
+        while (osRecvMesg(&x_9e70b6be, NULL, OS_MESG_NOBLOCK) != -1) {}
 
         D_800801E8 = ((OSTask *) task)->t.type;
 
         // start task and wait for its completion
         osSpTaskStart(task);
-        task_start = osGetTime();
+        x_a8947c6a = osGetTime();
         D_800801E4 = 1;
-        osRecvMesg(&gSchedSPQueue, NULL, OS_MESG_BLOCK);
+        osRecvMesg(&x_a4cdf342, NULL, OS_MESG_BLOCK);
 
-        D_8005BEE8 += osGetTime() - task_start;
+        D_8005BEE8 += osGetTime() - x_a8947c6a;
 
         // wait for RDP sync
         if (D_800801E8 != M_AUDTASK) {
             D_800801E4 = 2;
-            osRecvMesg(&gSchedDPQueue, NULL, OS_MESG_BLOCK);
+            osRecvMesg(&x_9e70b6be, NULL, OS_MESG_BLOCK);
         }
 
-        D_8005BEF0 += osGetTime() - task_start;
+        D_8005BEF0 += osGetTime() - x_a8947c6a;
     }
 }
 
-void execute_scheduled_tasks(void) {
-    while (osRecvMesg(&gSchedTaskRequestQueue, NULL, OS_MESG_NOBLOCK) != -1) {}
+void x_9d40d8e1(void) {
+    while (osRecvMesg(&x_c0f7aef0, NULL, OS_MESG_NOBLOCK) != -1) {}
 
     osWritebackDCacheAll();
-    D_8008011C = func_80021338();
+    D_8008011C = x_1790ee2a();
     if (D_80080128 == 0) {
         // prepare two graphics task, one for f3d ucode, and the other for dr ucode
-        D_8004CBC8.t.data_ptr = D_80080100->gfxMain;
-        D_8004CBC8.t.data_size = (gMainGfxPos - D_80080100->gfxMain) * sizeof(Gfx);
+        D_8004CBC8.t.data_ptr = D_80080100->x_700a6ea1;
+        D_8004CBC8.t.data_size = (x_9a3c07b8 - D_80080100->x_700a6ea1) * sizeof(Gfx);
 
-        D_8004CC88.t.data_ptr = D_80080100->batchMain;
-        D_8004CC88.t.data_size = (gMainBatchPos - D_80080100->batchMain) * sizeof(Batch);
+        D_8004CC88.t.data_ptr = D_80080100->x_79588dca;
+        D_8004CC88.t.data_size = (x_8a79b283 - D_80080100->x_79588dca) * sizeof(x_320b5d80);
 
-        osSendMesg(&gSchedSPTaskQueue, (OSMesg) &D_8004CBC8, OS_MESG_BLOCK);
-        osSendMesg(&gSchedSPTaskQueue, (OSMesg) &D_8004CC88, OS_MESG_BLOCK);
+        osSendMesg(&x_72d58a77, (OSMesg) &D_8004CBC8, OS_MESG_BLOCK);
+        osSendMesg(&x_72d58a77, (OSMesg) &D_8004CC88, OS_MESG_BLOCK);
 
         D_8008011C += 2;
 
-        if (D_8008012C & GFX_FLAG_OVERLAY) {
-            D_801389B8.t.data_ptr = D_80080100->gfxOverlay;
-            D_801389B8.t.data_size = (gOverlayGfxPos - D_80080100->gfxOverlay) * sizeof(Gfx);
-            osSendMesg(&gSchedSPTaskQueue, (OSMesg) &D_801389B8, OS_MESG_BLOCK);
+        if (D_8008012C & x_48752861) {
+            D_801389B8.t.data_ptr = D_80080100->x_a4c192ba;
+            D_801389B8.t.data_size = (x_d8cbce84 - D_80080100->x_a4c192ba) * sizeof(Gfx);
+            osSendMesg(&x_72d58a77, (OSMesg) &D_801389B8, OS_MESG_BLOCK);
             D_8008011C++;
         }
     }
 }
 
-void sync_scheduler_tasks(void) {
+void x_d4af6341(void) {
     D_800801E5 = 0;
     if (D_8008011C != 0) {
         D_800801E5 = 7;
-        osRecvMesg(&gSchedTaskRequestQueue, NULL, OS_MESG_BLOCK);
+        osRecvMesg(&x_c0f7aef0, NULL, OS_MESG_BLOCK);
         D_8008011C = 0;
         D_800801E5 = 1;
         osSetTime(0);
     }
 }
 
-void sched_wait_vretrace(u8 arg0) {
-    if (MQ_IS_FULL(&gSchedVRetraceQueue)) {
-        osRecvMesg(&gSchedVRetraceQueue, NULL, OS_MESG_BLOCK);
+void x_08779f06(u8 x_cc1d0de5) {
+    if (MQ_IS_FULL(&x_76074a65)) {
+        osRecvMesg(&x_76074a65, NULL, OS_MESG_BLOCK);
         D_80080128 = 1;
     } else {
         D_80080128 = 0;
-        osRecvMesg(&gSchedVRetraceQueue, NULL, OS_MESG_BLOCK);
-        if (arg0) {
-            osViSwapBuffer(gFramebuffers[D_8005BFCE]);
+        osRecvMesg(&x_76074a65, NULL, OS_MESG_BLOCK);
+        if (x_cc1d0de5) {
+            osViSwapBuffer(x_96f79785[D_8005BFCE]);
             D_8005BFCE = 1 - D_8005BFCE;
         }
     }
 }
 
-#ifdef NON_EQUIVALENT
-void initialize_game_mode(u16 gameMode) {
+#ifdef x_0fab73bf
+void x_16b2a52b(u16 x_7cedc3fb) {
     s32 unused[18];
     u32 a3;
-    s32 tmp;
-    UnkStruct800031FC sp28 = { 0, 90, 0, 0 };
-    UnkStruct800031FC sp20 = { 0, 233, 500, 0 };
+    s32 x_cf10d3eb;
+    x_cc16c016 x_5aee6615 = { 0, 90, 0, 0 };
+    x_cc16c016 x_dd7ffac5 = { 0, 233, 500, 0 };
 
-    gScreenWidth = 320;
-    gScreenHeight = 240;
+    x_c84980f9 = 320;
+    x_a4f5fb93 = 240;
     a3 = 0x80400000 - 2 * 2 * 320 * 240 - 64;
 
-    gFramebuffers[0] = a3;
-    tmp = gScreenHeight * gScreenWidth;
-    gFramebuffers[1] = a3 + 2 * tmp;
+    x_96f79785[0] = a3;
+    x_cf10d3eb = x_a4f5fb93 * x_c84980f9;
+    x_96f79785[1] = a3 + 2 * x_cf10d3eb;
 
-    D_80080124 = D_80080120 = ((u32) main_VRAM_END + 0x40) & ~0x3F;
-    gHeapBase = (void *) (((u32) D_80080120 + 0x25800 + 0x40) & ~0x3F);
-    initialize_memory_heap();
-    func_80025E6C();
-    func_80025EDC(D_80080124, 0x25800);
-    func_80012490();
-    func_80024D2C();
-    audio_init();
-    func_80002C54();
-    D_80080110 = gGameModes[gameMode].unk_0C;
-    D_80080112 = gGameModes[gameMode].unk_0D;
-    D_80080114 = gGameModes[gameMode].unk_0E;
-    func_8002A8C0(&gTaskPool, 50, sizeof(ObjectTask));
-    func_8002AC10();
-    gCamera = camera_create();
-    D_80080136 = gGameModes[gameMode].unk_14;
-    D_80080138 = gGameModes[gameMode].unk_16;
-    D_80080130 = gGameModes[gameMode].unk_10;
-    D_80080132 = gGameModes[gameMode].unk_11;
-    D_80080134 = gGameModes[gameMode].unk_12;
-    D_8008012C = GFX_FLAG_NONE;
-    if (!tmp) {}
+    D_80080124 = D_80080120 = ((u32) x_9caeba2b + 0x40) & ~0x3F;
+    x_40c4fc96 = (void *) (((u32) D_80080120 + 0x25800 + 0x40) & ~0x3F);
+    x_82b801fe();
+    x_43d722ac();
+    x_ab4a6fed(D_80080124, 0x25800);
+    x_342bc581();
+    x_14384217();
+    x_3ef429e1();
+    x_596c5c60();
+    D_80080110 = x_4540c33c[x_7cedc3fb].x_b8173ab8;
+    D_80080112 = x_4540c33c[x_7cedc3fb].x_d863406f;
+    D_80080114 = x_4540c33c[x_7cedc3fb].x_f6c089c5;
+    x_7824740c(&x_30839b82, 50, sizeof(x_41a0e1e6));
+    x_3c16ed51();
+    x_f4bce728 = x_7b6cfabc();
+    D_80080136 = x_4540c33c[x_7cedc3fb].x_d23de2ad;
+    D_80080138 = x_4540c33c[x_7cedc3fb].x_55739355;
+    D_80080130 = x_4540c33c[x_7cedc3fb].x_60c27ea9;
+    D_80080132 = x_4540c33c[x_7cedc3fb].x_ee25ce89;
+    D_80080134 = x_4540c33c[x_7cedc3fb].x_747e2503;
+    D_8008012C = x_0745dc0e;
+    if (!x_cf10d3eb) {}
     memcpy(&D_801389B8, &D_8004CBC8, sizeof(OSTask));
 
     D_8013C228 = NULL;
     D_80080116 = D_80080118 = 0;
     D_80080129 = TRUE;
-    reset_post_render_hooks();
-    reset_lights();
-    gGlobalFlags = GAME_FLAG_4;
-    func_80024A38(0);
-    func_80024A38(1);
+    x_46665fe1();
+    x_6491559d();
+    x_e30d50d2 = x_86c5bc33;
+    x_15468514(0);
+    x_15468514(1);
     D_8005BFF0[0].perspNorm = 0;
     D_8005BFF0[1].perspNorm = 1;
     D_8005BFCE = 0;
-    reset_scrollable_textures();
-    func_80023200();
+    x_13905dd7();
+    x_38c80ca9();
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/sched/initialize_game_mode.s")
-void initialize_game_mode(u16 gameMode);
+#pragma x_eda6f9e3("asm/nonmatchings/sched/initialize_game_mode.s")
+void x_16b2a52b(u16 x_7cedc3fb);
 #endif
 
-void reset_game_mode_systems(u16 gameMode) {
-    gBgLayerList = NULL;
-    gBgScrollX = 0;
-    gBgScrollY = 0;
+void x_a892f516(u16 x_7cedc3fb) {
+    x_3b49183f = NULL;
+    x_e74df613 = 0;
+    x_6c647b3a = 0;
     D_80081428 = 0;
-    reset_and_compact_heap();
-    func_80026250();
-    audio_reset();
-    D_80080110 = gGameModes[gameMode].unk_0C;
-    D_80080112 = gGameModes[gameMode].unk_0D;
-    D_80080114 = gGameModes[gameMode].unk_0E;
-    func_8002A8C0(&gTaskPool, 50, sizeof(ObjectTask));
-    func_8002AC10();
-    gCamera = camera_create();
-    func_80024D2C();
-    func_80002C54();
+    x_fd701d0e();
+    x_29f4699a();
+    x_1e7c754d();
+    D_80080110 = x_4540c33c[x_7cedc3fb].x_b8173ab8;
+    D_80080112 = x_4540c33c[x_7cedc3fb].x_d863406f;
+    D_80080114 = x_4540c33c[x_7cedc3fb].x_f6c089c5;
+    x_7824740c(&x_30839b82, 50, sizeof(x_41a0e1e6));
+    x_3c16ed51();
+    x_f4bce728 = x_7b6cfabc();
+    x_14384217();
+    x_596c5c60();
     D_80049CF0 = 0;
-    D_80080136 = gGameModes[gameMode].unk_14;
-    D_80080138 = gGameModes[gameMode].unk_16;
-    D_80080130 = gGameModes[gameMode].unk_10;
-    D_80080132 = gGameModes[gameMode].unk_11;
-    D_80080134 = gGameModes[gameMode].unk_12;
-    D_8008012C = GFX_FLAG_NONE;
+    D_80080136 = x_4540c33c[x_7cedc3fb].x_d23de2ad;
+    D_80080138 = x_4540c33c[x_7cedc3fb].x_55739355;
+    D_80080130 = x_4540c33c[x_7cedc3fb].x_60c27ea9;
+    D_80080132 = x_4540c33c[x_7cedc3fb].x_ee25ce89;
+    D_80080134 = x_4540c33c[x_7cedc3fb].x_747e2503;
+    D_8008012C = x_0745dc0e;
     D_8013C228 = NULL;
     D_80080118 = 0;
     D_80080129 = TRUE;
-    reset_post_render_hooks();
-    reset_lights();
-    gGlobalFlags = GAME_FLAG_4;
+    x_46665fe1();
+    x_6491559d();
+    x_e30d50d2 = x_86c5bc33;
     D_80080128 = 1;
-    reset_scrollable_textures();
-    func_80023200();
+    x_13905dd7();
+    x_38c80ca9();
 }

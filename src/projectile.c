@@ -1,506 +1,506 @@
 #include "common.h"
 #include "task.h"
 
-void projectile_impact_explosion(Object *obj, Object *obj2);
-void func_80022EC0(Object *);
+void x_a10f6c7a(Object *obj, Object *x_71d00f40);
+void x_280f655a(Object *);
 
-void projectile_fade_away(Object *obj) {
-    if (++obj->frameIndex >= obj->modInst->numAnimFrames) {
-        TASK_END(obj->currentTask);
-        obj->flags |= OBJ_FLAG_DELETE;
+void x_c0cfb7d5(Object *obj) {
+    if (++obj->x_5fcb1654 >= obj->x_20d20338->x_8e601526) {
+        x_5e6f40dd(obj->x_64946db0);
+        obj->flags |= x_f51cb721;
     }
 
-    if (obj->color.a >= obj->vars[0]) {
-        obj->color.a -= obj->vars[0];
+    if (obj->color.a >= obj->x_0f4167b4[0]) {
+        obj->color.a -= obj->x_0f4167b4[0];
     } else {
         obj->color.a = 0;
-        TASK_END(obj->currentTask);
-        obj->flags |= OBJ_FLAG_DELETE;
+        x_5e6f40dd(obj->x_64946db0);
+        obj->flags |= x_f51cb721;
     }
 }
 
-void projectile_spawn_at_frame(Object *obj) {
-    Player *player = (Player *) obj->vars[0];
-    ProjectileShot *s0;
+void x_c3947955(Object *obj) {
+    Player *player = (Player *) obj->x_0f4167b4[0];
+    x_b842de24 *s0;
 
     ;
-    for (s0 = player->barrage->unk_00; s0->projectileId != 255; s0++) {
-        if (obj->frameIndex == s0->frameIndex) {
-            projectile_spawn(obj, s0->projectileId);
+    for (s0 = player->x_0b88f58e->x_af0aa1f8; s0->x_d7ce6b8d != 255; s0++) {
+        if (obj->x_5fcb1654 == s0->x_5fcb1654) {
+            x_86c0b63f(obj, s0->x_d7ce6b8d);
         }
     }
 }
 
-void player_action_init_projectiles(Object *obj) {
-    Player *player = (Player *) obj->vars[0];
-    CombatState *state;
+void x_cfb419a2(Object *obj) {
+    Player *player = (Player *) obj->x_0f4167b4[0];
+    x_388306ba *state;
 
-    state = &player->combatStateTable[player->combatStateId];
-    if (state->projBarrage >= 0) {
-        player->barrage = &player->barrageTable[state->projBarrage];
-        player->projectileObj = NULL;
-        obj->currentTask->func = projectile_spawn_at_frame;
+    state = &player->x_68a6b5cd[player->x_cd14c741];
+    if (state->x_fc1da284 >= 0) {
+        player->x_0b88f58e = &player->x_38b3091d[state->x_fc1da284];
+        player->x_66350762 = NULL;
+        obj->x_64946db0->x_f6382727 = x_c3947955;
     } else {
-        TASK_END(obj->currentTask);
+        x_5e6f40dd(obj->x_64946db0);
     }
 }
 
-void projectile_noop(Object *obj) {
+void x_aa7644d5(Object *obj) {
 }
 
-void projectile_on_impact(Object *obj, Object *obj2) {
-    if (obj->unk_078 == 8) {
-        projectile_noop(obj);
+void x_def251be(Object *obj, Object *x_71d00f40) {
+    if (obj->x_1b0e7aa2 == 8) {
+        x_aa7644d5(obj);
     } else {
-        projectile_impact_explosion(obj, obj2);
+        x_a10f6c7a(obj, x_71d00f40);
     }
 }
 
-void projectile_cleanup(Object *obj, ProjectileDef *effect) {
-    Player *player = (Player *) obj->vars[0];
+void x_fbfba96d(Object *obj, x_6fc0b62f *effect) {
+    Player *player = (Player *) obj->x_0f4167b4[0];
 
-    player->flags &= ~PLAYER_FLAG_SHOOTED;
+    player->flags &= ~x_c15491f2;
 
-    switch (player->characterId) {
-        case AARON:
-            obj->vars[1] = 0;
-            if (obj->vars[3] == 1) {
-                obj->currentTask->func = func_8002A870;
+    switch (player->x_eb1fe45b) {
+        case x_c4ddde6d:
+            obj->x_0f4167b4[1] = 0;
+            if (obj->x_0f4167b4[3] == 1) {
+                obj->x_64946db0->x_f6382727 = x_38d41ba7;
             } else {
-                TASK_END(obj->currentTask);
-                obj->flags |= OBJ_FLAG_DELETE;
-                D_8008012C &= ~GFX_FLAG_10;
+                x_5e6f40dd(obj->x_64946db0);
+                obj->flags |= x_f51cb721;
+                D_8008012C &= ~x_c626209d;
             }
             return;
-        case GORE:
-            TASK_END(obj->currentTask);
-            obj->flags |= OBJ_FLAG_DELETE;
-            D_8008012C &= ~GFX_FLAG_10;
+        case x_537ef8a7:
+            x_5e6f40dd(obj->x_64946db0);
+            obj->flags |= x_f51cb721;
+            D_8008012C &= ~x_c626209d;
             return;
     }
 
-    D_8008012C &= ~GFX_FLAG_10;
-    TASK_END(obj->currentTask);
-    obj->flags |= OBJ_FLAG_DELETE;
+    D_8008012C &= ~x_c626209d;
+    x_5e6f40dd(obj->x_64946db0);
+    obj->flags |= x_f51cb721;
 }
 
-void projectile_update_sprite(Object *obj) {
+void x_0de5e23a(Object *obj) {
     u8 *t0;
-    ProjectileDef *s0;
-    s32 temp2;
+    x_6fc0b62f *s0;
+    s32 x_df21a243;
     Player *player;
     u8 v1;
     s16 temp;
-    Object *playerObj;
-    Vec4i sp28;
+    Object *x_b3c3622a;
+    x_88f11482 x_5aee6615;
 
-    s0 = (ProjectileDef *) obj->vars[7];
-    t0 = (u8 *) obj->vars[1];
-    player = (Player *) obj->vars[0];
-    playerObj = player->obj;
+    s0 = (x_6fc0b62f *) obj->x_0f4167b4[7];
+    t0 = (u8 *) obj->x_0f4167b4[1];
+    player = (Player *) obj->x_0f4167b4[0];
+    x_b3c3622a = player->obj;
 
-    if ((s0->flags & 2) && s0->boneId >= 0) {
-        func_80028120(playerObj, s0, &sp28);
-        obj->pos.x = sp28.x;
-        obj->pos.y = sp28.y;
-        obj->pos.z = sp28.z;
+    if ((s0->flags & 2) && s0->x_32485e13 >= 0) {
+        x_342a32f9(x_b3c3622a, s0, &x_5aee6615);
+        obj->pos.x = x_5aee6615.x;
+        obj->pos.y = x_5aee6615.y;
+        obj->pos.z = x_5aee6615.z;
     }
 
-    if (--obj->unk_08C <= 0) {
-        temp = obj->vars[2]++;
-        obj->unk_08C = obj->vars[4];
+    if (--obj->x_f9866d50 <= 0) {
+        temp = obj->x_0f4167b4[2]++;
+        obj->x_f9866d50 = obj->x_0f4167b4[4];
         v1 = t0[temp];
 
         if (v1 == 0xFF) {
-            obj->vars[2] = 1;
+            obj->x_0f4167b4[2] = 1;
             v1 = t0[0];
         } else if (v1 == 0xFE) {
-            projectile_cleanup(obj, s0);
+            x_fbfba96d(obj, s0);
             return;
         }
 
-        obj->frameIndex = v1;
-        if ((s0->flags & 1) && obj->frameIndex >= s0->unk_36) {
-            if (obj->color.a >= obj->vars[9]) {
-                obj->color.a -= obj->vars[9];
+        obj->x_5fcb1654 = v1;
+        if ((s0->flags & 1) && obj->x_5fcb1654 >= s0->x_1adc8f8a) {
+            if (obj->color.a >= obj->x_0f4167b4[9]) {
+                obj->color.a -= obj->x_0f4167b4[9];
             } else {
                 obj->color.a = 0;
-                TASK_END(obj->currentTask);
-                obj->flags |= OBJ_FLAG_DELETE;
+                x_5e6f40dd(obj->x_64946db0);
+                obj->flags |= x_f51cb721;
             }
         }
     }
 
-    obj->flags &= ~OBJ_FLAG_HIDDEN;
+    obj->flags &= ~x_c537cafa;
 
-    if (((s0->flags & 0x10) && --obj->vars[5] < 0) || obj->pos.y > 0) { // @bug probably
-        projectile_cleanup(obj, s0);
+    if (((s0->flags & 0x10) && --obj->x_0f4167b4[5] < 0) || obj->pos.y > 0) { // @bug probably
+        x_fbfba96d(obj, s0);
         return;
     }
 
     if (s0->flags & 4) {
-        func_80022EC0(obj);
+        x_280f655a(obj);
     }
 
     obj->pos.x += obj->velocity.x;
     obj->pos.y += obj->velocity.y;
     obj->pos.z += obj->velocity.z;
 
-    temp2 = s0->unk_30;
-    if (temp2 >= 0 && --obj->vars[8] < 0) {
-        obj->vars[8] = s0->unk_34;
-        projectile_spawn(obj, temp2 ^ 0); // required to match
+    x_df21a243 = s0->x_49e4c93e;
+    if (x_df21a243 >= 0 && --obj->x_0f4167b4[8] < 0) {
+        obj->x_0f4167b4[8] = s0->x_8cd129ed;
+        x_86c0b63f(obj, x_df21a243 ^ 0); // required to match
     }
 }
 
-void projectile_update_model(Object *obj) {
-    ProjectileDef *effect;
-    s32 temp2;
+void x_35e86baf(Object *obj) {
+    x_6fc0b62f *effect;
+    s32 x_df21a243;
     Player *player;
     u8 v1;
     s16 temp;
-    Object *playerObj;
-    Vec4i sp2C;
+    Object *x_b3c3622a;
+    x_88f11482 x_32f1d6e2;
 
-    effect = (ProjectileDef *) obj->vars[7];
-    player = (Player *) obj->vars[0];
-    playerObj = player->obj;
+    effect = (x_6fc0b62f *) obj->x_0f4167b4[7];
+    player = (Player *) obj->x_0f4167b4[0];
+    x_b3c3622a = player->obj;
 
-    D_8008012C |= GFX_FLAG_10;
+    D_8008012C |= x_c626209d;
 
-    if ((effect->flags & 2) && effect->boneId >= 0) {
-        func_80028120(playerObj, effect, &sp2C);
-        obj->pos.x = sp2C.x;
-        obj->pos.y = sp2C.y;
-        obj->pos.z = sp2C.z;
+    if ((effect->flags & 2) && effect->x_32485e13 >= 0) {
+        x_342a32f9(x_b3c3622a, effect, &x_32f1d6e2);
+        obj->pos.x = x_32f1d6e2.x;
+        obj->pos.y = x_32f1d6e2.y;
+        obj->pos.z = x_32f1d6e2.z;
     }
 
-    obj->flags &= ~OBJ_FLAG_HIDDEN;
-    obj->frameIndex++;
+    obj->flags &= ~x_c537cafa;
+    obj->x_5fcb1654++;
 
     if (effect->flags & 0x10) {
-        if (--obj->vars[5] < 0 || obj->pos.y > 0) {
-            projectile_cleanup(obj, effect);
+        if (--obj->x_0f4167b4[5] < 0 || obj->pos.y > 0) {
+            x_fbfba96d(obj, effect);
             return;
         }
-        if (obj->frameIndex >= obj->modInst->numAnimFrames) {
-            obj->frameIndex = effect->unk_24;
+        if (obj->x_5fcb1654 >= obj->x_20d20338->x_8e601526) {
+            obj->x_5fcb1654 = effect->x_817784f2;
         }
     }
 
-    if (obj->frameIndex >= obj->modInst->numAnimFrames) {
-        projectile_cleanup(obj, effect);
+    if (obj->x_5fcb1654 >= obj->x_20d20338->x_8e601526) {
+        x_fbfba96d(obj, effect);
         return;
     }
 
     if (effect->flags & 4) {
-        func_80022EC0(obj);
+        x_280f655a(obj);
     }
 
     obj->pos.x += obj->velocity.x;
     obj->pos.y += obj->velocity.y;
     obj->pos.z += obj->velocity.z;
 
-    if ((effect->flags & 1) && obj->frameIndex >= effect->unk_36) {
-        if (obj->color.a >= obj->vars[9]) {
-            obj->color.a -= obj->vars[9];
+    if ((effect->flags & 1) && obj->x_5fcb1654 >= effect->x_1adc8f8a) {
+        if (obj->color.a >= obj->x_0f4167b4[9]) {
+            obj->color.a -= obj->x_0f4167b4[9];
         } else {
             obj->color.a = 0;
-            projectile_cleanup(obj, effect);
+            x_fbfba96d(obj, effect);
             return;
         }
     }
 
-    temp2 = effect->unk_30;
-    if (temp2 >= 0 && --obj->vars[8] < 0) {
-        obj->vars[8] = effect->unk_34;
-        projectile_spawn(obj, temp2 ^ 0); // required to match
+    x_df21a243 = effect->x_49e4c93e;
+    if (x_df21a243 >= 0 && --obj->x_0f4167b4[8] < 0) {
+        obj->x_0f4167b4[8] = effect->x_8cd129ed;
+        x_86c0b63f(obj, x_df21a243 ^ 0); // required to match
     }
 }
 
-void projectile_impact_explosion(Object *obj, Object *obj2) {
+void x_a10f6c7a(Object *obj, Object *x_71d00f40) {
     Player *player;
     Object *v0;
-    ProjectileDef *v2;
-    ProjectileDef *v1;
+    x_6fc0b62f *v2;
+    x_6fc0b62f *v1;
 
-    player = (Player *) obj->vars[0];
-    v1 = (ProjectileDef *) obj->vars[7];
-    v2 = player->projectileTable + v1->unk_42;
+    player = (Player *) obj->x_0f4167b4[0];
+    v1 = (x_6fc0b62f *) obj->x_0f4167b4[7];
+    v2 = player->x_e4ca14d3 + v1->x_350c85ef;
 
-    obj->unk_07C = obj->unk_07A = 0;
-    obj->flags |= OBJ_FLAG_DELETE;
-    TASK_END(obj->currentTask);
+    obj->x_b1e624ba = obj->x_e4466eca = 0;
+    obj->flags |= x_f51cb721;
+    x_5e6f40dd(obj->x_64946db0);
 
-    v2->lifetime = 0x10;
+    v2->x_6f6a6d94 = 0x10;
     v2->flags |= 0x10;
-    v2->unk_36 = 0;
-    v2->unk_38 = 0x10;
+    v2->x_1adc8f8a = 0;
+    v2->x_251abb64 = 0x10;
 
-    v0 = projectile_spawn(obj, v1->unk_42);
+    v0 = x_86c0b63f(obj, v1->x_350c85ef);
     if (v0 != NULL) {
-        obj->unk_076 |= 8;
-        v0->unk_076 &= ~2;
-        if (player->playerId != PLAYER_1) {
-            v0->unk_07A = 2;
+        obj->x_61f772e7 |= 8;
+        v0->x_61f772e7 &= ~2;
+        if (player->x_30bbe547 != x_83106b21) {
+            v0->x_e4466eca = 2;
         } else {
-            v0->unk_07C = 2;
+            v0->x_b1e624ba = 2;
         }
-        v0->unk_1FC = 300;
+        v0->x_de73d1d5 = 300;
     }
 }
 
-void projectile_impact_fade_model(Object *obj, Object *arg1) {
-    Player *player = (Player *) obj->vars[0];
+void x_f5f769f6(Object *obj, Object *x_84ff873b) {
+    Player *player = (Player *) obj->x_0f4167b4[0];
     Object *v0;
-    Vec4i sp30;
-    ProjectileDef *v1 = (ProjectileDef *) obj->vars[7];
-    ColorRGBA sp24[2] = { { 215, 180, 45, 0 }, { 250, 190, 55, 0 } };
+    x_88f11482 x_c9614940;
+    x_6fc0b62f *v1 = (x_6fc0b62f *) obj->x_0f4167b4[7];
+    x_6751d717 x_5bbba600[2] = { { 215, 180, 45, 0 }, { 250, 190, 55, 0 } };
 
-    if ((obj->unk_078 & 8) && (obj->unk_076 & 8)) {
-        projectile_noop(obj);
+    if ((obj->x_1b0e7aa2 & 8) && (obj->x_61f772e7 & 8)) {
+        x_aa7644d5(obj);
         return;
     }
 
-    obj->unk_07C = obj->unk_07A = 0;
-    obj->flags |= OBJ_FLAG_DELETE;
-    TASK_END(obj->currentTask);
+    obj->x_b1e624ba = obj->x_e4466eca = 0;
+    obj->flags |= x_f51cb721;
+    x_5e6f40dd(obj->x_64946db0);
 
-    sp30.x = 0;
-    sp30.y = 0;
-    sp30.z = -obj->unk_1FC;
-    math_rotate_vector(&sp30, &obj->rotation);
-    sp30.x += obj->pos.x;
-    sp30.z += obj->pos.z;
-    obj->unk_1FC = 0;
+    x_c9614940.x = 0;
+    x_c9614940.y = 0;
+    x_c9614940.z = -obj->x_de73d1d5;
+    x_9b0df250(&x_c9614940, &obj->x_224610f1);
+    x_c9614940.x += obj->pos.x;
+    x_c9614940.z += obj->pos.z;
+    obj->x_de73d1d5 = 0;
 
-    v0 = create_model_instance(&sp30, 0x1000, projectile_fade_away, player->effectModels[v1->unk_42]);
+    v0 = x_572f827d(&x_c9614940, 0x1000, x_c0cfb7d5, player->x_dd32bc14[v1->x_350c85ef]);
     if (v0 == NULL) {
         return;
     }
 
     v0->color.a = 255;
-    v0->vars[0] = 5;
-    v0->flags |= OBJ_FLAG_TRANSPARENT;
-    v0->unk_076 &= ~2;
-    if (player->playerId != PLAYER_1) {
-        v0->unk_07A = 2;
+    v0->x_0f4167b4[0] = 5;
+    v0->flags |= x_b6789b80;
+    v0->x_61f772e7 &= ~2;
+    if (player->x_30bbe547 != x_83106b21) {
+        v0->x_e4466eca = 2;
     } else {
-        v0->unk_07C = 2;
+        v0->x_b1e624ba = 2;
     }
-    v0->unk_1FC = 300;
-    create_light(v0, &sp24[player->playerId]);
+    v0->x_de73d1d5 = 300;
+    x_371376ba(v0, &x_5bbba600[player->x_30bbe547]);
 }
 
-ObjFunc D_8004A4C8[2] = { projectile_update_model, projectile_update_sprite }; // unused
+x_09d6a3c8 D_8004A4C8[2] = { x_35e86baf, x_0de5e23a }; // unused
 
-void projectile_gore_homing_setup(Object *obj, s32 arg1, Object *arg2) {
-    Player *player = (Player *) obj->vars[0];
+void x_4b88b87a(Object *obj, s32 x_84ff873b, Object *x_2092f891) {
+    Player *player = (Player *) obj->x_0f4167b4[0];
     Object *v0;
 
-    if (player->characterId == GORE && arg1 == 0) {
-        arg2->unk_1E8 = projectile_impact_fade_model;
-        v0 = func_80030908();
+    if (player->x_eb1fe45b == x_537ef8a7 && x_84ff873b == 0) {
+        x_2092f891->x_450fdcd0 = x_f5f769f6;
+        v0 = x_24276d64();
         if (v0 != NULL) {
-            v0->vars[1] = 50;
-            v0->vars[0] = 30;
+            v0->x_0f4167b4[1] = 50;
+            v0->x_0f4167b4[0] = 30;
         }
     }
 }
 
-Object *projectile_spawn(Object *obj, s32 projectileId) {
-    Vec4i pos;
-    Object *effectObj;
-    Player *player = (Player *) obj->vars[0];
-    ProjectileDef *effect = player->projectileTable + projectileId;
+Object *x_86c0b63f(Object *obj, s32 x_d7ce6b8d) {
+    x_88f11482 pos;
+    Object *x_02f7ef06;
+    Player *player = (Player *) obj->x_0f4167b4[0];
+    x_6fc0b62f *effect = player->x_e4ca14d3 + x_d7ce6b8d;
     s32 pad[2];
 
-    if (effect->boneId >= 0) {
-        func_80028120(obj, effect, &pos);
+    if (effect->x_32485e13 >= 0) {
+        x_342a32f9(obj, effect, &pos);
     } else {
-        pos.x = effect->originX;
-        pos.y = effect->originY;
-        pos.z = effect->originZ;
-        math_rotate_vector(&pos, &obj->rotation);
+        pos.x = effect->x_1422e8f9;
+        pos.y = effect->x_6f7546e4;
+        pos.z = effect->x_95b3e972;
+        x_9b0df250(&pos, &obj->x_224610f1);
         pos.x += obj->pos.x;
         pos.y += obj->pos.y;
         pos.z += obj->pos.z;
     }
 
-    if (effect->spriteIndex >= 0) {
-        effectObj = create_3dsprite(&pos, 0x1100, projectile_update_sprite, player->effectSprites[effect->spriteIndex]);
-        if (effectObj == NULL) {
-            return effectObj;
+    if (effect->x_e2f3aa2a >= 0) {
+        x_02f7ef06 = x_6f2f6fab(&pos, 0x1100, x_0de5e23a, player->x_a1dcdb62[effect->x_e2f3aa2a]);
+        if (x_02f7ef06 == NULL) {
+            return x_02f7ef06;
         }
 
-        effectObj->frameIndex = player->unk_44[effect->spriteFrame];
-        effectObj->unk_08C = effectObj->vars[4] = effect->unk_1E;
+        x_02f7ef06->x_5fcb1654 = player->x_8b00beac[effect->x_bc085e56];
+        x_02f7ef06->x_f9866d50 = x_02f7ef06->x_0f4167b4[4] = effect->x_fbb09ed1;
     } else {
-        effectObj =
-            create_model_instance(&pos, 0x1000, projectile_update_model, player->effectModels[effect->modelIndex]);
-        if (effectObj == NULL) {
-            return effectObj;
+        x_02f7ef06 =
+            x_572f827d(&pos, 0x1000, x_35e86baf, player->x_dd32bc14[effect->x_1d88fb18]);
+        if (x_02f7ef06 == NULL) {
+            return x_02f7ef06;
         }
 
-        effectObj->flags |= OBJ_FLAG_HIDDEN;
-        effectObj->currentTask->start_delay = effect->unk_1E;
-        player->projectileObj = effectObj;
+        x_02f7ef06->flags |= x_c537cafa;
+        x_02f7ef06->x_64946db0->x_c7f843c2 = effect->x_fbb09ed1;
+        player->x_66350762 = x_02f7ef06;
     }
 
-    if (effectObj->modInst == NULL) {
+    if (x_02f7ef06->x_20d20338 == NULL) {
         return NULL;
     }
 
-    if (effectObj != NULL) {
+    if (x_02f7ef06 != NULL) {
         if (effect->flags & 4) {
-            if (player->playerId != PLAYER_1) {
-                effectObj->unk_07A = 2;
+            if (player->x_30bbe547 != x_83106b21) {
+                x_02f7ef06->x_e4466eca = 2;
             } else {
-                effectObj->unk_07C = 2;
+                x_02f7ef06->x_b1e624ba = 2;
             }
-            effectObj->unk_1FC = 300;
-            effectObj->unk_076 |= 2;
-            effectObj->unk_076 |= 8;
-            effectObj->unk_1E8 = projectile_on_impact;
-            player->flags |= PLAYER_FLAG_SHOOTED;
+            x_02f7ef06->x_de73d1d5 = 300;
+            x_02f7ef06->x_61f772e7 |= 2;
+            x_02f7ef06->x_61f772e7 |= 8;
+            x_02f7ef06->x_450fdcd0 = x_def251be;
+            player->flags |= x_c15491f2;
         }
 
         if (effect->flags & 0x40) {
-            create_light(effectObj, &effect->lightColors[player->playerId]);
+            x_371376ba(x_02f7ef06, &effect->x_c3357d6a[player->x_30bbe547]);
         }
 
-        effectObj->vars[0] = player;
-        effectObj->vars[1] = player->unk_44 + effect->spriteFrame;
-        effectObj->vars[2] = 0;
-        effectObj->vars[5] = effect->lifetime;
-        effectObj->vars[6] = player->combatState;
-        effectObj->vars[7] = effect;
-        effectObj->vars[3] = projectileId;
-        effectObj->velocity.x = effect->velocityX;
-        effectObj->velocity.y = effect->velocityY;
-        effectObj->velocity.z = effect->velocityZ;
-        effectObj->unk_040.x = 0xF00000;
-        effectObj->unk_040.y = 0xF00000;
-        effectObj->unk_040.z = 0xF00000;
+        x_02f7ef06->x_0f4167b4[0] = player;
+        x_02f7ef06->x_0f4167b4[1] = player->x_8b00beac + effect->x_bc085e56;
+        x_02f7ef06->x_0f4167b4[2] = 0;
+        x_02f7ef06->x_0f4167b4[5] = effect->x_6f6a6d94;
+        x_02f7ef06->x_0f4167b4[6] = player->x_7f68c36b;
+        x_02f7ef06->x_0f4167b4[7] = effect;
+        x_02f7ef06->x_0f4167b4[3] = x_d7ce6b8d;
+        x_02f7ef06->velocity.x = effect->x_52756e64;
+        x_02f7ef06->velocity.y = effect->x_4615af37;
+        x_02f7ef06->velocity.z = effect->x_2c9fb9af;
+        x_02f7ef06->x_d7f6e5d2.x = 0xF00000;
+        x_02f7ef06->x_d7f6e5d2.y = 0xF00000;
+        x_02f7ef06->x_d7f6e5d2.z = 0xF00000;
 
-        math_rotate_vector(&effectObj->velocity, &obj->rotation);
+        x_9b0df250(&x_02f7ef06->velocity, &obj->x_224610f1);
 
-        effectObj->vars[8] = effect->unk_32;
-        effectObj->rotation.y = player->obj->rotation.y;
-        effect->unk_40 = 0;
+        x_02f7ef06->x_0f4167b4[8] = effect->x_c3bc2262;
+        x_02f7ef06->x_224610f1.y = player->obj->x_224610f1.y;
+        effect->x_a484ea08 = 0;
 
         if (effect->flags & 9) {
-            effectObj->flags |= OBJ_FLAG_TRANSPARENT;
-            effectObj->color.a = 255;
+            x_02f7ef06->flags |= x_b6789b80;
+            x_02f7ef06->color.a = 255;
 
-            if (effect->unk_38 > 0) {
-                effectObj->vars[9] = 255 / effect->unk_38;
-            } else if (effect->spriteIndex < 0 && effectObj->modInst->numAnimFrames != 0) {
-                effectObj->vars[9] = 255 / effectObj->modInst->numAnimFrames;
+            if (effect->x_251abb64 > 0) {
+                x_02f7ef06->x_0f4167b4[9] = 255 / effect->x_251abb64;
+            } else if (effect->x_e2f3aa2a < 0 && x_02f7ef06->x_20d20338->x_8e601526 != 0) {
+                x_02f7ef06->x_0f4167b4[9] = 255 / x_02f7ef06->x_20d20338->x_8e601526;
             } else {
-                effectObj->vars[9] = 255 / effectObj->modInst->numNodes; // ?????????
+                x_02f7ef06->x_0f4167b4[9] = 255 / x_02f7ef06->x_20d20338->x_6dcce206; // ?????????
             }
 
-            if (player->characterId == DEMITRON && effect->modelIndex == 0) {
+            if (player->x_eb1fe45b == x_ff5073d4 && effect->x_1d88fb18 == 0) {
 
-                effectObj->vars[9] = 128 / effectObj->modInst->numAnimFrames;
-                effectObj->color.a = 128;
+                x_02f7ef06->x_0f4167b4[9] = 128 / x_02f7ef06->x_20d20338->x_8e601526;
+                x_02f7ef06->color.a = 128;
             }
         }
 
-        projectile_gore_homing_setup(obj, projectileId, effectObj);
+        x_4b88b87a(obj, x_d7ce6b8d, x_02f7ef06);
     }
 
-    return effectObj;
+    return x_02f7ef06;
 }
 
-u8 projectile_apply_damage(Player *arg0, Player *arg1, Object *arg2) {
+u8 x_2aacdb7c(Player *x_cc1d0de5, Player *x_84ff873b, Object *x_2092f891) {
     s16 v0;
-    CombatState *a2;
-    u8 isBlock;
+    x_388306ba *a2;
+    u8 x_2a9ef16e;
 
-    a2 = (CombatState *) arg2->vars[6];
+    a2 = (x_388306ba *) x_2092f891->x_0f4167b4[6];
 
-    if (gRoundOver && !gReplayActive) {
+    if (x_9df63a90 && !x_33abac12) {
         return FALSE;
     }
 
-    v0 = apply_damage_and_reaction(arg0, arg1, a2);
-    isBlock = (v0 == 270 || v0 == 271);
-    return isBlock;
+    v0 = x_cc2e74aa(x_cc1d0de5, x_84ff873b, a2);
+    x_2a9ef16e = (v0 == 270 || v0 == 271);
+    return x_2a9ef16e;
 }
 
-void projectile_hit_opponent(Object *obj, Player *arg1, ProjectileDef *arg2, u8 arg3) {
-    Player *player = (Player *) obj->vars[0];
-    ProjectileDef *sp18 = player->projectileTable + arg2->unk_42;
+void x_e8a9f217(Object *obj, Player *x_84ff873b, x_6fc0b62f *x_2092f891, u8 x_ee71e5cb) {
+    Player *player = (Player *) obj->x_0f4167b4[0];
+    x_6fc0b62f *x_a1fcc259 = player->x_e4ca14d3 + x_2092f891->x_350c85ef;
     Object *v00;
 
-    if (projectile_apply_damage(arg1, player, obj)) {
-        sp18->lifetime = 0x10;
-        sp18->flags |= 0x10;
-        sp18->unk_36 = 0;
-        sp18->unk_38 = 0x10;
+    if (x_2aacdb7c(x_84ff873b, player, obj)) {
+        x_a1fcc259->x_6f6a6d94 = 0x10;
+        x_a1fcc259->flags |= 0x10;
+        x_a1fcc259->x_1adc8f8a = 0;
+        x_a1fcc259->x_251abb64 = 0x10;
     } else {
-        sp18->lifetime = 0;
-        sp18->flags &= ~0x10;
-        sp18->unk_38 = -1;
+        x_a1fcc259->x_6f6a6d94 = 0;
+        x_a1fcc259->flags &= ~0x10;
+        x_a1fcc259->x_251abb64 = -1;
     }
 
-    if (arg3) {
-        v00 = projectile_spawn(obj, arg2->unk_42);
+    if (x_ee71e5cb) {
+        v00 = x_86c0b63f(obj, x_2092f891->x_350c85ef);
         if (v00 != NULL) {
             v00->color.a = 128;
-            if (v00->modInst->numAnimFrames != 0) {
-                v00->vars[9] = 255 / v00->modInst->numAnimFrames;
+            if (v00->x_20d20338->x_8e601526 != 0) {
+                v00->x_0f4167b4[9] = 255 / v00->x_20d20338->x_8e601526;
             }
         }
     }
 
-    projectile_cleanup(obj, arg2);
+    x_fbfba96d(obj, x_2092f891);
 }
 
-#ifdef NON_EQUIVALENT
-u8 func_80022CD0(Object *obj) {
+#ifdef x_0fab73bf
+u8 x_6ce73fcf(Object *obj) {
     Player *player;
-    Vec4i *playerPos;
-    Vec4i *oppPos;
-    ProjectileDef *a2;
+    x_88f11482 *x_7f6ea7e4;
+    x_88f11482 *x_9b380833;
+    x_6fc0b62f *a2;
     Object *v0;
-    Vec4i sp44;
-    Player *sp20;
+    x_88f11482 x_fc517ba8;
+    Player *x_dd7ffac5;
     s16 q;
-    u32 dx, dz;
+    u32 x_720f6ac9, dz;
     s32 pad[2];
 
-    player = (Player *) obj->vars[0];
-    sp20 = gPlayers + (player->playerId != PLAYER_1 ? PLAYER_1 : PLAYER_2);
-    a2 = (ProjectileDef *) obj->vars[7];
+    player = (Player *) obj->x_0f4167b4[0];
+    x_dd7ffac5 = x_824b9544 + (player->x_30bbe547 != x_83106b21 ? x_83106b21 : x_6f0b3be3);
+    a2 = (x_6fc0b62f *) obj->x_0f4167b4[7];
 
-    playerPos = &obj->pos;
-    oppPos = &sp20->obj->pos;
+    x_7f6ea7e4 = &obj->pos;
+    x_9b380833 = &x_dd7ffac5->obj->pos;
 
-    q = obj->vars[3];
-    if (player->characterId == GORE) {
+    q = obj->x_0f4167b4[3];
+    if (player->x_eb1fe45b == x_537ef8a7) {
         if (q == 0) {
             if (1) {
-                dx = ABS(playerPos->x - oppPos->x);
+                x_720f6ac9 = ABS(x_7f6ea7e4->x - x_9b380833->x);
             }
-            dz = ABS(playerPos->z - oppPos->z);
+            dz = ABS(x_7f6ea7e4->z - x_9b380833->z);
 
             // a2->unk_40 += 22;
             // obj->unk_1FC = a2->unk_40;
-            if (FAST_HYPOT(dx, dz) < (obj->unk_1FC = a2->unk_40 += 22) &&
-                !(sp20->combatState->flags & (CSF_JUMP | CSF_HOP))) {
-                projectile_hit_opponent(obj, sp20, a2, FALSE);
+            if (x_4a9e7834(x_720f6ac9, dz) < (obj->x_de73d1d5 = a2->x_a484ea08 += 22) &&
+                !(x_dd7ffac5->x_7f68c36b->flags & (x_025a12b8 | x_36377d70))) {
+                x_e8a9f217(obj, x_dd7ffac5, a2, FALSE);
 
-                sp44.x = playerPos->x;
-                sp44.z = playerPos->z;
-                sp44.y = 0;
-                v0 = create_model_instance(&sp44, 0x1000, projectile_fade_away, player->effectModels[a2->unk_42]);
+                x_fc517ba8.x = x_7f6ea7e4->x;
+                x_fc517ba8.z = x_7f6ea7e4->z;
+                x_fc517ba8.y = 0;
+                v0 = x_572f827d(&x_fc517ba8, 0x1000, x_c0cfb7d5, player->x_dd32bc14[a2->x_350c85ef]);
                 if (v0 != NULL) {
                     v0->color.a = 255;
-                    v0->vars[0] = 255 / v0->modInst->numAnimFrames;
-                    v0->flags |= OBJ_FLAG_TRANSPARENT;
+                    v0->x_0f4167b4[0] = 255 / v0->x_20d20338->x_8e601526;
+                    v0->flags |= x_b6789b80;
                 }
             }
 
@@ -512,70 +512,70 @@ u8 func_80022CD0(Object *obj) {
     return FALSE;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/projectile/func_80022CD0.s")
-u8 func_80022CD0(Object *obj);
+#pragma x_eda6f9e3("asm/nonmatchings/projectile/func_80022CD0.s")
+u8 x_6ce73fcf(Object *obj);
 #endif
 
-void func_80022EC0(Object *obj) {
+void x_280f655a(Object *obj) {
     Player *player;
-    Player *opponent;
+    Player *x_98c4e5a5;
     s32 pad[2];
-    Vec4s sp40;
-    Vec4s sp38;
+    x_2758cdab x_081c4eef;
+    x_2758cdab x_49781937;
     Object *v00;
-    ProjectileDef *sp30;
-    ProjectileDef *sp2C;
+    x_6fc0b62f *x_c9614940;
+    x_6fc0b62f *x_32f1d6e2;
     s32 pad2;
 
-    sp2C = (ProjectileDef *) obj->vars[7];
-    player = (Player *) obj->vars[0];
-    opponent = gPlayers + (player->playerId != PLAYER_1 ? PLAYER_1 : PLAYER_2);
+    x_32f1d6e2 = (x_6fc0b62f *) obj->x_0f4167b4[7];
+    player = (Player *) obj->x_0f4167b4[0];
+    x_98c4e5a5 = x_824b9544 + (player->x_30bbe547 != x_83106b21 ? x_83106b21 : x_6f0b3be3);
 
-    if (opponent->combatState->flags & CSF_INVINSIBLE) {
+    if (x_98c4e5a5->x_7f68c36b->flags & x_7b8f7fad) {
         return;
     }
-    if (func_80022CD0(obj)) {
+    if (x_6ce73fcf(obj)) {
         return;
     }
 
-    sp40.x = opponent->hitZones.headPos->x;
-    sp40.y = opponent->hitZones.headPos->y;
-    sp40.z = opponent->hitZones.headPos->z;
+    x_081c4eef.x = x_98c4e5a5->x_5c5b1d93.x_b7552092->x;
+    x_081c4eef.y = x_98c4e5a5->x_5c5b1d93.x_b7552092->y;
+    x_081c4eef.z = x_98c4e5a5->x_5c5b1d93.x_b7552092->z;
 
-    sp38.x = obj->pos.x;
-    sp38.y = obj->pos.y;
-    sp38.z = obj->pos.z;
+    x_49781937.x = obj->pos.x;
+    x_49781937.y = obj->pos.y;
+    x_49781937.z = obj->pos.z;
 
-    if (is_point_in_hit_range(&sp40, &opponent->obj->pos, opponent->hitZones.radius1 + 80000, &sp38)) {
-        if (!(sp2C->flags & 0x20) && !(player->flags & PLAYER_FLAG_2000)) {
-            sp30 = player->projectileTable + sp2C->unk_42;
-            if (projectile_apply_damage(opponent, player, obj)) {
-                sp30->lifetime = 0x10;
-                sp30->flags |= 0x10;
-                sp30->unk_36 = 0;
-                sp30->unk_38 = 0x10;
+    if (x_81c2909d(&x_081c4eef, &x_98c4e5a5->obj->pos, x_98c4e5a5->x_5c5b1d93.x_62706fff + 80000, &x_49781937)) {
+        if (!(x_32f1d6e2->flags & 0x20) && !(player->flags & x_d8a402c3)) {
+            x_c9614940 = player->x_e4ca14d3 + x_32f1d6e2->x_350c85ef;
+            if (x_2aacdb7c(x_98c4e5a5, player, obj)) {
+                x_c9614940->x_6f6a6d94 = 0x10;
+                x_c9614940->flags |= 0x10;
+                x_c9614940->x_1adc8f8a = 0;
+                x_c9614940->x_251abb64 = 0x10;
             } else {
-                sp30->lifetime = 0;
-                sp30->flags &= ~0x10;
-                sp30->unk_38 = -1;
+                x_c9614940->x_6f6a6d94 = 0;
+                x_c9614940->flags &= ~0x10;
+                x_c9614940->x_251abb64 = -1;
             }
 
-            v00 = projectile_spawn(obj, sp2C->unk_42);
+            v00 = x_86c0b63f(obj, x_32f1d6e2->x_350c85ef);
             if (v00 != NULL) {
-                v00->unk_076 &= ~2;
-                if (player->playerId != PLAYER_1) {
-                    v00->unk_07A = 2;
+                v00->x_61f772e7 &= ~2;
+                if (player->x_30bbe547 != x_83106b21) {
+                    v00->x_e4466eca = 2;
                 } else {
-                    v00->unk_07C = 2;
+                    v00->x_b1e624ba = 2;
                 }
-                v00->unk_1FC = 300;
+                v00->x_de73d1d5 = 300;
             }
 
-            projectile_cleanup(obj, sp2C);
+            x_fbfba96d(obj, x_32f1d6e2);
         } else {
-            projectile_cleanup(obj, sp2C);
+            x_fbfba96d(obj, x_32f1d6e2);
         }
 
-        player->projectileObj = NULL;
+        player->x_66350762 = NULL;
     }
 }

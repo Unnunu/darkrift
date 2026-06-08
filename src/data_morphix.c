@@ -1,6 +1,6 @@
 #include "common.h"
 
-HitZonesSetup D_800527A0 = {
+x_87049dce D_800527A0 = {
     6,
     9,
     3,
@@ -20,25 +20,25 @@ HitZonesSetup D_800527A0 = {
     { 0, 0, 0, 0 },
 };
 
-s16 D_80052820[] = { MOVE_ID_BS_COMBO_1_P1, MOVE_ID_BS_COMBO_1_P2, MOVE_ID_BS_COMBO_1_P3, 0 };
-s16 D_80052828[] = { MOVE_ID_BS_COMBO_1_P1, MOVE_ID_BS_COMBO_1_P2, MOVE_ID_COCOMBO_1_P1,
-                     MOVE_ID_COCOMBO_1_P2,  MOVE_ID_COCOMBO_1_P3,  0 };
-s16 D_80052834[] = { MOVE_ID_BS_COMBO_1_P1, MOVE_ID_BS_COMBO_1_P2, MOVE_ID_COCOMBO_1_P1,
-                     MOVE_ID_COCOMBO_1_P2,  MOVE_ID_COCOMBO_2_P1,  MOVE_ID_COCOMBO_2_P2,
-                     MOVE_ID_COCOMBO_2_P3,  MOVE_ID_COCOMBO_2_P4,  0 };
-s16 D_80052848[] = { MOVE_ID_HS_COMBO_1_P1, MOVE_ID_HS_COMBO_1_P2, MOVE_ID_COCOMBO_1_P1,
-                     MOVE_ID_COCOMBO_1_P2,  MOVE_ID_COCOMBO_1_P3,  0 };
-s16 D_80052854[] = { MOVE_ID_HS_COMBO_1_P1, MOVE_ID_HS_COMBO_1_P2, MOVE_ID_COCOMBO_1_P1, MOVE_ID_COCOMBO_1_P2,
-                     MOVE_ID_COCOMBO_2_P1,  MOVE_ID_COCOMBO_2_P2,  MOVE_ID_COCOMBO_3_P1, 0 };
+s16 D_80052820[] = { x_89bd7f51, x_0259aa31, x_42786438, 0 };
+s16 D_80052828[] = { x_89bd7f51, x_0259aa31, x_6a3715eb,
+                     x_9efec86a,  x_afcef681,  0 };
+s16 D_80052834[] = { x_89bd7f51, x_0259aa31, x_6a3715eb,
+                     x_9efec86a,  x_a1422c65,  x_618f64b1,
+                     x_55e6a23a,  x_3b36e7f6,  0 };
+s16 D_80052848[] = { x_2d2ae732, x_84625073, x_6a3715eb,
+                     x_9efec86a,  x_afcef681,  0 };
+s16 D_80052854[] = { x_2d2ae732, x_84625073, x_6a3715eb, x_9efec86a,
+                     x_a1422c65,  x_618f64b1,  x_4f064f79, 0 };
 s16 *D_80052864[] = {
     D_80052820, D_80052828, D_80052834, D_80052848, D_80052854, NULL,
 };
 
-Unk_8004BA6C D_8005287C[] = {
+x_448872e8 D_8005287C[] = {
     { 36, 6, 1 },
     { 38, 6, 1 },
     { 0, 0, 0 },
 };
-Unk_8004BA6C D_80052890[] = {
+x_448872e8 D_80052890[] = {
     { 118, 5, 1 }, { 120, 5, 1 }, { 122, 5, 1 }, { 124, 5, 1 }, { 0, 0, 0 },
 };
