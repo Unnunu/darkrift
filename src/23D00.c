@@ -157,7 +157,7 @@ void x_071f1bfa(x_2f5c3183 *x_cc1d0de5) {
     }
 }
 
-#ifdef x_26a627fb
+#ifdef NON_MATCHING
 void x_dbbadf22(Object *obj) {
     s32 pad[7];
     Vtx *temp;
@@ -259,8 +259,8 @@ void x_dbbadf22(Object *obj) {
     x_ec427b59 = s2->x_b050a210[D_8005BFCE];
     a3 = s2->x_112d334c[D_8005BFCE];
 
-    d1 = x_7eefcd11.x.z * x_70eb54d5->x + x_7eefcd11.y.z * x_70eb54d5->y +
-         x_7eefcd11.z.z * x_70eb54d5->z + x_7eefcd11.w.z;
+    d1 = x_7eefcd11.x.z * x_70eb54d5->x + x_7eefcd11.y.z * x_70eb54d5->y + x_7eefcd11.z.z * x_70eb54d5->z +
+         x_7eefcd11.w.z;
 
     s2->x_8921bd8d = 0;
     s2->x_d5f67ba6 = 0;
@@ -273,8 +273,7 @@ void x_dbbadf22(Object *obj) {
             y = pos->y >> 16;
             z = pos->z >> 16;
 
-            d2 = x_7eefcd11.x.z * x + x_7eefcd11.y.z * y + x_7eefcd11.z.z * z +
-                 x_7eefcd11.w.z;
+            d2 = x_7eefcd11.x.z * x + x_7eefcd11.y.z * y + x_7eefcd11.z.z * z + x_7eefcd11.w.z;
 
             if (d1 < d2) {
                 x_ec427b59->v.ob[0] = x - x_5d45b0f8.x;
@@ -356,7 +355,7 @@ void x_dbbadf22(Object *obj) {
     x_071f1bfa(s2);
 }
 #else
-#pragma x_eda6f9e3("asm/nonmatchings/23D00/func_80023628.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/23D00/x_dbbadf22.s")
 void x_dbbadf22(Object *);
 #endif
 

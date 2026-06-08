@@ -366,7 +366,8 @@ void x_9742b98c(Object *obj) {
 
     x_5086c3f0->a = obj->color.a;
 
-    if (x_bd706c81->r != x_5086c3f0->r || x_bd706c81->g != x_5086c3f0->g || x_bd706c81->b != x_5086c3f0->b || x_bd706c81->a != x_5086c3f0->a) {
+    if (x_bd706c81->r != x_5086c3f0->r || x_bd706c81->g != x_5086c3f0->g || x_bd706c81->b != x_5086c3f0->b ||
+        x_bd706c81->a != x_5086c3f0->a) {
         x_71257e81(x_2657bff1, obj);
         memcpy(&obj->x_da940449, &obj->x_47e6a04c, sizeof(x_6751d717));
     }
@@ -535,8 +536,8 @@ void x_8487d43a(Object *obj, s32 x_84ff873b) {
     for (i = 0; i < x_8a9089b3; i++) {
         s1 = s6[i].x_164cf1ca;
         if (transforms != NULL) {
-            x_f9704fd6 *mtx = (s1->x_0c9f73ee >= 0) ? &transforms[s1->x_0c9f73ee].x_0c1a9bdd
-                                                  : &transforms[s1->group[0]].x_0c1a9bdd;
+            x_f9704fd6 *mtx =
+                (s1->x_0c9f73ee >= 0) ? &transforms[s1->x_0c9f73ee].x_0c1a9bdd : &transforms[s1->group[0]].x_0c1a9bdd;
             x_16eff9cc(mtx, x_bf6199df, &D_800813E0);
         } else {
             x_16eff9cc(&model->x_abd7b3c4.x_0c1a9bdd, x_bf6199df, &D_800813E0);
@@ -936,16 +937,13 @@ void x_c0cb3394(u8 *x_21a0270b, s16 *value, Object *obj) {
                 model->x_898495c5 = TRUE;
                 break;
             case 4:
-                model->x_6689336b.x =
-                    ((*value + model->x_6689336b.x - model->x_9cfd7bb4.x) >> 1) + model->x_9cfd7bb4.x;
+                model->x_6689336b.x = ((*value + model->x_6689336b.x - model->x_9cfd7bb4.x) >> 1) + model->x_9cfd7bb4.x;
                 break;
             case 5:
-                model->x_6689336b.y =
-                    ((*value + model->x_6689336b.y - model->x_9cfd7bb4.y) >> 1) + model->x_9cfd7bb4.y;
+                model->x_6689336b.y = ((*value + model->x_6689336b.y - model->x_9cfd7bb4.y) >> 1) + model->x_9cfd7bb4.y;
                 break;
             case 6:
-                model->x_6689336b.z =
-                    ((*value + model->x_6689336b.z - model->x_9cfd7bb4.z) >> 1) + model->x_9cfd7bb4.z;
+                model->x_6689336b.z = ((*value + model->x_6689336b.z - model->x_9cfd7bb4.z) >> 1) + model->x_9cfd7bb4.z;
                 break;
             case 7:
                 model->x_4e599cb3.x = (*value + model->x_4e599cb3.x) >> 1;
@@ -1545,7 +1543,7 @@ void x_3a85c5a8(Object *obj) {
     D_8013C4E8 = &x_20d20338->x_da66be9b;
 }
 
-#ifdef x_0fab73bf
+#ifdef NON_EQUIVALENT
 void x_5ff12555(Object *obj) {
     x_d0fba50a *a2;
     x_6fcfcf46 *v1;
@@ -1689,9 +1687,12 @@ void x_5ff12555(Object *obj) {
                 x_a822276e |= ~0xFF;
             }
 
-            x_65cbb149 = ((x_c188a78e * x_1cc81ccd) >> 10) + ((x_81bfdb41 * x_f534bdd3) >> 10) + ((x_dcab8ab0 * x_a822276e) >> 10);
-            x_568db421 = ((x_5b215acc * x_1cc81ccd) >> 10) + ((x_dcccc364 * x_f534bdd3) >> 10) + ((x_8a9089b3 * x_a822276e) >> 10);
-            x_f4f7b3d7 = ((x_3def65ec * x_1cc81ccd) >> 10) + ((x_5c787447 * x_f534bdd3) >> 10) + ((x_4a1fd4d1 * x_a822276e) >> 10);
+            x_65cbb149 = ((x_c188a78e * x_1cc81ccd) >> 10) + ((x_81bfdb41 * x_f534bdd3) >> 10) +
+                         ((x_dcab8ab0 * x_a822276e) >> 10);
+            x_568db421 = ((x_5b215acc * x_1cc81ccd) >> 10) + ((x_dcccc364 * x_f534bdd3) >> 10) +
+                         ((x_8a9089b3 * x_a822276e) >> 10);
+            x_f4f7b3d7 = ((x_3def65ec * x_1cc81ccd) >> 10) + ((x_5c787447 * x_f534bdd3) >> 10) +
+                         ((x_4a1fd4d1 * x_a822276e) >> 10);
 
             x_4b500ba0 = x_de61763c * x_65cbb149 + x_2a89e429 * x_568db421 + x_54406eae * x_f4f7b3d7;
             if (x_4b500ba0 > 0) {
@@ -1750,7 +1751,7 @@ void x_5ff12555(Object *obj) {
     }
 }
 #else
-#pragma x_eda6f9e3("asm/nonmatchings/model/func_80037E28.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/model/x_5ff12555.s")
 #endif
 
 void x_0022bfc3(Object *obj) {

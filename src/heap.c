@@ -104,7 +104,7 @@ void x_fd701d0e(void) {
             x_28d4de16(x_5d7a764d, &x_3c86e126);
             if (D_8005AEB8[x_d70d9bc9].x_3c30b5f3 != NULL) {
                 D_8005AEB8[x_d70d9bc9].x_3c30b5f3(x_50f1dbff, D_8005AEB8[x_d70d9bc9].data,
-                                                    D_8005AEB8[x_d70d9bc9].x_3b9aa142);
+                                                  D_8005AEB8[x_d70d9bc9].x_3b9aa142);
             }
             D_8005AEB8[x_d70d9bc9].data = x_50f1dbff;
         }
@@ -211,7 +211,7 @@ void x_2c0505ad(void) {
     }
 }
 
-#ifdef x_26a627fb
+#ifdef NON_MATCHING
 void *x_5319ff51(u32 size) {
     x_704d55d4 *current;
     u32 x_bc354e67;
@@ -276,7 +276,7 @@ x_3ace60b0:
 }
 #else
 void *x_5319ff51(u32 x_cc1d0de5);
-#pragma x_eda6f9e3("asm/nonmatchings/heap/do_mem_alloc.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/heap/x_5319ff51.s")
 #endif
 
 void x_86715543(void *ptr) {

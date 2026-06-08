@@ -7,7 +7,7 @@ s32 D_80053D44 = 0;
 s32 D_80053D48 = 0;
 
 u8 D_8013EE00[256];
-OSThread x_961e4375;
+OSThread __osThreadSave;
 
 void x_25bb0b8f(u32 i, u8 *str) {
     str[0] = (i >> 24) & 0xFF;
@@ -77,10 +77,10 @@ void x_b7d3fa81(void) {
 }
 
 void x_64fe7b2e(void) {
-    x_e1293f81((u8 *) &x_961e4375.context, sizeof(__OSThreadContext));
+    x_e1293f81((u8 *) &__osThreadSave.context, sizeof(__OSThreadContext));
 }
 
-void x_10ebd190(u32 arg) {
+void kdebugserver(u32 arg) {
     u32 i;
     rdbPacket packet;
 

@@ -2,7 +2,7 @@
 #include "PR/gt.h"
 #include "task.h"
 
-#define x_d8fc928a(pkt, dl)                       \
+#define x_d8fc928a(pkt, dl)                         \
     {                                               \
         Gfx *_g = (Gfx *) (pkt);                    \
         _g->words.w0 = _SHIFTL(G_PERSPNORM, 24, 8); \
@@ -149,8 +149,7 @@ void x_da2cde4c(void) {
         gSPDisplayList(x_9a3c07b8++, D_80080100->x_5b2cc439);
     }
     gSPDisplayList(x_9a3c07b8++, D_8004CB00);
-    gSPMatrix(x_9a3c07b8++, x_c485761a(&D_80080100->x_0f39faa7),
-              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(x_9a3c07b8++, x_c485761a(&D_80080100->x_0f39faa7), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     x_d8fc928a(x_9a3c07b8++, D_80080100->perspNorm);
     D_8004CC20.perspNorm = D_80080100->perspNorm;
     gDPSetFogColor(x_9a3c07b8++, D_80080130, D_80080132, D_80080134, 255);
@@ -325,9 +324,8 @@ void x_82df7d23(void) {
     D_8005BFCE = D_8005BEF8 = D_8005BEF0 = D_8005BEE8 = D_8005BEE0 = 0;
 
     while (!(x_e30d50d2 & x_bee364e0) || !(x_e30d50d2 & x_e3ff543d)) {
-        if (!(x_e30d50d2 & x_dd99cbfb) && !(x_e30d50d2 & x_86c5bc33) &&
-            x_59ce598c[x_83106b21].buttons == x_9cefe76c && x_59ce598c[x_83106b21].enabled &&
-            x_59ce598c[x_83106b21].x_c4397934) {
+        if (!(x_e30d50d2 & x_dd99cbfb) && !(x_e30d50d2 & x_86c5bc33) && x_59ce598c[x_83106b21].buttons == x_9cefe76c &&
+            x_59ce598c[x_83106b21].enabled && x_59ce598c[x_83106b21].x_c4397934) {
             x_14a106cd(x_83106b21);
         } else if (!(x_e30d50d2 & x_dd99cbfb) && !(x_e30d50d2 & x_86c5bc33) &&
                    x_59ce598c[x_6f0b3be3].buttons == x_9cefe76c && x_59ce598c[x_6f0b3be3].enabled &&
@@ -367,7 +365,7 @@ void x_82df7d23(void) {
     x_08779f06(FALSE);
 }
 
-#ifdef x_26a627fb
+#ifdef NON_MATCHING
 void x_b7eeb04a(s32 x_cc1d0de5, Vtx *x_84ff873b) {
     if (x_84ff873b == NULL) {
         x_84ff873b = &D_800492B0[D_8005BFCE];
@@ -404,11 +402,11 @@ void x_b7eeb04a(s32 x_cc1d0de5, Vtx *x_84ff873b) {
     x_50746900(x_ee137e39, NULL, &D_8005BF00, x_84ff873b, D_80049330);
 }
 #else
-#pragma x_eda6f9e3("asm/nonmatchings/main/draw_solid_quad.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/main/x_b7eeb04a.s")
 void x_b7eeb04a(s32 x_cc1d0de5, Vtx *x_84ff873b);
 #endif
 
-#ifdef x_26a627fb
+#ifdef NON_MATCHING
 void x_e1511bdd(s32 x_cc1d0de5, Vtx *vertices) {
     Gfx *gfx = D_8005BF58;
 
@@ -447,7 +445,7 @@ void x_e1511bdd(s32 x_cc1d0de5, Vtx *vertices) {
     x_50746900(x_ee137e39, NULL, &D_8005BF00, vertices, D_80049330);
 }
 #else
-#pragma x_eda6f9e3("asm/nonmatchings/main/draw_translucent_quad.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/main/x_e1511bdd.s")
 void x_e1511bdd(s32 x_cc1d0de5, Vtx *x_84ff873b);
 #endif
 

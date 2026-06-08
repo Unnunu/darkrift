@@ -37,10 +37,8 @@ s16 D_80049D44[] = { 70, 60, 60, 55, 50, 45, 40, 40 };
 s16 D_80049D54[] = { 8, 6, 4, 2, 0, 0, 0, 0 };
 s16 D_80049D64[] = { 2, 2, 2, 1, 1, 1, 1, 1 };
 s16 (*x_0d580d2b[])(struct Player *) = {
-    x_96d51072,        x_456d0051,          x_30f96d57,     x_09f9ea13,
-    x_02127c90,       x_a92b640d, x_54e2b66c,         x_8b270b48,
-    x_8985d3ca,    x_9aa019dc,    x_b8c2dd87,      x_96cd9330,
-    x_f7322749, x_4f67a505, x_449f1966, x_61604a34,
+    x_96d51072, x_456d0051, x_30f96d57, x_09f9ea13, x_02127c90, x_a92b640d, x_54e2b66c, x_8b270b48,
+    x_8985d3ca, x_9aa019dc, x_b8c2dd87, x_96cd9330, x_f7322749, x_4f67a505, x_449f1966, x_61604a34,
 };
 s16 D_80049DB4[] = { 13, 13, 13, 10, 19, 19, 10, 10, 19, 10, 10, 0 };
 s16 D_80049DCC[] = { 10, 10, 10, 7, 12, 12, 10, 10, 12, 10, 10, 0, 0, 0, 0, 0, 0, 0 };
@@ -93,8 +91,7 @@ void x_da66d1d5(Player *player) {
         } else if (player->x_448f0851 == 0 && player->obj->x_5fcb1654 >= player->x_7f68c36b->x_bab9966d - 1) {
             player->x_448f0851 = 512;
         }
-    } else if (!(player->x_b9252303->flags & x_09809fad) &&
-               !(player->flags & x_030d2322)) {
+    } else if (!(player->x_b9252303->flags & x_09809fad) && !(player->flags & x_030d2322)) {
         if (x_af5ccc8a(player->obj) && !(player->x_7f68c36b->flags & x_cdcff2e1) &&
             !(player->obj->flags & x_da584e3c)) {
             if (player->x_7f68c36b->flags & x_037894c1) {
@@ -188,7 +185,7 @@ u8 x_c41ec21f(Player *player) {
     return FALSE;
 }
 
-#ifdef x_26a627fb
+#ifdef NON_MATCHING
 u8 x_9f09065b(Player *player, x_1e5e42da *x_81570fde) {
     s32 x_7d78dd2d;
     s32 x_d7f0204f;
@@ -202,16 +199,14 @@ u8 x_9f09065b(Player *player, x_1e5e42da *x_81570fde) {
 
         // read AiAction header
         x_81570fde->x_76cf2d04 = player->x_994b73a7 + player->x_4ec7bbf8[*x_81570fde->x_9daba480];
-        x_81570fde->x_ca75ac5d =
-            ((s16) *x_81570fde->x_76cf2d04 == -1) ? NULL : x_0d580d2b[*x_81570fde->x_76cf2d04];
+        x_81570fde->x_ca75ac5d = ((s16) *x_81570fde->x_76cf2d04 == -1) ? NULL : x_0d580d2b[*x_81570fde->x_76cf2d04];
         x_81570fde->x_76cf2d04++;
         x_81570fde->x_5a6554ba = *x_81570fde->x_76cf2d04++;
         x_81570fde->x_5c398490 = *x_81570fde->x_76cf2d04++;
 
-        a3 = (x_81570fde->x_5c398490 & x_7d78dd2d & 0x400) &&
-             !((x_81570fde->x_5c398490 & 0x200) ^ (x_7d78dd2d & 0x200));
-        if (a3 && (x_81570fde->x_5c398490 & 8) &&
-            ((x_81570fde->x_5c398490 & 8) ^ (x_d7f0204f & x_9298c772))) {
+        a3 =
+            (x_81570fde->x_5c398490 & x_7d78dd2d & 0x400) && !((x_81570fde->x_5c398490 & 0x200) ^ (x_7d78dd2d & 0x200));
+        if (a3 && (x_81570fde->x_5c398490 & 8) && ((x_81570fde->x_5c398490 & 8) ^ (x_d7f0204f & x_9298c772))) {
             a3 = FALSE;
         }
 
@@ -236,7 +231,7 @@ u8 x_9f09065b(Player *player, x_1e5e42da *x_81570fde) {
     return FALSE;
 }
 #else
-#pragma x_eda6f9e3("asm/nonmatchings/ai/ai_setup_action.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/ai/x_9f09065b.s")
 #endif
 
 void x_c94a154b(Player *player) {
@@ -346,8 +341,7 @@ u8 x_cb6a0d41(Player *player, x_ccb3bba0 **x_73dff70e, u8 x_852d4cff) {
     x_98c4e5a5 = x_824b9544 + 1 - player->x_30bbe547;
 
     if (x_852d4cff) {
-        x_0475899f =
-            (x_824b9544[1 - player->x_30bbe547].x_7f68c36b->flags & x_037894c1) ? x_26778114 : x_ee946ac0;
+        x_0475899f = (x_824b9544[1 - player->x_30bbe547].x_7f68c36b->flags & x_037894c1) ? x_26778114 : x_ee946ac0;
         x_4c93e610 = x_98c4e5a5->x_59f97427[x_0475899f];
         x_549ac3de = x_98c4e5a5->x_b8b27276[x_4c93e610];
         x_00e4973c = x_98c4e5a5->x_1af5b64c[x_549ac3de].x_acda7e96[player->x_eb1fe45b];
@@ -788,7 +782,8 @@ s16 x_88a987a4(Player *player) {
     x_98c4e5a5 = x_824b9544 + x_de68d2a6;
     if (!(x_98c4e5a5->flags & x_c15491f2)) {
         if ((x_c9614940 < x_32f1d6e2 && D_80049DB4[x_98c4e5a5->x_eb1fe45b] < x_32f1d6e2 - x_c9614940) ||
-            (x_18643961 < x_c9614940 && D_80049DCC[x_98c4e5a5->x_eb1fe45b] < x_824b9544[x_de68d2a6].x_7f68c36b->x_bab9966d - x_18643961) ||
+            (x_18643961 < x_c9614940 &&
+             D_80049DCC[x_98c4e5a5->x_eb1fe45b] < x_824b9544[x_de68d2a6].x_7f68c36b->x_bab9966d - x_18643961) ||
             ((x_824b9544[1 - player->x_30bbe547].flags & x_030d2322) &&
              x_824b9544[1 - player->x_30bbe547].obj->x_5fcb1654 < 6)) {
             player->flags &= ~x_d8a402c3;
@@ -858,7 +853,8 @@ s16 x_3f4966fe(Player *player) {
     x_98c4e5a5 = x_824b9544 + x_de68d2a6;
     if (!(x_98c4e5a5->flags & x_c15491f2) && x_463aa1ee(player)) {
         if ((x_c9614940 < x_32f1d6e2 && D_80049DB4[x_98c4e5a5->x_eb1fe45b] < x_32f1d6e2 - x_c9614940) ||
-            (x_18643961 < x_c9614940 && D_80049DCC[x_98c4e5a5->x_eb1fe45b] < x_824b9544[x_de68d2a6].x_7f68c36b->x_bab9966d - x_18643961) ||
+            (x_18643961 < x_c9614940 &&
+             D_80049DCC[x_98c4e5a5->x_eb1fe45b] < x_824b9544[x_de68d2a6].x_7f68c36b->x_bab9966d - x_18643961) ||
             ((x_824b9544[1 - player->x_30bbe547].flags & x_030d2322) &&
              x_824b9544[1 - player->x_30bbe547].obj->x_5fcb1654 < 6)) {
             player->flags &= ~x_d8a402c3;
@@ -897,8 +893,7 @@ s16 x_c292dfa6(Player *player) {
 
     x_4b1172f5 = x_99de1125(player, &x_73dff70e);
 
-    if (player->obj->x_5fcb1654 < (player->x_7f68c36b->x_bab9966d >> 1) &&
-        !(player->flags & x_9298c772)) {
+    if (player->obj->x_5fcb1654 < (player->x_7f68c36b->x_bab9966d >> 1) && !(player->flags & x_9298c772)) {
         return TRUE;
     }
 

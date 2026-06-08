@@ -336,8 +336,7 @@ Object *x_86c0b63f(Object *obj, s32 x_d7ce6b8d) {
         x_02f7ef06->x_5fcb1654 = player->x_8b00beac[effect->x_bc085e56];
         x_02f7ef06->x_f9866d50 = x_02f7ef06->x_0f4167b4[4] = effect->x_fbb09ed1;
     } else {
-        x_02f7ef06 =
-            x_572f827d(&pos, 0x1000, x_35e86baf, player->x_dd32bc14[effect->x_1d88fb18]);
+        x_02f7ef06 = x_572f827d(&pos, 0x1000, x_35e86baf, player->x_dd32bc14[effect->x_1d88fb18]);
         if (x_02f7ef06 == NULL) {
             return x_02f7ef06;
         }
@@ -459,7 +458,7 @@ void x_e8a9f217(Object *obj, Player *x_84ff873b, x_6fc0b62f *x_2092f891, u8 x_ee
     x_fbfba96d(obj, x_2092f891);
 }
 
-#ifdef x_0fab73bf
+#ifdef NON_EQUIVALENT
 u8 x_6ce73fcf(Object *obj) {
     Player *player;
     x_88f11482 *x_7f6ea7e4;
@@ -512,7 +511,7 @@ u8 x_6ce73fcf(Object *obj) {
     return FALSE;
 }
 #else
-#pragma x_eda6f9e3("asm/nonmatchings/projectile/func_80022CD0.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/projectile/x_6ce73fcf.s")
 u8 x_6ce73fcf(Object *obj);
 #endif
 

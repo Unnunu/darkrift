@@ -25,7 +25,7 @@ s32 D_80081434;
 s32 D_80081438;
 
 x_4a7d6dd4 *x_a0e73601(char *x_2b0c3984, s32 x_84ff873b, s32 x_64a8566c, s32 x_afebb108, s32 x_86f38745, s32 flags,
-                                 s32 x_fb21ca8c) {
+                       s32 x_fb21ca8c) {
     x_4a7d6dd4 *head;
     s32 pad;
     x_3b6b80ec *x_d59386e0;
@@ -114,16 +114,16 @@ void x_fde7a84d(x_4a7d6dd4 *x_8dddde0e, s32 x_ace80dba, s32 x_64a8566c, u32 heig
         do {
             x_54670c5d = MIN(height, 5);
             x_9bdb24e2 = x_9dc253a1 - x_c2580ba5;
-            gDPLoadTextureTile((*x_bde24317)++,                 // pkt
-                               x_c485761a(image), // timg
+            gDPLoadTextureTile((*x_bde24317)++,            // pkt
+                               x_c485761a(image),          // timg
                                G_IM_FMT_CI,                // fmt
                                G_IM_SIZ_8b,                // siz
-                               x_9dc253a1,                   // width
+                               x_9dc253a1,                 // width
                                0,                          // height
-                               x_c2580ba5,                       // uls
+                               x_c2580ba5,                 // uls
                                texT,                       // ult
-                               x_c2580ba5 + x_c84980f9,        // lrs
-                               texT + x_54670c5d,         // lrt
+                               x_c2580ba5 + x_c84980f9,    // lrs
+                               texT + x_54670c5d,          // lrt
                                0,                          // pal
                                G_TX_NOMIRROR | G_TX_CLAMP, // cms
                                G_TX_NOMIRROR | G_TX_CLAMP, // cmt
@@ -133,26 +133,26 @@ void x_fde7a84d(x_4a7d6dd4 *x_8dddde0e, s32 x_ace80dba, s32 x_64a8566c, u32 heig
                                G_TX_NOLOD                  // shiftt
             );
             gSPTextureRectangle((*x_bde24317)++,                    // pkt
-                                0 << 2,                        // xl
-                                x_64a8566c << 2,                     // yl
-                                x_9bdb24e2 << 2,                // xh
+                                0 << 2,                             // xl
+                                x_64a8566c << 2,                    // yl
+                                x_9bdb24e2 << 2,                    // xh
                                 (x_64a8566c + x_54670c5d - 1) << 2, // yh
-                                G_TX_RENDERTILE,               // tile
-                                x_c2580ba5 << 5,                     // s
-                                (texT + 1) << 5,               // t
-                                4 << 10,                       // dsdx
-                                1 << 10                        // dtdy
+                                G_TX_RENDERTILE,                    // tile
+                                x_c2580ba5 << 5,                    // s
+                                (texT + 1) << 5,                    // t
+                                4 << 10,                            // dsdx
+                                1 << 10                             // dtdy
             );
             gSPTextureRectangle((*x_bde24317)++,                    // pkt
-                                x_9bdb24e2 << 2,                // xl
-                                x_64a8566c << 2,                     // yl
-                                (x_c84980f9 - 1) << 2,       // xh
+                                x_9bdb24e2 << 2,                    // xl
+                                x_64a8566c << 2,                    // yl
+                                (x_c84980f9 - 1) << 2,              // xh
                                 (x_64a8566c + x_54670c5d - 1) << 2, // yh
-                                G_TX_RENDERTILE,               // tile
-                                (x_c2580ba5 + x_9bdb24e2) << 5,       // s
-                                texT << 5,                     // t
-                                4 << 10,                       // dsdx
-                                1 << 10                        // dtdy
+                                G_TX_RENDERTILE,                    // tile
+                                (x_c2580ba5 + x_9bdb24e2) << 5,     // s
+                                texT << 5,                          // t
+                                4 << 10,                            // dsdx
+                                1 << 10                             // dtdy
             );
             texT += x_54670c5d;
             x_64a8566c += x_54670c5d;
@@ -161,16 +161,16 @@ void x_fde7a84d(x_4a7d6dd4 *x_8dddde0e, s32 x_ace80dba, s32 x_64a8566c, u32 heig
     } else {
         do {
             x_54670c5d = MIN(height, 6);
-            gDPLoadTextureTile((*x_bde24317)++,                 // pkt
-                               x_c485761a(image), // timg
+            gDPLoadTextureTile((*x_bde24317)++,            // pkt
+                               x_c485761a(image),          // timg
                                G_IM_FMT_CI,                // fmt
                                G_IM_SIZ_8b,                // siz
-                               x_9dc253a1,                   // width
+                               x_9dc253a1,                 // width
                                0,                          // height
-                               x_c2580ba5,                       // uls
+                               x_c2580ba5,                 // uls
                                texT,                       // ult
-                               x_c2580ba5 + x_c84980f9,        // lrs
-                               texT + x_54670c5d - 1,     // lrt
+                               x_c2580ba5 + x_c84980f9,    // lrs
+                               texT + x_54670c5d - 1,      // lrt
                                0,                          // pal
                                G_TX_NOMIRROR | G_TX_CLAMP, // cms
                                G_TX_NOMIRROR | G_TX_CLAMP, // cmt
@@ -180,15 +180,15 @@ void x_fde7a84d(x_4a7d6dd4 *x_8dddde0e, s32 x_ace80dba, s32 x_64a8566c, u32 heig
                                G_TX_NOLOD                  // shiftt
             );
             gSPTextureRectangle((*x_bde24317)++,                    // pkt
-                                0 << 2,                        // xl
-                                x_64a8566c << 2,                     // yl
-                                (x_56e08f29 - 1) << 2,       // xh
+                                0 << 2,                             // xl
+                                x_64a8566c << 2,                    // yl
+                                (x_56e08f29 - 1) << 2,              // xh
                                 (x_64a8566c + x_54670c5d - 1) << 2, // yh
-                                G_TX_RENDERTILE,               // tile
-                                x_c2580ba5 << 5,                     // s
-                                texT << 5,                     // t
-                                4 << 10,                       // dsdx
-                                1 << 10                        // dtdy
+                                G_TX_RENDERTILE,                    // tile
+                                x_c2580ba5 << 5,                    // s
+                                texT << 5,                          // t
+                                4 << 10,                            // dsdx
+                                1 << 10                             // dtdy
             );
 
             texT += x_54670c5d;
@@ -242,7 +242,8 @@ void x_77751af8(void) {
             x_c2580ba5 = (x_8dddde0e->x_08b62e4f + x_c9084644) % x_8dddde0e->width;
             x_fde7a84d(x_8dddde0e, x_ace80dba, x_64a8566c, height, x_c2580ba5, 0);
 
-            if (!(x_8dddde0e->flags & x_8ce7ef70) && x_16201079 < x_64a8566c + height && x_64a8566c + height < x_84e8ddf2) {
+            if (!(x_8dddde0e->flags & x_8ce7ef70) && x_16201079 < x_64a8566c + height &&
+                x_64a8566c + height < x_84e8ddf2) {
                 x_16201079 = x_64a8566c + height;
             }
         }
@@ -255,7 +256,7 @@ void x_77751af8(void) {
         gDPPipeSync(x_9a3c07b8++);
         gDPSetCycleType(x_9a3c07b8++, G_CYC_FILL);
         gDPSetFillColor(x_9a3c07b8++, (GPACK_RGBA5551(D_80080130, D_80080132, D_80080134, 1) << 16) |
-                                           GPACK_RGBA5551(D_80080130, D_80080132, D_80080134, 1));
+                                          GPACK_RGBA5551(D_80080130, D_80080132, D_80080134, 1));
         gDPFillRectangle(x_9a3c07b8++, 0, x_16201079, x_c84980f9 - 1, x_16201079 + t3 - 1);
         gDPPipeSync(x_9a3c07b8++);
         gDPSetCycleType(x_9a3c07b8++, G_CYC_COPY);
@@ -278,7 +279,7 @@ void x_08216b8b(x_8ab35fe5 *x_cc1d0de5) {
     if (sprite) {}
 }
 
-#ifdef x_26a627fb
+#ifdef NON_MATCHING
 void x_23e3afdf(Object *obj) {
     x_7cc7ad58 *v1;
     u8 *pad;
@@ -355,35 +356,35 @@ void x_23e3afdf(Object *obj) {
 
         do {
             x_0dbe0778 = MIN(x_5ded428c, x_4760dd99);
-            gDPLoadTextureTile((*x_bde24317)++,                  // pkt
-                               x_c485761a(x_925c481a), // timg
-                               G_IM_FMT_CI,                 // fmt
-                               G_IM_SIZ_8b,                 // siz
-                               width,                       // width
-                               0,                           // height
-                               uls,                         // uls
-                               ult,                         // ult
-                               lrs,                         // lrs
-                               ult + x_0dbe0778 - 1,      // lrt
-                               0,                           // pal
-                               G_TX_NOMIRROR | G_TX_CLAMP,  // cms
-                               G_TX_NOMIRROR | G_TX_CLAMP,  // cmt
-                               G_TX_NOMASK,                 // masks
-                               G_TX_NOMASK,                 // maskt
-                               G_TX_NOLOD,                  // shifts
-                               G_TX_NOLOD                   // shiftt
+            gDPLoadTextureTile((*x_bde24317)++,            // pkt
+                               x_c485761a(x_925c481a),     // timg
+                               G_IM_FMT_CI,                // fmt
+                               G_IM_SIZ_8b,                // siz
+                               width,                      // width
+                               0,                          // height
+                               uls,                        // uls
+                               ult,                        // ult
+                               lrs,                        // lrs
+                               ult + x_0dbe0778 - 1,       // lrt
+                               0,                          // pal
+                               G_TX_NOMIRROR | G_TX_CLAMP, // cms
+                               G_TX_NOMIRROR | G_TX_CLAMP, // cmt
+                               G_TX_NOMASK,                // masks
+                               G_TX_NOMASK,                // maskt
+                               G_TX_NOLOD,                 // shifts
+                               G_TX_NOLOD                  // shiftt
             );
 
-            gSPTextureRectangle((*x_bde24317)++,                  // pkt
-                                x << 2,                      // xl
-                                y << 2,                      // yl
-                                (x + x_0cb35e25 - 2) << 2,    // xh
+            gSPTextureRectangle((*x_bde24317)++,           // pkt
+                                x << 2,                    // xl
+                                y << 2,                    // yl
+                                (x + x_0cb35e25 - 2) << 2, // xh
                                 (y + x_0dbe0778 - 1) << 2, // yh
-                                G_TX_RENDERTILE,             // tile
-                                uls << 5,                    // s
-                                ult << 5,                    // t
-                                4 << 10,                     // dsdx
-                                1 << 10                      // dtdy
+                                G_TX_RENDERTILE,           // tile
+                                uls << 5,                  // s
+                                ult << 5,                  // t
+                                4 << 10,                   // dsdx
+                                1 << 10                    // dtdy
             );
 
             ult += x_0dbe0778;
@@ -393,6 +394,6 @@ void x_23e3afdf(Object *obj) {
     }
 }
 #else
-#pragma x_eda6f9e3("asm/nonmatchings/scroll/func_80015724.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/scroll/x_23e3afdf.s")
 void x_23e3afdf(Object *);
 #endif

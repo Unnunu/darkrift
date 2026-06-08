@@ -37,7 +37,7 @@ x_82e80914 *D_8008160C;
 u16 *D_80081610;
 Mtx D_80081618;
 
-#ifdef x_0fab73bf
+#ifdef NON_EQUIVALENT
 void x_fc4a871b(void) {
     x_acccb624 x_c188a78e;
     s32 x_81bfdb41;
@@ -160,7 +160,7 @@ void x_fc4a871b(void) {
     }
 }
 #else
-#pragma x_eda6f9e3("asm/nonmatchings/gmd_pcl/setup_pcl_projection.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/gmd_pcl/x_fc4a871b.s")
 void x_fc4a871b(void);
 #endif
 

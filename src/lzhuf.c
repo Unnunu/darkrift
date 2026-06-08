@@ -7,8 +7,8 @@
 #define x_a0981260 (256 - x_b7847da5 + F)
 /* kinds of characters (character code = 0..N_CHAR-1) */
 #define T (x_a0981260 * 2 - 1) /* size of table */
-#define R (T - 1)          /* position of root */
-#define x_c02b3433 0x8000    /* updates tree when the */
+#define R (T - 1)              /* position of root */
+#define x_c02b3433 0x8000      /* updates tree when the */
 
 u8 D_8004C760[] = { 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
                     0,  0,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
@@ -169,7 +169,7 @@ void x_42b39ea8(void) {
     D_8004C960 = 0;
 }
 
-#ifdef x_0fab73bf
+#ifdef NON_EQUIVALENT
 void x_cbd0f8d7(void) {
     s16 i; // v0
     s16 j;
@@ -218,7 +218,7 @@ void x_cbd0f8d7(void) {
     }
 }
 #else
-#pragma x_eda6f9e3("asm/nonmatchings/lzhuf/func_8002541C.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/lzhuf/x_cbd0f8d7.s")
 void x_cbd0f8d7(void);
 #endif
 

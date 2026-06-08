@@ -233,11 +233,11 @@ void x_efb29a7d(void) {
                 for (j = 0; j < t2; j++) {
                     if (x_dfa11b27->flags & 2) {
                         x_50746900(x_ee137e39, NULL, (j != 0) ? v0->info : x_dfa11b27->x_415ed9d6[i], v0->vertices,
-                                    v0->triangles);
+                                   v0->triangles);
                         v0++;
                     } else {
                         x_50746900(x_8a79b283, NULL, (j != 0) ? v0->info : x_dfa11b27->x_415ed9d6[i], v0->vertices,
-                                    v0->triangles);
+                                   v0->triangles);
                         v0++;
                     }
                 }
@@ -253,8 +253,9 @@ void x_efb29a7d(void) {
     }
 }
 
-#ifdef x_0fab73bf
-void x_6d41c91d(Object *x_cc1d0de5, x_88f11482 *x_84ff873b, x_acccb624 *x_2092f891, Transform *x_ee71e5cb, void (*x_08ae3bb4)(Object *)) {
+#ifdef NON_EQUIVALENT
+void x_6d41c91d(Object *x_cc1d0de5, x_88f11482 *x_84ff873b, x_acccb624 *x_2092f891, Transform *x_ee71e5cb,
+                void (*x_08ae3bb4)(Object *)) {
     s16 i;
     s32 temp;
 
@@ -325,8 +326,9 @@ void x_6d41c91d(Object *x_cc1d0de5, x_88f11482 *x_84ff873b, x_acccb624 *x_2092f8
     x_cc1d0de5->light = NULL;
 }
 #else
-#pragma x_eda6f9e3("asm/nonmatchings/item/obj_init.s")
-void x_6d41c91d(Object *x_cc1d0de5, x_88f11482 *x_84ff873b, x_acccb624 *x_2092f891, Transform *x_ee71e5cb, void (*x_a0e63e9c)(Object *));
+#pragma GLOBAL_ASM("asm/nonmatchings/item/x_6d41c91d.s")
+void x_6d41c91d(Object *x_cc1d0de5, x_88f11482 *x_84ff873b, x_acccb624 *x_2092f891, Transform *x_ee71e5cb,
+                void (*x_a0e63e9c)(Object *));
 #endif
 
 void x_9c540986(Object *obj, Model *model) {

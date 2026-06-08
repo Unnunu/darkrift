@@ -115,7 +115,7 @@ void x_eb293927(Object *obj) {
     obj->x_5fcb1654 = v0;
 }
 
-#ifdef x_26a627fb
+#ifdef NON_MATCHING
 s32 x_a2f41f91(s32 x_30bbe547) {
     s32 v1;
     u32 i;
@@ -136,11 +136,11 @@ s32 x_a2f41f91(s32 x_30bbe547) {
     return v1;
 }
 #else
-#pragma x_eda6f9e3("asm/nonmatchings/plyrsel/func_8001DFE4.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/x_a2f41f91.s")
 s32 x_a2f41f91(s32 x_30bbe547);
 #endif
 
-#ifdef x_0fab73bf
+#ifdef NON_EQUIVALENT
 u8 x_7dc12b61(u8 x_30bbe547) {
     u8 x_1be999e5[x_edb381f3];
     s32 pad;
@@ -188,7 +188,7 @@ u8 x_7dc12b61(u8 x_30bbe547) {
     }
 }
 #else
-#pragma x_eda6f9e3("asm/nonmatchings/plyrsel/func_8001E188.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/x_7dc12b61.s")
 u8 x_7dc12b61(u8 x_30bbe547);
 #endif
 
@@ -287,7 +287,8 @@ void x_6aa7260b(Object *obj) {
 
         x_464d68e5 = x_ff9be353(x_30bbe547);
         if (x_30bbe547 == x_83106b21) {
-            D_8013C234->x_e7f1952a = D_8013C234->x_e7f1952a - D_8013C234->x_b88b3756 + D_8013C234->rightS - x_464d68e5 - 8;
+            D_8013C234->x_e7f1952a =
+                D_8013C234->x_e7f1952a - D_8013C234->x_b88b3756 + D_8013C234->rightS - x_464d68e5 - 8;
             D_8013C234->x_b88b3756 = D_8013C234->rightS - x_464d68e5 - 8;
         } else {
             D_8013C238->rightS = D_8013C238->x_b88b3756 + x_464d68e5;
@@ -935,24 +936,32 @@ void x_d8d91897(s16 x_30bbe547, u16 x_05e00b01, u16 x_7cedc3fb) {
 u16 x_872278ef[] = { x_af0e0a9f, x_64a28e7d, x_84d0a51b, x_b2ae561b, x_ffe9ce36, x_37f8540c, x_d0d35cc6 };
 u16 x_af558c92[] = { x_29dbff14, x_c7089780, x_64a28e7d, x_af0e0a9f, x_b2ae561b, x_84d0a51b, x_d0d35cc6 };
 
-u16 x_da3e5ada[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_64a28e7d, x_64a28e7d, x_ffe9ce36, x_d0d35cc6 };
-u16 x_2b6f9733[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_d0d35cc6 };
-u16 x_7eaa6bad[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_64a28e7d, x_64a28e7d, x_37f8540c, x_d0d35cc6 };
-u16 x_e694052f[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_64a28e7d, x_64a28e7d, x_b2ae561b, x_d0d35cc6 };
-u16 x_49a7f1c5[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_64a28e7d, x_64a28e7d, x_c7089780, x_d0d35cc6 };
-u16 x_0f81075a[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_64a28e7d, x_64a28e7d, x_29dbff14, x_d0d35cc6 };
-u16 x_42d5a2ea[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_af0e0a9f, x_af0e0a9f, x_ffe9ce36, x_d0d35cc6 };
-u16 x_b6970c24[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_af0e0a9f, x_af0e0a9f, x_84d0a51b, x_d0d35cc6 };
-u16 x_f9cc0201[] = {
-    x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_af0e0a9f, x_af0e0a9f, x_37f8540c, x_d0d35cc6
-};
-u16 x_a8689ca4[] = {
-    x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_af0e0a9f, x_af0e0a9f, x_b2ae561b, x_d0d35cc6
-};
+u16 x_da3e5ada[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680,
+                     x_64a28e7d, x_64a28e7d, x_ffe9ce36, x_d0d35cc6 };
+u16 x_2b6f9733[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680,
+                     x_64a28e7d, x_64a28e7d, x_84d0a51b, x_d0d35cc6 };
+u16 x_7eaa6bad[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680,
+                     x_64a28e7d, x_64a28e7d, x_37f8540c, x_d0d35cc6 };
+u16 x_e694052f[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680,
+                     x_64a28e7d, x_64a28e7d, x_b2ae561b, x_d0d35cc6 };
+u16 x_49a7f1c5[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680,
+                     x_64a28e7d, x_64a28e7d, x_c7089780, x_d0d35cc6 };
+u16 x_0f81075a[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680,
+                     x_64a28e7d, x_64a28e7d, x_29dbff14, x_d0d35cc6 };
+u16 x_42d5a2ea[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680,
+                     x_af0e0a9f, x_af0e0a9f, x_ffe9ce36, x_d0d35cc6 };
+u16 x_b6970c24[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680,
+                     x_af0e0a9f, x_af0e0a9f, x_84d0a51b, x_d0d35cc6 };
+u16 x_f9cc0201[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680,
+                     x_af0e0a9f, x_af0e0a9f, x_37f8540c, x_d0d35cc6 };
+u16 x_a8689ca4[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680,
+                     x_af0e0a9f, x_af0e0a9f, x_b2ae561b, x_d0d35cc6 };
 
-u16 D_8004A114[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680, x_c7089780, x_c7089780, x_c7089780, x_84d0a51b, x_d0d35cc6 };
+u16 D_8004A114[] = { x_f7763ed8, x_ffe9ce36, x_64a28e7d, x_fc4a9735, x_b8c91680,
+                     x_c7089780, x_c7089780, x_c7089780, x_84d0a51b, x_d0d35cc6 };
 
-u16 D_8004A128[] = { x_ad1aebe6, x_84d0a51b, x_ffe9ce36, x_84d0a51b, x_c7089780, x_c7089780, x_c7089780, x_c7089780, x_d0d35cc6 };
+u16 D_8004A128[] = { x_ad1aebe6, x_84d0a51b, x_ffe9ce36, x_84d0a51b, x_c7089780,
+                     x_c7089780, x_c7089780, x_c7089780, x_d0d35cc6 };
 u16 D_8004A13C[] = { x_ad1aebe6, x_84d0a51b, x_ffe9ce36, x_84d0a51b, x_29dbff14, x_ffe9ce36, x_d0d35cc6 };
 u16 D_8004A14C[] = { x_ad1aebe6, x_84d0a51b, x_ffe9ce36, x_84d0a51b, x_29dbff14, x_84d0a51b, x_d0d35cc6 };
 u16 D_8004A15C[] = { x_ad1aebe6, x_84d0a51b, x_ffe9ce36, x_84d0a51b, x_29dbff14, x_37f8540c, x_d0d35cc6 };
@@ -963,15 +972,24 @@ u16 D_8004A19C[] = { x_ad1aebe6, x_84d0a51b, x_ffe9ce36, x_84d0a51b, x_29dbff14,
 u16 D_8004A1AC[] = { x_ad1aebe6, x_84d0a51b, x_ffe9ce36, x_84d0a51b, x_29dbff14, x_29dbff14, x_b2ae561b, x_d0d35cc6 };
 
 u16 D_8004A1BC[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780, x_ffe9ce36, x_d0d35cc6 };
-u16 D_8004A1CC[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780, x_c7089780, x_84d0a51b, x_d0d35cc6 };
-u16 D_8004A1E0[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780, x_c7089780, x_37f8540c, x_d0d35cc6 };
-u16 D_8004A1F4[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780, x_c7089780, x_b2ae561b, x_d0d35cc6 };
-u16 D_8004A208[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780, x_c7089780, x_29dbff14, x_d0d35cc6 };
-u16 D_8004A21C[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780, x_c7089780, x_c7089780, x_ffe9ce36, x_d0d35cc6 };
-u16 D_8004A230[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780, x_c7089780, x_c7089780, x_84d0a51b, x_d0d35cc6 };
-u16 D_8004A244[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780, x_c7089780, x_c7089780, x_37f8540c, x_d0d35cc6 };
-u16 D_8004A258[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780, x_c7089780, x_c7089780, x_c7089780, x_b2ae561b, x_d0d35cc6 };
-u16 D_8004A270[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780, x_c7089780, x_c7089780, x_c7089780, x_29dbff14, x_d0d35cc6 };
+u16 D_8004A1CC[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b,
+                     x_c7089780, x_c7089780, x_84d0a51b, x_d0d35cc6 };
+u16 D_8004A1E0[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b,
+                     x_c7089780, x_c7089780, x_37f8540c, x_d0d35cc6 };
+u16 D_8004A1F4[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b,
+                     x_c7089780, x_c7089780, x_b2ae561b, x_d0d35cc6 };
+u16 D_8004A208[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b,
+                     x_c7089780, x_c7089780, x_29dbff14, x_d0d35cc6 };
+u16 D_8004A21C[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b,
+                     x_c7089780, x_c7089780, x_c7089780, x_ffe9ce36, x_d0d35cc6 };
+u16 D_8004A230[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b,
+                     x_c7089780, x_c7089780, x_c7089780, x_84d0a51b, x_d0d35cc6 };
+u16 D_8004A244[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b,
+                     x_c7089780, x_c7089780, x_c7089780, x_37f8540c, x_d0d35cc6 };
+u16 D_8004A258[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780,
+                     x_c7089780, x_c7089780, x_c7089780, x_b2ae561b, x_d0d35cc6 };
+u16 D_8004A270[] = { x_c7089780, x_84d0a51b, x_64a28e7d, x_64a28e7d, x_84d0a51b, x_c7089780,
+                     x_c7089780, x_c7089780, x_c7089780, x_29dbff14, x_d0d35cc6 };
 
 x_64b038aa x_e521e2f2[] = { { D_8004A114, x_5b38dd2f, 0, 0 },
                             { x_872278ef, x_d74e99e0, TRUE, FALSE },

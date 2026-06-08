@@ -248,7 +248,7 @@ s32 x_66e69c02(char *x_e2308d38) {
 void x_9b2b63e0(char *name) {
     if (name[0] == '\0') {
         // load root wad
-        x_77d8d882 = x_76136bc5;
+        x_77d8d882 = resources_ROM_START;
         x_07194b79(x_77d8d882, x_897e2c89, D_8013C214);
         x_51ce9d2c = x_897e2c89->x_63b85330;
         x_aaf3898b = x_897e2c89->x_c6a89d30;

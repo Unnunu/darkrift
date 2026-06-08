@@ -552,7 +552,7 @@ s32 x_47d273d8(s32 x_cc1d0de5, s32 x_84ff873b) {
     return -a0;
 }
 
-#ifdef x_26a627fb
+#ifdef NON_MATCHING
 s32 x_d9b20313(s16 x_cc1d0de5) {
     u16 index;
 
@@ -576,11 +576,11 @@ s32 x_d9b20313(s16 x_cc1d0de5) {
     return 0;
 }
 #else
-#pragma x_eda6f9e3("asm/nonmatchings/math/func_80012854.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/x_d9b20313.s")
 s32 x_d9b20313(s16 x_cc1d0de5);
 #endif
 
-#ifdef x_26a627fb
+#ifdef NON_MATCHING
 f32 x_2cfb7bc7(u16 x_cc1d0de5) {
     u16 index;
 
@@ -606,7 +606,7 @@ f32 x_2cfb7bc7(u16 x_cc1d0de5) {
     return 0.0f;
 }
 #else
-#pragma x_eda6f9e3("asm/nonmatchings/math/func_80012978.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/math/x_2cfb7bc7.s")
 f32 x_2cfb7bc7(u16 x_cc1d0de5);
 #endif
 
@@ -706,9 +706,12 @@ void x_20ce5003(x_f9704fd6 *x_cc1d0de5, x_f9704fd6 *x_84ff873b) {
     m.z.x = x_cc1d0de5->z.x * x_84ff873b->x.x + x_cc1d0de5->z.y * x_84ff873b->y.x + x_cc1d0de5->z.z * x_84ff873b->z.x;
     m.z.y = x_cc1d0de5->z.x * x_84ff873b->x.y + x_cc1d0de5->z.y * x_84ff873b->y.y + x_cc1d0de5->z.z * x_84ff873b->z.y;
     m.z.z = x_cc1d0de5->z.x * x_84ff873b->x.z + x_cc1d0de5->z.y * x_84ff873b->y.z + x_cc1d0de5->z.z * x_84ff873b->z.z;
-    m.w.x = x_cc1d0de5->w.x * x_84ff873b->x.x + x_cc1d0de5->w.y * x_84ff873b->y.x + x_cc1d0de5->w.z * x_84ff873b->z.x + x_84ff873b->w.x;
-    m.w.y = x_cc1d0de5->w.x * x_84ff873b->x.y + x_cc1d0de5->w.y * x_84ff873b->y.y + x_cc1d0de5->w.z * x_84ff873b->z.y + x_84ff873b->w.y;
-    m.w.z = x_cc1d0de5->w.x * x_84ff873b->x.z + x_cc1d0de5->w.y * x_84ff873b->y.z + x_cc1d0de5->w.z * x_84ff873b->z.z + x_84ff873b->w.z;
+    m.w.x = x_cc1d0de5->w.x * x_84ff873b->x.x + x_cc1d0de5->w.y * x_84ff873b->y.x + x_cc1d0de5->w.z * x_84ff873b->z.x +
+            x_84ff873b->w.x;
+    m.w.y = x_cc1d0de5->w.x * x_84ff873b->x.y + x_cc1d0de5->w.y * x_84ff873b->y.y + x_cc1d0de5->w.z * x_84ff873b->z.y +
+            x_84ff873b->w.y;
+    m.w.z = x_cc1d0de5->w.x * x_84ff873b->x.z + x_cc1d0de5->w.y * x_84ff873b->y.z + x_cc1d0de5->w.z * x_84ff873b->z.z +
+            x_84ff873b->w.z;
 
     x_cc1d0de5->x.x = m.x.x;
     x_cc1d0de5->x.y = m.x.y;
@@ -725,15 +728,24 @@ void x_20ce5003(x_f9704fd6 *x_cc1d0de5, x_f9704fd6 *x_84ff873b) {
 }
 
 void x_f3aae376(x_f9704fd6 *x_cc1d0de5, x_f9704fd6 *x_84ff873b) {
-    D_800813A0.x.x = x_cc1d0de5->x.x * x_84ff873b->x.x + x_cc1d0de5->x.y * x_84ff873b->y.x + x_cc1d0de5->x.z * x_84ff873b->z.x;
-    D_800813A0.x.y = x_cc1d0de5->x.x * x_84ff873b->x.y + x_cc1d0de5->x.y * x_84ff873b->y.y + x_cc1d0de5->x.z * x_84ff873b->z.y;
-    D_800813A0.x.z = x_cc1d0de5->x.x * x_84ff873b->x.z + x_cc1d0de5->x.y * x_84ff873b->y.z + x_cc1d0de5->x.z * x_84ff873b->z.z;
-    D_800813A0.y.x = x_cc1d0de5->y.x * x_84ff873b->x.x + x_cc1d0de5->y.y * x_84ff873b->y.x + x_cc1d0de5->y.z * x_84ff873b->z.x;
-    D_800813A0.y.y = x_cc1d0de5->y.x * x_84ff873b->x.y + x_cc1d0de5->y.y * x_84ff873b->y.y + x_cc1d0de5->y.z * x_84ff873b->z.y;
-    D_800813A0.y.z = x_cc1d0de5->y.x * x_84ff873b->x.z + x_cc1d0de5->y.y * x_84ff873b->y.z + x_cc1d0de5->y.z * x_84ff873b->z.z;
-    D_800813A0.z.x = x_cc1d0de5->z.x * x_84ff873b->x.x + x_cc1d0de5->z.y * x_84ff873b->y.x + x_cc1d0de5->z.z * x_84ff873b->z.x;
-    D_800813A0.z.y = x_cc1d0de5->z.x * x_84ff873b->x.y + x_cc1d0de5->z.y * x_84ff873b->y.y + x_cc1d0de5->z.z * x_84ff873b->z.y;
-    D_800813A0.z.z = x_cc1d0de5->z.x * x_84ff873b->x.z + x_cc1d0de5->z.y * x_84ff873b->y.z + x_cc1d0de5->z.z * x_84ff873b->z.z;
+    D_800813A0.x.x =
+        x_cc1d0de5->x.x * x_84ff873b->x.x + x_cc1d0de5->x.y * x_84ff873b->y.x + x_cc1d0de5->x.z * x_84ff873b->z.x;
+    D_800813A0.x.y =
+        x_cc1d0de5->x.x * x_84ff873b->x.y + x_cc1d0de5->x.y * x_84ff873b->y.y + x_cc1d0de5->x.z * x_84ff873b->z.y;
+    D_800813A0.x.z =
+        x_cc1d0de5->x.x * x_84ff873b->x.z + x_cc1d0de5->x.y * x_84ff873b->y.z + x_cc1d0de5->x.z * x_84ff873b->z.z;
+    D_800813A0.y.x =
+        x_cc1d0de5->y.x * x_84ff873b->x.x + x_cc1d0de5->y.y * x_84ff873b->y.x + x_cc1d0de5->y.z * x_84ff873b->z.x;
+    D_800813A0.y.y =
+        x_cc1d0de5->y.x * x_84ff873b->x.y + x_cc1d0de5->y.y * x_84ff873b->y.y + x_cc1d0de5->y.z * x_84ff873b->z.y;
+    D_800813A0.y.z =
+        x_cc1d0de5->y.x * x_84ff873b->x.z + x_cc1d0de5->y.y * x_84ff873b->y.z + x_cc1d0de5->y.z * x_84ff873b->z.z;
+    D_800813A0.z.x =
+        x_cc1d0de5->z.x * x_84ff873b->x.x + x_cc1d0de5->z.y * x_84ff873b->y.x + x_cc1d0de5->z.z * x_84ff873b->z.x;
+    D_800813A0.z.y =
+        x_cc1d0de5->z.x * x_84ff873b->x.y + x_cc1d0de5->z.y * x_84ff873b->y.y + x_cc1d0de5->z.z * x_84ff873b->z.y;
+    D_800813A0.z.z =
+        x_cc1d0de5->z.x * x_84ff873b->x.z + x_cc1d0de5->z.y * x_84ff873b->y.z + x_cc1d0de5->z.z * x_84ff873b->z.z;
 
     x_cc1d0de5->x.x = D_800813A0.x.x;
     x_cc1d0de5->x.y = D_800813A0.x.y;
@@ -882,7 +894,8 @@ void x_948f0b9f(x_f9704fd6 *x_cc1d0de5, x_2758cdab *x_84ff873b) {
 
 void x_985542fc(x_acccb624 *x_cc1d0de5, Mtx *x_84ff873b) {
     s32 unused;
-    s32 x_5dde8968, x_769a4e6d, x_8ec5e9e6, x_55b42800, x_ec6aded5, x_ef90d9c1, x_68d617d6, x_719d1653, x_b2ab54fd, x_a2f28e2b, x_4a60bf7d, x_2b4e5423;
+    s32 x_5dde8968, x_769a4e6d, x_8ec5e9e6, x_55b42800, x_ec6aded5, x_ef90d9c1, x_68d617d6, x_719d1653, x_b2ab54fd,
+        x_a2f28e2b, x_4a60bf7d, x_2b4e5423;
 
     x_948f0b9f(&D_800813E0, x_cc1d0de5);
 
@@ -964,7 +977,8 @@ void x_40fe131d(x_f9704fd6 *x_cc1d0de5, x_88f11482 *x_84ff873b) {
 
 void x_ba58a12b(Mtx *x_84ff873b, x_f9704fd6 *x_cc1d0de5) {
     s32 unused;
-    s32 x_5dde8968, x_769a4e6d, x_8ec5e9e6, x_55b42800, x_ec6aded5, x_ef90d9c1, x_68d617d6, x_719d1653, x_b2ab54fd, x_a2f28e2b, x_4a60bf7d, x_2b4e5423, x_2eb0f31d, x_b5252c3a, x_7e545c6c, x_b84ff805;
+    s32 x_5dde8968, x_769a4e6d, x_8ec5e9e6, x_55b42800, x_ec6aded5, x_ef90d9c1, x_68d617d6, x_719d1653, x_b2ab54fd,
+        x_a2f28e2b, x_4a60bf7d, x_2b4e5423, x_2eb0f31d, x_b5252c3a, x_7e545c6c, x_b84ff805;
 
     x_5dde8968 = x_cc1d0de5->x.x * 65536.0;
     x_769a4e6d = x_cc1d0de5->x.y * 65536.0;
@@ -1030,13 +1044,14 @@ void x_9a6513bb(x_770ebaaf *x_cc1d0de5, Mtx *m) {
     D_80081360.x.x = (f32) x_cc1d0de5->x * (1.0 / 4096.0);
     D_80081360.y.y = (f32) x_cc1d0de5->y * (1.0 / 4096.0);
     D_80081360.z.z = (f32) x_cc1d0de5->x * (1.0 / 4096.0); // @BUG should be arg0->z
-    x_20ce5003(mf, &D_80081360);                  // TODO: type Matrix4f or float[4][4]
+    x_20ce5003(mf, &D_80081360);                           // TODO: type Matrix4f or float[4][4]
     x_ba58a12b(m, mf);
 }
 
 void x_a9d39d06(x_2758cdab *x_cc1d0de5, x_88f11482 *x_84ff873b, Mtx *x_2092f891) {
     s32 unused;
-    s32 x_5dde8968, x_769a4e6d, x_8ec5e9e6, x_55b42800, x_ec6aded5, x_ef90d9c1, x_68d617d6, x_719d1653, x_b2ab54fd, x_a2f28e2b, x_4a60bf7d, x_2b4e5423;
+    s32 x_5dde8968, x_769a4e6d, x_8ec5e9e6, x_55b42800, x_ec6aded5, x_ef90d9c1, x_68d617d6, x_719d1653, x_b2ab54fd,
+        x_a2f28e2b, x_4a60bf7d, x_2b4e5423;
 
     x_948f0b9f(&D_800813E0, x_cc1d0de5);
 
@@ -1112,7 +1127,8 @@ void x_924a8661(x_f9704fd6 *x_cc1d0de5, s16 angle) {
 
 void x_cd274068(x_2758cdab *x_cc1d0de5, Mtx *x_84ff873b) {
     s32 unused;
-    s32 x_5dde8968, x_769a4e6d, x_8ec5e9e6, x_55b42800, x_ec6aded5, x_ef90d9c1, x_68d617d6, x_719d1653, x_b2ab54fd, x_a2f28e2b, x_4a60bf7d, x_2b4e5423, x_2eb0f31d, x_b5252c3a, x_7e545c6c, x_b84ff805;
+    s32 x_5dde8968, x_769a4e6d, x_8ec5e9e6, x_55b42800, x_ec6aded5, x_ef90d9c1, x_68d617d6, x_719d1653, x_b2ab54fd,
+        x_a2f28e2b, x_4a60bf7d, x_2b4e5423, x_2eb0f31d, x_b5252c3a, x_7e545c6c, x_b84ff805;
     f32 x_acb6dbd2, x_52bc44bc;
 
     x_acb6dbd2 = x_2cfb7bc7(x_cc1d0de5->z);
@@ -1160,7 +1176,8 @@ void x_cd274068(x_2758cdab *x_cc1d0de5, Mtx *x_84ff873b) {
 
 void x_1847c5c9(x_2758cdab *x_cc1d0de5, Mtx *x_84ff873b) {
     s32 unused;
-    s32 x_5dde8968, x_769a4e6d, x_8ec5e9e6, x_55b42800, x_ec6aded5, x_ef90d9c1, x_68d617d6, x_719d1653, x_b2ab54fd, x_a2f28e2b, x_4a60bf7d, x_2b4e5423, x_2eb0f31d, x_b5252c3a, x_7e545c6c, x_b84ff805;
+    s32 x_5dde8968, x_769a4e6d, x_8ec5e9e6, x_55b42800, x_ec6aded5, x_ef90d9c1, x_68d617d6, x_719d1653, x_b2ab54fd,
+        x_a2f28e2b, x_4a60bf7d, x_2b4e5423, x_2eb0f31d, x_b5252c3a, x_7e545c6c, x_b84ff805;
     f32 x_5f8adb52, x_0ee12fe1;
 
     x_5f8adb52 = x_2cfb7bc7(x_cc1d0de5->x);
@@ -1221,18 +1238,30 @@ void x_02631bf6(x_f9704fd6 *x_cc1d0de5, x_f9704fd6 *x_84ff873b) {
 }
 
 void x_903494af(x_f9704fd6 *x_cc1d0de5, x_f9704fd6 *x_84ff873b, x_f9704fd6 *x_2092f891) {
-    x_cc1d0de5->x.x = x_84ff873b->x.x * x_2092f891->x.x + x_84ff873b->x.y * x_2092f891->y.x + x_84ff873b->x.z * x_2092f891->z.x;
-    x_cc1d0de5->x.y = x_84ff873b->x.x * x_2092f891->x.y + x_84ff873b->x.y * x_2092f891->y.y + x_84ff873b->x.z * x_2092f891->z.y;
-    x_cc1d0de5->x.z = x_84ff873b->x.x * x_2092f891->x.z + x_84ff873b->x.y * x_2092f891->y.z + x_84ff873b->x.z * x_2092f891->z.z;
-    x_cc1d0de5->y.x = x_84ff873b->y.x * x_2092f891->x.x + x_84ff873b->y.y * x_2092f891->y.x + x_84ff873b->y.z * x_2092f891->z.x;
-    x_cc1d0de5->y.y = x_84ff873b->y.x * x_2092f891->x.y + x_84ff873b->y.y * x_2092f891->y.y + x_84ff873b->y.z * x_2092f891->z.y;
-    x_cc1d0de5->y.z = x_84ff873b->y.x * x_2092f891->x.z + x_84ff873b->y.y * x_2092f891->y.z + x_84ff873b->y.z * x_2092f891->z.z;
-    x_cc1d0de5->z.x = x_84ff873b->z.x * x_2092f891->x.x + x_84ff873b->z.y * x_2092f891->y.x + x_84ff873b->z.z * x_2092f891->z.x;
-    x_cc1d0de5->z.y = x_84ff873b->z.x * x_2092f891->x.y + x_84ff873b->z.y * x_2092f891->y.y + x_84ff873b->z.z * x_2092f891->z.y;
-    x_cc1d0de5->z.z = x_84ff873b->z.x * x_2092f891->x.z + x_84ff873b->z.y * x_2092f891->y.z + x_84ff873b->z.z * x_2092f891->z.z;
-    x_cc1d0de5->w.x = x_84ff873b->w.x * x_2092f891->x.x + x_84ff873b->w.y * x_2092f891->y.x + x_84ff873b->w.z * x_2092f891->z.x + x_2092f891->w.x;
-    x_cc1d0de5->w.y = x_84ff873b->w.x * x_2092f891->x.y + x_84ff873b->w.y * x_2092f891->y.y + x_84ff873b->w.z * x_2092f891->z.y + x_2092f891->w.y;
-    x_cc1d0de5->w.z = x_84ff873b->w.x * x_2092f891->x.z + x_84ff873b->w.y * x_2092f891->y.z + x_84ff873b->w.z * x_2092f891->z.z + x_2092f891->w.z;
+    x_cc1d0de5->x.x =
+        x_84ff873b->x.x * x_2092f891->x.x + x_84ff873b->x.y * x_2092f891->y.x + x_84ff873b->x.z * x_2092f891->z.x;
+    x_cc1d0de5->x.y =
+        x_84ff873b->x.x * x_2092f891->x.y + x_84ff873b->x.y * x_2092f891->y.y + x_84ff873b->x.z * x_2092f891->z.y;
+    x_cc1d0de5->x.z =
+        x_84ff873b->x.x * x_2092f891->x.z + x_84ff873b->x.y * x_2092f891->y.z + x_84ff873b->x.z * x_2092f891->z.z;
+    x_cc1d0de5->y.x =
+        x_84ff873b->y.x * x_2092f891->x.x + x_84ff873b->y.y * x_2092f891->y.x + x_84ff873b->y.z * x_2092f891->z.x;
+    x_cc1d0de5->y.y =
+        x_84ff873b->y.x * x_2092f891->x.y + x_84ff873b->y.y * x_2092f891->y.y + x_84ff873b->y.z * x_2092f891->z.y;
+    x_cc1d0de5->y.z =
+        x_84ff873b->y.x * x_2092f891->x.z + x_84ff873b->y.y * x_2092f891->y.z + x_84ff873b->y.z * x_2092f891->z.z;
+    x_cc1d0de5->z.x =
+        x_84ff873b->z.x * x_2092f891->x.x + x_84ff873b->z.y * x_2092f891->y.x + x_84ff873b->z.z * x_2092f891->z.x;
+    x_cc1d0de5->z.y =
+        x_84ff873b->z.x * x_2092f891->x.y + x_84ff873b->z.y * x_2092f891->y.y + x_84ff873b->z.z * x_2092f891->z.y;
+    x_cc1d0de5->z.z =
+        x_84ff873b->z.x * x_2092f891->x.z + x_84ff873b->z.y * x_2092f891->y.z + x_84ff873b->z.z * x_2092f891->z.z;
+    x_cc1d0de5->w.x = x_84ff873b->w.x * x_2092f891->x.x + x_84ff873b->w.y * x_2092f891->y.x +
+                      x_84ff873b->w.z * x_2092f891->z.x + x_2092f891->w.x;
+    x_cc1d0de5->w.y = x_84ff873b->w.x * x_2092f891->x.y + x_84ff873b->w.y * x_2092f891->y.y +
+                      x_84ff873b->w.z * x_2092f891->z.y + x_2092f891->w.y;
+    x_cc1d0de5->w.z = x_84ff873b->w.x * x_2092f891->x.z + x_84ff873b->w.y * x_2092f891->y.z +
+                      x_84ff873b->w.z * x_2092f891->z.z + x_2092f891->w.z;
 }
 
 void x_44a54e96(Transform *transform) {

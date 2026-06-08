@@ -245,7 +245,7 @@ void x_08779f06(u8 x_cc1d0de5) {
     }
 }
 
-#ifdef x_0fab73bf
+#ifdef NON_EQUIVALENT
 void x_16b2a52b(u16 x_7cedc3fb) {
     s32 unused[18];
     u32 a3;
@@ -300,7 +300,7 @@ void x_16b2a52b(u16 x_7cedc3fb) {
     x_38c80ca9();
 }
 #else
-#pragma x_eda6f9e3("asm/nonmatchings/sched/initialize_game_mode.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/sched/x_16b2a52b.s")
 void x_16b2a52b(u16 x_7cedc3fb);
 #endif
 

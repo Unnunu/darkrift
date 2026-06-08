@@ -426,8 +426,8 @@ s32 x_d3029871(void *x_cc1d0de5) {
         x_435c561d.z += a1;
         x_19d34654(a3, a1);
         if (x_f4bce728->pos.x != 0 || x_f4bce728->pos.z != 0 || x_435c561d.x != 0 || x_435c561d.z != 0) {
-            guLookAtF(&x_b082fd90, x_f4bce728->pos.x, x_f4bce728->pos.y, x_f4bce728->pos.z, x_435c561d.x,
-                      x_435c561d.y, x_435c561d.z, 0.0f, -1.0f, 0.0f);
+            guLookAtF(&x_b082fd90, x_f4bce728->pos.x, x_f4bce728->pos.y, x_f4bce728->pos.z, x_435c561d.x, x_435c561d.y,
+                      x_435c561d.z, 0.0f, -1.0f, 0.0f);
             x_16eff9cc(&x_b082fd90, &x_e1751f31, &x_7eefcd11);
         }
     }
@@ -581,8 +581,8 @@ void x_076ece50(Object *obj, u8 x_84ff873b) {
     if (x_84ff873b) {
         x_40bc04d0(obj);
         if (obj->pos.x != 0 || obj->pos.z != 0 || x_435c561d.x != 0 || x_435c561d.z != 0) {
-            guLookAtF(&x_b082fd90, obj->pos.x, obj->pos.y, obj->pos.z, x_435c561d.x, x_435c561d.y,
-                      x_435c561d.z, 0.0f, -1.0f, 0.0f);
+            guLookAtF(&x_b082fd90, obj->pos.x, obj->pos.y, obj->pos.z, x_435c561d.x, x_435c561d.y, x_435c561d.z, 0.0f,
+                      -1.0f, 0.0f);
             x_16eff9cc(&x_b082fd90, &x_e1751f31, &x_7eefcd11);
         }
     }
@@ -684,7 +684,7 @@ void x_93e7a709(Object *obj) {
     x_59ce598c[x_83106b21].x_c4397934 = x_7b42bed5 = x_59ce598c[x_6f0b3be3].x_c4397934 = FALSE; // required to match
 }
 
-#ifdef x_0fab73bf
+#ifdef NON_EQUIVALENT
 void x_7cdfb63d(u8 x_cc1d0de5) {
     s16 s6;
     s16 s1;
@@ -728,7 +728,8 @@ x_3ace60b0:
         s0 = (temp[x_83106b21].x_5c5b1d93.x_b7552092->y - 200.0f) < v0;
     }
 
-    if ((x_824b9544[x_83106b21].x_7f68c36b->flags & x_ceaa006e) || (x_824b9544[x_6f0b3be3].x_7f68c36b->flags & x_ceaa006e)) {
+    if ((x_824b9544[x_83106b21].x_7f68c36b->flags & x_ceaa006e) ||
+        (x_824b9544[x_6f0b3be3].x_7f68c36b->flags & x_ceaa006e)) {
         s0 = TRUE;
     }
 
@@ -780,7 +781,7 @@ x_3ace60b0:
     }
 }
 #else
-#pragma x_eda6f9e3("asm/nonmatchings/opencam/camera_push_players_apart.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/opencam/x_7cdfb63d.s")
 void x_7cdfb63d(u8);
 #endif
 
@@ -795,12 +796,9 @@ void x_e6f68754(x_88f11482 *x_cc1d0de5, f32 *x_84ff873b, f32 *x_2092f891, f32 *x
     *x_ee71e5cb = 0;
 
     if (*x_f4bce728->x_20d20338->x_50771dcd == 0) {
-        *x_84ff873b = x_7eefcd11.x.x * x + x_7eefcd11.y.x * y + x_7eefcd11.z.x * z +
-                x_7eefcd11.w.x;
-        *x_2092f891 = x_7eefcd11.x.y * x + x_7eefcd11.y.y * y + x_7eefcd11.z.y * z +
-                x_7eefcd11.w.y;
-        temp = x_7eefcd11.x.w * x + x_7eefcd11.y.w * y + x_7eefcd11.z.w * z +
-               x_7eefcd11.w.w;
+        *x_84ff873b = x_7eefcd11.x.x * x + x_7eefcd11.y.x * y + x_7eefcd11.z.x * z + x_7eefcd11.w.x;
+        *x_2092f891 = x_7eefcd11.x.y * x + x_7eefcd11.y.y * y + x_7eefcd11.z.y * z + x_7eefcd11.w.y;
+        temp = x_7eefcd11.x.w * x + x_7eefcd11.y.w * y + x_7eefcd11.z.w * z + x_7eefcd11.w.w;
         if (temp != 0) {
             *x_84ff873b /= temp;
             *x_2092f891 /= temp;

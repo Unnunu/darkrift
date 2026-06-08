@@ -3,27 +3,27 @@
 // R_CBUTTONS, L_CBUTTONS, D_CBUTTONS, U_CBUTTONS
 s32 D_8004A4F0[] = {
     0,
-    x_37f8540c,                                  // R_CBUTTONS
-    x_ffe9ce36,                                   // L_CBUTTONS
-    x_37f8540c | x_ffe9ce36,                      // R_CBUTTONS + L_CBUTTONS
-    x_b2ae561b,                                   // D_CBUTTONS
-    x_b2ae561b | x_37f8540c,                      // D_CBUTTONS + R_CBUTTONS
-    x_b2ae561b | x_ffe9ce36,                       // D_CBUTTONS + L_CBUTTONS
-    x_b2ae561b | x_ffe9ce36 | x_37f8540c,          // D_CBUTTONS + L_CBUTTONS + R_CBUTTONS
-    x_84d0a51b,                                     // U_CBUTTONS
-    x_84d0a51b | x_37f8540c,                        // U_CBUTTONS + R_CBUTTONS
-    x_84d0a51b | x_ffe9ce36,                         // U_CBUTTONS + L_CBUTTONS
-    x_84d0a51b | x_37f8540c | x_ffe9ce36,            // U_CBUTTONS + L_CBUTTONS + R_CBUTTONS
-    x_84d0a51b | x_b2ae561b,                         // U_CBUTTONS + D_CBUTTONS
-    x_84d0a51b | x_b2ae561b | x_37f8540c,            // U_CBUTTONS + D_CBUTTONS + R_CBUTTONS
+    x_37f8540c,                                       // R_CBUTTONS
+    x_ffe9ce36,                                       // L_CBUTTONS
+    x_37f8540c | x_ffe9ce36,                          // R_CBUTTONS + L_CBUTTONS
+    x_b2ae561b,                                       // D_CBUTTONS
+    x_b2ae561b | x_37f8540c,                          // D_CBUTTONS + R_CBUTTONS
+    x_b2ae561b | x_ffe9ce36,                          // D_CBUTTONS + L_CBUTTONS
+    x_b2ae561b | x_ffe9ce36 | x_37f8540c,             // D_CBUTTONS + L_CBUTTONS + R_CBUTTONS
+    x_84d0a51b,                                       // U_CBUTTONS
+    x_84d0a51b | x_37f8540c,                          // U_CBUTTONS + R_CBUTTONS
+    x_84d0a51b | x_ffe9ce36,                          // U_CBUTTONS + L_CBUTTONS
+    x_84d0a51b | x_37f8540c | x_ffe9ce36,             // U_CBUTTONS + L_CBUTTONS + R_CBUTTONS
+    x_84d0a51b | x_b2ae561b,                          // U_CBUTTONS + D_CBUTTONS
+    x_84d0a51b | x_b2ae561b | x_37f8540c,             // U_CBUTTONS + D_CBUTTONS + R_CBUTTONS
     x_84d0a51b | x_b2ae561b | x_ffe9ce36,             // U_CBUTTONS + D_CBUTTONS + L_CBUTTONS
     x_84d0a51b | x_b2ae561b | x_37f8540c | x_ffe9ce36 // U_CBUTTONS + D_CBUTTONS + L_CBUTTONS + R_CBUTTONS
 };
 
 // R_TRIG, L_TRIG
 s32 D_8004A530[] = { 0,
-                     x_64a28e7d,         // R_TRIG
-                     x_af0e0a9f,         // L_TRIG
+                     x_64a28e7d,              // R_TRIG
+                     x_af0e0a9f,              // L_TRIG
                      x_af0e0a9f | x_64a28e7d, // R_TRIG + L_TRIG
                      0,
                      0,
@@ -34,35 +34,35 @@ s32 D_8004A530[] = { 0,
 // R_JPAD, L_JPAD, D_JPAD, U_JPAD
 s32 D_8004A554[] = {
     0,
-    x_fc4a9735,                       // R_JPAD
-    x_ad1aebe6,                        // L_JPAD
-    x_fc4a9735 | x_ad1aebe6,            // R_JPAD + L_JPAD
-    x_b8c91680,                        // D_JPAD
-    x_fc4a9735 | x_b8c91680,            // R_JPAD + D_JPAD
-    x_b8c91680 | x_ad1aebe6,             // L_JPAD + D_JPAD
+    x_fc4a9735,                           // R_JPAD
+    x_ad1aebe6,                           // L_JPAD
+    x_fc4a9735 | x_ad1aebe6,              // R_JPAD + L_JPAD
+    x_b8c91680,                           // D_JPAD
+    x_fc4a9735 | x_b8c91680,              // R_JPAD + D_JPAD
+    x_b8c91680 | x_ad1aebe6,              // L_JPAD + D_JPAD
     x_fc4a9735 | x_b8c91680 | x_ad1aebe6, // R_JPAD + L_JPAD + D_JPAD
-    x_f7763ed8,                          // U_JPAD
+    x_f7763ed8,                           // U_JPAD
     x_f7763ed8 | x_fc4a9735,              // R_JPAD + U_JPAD
-    x_f7763ed8 | x_ad1aebe6                // L_JPAD + U_JPAD
+    x_f7763ed8 | x_ad1aebe6               // L_JPAD + U_JPAD
 };
 // START_BUTTON, Z_TRIG, B_BUTTON, A_BUTTON
 s32 D_8004A580[] = {
     0,
-    x_9cefe76c,             // START_BUTTON
-    x_af0e0a9f,                 // Z_TRIG
+    x_9cefe76c,              // START_BUTTON
+    x_af0e0a9f,              // Z_TRIG
     x_1c9950cc | x_9cefe76c, // START_BUTTON + Z_TRIG
-    x_c7089780,                 // B_BUTTON
-    0,                     // START_BUTTON + B_BUTTON
-    x_1c9950cc | x_c7089780,     // Z_TRIG + B_BUTTON
-    0,                     // START_BUTTON + Z_TRIG + B_BUTTON
-    x_29dbff14,                 // A_BUTTON
-    0,                     // START_BUTTON + A_BUTTON
-    x_1c9950cc | x_29dbff14,     // Z_TRIG + A_BUTTON
-    0,                     // START_BUTTON + Z_TRIG + A_BUTTON
-    x_c7089780 | x_29dbff14,         // B_BUTTON + A_BUTTON
-    0,                     // START_BUTTON + B_BUTTON + A_BUTTON
-    0,                     // Z_TRIG + B_BUTTON + A_BUTTON
-    0                      // START_BUTTON + Z_TRIG + B_BUTTON + A_BUTTON
+    x_c7089780,              // B_BUTTON
+    0,                       // START_BUTTON + B_BUTTON
+    x_1c9950cc | x_c7089780, // Z_TRIG + B_BUTTON
+    0,                       // START_BUTTON + Z_TRIG + B_BUTTON
+    x_29dbff14,              // A_BUTTON
+    0,                       // START_BUTTON + A_BUTTON
+    x_1c9950cc | x_29dbff14, // Z_TRIG + A_BUTTON
+    0,                       // START_BUTTON + Z_TRIG + A_BUTTON
+    x_c7089780 | x_29dbff14, // B_BUTTON + A_BUTTON
+    0,                       // START_BUTTON + B_BUTTON + A_BUTTON
+    0,                       // Z_TRIG + B_BUTTON + A_BUTTON
+    0                        // START_BUTTON + Z_TRIG + B_BUTTON + A_BUTTON
 };
 
 x_23580eef x_59ce598c[2];
@@ -99,7 +99,7 @@ void x_15468514(u16 x_1b94c75c) {
     }
 }
 
-#ifdef x_26a627fb
+#ifdef NON_MATCHING
 void x_d523d906(s16 x_1b94c75c) {
     s32 temp;
     u16 v1;
@@ -156,15 +156,15 @@ void x_d523d906(s16 x_1b94c75c) {
 
     x_59ce598c[x_1b94c75c].buttons = temp & buttons;
     v0 = x_59ce598c[x_1b94c75c].x_33260da8;
-    if (buttons != v0 ||
-        (buttons & (x_37f8540c | x_ad1aebe6 | x_b8c91680 | x_fc4a9735)) && !(buttons & (x_ffe9ce36 | x_b2ae561b | x_84d0a51b))) {
+    if (buttons != v0 || (buttons & (x_37f8540c | x_ad1aebe6 | x_b8c91680 | x_fc4a9735)) &&
+                             !(buttons & (x_ffe9ce36 | x_b2ae561b | x_84d0a51b))) {
         x_59ce598c[x_1b94c75c].x_c4397934 = TRUE;
     }
 
     x_59ce598c[x_1b94c75c].x_33260da8 = buttons;
     do { } while (0); }
 #else
-#pragma x_eda6f9e3("asm/nonmatchings/input/func_80024A90.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/input/x_d523d906.s")
 void x_d523d906(s16 x_cc1d0de5);
 #endif
 

@@ -101,7 +101,8 @@ u8 x_81c2909d(x_2758cdab *x_cc1d0de5, x_88f11482 *x_84ff873b, u32 x_72eb45b1, x_
     }
 }
 
-x_2758cdab *x_9f5c9f25(x_2758cdab *x_65d81f5e, x_88f11482 *x_6530585f, u32 x_72eb45b1, x_2758cdab *x_c593269c, x_2758cdab *x_dedb5b95) {
+x_2758cdab *x_9f5c9f25(x_2758cdab *x_65d81f5e, x_88f11482 *x_6530585f, u32 x_72eb45b1, x_2758cdab *x_c593269c,
+                       x_2758cdab *x_dedb5b95) {
     s16 x_2ec7c161, x_ef312970;
     s32 x_720f6ac9, dz;
     s32 pad[4];
@@ -165,7 +166,7 @@ x_2758cdab *x_9f5c9f25(x_2758cdab *x_65d81f5e, x_88f11482 *x_6530585f, u32 x_72e
     return NULL;
 }
 
-#ifdef x_26a627fb
+#ifdef NON_MATCHING
 s32 x_cc2e74aa(Player *x_7246d2b2, Player *x_e64ba38a, x_388306ba *x_0deedaaf) {
     x_388306ba *x_cd232430;
     s32 hp;
@@ -280,7 +281,7 @@ s32 x_cc2e74aa(Player *x_7246d2b2, Player *x_e64ba38a, x_388306ba *x_0deedaaf) {
 }
 #else
 s32 x_cc2e74aa(Player *x_cc1d0de5, Player *x_84ff873b, x_388306ba *x_2092f891);
-#pragma x_eda6f9e3("asm/nonmatchings/player_combat/apply_damage_and_reaction.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/player_combat/x_cc2e74aa.s")
 #endif
 
 void x_54661eb1(Player *x_7246d2b2, Player *x_e64ba38a, x_2758cdab *x_c9d501a3) {
@@ -714,11 +715,10 @@ void x_4f2b827a(Player *player, x_87049dce *x_46ce35c8) {
     player->x_5c5b1d93.x_62706fff = x_46ce35c8->x_62706fff;
     player->x_5c5b1d93.x_38ae036c = x_46ce35c8->x_38ae036c;
 
-    if (x_46ce35c8->x_3bf3046a.x != 0 || x_46ce35c8->x_3bf3046a.y != 0 ||
-        x_46ce35c8->x_3bf3046a.z != 0) {
+    if (x_46ce35c8->x_3bf3046a.x != 0 || x_46ce35c8->x_3bf3046a.y != 0 || x_46ce35c8->x_3bf3046a.z != 0) {
         player->x_5c5b1d93.x_c01445c3 = TRUE;
-        x_f2c7456d(&player->obj->x_20d20338->transforms[x_46ce35c8->x_e888d5ae],
-                       &player->x_5c5b1d93.x_cc2c17a6, -3, -3);
+        x_f2c7456d(&player->obj->x_20d20338->transforms[x_46ce35c8->x_e888d5ae], &player->x_5c5b1d93.x_cc2c17a6, -3,
+                   -3);
         player->x_5c5b1d93.x_cc2c17a6.x_3fde9cd9.w.x = x_46ce35c8->x_3bf3046a.x;
         player->x_5c5b1d93.x_cc2c17a6.x_3fde9cd9.w.y = x_46ce35c8->x_3bf3046a.y;
         player->x_5c5b1d93.x_cc2c17a6.x_3fde9cd9.w.z = x_46ce35c8->x_3bf3046a.z;
@@ -726,11 +726,10 @@ void x_4f2b827a(Player *player, x_87049dce *x_46ce35c8) {
         player->x_5c5b1d93.x_c01445c3 = FALSE;
     }
 
-    if (x_46ce35c8->x_f95a218e.x != 0 || x_46ce35c8->x_f95a218e.y != 0 ||
-        x_46ce35c8->x_f95a218e.z != 0) {
+    if (x_46ce35c8->x_f95a218e.x != 0 || x_46ce35c8->x_f95a218e.y != 0 || x_46ce35c8->x_f95a218e.z != 0) {
         player->x_5c5b1d93.x_a1c57a3b = TRUE;
-        x_f2c7456d(&player->obj->x_20d20338->transforms[x_46ce35c8->x_1ffa33d9],
-                       &player->x_5c5b1d93.x_0548cec6, -3, -3);
+        x_f2c7456d(&player->obj->x_20d20338->transforms[x_46ce35c8->x_1ffa33d9], &player->x_5c5b1d93.x_0548cec6, -3,
+                   -3);
         player->x_5c5b1d93.x_0548cec6.x_3fde9cd9.w.x = x_46ce35c8->x_f95a218e.x;
         player->x_5c5b1d93.x_0548cec6.x_3fde9cd9.w.y = x_46ce35c8->x_f95a218e.y;
         player->x_5c5b1d93.x_0548cec6.x_3fde9cd9.w.z = x_46ce35c8->x_f95a218e.z;
@@ -741,7 +740,7 @@ void x_4f2b827a(Player *player, x_87049dce *x_46ce35c8) {
     if (x_46ce35c8->x_8f7663b3.x != 0 || x_46ce35c8->x_8f7663b3.y != 0 || x_46ce35c8->x_8f7663b3.z != 0) {
         player->x_5c5b1d93.x_d8ede1db = TRUE;
         x_f2c7456d(&player->obj->x_20d20338->transforms[x_46ce35c8->x_baea923a], &player->x_5c5b1d93.x_6057c67e, -3,
-                       -3);
+                   -3);
         player->x_5c5b1d93.x_6057c67e.x_3fde9cd9.w.x = x_46ce35c8->x_8f7663b3.x;
         player->x_5c5b1d93.x_6057c67e.x_3fde9cd9.w.y = x_46ce35c8->x_8f7663b3.y;
         player->x_5c5b1d93.x_6057c67e.x_3fde9cd9.w.z = x_46ce35c8->x_8f7663b3.z;
@@ -749,11 +748,10 @@ void x_4f2b827a(Player *player, x_87049dce *x_46ce35c8) {
         player->x_5c5b1d93.x_d8ede1db = FALSE;
     }
 
-    if (x_46ce35c8->x_150bdca9.x != 0 || x_46ce35c8->x_150bdca9.y != 0 ||
-        x_46ce35c8->x_150bdca9.z != 0) {
+    if (x_46ce35c8->x_150bdca9.x != 0 || x_46ce35c8->x_150bdca9.y != 0 || x_46ce35c8->x_150bdca9.z != 0) {
         player->x_5c5b1d93.x_22014d8c = TRUE;
-        x_f2c7456d(&player->obj->x_20d20338->transforms[x_46ce35c8->x_df4167c9],
-                       &player->x_5c5b1d93.x_45875993, -3, -3);
+        x_f2c7456d(&player->obj->x_20d20338->transforms[x_46ce35c8->x_df4167c9], &player->x_5c5b1d93.x_45875993, -3,
+                   -3);
         player->x_5c5b1d93.x_45875993.x_3fde9cd9.w.x = x_46ce35c8->x_150bdca9.x;
         player->x_5c5b1d93.x_45875993.x_3fde9cd9.w.y = x_46ce35c8->x_150bdca9.y;
         player->x_5c5b1d93.x_45875993.x_3fde9cd9.w.z = x_46ce35c8->x_150bdca9.z;
@@ -763,8 +761,8 @@ void x_4f2b827a(Player *player, x_87049dce *x_46ce35c8) {
 
     if (x_46ce35c8->x_495dd749.x != 0 || x_46ce35c8->x_495dd749.y != 0 || x_46ce35c8->x_495dd749.z != 0) {
         player->x_5c5b1d93.x_6216b7a1 = TRUE;
-        x_f2c7456d(&player->obj->x_20d20338->transforms[x_46ce35c8->x_cc509e17],
-                       &player->x_5c5b1d93.x_20d81af7, -3, -3);
+        x_f2c7456d(&player->obj->x_20d20338->transforms[x_46ce35c8->x_cc509e17], &player->x_5c5b1d93.x_20d81af7, -3,
+                   -3);
         player->x_5c5b1d93.x_20d81af7.x_3fde9cd9.w.x = x_46ce35c8->x_495dd749.x;
         player->x_5c5b1d93.x_20d81af7.x_3fde9cd9.w.y = x_46ce35c8->x_495dd749.y;
         player->x_5c5b1d93.x_20d81af7.x_3fde9cd9.w.z = x_46ce35c8->x_495dd749.z;
