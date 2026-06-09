@@ -34,7 +34,7 @@ extern s32 x_ba260e1b[20];
 /* .data */
 
 s16 D_80049290[] = { 0, 0, 0, 0, 0, 0, 0, 1000, 0, 0, 0, 0, 1000, 0 };
-s32 x_e3a9f332 = 0;
+s32 gFrameCounter = 0;
 Vtx D_800492B0[2][4] = { { { { { 0, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
                            { { { x_56e08f29 << 2, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
                            { { { 0, x_84e8ddf2 << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
@@ -201,7 +201,7 @@ Object *x_a1378aba(void) {
 
     obj->x_0232396f = x_a1821d40;
     x_7e194d55(2, obj->x_0f4167b4[2]);
-    x_66c4e9c7 = TRUE;
+    gTaskLock = TRUE;
     D_8005BEFC = 0;
     return obj;
 }
@@ -221,7 +221,7 @@ void x_14a106cd(s16 x_ce13e71a) {
     x_5cb3a50d = FALSE;
     x_59ce598c[x_ce13e71a].x_c4397934 = FALSE;
 
-    while (x_30839b82.count < 10 || x_5c163218.count <= 0) {
+    while (gTaskPool.count < 10 || x_5c163218.count <= 0) {
         x_da2cde4c();
     }
 
@@ -278,7 +278,7 @@ void x_14a106cd(s16 x_ce13e71a) {
         x_59ce598c[x_6f0b3be3].x_d93bcabf = x_235d81c7;
 
         x_59ce598c[x_ce13e71a].x_c4397934 = FALSE;
-        x_66c4e9c7 = FALSE;
+        gTaskLock = FALSE;
         x_e30d50d2 &= ~x_700de048;
         alSeqSetLoc(x_d896e1bb, &x_9ae0d7c5);
         alSeqpPlay(x_85a4d96f);
@@ -295,14 +295,14 @@ void x_14a106cd(s16 x_ce13e71a) {
 
 void x_60affc72(void) {
     x_e30d50d2 = 0;
-    x_66c4e9c7 = TRUE;
+    gTaskLock = TRUE;
     x_aec099eb = x_b5cc849a = 1800;
 
     x_4495b42c(x_4f944650, 0x1000);
     while (!(x_e30d50d2 & x_bee364e0)) {
         x_da2cde4c();
     }
-    x_66c4e9c7 = FALSE;
+    gTaskLock = FALSE;
 
     while (x_59ce598c[x_83106b21].buttons == (x_9cefe76c | x_1c9950cc) ||
            x_59ce598c[x_6f0b3be3].buttons == (x_9cefe76c | x_1c9950cc)) {
@@ -334,7 +334,7 @@ void x_82df7d23(void) {
         }
 
         if (x_e30d50d2 & x_dd99cbfb) {
-            x_66c4e9c7 = 1 - x_66c4e9c7;
+            gTaskLock = 1 - gTaskLock;
         }
         x_da2cde4c();
     }
@@ -344,13 +344,13 @@ void x_82df7d23(void) {
 
     if (!(x_e30d50d2 & x_d4c59644)) {
         if (!(x_e30d50d2 & x_b9be821f)) {
-            x_66c4e9c7 = TRUE;
+            gTaskLock = TRUE;
         }
         x_4495b42c(x_4f944650, 0x1000);
         while (!(x_e30d50d2 & x_bee364e0)) {
             x_da2cde4c();
         }
-        x_66c4e9c7 = FALSE;
+        gTaskLock = FALSE;
     }
 
     x_e30d50d2 &= ~x_520a704c;

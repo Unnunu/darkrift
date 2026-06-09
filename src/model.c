@@ -66,7 +66,7 @@ s32 x_8b037ea8(void *unused) {
     u32 *x_eb7790f7;
     u32 x_5b96ee3f;
 
-    if (x_e3a9f332 & 1) {
+    if (gFrameCounter & 1) {
         return 1;
     }
 
@@ -1221,10 +1221,10 @@ void x_b6e96a17(Object *obj) {
     x_6fcfcf46 *model = obj->x_20d20338;
     s32 x_9ef67445 = FALSE;
 
-    if (obj->x_5fcb1654 & 1) {
+    if (obj->frameCounter & 1) {
         x_9ef67445 = TRUE;
     }
-    x_14f49e74 = (obj->x_5fcb1654 + 1) >> 1;
+    x_14f49e74 = (obj->frameCounter + 1) >> 1;
 
     x_21a0270b = model->x_924433d2;
     while (*(s32 *) x_21a0270b != -1) {
@@ -1360,16 +1360,16 @@ void x_0f2c2c2a(Object *obj) {
     model->x_4e599cb3.x = model->x_4e599cb3.y = model->x_4e599cb3.z = 0x100;
     obj->flags &= ~x_56bbd9b2;
 
-    if (obj->x_5fcb1654 != 0) {
-        v12 = obj->x_5fcb1654;
+    if (obj->frameCounter != 0) {
+        v12 = obj->frameCounter;
         for (j = 0; j < v12; j++) {
-            obj->x_5fcb1654 = j;
+            obj->frameCounter = j;
             x_b6e96a17(obj);
             if (j == 0) {
                 x_b6e96a17(obj);
             }
         }
-        obj->x_5fcb1654 = v12;
+        obj->frameCounter = v12;
     } else {
         x_b6e96a17(obj);
     }
@@ -1455,10 +1455,10 @@ void x_9f1f8050(Object *obj) {
             x_20d20338->x_2f4c4ce1 = x_20d20338->x_ee205ef9;
         }
 
-        if (obj->x_5fcb1654 != obj->x_2b06a023) {
+        if (obj->frameCounter != obj->x_2b06a023) {
             x_b6e96a17(obj);
             x_2a8d0730(obj);
-            obj->x_2b06a023 = obj->x_5fcb1654;
+            obj->x_2b06a023 = obj->frameCounter;
         }
 
         if (x_20d20338->x_9a3e80ff != NULL) {
@@ -1503,7 +1503,7 @@ void x_3a85c5a8(Object *obj) {
 
     temp = obj->flags & x_c537cafa; // required to match
 
-    index = obj->x_5fcb1654;
+    index = obj->frameCounter;
     x_20d20338 = obj->x_20d20338;
     x_94b671c9 = x_20d20338->model;
     x_24aca5c4 = x_94b671c9->x_467629e6[index];
@@ -1600,7 +1600,7 @@ void x_5ff12555(Object *obj) {
     s32 x_081c4eef;
 
     v1 = obj->x_20d20338;
-    t6 = x_e3a9f332 & 7;
+    t6 = gFrameCounter & 7;
     a2 = &x_4540c33c[x_f71086e0];
 
     t2 = v1->x_6dcce206;
@@ -1805,10 +1805,10 @@ void x_0022bfc3(Object *obj) {
             x_20d20338->x_2f4c4ce1 = x_20d20338->x_ee205ef9;
         }
 
-        if (obj->x_5fcb1654 != obj->x_2b06a023) {
+        if (obj->frameCounter != obj->x_2b06a023) {
             x_b6e96a17(obj);
             x_2a8d0730(obj);
-            obj->x_2b06a023 = obj->x_5fcb1654;
+            obj->x_2b06a023 = obj->frameCounter;
         }
 
         x_948f0b9f(&x_7642845a->x_3fde9cd9, &obj->x_224610f1);

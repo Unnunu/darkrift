@@ -169,7 +169,7 @@ void x_d523d906(s16 x_cc1d0de5);
 #endif
 
 void x_0dd43bb1(void) {
-    x_e3a9f332++;
+    gFrameCounter++;
     x_bb61051c();
 
     if (x_59ce598c[x_83106b21].enabled && x_59ce598c[x_83106b21].x_12a7bd86) {

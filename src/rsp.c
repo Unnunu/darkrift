@@ -92,12 +92,12 @@ void x_46665fe1(void) {
     }
 }
 
-void x_71257e81(s32 (*x_f6382727)(void *), void *arg) {
+void x_71257e81(s32 (*callback)(void *), void *arg) {
     s32 i;
 
     for (i = 0; i < x_e286d4b7(x_9d6e6e5f); i++) {
         if (x_9d6e6e5f[i] == 0) {
-            x_9d6e6e5f[i] = x_f6382727;
+            x_9d6e6e5f[i] = callback;
             x_ba260e1b[i] = arg;
             return;
         }
@@ -273,7 +273,7 @@ void x_16b2a52b(u16 x_7cedc3fb) {
     D_80080110 = x_4540c33c[x_7cedc3fb].x_b8173ab8;
     D_80080112 = x_4540c33c[x_7cedc3fb].x_d863406f;
     D_80080114 = x_4540c33c[x_7cedc3fb].x_f6c089c5;
-    x_7824740c(&x_30839b82, 50, sizeof(x_41a0e1e6));
+    x_7824740c(&gTaskPool, 50, sizeof(TaskNode));
     x_3c16ed51();
     x_f4bce728 = x_7b6cfabc();
     D_80080136 = x_4540c33c[x_7cedc3fb].x_d23de2ad;
@@ -315,7 +315,7 @@ void x_a892f516(u16 x_7cedc3fb) {
     D_80080110 = x_4540c33c[x_7cedc3fb].x_b8173ab8;
     D_80080112 = x_4540c33c[x_7cedc3fb].x_d863406f;
     D_80080114 = x_4540c33c[x_7cedc3fb].x_f6c089c5;
-    x_7824740c(&x_30839b82, 50, sizeof(x_41a0e1e6));
+    x_7824740c(&gTaskPool, 50, sizeof(TaskNode));
     x_3c16ed51();
     x_f4bce728 = x_7b6cfabc();
     x_14384217();

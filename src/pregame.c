@@ -61,7 +61,7 @@ void x_eb293927(Object *obj) {
         }
     }
 
-    v0 = obj->x_5fcb1654;
+    v0 = obj->frameCounter;
 
     if (buttons & (x_ad1aebe6 | x_fc4a9735)) {
         if (buttons & x_ad1aebe6) {
@@ -112,7 +112,7 @@ void x_eb293927(Object *obj) {
     if (v0 > obj->x_904eaf67->x_5b30c492 - 1) {
         v0 = 0;
     }
-    obj->x_5fcb1654 = v0;
+    obj->frameCounter = v0;
 }
 
 #ifdef NON_MATCHING
@@ -183,7 +183,7 @@ u8 x_7dc12b61(u8 x_30bbe547) {
         }
 
         if (v1 != 0) {
-            return x_1be999e5[x_e3a9f332 % v1];
+            return x_1be999e5[gFrameCounter % v1];
         }
     }
 }
@@ -211,28 +211,28 @@ void x_8aee6708(Object *obj) {
 
         if (x_5e4e2788 == x_e483bf48 || x_5e4e2788 == x_557d3dd6) {
             x_93463df6 = (x_5e4e2788 == x_557d3dd6);
-            x_5e6f40dd(x_696804c5[x_93463df6]->x_64946db0);
+            TASK_END(x_696804c5[x_93463df6]->currentTask);
             x_d16311d7[x_93463df6]->x_0f4167b4[7] = 20;
             x_35e81a03(x_696804c5[x_93463df6], x_49781937);
             x_696804c5[1 - x_93463df6]->x_0f4167b4[6] = x_7dc12b61(1 - x_93463df6);
         } else {
-            x_5e6f40dd(x_696804c5[x_83106b21]->x_64946db0);
-            x_5e6f40dd(x_696804c5[x_6f0b3be3]->x_64946db0);
+            TASK_END(x_696804c5[x_83106b21]->currentTask);
+            TASK_END(x_696804c5[x_6f0b3be3]->currentTask);
             x_d16311d7[x_83106b21]->x_0f4167b4[7] = 20;
             x_d16311d7[x_6f0b3be3]->x_0f4167b4[7] = 20;
             x_35e81a03(x_696804c5[x_83106b21], x_49781937);
             x_35e81a03(x_696804c5[x_6f0b3be3], x_49781937);
         }
 
-        x_5e6f40dd(obj->x_64946db0);
+        TASK_END(obj->currentTask);
         return;
     }
 
     x_523c079f = x_cf10d3eb / 10;
     x_d413f652 = x_cf10d3eb - x_523c079f * 10;
-    obj->x_5fcb1654 = x_d413f652;
-    a1->x_5fcb1654 = x_523c079f;
-    obj->x_64946db0->x_c7f843c2 = 60;
+    obj->frameCounter = x_d413f652;
+    a1->frameCounter = x_523c079f;
+    obj->currentTask->delay = 60;
 }
 
 void x_35e81a03(Object *obj, Object *x_84ff873b) {
@@ -241,10 +241,10 @@ void x_35e81a03(Object *obj, Object *x_84ff873b) {
     x_30bbe547 = obj->x_0f4167b4[0];
     x_84ff873b->x_0f4167b4[8]++;
 
-    if (obj->x_5fcb1654 >= 5) {
-        x_84ff873b->x_0f4167b4[9 + x_30bbe547] = x_77831b2c[x_30bbe547].x_eb1fe45b = obj->x_5fcb1654 + 1;
+    if (obj->frameCounter >= 5) {
+        x_84ff873b->x_0f4167b4[9 + x_30bbe547] = x_77831b2c[x_30bbe547].x_eb1fe45b = obj->frameCounter + 1;
     } else {
-        x_84ff873b->x_0f4167b4[9 + x_30bbe547] = x_77831b2c[x_30bbe547].x_eb1fe45b = obj->x_5fcb1654;
+        x_84ff873b->x_0f4167b4[9 + x_30bbe547] = x_77831b2c[x_30bbe547].x_eb1fe45b = obj->frameCounter;
     }
 
     if (x_84ff873b->x_0f4167b4[11] == -1) {
@@ -268,7 +268,7 @@ void x_6aa7260b(Object *obj) {
     if (buttons & x_9cefe76c) {
         x_7e194d55(2, x_a7d9a1e8 != 0 ? 0 : x_30bbe547 + 4);
         x_35e81a03(obj, obj->x_e2f64c57[5]);
-        x_5e6f40dd(obj->x_64946db0);
+        TASK_END(obj->currentTask);
     } else if (buttons & (x_ad1aebe6 | x_fc4a9735)) {
         a0 = obj->x_e2f64c57[9];
         if (x_30bbe547 == x_83106b21 && (buttons & x_ad1aebe6) || x_30bbe547 == x_6f0b3be3 && (buttons & x_fc4a9735)) {
@@ -317,7 +317,7 @@ void x_a70125d9(Object *obj, Object *x_84ff873b, Object *x_2092f891) {
 
     if (obj->x_0f4167b4[2] > 0) {
         obj->x_0f4167b4[2]--;
-        obj->x_5fcb1654 = 0x29 + (x_77831b2c[v0].x_c35c64af == 400);
+        obj->frameCounter = 0x29 + (x_77831b2c[v0].x_c35c64af == 400);
         x_2092f891->flags |= x_c537cafa;
         x_84ff873b->flags |= x_c537cafa;
         obj->flags &= ~x_c537cafa;
@@ -347,14 +347,14 @@ void x_a70125d9(Object *obj, Object *x_84ff873b, Object *x_2092f891) {
         obj->flags |= x_c537cafa;
     }
 
-    if ((x_e3a9f332 % 15) == 0) {
-        x_6e3cc34e = ((x_e3a9f332 % 30) == 0);
+    if ((gFrameCounter % 15) == 0) {
+        x_6e3cc34e = ((gFrameCounter % 30) == 0);
         obj->x_0f4167b4[1] = x_6e3cc34e;
     }
 
-    obj->x_5fcb1654 = 0x1C + x_d413f652;
-    x_84ff873b->x_5fcb1654 = 0x1C + x_523c079f;
-    x_2092f891->x_5fcb1654 = 0x1C + x_a8677df7;
+    obj->frameCounter = 0x1C + x_d413f652;
+    x_84ff873b->frameCounter = 0x1C + x_523c079f;
+    x_2092f891->frameCounter = 0x1C + x_a8677df7;
 }
 
 void x_6e0d3e38(Object *obj) {
@@ -374,7 +374,7 @@ void x_6e0d3e38(Object *obj) {
     v02 = obj->x_0f4167b4[2]--; // reuse required to match
     if (v02 < 0) {
         obj->x_0f4167b4[2] = 15;
-        obj->x_5fcb1654 = 0x4f - obj->x_5fcb1654;
+        obj->frameCounter = 0x4f - obj->frameCounter;
     }
 
     if (x_696804c5[x_b2bb447b]->x_0f4167b4[1] & x_9cefe76c) {
@@ -419,7 +419,7 @@ void x_0362e0e0(Object *obj) {
     v0->x_0f4167b4[0] = s1;
     v0->x_0f4167b4[3] = s3;
     s3 = x_12014163(&x_d753d975[s1], &x_d65a2f4e, x_24b231d4);
-    s3->x_5fcb1654 = 15 - s1;
+    s3->frameCounter = 15 - s1;
     v0->x_0f4167b4[4] = s3;
 
     x_464d68e5 = x_ff9be353(s1);
@@ -451,8 +451,8 @@ void x_0362e0e0(Object *obj) {
 
     obj->x_0f4167b4[1] = 0;
     obj->x_0f4167b4[9] = x_7f4af95e;
-    obj->x_64946db0->x_f6382727 = x_6aa7260b;
-    obj->x_64946db0->x_c7f843c2 = 20;
+    obj->currentTask->callback = x_6aa7260b;
+    obj->currentTask->delay = 20;
 }
 
 void x_0f87e747(Object *obj) {
@@ -476,15 +476,15 @@ void x_0f87e747(Object *obj) {
     }
 
     obj->x_0f4167b4[2] = 15;
-    if (obj->x_5fcb1654 >= 5) {
-        v1 = obj->x_5fcb1654 + 1;
+    if (obj->frameCounter >= 5) {
+        v1 = obj->frameCounter + 1;
     } else {
-        v1 = obj->x_5fcb1654;
+        v1 = obj->frameCounter;
     }
 
     if (obj->x_0f4167b4[6] == 9 || obj->x_0f4167b4[6] == 1) {
         v1 = obj->x_0f4167b4[6];
-        obj->x_5fcb1654 = v1 - (v1 == x_968cc9a2);
+        obj->frameCounter = v1 - (v1 == x_968cc9a2);
     }
 
     if (v1 == obj->x_0f4167b4[6]) {
@@ -492,7 +492,7 @@ void x_0f87e747(Object *obj) {
         x_35e81a03(obj, x_aaadc3e8);
         x_aaadc3e8 = obj->x_e2f64c57[4];
         x_aaadc3e8->x_0f4167b4[7] = 20;
-        x_5e6f40dd(obj->x_64946db0);
+        TASK_END(obj->currentTask);
         return;
     }
 
@@ -531,9 +531,9 @@ void x_0f87e747(Object *obj) {
     }
 
     if (v1 >= x_e235676f) {
-        obj->x_5fcb1654 = v1 - 1;
+        obj->frameCounter = v1 - 1;
     } else {
-        obj->x_5fcb1654 = v1;
+        obj->frameCounter = v1;
     }
 }
 
@@ -579,12 +579,12 @@ void x_34648a7a(Object *obj) {
                 if (x_5e4e2788 == x_e483bf48 || x_5e4e2788 == x_557d3dd6) {
                     x_696804c5[1 - a3]->x_0f4167b4[6] = x_7dc12b61(1 - a3);
                 }
-                x_5e6f40dd(obj->x_64946db0);
+                TASK_END(obj->currentTask);
             }
         } else if (v1 & (x_ad1aebe6 | x_fc4a9735)) {
             x_7e194d55(2, 6 + a3);
 
-            v0 = obj->x_5fcb1654;
+            v0 = obj->frameCounter;
             if (v1 & x_ad1aebe6) {
                 v0--;
             } else {
@@ -605,7 +605,7 @@ void x_34648a7a(Object *obj) {
                 v0 = 0;
             }
 
-            obj->x_5fcb1654 = v0;
+            obj->frameCounter = v0;
         }
     }
 }
@@ -613,13 +613,13 @@ void x_34648a7a(Object *obj) {
 void x_044d3222(Object *obj) {
     if (obj->x_0f4167b4[7] != 0) {
         if (obj->x_0f4167b4[8]-- == 0) {
-            obj->x_5fcb1654 = obj->x_0f4167b4[0] * 4 - obj->x_5fcb1654 + 171;
-            obj->x_0f4167b4[8] = -254 - (obj->x_0f4167b4[0] * 2 - obj->x_5fcb1654) * 3;
+            obj->frameCounter = obj->x_0f4167b4[0] * 4 - obj->frameCounter + 171;
+            obj->x_0f4167b4[8] = -254 - (obj->x_0f4167b4[0] * 2 - obj->frameCounter) * 3;
         }
 
         if (--obj->x_0f4167b4[7] == 0) {
-            obj->x_5fcb1654 = obj->x_0f4167b4[0] * 2 + 86;
-            x_5e6f40dd(obj->x_64946db0);
+            obj->frameCounter = obj->x_0f4167b4[0] * 2 + 86;
+            TASK_END(obj->currentTask);
         }
     }
 }
@@ -631,7 +631,7 @@ void x_6fa3f96e(Object *obj) {
 
     if (obj->x_0f4167b4[8] == 2) {
         obj->x_0f4167b4[8] = 3;
-        obj->x_64946db0->x_c7f843c2 = 10;
+        obj->currentTask->delay = 10;
         x_696804c5[0]->flags |= x_5a44854c;
         x_696804c5[1]->flags |= x_5a44854c;
         return;
@@ -642,7 +642,7 @@ void x_6fa3f96e(Object *obj) {
         x_696804c5[0]->flags |= x_5a44854c;
         x_696804c5[1]->flags |= x_5a44854c;
         obj->flags &= ~x_c537cafa;
-        obj->x_64946db0->x_c7f843c2 = 20;
+        obj->currentTask->delay = 20;
         return;
     }
 
@@ -671,7 +671,7 @@ void x_6fa3f96e(Object *obj) {
         x_77831b2c[obj->x_0f4167b4[11]].x_fb21ca8c++;
     }
 
-    x_5e6f40dd(obj->x_64946db0);
+    TASK_END(obj->currentTask);
 }
 
 void x_7447fdfb(Object *obj) {
@@ -680,7 +680,7 @@ void x_7447fdfb(Object *obj) {
 
     if (obj->x_0f4167b4[2]-- < 0) {
         obj->x_0f4167b4[2] = 15;
-        obj->x_5fcb1654 = obj->x_0f4167b4[1] - obj->x_5fcb1654;
+        obj->frameCounter = obj->x_0f4167b4[1] - obj->frameCounter;
     }
 
     x_30bbe547 = obj->x_0f4167b4[0];
@@ -693,16 +693,16 @@ void x_7447fdfb(Object *obj) {
 void x_95e711cc(Object *obj) {
     if (obj->x_0f4167b4[x_a44625a6]-- < 0) {
         obj->x_0f4167b4[x_a44625a6] = 15;
-        obj->x_5fcb1654 = obj->x_0f4167b4[x_82e2e1db] - obj->x_5fcb1654;
+        obj->frameCounter = obj->x_0f4167b4[x_82e2e1db] - obj->frameCounter;
     }
 
     if (x_59ce598c[obj->x_0f4167b4[x_0140ad12]].buttons & x_9cefe76c) {
-        obj->x_5fcb1654 = x_aaa2c518 - 2 * obj->x_0f4167b4[0];
-        obj->x_0f4167b4[x_82e2e1db] = obj->x_5fcb1654 * 2 + 1;
+        obj->frameCounter = x_aaa2c518 - 2 * obj->x_0f4167b4[0];
+        obj->x_0f4167b4[x_82e2e1db] = obj->frameCounter * 2 + 1;
         obj->pos.x = 245 - obj->x_0f4167b4[x_0140ad12] * 167;
 
         obj->x_0f4167b4[x_0140ad12] = 1 - obj->x_0f4167b4[x_0140ad12];
-        obj->x_64946db0->x_f6382727 = x_7447fdfb;
+        obj->currentTask->callback = x_7447fdfb;
     }
 }
 
@@ -810,13 +810,13 @@ void x_2c1b660c(void) {
 
     x_696804c5[0] = x_12014163(&x_5c2a3a42, &x_c3be5f96, x_24b231d4);
     x_696804c5[0]->x_0f4167b4[0] = x_83106b21;
-    x_696804c5[0]->x_5fcb1654 = x_c16a42f3;
-    x_696804c5[0]->x_64946db0->x_c7f843c2 = 20;
+    x_696804c5[0]->frameCounter = x_c16a42f3;
+    x_696804c5[0]->currentTask->delay = 20;
 
     x_696804c5[1] = x_12014163(&x_0cbc7c1c, &x_a8ee65ba, x_24b231d4);
     x_696804c5[1]->x_0f4167b4[0] = x_6f0b3be3;
-    x_696804c5[1]->x_5fcb1654 = x_fb97b65c;
-    x_696804c5[1]->x_64946db0->x_c7f843c2 = 20;
+    x_696804c5[1]->frameCounter = x_fb97b65c;
+    x_696804c5[1]->currentTask->delay = 20;
 
     x_523933cc[0] = x_12014163(&x_a3f0c785, &x_37539a8c, x_24b231d4);
     x_523933cc[0]->x_0f4167b4[0] = x_83106b21;
@@ -844,27 +844,27 @@ void x_2c1b660c(void) {
         case x_e483bf48:
         case x_557d3dd6:
             x_13d65ace = (x_5e4e2788 == x_557d3dd6);
-            x_696804c5[1 - x_13d65ace]->x_64946db0->x_f6382727 = x_0f87e747;
-            x_696804c5[1 - x_13d65ace]->x_64946db0->x_c7f843c2 = 0;
-            x_696804c5[1 - x_13d65ace]->x_64946db0->flags = x_0fb55613;
+            x_696804c5[1 - x_13d65ace]->currentTask->callback = x_0f87e747;
+            x_696804c5[1 - x_13d65ace]->currentTask->delay = 0;
+            x_696804c5[1 - x_13d65ace]->currentTask->flags = TASK_RUNNABLE;
 
             if (x_77831b2c[x_13d65ace].x_b2b764b3 != 0) {
                 x_696804c5[1 - x_13d65ace]->x_0f4167b4[6] = x_7dc12b61(1 - x_13d65ace);
-                x_5e6f40dd(x_696804c5[x_13d65ace]->x_64946db0);
+                TASK_END(x_696804c5[x_13d65ace]->currentTask);
                 x_523933cc[x_13d65ace]->x_0f4167b4[7] = 20;
                 x_fd096fa8->x_0f4167b4[8] = 1;
                 x_fd096fa8->x_0f4167b4[9 + x_13d65ace] = x_77831b2c[x_13d65ace].x_eb1fe45b;
             }
             break;
         case x_3658fb97:
-            x_696804c5[0]->x_64946db0->x_f6382727 = x_0f87e747;
-            x_696804c5[0]->x_64946db0->x_c7f843c2 = 0;
-            x_696804c5[0]->x_64946db0->flags = x_0fb55613;
+            x_696804c5[0]->currentTask->callback = x_0f87e747;
+            x_696804c5[0]->currentTask->delay = 0;
+            x_696804c5[0]->currentTask->flags = TASK_RUNNABLE;
             x_696804c5[0]->x_0f4167b4[6] = x_7dc12b61(0);
 
-            x_696804c5[1]->x_64946db0->x_f6382727 = x_0f87e747;
-            x_696804c5[1]->x_64946db0->x_c7f843c2 = 0;
-            x_696804c5[1]->x_64946db0->flags = x_0fb55613;
+            x_696804c5[1]->currentTask->callback = x_0f87e747;
+            x_696804c5[1]->currentTask->delay = 0;
+            x_696804c5[1]->currentTask->flags = TASK_RUNNABLE;
             x_696804c5[1]->x_0f4167b4[6] = x_7dc12b61(1);
             break;
         case x_96f25e0a:

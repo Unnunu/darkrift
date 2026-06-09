@@ -56,7 +56,7 @@ void x_24bc1a84(x_b57dc591 *x_cc1d0de5, u32 count, u32 x_52f03926) {
 
 void x_8e6b5db0(s32 count) {
     x_24bc1a84(&x_11f3efb0, count, sizeof(Object));
-    x_24bc1a84(&x_30839b82, count, sizeof(x_41a0e1e6));
+    x_24bc1a84(&gTaskPool, count, sizeof(TaskNode));
 }
 
 void x_3c16ed51(void) {
@@ -210,8 +210,8 @@ void x_efb29a7d(void) {
             if (obj->flags & x_28b57b50) {
                 x_1760d24f(obj->light);
             }
-            task_free_list(obj->x_d178c88f);
-            obj->x_d178c88f = NULL;
+            task_free_list(obj->taskListHead);
+            obj->taskListHead = NULL;
             x_a58b9b64 = obj;
             obj = obj->x_2d5f3fbd;
             x_63b616bf(x_a58b9b64);
@@ -291,28 +291,28 @@ void x_6d41c91d(Object *x_cc1d0de5, x_88f11482 *x_84ff873b, x_acccb624 *x_2092f8
     x_cc1d0de5->x_3e400065 = 0x100;
 
     x_cc1d0de5->x_1b0e7aa2 = 0;
-    x_cc1d0de5->x_5fcb1654 = 0;
+    x_cc1d0de5->frameCounter = 0;
     x_cc1d0de5->x_2b06a023 = -1;
     x_cc1d0de5->color.a = 128;
     x_cc1d0de5->x_8f6ab396 = 0;
     x_cc1d0de5->x_9112b8b9 = 0;
 
-    x_cc1d0de5->x_d178c88f = (x_41a0e1e6 *) x_6d619dce(x_30839b82);
-    x_cc1d0de5->x_64946db0 = x_cc1d0de5->x_d178c88f;
+    x_cc1d0de5->taskListHead = (TaskNode *) x_6d619dce(gTaskPool);
+    x_cc1d0de5->currentTask = x_cc1d0de5->taskListHead;
     if (x_08ae3bb4 != NULL) {
-        x_cc1d0de5->x_64946db0->x_c7f843c2 = 0;
-        x_cc1d0de5->x_64946db0->flags = x_0fb55613;
-        x_cc1d0de5->x_64946db0->x_f6382727 = x_08ae3bb4;
-        x_cc1d0de5->x_64946db0->x_116c9ff3 = 0;
+        x_cc1d0de5->currentTask->delay = 0;
+        x_cc1d0de5->currentTask->flags = TASK_RUNNABLE;
+        x_cc1d0de5->currentTask->callback = x_08ae3bb4;
+        x_cc1d0de5->currentTask->stackPtr = 0;
     } else {
-        x_cc1d0de5->x_64946db0->x_c7f843c2 = 0;
-        x_cc1d0de5->x_64946db0->flags = x_0fb55613;
-        x_cc1d0de5->x_64946db0->x_f6382727 = task_remove_current;
-        x_cc1d0de5->x_64946db0->x_116c9ff3 = 0;
+        x_cc1d0de5->currentTask->delay = 0;
+        x_cc1d0de5->currentTask->flags = TASK_RUNNABLE;
+        x_cc1d0de5->currentTask->callback = task_remove_current;
+        x_cc1d0de5->currentTask->stackPtr = 0;
     }
 
-    x_cc1d0de5->x_64946db0->next = NULL;
-    x_cc1d0de5->x_64946db0->x_116c9ff3 = 0;
+    x_cc1d0de5->currentTask->next = NULL;
+    x_cc1d0de5->currentTask->stackPtr = 0;
 
     x_948f0b9f(&x_cc1d0de5->transform.x_3fde9cd9, x_2092f891);
     x_fc6adb04(&x_cc1d0de5->transform.x_3fde9cd9, x_84ff873b);
@@ -428,11 +428,11 @@ Object *x_12014163(x_88f11482 *pos, x_f0d7e70f *def, s32 context) {
     Object *obj;
 
     obj = x_5283664d(def->x_95ee18a8);
-    x_6d41c91d(obj, pos, &x_acab9952, NULL, def->x_f6382727);
+    x_6d41c91d(obj, pos, &x_acab9952, NULL, def->callback);
     obj->x_0232396f = x_23e3afdf;
     obj->flags = def->flags;
     obj->flags |= x_3d723236;
-    obj->x_5fcb1654 = def->x_f85f1359;
+    obj->frameCounter = def->x_f85f1359;
     obj->x_904eaf67 = x_b717ed65[x_e720f37d(def->x_6870fa4a, context)].data;
 
     return obj;
@@ -504,7 +504,7 @@ Object *x_1d5cf6e2(x_88f11482 *pos, x_8b39d614 *properties, s32 context) {
     if (x_5c163218.count >= 2) {
         obj = x_8e3c7e83(pos, NULL, &properties->base, context);
         obj->x_0232396f = x_3a85c5a8;
-        obj->x_5fcb1654 = properties->x_14033586;
+        obj->frameCounter = properties->x_14033586;
         obj->flags |= properties->flags | x_0b94e8d0;
         obj->color.a = 128;
 
@@ -603,7 +603,7 @@ Object *x_6f2f6fab(x_88f11482 *pos, s32 x_95ee18a8, void (*x_08ae3bb4)(Object *)
 
     obj = x_572f827d(pos, x_95ee18a8, x_08ae3bb4, model);
     obj->x_0232396f = x_3a85c5a8;
-    obj->x_5fcb1654 = 0;
+    obj->frameCounter = 0;
     obj->flags |= x_215d3747 | x_b6789b80 | x_0b94e8d0;
     obj->color.a = 128;
 

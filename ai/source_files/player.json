@@ -37,22 +37,40 @@
     "x_253cc396",
     "x_fb0d2e6c"
   ],
-  "key_apis": ["guRandom"],
+  "key_apis": [
+    "guRandom"
+  ],
   "strings": [
-    "\"dum.db\"", "\".db\"", "\".MOV\"", "\"dum.sym\"", "\".sym\"",
-    "\"/aaro/dummy\"", "\"mod0.k2\"", "\"spr0.sp3\"", "\"dum.tmd\"",
-    "\"dumshad.k4\"", "\"shad.k4\"", "\"shad2.k4\"", "\".tmd\"",
-    "\"2.tmd\"", "\".k3\"", "\"2.k3\"", "\"_h\"", "\"_v\"", "\"1\"", "\"2\""
+    "\"dum.db\"",
+    "\".db\"",
+    "\".MOV\"",
+    "\"dum.sym\"",
+    "\".sym\"",
+    "\"/aaro/dummy\"",
+    "\"mod0.k2\"",
+    "\"spr0.sp3\"",
+    "\"dum.tmd\"",
+    "\"dumshad.k4\"",
+    "\"shad.k4\"",
+    "\"shad2.k4\"",
+    "\".tmd\"",
+    "\"2.tmd\"",
+    "\".k3\"",
+    "\"2.k3\"",
+    "\"_h\"",
+    "\"_v\"",
+    "\"1\"",
+    "\"2\""
   ],
   "subsystems": [
     "Character init: loads .tmd/.k3 models, .MOV animations, .k4 shadows, .sp3 sprites, .db/.sym character data",
     "Move selection: processes button input, walks character move list, handles forced transitions",
-    "State machine: manages FSM context (x_41a0e1e6) with callback stacks",
+    "State machine: manages FSM context (TaskNode) with callback stacks",
     "Replay recording: 512-entry ring buffer for demo playback or rollback",
     "Per-frame update: ground detection, animation sync, hit/grab range checks, collision flags"
   ],
   "open_questions": [
-    "What do the x_c0a431f7, x_4495b42c, x_af5ccc8a, x_f7a1a468 etc. function pointers do? Need to cross-reference with functions.h",
+    "What do the task_execute, x_4495b42c, x_af5ccc8a, x_f7a1a468 etc. function pointers do? Need to cross-reference with functions.h",
     "The replay buffer structure x_64923535 — is this for netcode rollback or just demo playback?",
     "What determines _h vs _v character path suffix? Horizontal/vertical split-screen orientation?"
   ]

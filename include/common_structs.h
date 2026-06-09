@@ -417,7 +417,7 @@ typedef struct Object {
     /* 0x07C */ s16 x_b1e624ba;
     /* 0x07E */ s16 x_89c109c9;
     /* 0x080 */ s32 flags;
-    /* 0x084 */ s16 x_5fcb1654;
+    /* 0x084 */ s16 frameCounter;
     /* 0x086 */ s16 x_2b06a023;
     /* 0x088 */ x_6751d717 color;
     /* 0x08C */ s16 x_f9866d50;
@@ -432,8 +432,8 @@ typedef struct Object {
     /* 0x0D0 */ Transform transform;
     /* 0x1E8 */ void (*x_450fdcd0)(struct Object *, struct Object *);
     /* 0x1EC */ x_09d6a3c8 x_0232396f;
-    /* 0x1F0 */ struct x_41a0e1e6 *x_d178c88f;
-    /* 0x1F4 */ struct x_41a0e1e6 *x_64946db0;
+    /* 0x1F0 */ struct TaskNode *taskListHead;
+    /* 0x1F4 */ struct TaskNode *currentTask;
     /* 0x1F8 */ s16 x_8f6ab396;
     /* 0x1FA */ s16 x_9112b8b9;
     /* 0x1FC */ s32 x_de73d1d5;
@@ -445,11 +445,11 @@ typedef struct Object {
     /* 0x214 */ struct Object *x_d0268c0d;
 } Object; // size = 0x218
 
-typedef struct x_c305712a {
+typedef struct FsmState {
     /* 0x00 */ u32 flags;
-    /* 0x04 */ x_09d6a3c8 x_f6382727;
-    /* 0x08 */ s16 x_c7f843c2;
-} x_c305712a; // size = 0xC
+    /* 0x04 */ x_09d6a3c8 callback;
+    /* 0x08 */ s16 delay;
+} FsmState; // size = 0xC
 
 typedef struct x_e0b9a726 {
     /* 0x00 */ s16 x_4f311d1d;
@@ -464,23 +464,23 @@ typedef struct x_e0b9a726 {
     /* 0x1A */ char x_c250cfce[2];
 } x_e0b9a726; // size = 0x1C
 
-typedef struct x_41a0e1e6 {
+typedef struct TaskNode {
     /* 0x00 */ u32 flags;
-    /* 0x04 */ x_09d6a3c8 x_f6382727;
+    /* 0x04 */ x_09d6a3c8 callback;
     /* 0x08 */ s32 params[6];
-    /* 0x20 */ u16 x_116c9ff3;
-    /* 0x24 */ x_c305712a stack[8];
-    /* 0x84 */ s16 x_c7f843c2;
-    /* 0x86 */ s16 x_8a242a5a;
+    /* 0x20 */ u16 stackPtr;
+    /* 0x24 */ FsmState stack[8];
+    /* 0x84 */ s16 delay;
+    /* 0x86 */ s16 triggerTime;
     /* 0x88 */ s16 id;
     /* 0x8A */ char x_5f7c7171[6];
-    /* 0x90 */ x_c305712a x_bda3dc45;
-    /* 0x9C */ struct x_41a0e1e6 *next;
-} x_41a0e1e6; // size = 0xA0
+    /* 0x90 */ FsmState pushState;
+    /* 0x9C */ struct TaskNode *next;
+} TaskNode; // size = 0xA0
 
 typedef struct x_f0d7e70f {
     /* 0x00 */ s16 x_f85f1359;
-    /* 0x04 */ x_09d6a3c8 x_f6382727;
+    /* 0x04 */ x_09d6a3c8 callback;
     /* 0x08 */ s32 flags;
     /* 0x0C */ s16 x_95ee18a8;
     /* 0x10 */ char *x_6870fa4a;
@@ -614,7 +614,7 @@ typedef struct x_998ccc48 {
 
 typedef struct x_b842de24 {
     /* 0x00 */ u8 x_d7ce6b8d;
-    /* 0x01 */ u8 x_5fcb1654;
+    /* 0x01 */ u8 frameCounter;
     /* 0x02 */ u8 x_cd679b4c;
 } x_b842de24; // size = 0x3
 
@@ -640,7 +640,7 @@ typedef struct x_5d25c43c {
 
 typedef struct x_58fcf07a {
     /* 0x00 */ s16 x_300600ea;
-    /* 0x02 */ s16 x_5fcb1654;
+    /* 0x02 */ s16 frameCounter;
     /* 0x04 */ s16 x_9d8a9022;
     /* 0x06 */ s16 x_7028ad92;
 } x_58fcf07a; // size = 0x8
@@ -734,11 +734,11 @@ typedef struct Player {
     /* 0x0000 */ Object *obj;
     /* 0x0004 */ s16 x_30bbe547;
     /* 0x0006 */ s16 x_eb1fe45b;
-    /* 0x0008 */ x_41a0e1e6 *x_147ade82;
-    /* 0x000C */ x_41a0e1e6 *x_b9252303;
-    /* 0x0010 */ x_41a0e1e6 *x_50a9ff14;
-    /* 0x0014 */ x_41a0e1e6 *x_cdb23d89;
-    /* 0x0018 */ x_41a0e1e6 *x_08b62e4f;
+    /* 0x0008 */ TaskNode *x_147ade82;
+    /* 0x000C */ TaskNode *x_b9252303;
+    /* 0x0010 */ TaskNode *x_50a9ff14;
+    /* 0x0014 */ TaskNode *x_cdb23d89;
+    /* 0x0018 */ TaskNode *x_08b62e4f;
 
     // tables from .db file
     /* 0x001C */ x_58fcf07a *x_ae3aa7af;

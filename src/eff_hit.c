@@ -38,9 +38,9 @@ u8 x_82bfe825(Object *obj) {
 void x_19fed2ac(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
-    if (obj->x_5fcb1654 > 5 && (player->flags & x_188f9cec)) {
+    if (obj->frameCounter > 5 && (player->flags & x_188f9cec)) {
         player->flags &= ~x_188f9cec;
-        x_5e6f40dd(obj->x_64946db0);
+        TASK_END(obj->currentTask);
     }
 }
 
@@ -51,21 +51,21 @@ void x_f95cb1c9(Object *obj) {
     if (!(player->x_7f68c36b->flags & x_037894c1)) {
         player->flags &= ~x_188f9cec;
     }
-    obj->x_64946db0->x_f6382727 = task_remove_current;
+    obj->currentTask->callback = task_remove_current;
 }
 
 void x_56d15e8a(Object *obj) {
-    obj->x_64946db0->x_c7f843c2 = 10;
-    obj->x_64946db0->x_f6382727 = x_f95cb1c9;
+    obj->currentTask->delay = 10;
+    obj->currentTask->callback = x_f95cb1c9;
 }
 
 void x_f1e3e841(Object *obj) {
     obj->color.a -= 5;
-    obj->x_5fcb1654++;
-    if (obj->x_5fcb1654 > 9) {
+    obj->frameCounter++;
+    if (obj->frameCounter > 9) {
         obj->flags |= x_f51cb721;
     }
-    obj->x_64946db0->x_c7f843c2 = 2;
+    obj->currentTask->delay = 2;
 }
 
 void x_5dea773a(Object *obj) {
@@ -115,7 +115,7 @@ void x_8a61a432(Object *obj) {
     player->x_5c5b1d93.x_62706fff = x_84ce1cfb(v0);
 
     if (player->x_7f68c36b->flags & x_ff05097f) {
-        obj->x_64946db0->x_f6382727 = x_5dea773a;
+        obj->currentTask->callback = x_5dea773a;
     } else {
         x_56d15e8a(obj);
     }
@@ -129,9 +129,9 @@ void x_9891654e(Object *obj) {
     player->flags &= ~x_030d2322;
     obj->x_20d20338->x_3aefae96 = D_8004BA98[player->x_eb1fe45b].x;
     obj->x_20d20338->x_713417ac = D_8004BA98[player->x_eb1fe45b].z;
-    obj->x_64946db0->x_c7f843c2 = 2;
-    obj->x_64946db0->x_f6382727 = x_8a61a432;
-    obj->x_64946db0->x_c7f843c2 = 2;
+    obj->currentTask->delay = 2;
+    obj->currentTask->callback = x_8a61a432;
+    obj->currentTask->delay = 2;
     D_8013C3A0[x_30bbe547].x = obj->pos.x;
     D_8013C3A0[x_30bbe547].z = obj->pos.z;
 }
@@ -143,18 +143,18 @@ void x_afe56bcd(Object *obj) {
     player->flags &= ~x_030d2322;
     obj->x_20d20338->x_713417ac = D_8004BAF0[player->x_eb1fe45b].z;
     obj->x_20d20338->x_3aefae96 = D_8004BAF0[player->x_eb1fe45b].x;
-    obj->x_64946db0->x_c7f843c2 = 2;
-    obj->x_64946db0->x_f6382727 = x_8a61a432;
+    obj->currentTask->delay = 2;
+    obj->currentTask->callback = x_8a61a432;
     D_8013C3A0[x_30bbe547].x = obj->pos.x;
     D_8013C3A0[x_30bbe547].z = obj->pos.z;
 }
 
 void x_aa63f018(Object *obj) {
-    x_5e6f40dd(obj->x_64946db0);
+    TASK_END(obj->currentTask);
 }
 
 void x_01a2aa4d(Object *obj) {
-    x_5e6f40dd(obj->x_64946db0);
+    TASK_END(obj->currentTask);
 }
 
 void x_efd0ce39(Object *obj) {
@@ -173,7 +173,7 @@ void x_efd0ce39(Object *obj) {
     }
 
     obj->x_224610f1.y = 0xC00 - x_7d3ef158 - v1;
-    x_5e6f40dd(obj->x_64946db0);
+    TASK_END(obj->currentTask);
 }
 
 u8 x_52c80142(Object *obj) {
@@ -203,7 +203,7 @@ void x_82fdb659(Object *obj) {
     Player *x_98c4e5a5 = x_824b9544 + 1 - player->x_30bbe547;
     s16 x_eb1fe45b = player->x_eb1fe45b;
 
-    if (obj->x_5fcb1654 == player->x_7f68c36b->x_bab9966d - 1) {
+    if (obj->frameCounter == player->x_7f68c36b->x_bab9966d - 1) {
         player->x_6f5a5c61 = obj->x_0f4167b4[2];
         if (obj->x_0f4167b4[3] < 0) {
             player->x_95a50856 += player->x_6f5a5c61;
@@ -226,7 +226,7 @@ void x_82fdb659(Object *obj) {
             break;
         case x_73cf9ceb:
             if (x_77831b2c[1 - player->x_30bbe547].x_eb1fe45b == x_13ed828f &&
-                obj->x_5fcb1654 < player->x_7f68c36b->x_bab9966d - 1) {
+                obj->frameCounter < player->x_7f68c36b->x_bab9966d - 1) {
                 obj->pos.y = 100;
             } else {
                 obj->pos.y = 0;
@@ -244,7 +244,7 @@ void x_82fdb659(Object *obj) {
 void x_82196a2e(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
-    if (obj->x_5fcb1654 >= player->x_7f68c36b->x_bab9966d - 2) {
+    if (obj->frameCounter >= player->x_7f68c36b->x_bab9966d - 2) {
         player->x_6f5a5c61 = obj->x_0f4167b4[2];
         if (obj->x_0f4167b4[3] < 0) {
             player->x_95a50856 += player->x_6f5a5c61;
@@ -260,7 +260,7 @@ void x_82196a2e(Object *obj) {
             player->obj->x_9200c538 = 0;
         }
 
-        player->x_08b62e4f->x_f6382727 = x_340c2137;
+        player->x_08b62e4f->callback = x_340c2137;
     }
 }
 
@@ -268,12 +268,12 @@ void x_6c979ff3(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     s16 x_de68d2a6 = 1 - player->x_30bbe547;
 
-    player->x_08b62e4f->x_f6382727 = x_82196a2e;
+    player->x_08b62e4f->callback = x_82196a2e;
 
     if (x_824b9544[x_de68d2a6].x_eb1fe45b != x_c4ddde6d) {
-        obj->x_64946db0->x_f6382727 = x_17ad7985;
+        obj->currentTask->callback = x_17ad7985;
     } else {
-        x_5e6f40dd(obj->x_64946db0);
+        TASK_END(obj->currentTask);
     }
 }
 
@@ -288,11 +288,11 @@ void x_6098478f(Object *obj) {
     x_88f11482 x_93463df6;
 
     if (x_9df63a90 && x_33abac12 == 0) {
-        x_5e6f40dd(obj->x_64946db0);
+        TASK_END(obj->currentTask);
         return;
     }
 
-    if (obj->x_5fcb1654 != player->x_7f68c36b->x_bab9966d - 1) {
+    if (obj->frameCounter != player->x_7f68c36b->x_bab9966d - 1) {
         return;
     }
 
@@ -303,7 +303,7 @@ void x_6098478f(Object *obj) {
     if (!(player->flags & x_9298c772) && x_9a96200f < D_8004C178[player->x_eb1fe45b] &&
         (x_824b9544[x_de68d2a6].x_7f68c36b->flags & x_ff05097f) &&
         !(x_824b9544[x_de68d2a6].x_7f68c36b->flags & x_7b8f7fad)) {
-        x_5e6f40dd(obj->x_64946db0);
+        TASK_END(obj->currentTask);
 
         if (x_824b9544[x_de68d2a6].flags & x_9298c772) {
             if (!(x_824b9544[x_de68d2a6].x_7f68c36b->flags & x_cdcff2e1)) {
@@ -353,17 +353,17 @@ void x_602b94bb(Object *obj) {
     s16 x_de68d2a6;
     s32 unused[3];
 
-    if (obj->x_5fcb1654 == player->x_7f68c36b->x_c53ac2df) {
+    if (obj->frameCounter == player->x_7f68c36b->x_c53ac2df) {
         x_eb1fe45b = player->x_eb1fe45b;
         x_de68d2a6 = 1 - player->x_30bbe547;
         x_c05bfb58(&x_824b9544[x_de68d2a6], D_8004B920[x_eb1fe45b].x_cd679b4c, 1);
 
         if (player->x_eb1fe45b == x_c4ddde6d) {
-            obj->x_64946db0->x_f6382727 = x_cfb419a2;
+            obj->currentTask->callback = x_cfb419a2;
         } else if (D_8004BA6C[x_eb1fe45b] != NULL) {
-            obj->x_64946db0->x_f6382727 = x_d5db0c41;
+            obj->currentTask->callback = x_d5db0c41;
         } else {
-            x_5e6f40dd(obj->x_64946db0);
+            TASK_END(obj->currentTask);
         }
     }
 }
@@ -372,11 +372,11 @@ void x_23eecff5(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
     if (player->x_eb1fe45b == x_968cc9a2) {
-        obj->x_64946db0->x_f6382727 = x_cfb419a2;
+        obj->currentTask->callback = x_cfb419a2;
     } else if (D_8004BA6C[player->x_eb1fe45b] != NULL) {
-        obj->x_64946db0->x_f6382727 = x_d5db0c41;
+        obj->currentTask->callback = x_d5db0c41;
     } else {
-        x_5e6f40dd(obj->x_64946db0);
+        TASK_END(obj->currentTask);
     }
 }
 
@@ -441,8 +441,8 @@ Object *x_24276d64(void) {
 void x_507d2a70(Object *obj) {
     if (obj->x_20d20338->x_abd7b3c4.x_3fde9cd9.w.y > -200.0f) {
         x_7621a350(obj);
-        obj->x_64946db0->x_f6382727 = x_adf28f33;
-        obj->x_64946db0->x_c7f843c2 = 20;
+        obj->currentTask->callback = x_adf28f33;
+        obj->currentTask->delay = 20;
     }
 }
 
@@ -451,7 +451,7 @@ void x_adf28f33(Object *obj) {
         return;
     }
 
-    obj->x_64946db0->x_f6382727 = x_507d2a70;
+    obj->currentTask->callback = x_507d2a70;
 }
 
 void x_17ad7985(Object *obj) {
@@ -464,27 +464,27 @@ void x_17ad7985(Object *obj) {
             v0->x_0f4167b4[1] = 50;
         }
 
-        obj->x_64946db0->x_f6382727 = x_adf28f33;
-        obj->x_64946db0->x_c7f843c2 = 20;
+        obj->currentTask->callback = x_adf28f33;
+        obj->currentTask->delay = 20;
     }
 }
 
 void x_5b5c4189(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
-    if (obj->x_5fcb1654 > (player->x_7f68c36b->x_bab9966d >> 1)) {
-        player->x_b9252303->x_f6382727 = x_d18c17c2;
-        player->x_b9252303->x_c7f843c2 = 0;
-        player->x_b9252303->flags = x_0fb55613;
+    if (obj->frameCounter > (player->x_7f68c36b->x_bab9966d >> 1)) {
+        player->x_b9252303->callback = x_d18c17c2;
+        player->x_b9252303->delay = 0;
+        player->x_b9252303->flags = TASK_RUNNABLE;
     } else {
-        player->x_b9252303->x_f6382727 = x_55af5110;
-        player->x_b9252303->x_c7f843c2 = 0;
-        player->x_b9252303->flags = x_0fb55613;
+        player->x_b9252303->callback = x_55af5110;
+        player->x_b9252303->delay = 0;
+        player->x_b9252303->flags = TASK_RUNNABLE;
         obj->flags |= x_56bbd9b2;
     }
 
     player->flags &= ~x_188f9cec;
-    x_5e6f40dd(obj->x_64946db0);
+    TASK_END(obj->currentTask);
 }
 
 void x_ca73900f(Object *obj) {
@@ -506,7 +506,7 @@ void x_ca73900f(Object *obj) {
 void x_297fd9f3(Object *obj) {
     obj->velocity.y = 0xFFEC0000;
     obj->x_8da078cc.y = 0x20000;
-    obj->x_64946db0->x_f6382727 = x_ca73900f;
+    obj->currentTask->callback = x_ca73900f;
     x_67a3a840(obj);
 }
 
@@ -562,8 +562,8 @@ u8 x_8c8da256(Object *obj) {
 void x_d76c20a9(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
-    obj->x_64946db0->x_c7f843c2 = player->x_68a6b5cd[player->x_cd14c741].x_887b6be9 - obj->x_5fcb1654 + 2;
-    obj->x_64946db0->x_f6382727 = x_e47877a0;
+    obj->currentTask->delay = player->x_68a6b5cd[player->x_cd14c741].x_887b6be9 - obj->frameCounter + 2;
+    obj->currentTask->callback = x_e47877a0;
 }
 
 void x_e47877a0(Object *obj) {
@@ -572,12 +572,12 @@ void x_e47877a0(Object *obj) {
     s16 a1 = x_dba71d7e;
 
     if ((x_98c4e5a5->flags & (x_030d2322 | x_6de2d515 | x_faf494e7)) && x_9a96200f < 400 &&
-        obj->x_5fcb1654 >= player->x_7f68c36b->x_c53ac2df) {
+        obj->frameCounter >= player->x_7f68c36b->x_c53ac2df) {
         if (x_98c4e5a5->x_7f68c36b->flags & x_7507aa4b) {
             a1 = x_caa30513;
         }
         x_c05bfb58(x_98c4e5a5, a1, 1);
-        x_5e6f40dd(obj->x_64946db0);
+        TASK_END(obj->currentTask);
     }
 }
 
@@ -586,7 +586,7 @@ void x_eb9bf905(Object *obj) {
 
     if (x_9a96200f < D_8004C1A4[player->x_eb1fe45b] && player->x_cd14c741 != 17) {
         x_c05bfb58(player, x_e5ca67a6, 1);
-        x_5e6f40dd(obj->x_64946db0);
+        TASK_END(obj->currentTask);
     }
 }
 
@@ -594,11 +594,11 @@ void x_af431a0a(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
     if (player->x_eb1fe45b == x_b52da315) {
-        obj->x_64946db0->x_c7f843c2 = 2;
+        obj->currentTask->delay = 2;
     } else {
-        obj->x_64946db0->x_c7f843c2 = 6;
+        obj->currentTask->delay = 6;
     }
-    obj->x_64946db0->x_f6382727 = x_eb9bf905;
+    obj->currentTask->callback = x_eb9bf905;
 }
 
 u8 x_e821cb83(s32 x_cc1d0de5) {
@@ -634,7 +634,7 @@ void x_df5751ad(Object *obj) {
         x_ebe27fa0(obj);
     }
 
-    obj->x_64946db0->x_f6382727 = x_e1ae01d8;
+    obj->currentTask->callback = x_e1ae01d8;
 }
 
 void x_67a3a840(Object *obj) {
@@ -651,7 +651,7 @@ void x_67a3a840(Object *obj) {
 void x_02f6f8ad(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
-    if (obj->x_5fcb1654 == player->x_7f68c36b->x_bab9966d - 1) {
+    if (obj->frameCounter == player->x_7f68c36b->x_bab9966d - 1) {
         x_67a3a840(obj);
     }
 }
@@ -664,7 +664,7 @@ void x_18bd9b95(Object *obj) {
         x_98c4e5a5->flags |= x_188f9cec;
     }
 
-    if (obj->x_5fcb1654 >= 24) {
+    if (obj->frameCounter >= 24) {
         player->flags &= ~x_188f9cec;
     }
 }
@@ -717,7 +717,7 @@ void x_7ef99aca(Object *obj) {
     Object *x_13d65ace = x_3ac11521[x_83106b21];
     Object *x_c48d15e0 = x_3ac11521[x_6f0b3be3];
 
-    if (!(player->flags & x_9298c772) && obj->x_5fcb1654 >= player->x_7f68c36b->x_bab9966d - 1) {
+    if (!(player->flags & x_9298c772) && obj->frameCounter >= player->x_7f68c36b->x_bab9966d - 1) {
         if (player->x_30bbe547 != x_83106b21) {
             x_c48d15e0->x_224610f1.y = 0xC00 - x_09a33777;
         } else {
@@ -772,7 +772,7 @@ void x_d87a4f6e(Object *obj) {
 
     if (player->x_101ebc50 > 0x100 || (x_98c4e5a5->x_7f68c36b->flags & x_025a12b8) || v12) {
         player->flags |= x_188f9cec;
-        x_5e6f40dd(obj->x_64946db0);
+        TASK_END(obj->currentTask);
     }
 }
 
@@ -805,7 +805,7 @@ u8 x_29d2787d(Object *obj) {
     v1 = x_824b9544 + (1 - player->x_30bbe547);
 
     a1 = (v1->x_7f68c36b->flags & x_01e3e146) &&
-         (v1->x_7f68c36b->x_fedecf5c < v1->obj->x_5fcb1654 || v1->x_7f68c36b->x_c53ac2df > v1->obj->x_5fcb1654);
+         (v1->x_7f68c36b->x_fedecf5c < v1->obj->frameCounter || v1->x_7f68c36b->x_c53ac2df > v1->obj->frameCounter);
     return a1 > 0;
 }
 
@@ -818,7 +818,7 @@ void x_4a0e9b26(Object *obj) {
     v1 = &player->x_68a6b5cd[player->x_cd14c741];
 
     if (!(v1->flags & x_f79587cb) && x_77831b2c[player->x_30bbe547].x_03604d94 &&
-        (v0->x_7f68c36b->flags & x_01e3e146) && v0->obj->x_5fcb1654 < v0->x_7f68c36b->x_c53ac2df) {
+        (v0->x_7f68c36b->flags & x_01e3e146) && v0->obj->frameCounter < v0->x_7f68c36b->x_c53ac2df) {
         if (v0->flags & x_ed8e51a2) {
             x_c05bfb58(player, x_e2a42ecd, 1);
             player->x_81570fde.x_ca75ac5d = x_8b270b48;
@@ -997,7 +997,7 @@ void x_77f7ce0e(Object *obj) {
     x_448872e8 *s0;
 
     for (s0 = D_8004BA40[v0->x_eb1fe45b]; s0->x_af0aa1f8 != 0; s0++) {
-        if (obj->x_5fcb1654 == s0->x_af0aa1f8) {
+        if (obj->frameCounter == s0->x_af0aa1f8) {
             x_c1018f80(s0, &v0->x_5c5b1d93, obj);
         }
     }
@@ -1008,7 +1008,7 @@ void x_d5db0c41(Object *obj) {
     x_448872e8 *s0;
 
     for (s0 = D_8004BA6C[v0->x_eb1fe45b]; s0->x_af0aa1f8 != 0; s0++) {
-        if (obj->x_5fcb1654 == s0->x_af0aa1f8) {
+        if (obj->frameCounter == s0->x_af0aa1f8) {
             x_c1018f80(s0, &v0->x_5c5b1d93, obj);
         }
     }
@@ -1054,9 +1054,9 @@ void x_370c7b4f(Object *obj) {
     Player *v0 = (Player *) obj->x_e2f64c57[0];
 
     if (v0->x_eb1fe45b == x_c4ddde6d) {
-        obj->x_64946db0->x_f6382727 = x_cfb419a2;
+        obj->currentTask->callback = x_cfb419a2;
     } else {
-        x_5e6f40dd(obj->x_64946db0);
+        TASK_END(obj->currentTask);
     }
 }
 
@@ -1069,8 +1069,8 @@ void x_05731c3c(Object *obj) {
 void x_e9917882(Object *obj) {
     Player *v0 = (Player *) obj->x_e2f64c57[0];
 
-    if (obj->x_5fcb1654 == v0->x_7f68c36b->x_bab9966d - 2) {
-        obj->x_64946db0->x_f6382727 = x_05731c3c;
+    if (obj->frameCounter == v0->x_7f68c36b->x_bab9966d - 2) {
+        obj->currentTask->callback = x_05731c3c;
     }
 }
 
@@ -1080,8 +1080,8 @@ void x_96e05dec(Object *obj) {
     if (v0->flags & x_9298c772) {
         x_c05bfb58(v0, x_9f2970bc, 1);
     } else {
-        obj->x_64946db0->x_c7f843c2 = 60;
-        obj->x_64946db0->x_f6382727 = x_05731c3c;
+        obj->currentTask->delay = 60;
+        obj->currentTask->callback = x_05731c3c;
     }
 }
 
@@ -1095,10 +1095,10 @@ void x_fd0916cc(Object *obj) {
     Player *v0 = (Player *) obj->x_e2f64c57[0];
 
     if (x_77831b2c[x_83106b21].x_eb1fe45b == x_77831b2c[x_6f0b3be3].x_eb1fe45b && v0->x_30bbe547 != 0) {
-        obj->x_64946db0->x_c7f843c2 = 15;
+        obj->currentTask->delay = 15;
     }
 
-    obj->x_64946db0->x_f6382727 = x_a3014bb9;
+    obj->currentTask->callback = x_a3014bb9;
 }
 
 void x_c1c8c6a7(Object *obj) {
@@ -1106,13 +1106,13 @@ void x_c1c8c6a7(Object *obj) {
     Player *v0 = (Player *) obj->x_e2f64c57[0];
     s32 v1 = v0->x_30bbe547;
 
-    if (obj->x_5fcb1654 == v0->x_7f68c36b->x_bab9966d - 1) {
+    if (obj->frameCounter == v0->x_7f68c36b->x_bab9966d - 1) {
         x_dd7ffac5.x = x_dd7ffac5.y = 0;
         x_dd7ffac5.z = -D_8013C3C8[v1];
         x_9b0df250(&x_dd7ffac5, &obj->x_224610f1);
         obj->pos.x += x_dd7ffac5.x;
         obj->pos.z += x_dd7ffac5.z;
-        obj->x_64946db0->x_f6382727 = x_c3947955;
+        obj->currentTask->callback = x_c3947955;
     }
 
     x_c3947955(obj);
@@ -1122,12 +1122,12 @@ void x_bc38049f(Object *obj) {
     Player *v0 = (Player *) obj->x_e2f64c57[0];
     s32 v1 = v0->x_30bbe547;
 
-    if (v0->x_eb1fe45b == x_ff5073d4 && obj->x_5fcb1654 > 50) {
+    if (v0->x_eb1fe45b == x_ff5073d4 && obj->frameCounter > 50) {
         x_c3947955(obj);
-        obj->x_64946db0->x_f6382727 = x_c3947955;
+        obj->currentTask->callback = x_c3947955;
     } else {
         D_8013C3C8[v1] = x_9a96200f;
         x_cfb419a2(obj);
-        obj->x_64946db0->x_f6382727 = x_c1c8c6a7;
+        obj->currentTask->callback = x_c1c8c6a7;
     }
 }

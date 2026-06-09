@@ -100,8 +100,8 @@ u8 x_df816944[3] = { FALSE, FALSE, FALSE };
 s8 x_af0cb8e3[3] = { -1, -1, -1 };
 s32 x_15814eea = 0x7FFF;
 s32 D_8004A47C = 0; // unused
-OSTask x_3ab68193 = { { M_AUDTASK, 0, NULL, 0, NULL, SP_UCODE_SIZE, NULL, SP_UCODE_DATA_SIZE, NULL,
-                          SP_DRAM_STACK_SIZE8, NULL, 0, NULL, 0, NULL, 0 } };
+OSTask x_3ab68193 = { { M_AUDTASK, 0, NULL, 0, NULL, SP_UCODE_SIZE, NULL, SP_UCODE_DATA_SIZE, NULL, SP_DRAM_STACK_SIZE8,
+                        NULL, 0, NULL, 0, NULL, 0 } };
 
 void x_3e63f835(ALSynConfig *);
 ALDMAproc x_5feb315f(x_3eed2154 **state);
@@ -201,8 +201,7 @@ void x_0edd29ad(void) {
     D_800A4538[i].x_2b18f4e7 = alHeapDBAlloc("audio.c", 241, &x_e1d5ba1b, 1, x_5ef2b67b);
 
     for (i = 0; i < x_e286d4b7(D_80081840.x_8d54ede8); i++) {
-        D_80081840.x_8d54ede8[i] =
-            alHeapDBAlloc("audio.c", 244, &x_e1d5ba1b, 1, x_c46f8893->x_af00367e * sizeof(Acmd));
+        D_80081840.x_8d54ede8[i] = alHeapDBAlloc("audio.c", 244, &x_e1d5ba1b, 1, x_c46f8893->x_af00367e * sizeof(Acmd));
     }
 
     x_322bfd84 = x_c46f8893->x_af00367e;
@@ -524,7 +523,7 @@ void x_cee53c69(void) {
 
 void x_4a2432d1(Object *obj) {
     if (obj->x_0f4167b4[0]-- < 0) {
-        x_5e6f40dd(obj->x_64946db0);
+        TASK_END(obj->currentTask);
     }
 }
 
@@ -583,7 +582,7 @@ void x_292e1d02(Object *obj, s32 unused) {
 
     if (x_83bc437e) {
         obj->flags |= x_f51cb721;
-        x_5e6f40dd(obj->x_64946db0);
+        TASK_END(obj->currentTask);
     }
 }
 

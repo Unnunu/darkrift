@@ -1,1 +1,67 @@
-{"file":"src/task.c","hash":"df73244f","rom_offsets":{"text":"0x396C0","data":"0x53C20"},"summary":"Cooperative task scheduler/FSM: linked-list state machine per Object. Push/pop substate stack, delay counters, callback dispatch. Implements task.h API. Used by player, model, match, camera, scroll, hud, item, fighters, practice.","functions":[{"name":"x_bbe35044","doc_name":"task_free_list","summary":"Free all task nodes in a linked list back to the pool allocator. Iterates through the list and calls pool free (x_48825d30) on each node.","params":["list - head of task linked list"],"returns":"void"},{"name":"x_c0a431f7","doc_name":"task_execute","summary":"Core task scheduler dispatcher for an Object. Iterates the object's task list, handles push/pop substate stack, delay counters, and executes runnable callbacks. If global lock (x_66c4e9c7) is set, returns immediately. Push conditions: time-based (x_09809fad), frame-based (x_c6236507), or forced push (x_04b7a0c6 + x_2612575e). Pop flag (x_d8bfe182) restores previous state from stack. Runnable flag (x_0fb55613) triggers callback execution.","params":["obj - Object whose task list to process"],"returns":"void"},{"name":"x_52c4e4a9","doc_name":"task_find_by_id","summary":"Linear search for a task by ID in a linked list. Returns pointer to task if found, otherwise falls through (no explicit NULL return).","params":["x_cc1d0de5 - head of task list","id - task ID to find"],"returns":"x_41a0e1e6* - matching task or undefined if not found"},{"name":"x_20a23ba4","doc_name":"task_append","summary":"Allocate and append a new task to an Object's task list. Pulls from pool allocator (x_6d619dce), appends to end of list, assigns auto-incrementing ID, initializes stack pointer, callback, flags, delay.","params":["obj - parent Object","x_f6382727 - callback function","flags - task flags"],"returns":"x_41a0e1e6* - newly created task node"},{"name":"x_0ae6735d","doc_name":"task_remove_current","summary":"Mark the currently executing task for pop/removal. Sets the pop flag (x_d8bfe182) on the current task via x_5e6f40dd macro. Called from task callbacks to signal completion/transition.","params":["obj - parent Object (current task in obj->x_64946db0)"],"returns":"void"}],"key_apis":[],"strings":[],"subsystems":["system"],"open_questions":["x_52c4e4a9 missing explicit NULL return on not-found — is this intentional?"]}
+{
+    "file": "src/task.c",
+    "hash": "df73244f",
+    "rom_offsets": {
+        "text": "0x396C0",
+        "data": "0x53C20"
+    },
+    "summary": "Cooperative task scheduler/FSM: linked-list state machine per Object. Push/pop substate stack, delay counters, callback dispatch. Implements task.h API. Used by player, model, match, camera, scroll, hud, item, fighters, practice.",
+    "functions": [
+        {
+            "name": "x_bbe35044",
+            "doc_name": "task_free_list",
+            "summary": "Free all task nodes in a linked list back to the pool allocator. Iterates through the list and calls pool free (x_48825d30) on each node.",
+            "params": [
+                "list - head of task linked list"
+            ],
+            "returns": "void"
+        },
+        {
+            "name": "task_execute",
+            "doc_name": "task_execute",
+            "summary": "Core task scheduler dispatcher for an Object. Iterates the object's task list, handles push/pop substate stack, delay counters, and executes runnable callbacks. If global lock (gTaskLock) is set, returns immediately. Push conditions: time-based (TASK_TIME_BASED), frame-based (TASK_FRAME_BASED), or forced push (TASK_PUSH + TASK_FORCE_PUSH). Pop flag (TASK_POP) restores previous state from stack. Runnable flag (TASK_RUNNABLE) triggers callback execution.",
+            "params": [
+                "obj - Object whose task list to process"
+            ],
+            "returns": "void"
+        },
+        {
+            "name": "x_52c4e4a9",
+            "doc_name": "task_find_by_id",
+            "summary": "Linear search for a task by ID in a linked list. Returns pointer to task if found, otherwise falls through (no explicit NULL return).",
+            "params": [
+                "x_cc1d0de5 - head of task list",
+                "id - task ID to find"
+            ],
+            "returns": "TaskNode* - matching task or undefined if not found"
+        },
+        {
+            "name": "x_20a23ba4",
+            "doc_name": "task_append",
+            "summary": "Allocate and append a new task to an Object's task list. Pulls from pool allocator (x_6d619dce), appends to end of list, assigns auto-incrementing ID, initializes stack pointer, callback, flags, delay.",
+            "params": [
+                "obj - parent Object",
+                "callback - callback function",
+                "flags - task flags"
+            ],
+            "returns": "TaskNode* - newly created task node"
+        },
+        {
+            "name": "x_0ae6735d",
+            "doc_name": "task_remove_current",
+            "summary": "Mark the currently executing task for pop/removal. Sets the pop flag (TASK_POP) on the current task via TASK_END macro. Called from task callbacks to signal completion/transition.",
+            "params": [
+                "obj - parent Object (current task in obj->currentTask)"
+            ],
+            "returns": "void"
+        }
+    ],
+    "key_apis": [],
+    "strings": [],
+    "subsystems": [
+        "system"
+    ],
+    "open_questions": [
+        "x_52c4e4a9 missing explicit NULL return on not-found — is this intentional?"
+    ]
+}

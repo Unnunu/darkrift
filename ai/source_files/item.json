@@ -4,7 +4,9 @@
   "path": "src/item.c",
   "lines": 812,
   "evidence": {
-    "strings": ["item.c"]
+    "strings": [
+      "item.c"
+    ]
   },
-  "summary": "Object/item system (x_41a0e1e6 pool), entity creation/destruction, scene management."
+  "summary": "Object/item system (TaskNode pool), entity creation/destruction, scene management."
 }

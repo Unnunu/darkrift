@@ -126,20 +126,32 @@ s32 x_61a58c70(x_12f9ebc0 *x_cc1d0de5) {
     x_fa3a2a63(&x_cc1d0de5->x_646d43df, &x_5aee6615);
     x_fa3a2a63(&x_cc1d0de5->x_646d43df, &x_5bbba600);
 
-    A0->x.x = D_80049A94.x.x * x_c9614940->x + D_80049A94.x.y * x_32f1d6e2->x + D_80049A94.x.z * x_5aee6615->x + D_80049A94.x.w * x_5bbba600->x;
-    A0->y.x = D_80049A94.y.x * x_c9614940->x + D_80049A94.y.y * x_32f1d6e2->x + D_80049A94.y.z * x_5aee6615->x + D_80049A94.y.w * x_5bbba600->x;
-    A0->z.x = D_80049A94.z.x * x_c9614940->x + D_80049A94.z.y * x_32f1d6e2->x + D_80049A94.z.z * x_5aee6615->x + D_80049A94.z.w * x_5bbba600->x;
-    A0->w.x = D_80049A94.w.x * x_c9614940->x + D_80049A94.w.y * x_32f1d6e2->x + D_80049A94.w.z * x_5aee6615->x + D_80049A94.w.w * x_5bbba600->x;
+    A0->x.x = D_80049A94.x.x * x_c9614940->x + D_80049A94.x.y * x_32f1d6e2->x + D_80049A94.x.z * x_5aee6615->x +
+              D_80049A94.x.w * x_5bbba600->x;
+    A0->y.x = D_80049A94.y.x * x_c9614940->x + D_80049A94.y.y * x_32f1d6e2->x + D_80049A94.y.z * x_5aee6615->x +
+              D_80049A94.y.w * x_5bbba600->x;
+    A0->z.x = D_80049A94.z.x * x_c9614940->x + D_80049A94.z.y * x_32f1d6e2->x + D_80049A94.z.z * x_5aee6615->x +
+              D_80049A94.z.w * x_5bbba600->x;
+    A0->w.x = D_80049A94.w.x * x_c9614940->x + D_80049A94.w.y * x_32f1d6e2->x + D_80049A94.w.z * x_5aee6615->x +
+              D_80049A94.w.w * x_5bbba600->x;
 
-    A0->x.y = D_80049A94.x.x * x_c9614940->y + D_80049A94.x.y * x_32f1d6e2->y + D_80049A94.x.z * x_5aee6615->y + D_80049A94.x.w * x_5bbba600->y;
-    A0->y.y = D_80049A94.y.x * x_c9614940->y + D_80049A94.y.y * x_32f1d6e2->y + D_80049A94.y.z * x_5aee6615->y + D_80049A94.y.w * x_5bbba600->y;
-    A0->z.y = D_80049A94.z.x * x_c9614940->y + D_80049A94.z.y * x_32f1d6e2->y + D_80049A94.z.z * x_5aee6615->y + D_80049A94.z.w * x_5bbba600->y;
-    A0->w.y = D_80049A94.w.x * x_c9614940->y + D_80049A94.w.y * x_32f1d6e2->y + D_80049A94.w.z * x_5aee6615->y + D_80049A94.w.w * x_5bbba600->y;
+    A0->x.y = D_80049A94.x.x * x_c9614940->y + D_80049A94.x.y * x_32f1d6e2->y + D_80049A94.x.z * x_5aee6615->y +
+              D_80049A94.x.w * x_5bbba600->y;
+    A0->y.y = D_80049A94.y.x * x_c9614940->y + D_80049A94.y.y * x_32f1d6e2->y + D_80049A94.y.z * x_5aee6615->y +
+              D_80049A94.y.w * x_5bbba600->y;
+    A0->z.y = D_80049A94.z.x * x_c9614940->y + D_80049A94.z.y * x_32f1d6e2->y + D_80049A94.z.z * x_5aee6615->y +
+              D_80049A94.z.w * x_5bbba600->y;
+    A0->w.y = D_80049A94.w.x * x_c9614940->y + D_80049A94.w.y * x_32f1d6e2->y + D_80049A94.w.z * x_5aee6615->y +
+              D_80049A94.w.w * x_5bbba600->y;
 
-    A0->x.z = D_80049A94.x.x * x_c9614940->z + D_80049A94.x.y * x_32f1d6e2->z + D_80049A94.x.z * x_5aee6615->z + D_80049A94.x.w * x_5bbba600->z;
-    A0->y.z = D_80049A94.y.x * x_c9614940->z + D_80049A94.y.y * x_32f1d6e2->z + D_80049A94.y.z * x_5aee6615->z + D_80049A94.y.w * x_5bbba600->z;
-    A0->z.z = D_80049A94.z.x * x_c9614940->z + D_80049A94.z.y * x_32f1d6e2->z + D_80049A94.z.z * x_5aee6615->z + D_80049A94.z.w * x_5bbba600->z;
-    A0->w.z = D_80049A94.w.x * x_c9614940->z + D_80049A94.w.y * x_32f1d6e2->z + D_80049A94.w.z * x_5aee6615->z + D_80049A94.w.w * x_5bbba600->z;
+    A0->x.z = D_80049A94.x.x * x_c9614940->z + D_80049A94.x.y * x_32f1d6e2->z + D_80049A94.x.z * x_5aee6615->z +
+              D_80049A94.x.w * x_5bbba600->z;
+    A0->y.z = D_80049A94.y.x * x_c9614940->z + D_80049A94.y.y * x_32f1d6e2->z + D_80049A94.y.z * x_5aee6615->z +
+              D_80049A94.y.w * x_5bbba600->z;
+    A0->z.z = D_80049A94.z.x * x_c9614940->z + D_80049A94.z.y * x_32f1d6e2->z + D_80049A94.z.z * x_5aee6615->z +
+              D_80049A94.z.w * x_5bbba600->z;
+    A0->w.z = D_80049A94.w.x * x_c9614940->z + D_80049A94.w.y * x_32f1d6e2->z + D_80049A94.w.z * x_5aee6615->z +
+              D_80049A94.w.w * x_5bbba600->z;
 
     x_339d85cc(&x_cc1d0de5->x_646d43df, x_32f1d6e2);
     x_339d85cc(&x_cc1d0de5->x_646d43df, x_5aee6615);
@@ -273,7 +285,7 @@ void x_f7a1a468(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
     x_cc1d0de5->x_1ba29927 = x_fd599243.z;
     x_90ab8f92(&x_cc1d0de5->x_60635a2d, &x_fd599243);
 
-    if (!x_66c4e9c7 && x_84ff873b && !(x_e30d50d2 & x_dd99cbfb) && x_cc1d0de5->x_b1f57d55 < 16) {
+    if (!gTaskLock && x_84ff873b && !(x_e30d50d2 & x_dd99cbfb) && x_cc1d0de5->x_b1f57d55 < 16) {
         s5 = &x_cc1d0de5->x_08fddbc8[x_cc1d0de5->x_b1f57d55];
         s4 = NULL;
 
@@ -360,9 +372,9 @@ void x_f7a1a468(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
                 s3++;
             }
             x_df21a243 = x_7eefcd11.x.z * x_30a44af1->x + x_7eefcd11.y.z * x_30a44af1->y +
-                    x_7eefcd11.z.z * x_30a44af1->z + x_7eefcd11.w.z;
+                         x_7eefcd11.z.z * x_30a44af1->z + x_7eefcd11.w.z;
             x_8c5f8c03 = x_7eefcd11.x.z * x_ec0139c7->x + x_7eefcd11.y.z * x_ec0139c7->y +
-                    x_7eefcd11.z.z * x_ec0139c7->z + x_7eefcd11.w.z;
+                         x_7eefcd11.z.z * x_ec0139c7->z + x_7eefcd11.w.z;
             s5->x_24fe8ee6 = x_8c5f8c03 < x_df21a243;
         } else if (s4 != NULL) {
             s5->x_24fe8ee6 = s4->x_24fe8ee6;
@@ -527,7 +539,7 @@ void x_f7a1a468(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
 
     for (j = 0; j < x_cc1d0de5->x_b1f57d55; j++) {
         x_94b671c9 = x_cc1d0de5->x_08fddbc8 + j;
-        if (!x_66c4e9c7) {
+        if (!gTaskLock) {
             x_94b671c9->x_6f6a6d94--;
         }
         if (D_8008012C & x_c626209d) {
@@ -558,7 +570,7 @@ void x_f7a1a468(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
     for (j = 0; j < x_cc1d0de5->x_b1f57d55; j++) {
         x_94b671c9 = x_cc1d0de5->x_08fddbc8 + j;
 
-        if (!x_66c4e9c7) {
+        if (!gTaskLock) {
             x_94b671c9->x_6f6a6d94--;
         }
         if (D_8008012C & x_c626209d) {
@@ -590,8 +602,8 @@ void x_f7a1a468(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
     }
 }
 
-void x_ed9e2514(x_056d4f07 *x_897abbb1, x_6fcfcf46 *x_c657ede8, x_f9704fd6 *x_2092f891, x_f9704fd6 *x_ee71e5cb, x_88f11482 *x_a0e63e9c,
-                       x_6751d717 *x_1011f751) {
+void x_ed9e2514(x_056d4f07 *x_897abbb1, x_6fcfcf46 *x_c657ede8, x_f9704fd6 *x_2092f891, x_f9704fd6 *x_ee71e5cb,
+                x_88f11482 *x_a0e63e9c, x_6751d717 *x_1011f751) {
     u32 i, j;
     Gfx *gfx;
     u32 a;

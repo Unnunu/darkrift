@@ -2,7 +2,7 @@
 
 u8 gTaskLock = FALSE;
 
-TaskPool gTaskPool;
+x_b57dc591 gTaskPool;
 
 /**
  * task_free_list - Free all task nodes in a linked list back to the pool allocator.
@@ -10,8 +10,8 @@ TaskPool gTaskPool;
  * Params: list - head of task linked list
  */
 void task_free_list(TaskNode *list) {
-    x_41a0e1e6 *ptr;
-    x_41a0e1e6 *next;
+    TaskNode *ptr;
+    TaskNode *next;
 
     for (ptr = list; ptr != NULL; ptr = next) {
         next = ptr->next;
@@ -31,8 +31,8 @@ void task_free_list(TaskNode *list) {
  * Params: obj - Object whose task list to process
  */
 void task_execute(Object *obj) {
-    x_41a0e1e6 *task;
-    x_c305712a *stack;
+    TaskNode *task;
+    FsmState *stack;
     s16 flags;
 
     task = obj->taskListHead;
@@ -102,8 +102,8 @@ void task_execute(Object *obj) {
  * Returns: TaskNode* - matching task or undefined if not found
  */
 TaskNode *task_find_by_id(TaskNode *head, s16 id) {
-    x_41a0e1e6 *ptr;
-    for (ptr = x_cc1d0de5; ptr != NULL; ptr = ptr->next) {
+    TaskNode *ptr;
+    for (ptr = head; ptr != NULL; ptr = ptr->next) {
         if (ptr->id == id) {
             return ptr;
         }
@@ -144,10 +144,10 @@ TaskNode *task_append(Object *obj, void (*callback)(Object *), s16 flags) {
 
 /**
  * task_remove_current - Mark the currently executing task for pop/removal.
- * Sets the pop flag (TASK_POP) on the current task via TASK_POP macro.
+ * Sets the pop flag (TASK_POP) on the current task via TASK_END macro.
  * Called from task callbacks to signal completion/transition.
  * Params: obj - parent Object (current task in obj->currentTask)
  */
 void task_remove_current(Object *obj) {
-    TASK_POP(obj->currentTask);
+    TASK_END(obj->currentTask);
 }

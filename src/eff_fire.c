@@ -18,9 +18,9 @@ void x_9191631f(Object *obj) {
     Object *x_49781937;
     x_6751d717 x_c9614940[] = { { 255, 225, 175, 0 }, { 255, 200, 0, 0 } };
 
-    obj->x_5fcb1654++;
-    if (obj->x_5fcb1654 >= obj->x_20d20338->x_8e601526) {
-        x_5e6f40dd(obj->x_64946db0);
+    obj->frameCounter++;
+    if (obj->frameCounter >= obj->x_20d20338->x_8e601526) {
+        TASK_END(obj->currentTask);
         obj->flags |= x_f51cb721;
         D_8008012C &= ~x_c626209d;
     }
@@ -48,7 +48,7 @@ void x_9191631f(Object *obj) {
             }
             x_49781937->flags |= x_b6789b80;
         }
-        x_5e6f40dd(obj->x_64946db0);
+        TASK_END(obj->currentTask);
         obj->flags |= x_f51cb721;
     }
 
@@ -116,5 +116,5 @@ void x_ff5d42d3(Object *obj) {
 
 void x_38d41ba7(Object *obj) {
     obj->x_0f4167b4[1] = 0;
-    obj->x_64946db0->x_f6382727 = x_ff5d42d3;
+    obj->currentTask->callback = x_ff5d42d3;
 }

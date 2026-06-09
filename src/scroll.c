@@ -304,7 +304,7 @@ void x_23e3afdf(Object *obj) {
     Gfx **x_bde24317;
 
     x_904eaf67 = obj->x_904eaf67;
-    v1 = &x_904eaf67->x_a34b89cc[obj->x_5fcb1654];
+    v1 = &x_904eaf67->x_a34b89cc[obj->frameCounter];
 
     x_925c481a = v1->texture->data;
     part = v1->parts;

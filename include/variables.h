@@ -16,7 +16,7 @@ extern x_ee01e8c6 *D_80080100;
 extern s32 x_6c647b3a;
 extern s32 D_8008012C;
 extern s32 D_80081428;
-extern s32 x_e3a9f332;
+extern s32 gFrameCounter;
 extern x_f9704fd6 D_800813E0;
 extern OSMesgQueue x_72d58a77;
 extern x_320b5d80 *x_8a79b283;

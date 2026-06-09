@@ -138,12 +138,12 @@ void x_e5f3a418(Object *obj) {
     x_7d4d6609();
 
     if (obj->x_20d20338->x_50771dcd[0] != NULL) {
-        obj->x_5fcb1654++;
-        if (obj->x_5fcb1654 >= obj->x_20d20338->x_8e601526 - 1) {
+        obj->frameCounter++;
+        if (obj->frameCounter >= obj->x_20d20338->x_8e601526 - 1) {
             obj->x_20d20338->x_50771dcd[0] = NULL;
             if (!x_9df63a90 || D_80080234 == 0) {
-                obj->x_64946db0->x_f6382727 = x_31bdfdc5;
-                obj->x_64946db0->x_c7f843c2 = 1;
+                obj->currentTask->callback = x_31bdfdc5;
+                obj->currentTask->delay = 1;
                 D_8008012C &= ~x_f846a903;
                 x_824b9544[x_83106b21].obj->flags &= ~x_060adf1c;
                 x_824b9544[x_6f0b3be3].obj->flags &= ~x_060adf1c;
@@ -173,7 +173,7 @@ void x_394dcce8(Object *obj) {
 
     x_e5f3a418(obj);
 
-    if (obj->x_5fcb1654 >= obj->x_20d20338->x_8e601526 - 1 || (x_59ce598c[x_83106b21].buttons & x_9cefe76c) ||
+    if (obj->frameCounter >= obj->x_20d20338->x_8e601526 - 1 || (x_59ce598c[x_83106b21].buttons & x_9cefe76c) ||
         (x_59ce598c[x_6f0b3be3].buttons & x_9cefe76c)) {
         if (x_5e4e2788 != x_79c2dc5b) {
             x_b372f4dd();
@@ -189,7 +189,7 @@ void x_394dcce8(Object *obj) {
 
         x_076ece50(obj, FALSE);
 
-        obj->x_64946db0->x_f6382727 = x_31bdfdc5;
+        obj->currentTask->callback = x_31bdfdc5;
         obj->x_20d20338->x_50771dcd[0] = NULL;
         x_59ce598c[x_83106b21].x_c4397934 = x_59ce598c[x_6f0b3be3].x_c4397934 = FALSE;
         D_8008012C &= ~(x_f846a903 | x_c626209d);
@@ -296,7 +296,7 @@ void x_b2473ec5(Object *obj) {
     obj->pos.z = -2300;
     x_435c561d.y = -480;
     D_8013C588 = 597;
-    obj->x_64946db0->x_f6382727 = x_275dc194;
+    obj->currentTask->callback = x_275dc194;
 }
 
 void x_052b2310(void) {
@@ -636,13 +636,13 @@ void x_aa320d3c(Object *obj) {
 
         x_076ece50(obj, FALSE);
 
-        obj->x_64946db0->x_f6382727 = x_31bdfdc5;
+        obj->currentTask->callback = x_31bdfdc5;
         obj->x_20d20338->x_50771dcd[0] = NULL;
         x_59ce598c[x_83106b21].x_c4397934 = x_59ce598c[x_6f0b3be3].x_c4397934 = FALSE;
         D_8008012C &= ~(x_f846a903 | x_c626209d);
     } else {
         if (--obj->x_0f4167b4[10] <= 0) {
-            obj->x_64946db0->x_f6382727 = x_394dcce8;
+            obj->currentTask->callback = x_394dcce8;
         }
     }
 }
@@ -658,10 +658,10 @@ void x_a92790e6(Object *obj) {
     x_a1fcc259[7] = '1' + x_2615d8ad;
     x_7b42bed5 = x_e720f37d(x_a1fcc259, x_2587f84f);
     x_7bb27e6e(x_f4bce728, (x_a05f18ad *) x_b717ed65[x_7b42bed5].data);
-    x_f4bce728->x_64946db0->x_f6382727 = x_aa320d3c;
-    x_f4bce728->x_64946db0->x_c7f843c2 = 0;
-    x_f4bce728->x_64946db0->flags = x_0fb55613;
-    x_f4bce728->x_64946db0->x_c7f843c2 = 1;
+    x_f4bce728->currentTask->callback = x_aa320d3c;
+    x_f4bce728->currentTask->delay = 0;
+    x_f4bce728->currentTask->flags = TASK_RUNNABLE;
+    x_f4bce728->currentTask->delay = 1;
     x_f4bce728->x_0f4167b4[10] = 60;
     x_59ce598c[x_83106b21].x_c4397934 = x_7b42bed5 = x_59ce598c[x_6f0b3be3].x_c4397934 = FALSE; // required to match
 }
@@ -677,10 +677,10 @@ void x_93e7a709(Object *obj) {
     x_a1fcc259[7] = '1' + x_2615d8ad;
     x_7b42bed5 = x_e720f37d(x_a1fcc259, x_2587f84f);
     x_7bb27e6e(x_f4bce728, (x_a05f18ad *) x_b717ed65[x_7b42bed5].data);
-    x_f4bce728->x_64946db0->x_f6382727 = x_394dcce8;
-    x_f4bce728->x_64946db0->x_c7f843c2 = 0;
-    x_f4bce728->x_64946db0->flags = x_0fb55613;
-    x_f4bce728->x_64946db0->x_c7f843c2 = 1;
+    x_f4bce728->currentTask->callback = x_394dcce8;
+    x_f4bce728->currentTask->delay = 0;
+    x_f4bce728->currentTask->flags = TASK_RUNNABLE;
+    x_f4bce728->currentTask->delay = 1;
     x_59ce598c[x_83106b21].x_c4397934 = x_7b42bed5 = x_59ce598c[x_6f0b3be3].x_c4397934 = FALSE; // required to match
 }
 
@@ -881,8 +881,8 @@ void x_d23046bd(Object *obj, s32 x_84ff873b) {
     x_0525ed93 = (guRandom() % 2) + 2;
     x_aba11848 = -1;
     x_b227e464 = (guRandom() % 2) + 1;
-    obj->x_64946db0->x_f6382727 = x_a155a0ba;
-    obj->x_64946db0->x_c7f843c2 = 0;
+    obj->currentTask->callback = x_a155a0ba;
+    obj->currentTask->delay = 0;
     obj->x_0f4167b4[3] = x_84ff873b;
     obj->x_0f4167b4[1] = x_47d273d8(x_dd7ffac5, x_5bbba600);
     x_a155a0ba(obj);

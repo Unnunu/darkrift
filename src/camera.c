@@ -39,7 +39,7 @@ void x_7bb27e6e(Object *obj, x_a05f18ad *x_ec23cef0) {
 
     x_20d20338->x_ee205ef9 = 0;
     obj->x_2b06a023 = x_20d20338->x_2f4c4ce1 = -1;
-    obj->x_5fcb1654 = 0;
+    obj->frameCounter = 0;
 
     x_20d20338->x_50771dcd[0] = x_ec23cef0;
 
@@ -69,7 +69,7 @@ void x_434424a1(Object *obj, x_88f11482 *x_84ff873b, s32 x_2092f891, x_a05f18ad 
     model->x_ee205ef9 = 0;
     obj->x_2b06a023 = model->x_2f4c4ce1;
 
-    obj->x_5fcb1654 = 0;
+    obj->frameCounter = 0;
 
     obj->x_20d20338->x_8e601526 = 0x7FFF;
 
@@ -141,10 +141,10 @@ void x_2b791dba(Object *obj) {
             model->x_2f4c4ce1 = model->x_ee205ef9;
         }
 
-        if (obj->x_5fcb1654 != obj->x_2b06a023) {
+        if (obj->frameCounter != obj->x_2b06a023) {
             x_b6e96a17(obj);
             x_2a8d0730(obj);
-            obj->x_2b06a023 = obj->x_5fcb1654;
+            obj->x_2b06a023 = obj->frameCounter;
 
             if (model->x_5d0e77f6[0].x != 0 || model->x_5d0e77f6[0].y != 0 || model->x_5d0e77f6[0].z != 0) {
                 x_f10a928a.x = model->x_5d0e77f6[0].x;
@@ -160,8 +160,7 @@ void x_2b791dba(Object *obj) {
         obj->pos.y = model->x_6689336b.y;
     }
 
-    guPerspectiveF(&x_e1751f31, &D_80080100->perspNorm, x_9972afd1, 4.0f / 3.0f, x_37b927c9,
-                   x_45c764a7, x_bc5e8843);
+    guPerspectiveF(&x_e1751f31, &D_80080100->perspNorm, x_9972afd1, 4.0f / 3.0f, x_37b927c9, x_45c764a7, x_bc5e8843);
 
     if (obj->pos.x != 0 || obj->pos.z != 0 || x_435c561d.x != 0 || x_435c561d.z != 0) {
         guLookAtF(&x_b082fd90, obj->pos.x, obj->pos.y + (f32) x_cf60a652, obj->pos.z, x_435c561d.x,
@@ -196,8 +195,7 @@ void x_2b791dba(Object *obj) {
 void x_80ee4395(void) {
     s32 perspNorm;
 
-    guPerspectiveF(&x_e1751f31, &perspNorm, x_9972afd1, 4.0f / 3.0f, x_37b927c9, x_45c764a7,
-                   x_bc5e8843);
+    guPerspectiveF(&x_e1751f31, &perspNorm, x_9972afd1, 4.0f / 3.0f, x_37b927c9, x_45c764a7, x_bc5e8843);
     guLookAtF(&D_8013C670, 0.0f, 0.0f, -2300.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f);
     x_16eff9cc(&D_8013C670, &x_e1751f31, &D_8013C6B0);
 }
@@ -214,13 +212,13 @@ Object *x_7b6cfabc(void) {
     obj->flags = x_4271d4b5;
     obj->x_2b06a023 = -1;
 
-    obj->x_d178c88f = (x_41a0e1e6 *) x_6d619dce(x_30839b82);
-    obj->x_64946db0 = obj->x_d178c88f;
-    obj->x_64946db0->x_c7f843c2 = 0;
-    obj->x_64946db0->flags = x_0fb55613;
-    obj->x_64946db0->x_f6382727 = task_remove_current;
-    obj->x_64946db0->x_116c9ff3 = 0;
-    obj->x_64946db0->next = NULL;
+    obj->taskListHead = (TaskNode *) x_6d619dce(gTaskPool);
+    obj->currentTask = obj->taskListHead;
+    obj->currentTask->delay = 0;
+    obj->currentTask->flags = TASK_RUNNABLE;
+    obj->currentTask->callback = task_remove_current;
+    obj->currentTask->stackPtr = 0;
+    obj->currentTask->next = NULL;
 
     x_435c561d.x = x_435c561d.z = 0;
     x_435c561d.y = -563;

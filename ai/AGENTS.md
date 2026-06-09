@@ -62,8 +62,8 @@ darkrift/
 | `Player` | 0x5F50 | Full player state — Object ptr, move tables, AI state, 4x physics, models |
 | `Transform` | 0x118 | Render transform — 2 Mtx + hierarchy links + quaternions |
 | `Model` | 0x3D0 | 3D model — KMD data, batch transforms, per-part render info |
-| `x_41a0e1e6` | 0xA0 | FSM controller — flags, callback stack (8 deep), params, next link |
-| `x_c305712a` | 0x0C | FSM state — flags, callback, duration counter |
+| `TaskNode` | 0xA0 | FSM controller — flags, callback stack (8 deep), params, next link |
+| `FsmState` | 0x0C | FSM state — flags, callback, duration counter |
 | `x_6fcfcf46` | 0x1F90 | Physics/collision state — velocity, transforms, batch info |
 | `x_056d4f07` | 0x1458 | Shadow/effect renderer — projections, mesh data, 16 shadow instances |
 | `x_ee01e8c6` | 0x12088 | Global GFX context — projection matrix, display list buffers, batch arrays |
