@@ -1,0 +1,11 @@
+{
+  "hash": "kdebugserver",
+  "name": "kdebugserver",
+  "path": "src/kdebugserver.c",
+  "lines": 135,
+  "evidence": {
+    "includes": ["PR/os_internal.h", "PR/rcp.h", "PR/rdb.h"],
+    "type": "rdbPacket"
+  },
+  "summary": "N64 RDB (Region Debug) server for communication over the debug bus."
+}

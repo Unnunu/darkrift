@@ -1,0 +1,1 @@
+{"file":"src/char_cfg.c","hash":"b1eb6a03","rom_offsets":{"text":"0x2B4C0","data":"0x53020"},"summary":"Data-only per-fighter config: actor params (health, damage, spawn offset), animation sequence tables, hitbox frame data.","functions":[],"key_apis":[],"strings":[],"subsystems":[],"open_questions":["Which character does this belong to?"]}

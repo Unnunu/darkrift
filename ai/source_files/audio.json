@@ -1,0 +1,22 @@
+{
+  "hash": "cac92df6",
+  "name": "audio",
+  "path": "src/audio.c",
+  "lines": 679,
+  "evidence": {
+    "strings": ["audio.c"],
+    "api_calls": [
+      "alSeqpNew", "alSeqpPlay", "alSeqpStop", "alSeqpSetVol",
+      "alSndpNew", "alSndpAllocate", "alSndpPlay", "alSndpStop",
+      "alSndpSetVol", "alSndpSetPan", "alSndpGetState",
+      "alSndpSetSound", "alSndpDeallocate",
+      "alInit", "alClose", "alBnkfNew", "alAudioFrame",
+      "alHeapInit", "alHeapDBAlloc",
+      "osAiSetFrequency", "osAiSetNextBuffer", "osAiGetLength",
+      "alLink", "alUnlink"
+    ],
+    "task_type": "M_AUDTASK",
+    "ucode": "aspMainTextStart / aspMainDataStart"
+  },
+  "summary": "Audio subsystem: BGM (ALSeqPlayer), SFX (3x ALSndPlayer), audio heap, AI hardware DMA, ASP RSP ucode task."
+}

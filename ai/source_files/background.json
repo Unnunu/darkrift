@@ -1,0 +1,11 @@
+{
+  "file": "src/background.c",
+  "hash": "3f72e5c8",
+  "rom_offsets": { "text": "0x1B6E0", "data": "0x4A8F0", "rodata": "0x55530", "bss": "0x800814E0" },
+  "summary": "Tiled scrolling background renderer: opens .pcl tilemap + .GMD model, frustum culling (distance 7500), viewport clip, tile-by-tile gSPDisplayList dispatch.",
+  "functions": ["x_7a8b20f2", "x_fc4a871b", "x_ff4031b5"],
+  "key_apis": ["gSPDisplayList", "gSPMatrix", "gDPLoadTLUT_pal16"],
+  "strings": [],
+  "subsystems": ["Tilemap: .pcl tile count/size, .GMD texture+palette, camera rotation"],
+  "open_questions": [".pcl format? .GMD model-with-texture format?"]
+}

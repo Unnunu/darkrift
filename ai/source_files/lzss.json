@@ -1,0 +1,9 @@
+{
+  "file": "src/lzss.c", "hash": "274fc753",
+  "rom_offsets": { "text": "0x26380", "data": "0x52B50", "bss": "0x800B85B0" },
+  "summary": "LZSS decompression: sliding window N=4096, F=60 max match, double-buffered DMA streaming from ROM. Uses Huffman layer for entropy coding.",
+  "functions": ["x_679a6854", "x_1f8f58cf", "x_66cc7af3", "x_69c2895e"],
+  "key_apis": [], "strings": [],
+  "subsystems": ["LZSS with Huffman entropy coding", "Double-buffered ROM streaming"],
+  "open_questions": []
+}

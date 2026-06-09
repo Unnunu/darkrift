@@ -1,0 +1,36 @@
+{
+  "file": "src/present.c",
+  "hash": "2435583e",
+  "rom_offsets": {
+    "text": "0x1A0E0",
+    "data": "0x4A770",
+    "rodata": "0x554E0",
+    "bss": "0x80081250"
+  },
+  "summary": "Presentation/attract screens: title 'Press Start', Kronos logo, attract/demo mode (8 char matchups), win/result screens (P1/P2/alt), 'The End' credits, Demispk demo text. Separate from menu.c (options/intros) and match.c (match flow).",
+  "functions": [
+    "x_49d7310c", "x_8e4185d3", "x_68b31e51", "x_676f15d0", "x_4ffceeac",
+    "x_91e62f73", "x_f9bb9d72", "x_cd3cef0b", "x_dd6dab2d", "x_d4c3c5a0",
+    "x_0a56b2ef", "x_baaaa706", "x_d9b4fdc2", "x_4e451f2a", "x_37361bf1",
+    "x_97751dc5", "x_6eea7033", "x_dbd7d03e", "x_eea71685", "x_5638088b",
+    "x_c6ad333b", "x_f8ef3d35", "x_070b94ab", "x_4a516f61", "x_e0804c27",
+    "x_d2b7f1c2", "x_bc6a41ae", "x_64109585"
+  ],
+  "key_apis": [],
+  "strings": [
+    "\"title.k2\"", "\"kronos\"", "\"titopen.k2\"", "\"haze.k2\"",
+    "\"haze1.k2\"", "\"theend.k2\"", "\"demispk\""
+  ],
+  "subsystems": [
+    "Title: Press Start sequence with fade-in, cursor bounce",
+    "Kronos logo animation with SFX timing table",
+    "Attract/demo: cycles 8 character matchups, AI vs AI playback",
+    "Win results: P1/P2 branching result screens with framexSFX tables",
+    "The End: credits screen fade-in/text scroll",
+    "Mode select: 1P/2P/VS CPU/Options menu"
+  ],
+  "open_questions": [
+    "Relationship with menu.c — what parts overlap vs complement?",
+    "D_80049B70[8][2] char-cycle table — which 8 characters?"
+  ]
+}

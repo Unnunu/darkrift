@@ -1,0 +1,21 @@
+{
+  "hash": "1f557ef1",
+  "name": "gfx_data",
+  "path": "src/gfx_data.c",
+  "lines": 152,
+  "evidence": {
+    "globals": [
+      "OSTask D_8004CBC8 (M_GFXTASK)",
+      "Gfx D_8004C9C0 (viewport + geom mode)",
+      "Gfx D_8004C9E8 (render mode presets)",
+      "Gfx D_8004CA68 (copy mode)",
+      "Gfx D_8004CB00 (3D render setup)",
+      "Vp D_8004C9B0 (viewport 320x240)",
+      "x_3e2f9cf1 D_8004CC20 (DR ucode config)",
+      "x_c1cedf06 D_8004CCC8 / D_8004CD30 (DR contexts)",
+      "u64 D_800B85B0[SP_DRAM_STACK_SIZE64] (RSP stack)",
+      "Gfx D_800B89B0[0x10000] (DL buffer)"
+    ]
+  },
+  "summary": "Static graphics data: RSP GFX OSTask, viewport, render mode display lists, DR ucode config structs, RSP stack, DL buffer."
+}

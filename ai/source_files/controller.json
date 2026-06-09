@@ -1,0 +1,14 @@
+{
+  "hash": "13e5c685",
+  "name": "controller",
+  "path": "src/controller.c",
+  "lines": 54,
+  "evidence": {
+    "api_calls": [
+      "osContInit", "osContStartReadData", "osContGetReadData",
+      "osCreateMesgQueue", "osSetEventMesg(OS_EVENT_SI)", "osRecvMesg"
+    ],
+    "datatypes": ["OSContPad", "OSContStatus"]
+  },
+  "summary": "Controller input: init (x_083782bc, called from boot.c) and per-frame read (x_bb61051c)."
+}

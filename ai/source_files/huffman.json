@@ -1,0 +1,9 @@
+{
+  "file": "src/huffman.c", "hash": "573e99f1",
+  "rom_offsets": { "text": "0x25B50", "data": "0x4D360", "bss": "0x800B6400" },
+  "summary": "Adaptive Huffman tree decoder + bit I/O: DMA refill, bit/byte reading, Huffman frequency tree management (rebuild on overflow), used by LZSS decompressor.",
+  "functions": ["x_1041b8d9", "x_86fda831", "x_dbb46089", "x_13af1d38", "x_472e02c2", "x_42b39ea8", "x_cbd0f8d7", "x_a8ae0481"],
+  "key_apis": ["osRecvMesg"], "strings": [],
+  "subsystems": ["Adaptive Huffman with frequency sorting", "Double-buffered DMA"],
+  "open_questions": ["x_cbd0f8d7 is NON_EQUIVALENT — needs matching"]
+}

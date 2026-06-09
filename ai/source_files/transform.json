@@ -1,0 +1,33 @@
+{
+  "file": "src/transform.c",
+  "hash": "3b281efc",
+  "rom_offsets": {
+    "text": "0x13050",
+    "data": "0x4D990",
+    "rodata": "0x553B0",
+    "bss": "0x800812A0"
+  },
+  "summary": "Transform/matrix math core: atan2/sin/cos lookup tables, 4x4 matrix ops (float + fixed-point Mtx), Euler angle rotation, transform hierarchy (parent/child/sibling composition), coordinate transforms, and RSP cache writeback.",
+  "functions": [
+    "x_9b85c792", "x_4d4bbb59", "x_342bc581", "x_47d273d8", "x_3004a565",
+    "x_e5c4361f", "x_32f08c92", "x_2f9427b6", "x_20ce5003", "x_f3aae376",
+    "x_948f0b9f", "x_985542fc", "x_f1842abd", "x_fc6adb04", "x_9b0df250",
+    "x_f3b449e2", "x_40fe131d", "x_ba58a12b", "x_07c0bc31", "x_9a6513bb",
+    "x_a9d39d06", "x_70b240cc", "x_3d064496", "x_924a8661", "x_cd274068",
+    "x_1847c5c9", "x_02631bf6", "x_903494af", "x_44a54e96", "x_16eff9cc",
+    "x_f2c7456d", "x_d9b20313", "x_2cfb7bc7"
+  ],
+  "key_apis": ["guMtxIdent", "osWritebackDCache"],
+  "strings": [],
+  "subsystems": [
+    "Trig tables: atan2 LUT (D_8004CD90), sin/cos LUT (D_80050F14) — both read-only rodata",
+    "Float matrix (x_f9704fd6): identity, multiply, Euler rotation (XYZ/ZYX/single-axis), scale, transpose, copy",
+    "Fixed-point Mtx: construction from Euler angles, identity, partial identity, float-to-fixed conversion",
+    "Transform hierarchy: x_f2c7456d links nodes, x_44a54e96 recursively computes world transforms",
+    "RSP prep: x_342bc581 flushes pre-allocated Mtx via guMtxIdent + osWritebackDCache"
+  ],
+  "open_questions": [
+    "x_9a6513bb has a potential bug in the 1/4096 scale conversion — required to match?",
+    "What is the exact format of x_f9704fd6? (4 rows of x_123b8fa2 with x/y/z/w)"
+  ]
+}

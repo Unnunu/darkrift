@@ -1,0 +1,16 @@
+{
+  "hash": "e464307e",
+  "name": "rsp",
+  "path": "src/rsp.c",
+  "lines": 339,
+  "evidence": {
+    "api_calls": [
+      "osSpTaskStart", "osSpTaskLoad", "osGetTime", "osSetTime",
+      "osRecvMesg", "osSendMesg", "osViSwapBuffer", "osWritebackDCacheAll"
+    ],
+    "ucodes": ["gspFast3DTextStart/DataStart", "gspDarkRift3DTextStart/DataStart"],
+    "task_types": ["M_AUDTASK"],
+    "thread": "Thread 4 (RSP scheduler) from boot.c"
+  },
+  "summary": "RSP task scheduler + GFX task manager. Thread 4 loop: receive OSTask -> osSpTaskStart -> wait SP/DP. Also VSync/buffer swap, screen clear, task submission."
+}

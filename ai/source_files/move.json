@@ -1,0 +1,11 @@
+{
+  "file": "src/move.c", "hash": "8b713856",
+  "rom_offsets": { "text": "0x24930", "bss": "0x800B63A0" },
+  "summary": "Fighting game move/attack state machine: animation sequence scheduler via cooperative task swapping, combo chains, sound triggers at specific animation frames, move initialization and cleanup.",
+  "functions": ["x_d30a20e1", "x_55af5110", "x_209f3063", "x_d16f8fa6", "x_fe7e2137",
+    "x_378d4f8e", "x_d18c17c2", "x_330375dc", "x_7c333f6c", "x_73e8f926",
+    "x_6ac04b7a", "x_46bebbb5", "x_8126b2af", "x_9a2e218f", "x_cdd4d8f3"],
+  "key_apis": [], "strings": [],
+  "subsystems": ["Move task scheduler via function-pointer swapping", "Combo chain processing", "Sound timing per animation frame"],
+  "open_questions": []
+}

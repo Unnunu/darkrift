@@ -1,0 +1,23 @@
+{
+  "hash": "cbf2ec05",
+  "name": "main",
+  "path": "src/main.c",
+  "lines": 589,
+  "evidence": {
+    "api_calls": [
+      "osGetTime", "osViBlack", "osVirtualToPhysical",
+      "gSPSegment", "gSPDisplayList", "gSPMatrix", "gDPFullSync", "gSPEndDisplayList",
+      "gDPPipeSync", "gDPSetCycleType", "gDPSetCombineMode",
+      "gDPSetColorImage", "gDPSetDepthImage", "gDPSetFogColor", "gSPFogPosition"
+    ],
+    "key_functions": {
+      "x_14ae77a0": "Main game loop — called from boot.c, dispatches to scene functions",
+      "x_da2cde4c": "Render one frame — full display list construction",
+      "x_225c77c4": "Init gfx state for a scene",
+      "x_b7eeb04a / x_e1511bdd": "Fullscreen quad (opaque/transparent) for transitions",
+      "x_6b09ed5a..x_4f944650": "Transition effect callbacks (fade in/out, crossfade)"
+    },
+    "segment": "game (was cbf2ec05, renamed to main in splat.yaml)"
+  },
+  "summary": "Main game loop + per-frame renderer + scene dispatch + transition effects."
+}

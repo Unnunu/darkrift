@@ -1,0 +1,27 @@
+{
+  "file": "src/trail.c",
+  "hash": "716adc37",
+  "rom_offsets": {
+    "text": "0x11700",
+    "data": "0x4A5B0",
+    "bss": "0x80081280"
+  },
+  "summary": "Weapon/sword trail afterimage renderer. Catmull-Rom spline interpolation, triangle-strip ribbon with alpha/color fade, separate front/back face collections for proper translucency sorting.",
+  "functions": [
+    "x_51d7e40d", "x_339d85cc", "x_fa3a2a63", "x_3c2e0c67",
+    "x_61a58c70", "x_90ab8f92", "x_0643a037", "x_19200409",
+    "x_f7a1a468", "x_ed9e2514"
+  ],
+  "key_apis": [],
+  "strings": [],
+  "subsystems": [
+    "Ring buffer: manages tail/head/mask/count for spline control points",
+    "Catmull-Rom spline: fixed 4x4 Hermite basis, forward differencing, 4 midpoints per segment",
+    "Trail render: reads weapon tip/base transforms, builds alpha-faded vertex strip, submits to front/back draw lists",
+    "XLU mode: G_RM_XLU_SURF, translucent ribbon with alpha from 255 → 0"
+  ],
+  "open_questions": [
+    "x_fa3a2a63 has a bug (missing return 1) — is this required-to-match?",
+    "How is the weapon tip/base transform (x_007a9250, x_89f63109) linked to specific bones?"
+  ]
+}

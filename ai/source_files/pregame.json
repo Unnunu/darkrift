@@ -1,0 +1,27 @@
+{
+  "file": "src/pregame.c",
+  "hash": "a7cab0a2",
+  "rom_offsets": { "text": "0x1EA10", "data": "0x4A9F0", "rodata": "0x555C0", "bss": "0x80081670" },
+  "summary": "Pre-match setup screen: character grid nav (P1/P2), CPU AI opponent selection, handicap bar (0-400), cheat code engine (31 sequences), practice mode toggle, match start flow.",
+  "functions": [
+    "x_34648a7a", "x_eb293927", "x_0f87e747", "x_0362e0e0", "x_6e0d3e38",
+    "x_a70125d9", "x_6aa7260b", "x_778bd81c", "x_e521e2f2", "x_8aee6708",
+    "x_6fa3f96e", "x_95e711cc", "x_9f82ca8d", "x_7caf7d71"
+  ],
+  "key_apis": [],
+  "strings": [
+    "\"bars.sp2\"", "\"grpp1.sp2\"", "\"grpp2.sp2\"", "\"options2.sp2\"", "\"practice.sp2\"",
+    "\"/plyrsel/plyrsel\"", "\"/plyrsel/music\"", "\"/plyrsel/select2\"", "\"/plyrsel/select3\""
+  ],
+  "subsystems": [
+    "Character grid: P1/P2 navigation, CPU AI opponent walks grid toward target",
+    "Handicap: 0-400 range, sprite-based digit rendering",
+    "Cheat codes: 31 directional input sequences with handler dispatch",
+    "Practice mode: side-swapping toggle",
+    "Game mode: 1P, VS, Practice, Team, Tournament branching"
+  ],
+  "open_questions": [
+    "2 functions under NON_MATCHING/NON_EQUIVALENT — which?",
+    "31 cheat code sequences — what are their effects?"
+  ]
+}

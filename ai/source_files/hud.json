@@ -1,0 +1,17 @@
+{
+  "file": "src/hud.c", "hash": "992e0686",
+  "rom_offsets": { "text": "0x28C10", "data": "0x52E20", "rodata": "0x55B70", "bss": "0x8013C230" },
+  "summary": "HUD module: health bars with smooth tween/shrink, score digits, stock icons, character portraits, round timer, results overlay (KO/victory/defeat), dust hit effects.",
+  "functions": [
+    "x_bf666432", "x_27a93dac", "x_73651cea", "x_709712b3", "x_ebe27fa0",
+    "x_7621a350", "x_342a32f9", "x_47cbb2c0", "x_ad14714d", "x_eff6c1a4",
+    "x_c0a56b97", "x_e7887022", "x_fb66828a", "x_ea2a7987", "x_41d6ae47",
+    "x_34018036", "x_fd44eb65", "x_a1847541", "x_58906f63", "x_f058b0f7",
+    "x_7ab6c8e2", "x_9564f634", "x_4740163c", "x_1f0fbecd", "x_d9c3c170",
+    "x_751dec03", "x_af61e89b", "x_d265c713", "x_c85182b9", "x_7a336326"
+  ],
+  "key_apis": ["gDPPipeSync", "gDPSetCombineMode", "gtStateSetOthermode"],
+  "strings": ["\"dusthit.sp3\"", "\"bars.sp2\""],
+  "subsystems": ["Health bar tween", "Score digit rendering", "Result screen FSM", "Dust hit particles"],
+  "open_questions": []
+}

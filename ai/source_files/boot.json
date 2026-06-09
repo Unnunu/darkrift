@@ -1,0 +1,15 @@
+{
+  "hash": "d6c43c79",
+  "name": "boot",
+  "path": "src/boot.c",
+  "lines": 105,
+  "evidence": {
+    "api_calls": [
+      "osInitialize", "osCreateThread", "osStartThread", "osSetThreadPri",
+      "osCreateViManager", "osViSetMode", "osViSetSpecialFeatures", "osViBlack", "osViSetEvent",
+      "osCreatePiManager", "osCreateMesgQueue", "osSetEventMesg(OS_EVENT_SP)", "osSetEventMesg(OS_EVENT_DP)"
+    ],
+    "thread_hierarchy": "Thread 1 (IDLE) -> Thread 3 (MAIN) + Thread 4 (RSP)"
+  },
+  "summary": "Boot/init: osInitialize, VI/PI manager init, thread creation (main + RSP), message queues, controller init, entry to main game loop (x_14ae77a0)."
+}

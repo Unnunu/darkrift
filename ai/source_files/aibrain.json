@@ -1,0 +1,19 @@
+{
+  "file": "src/aibrain.c",
+  "hash": "d5fd353d",
+  "rom_offsets": { "text": "0x1C3D0", "data": "0x4A910", "rodata": "0x55540", "bss": "0x80081660" },
+  "summary": "AI opponent behavior system: reaction tables, action sequence parser, 16 behavior functions (pursuit/retreat/sidestep), difficulty 0-7 cooldowns, distance management, guRandom PRNG.",
+  "functions": ["x_da66d1d5", "x_9f09065b", "x_0d580d2b"],
+  "key_apis": ["guRandom"],
+  "strings": [],
+  "subsystems": [
+    "Reaction tables: maps enemy actions → response via x_acda7e96[]",
+    "Difficulty: rounds 0-7 control cooldowns, patience, aggression",
+    "Distance: inter-fighter distance vs character-specific thresholds",
+    "16 behavior fns: pursuit, retreat, sidestep, delay, re-eval, aggression"
+  ],
+  "open_questions": [
+    "x_9f09065b is NON_MATCHING — needs decompilation",
+    "What are the 10 difficulty entry names in D_80049D34?"
+  ]
+}

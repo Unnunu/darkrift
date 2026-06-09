@@ -1,0 +1,9 @@
+{
+  "file": "src/buttons.c", "hash": "40f8a510",
+  "rom_offsets": { "text": "0x255B0", "data": "0x4B1C0", "bss": "0x800AA430" },
+  "summary": "Controller input processor: remaps button bits via lookup table, decomposes raw word, maps analog stick (±40 threshold) to d-pad, applies swap/lock/filter, per-frame poll.",
+  "functions": ["x_90d8784d", "x_15468514", "x_d523d906", "x_0dd43bb1", "x_14384217"],
+  "key_apis": [], "strings": [],
+  "subsystems": ["Button remap via x_013307ec[2][8]", "Analog→d-pad conversion", "Sticky-lock filter"],
+  "open_questions": ["4 lookup tables D_8004A4F0/A530/A554/A580 formats"]
+}

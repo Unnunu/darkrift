@@ -1,0 +1,10 @@
+{
+  "hash": "a46ab948",
+  "name": "camera",
+  "path": "src/camera.c",
+  "lines": 358,
+  "evidence": {
+    "strings": ["camera.c"]
+  },
+  "summary": "Camera math: projection/view matrices, perspective, look-at, transform pipelines."
+}

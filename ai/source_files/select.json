@@ -1,0 +1,28 @@
+{
+  "file": "src/select.c",
+  "hash": "108260c9",
+  "rom_offsets": {
+    "text": "0x18A10",
+    "data": "0x4A740",
+    "rodata": "0x554B0",
+    "bss": "0x80081460"
+  },
+  "summary": "Selection UI widgets — options menu (SFX/music volume, stateful browsing), character select (8-char grid, D-pad, lock-in), stage select, numeric sprite rendering.",
+  "functions": [
+    "x_a2a8ba2f", "x_bc5bf713", "x_0e243657", "x_4d34121d", "x_c1c0a10d",
+    "x_ff609efb", "x_28ceb562", "x_12081995", "x_53598eda", "x_b5c125fc",
+    "x_dd25b026", "x_d1cd74f9", "x_d4ae14dc", "x_2cae892b", "x_8383794c",
+    "x_8da34614", "x_0073afdd", "x_aad8fe8c"
+  ],
+  "key_apis": [],
+  "strings": ["\"options2.sp2\""],
+  "subsystems": [
+    "Options: 6 states (browse, toggle, SFX vol 0-9, music vol 0-9)",
+    "Character select: 8-char grid, D-pad wrapping, sprite ID remap, 2P lock-in",
+    "Stage select: browse by name D_8004B844[i].name + \"st\" suffix",
+    "Number rendering: 3-digit numbers from digit sprite base 21"
+  ],
+  "open_questions": [
+    "D_80049B20 index remap {4,7,6,5,1,3,0,2} — character-to-portrait mapping?"
+  ]
+}

@@ -1,0 +1,1 @@
+{"file":"src/char_moves.c","hash":"a8c9742a","rom_offsets":{"text":"0x2B4C0","data":"0x53180"},"summary":"Data-only per-fighter moveset: 9 animation sequences (states), frame-event triggers for hitboxes, physics config (timings, hurtbox offsets).","functions":[],"key_apis":[],"strings":[],"subsystems":[],"open_questions":["Which character? 9 states likely map to basic actions."]}

@@ -1,0 +1,10 @@
+{
+  "hash": "d53dbdfd",
+  "name": "kmd",
+  "path": "src/kmd.c",
+  "lines": 859,
+  "evidence": {
+    "strings": ["kmd.c"],
+    "summary": "KMD/TMD model parser. Converts raw model data into internal format (vertices, triangles, nodes, skeleton)."
+  }
+}

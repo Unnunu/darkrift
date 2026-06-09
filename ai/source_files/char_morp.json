@@ -1,0 +1,1 @@
+{"file":"src/char_morp.c","hash":"6a1b262c","rom_offsets":{"text":"0x2B4C0","data":"0x527A0"},"summary":"Data-only per-fighter config for character Morphix: stats (6,9,3,17,14,16,13,11,5), price thresholds, RGBA colors, item ID lists, shop entries (items 36/38 type=6 and 118/120/122/124 type=5).","functions":[],"key_apis":[],"strings":[],"subsystems":["menu"],"open_questions":[]}

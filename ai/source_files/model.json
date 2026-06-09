@@ -1,0 +1,10 @@
+{
+  "hash": "7c0f8cf9",
+  "name": "model",
+  "path": "src/model.c",
+  "lines": 1868,
+  "evidence": {
+    "strings": ["model.c"]
+  },
+  "summary": "3D model rendering: TMD/KMD model hierarchy, batch rendering, texture assignment, lighting."
+}

@@ -1,0 +1,27 @@
+{
+  "file": "src/combat.c",
+  "hash": "5c37bf8b",
+  "rom_offsets": {
+    "text": "0xF530",
+    "data": "0x4A5A0",
+    "bss": "0x80081260"
+  },
+  "summary": "Combat hit detection and damage resolution system. Links collision spheres to character bones, runs hit detection across volume sets, calculates damage outcomes, and spawns visual hit effects.",
+  "functions": [
+    "x_747e1955", "x_1b1336fe", "x_801c8e55", "x_81c2909d", "x_9f5c9f25",
+    "x_cc2e74aa", "x_54661eb1", "x_a617fc50", "x_ec2ec20a",
+    "x_3fe0a5ec", "x_5a643f96", "x_4f2b827a"
+  ],
+  "key_apis": [],
+  "strings": [],
+  "subsystems": [
+    "Collision volume setup: links spheres to bone transforms via x_998ccc48 and x_87049dce config",
+    "Hit detection: 4 collision sets (upper body, lower body, grounded, alternate ground) using Manhattan radius and midpoint search",
+    "Damage resolution: HP deduction, ring-out (y=0), grab/slam states, death, hitstun animation selection",
+    "Hit effects: spawns red (attacker) and blue (defender) flash objects"
+  ],
+  "open_questions": [
+    "x_cc2e74aa is NON_MATCHING (compiled from ASM) — the hit outcome logic needs decompilation",
+    "x_87049dce collision config — exact meaning of each field (bone indices, offset vectors)"
+  ]
+}

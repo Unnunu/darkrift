@@ -1,0 +1,8 @@
+{
+  "file": "src/fighters.c", "hash": "134911bd",
+  "rom_offsets": { "text": "0x25980", "data": "0x4D350", "rodata": "0x55870", "bss": "0x800AA470" },
+  "summary": "Pure data tables: 10 character definitions (names, palettes, texture segments), move frame data, hitbox table, fighter state machine (45+ states), UI overlay flow names (battle/round/perfect/gameover/pause), per-character positioning/timing.",
+  "functions": [], "key_apis": [], "strings": [],
+  "subsystems": ["Character database", "State machine definition", "Hitbox/attack table", "UI screen flow names"],
+  "open_questions": []
+}

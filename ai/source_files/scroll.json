@@ -1,0 +1,10 @@
+{
+  "hash": "4a248257",
+  "name": "scroll",
+  "path": "src/scroll.c",
+  "lines": 548,
+  "evidence": {
+    "strings": ["scroll.c"]
+  },
+  "summary": "Scroll/background layer rendering + Object system (linked list management)."
+}

@@ -1,0 +1,10 @@
+{
+  "hash": "38d952c0",
+  "name": "wad",
+  "path": "src/wad.c",
+  "lines": 1091,
+  "evidence": {
+    "strings": ["wad.c"],
+    "summary": "WAD archive loader + resource manager. 256-slot cache, 22 asset types (TMD/KMD models, textures, BGM, SFX, banks). Path-based WAD navigation (ROOT/SCAR/SCAR1_H/...)."
+  }
+}

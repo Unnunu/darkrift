@@ -1,0 +1,8 @@
+{
+  "file": "src/fighter.c", "hash": "f5b5f599",
+  "rom_offsets": { "text": "0x2AE80", "data": "0x52F10" },
+  "summary": "Per-fighter config data: collision volume setup (x_87049dce), character group ID lists for select screen categories, per-fighter update callback. One of several such per-character data files.",
+  "functions": [], "key_apis": [], "strings": [],
+  "subsystems": ["Collision volumes", "Character grouping"],
+  "open_questions": ["One of 10 similar files (D_80052220–D_80052B30) — which fighter?"]
+}

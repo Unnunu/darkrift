@@ -1,0 +1,14 @@
+{
+  "hash": "a8ef58b5",
+  "name": "memory",
+  "path": "src/memory.c",
+  "lines": 367,
+  "evidence": {
+    "api_calls": [
+      "osPiStartDma", "osWritebackDCacheAll", "osInvalDCache",
+      "osRecvMesg", "osSendMesg"
+    ],
+    "datatypes": ["OSIoMesg"]
+  },
+  "summary": "Custom heap allocator (best-fit, split/merge, magic 0xABCD6789) + DMA over PI (sync/async) + 256-slot manager with callbacks."
+}

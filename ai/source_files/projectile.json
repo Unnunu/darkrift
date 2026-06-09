@@ -1,0 +1,23 @@
+{
+  "file": "src/projectile.c",
+  "hash": "49be7a13",
+  "rom_offsets": { "text": "0x22940", "data": "0x4B0C0", "bss": "0x800801F0" },
+  "summary": "Projectile/combat-effect subsystem: ring/ground projectiles with byte-array timeline, held/body-attached projectiles, homing tracking, hit collision handler, guard prediction, counter-hit throw spawn.",
+  "functions": [
+    "x_86c0b63f", "x_6f2f6fab", "x_0de5e23a", "x_35e86baf", "x_280f655a",
+    "x_a10f6c7a", "x_fbfba96d", "x_2aacdb7c", "x_f5f769f6", "x_4b88b87a",
+    "x_6ce73fcf", "x_c0cfb7d5"
+  ],
+  "key_apis": [],
+  "strings": [],
+  "subsystems": [
+    "Ring projectiles: timeline-based sub-effect spawning, homing tracking",
+    "Held projectiles: body-attached, bone-linked, frame counter, global flag",
+    "Hit collision handler + guard prediction",
+    "Counter-hit throw spawn"
+  ],
+  "open_questions": [
+    "D_8004A4C8 unused table of 2 update fn pointers?",
+    "x_6fc0b62f effect descriptor — exact field meanings"
+  ]
+}
