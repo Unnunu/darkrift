@@ -165,7 +165,7 @@ void x_efd0ce39(Object *obj) {
 
     x_7d3ef158 = (0xC00 - obj->x_224610f1.y) & 0xFFF;
 
-    temp = x_39970af2(x_09a33777 - (player->x_30bbe547 != x_83106b21 ? 0 : 0x800), x_7d3ef158);
+    temp = angle_diff(x_09a33777 - (player->x_30bbe547 != x_83106b21 ? 0 : 0x800), x_7d3ef158);
     if (temp < 0) {
         v1 = temp + 0x800;
     } else {
@@ -190,7 +190,7 @@ u8 x_52c80142(Object *obj) {
     x_93463df6.x = 0;
     x_93463df6.y = 0;
     x_93463df6.z = -temp;
-    x_9b0df250(&x_93463df6, &obj->x_224610f1);
+    vec_rotate_by_euler(&x_93463df6, &obj->x_224610f1);
     (x_824b9544 + x_de68d2a6)->obj->pos.x = obj->pos.x + x_93463df6.x;
     (x_824b9544 + x_de68d2a6)->obj->pos.z = obj->pos.z + x_93463df6.z;
     (x_824b9544 + x_de68d2a6)->obj->x_224610f1.y = 0x400 - ((0xC00 - obj->x_224610f1.y) & 0xFFF);
@@ -325,7 +325,7 @@ void x_6098478f(Object *obj) {
         x_93463df6.x = 0;
         x_93463df6.y = 0;
         x_93463df6.z = -temp;
-        x_9b0df250(&x_93463df6, &obj->x_224610f1);
+        vec_rotate_by_euler(&x_93463df6, &obj->x_224610f1);
         (x_824b9544 + x_de68d2a6)->obj->pos.x = obj->pos.x + x_93463df6.x;
         (x_824b9544 + x_de68d2a6)->obj->pos.z = obj->pos.z + x_93463df6.z;
         (x_824b9544 + x_de68d2a6)->obj->x_224610f1.y = 0x400 - ((0xC00 - obj->x_224610f1.y) & 0xFFF);
@@ -523,11 +523,11 @@ u8 x_af5ccc8a(Object *obj) {
     }
 
     if (player->x_30bbe547 != x_83106b21) {
-        if (abs(x_39970af2(x_09a33777, t8)) > 0x400) {
+        if (abs(angle_diff(x_09a33777, t8)) > 0x400) {
             x_cd986d3c = TRUE;
         }
     } else {
-        if (abs(x_39970af2(x_09a33777, t8)) < 0x400) {
+        if (abs(angle_diff(x_09a33777, t8)) < 0x400) {
             x_cd986d3c = TRUE;
         }
     }
@@ -612,7 +612,7 @@ void x_31926e97(Object *obj) {
     s16 x_7d3ef158;
 
     x_434431dd = (0xC00 - x_98c4e5a5->obj->x_224610f1.y) & 0xFFF;
-    x_7d3ef158 = x_39970af2(x_09a33777, x_434431dd);
+    x_7d3ef158 = angle_diff(x_09a33777, x_434431dd);
 
     if (x_7d3ef158 < 0) {
         x_7d3ef158 -= 0x800;
@@ -686,7 +686,7 @@ void x_ca4d8099(Object *obj) {
         (player->x_cd14c741 == 39 || player->x_cd14c741 == 84)) {
         if (player->x_30bbe547 != x_83106b21) {
             x_4346f5cb = (0xC00 - x_dd7ffac5->x_224610f1.y) & 0xFFF;
-            x_7d3ef158 = x_39970af2(x_09a33777 - 0x800, x_4346f5cb);
+            x_7d3ef158 = angle_diff(x_09a33777 - 0x800, x_4346f5cb);
 
             if (abs(x_7d3ef158) > 140) {
                 if (x_7d3ef158 < 0) {
@@ -698,7 +698,7 @@ void x_ca4d8099(Object *obj) {
             x_dd7ffac5->x_224610f1.y = 0xC00 - (x_4346f5cb + x_7d3ef158);
         } else {
             x_f6289181 = (0xC00 - x_5bbba600->x_224610f1.y) & 0xFFF;
-            x_7d3ef158 = x_39970af2(x_09a33777, x_f6289181);
+            x_7d3ef158 = angle_diff(x_09a33777, x_f6289181);
 
             if (abs(x_7d3ef158) > 140) {
                 if (x_7d3ef158 < 0) {
@@ -864,9 +864,9 @@ void x_340c2137(Object *x_cc1d0de5) {
     x_ccb8eae3 = x_3be4fcf3->x_a4b33e43;
     x_7be1f4c5 = x_3ac11521[x_3f615590]->x_20d20338->x_abd7b3c4.x_0c1a9bdd.y.y + 360.0f;
     if (x_ccb8eae3 == 0 || x_ccb8eae3 == 7 || (x_3be4fcf3->x_7f68c36b->flags & x_f79587cb)) {
-        x_331089fa.x = x_47d273d8(x_7be1f4c5, x_9a96200f);
+        x_331089fa.x = atan2_lut(x_7be1f4c5, x_9a96200f);
         x_cf297abc =
-            x_39970af2((s16) ((0xC00 - x_cc1d0de5->x_224610f1.y) & 0xFFF), (s16) (x_09a33777 - (x_3f615590 << 0xB)));
+            angle_diff((s16) ((0xC00 - x_cc1d0de5->x_224610f1.y) & 0xFFF), (s16) (x_09a33777 - (x_3f615590 << 0xB)));
 
         if (x_cf297abc > 1700) {
             x_cf297abc = 1700;
@@ -985,8 +985,8 @@ void x_340c2137(Object *x_cc1d0de5) {
         }
     }
 
-    x_948f0b9f(&x_3be4fcf3->x_a4d7c80d.x_3fde9cd9, &x_331089fa);
-    x_948f0b9f(&x_3be4fcf3->x_022dff72.x_3fde9cd9, &x_fd09f53e);
+    mat4_from_euler(&x_3be4fcf3->x_a4d7c80d.x_3fde9cd9, &x_331089fa);
+    mat4_from_euler(&x_3be4fcf3->x_022dff72.x_3fde9cd9, &x_fd09f53e);
 }
 #else
 #pragma GLOBAL_ASM("asm/nonmatchings/eff_hit/x_340c2137.s")
@@ -1109,7 +1109,7 @@ void x_c1c8c6a7(Object *obj) {
     if (obj->frameCounter == v0->x_7f68c36b->x_bab9966d - 1) {
         x_dd7ffac5.x = x_dd7ffac5.y = 0;
         x_dd7ffac5.z = -D_8013C3C8[v1];
-        x_9b0df250(&x_dd7ffac5, &obj->x_224610f1);
+        vec_rotate_by_euler(&x_dd7ffac5, &obj->x_224610f1);
         obj->pos.x += x_dd7ffac5.x;
         obj->pos.z += x_dd7ffac5.z;
         obj->currentTask->callback = x_c3947955;

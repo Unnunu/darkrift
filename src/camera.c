@@ -137,20 +137,20 @@ void x_2b791dba(Object *obj) {
 
     if (model->x_50771dcd[0] != NULL) {
         if (model->x_ee205ef9 != model->x_2f4c4ce1) {
-            x_0f2c2c2a(obj);
+            model_anim_load(obj);
             model->x_2f4c4ce1 = model->x_ee205ef9;
         }
 
         if (obj->frameCounter != obj->x_2b06a023) {
-            x_b6e96a17(obj);
-            x_2a8d0730(obj);
+            model_anim_tick(obj);
+            model_transforms_update(obj);
             obj->x_2b06a023 = obj->frameCounter;
 
             if (model->x_5d0e77f6[0].x != 0 || model->x_5d0e77f6[0].y != 0 || model->x_5d0e77f6[0].z != 0) {
                 x_f10a928a.x = model->x_5d0e77f6[0].x;
                 x_f10a928a.y = model->x_5d0e77f6[0].y;
                 x_f10a928a.z = model->x_5d0e77f6[0].z;
-                x_9b0df250(&x_f10a928a, &obj->x_224610f1);
+                vec_rotate_by_euler(&x_f10a928a, &obj->x_224610f1);
                 x_435c561d.x = D_8013C818.x + x_f10a928a.x;
                 x_435c561d.y = D_8013C818.y + x_f10a928a.y;
                 x_435c561d.z = D_8013C818.z + x_f10a928a.z;
@@ -165,17 +165,17 @@ void x_2b791dba(Object *obj) {
     if (obj->pos.x != 0 || obj->pos.z != 0 || x_435c561d.x != 0 || x_435c561d.z != 0) {
         guLookAtF(&x_b082fd90, obj->pos.x, obj->pos.y + (f32) x_cf60a652, obj->pos.z, x_435c561d.x,
                   x_435c561d.y + (f32) x_cf60a652, x_435c561d.z, 0.0f, -1.0f, 0.0f);
-        x_16eff9cc(&x_b082fd90, &x_e1751f31, &x_7eefcd11);
+        mat4_mul_general(&x_b082fd90, &x_e1751f31, &x_7eefcd11);
     }
 
-    x_ba58a12b(&D_80080100->x_0f39faa7, &x_7eefcd11);
+    mat4_to_mtx(&D_80080100->x_0f39faa7, &x_7eefcd11);
 
     x_2bef91d9 = x_435c561d.x - x_f4bce728->pos.x;
     x_86fee161 = x_435c561d.y - x_f4bce728->pos.y;
     x_2dffbf44 = x_435c561d.z - x_f4bce728->pos.z;
 
     x_f81735c3 = x_4c17a2ba;
-    x_4c17a2ba = x_47d273d8(x_2dffbf44, x_2bef91d9);
+    x_4c17a2ba = atan2_lut(x_2dffbf44, x_2bef91d9);
 
     x_f5463fa4 = ABS(x_2bef91d9);
     x_98e2dc09 = ABS(x_2dffbf44);
@@ -184,7 +184,7 @@ void x_2b791dba(Object *obj) {
     x_3f054879(x_2bef91d9, x_2dffbf44, x_f5463fa4, x_98e2dc09);
 
     D_8013C668.y = -0xC00 - x_4c17a2ba;
-    D_8013C668.x = -x_47d273d8(x_86fee161, x_d16311d7);
+    D_8013C668.x = -atan2_lut(x_86fee161, x_d16311d7);
 
     if (!(D_8008012C & x_8df87377) || model->x_50771dcd[0]) {
         D_80081428 = D_8013C828;
@@ -197,7 +197,7 @@ void x_80ee4395(void) {
 
     guPerspectiveF(&x_e1751f31, &perspNorm, x_9972afd1, 4.0f / 3.0f, x_37b927c9, x_45c764a7, x_bc5e8843);
     guLookAtF(&D_8013C670, 0.0f, 0.0f, -2300.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f);
-    x_16eff9cc(&D_8013C670, &x_e1751f31, &D_8013C6B0);
+    mat4_mul_general(&D_8013C670, &x_e1751f31, &D_8013C6B0);
 }
 
 Object *x_7b6cfabc(void) {
@@ -233,19 +233,19 @@ Object *x_7b6cfabc(void) {
     x_bc5e8843 = 1.0f;
     x_9972afd1 = 30.0f;
 
-    x_3004a565(&x_b082fd90);
-    x_3004a565(&x_e1751f31);
+    mat4_ident(&x_b082fd90);
+    mat4_ident(&x_e1751f31);
 
     obj->x_0232396f = x_2b791dba;
     D_8013C668.z = 0;
 
-    obj->x_20d20338 = x_56c3086a(sizeof(x_6fcfcf46), "camera.c", 247);
+    obj->x_20d20338 = mem_alloc_debug(sizeof(x_6fcfcf46), "camera.c", 247);
     obj->x_20d20338->x_6dcce206 = 1;
     obj->x_20d20338->transforms = &D_8013C6F0;
     obj->x_20d20338->x_0094fc88 = &D_8013C808;
 
-    x_f2c7456d(NULL, &obj->x_20d20338->x_abd7b3c4, -1, -2);
-    x_f2c7456d(&obj->x_20d20338->x_abd7b3c4, obj->x_20d20338->transforms, 0, -1);
+    transform_init_node(NULL, &obj->x_20d20338->x_abd7b3c4, -1, -2);
+    transform_init_node(&obj->x_20d20338->x_abd7b3c4, obj->x_20d20338->transforms, 0, -1);
 
     obj->x_20d20338->x_9cfd7bb4.x = obj->x_20d20338->x_9cfd7bb4.y = obj->x_20d20338->x_9cfd7bb4.z = 0;
     obj->x_20d20338->x_50771dcd = D_80053030;

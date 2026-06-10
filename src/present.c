@@ -230,7 +230,7 @@ void x_0a56b2ef(Object *obj) {
     if (D_8005BEFC + 8 < 255) {
         D_8005BEFC += 8;
     } else {
-        x_86715543(x_3b49183f);
+        mem_free(x_3b49183f);
         x_3b49183f = NULL;
         x_a0e73601("kronos", 0, 60, 0, 180, x_96186256, x_35b88489);
         obj->x_0232396f = x_d4c3c5a0;
@@ -349,7 +349,7 @@ void x_6eea7033(Object *obj, s16 x_84ff873b) {
     if (obj != NULL) {
         obj->x_e2f64c57[1] = v0;
     }
-    x_78476cbd(v0, FALSE);
+    model_collect_textures(v0, FALSE);
 
     x_4495b42c(x_4e451f2a, 0x1000);
 }
@@ -444,7 +444,7 @@ void x_070b94ab(Object *obj) {
 
 void x_4a516f61(Object *obj) {
     if (x_f4bce728->x_20d20338->x_50771dcd[0] == NULL) {
-        x_d23046bd(x_f4bce728, obj->x_0f4167b4[1]);
+        cam_ko_init(x_f4bce728, obj->x_0f4167b4[1]);
         TASK_END(obj->currentTask);
         obj->flags |= x_f51cb721;
     }

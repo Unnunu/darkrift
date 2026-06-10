@@ -269,7 +269,7 @@ void x_f5f769f6(Object *obj, Object *x_84ff873b) {
     x_c9614940.x = 0;
     x_c9614940.y = 0;
     x_c9614940.z = -obj->x_de73d1d5;
-    x_9b0df250(&x_c9614940, &obj->x_224610f1);
+    vec_rotate_by_euler(&x_c9614940, &obj->x_224610f1);
     x_c9614940.x += obj->pos.x;
     x_c9614940.z += obj->pos.z;
     obj->x_de73d1d5 = 0;
@@ -289,7 +289,7 @@ void x_f5f769f6(Object *obj, Object *x_84ff873b) {
         v0->x_b1e624ba = 2;
     }
     v0->x_de73d1d5 = 300;
-    x_371376ba(v0, &x_5bbba600[player->x_30bbe547]);
+    model_light_attach(v0, &x_5bbba600[player->x_30bbe547]);
 }
 
 x_09d6a3c8 D_8004A4C8[2] = { x_35e86baf, x_0de5e23a }; // unused
@@ -321,7 +321,7 @@ Object *x_86c0b63f(Object *obj, s32 x_d7ce6b8d) {
         pos.x = effect->x_1422e8f9;
         pos.y = effect->x_6f7546e4;
         pos.z = effect->x_95b3e972;
-        x_9b0df250(&pos, &obj->x_224610f1);
+        vec_rotate_by_euler(&pos, &obj->x_224610f1);
         pos.x += obj->pos.x;
         pos.y += obj->pos.y;
         pos.z += obj->pos.z;
@@ -365,7 +365,7 @@ Object *x_86c0b63f(Object *obj, s32 x_d7ce6b8d) {
         }
 
         if (effect->flags & 0x40) {
-            x_371376ba(x_02f7ef06, &effect->x_c3357d6a[player->x_30bbe547]);
+            model_light_attach(x_02f7ef06, &effect->x_c3357d6a[player->x_30bbe547]);
         }
 
         x_02f7ef06->x_0f4167b4[0] = player;
@@ -382,7 +382,7 @@ Object *x_86c0b63f(Object *obj, s32 x_d7ce6b8d) {
         x_02f7ef06->x_d7f6e5d2.y = 0xF00000;
         x_02f7ef06->x_d7f6e5d2.z = 0xF00000;
 
-        x_9b0df250(&x_02f7ef06->velocity, &obj->x_224610f1);
+        vec_rotate_by_euler(&x_02f7ef06->velocity, &obj->x_224610f1);
 
         x_02f7ef06->x_0f4167b4[8] = effect->x_c3bc2262;
         x_02f7ef06->x_224610f1.y = player->obj->x_224610f1.y;

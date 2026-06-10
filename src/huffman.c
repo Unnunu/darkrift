@@ -60,9 +60,9 @@ void x_1041b8d9(void) {
         while (osRecvMesg(&gPiMessageQueue, NULL, OS_MESG_NOBLOCK)) {}
 
         if ((u32) D_800B6430 < (u32) D_800B6420) {
-            x_2add4a13(D_800B6438->romAddr + D_800B6424 * D_800B6430, D_800B6410[1 - D_800B6428], D_800B6430);
+            dma_read_async(D_800B6438->romAddr + D_800B6424 * D_800B6430, D_800B6410[1 - D_800B6428], D_800B6430);
         } else {
-            x_2add4a13(D_800B6438->romAddr + D_800B6424 * D_800B6430, D_800B6410[1 - D_800B6428], D_800B6420);
+            dma_read_async(D_800B6438->romAddr + D_800B6424 * D_800B6430, D_800B6410[1 - D_800B6428], D_800B6420);
         }
         D_800B6420 -= D_800B6430;
     }

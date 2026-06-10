@@ -32,7 +32,7 @@ x_4a7d6dd4 *x_a0e73601(char *x_2b0c3984, s32 x_84ff873b, s32 x_64a8566c, s32 x_a
     x_4a7d6dd4 *x_8dddde0e;
     char x_7244b466[20];
 
-    x_8dddde0e = x_56c3086a(sizeof(x_4a7d6dd4), "scroll.c", 21);
+    x_8dddde0e = mem_alloc_debug(sizeof(x_4a7d6dd4), "scroll.c", 21);
 
     x_dab0846a(x_7244b466, x_2b0c3984);
     x_8c518b47(x_7244b466, ".tex");
@@ -79,14 +79,14 @@ void x_25025961(x_4a7d6dd4 *x_a0b04eac) {
 
     if (x_a0b04eac == it) {
         x_3b49183f = x_3b49183f->next;
-        x_86715543(x_a0b04eac);
+        mem_free(x_a0b04eac);
         return;
     }
 
     while (it != NULL) {
         if (it == x_a0b04eac) {
             prev->next = it->next;
-            x_86715543(x_a0b04eac);
+            mem_free(x_a0b04eac);
             return;
         }
         prev = it;

@@ -551,7 +551,7 @@ void x_f7a1a468(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
 
             if (!x_d647d552) {
                 x_a52ba8b1 = x_cc1d0de5->x_ad2af5d9 + D_8005BFCE;
-                x_ba58a12b(&x_a52ba8b1->transform, &x_7eefcd11);
+                mat4_to_mtx(&x_a52ba8b1->transform, &x_7eefcd11);
                 x_d647d552 = TRUE;
                 x_5c10660a = FALSE;
             } else {
@@ -582,7 +582,7 @@ void x_f7a1a468(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
 
             if (!x_d647d552) {
                 x_a52ba8b1 = x_cc1d0de5->x_ad2af5d9 + 2 + D_8005BFCE;
-                x_ba58a12b(&x_a52ba8b1->transform, &x_7eefcd11);
+                mat4_to_mtx(&x_a52ba8b1->transform, &x_7eefcd11);
                 x_d647d552 = TRUE;
                 x_5c10660a = FALSE;
             } else {
@@ -636,7 +636,7 @@ void shadow_init(x_056d4f07 *x_897abbb1, x_6fcfcf46 *x_c657ede8, x_f9704fd6 *x_2
     for (i = 0; i < 16; i++) {
         s6 = &x_897abbb1->x_08fddbc8[i];
         x_19200409(&s6->x_3ab7202f);
-        x_ad92c136(s6->vertices, 0, sizeof(Vtx) * 8);
+        mem_set(s6->vertices, 0, sizeof(Vtx) * 8);
 
         a = 200;
         if (i == 0) {

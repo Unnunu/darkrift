@@ -213,24 +213,24 @@ s32 replay_start(void *x_cc1d0de5) {
     player_reinit(x_6f0b3be3);
     x_824b9544[x_83106b21].obj->frameCounter = 2;
     x_824b9544[x_6f0b3be3].obj->frameCounter = 2;
-    x_0f2c2c2a(x_824b9544[x_83106b21].obj);
-    x_0f2c2c2a(x_824b9544[x_6f0b3be3].obj);
+    model_anim_load(x_824b9544[x_83106b21].obj);
+    model_anim_load(x_824b9544[x_6f0b3be3].obj);
 
-    x_e5c4361f(&x_824b9544[x_83106b21].x_a4d7c80d.x_3fde9cd9);
-    x_e5c4361f(&x_824b9544[x_83106b21].x_022dff72.x_3fde9cd9);
-    x_e5c4361f(&x_824b9544[x_6f0b3be3].x_a4d7c80d.x_3fde9cd9);
-    x_e5c4361f(&x_824b9544[x_6f0b3be3].x_022dff72.x_3fde9cd9);
+    mat4_ident_partial(&x_824b9544[x_83106b21].x_a4d7c80d.x_3fde9cd9);
+    mat4_ident_partial(&x_824b9544[x_83106b21].x_022dff72.x_3fde9cd9);
+    mat4_ident_partial(&x_824b9544[x_6f0b3be3].x_a4d7c80d.x_3fde9cd9);
+    mat4_ident_partial(&x_824b9544[x_6f0b3be3].x_022dff72.x_3fde9cd9);
 
-    x_2a8d0730(x_824b9544[x_83106b21].obj);
-    x_2a8d0730(x_824b9544[x_6f0b3be3].obj);
+    model_transforms_update(x_824b9544[x_83106b21].obj);
+    model_transforms_update(x_824b9544[x_6f0b3be3].obj);
     x_824b9544[x_83106b21].obj->x_2b06a023 = x_824b9544[x_83106b21].obj->frameCounter;
     x_824b9544[x_6f0b3be3].obj->x_2b06a023 = x_824b9544[x_6f0b3be3].obj->frameCounter;
     x_824b9544[x_83106b21].x_b9252303->flags &= ~TASK_TIME_BASED;
     x_824b9544[x_6f0b3be3].x_b9252303->flags &= ~TASK_TIME_BASED;
 
     x_09a33777 = 0x800;
-    x_70e8be1f(x_f4bce728);
-    x_f4bce728->currentTask->callback = x_31bdfdc5;
+    cam_battle_init(x_f4bce728);
+    x_f4bce728->currentTask->callback = cam_battle_update;
     x_f4bce728->currentTask->delay = 0;
     x_435c561d.x = x_435c561d.z = 0;
     x_435c561d.y = -400;
@@ -256,7 +256,7 @@ s32 replay_start(void *x_cc1d0de5) {
             replay_task_exec(v0);
         }
 
-        x_076ece50(x_f4bce728, TRUE);
+        cam_update(x_f4bce728, TRUE);
     }
 
     return 0;
@@ -288,13 +288,13 @@ void player_tick(Object *obj) {
     task_execute(obj);
 
     if (x_3bae2428->x_ee205ef9 != x_3bae2428->x_2f4c4ce1) {
-        x_0f2c2c2a(obj);
+        model_anim_load(obj);
         x_3bae2428->x_2f4c4ce1 = x_3bae2428->x_ee205ef9;
     }
 
     if (obj->frameCounter != obj->x_2b06a023) {
-        x_b6e96a17(obj);
-        x_2a8d0730(obj);
+        model_anim_tick(obj);
+        model_transforms_update(obj);
         obj->x_2b06a023 = obj->frameCounter;
     }
 
@@ -340,7 +340,7 @@ void player_ai_check(Object *obj) {
         player->flags &= ~x_9298c772;
     }
 
-    x_0022bfc3(obj);
+    model_render(obj);
 
     if (x_af5ccc8a(obj)) {
         player->flags |= x_9298c772;
@@ -359,7 +359,7 @@ void player_ai_check(Object *obj) {
     x_f7a1a468(&player->x_a241ea2a, (x_8cc4f7df->flags & (x_a83332f6 | x_bd969186)) && x_36512335);
 
     if (player->x_eb1fe45b != x_b52da315) {
-        x_5ff12555(obj);
+        model_lighting_apply(obj);
     }
 
     if (gTaskLock) {
@@ -578,7 +578,7 @@ void player_load_db(s16 x_30bbe547, s16 x_eb1fe45b) {
         q = D_8004B94C[x_2a89e429].x_af0aa1f8;
         a12 = s0[q].x_43d35340;
         x_20d20338->x_50771dcd[a12] = x_b717ed65[x_464d68e5].data;
-        s0[q].x_bab9966d = x_d8998bf6(x_20d20338, a12) - 1;
+        s0[q].x_bab9966d = model_anim_duration(x_20d20338, a12) - 1;
     }
 
     x_dab0846a(x_dd9604d9, D_8004B94C[11 + x_2a89e429].x_1256da71);
@@ -588,22 +588,22 @@ void player_load_db(s16 x_30bbe547, s16 x_eb1fe45b) {
         a12 = s0[q].x_43d35340;
         x_20d20338->x_50771dcd[a12] = x_b717ed65[x_464d68e5].data;
         if (x_2a89e429 != x_c4ddde6d) {
-            s0[q].x_bab9966d = x_d8998bf6(x_20d20338, a12) - 1;
+            s0[q].x_bab9966d = model_anim_duration(x_20d20338, a12) - 1;
         }
 
         q = D_8004B9FC[x_2a89e429];
         a12 = s0[q].x_43d35340;
         x_20d20338->x_50771dcd[a12] = x_b717ed65[x_464d68e5].data;
-        s0[q].x_bab9966d = x_d8998bf6(x_20d20338, a12) - 1;
+        s0[q].x_bab9966d = model_anim_duration(x_20d20338, a12) - 1;
     }
 
     player->x_cd14c741 = 0;
 
     for (i = 0; i < *x_8a9089b3; i++, s0++) {
         if (s0->x_bab9966d == -1) {
-            s0->x_bab9966d = x_d8998bf6(x_20d20338, s0->x_43d35340) - 1;
-        } else if (x_d8998bf6(x_20d20338, s0->x_43d35340) < s0->x_bab9966d) {
-            s0->x_bab9966d = x_d8998bf6(x_20d20338, s0->x_43d35340) - 1;
+            s0->x_bab9966d = model_anim_duration(x_20d20338, s0->x_43d35340) - 1;
+        } else if (model_anim_duration(x_20d20338, s0->x_43d35340) < s0->x_bab9966d) {
+            s0->x_bab9966d = model_anim_duration(x_20d20338, s0->x_43d35340) - 1;
         }
 
         if (s0->x_946f41d3 == -1 || s0->x_79b8e870 == -1) {
@@ -665,13 +665,13 @@ void player_transform_setup(Object *obj, s16 x_30bbe547, s16 x_2092f891) {
 
     s0 = &obj->x_20d20338->transforms[D_8004C1D8[x_2092f891]];
     s1 = &x_824b9544[x_30bbe547].x_a4d7c80d;
-    x_f2c7456d(s0->x_e4712596, s1, -3, -3);
+    transform_init_node(s0->x_e4712596, s1, -3, -3);
     s1->x_3fde9cd9.w.x = s0->x_3fde9cd9.w.x;
     s1->x_3fde9cd9.w.y = s0->x_3fde9cd9.w.y;
     s1->x_3fde9cd9.w.z = s0->x_3fde9cd9.w.z;
     transform_remove(s0);
     x_49781937 = s0->x_171183e4;
-    x_f2c7456d(s1, s0, -3, -3);
+    transform_init_node(s1, s0, -3, -3);
     s0->x_171183e4 = x_49781937;
 
     x_e7962160[0].x = 0;
@@ -680,13 +680,13 @@ void player_transform_setup(Object *obj, s16 x_30bbe547, s16 x_2092f891) {
 
     s0 = &obj->x_20d20338->transforms[0];
     s1 = &x_824b9544[x_30bbe547].x_022dff72;
-    x_f2c7456d(s0->x_e4712596, s1, -3, -3);
+    transform_init_node(s0->x_e4712596, s1, -3, -3);
     s1->x_3fde9cd9.w.x = s0->x_3fde9cd9.w.x;
     s1->x_3fde9cd9.w.y = s0->x_3fde9cd9.w.y;
     s1->x_3fde9cd9.w.z = s0->x_3fde9cd9.w.z;
     transform_remove(s0);
     x_49781937 = s0->x_171183e4;
-    x_f2c7456d(s1, s0, -3, -3);
+    transform_init_node(s1, s0, -3, -3);
     s0->x_171183e4 = x_49781937;
 
     D_80052D64[x_30bbe547] = D_80052D68[x_30bbe547] = D_80052D6C[x_30bbe547] = D_80052D70[x_30bbe547] =
@@ -789,12 +789,12 @@ void light_spawn_by_type(u16 x_cc1d0de5, u16 x_84ff873b) {
     switch (x_84ff873b) {
         case x_6a049984:
             x_32f1d6e2 = x_4495b42c(light_follow_bone5, 0x1000);
-            x_371376ba(x_32f1d6e2, &x_49781937[x_cc1d0de5]);
+            model_light_attach(x_32f1d6e2, &x_49781937[x_cc1d0de5]);
             x_32f1d6e2->x_e2f64c57[0] = &x_824b9544[x_cc1d0de5];
             break;
         case x_b52da315:
             x_32f1d6e2 = x_4495b42c(light_follow_root, 0x1000);
-            x_371376ba(x_32f1d6e2, &x_c9614940[x_cc1d0de5]);
+            model_light_attach(x_32f1d6e2, &x_c9614940[x_cc1d0de5]);
             x_32f1d6e2->x_e2f64c57[0] = &x_824b9544[x_cc1d0de5];
             break;
         case x_ff5073d4:
@@ -875,7 +875,7 @@ void player_init(s16 x_30bbe547) {
         }
     }
 
-    x_77cc77b6(obj, x_5d45b0f8, x_30bbe547);
+    model_shadow_spawn(obj, x_5d45b0f8, x_30bbe547);
 
     obj->x_224610f1.y = 0xC00 - x_4cec9290[x_30bbe547];
     obj->x_0232396f = player_ai_check;
@@ -1161,10 +1161,10 @@ label:
 
         x_5b695729 = player->x_68a6b5cd + x_cd14c741;
         if (x_5b695729->x_016911c1 >= 0 && x_5b695729->x_71e17346 == -1) {
-            x_7d4d6609();
+            cam_save_state();
             x_7bb27e6e(x_f4bce728,
                        player->obj->x_20d20338->x_50771dcd[player->x_68a6b5cd[x_5b695729->x_016911c1].x_43d35340]);
-            x_f4bce728->currentTask->callback = x_e5f3a418;
+            x_f4bce728->currentTask->callback = cam_cinematic_update;
             x_f4bce728->currentTask->delay = 0;
             x_f4bce728->currentTask->flags = TASK_RUNNABLE;
         }

@@ -1,1 +1,79 @@
-{"file":"src/cam_follow.c","hash":"01c1f892","rom_offsets":{"text":"0x39A00","data":"0x53C30"},"summary":"Battle camera controller: 2-player orbital follow, split-screen distance adjustment, player auto-face toward camera, world boundary wrapping (±0x2300), cinematic transitions, debug controls.","functions":["x_31bdfdc5","x_076ece50","x_7cdfb63d","x_394dcce8","x_aa320d3c","x_a92790e6","x_93e7a709","x_70e8be1f","x_e5f3a418","x_7d4d6609","x_36ef4518","x_a155a0ba","x_d23046bd","x_275dc194","x_5232700e","x_b2473ec5","x_052b2310","x_19d34654","x_d3029871","x_21842899","x_40bc04d0","x_0cdda050","x_39970af2","x_e6f68754","x_67ffc48b"],"key_apis":["guLookAtF","guRandom","sqrtf"],"strings":["opencamX.oc"],"subsystems":["camera"],"open_questions":[]}
+{
+  "file": "src/cam_follow.c",
+  "hash": "01c1f892",
+  "rom_offsets": {
+    "text": "0x39A00",
+    "data": "0x53C30"
+  },
+  "summary": "Battle camera controller: 2-player orbital follow, split-screen distance adjustment, player auto-face toward camera, world boundary wrapping (±0x2300), cinematic transitions, debug controls.",
+  "functions": [
+    "cam_battle_update",
+    "cam_update",
+    "cam_distance_update",
+    "cam_intro_skip_check",
+    "cam_intro_wait_input",
+    "cam_intro_start",
+    "cam_intro_start_inverse",
+    "cam_battle_init",
+    "cam_cinematic_update",
+    "cam_save_state",
+    "cam_save_state_alt",
+    "cam_ko_orbit",
+    "cam_ko_init",
+    "cam_debug_controls",
+    "cam_debug_scene_input",
+    "cam_debug_init",
+    "cam_face_players",
+    "cam_world_shift",
+    "cam_world_wrap",
+    "cam_world_wrap_reset",
+    "cam_boundary_check",
+    "lerp_int",
+    "angle_diff",
+    "cam_project_point",
+    "iabs"
+  ],
+  "function_details": {
+    "cam_save_state": "Saves current camera position, target, FOV, and angle to backup globals (D_8013C310/D_8013C320 etc.)",
+    "cam_save_state_alt": "Saves camera state to secondary backup set (x_84e6adae, x_f8a5b34e, etc.) for snapshot/restore pattern",
+    "cam_cinematic_update": "Camera task callback for intro/cinematic sequences. Saves state, calls cam_update, restores, manages animation frame transitions, switches to cam_battle_update when done",
+    "cam_intro_skip_check": "Cinematic update with skip detection: advances intro until timeout, button press, or flag triggers transition to battle camera",
+    "cam_debug_controls": "Debug camera controls: moves camera position/FOV via button inputs",
+    "cam_debug_scene_input": "Debug: sets camera position and light direction based on raw button input",
+    "cam_debug_init": "Initializes debug camera at default position (-480, -2300)",
+    "cam_face_players": "Auto-faces each player toward camera. Computes signed angle difference, clamps rotation to ±140, sets facing flags",
+    "lerp_int": "Fixed-point linear interpolation: ((a - b) * t) >> 16 + c",
+    "angle_diff": "Signed angle difference with 0x1000-wrap handling. Result in [-0x800, 0x800] range",
+    "cam_world_shift": "Shifts all world objects (backgrounds, players, shadow renderers) by (dx, dz) for world wrapping",
+    "cam_world_wrap": "Boundary wrap callback: checks if camera or player exceeds ±0x2300 bounds, shifts world by stored offset, recalculates lookAt matrix",
+    "cam_world_wrap_reset": "Resets world position to origin after boundary wrap",
+    "cam_boundary_check": "Checks camera/player position against ±0x2300 arena boundary, schedules world wrap callback via x_71257e81",
+    "cam_update": "Main camera update: calculates orbit position around midpoint of both players, handles zoom interpolation based on player distance, angle following, lookAt matrix. Called from battle and cinematic loops",
+    "cam_battle_init": "Initializes battle camera: sets initial position, computes zoom/distance params from random angle, stores player position pointers",
+    "cam_intro_wait_input": "Intro camera state: waits for button press or timeout, then transitions to battle camera (cam_battle_update)",
+    "cam_intro_start": "Starts intro camera animation from opencamX.oc save file with cam_intro_wait_input callback",
+    "cam_intro_start_inverse": "Starts intro camera from save file with cam_intro_skip_check callback (skipable variant)",
+    "cam_distance_update": "NON_EQUIVALENT (asm). Core distance management: adjusts camera distance based on player separation, ground collision, special move flags. Uses midpoint push-apart when angle diff > 0x200",
+    "cam_project_point": "Projects 3D point to screen coordinates using view matrix (x_7eefcd11). Returns normalized screen-space position and depth (w-divide safety check)",
+    "cam_ko_orbit": "KO/victory camera animation: orbits winning player with oscillating height and radial bobbing",
+    "cam_ko_init": "Initializes KO camera animation with random parameters: orbit speed, height bob direction, radial direction",
+    "cam_battle_update": "Main battle camera loop: orchestrates distance adjustment, angle following, player facing, zoom smoothing, screen-edge push, world boundary wrapping, and lookAt calculation. Core gameplay camera"
+  },
+  "key_apis": [
+    "guLookAtF — N64 matrix lookAt calculation",
+    "guRandom — random number for camera init params",
+    "sqrtf — distance calculation",
+    "angle_diff — signed angle wrapping helper"
+  ],
+  "strings": [
+    "opencamX.oc"
+  ],
+  "subsystems": [
+    "camera"
+  ],
+  "open_questions": [
+    "~60 globals in cam_follow.c — many are configuration constants / state variables deferred to Wave 2",
+    "cam_distance_update (NON_EQUIVALENT) — asm-decompiled, needs C verification",
+    "Precise meaning of D_8013C310/D_8013C320 etc. backup vars and their relation to player states"
+  ]
+}

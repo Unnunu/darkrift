@@ -1,6 +1,6 @@
 #include "common.h"
 
-s16 D_8004CD90[] = {
+s16 sAtan2Table[] = {
     0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
     0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
     0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
@@ -368,7 +368,7 @@ s16 D_8004CD90[] = {
     506, 504, 501, 512, 509, 506, 504, 512, 509, 506, 512, 509, 512
 }; // arctan table
 
-f32 D_80050F14[] = {
+f32 sSinCosTable[] = {
     1.000000, 0.999999, 0.999995,  0.999989,  0.999981,  0.999971,  0.999958,  0.999942,  0.999925, 0.999905, 0.999882,
     0.999858, 0.999831, 0.999801,  0.999769,  0.999735,  0.999699,  0.999660,  0.999619,  0.999575, 0.999529, 0.999481,
     0.999431, 0.999378, 0.999322,  0.999265,  0.999205,  0.999142,  0.999078,  0.999011,  0.998941, 0.998870, 0.998795,
@@ -465,16 +465,16 @@ f32 D_80050F14[] = {
     0.001534, 0.000000, -0.001534, -0.003068, -0.004602, -0.006136, -0.007670, -0.009204, -0.010738
 }; // sin table
 
-x_f9704fd6 D_800812A0;
-x_f9704fd6 D_800812E0;
-x_f9704fd6 D_80081320;
-x_f9704fd6 D_80081360;
-x_f9704fd6 D_800813A0;
-x_f9704fd6 D_800813E0;
+x_f9704fd6 gMat4RotY;
+x_f9704fd6 gMat4RotX;
+x_f9704fd6 gMat4RotZ;
+x_f9704fd6 gMat4Scale;
+x_f9704fd6 gMat4Mul3x3;
+x_f9704fd6 gMat4Temp;
 
-void x_32f08c92(Mtx *m);
+void mtx_ident(Mtx *m);
 
-void x_9b85c792(Mtx *m) {
+void mtx_ident_loop(Mtx *m) {
     s32 i, j;
 
     for (i = 0; i < 8; i++) {
@@ -482,7 +482,7 @@ void x_9b85c792(Mtx *m) {
     }
 }
 
-void x_4d4bbb59(x_f9704fd6 *m) {
+void mat4_ident_loop(x_f9704fd6 *m) {
     s32 i, j;
 
     for (i = 0; i < 4; i++) {
@@ -490,19 +490,19 @@ void x_4d4bbb59(x_f9704fd6 *m) {
     }
 }
 
-void x_342bc581(void) {
-    x_3004a565(&D_800813E0);
-    x_3004a565(&D_800812A0);
-    x_3004a565(&D_800812E0);
-    x_3004a565(&D_80081320);
-    x_3004a565(&D_80081360);
-    x_4d4bbb59(&D_800812A0);
-    x_32f08c92(&D_8005BF80);
-    guMtxIdent(&D_8013C4A0);
-    osWritebackDCache(&D_8013C4A0, sizeof(Mtx));
+void matrix_system_init(void) {
+    mat4_ident(&gMat4Temp);
+    mat4_ident(&gMat4RotY);
+    mat4_ident(&gMat4RotX);
+    mat4_ident(&gMat4RotZ);
+    mat4_ident(&gMat4Scale);
+    mat4_ident_loop(&gMat4RotY);
+    mtx_ident(&D_8005BF80);
+    guMtxIdent(&sUnusedMatrix);
+    osWritebackDCache(&sUnusedMatrix, sizeof(Mtx));
 }
 
-s32 x_47d273d8(s32 x_cc1d0de5, s32 x_84ff873b) {
+s32 atan2_lut(s32 x_cc1d0de5, s32 x_84ff873b) {
     u32 v0;
     s32 x_49781937, x_93463df6;
     s16 t5;
@@ -530,12 +530,12 @@ s32 x_47d273d8(s32 x_cc1d0de5, s32 x_84ff873b) {
         for (i = 1; i <= t4; i++) {
             v1 += i;
         }
-        a0 = 0x400 - D_8004CD90[129 * t4 + t6 - v1];
+        a0 = 0x400 - sAtan2Table[129 * t4 + t6 - v1];
     } else {
         for (i = 1; i <= t6; i++) {
             v1 += i;
         }
-        a0 = D_8004CD90[129 * t6 + t4 - v1];
+        a0 = sAtan2Table[129 * t6 + t4 - v1];
     }
 
     t5 = x_84ff873b < 0;
@@ -553,68 +553,68 @@ s32 x_47d273d8(s32 x_cc1d0de5, s32 x_84ff873b) {
 }
 
 #ifdef NON_MATCHING
-s32 x_d9b20313(s16 x_cc1d0de5) {
+s32 sin_fixed(s16 x_cc1d0de5) {
     u16 index;
 
     index = (x_cc1d0de5 & 0xFFF);
 
     if (index < 0x400) {
-        return D_80050F14[index] * 4096.0;
+        return sSinCosTable[index] * 4096.0;
     }
     if (index < 0x800) {
-        return (-D_80050F14[0x800 - index]) * 4096.0;
+        return (-sSinCosTable[0x800 - index]) * 4096.0;
     }
 
     index -= 0x800;
 
     if (index < 0x400) {
-        return -D_80050F14[index] * 4096.0;
+        return -sSinCosTable[index] * 4096.0;
     }
     if (index < 0x1000) {
-        return D_80050F14[0x800 - index] * 4096.0;
+        return sSinCosTable[0x800 - index] * 4096.0;
     }
     return 0;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/transform/x_d9b20313.s")
-s32 x_d9b20313(s16 x_cc1d0de5);
+#pragma GLOBAL_ASM("asm/nonmatchings/transform/sin_fixed.s")
+s32 sin_fixed(s16 x_cc1d0de5);
 #endif
 
 #ifdef NON_MATCHING
-f32 x_2cfb7bc7(u16 x_cc1d0de5) {
+f32 sin_float(u16 x_cc1d0de5) {
     u16 index;
 
     index = x_cc1d0de5 & 0xFFF;
 
     if (index < 0x400) {
-        return D_80050F14[index];
+        return sSinCosTable[index];
     }
     if (index < 0x800) {
-        return -D_80050F14[0x800 - index];
+        return -sSinCosTable[0x800 - index];
     }
 
     index = index - 0x800;
     do {
     } while (0);
     if (index < 0x400) {
-        return -D_80050F14[index];
+        return -sSinCosTable[index];
     }
     if (index < 0x1000) {
-        return D_80050F14[0x800 - index];
+        return sSinCosTable[0x800 - index];
     }
 
     return 0.0f;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/transform/x_2cfb7bc7.s")
-f32 x_2cfb7bc7(u16 x_cc1d0de5);
+#pragma GLOBAL_ASM("asm/nonmatchings/transform/sin_float.s")
+f32 sin_float(u16 x_cc1d0de5);
 #endif
 
-void x_f2c7456d(Transform *x_e4712596, Transform *x_84ff873b, s32 id, s32 x_eb290249) {
-    x_32f08c92(&x_84ff873b->mtx[0]);
-    x_32f08c92(&x_84ff873b->mtx[1]);
-    x_3004a565(&x_84ff873b->x_3fde9cd9);
-    x_3004a565(&x_84ff873b->x_0c1a9bdd);
+void transform_init_node(Transform *x_e4712596, Transform *x_84ff873b, s32 id, s32 x_eb290249) {
+    mtx_ident(&x_84ff873b->mtx[0]);
+    mtx_ident(&x_84ff873b->mtx[1]);
+    mat4_ident(&x_84ff873b->x_3fde9cd9);
+    mat4_ident(&x_84ff873b->x_0c1a9bdd);
 
     x_84ff873b->x_eb290249 = x_eb290249;
     x_84ff873b->id = id;
@@ -633,7 +633,7 @@ void x_f2c7456d(Transform *x_e4712596, Transform *x_84ff873b, s32 id, s32 x_eb29
     x_84ff873b->x_e4712596 = x_e4712596;
 }
 
-void x_3004a565(x_f9704fd6 *mf) {
+void mat4_ident(x_f9704fd6 *mf) {
     *(s32 *) &mf->x.y = 0;
     *(s32 *) &mf->x.z = 0;
     *(s32 *) &mf->x.w = 0;
@@ -653,12 +653,12 @@ void x_3004a565(x_f9704fd6 *mf) {
     mf->x.x = mf->y.y = mf->z.z = mf->w.w = 1.0f;
 }
 
-void x_e5c4361f(x_f9704fd6 *mf) {
-    x_ad92c136(mf, 0, 0x30);
+void mat4_ident_partial(x_f9704fd6 *mf) {
+    mem_set(mf, 0, 0x30);
     mf->x.x = mf->y.y = mf->z.z = 1.0f;
 }
 
-void x_32f08c92(Mtx *m) {
+void mtx_ident(Mtx *m) {
     m->m[0][1] = 0;
     m->m[0][3] = 0;
     m->m[1][0] = 0;
@@ -678,7 +678,7 @@ void x_32f08c92(Mtx *m) {
     m->m[1][3] = FTOFIX32(1) >> 16;
 }
 
-void x_2f9427b6(Mtx *m) {
+void mtx_ident_alt(Mtx *m) {
     m->m[0][1] = 0;
     m->m[0][3] = 0;
     m->m[1][0] = 0;
@@ -694,7 +694,7 @@ void x_2f9427b6(Mtx *m) {
     m->m[1][1] = FTOFIX32(1);
 }
 
-void x_20ce5003(x_f9704fd6 *x_cc1d0de5, x_f9704fd6 *x_84ff873b) {
+void mat4_mul(x_f9704fd6 *x_cc1d0de5, x_f9704fd6 *x_84ff873b) {
     x_f9704fd6 m;
 
     m.x.x = x_cc1d0de5->x.x * x_84ff873b->x.x + x_cc1d0de5->x.y * x_84ff873b->y.x + x_cc1d0de5->x.z * x_84ff873b->z.x;
@@ -727,38 +727,38 @@ void x_20ce5003(x_f9704fd6 *x_cc1d0de5, x_f9704fd6 *x_84ff873b) {
     x_cc1d0de5->w.z = m.w.z;
 }
 
-void x_f3aae376(x_f9704fd6 *x_cc1d0de5, x_f9704fd6 *x_84ff873b) {
-    D_800813A0.x.x =
+void mat4_mul3x3(x_f9704fd6 *x_cc1d0de5, x_f9704fd6 *x_84ff873b) {
+    gMat4Mul3x3.x.x =
         x_cc1d0de5->x.x * x_84ff873b->x.x + x_cc1d0de5->x.y * x_84ff873b->y.x + x_cc1d0de5->x.z * x_84ff873b->z.x;
-    D_800813A0.x.y =
+    gMat4Mul3x3.x.y =
         x_cc1d0de5->x.x * x_84ff873b->x.y + x_cc1d0de5->x.y * x_84ff873b->y.y + x_cc1d0de5->x.z * x_84ff873b->z.y;
-    D_800813A0.x.z =
+    gMat4Mul3x3.x.z =
         x_cc1d0de5->x.x * x_84ff873b->x.z + x_cc1d0de5->x.y * x_84ff873b->y.z + x_cc1d0de5->x.z * x_84ff873b->z.z;
-    D_800813A0.y.x =
+    gMat4Mul3x3.y.x =
         x_cc1d0de5->y.x * x_84ff873b->x.x + x_cc1d0de5->y.y * x_84ff873b->y.x + x_cc1d0de5->y.z * x_84ff873b->z.x;
-    D_800813A0.y.y =
+    gMat4Mul3x3.y.y =
         x_cc1d0de5->y.x * x_84ff873b->x.y + x_cc1d0de5->y.y * x_84ff873b->y.y + x_cc1d0de5->y.z * x_84ff873b->z.y;
-    D_800813A0.y.z =
+    gMat4Mul3x3.y.z =
         x_cc1d0de5->y.x * x_84ff873b->x.z + x_cc1d0de5->y.y * x_84ff873b->y.z + x_cc1d0de5->y.z * x_84ff873b->z.z;
-    D_800813A0.z.x =
+    gMat4Mul3x3.z.x =
         x_cc1d0de5->z.x * x_84ff873b->x.x + x_cc1d0de5->z.y * x_84ff873b->y.x + x_cc1d0de5->z.z * x_84ff873b->z.x;
-    D_800813A0.z.y =
+    gMat4Mul3x3.z.y =
         x_cc1d0de5->z.x * x_84ff873b->x.y + x_cc1d0de5->z.y * x_84ff873b->y.y + x_cc1d0de5->z.z * x_84ff873b->z.y;
-    D_800813A0.z.z =
+    gMat4Mul3x3.z.z =
         x_cc1d0de5->z.x * x_84ff873b->x.z + x_cc1d0de5->z.y * x_84ff873b->y.z + x_cc1d0de5->z.z * x_84ff873b->z.z;
 
-    x_cc1d0de5->x.x = D_800813A0.x.x;
-    x_cc1d0de5->x.y = D_800813A0.x.y;
-    x_cc1d0de5->x.z = D_800813A0.x.z;
-    x_cc1d0de5->y.x = D_800813A0.y.x;
-    x_cc1d0de5->y.y = D_800813A0.y.y;
-    x_cc1d0de5->y.z = D_800813A0.y.z;
-    x_cc1d0de5->z.x = D_800813A0.z.x;
-    x_cc1d0de5->z.y = D_800813A0.z.y;
-    x_cc1d0de5->z.z = D_800813A0.z.z;
+    x_cc1d0de5->x.x = gMat4Mul3x3.x.x;
+    x_cc1d0de5->x.y = gMat4Mul3x3.x.y;
+    x_cc1d0de5->x.z = gMat4Mul3x3.x.z;
+    x_cc1d0de5->y.x = gMat4Mul3x3.y.x;
+    x_cc1d0de5->y.y = gMat4Mul3x3.y.y;
+    x_cc1d0de5->y.z = gMat4Mul3x3.y.z;
+    x_cc1d0de5->z.x = gMat4Mul3x3.z.x;
+    x_cc1d0de5->z.y = gMat4Mul3x3.z.y;
+    x_cc1d0de5->z.z = gMat4Mul3x3.z.z;
 }
 
-void x_948f0b9f(x_f9704fd6 *x_cc1d0de5, x_2758cdab *x_84ff873b) {
+void mat4_from_euler(x_f9704fd6 *x_cc1d0de5, x_2758cdab *x_84ff873b) {
     f32 x_6de255a8;
     s32 v0;
     f32 x_d08eaf0a;
@@ -768,7 +768,7 @@ void x_948f0b9f(x_f9704fd6 *x_cc1d0de5, x_2758cdab *x_84ff873b) {
     f32 x_acb6dbd2;
 
     if (x_84ff873b->x == 0 && x_84ff873b->y == 0 && x_84ff873b->z == 0) {
-        x_e5c4361f(x_cc1d0de5);
+        mat4_ident_partial(x_cc1d0de5);
         return;
     }
     v0 = 0;
@@ -784,8 +784,8 @@ void x_948f0b9f(x_f9704fd6 *x_cc1d0de5, x_2758cdab *x_84ff873b) {
 
     switch (v0) {
         case 1:
-            x_acb6dbd2 = x_2cfb7bc7(x_84ff873b->z);
-            x_52bc44bc = -x_2cfb7bc7(x_84ff873b->z + 0x400);
+            x_acb6dbd2 = sin_float(x_84ff873b->z);
+            x_52bc44bc = -sin_float(x_84ff873b->z + 0x400);
             x_cc1d0de5->x.x = x_acb6dbd2;
             x_cc1d0de5->x.y = x_52bc44bc;
             x_cc1d0de5->y.x = -x_52bc44bc;
@@ -797,8 +797,8 @@ void x_948f0b9f(x_f9704fd6 *x_cc1d0de5, x_2758cdab *x_84ff873b) {
             x_cc1d0de5->z.z = 1.0f;
             break;
         case 2:
-            x_6de255a8 = x_2cfb7bc7(x_84ff873b->y);
-            x_d08eaf0a = -x_2cfb7bc7(x_84ff873b->y + 0x400);
+            x_6de255a8 = sin_float(x_84ff873b->y);
+            x_d08eaf0a = -sin_float(x_84ff873b->y + 0x400);
             x_cc1d0de5->x.x = x_6de255a8;
             x_cc1d0de5->x.z = -x_d08eaf0a;
             x_cc1d0de5->z.x = x_d08eaf0a;
@@ -810,10 +810,10 @@ void x_948f0b9f(x_f9704fd6 *x_cc1d0de5, x_2758cdab *x_84ff873b) {
             x_cc1d0de5->y.y = 1.0f;
             break;
         case 3:
-            x_6de255a8 = x_2cfb7bc7(x_84ff873b->y);
-            x_acb6dbd2 = x_2cfb7bc7(x_84ff873b->z);
-            x_d08eaf0a = -x_2cfb7bc7(x_84ff873b->y + 0x400);
-            x_52bc44bc = -x_2cfb7bc7(x_84ff873b->z + 0x400);
+            x_6de255a8 = sin_float(x_84ff873b->y);
+            x_acb6dbd2 = sin_float(x_84ff873b->z);
+            x_d08eaf0a = -sin_float(x_84ff873b->y + 0x400);
+            x_52bc44bc = -sin_float(x_84ff873b->z + 0x400);
             x_cc1d0de5->x.x = x_6de255a8 * x_acb6dbd2;
             x_cc1d0de5->x.y = x_6de255a8 * x_52bc44bc;
             x_cc1d0de5->x.z = -x_d08eaf0a;
@@ -825,8 +825,8 @@ void x_948f0b9f(x_f9704fd6 *x_cc1d0de5, x_2758cdab *x_84ff873b) {
             *(s32 *) &x_cc1d0de5->y.z = 0;
             break;
         case 4:
-            x_5f8adb52 = x_2cfb7bc7(x_84ff873b->x);
-            x_0ee12fe1 = -x_2cfb7bc7(x_84ff873b->x + 0x400);
+            x_5f8adb52 = sin_float(x_84ff873b->x);
+            x_0ee12fe1 = -sin_float(x_84ff873b->x + 0x400);
             x_cc1d0de5->y.y = x_5f8adb52;
             x_cc1d0de5->y.z = x_0ee12fe1;
             x_cc1d0de5->z.y = -x_0ee12fe1;
@@ -838,10 +838,10 @@ void x_948f0b9f(x_f9704fd6 *x_cc1d0de5, x_2758cdab *x_84ff873b) {
             x_cc1d0de5->x.x = 1.0f;
             break;
         case 5:
-            x_acb6dbd2 = x_2cfb7bc7(x_84ff873b->z);
-            x_52bc44bc = -x_2cfb7bc7(x_84ff873b->z + 0x400);
-            x_5f8adb52 = x_2cfb7bc7(x_84ff873b->x);
-            x_0ee12fe1 = -x_2cfb7bc7(x_84ff873b->x + 0x400);
+            x_acb6dbd2 = sin_float(x_84ff873b->z);
+            x_52bc44bc = -sin_float(x_84ff873b->z + 0x400);
+            x_5f8adb52 = sin_float(x_84ff873b->x);
+            x_0ee12fe1 = -sin_float(x_84ff873b->x + 0x400);
             x_cc1d0de5->x.x = x_acb6dbd2;
             x_cc1d0de5->x.y = x_52bc44bc;
             x_cc1d0de5->y.z = x_0ee12fe1;
@@ -853,10 +853,10 @@ void x_948f0b9f(x_f9704fd6 *x_cc1d0de5, x_2758cdab *x_84ff873b) {
             *(s32 *) &x_cc1d0de5->x.z = 0;
             break;
         case 6:
-            x_6de255a8 = x_2cfb7bc7(x_84ff873b->y);
-            x_d08eaf0a = -x_2cfb7bc7(x_84ff873b->y + 0x400);
-            x_5f8adb52 = x_2cfb7bc7(x_84ff873b->x);
-            x_0ee12fe1 = -x_2cfb7bc7(x_84ff873b->x + 0x400);
+            x_6de255a8 = sin_float(x_84ff873b->y);
+            x_d08eaf0a = -sin_float(x_84ff873b->y + 0x400);
+            x_5f8adb52 = sin_float(x_84ff873b->x);
+            x_0ee12fe1 = -sin_float(x_84ff873b->x + 0x400);
             x_cc1d0de5->x.x = x_6de255a8;
             x_cc1d0de5->x.z = -x_d08eaf0a;
             x_cc1d0de5->y.x = x_0ee12fe1 * x_d08eaf0a;
@@ -868,10 +868,10 @@ void x_948f0b9f(x_f9704fd6 *x_cc1d0de5, x_2758cdab *x_84ff873b) {
             *(s32 *) &x_cc1d0de5->x.y = 0;
             break;
         case 7:
-            x_6de255a8 = x_2cfb7bc7(x_84ff873b->y);
-            x_d08eaf0a = -x_2cfb7bc7(x_84ff873b->y + 0x400);
-            x_5f8adb52 = x_2cfb7bc7(x_84ff873b->x);
-            x_0ee12fe1 = -x_2cfb7bc7(x_84ff873b->x + 0x400);
+            x_6de255a8 = sin_float(x_84ff873b->y);
+            x_d08eaf0a = -sin_float(x_84ff873b->y + 0x400);
+            x_5f8adb52 = sin_float(x_84ff873b->x);
+            x_0ee12fe1 = -sin_float(x_84ff873b->x + 0x400);
             x_cc1d0de5->x.x = x_6de255a8;
             x_cc1d0de5->x.z = -x_d08eaf0a;
             x_cc1d0de5->y.x = x_0ee12fe1 * x_d08eaf0a;
@@ -881,36 +881,36 @@ void x_948f0b9f(x_f9704fd6 *x_cc1d0de5, x_2758cdab *x_84ff873b) {
             x_cc1d0de5->z.y = -x_0ee12fe1;
             x_cc1d0de5->z.z = x_5f8adb52 * x_6de255a8;
             *(s32 *) &x_cc1d0de5->x.y = 0;
-            x_acb6dbd2 = x_2cfb7bc7(x_84ff873b->z);
-            x_52bc44bc = -x_2cfb7bc7(x_84ff873b->z + 0x400);
-            D_80081320.x.y = x_52bc44bc;
-            D_80081320.y.x = -x_52bc44bc;
-            D_80081320.x.x = x_acb6dbd2;
-            D_80081320.y.y = x_acb6dbd2;
-            x_f3aae376(x_cc1d0de5, &D_80081320);
+            x_acb6dbd2 = sin_float(x_84ff873b->z);
+            x_52bc44bc = -sin_float(x_84ff873b->z + 0x400);
+            gMat4RotZ.x.y = x_52bc44bc;
+            gMat4RotZ.y.x = -x_52bc44bc;
+            gMat4RotZ.x.x = x_acb6dbd2;
+            gMat4RotZ.y.y = x_acb6dbd2;
+            mat4_mul3x3(x_cc1d0de5, &gMat4RotZ);
             break;
     }
 }
 
-void x_985542fc(x_acccb624 *x_cc1d0de5, Mtx *x_84ff873b) {
+void mtx_from_euler(x_acccb624 *x_cc1d0de5, Mtx *x_84ff873b) {
     s32 unused;
     s32 x_5dde8968, x_769a4e6d, x_8ec5e9e6, x_55b42800, x_ec6aded5, x_ef90d9c1, x_68d617d6, x_719d1653, x_b2ab54fd,
         x_a2f28e2b, x_4a60bf7d, x_2b4e5423;
 
-    x_948f0b9f(&D_800813E0, x_cc1d0de5);
+    mat4_from_euler(&gMat4Temp, x_cc1d0de5);
 
-    x_5dde8968 = FTOFIX32(D_800813E0.x.x);
-    x_769a4e6d = FTOFIX32(D_800813E0.x.y);
-    x_8ec5e9e6 = FTOFIX32(D_800813E0.x.z);
-    x_55b42800 = FTOFIX32(D_800813E0.x.w);
-    x_ec6aded5 = FTOFIX32(D_800813E0.y.x);
-    x_ef90d9c1 = FTOFIX32(D_800813E0.y.y);
-    x_68d617d6 = FTOFIX32(D_800813E0.y.z);
-    x_719d1653 = FTOFIX32(D_800813E0.y.w);
-    x_b2ab54fd = FTOFIX32(D_800813E0.z.x);
-    x_a2f28e2b = FTOFIX32(D_800813E0.z.y);
-    x_4a60bf7d = FTOFIX32(D_800813E0.z.z);
-    x_2b4e5423 = FTOFIX32(D_800813E0.z.w);
+    x_5dde8968 = FTOFIX32(gMat4Temp.x.x);
+    x_769a4e6d = FTOFIX32(gMat4Temp.x.y);
+    x_8ec5e9e6 = FTOFIX32(gMat4Temp.x.z);
+    x_55b42800 = FTOFIX32(gMat4Temp.x.w);
+    x_ec6aded5 = FTOFIX32(gMat4Temp.y.x);
+    x_ef90d9c1 = FTOFIX32(gMat4Temp.y.y);
+    x_68d617d6 = FTOFIX32(gMat4Temp.y.z);
+    x_719d1653 = FTOFIX32(gMat4Temp.y.w);
+    x_b2ab54fd = FTOFIX32(gMat4Temp.z.x);
+    x_a2f28e2b = FTOFIX32(gMat4Temp.z.y);
+    x_4a60bf7d = FTOFIX32(gMat4Temp.z.z);
+    x_2b4e5423 = FTOFIX32(gMat4Temp.z.w);
 
     x_84ff873b->m[0][0] = (x_5dde8968 & 0xFFFF0000) | ((x_769a4e6d >> 16) & 0xFFFF);
     x_84ff873b->m[0][1] = (x_8ec5e9e6 & 0xFFFF0000) | ((x_55b42800 >> 16) & 0xFFFF);
@@ -927,33 +927,33 @@ void x_985542fc(x_acccb624 *x_cc1d0de5, Mtx *x_84ff873b) {
     x_84ff873b->m[3][1] = ((x_4a60bf7d & 0xFFFF) << 16) | (x_2b4e5423 & 0xFFFF);
 }
 
-void x_f1842abd(s16 *x_cc1d0de5, x_88f11482 *x_84ff873b) {
+void mtx_set_translation(s16 *x_cc1d0de5, x_88f11482 *x_84ff873b) {
     x_cc1d0de5[12] = x_84ff873b->x;
     x_cc1d0de5[13] = x_84ff873b->y;
     x_cc1d0de5[14] = x_84ff873b->z;
 }
 
-void x_fc6adb04(x_f9704fd6 *x_cc1d0de5, x_88f11482 *x_84ff873b) {
+void mat4_set_translation(x_f9704fd6 *x_cc1d0de5, x_88f11482 *x_84ff873b) {
     x_cc1d0de5->w.x = x_84ff873b->x;
     x_cc1d0de5->w.y = x_84ff873b->y;
     x_cc1d0de5->w.z = x_84ff873b->z;
 }
 
-void x_9b0df250(x_88f11482 *x_cc1d0de5, x_2758cdab *x_84ff873b) {
+void vec_rotate_by_euler(x_88f11482 *x_cc1d0de5, x_2758cdab *x_84ff873b) {
     f32 x, y, z;
     f64 temp;
-    x_948f0b9f(&D_800813E0, x_84ff873b);
+    mat4_from_euler(&gMat4Temp, x_84ff873b);
 
-    x = D_800813E0.x.x * x_cc1d0de5->x + D_800813E0.y.x * x_cc1d0de5->y + D_800813E0.z.x * x_cc1d0de5->z;
-    y = D_800813E0.x.y * x_cc1d0de5->x + D_800813E0.y.y * x_cc1d0de5->y + D_800813E0.z.y * x_cc1d0de5->z;
-    z = D_800813E0.x.z * x_cc1d0de5->x + D_800813E0.y.z * x_cc1d0de5->y + D_800813E0.z.z * x_cc1d0de5->z;
+    x = gMat4Temp.x.x * x_cc1d0de5->x + gMat4Temp.y.x * x_cc1d0de5->y + gMat4Temp.z.x * x_cc1d0de5->z;
+    y = gMat4Temp.x.y * x_cc1d0de5->x + gMat4Temp.y.y * x_cc1d0de5->y + gMat4Temp.z.y * x_cc1d0de5->z;
+    z = gMat4Temp.x.z * x_cc1d0de5->x + gMat4Temp.y.z * x_cc1d0de5->y + gMat4Temp.z.z * x_cc1d0de5->z;
 
     x_cc1d0de5->x = temp = x >= 0.0 ? x + 0.5 : x - 0.5;
     x_cc1d0de5->y = temp = y >= 0.0 ? y + 0.5 : y - 0.5;
     x_cc1d0de5->z = temp = z >= 0.0 ? z + 0.5 : z - 0.5;
 }
 
-void x_f3b449e2(x_88f11482 *x_cc1d0de5, x_88f11482 *x_84ff873b, x_f9704fd6 *x_2092f891) {
+void vec_transform_by_mat4(x_88f11482 *x_cc1d0de5, x_88f11482 *x_84ff873b, x_f9704fd6 *x_2092f891) {
     f32 x, y, z;
     f64 temp;
 
@@ -966,16 +966,16 @@ void x_f3b449e2(x_88f11482 *x_cc1d0de5, x_88f11482 *x_84ff873b, x_f9704fd6 *x_20
     x_84ff873b->z = temp = z >= 0.0 ? z + 0.5 : z - 0.5;
 }
 
-void x_40fe131d(x_f9704fd6 *x_cc1d0de5, x_88f11482 *x_84ff873b) {
+void mat4_apply_scale(x_f9704fd6 *x_cc1d0de5, x_88f11482 *x_84ff873b) {
     if (x_84ff873b->x != 0x100 || x_84ff873b->y != 0x100 || x_84ff873b->z != 0x100) {
-        D_80081360.x.x = (f32) x_84ff873b->x * (1.0 / 256);
-        D_80081360.y.y = (f32) x_84ff873b->y * (1.0 / 256);
-        D_80081360.z.z = (f32) x_84ff873b->z * (1.0 / 256);
-        x_20ce5003(x_cc1d0de5, &D_80081360);
+        gMat4Scale.x.x = (f32) x_84ff873b->x * (1.0 / 256);
+        gMat4Scale.y.y = (f32) x_84ff873b->y * (1.0 / 256);
+        gMat4Scale.z.z = (f32) x_84ff873b->z * (1.0 / 256);
+        mat4_mul(x_cc1d0de5, &gMat4Scale);
     }
 }
 
-void x_ba58a12b(Mtx *x_84ff873b, x_f9704fd6 *x_cc1d0de5) {
+void mat4_to_mtx(Mtx *x_84ff873b, x_f9704fd6 *x_cc1d0de5) {
     s32 unused;
     s32 x_5dde8968, x_769a4e6d, x_8ec5e9e6, x_55b42800, x_ec6aded5, x_ef90d9c1, x_68d617d6, x_719d1653, x_b2ab54fd,
         x_a2f28e2b, x_4a60bf7d, x_2b4e5423, x_2eb0f31d, x_b5252c3a, x_7e545c6c, x_b84ff805;
@@ -1016,10 +1016,10 @@ void x_ba58a12b(Mtx *x_84ff873b, x_f9704fd6 *x_cc1d0de5) {
     x_84ff873b->m[3][3] = ((x_7e545c6c & 0xFFFF) << 16) | (x_b84ff805 & 0xFFFF);
 }
 
-void x_07c0bc31(s32 x_cc1d0de5, s32 x_84ff873b) {
+void stub_func(s32 x_cc1d0de5, s32 x_84ff873b) {
 }
 
-void x_9a6513bb(x_770ebaaf *x_cc1d0de5, Mtx *m) {
+void mtx_scale(x_770ebaaf *x_cc1d0de5, Mtx *m) {
     int i, j;
     unsigned int e1, e2;
     unsigned int *ai, *af;
@@ -1041,36 +1041,36 @@ void x_9a6513bb(x_770ebaaf *x_cc1d0de5, Mtx *m) {
         }
     }
 
-    D_80081360.x.x = (f32) x_cc1d0de5->x * (1.0 / 4096.0);
-    D_80081360.y.y = (f32) x_cc1d0de5->y * (1.0 / 4096.0);
-    D_80081360.z.z = (f32) x_cc1d0de5->x * (1.0 / 4096.0); // @BUG should be arg0->z
-    x_20ce5003(mf, &D_80081360);                           // TODO: type Matrix4f or float[4][4]
-    x_ba58a12b(m, mf);
+    gMat4Scale.x.x = (f32) x_cc1d0de5->x * (1.0 / 4096.0);
+    gMat4Scale.y.y = (f32) x_cc1d0de5->y * (1.0 / 4096.0);
+    gMat4Scale.z.z = (f32) x_cc1d0de5->x * (1.0 / 4096.0); // @BUG should be arg0->z
+    mat4_mul(mf, &gMat4Scale);                             // TODO: type Matrix4f or float[4][4]
+    mat4_to_mtx(m, mf);
 }
 
-void x_a9d39d06(x_2758cdab *x_cc1d0de5, x_88f11482 *x_84ff873b, Mtx *x_2092f891) {
+void mtx_from_euler_scale(x_2758cdab *x_cc1d0de5, x_88f11482 *x_84ff873b, Mtx *x_2092f891) {
     s32 unused;
     s32 x_5dde8968, x_769a4e6d, x_8ec5e9e6, x_55b42800, x_ec6aded5, x_ef90d9c1, x_68d617d6, x_719d1653, x_b2ab54fd,
         x_a2f28e2b, x_4a60bf7d, x_2b4e5423;
 
-    x_948f0b9f(&D_800813E0, x_cc1d0de5);
+    mat4_from_euler(&gMat4Temp, x_cc1d0de5);
 
     if (x_84ff873b->x != 0x1000 || x_84ff873b->y != 0x1000 || x_84ff873b->z != 0x1000) {
-        x_40fe131d(&D_800813E0, x_84ff873b);
+        mat4_apply_scale(&gMat4Temp, x_84ff873b);
     }
 
-    x_5dde8968 = FTOFIX32(D_800813E0.x.x);
-    x_769a4e6d = FTOFIX32(D_800813E0.x.y);
-    x_8ec5e9e6 = FTOFIX32(D_800813E0.x.z);
-    x_55b42800 = FTOFIX32(D_800813E0.x.w);
-    x_ec6aded5 = FTOFIX32(D_800813E0.y.x);
-    x_ef90d9c1 = FTOFIX32(D_800813E0.y.y);
-    x_68d617d6 = FTOFIX32(D_800813E0.y.z);
-    x_719d1653 = FTOFIX32(D_800813E0.y.w);
-    x_b2ab54fd = FTOFIX32(D_800813E0.z.x);
-    x_a2f28e2b = FTOFIX32(D_800813E0.z.y);
-    x_4a60bf7d = FTOFIX32(D_800813E0.z.z);
-    x_2b4e5423 = FTOFIX32(D_800813E0.z.w);
+    x_5dde8968 = FTOFIX32(gMat4Temp.x.x);
+    x_769a4e6d = FTOFIX32(gMat4Temp.x.y);
+    x_8ec5e9e6 = FTOFIX32(gMat4Temp.x.z);
+    x_55b42800 = FTOFIX32(gMat4Temp.x.w);
+    x_ec6aded5 = FTOFIX32(gMat4Temp.y.x);
+    x_ef90d9c1 = FTOFIX32(gMat4Temp.y.y);
+    x_68d617d6 = FTOFIX32(gMat4Temp.y.z);
+    x_719d1653 = FTOFIX32(gMat4Temp.y.w);
+    x_b2ab54fd = FTOFIX32(gMat4Temp.z.x);
+    x_a2f28e2b = FTOFIX32(gMat4Temp.z.y);
+    x_4a60bf7d = FTOFIX32(gMat4Temp.z.z);
+    x_2b4e5423 = FTOFIX32(gMat4Temp.z.w);
 
     x_2092f891->m[0][0] = (x_5dde8968 & 0xFFFF0000) | ((x_769a4e6d >> 16) & 0xFFFF);
     x_2092f891->m[0][1] = (x_8ec5e9e6 & 0xFFFF0000) | ((x_55b42800 >> 16) & 0xFFFF);
@@ -1087,73 +1087,73 @@ void x_a9d39d06(x_2758cdab *x_cc1d0de5, x_88f11482 *x_84ff873b, Mtx *x_2092f891)
     x_2092f891->m[3][1] = ((x_4a60bf7d & 0xFFFF) << 16) | (x_2b4e5423 & 0xFFFF);
 }
 
-void x_70b240cc(x_f9704fd6 *x_cc1d0de5, s16 angle) {
+void mat4_rot_x(x_f9704fd6 *x_cc1d0de5, s16 angle) {
     f32 x_23d3abbe, x_6aba8ce5;
 
-    x_23d3abbe = x_2cfb7bc7(angle);
-    x_6aba8ce5 = -x_2cfb7bc7(angle + 0x400);
-    D_800812E0.z.x = x_6aba8ce5;
-    D_800812E0.x.z = -x_6aba8ce5;
-    D_800812E0.x.x = x_23d3abbe;
-    D_800812E0.z.z = x_23d3abbe;
-    x_f3aae376(x_cc1d0de5, &D_800812E0);
+    x_23d3abbe = sin_float(angle);
+    x_6aba8ce5 = -sin_float(angle + 0x400);
+    gMat4RotX.z.x = x_6aba8ce5;
+    gMat4RotX.x.z = -x_6aba8ce5;
+    gMat4RotX.x.x = x_23d3abbe;
+    gMat4RotX.z.z = x_23d3abbe;
+    mat4_mul3x3(x_cc1d0de5, &gMat4RotX);
 }
 
-void x_3d064496(x_f9704fd6 *x_cc1d0de5, s16 angle) {
+void mat4_rot_z(x_f9704fd6 *x_cc1d0de5, s16 angle) {
     f32 x_23d3abbe, x_6aba8ce5;
 
-    x_23d3abbe = x_2cfb7bc7(angle);
-    x_6aba8ce5 = -x_2cfb7bc7(angle + 0x400);
-    D_80081320.x.y = x_6aba8ce5;
-    D_80081320.y.x = -x_6aba8ce5;
-    D_80081320.x.x = x_23d3abbe;
-    D_80081320.y.y = x_23d3abbe;
-    x_f3aae376(x_cc1d0de5, &D_80081320);
+    x_23d3abbe = sin_float(angle);
+    x_6aba8ce5 = -sin_float(angle + 0x400);
+    gMat4RotZ.x.y = x_6aba8ce5;
+    gMat4RotZ.y.x = -x_6aba8ce5;
+    gMat4RotZ.x.x = x_23d3abbe;
+    gMat4RotZ.y.y = x_23d3abbe;
+    mat4_mul3x3(x_cc1d0de5, &gMat4RotZ);
 }
 
-void x_924a8661(x_f9704fd6 *x_cc1d0de5, s16 angle) {
+void mat4_rot_y(x_f9704fd6 *x_cc1d0de5, s16 angle) {
     f32 x_23d3abbe, x_6aba8ce5;
 
-    x_23d3abbe = x_2cfb7bc7(angle);
-    x_6aba8ce5 = -x_2cfb7bc7(angle + 0x400);
-    x_4d4bbb59(&D_800812A0);
-    D_800812A0.y.z = x_6aba8ce5;
-    D_800812A0.z.y = -x_6aba8ce5;
-    D_800812A0.y.y = x_23d3abbe;
-    D_800812A0.z.z = x_23d3abbe;
-    x_f3aae376(x_cc1d0de5, &D_800812A0);
-    x_4d4bbb59(x_cc1d0de5);
+    x_23d3abbe = sin_float(angle);
+    x_6aba8ce5 = -sin_float(angle + 0x400);
+    mat4_ident_loop(&gMat4RotY);
+    gMat4RotY.y.z = x_6aba8ce5;
+    gMat4RotY.z.y = -x_6aba8ce5;
+    gMat4RotY.y.y = x_23d3abbe;
+    gMat4RotY.z.z = x_23d3abbe;
+    mat4_mul3x3(x_cc1d0de5, &gMat4RotY);
+    mat4_ident_loop(x_cc1d0de5);
 }
 
-void x_cd274068(x_2758cdab *x_cc1d0de5, Mtx *x_84ff873b) {
+void mtx_from_euler_zyx(x_2758cdab *x_cc1d0de5, Mtx *x_84ff873b) {
     s32 unused;
     s32 x_5dde8968, x_769a4e6d, x_8ec5e9e6, x_55b42800, x_ec6aded5, x_ef90d9c1, x_68d617d6, x_719d1653, x_b2ab54fd,
         x_a2f28e2b, x_4a60bf7d, x_2b4e5423, x_2eb0f31d, x_b5252c3a, x_7e545c6c, x_b84ff805;
     f32 x_acb6dbd2, x_52bc44bc;
 
-    x_acb6dbd2 = x_2cfb7bc7(x_cc1d0de5->z);
-    x_52bc44bc = -x_2cfb7bc7(x_cc1d0de5->z + 0x400);
+    x_acb6dbd2 = sin_float(x_cc1d0de5->z);
+    x_52bc44bc = -sin_float(x_cc1d0de5->z + 0x400);
 
-    x_3004a565(&D_800813E0);
-    D_800813E0.x.y = x_52bc44bc;
-    D_800813E0.y.x = -x_52bc44bc;
-    D_800813E0.x.x = x_acb6dbd2;
-    D_800813E0.y.y = x_acb6dbd2;
-    x_70b240cc(&D_800813E0, x_cc1d0de5->y);
-    x_924a8661(&D_800813E0, x_cc1d0de5->x);
+    mat4_ident(&gMat4Temp);
+    gMat4Temp.x.y = x_52bc44bc;
+    gMat4Temp.y.x = -x_52bc44bc;
+    gMat4Temp.x.x = x_acb6dbd2;
+    gMat4Temp.y.y = x_acb6dbd2;
+    mat4_rot_x(&gMat4Temp, x_cc1d0de5->y);
+    mat4_rot_y(&gMat4Temp, x_cc1d0de5->x);
 
-    x_5dde8968 = FTOFIX32(D_800813E0.x.x);
-    x_769a4e6d = FTOFIX32(D_800813E0.x.y);
-    x_8ec5e9e6 = FTOFIX32(D_800813E0.x.z);
-    x_55b42800 = FTOFIX32(D_800813E0.x.w);
-    x_ec6aded5 = FTOFIX32(D_800813E0.y.x);
-    x_ef90d9c1 = FTOFIX32(D_800813E0.y.y);
-    x_68d617d6 = FTOFIX32(D_800813E0.y.z);
-    x_719d1653 = FTOFIX32(D_800813E0.y.w);
-    x_b2ab54fd = FTOFIX32(D_800813E0.z.x);
-    x_a2f28e2b = FTOFIX32(D_800813E0.z.y);
-    x_4a60bf7d = FTOFIX32(D_800813E0.z.z);
-    x_2b4e5423 = FTOFIX32(D_800813E0.z.w);
+    x_5dde8968 = FTOFIX32(gMat4Temp.x.x);
+    x_769a4e6d = FTOFIX32(gMat4Temp.x.y);
+    x_8ec5e9e6 = FTOFIX32(gMat4Temp.x.z);
+    x_55b42800 = FTOFIX32(gMat4Temp.x.w);
+    x_ec6aded5 = FTOFIX32(gMat4Temp.y.x);
+    x_ef90d9c1 = FTOFIX32(gMat4Temp.y.y);
+    x_68d617d6 = FTOFIX32(gMat4Temp.y.z);
+    x_719d1653 = FTOFIX32(gMat4Temp.y.w);
+    x_b2ab54fd = FTOFIX32(gMat4Temp.z.x);
+    x_a2f28e2b = FTOFIX32(gMat4Temp.z.y);
+    x_4a60bf7d = FTOFIX32(gMat4Temp.z.z);
+    x_2b4e5423 = FTOFIX32(gMat4Temp.z.w);
 
     x_84ff873b->m[0][0] = (x_5dde8968 & 0xFFFF0000) | ((x_769a4e6d >> 16) & 0xFFFF);
     x_84ff873b->m[0][1] = (x_8ec5e9e6 & 0xFFFF0000) | ((x_55b42800 >> 16) & 0xFFFF);
@@ -1169,39 +1169,39 @@ void x_cd274068(x_2758cdab *x_cc1d0de5, Mtx *x_84ff873b) {
     x_84ff873b->m[3][0] = ((x_b2ab54fd & 0xFFFF) << 16) | (x_a2f28e2b & 0xFFFF);
     x_84ff873b->m[3][1] = ((x_4a60bf7d & 0xFFFF) << 16) | (x_2b4e5423 & 0xFFFF);
 
-    x_4d4bbb59(&D_800813E0);
-    x_948f0b9f(&D_800813E0, x_cc1d0de5);
-    x_4d4bbb59(&D_800813E0);
+    mat4_ident_loop(&gMat4Temp);
+    mat4_from_euler(&gMat4Temp, x_cc1d0de5);
+    mat4_ident_loop(&gMat4Temp);
 }
 
-void x_1847c5c9(x_2758cdab *x_cc1d0de5, Mtx *x_84ff873b) {
+void mtx_from_euler_xyz(x_2758cdab *x_cc1d0de5, Mtx *x_84ff873b) {
     s32 unused;
     s32 x_5dde8968, x_769a4e6d, x_8ec5e9e6, x_55b42800, x_ec6aded5, x_ef90d9c1, x_68d617d6, x_719d1653, x_b2ab54fd,
         x_a2f28e2b, x_4a60bf7d, x_2b4e5423, x_2eb0f31d, x_b5252c3a, x_7e545c6c, x_b84ff805;
     f32 x_5f8adb52, x_0ee12fe1;
 
-    x_5f8adb52 = x_2cfb7bc7(x_cc1d0de5->x);
-    x_0ee12fe1 = -x_2cfb7bc7(x_cc1d0de5->x + 0x400);
+    x_5f8adb52 = sin_float(x_cc1d0de5->x);
+    x_0ee12fe1 = -sin_float(x_cc1d0de5->x + 0x400);
 
-    D_800813E0.y.z = x_0ee12fe1;
-    D_800813E0.z.y = -x_0ee12fe1;
-    D_800813E0.y.y = x_5f8adb52;
-    D_800813E0.z.z = x_5f8adb52;
-    x_70b240cc(&D_800813E0, x_cc1d0de5->y);
-    x_3d064496(&D_800813E0, x_cc1d0de5->z);
+    gMat4Temp.y.z = x_0ee12fe1;
+    gMat4Temp.z.y = -x_0ee12fe1;
+    gMat4Temp.y.y = x_5f8adb52;
+    gMat4Temp.z.z = x_5f8adb52;
+    mat4_rot_x(&gMat4Temp, x_cc1d0de5->y);
+    mat4_rot_z(&gMat4Temp, x_cc1d0de5->z);
 
-    x_5dde8968 = FTOFIX32(D_800813E0.x.x);
-    x_769a4e6d = FTOFIX32(D_800813E0.x.y);
-    x_8ec5e9e6 = FTOFIX32(D_800813E0.x.z);
-    x_55b42800 = FTOFIX32(D_800813E0.x.w);
-    x_ec6aded5 = FTOFIX32(D_800813E0.y.x);
-    x_ef90d9c1 = FTOFIX32(D_800813E0.y.y);
-    x_68d617d6 = FTOFIX32(D_800813E0.y.z);
-    x_719d1653 = FTOFIX32(D_800813E0.y.w);
-    x_b2ab54fd = FTOFIX32(D_800813E0.z.x);
-    x_a2f28e2b = FTOFIX32(D_800813E0.z.y);
-    x_4a60bf7d = FTOFIX32(D_800813E0.z.z);
-    x_2b4e5423 = FTOFIX32(D_800813E0.z.w);
+    x_5dde8968 = FTOFIX32(gMat4Temp.x.x);
+    x_769a4e6d = FTOFIX32(gMat4Temp.x.y);
+    x_8ec5e9e6 = FTOFIX32(gMat4Temp.x.z);
+    x_55b42800 = FTOFIX32(gMat4Temp.x.w);
+    x_ec6aded5 = FTOFIX32(gMat4Temp.y.x);
+    x_ef90d9c1 = FTOFIX32(gMat4Temp.y.y);
+    x_68d617d6 = FTOFIX32(gMat4Temp.y.z);
+    x_719d1653 = FTOFIX32(gMat4Temp.y.w);
+    x_b2ab54fd = FTOFIX32(gMat4Temp.z.x);
+    x_a2f28e2b = FTOFIX32(gMat4Temp.z.y);
+    x_4a60bf7d = FTOFIX32(gMat4Temp.z.z);
+    x_2b4e5423 = FTOFIX32(gMat4Temp.z.w);
 
     x_84ff873b->m[0][0] = (x_5dde8968 & 0xFFFF0000) | ((x_769a4e6d >> 16) & 0xFFFF);
     x_84ff873b->m[0][1] = (x_8ec5e9e6 & 0xFFFF0000) | ((x_55b42800 >> 16) & 0xFFFF);
@@ -1217,12 +1217,12 @@ void x_1847c5c9(x_2758cdab *x_cc1d0de5, Mtx *x_84ff873b) {
     x_84ff873b->m[3][0] = ((x_b2ab54fd & 0xFFFF) << 16) | (x_a2f28e2b & 0xFFFF);
     x_84ff873b->m[3][1] = ((x_4a60bf7d & 0xFFFF) << 16) | (x_2b4e5423 & 0xFFFF);
 
-    x_4d4bbb59(&D_800813E0);
-    x_948f0b9f(&D_800813E0, x_cc1d0de5);
-    x_4d4bbb59(&D_800813E0);
+    mat4_ident_loop(&gMat4Temp);
+    mat4_from_euler(&gMat4Temp, x_cc1d0de5);
+    mat4_ident_loop(&gMat4Temp);
 }
 
-void x_02631bf6(x_f9704fd6 *x_cc1d0de5, x_f9704fd6 *x_84ff873b) {
+void mat4_copy(x_f9704fd6 *x_cc1d0de5, x_f9704fd6 *x_84ff873b) {
     x_cc1d0de5->x.x = x_84ff873b->x.x;
     x_cc1d0de5->x.y = x_84ff873b->x.y;
     x_cc1d0de5->x.z = x_84ff873b->x.z;
@@ -1237,7 +1237,7 @@ void x_02631bf6(x_f9704fd6 *x_cc1d0de5, x_f9704fd6 *x_84ff873b) {
     x_cc1d0de5->w.z = x_84ff873b->w.z;
 }
 
-void x_903494af(x_f9704fd6 *x_cc1d0de5, x_f9704fd6 *x_84ff873b, x_f9704fd6 *x_2092f891) {
+void mat4_mul3(x_f9704fd6 *x_cc1d0de5, x_f9704fd6 *x_84ff873b, x_f9704fd6 *x_2092f891) {
     x_cc1d0de5->x.x =
         x_84ff873b->x.x * x_2092f891->x.x + x_84ff873b->x.y * x_2092f891->y.x + x_84ff873b->x.z * x_2092f891->z.x;
     x_cc1d0de5->x.y =
@@ -1264,21 +1264,21 @@ void x_903494af(x_f9704fd6 *x_cc1d0de5, x_f9704fd6 *x_84ff873b, x_f9704fd6 *x_20
                       x_84ff873b->w.z * x_2092f891->z.z + x_2092f891->w.z;
 }
 
-void x_44a54e96(Transform *transform) {
+void transform_calc_world(Transform *transform) {
     Transform *ptr;
 
     if (transform->x_e4712596 != NULL) {
-        x_903494af(&transform->x_0c1a9bdd, &transform->x_3fde9cd9, &transform->x_e4712596->x_0c1a9bdd);
+        mat4_mul3(&transform->x_0c1a9bdd, &transform->x_3fde9cd9, &transform->x_e4712596->x_0c1a9bdd);
     } else {
-        x_02631bf6(&transform->x_0c1a9bdd, &transform->x_3fde9cd9);
+        mat4_copy(&transform->x_0c1a9bdd, &transform->x_3fde9cd9);
     }
 
     for (ptr = transform->x_171183e4; ptr != NULL; ptr = ptr->x_fda6b96a) {
-        x_44a54e96(ptr);
+        transform_calc_world(ptr);
     }
 }
 
-void x_16eff9cc(x_f9704fd6 *x_7d3c6b8d, x_f9704fd6 *x_2465a128, x_f9704fd6 *result) {
+void mat4_mul_general(x_f9704fd6 *x_7d3c6b8d, x_f9704fd6 *x_2465a128, x_f9704fd6 *result) {
     s32 i, j, k;
     float (*x_ca0df2c9)[4];
     float (*x_29c1b289)[4];

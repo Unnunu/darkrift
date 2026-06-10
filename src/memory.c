@@ -1,27 +1,27 @@
 #include "common.h"
 #include "string.h"
 
-#define x_2bc76549 0xABCD6789
-#define x_6919331f 0x23E806
-#define x_af32df05 256
+#define MEM_MAGIC 0xABCD6789
+#define MEM_HEAP_SIZE 0x23E806
+#define DMA_SLOT_MAX 256
 
-void x_28d4de16(x_704d55d4 *x_cc1d0de5, x_704d55d4 **x_84ff873b);
-void x_0be47d8a(u32 *dest, u32 *src, u32 size);
+void mem_list_prepend(x_704d55d4 *x_cc1d0de5, x_704d55d4 **x_84ff873b);
+void mem_copy_overlap(u32 *dest, u32 *src, u32 size);
 
-x_704d55d4 *x_cf9b7451 = NULL;
-x_704d55d4 *x_3c86e126 = NULL;
-u8 D_80049288 = FALSE;
+x_704d55d4 *sMemFreeList = NULL;
+x_704d55d4 *sMemUsedList = NULL;
+u8 sDefragNeeded = FALSE;
 
-OSIoMesg D_8005AE90;
-char x_898d1dc9[0x8];
-s32 x_21ce7377;
-s32 x_04e9945f;
-x_37652cbd D_8005AEB8[x_af32df05];
-s32 D_8005BEB8;
-char x_7cb809a7[0x4];
-void *x_40c4fc96;
+OSIoMesg sDmaMesg;
+char sMemPad1[0x8];
+s32 sMemAllocated;
+s32 sMemFreeBytes;
+x_37652cbd sDmaSlots[DMA_SLOT_MAX];
+s32 sDmaSlotCount;
+char sMemPad2[0x4];
+void *sHeapBase;
 
-void x_6779fd58(s32 x_cc1d0de5, s32 x_84ff873b) {
+void mem_delay(s32 x_cc1d0de5, s32 x_84ff873b) {
     s32 i, j;
 
     for (i = 0; i != x_84ff873b; i++) {
@@ -31,20 +31,20 @@ void x_6779fd58(s32 x_cc1d0de5, s32 x_84ff873b) {
     }
 }
 
-void x_82b801fe(void) {
-    x_cf9b7451 = (x_704d55d4 *) x_40c4fc96;
+void mem_pool_init(void) {
+    sMemFreeList = (x_704d55d4 *) sHeapBase;
 
-    x_cf9b7451->end = ((u32) (x_40c4fc96) + x_6919331f) & ~7;
-    x_cf9b7451->flags = 1;
-    x_cf9b7451->next = NULL;
-    x_cf9b7451->previous = NULL;
-    x_21ce7377 = 0;
-    x_cf9b7451->x_a9d4034d = x_2bc76549;
+    sMemFreeList->end = ((u32) (sHeapBase) + MEM_HEAP_SIZE) & ~7;
+    sMemFreeList->flags = 1;
+    sMemFreeList->next = NULL;
+    sMemFreeList->previous = NULL;
+    sMemAllocated = 0;
+    sMemFreeList->x_a9d4034d = MEM_MAGIC;
 
-    x_04e9945f = x_b30d1d21(x_cf9b7451);
+    sMemFreeBytes = mem_free_space(sMemFreeList);
 }
 
-void x_fd701d0e(void) {
+void mem_defrag(void) {
     s32 end;
     s32 x_d70d9bc9;
     void *x_968605c7;
@@ -55,81 +55,81 @@ void x_fd701d0e(void) {
     void *x_50f1dbff;
     x_704d55d4 *x_24aca5c4;
 
-    x_21ce7377 = 0;
+    sMemAllocated = 0;
 
-    x_cf9b7451 = x_40c4fc96;
-    x_cf9b7451->flags = 1;
-    x_cf9b7451->previous = NULL;
-    x_cf9b7451->next = NULL;
+    sMemFreeList = sHeapBase;
+    sMemFreeList->flags = 1;
+    sMemFreeList->previous = NULL;
+    sMemFreeList->next = NULL;
 
-    x_3c86e126 = NULL;
-    x_cf9b7451->x_a9d4034d = x_2bc76549;
+    sMemUsedList = NULL;
+    sMemFreeList->x_a9d4034d = MEM_MAGIC;
 
-    end = ((u32) (x_40c4fc96) + x_6919331f) & ~7;
+    end = ((u32) (sHeapBase) + MEM_HEAP_SIZE) & ~7;
 
     do {
         x_d70d9bc9 = -1;
         x_968605c7 = NULL;
 
-        for (i = 0; i < ARRAY_COUNT(D_8005AEB8); i++) {
-            x_37652cbd *slot = D_8005AEB8 + i;
+        for (i = 0; i < ARRAY_COUNT(sDmaSlots); i++) {
+            x_37652cbd *slot = sDmaSlots + i;
             if (!(slot->x_af0aa1f8 & 1) && (u32) slot->data < end) {
                 void *x_d1231a38 = slot->data;
                 if (x_d1231a38 > x_968605c7) {
                     x_968605c7 = x_d1231a38;
                     x_d70d9bc9 = i;
                 }
-                if (!x_cf9b7451) {} // required for matching
+                if (!sMemFreeList) {} // required for matching
             }
         }
 
         if (x_d70d9bc9 >= 0) {
-            s32 x_c028c62d = (u32) D_8005AEB8[x_d70d9bc9].data - sizeof(x_704d55d4);
+            s32 x_c028c62d = (u32) sDmaSlots[x_d70d9bc9].data - sizeof(x_704d55d4);
             x_5d7a764d = (x_704d55d4 *) x_c028c62d;
             x_4cf275a8 = x_5d7a764d->end - (u32) x_5d7a764d - sizeof(x_704d55d4);
             x_50f1dbff = end - x_4cf275a8;
-            if (x_50f1dbff != D_8005AEB8[x_d70d9bc9].data) {
+            if (x_50f1dbff != sDmaSlots[x_d70d9bc9].data) {
                 x_5d7a764d = end - x_5d7a764d->end + (s32) x_5d7a764d;
-                x_0be47d8a(x_50f1dbff, D_8005AEB8[x_d70d9bc9].data, x_4cf275a8);
+                mem_copy_overlap(x_50f1dbff, sDmaSlots[x_d70d9bc9].data, x_4cf275a8);
                 x_5d7a764d->end = end;
                 x_5d7a764d->flags = 0;
                 x_5d7a764d->next = x_5d7a764d->previous = NULL;
-                x_5d7a764d->x_a9d4034d = x_2bc76549;
+                x_5d7a764d->x_a9d4034d = MEM_MAGIC;
             } else {
                 x_5d7a764d->next = x_5d7a764d->previous = NULL;
             }
 
             end = x_5d7a764d;
-            x_21ce7377 = x_21ce7377 + x_5d7a764d->end - (u32) (x_24aca5c4 = x_5d7a764d) - sizeof(x_704d55d4);
-            x_28d4de16(x_5d7a764d, &x_3c86e126);
-            if (D_8005AEB8[x_d70d9bc9].x_3c30b5f3 != NULL) {
-                D_8005AEB8[x_d70d9bc9].x_3c30b5f3(x_50f1dbff, D_8005AEB8[x_d70d9bc9].data,
-                                                  D_8005AEB8[x_d70d9bc9].x_3b9aa142);
+            sMemAllocated = sMemAllocated + x_5d7a764d->end - (u32) (x_24aca5c4 = x_5d7a764d) - sizeof(x_704d55d4);
+            mem_list_prepend(x_5d7a764d, &sMemUsedList);
+            if (sDmaSlots[x_d70d9bc9].x_3c30b5f3 != NULL) {
+                sDmaSlots[x_d70d9bc9].x_3c30b5f3(x_50f1dbff, sDmaSlots[x_d70d9bc9].data,
+                                                 sDmaSlots[x_d70d9bc9].x_3b9aa142);
             }
-            D_8005AEB8[x_d70d9bc9].data = x_50f1dbff;
+            sDmaSlots[x_d70d9bc9].data = x_50f1dbff;
         }
     } while (x_d70d9bc9 >= 0);
 
-    x_cf9b7451->end = end;
-    x_04e9945f = x_b30d1d21(x_cf9b7451);
+    sMemFreeList->end = end;
+    sMemFreeBytes = mem_free_space(sMemFreeList);
 }
 
-void x_aa5915df(x_704d55d4 *list, s32 end) {
+void mem_free_add(x_704d55d4 *list, s32 end) {
     list->end = end;
     list->flags = 1;
     list->next = NULL;
     list->previous = NULL;
-    list->x_a9d4034d = x_2bc76549;
-    x_28d4de16(list, &x_cf9b7451);
+    list->x_a9d4034d = MEM_MAGIC;
+    mem_list_prepend(list, &sMemFreeList);
 }
 
-s32 x_28fecd4a(void) {
+s32 mem_validate(void) {
     x_704d55d4 *ptr;
     s32 ret = TRUE;
 
-    ptr = x_3c86e126;
+    ptr = sMemUsedList;
     while (ptr != NULL) {
-        if (ptr->x_a9d4034d == x_2bc76549) {
+        if (ptr->x_a9d4034d == MEM_MAGIC) {
             ptr = ptr->next;
         } else {
             ret = FALSE;
@@ -140,7 +140,7 @@ s32 x_28fecd4a(void) {
     return ret;
 }
 
-s32 x_b30d1d21(x_704d55d4 *x_6c87f683) {
+s32 mem_free_space(x_704d55d4 *x_6c87f683) {
     s32 x_cab1ae75 = 0;
 
     while (x_6c87f683 != NULL) {
@@ -152,7 +152,7 @@ s32 x_b30d1d21(x_704d55d4 *x_6c87f683) {
     return x_cab1ae75;
 }
 
-void x_28d4de16(x_704d55d4 *x_6c87f683, x_704d55d4 **x_bf0b39b3) {
+void mem_list_prepend(x_704d55d4 *x_6c87f683, x_704d55d4 **x_bf0b39b3) {
     x_6c87f683->next = *x_bf0b39b3;
     if (x_6c87f683->next != NULL) {
         x_6c87f683->next->previous = x_6c87f683;
@@ -161,12 +161,12 @@ void x_28d4de16(x_704d55d4 *x_6c87f683, x_704d55d4 **x_bf0b39b3) {
     x_6c87f683->previous = NULL;
 }
 
-void x_090192d9(x_704d55d4 *x_6c87f683) {
-    if (x_6c87f683 == x_cf9b7451) {
-        x_cf9b7451 = x_6c87f683->next;
+void mem_list_remove(x_704d55d4 *x_6c87f683) {
+    if (x_6c87f683 == sMemFreeList) {
+        sMemFreeList = x_6c87f683->next;
     }
-    if (x_6c87f683 == x_3c86e126) {
-        x_3c86e126 = x_6c87f683->next;
+    if (x_6c87f683 == sMemUsedList) {
+        sMemUsedList = x_6c87f683->next;
     }
 
     if (x_6c87f683->next != NULL && x_6c87f683->previous != NULL) {
@@ -182,21 +182,21 @@ void x_090192d9(x_704d55d4 *x_6c87f683) {
     x_6c87f683->previous = NULL;
 }
 
-void x_2c0505ad(void) {
+void mem_merge_free(void) {
     x_704d55d4 *current;
     x_704d55d4 *ptr;
 
-    x_04e9945f = x_b30d1d21(x_cf9b7451);
-    D_80049288 = FALSE;
+    sMemFreeBytes = mem_free_space(sMemFreeList);
+    sDefragNeeded = FALSE;
 
-    current = x_cf9b7451;
+    current = sMemFreeList;
     while (current != NULL) {
-        ptr = x_cf9b7451;
+        ptr = sMemFreeList;
         while (ptr != NULL) {
             if (current == (struct x_704d55d4 *) ptr->end) {
                 // merge two chunks
                 ptr->end = current->end;
-                x_090192d9(current);
+                mem_list_remove(current);
                 current = NULL;
                 break;
             }
@@ -206,22 +206,22 @@ void x_2c0505ad(void) {
         if (current != NULL) {
             current = current->next;
         } else {
-            current = x_cf9b7451;
+            current = sMemFreeList;
         }
     }
 }
 
 #ifdef NON_MATCHING
-void *x_5319ff51(u32 size) {
+void *mem_alloc(u32 size) {
     x_704d55d4 *current;
     u32 x_bc354e67;
     u32 x_e26ee934;
     x_704d55d4 *x_b264b422;
     x_704d55d4 *s1;
 
-x_3ace60b0:
-    x_21ce7377 += size;
-    x_04e9945f = x_b30d1d21(x_cf9b7451);
+retry_alloc:
+    sMemAllocated += size;
+    sMemFreeBytes = mem_free_space(sMemFreeList);
 
     if (size == 0) {
         return NULL;
@@ -232,7 +232,7 @@ x_3ace60b0:
     x_b264b422 = NULL;
     x_e26ee934 = 0x7FFFFFFF;
 
-    for (current = x_cf9b7451; current != NULL; current = current->next) {
+    for (current = sMemFreeList; current != NULL; current = current->next) {
         x_bc354e67 = current->end - ((u32) current) - sizeof(x_704d55d4);
 
         if (x_bc354e67 == size) {
@@ -254,47 +254,47 @@ x_3ace60b0:
             x_b264b422->end = x_b264b422->end - size - sizeof(x_704d55d4);
             s1 = x_b264b422->end;
             s1->flags = 0;
-            s1->x_a9d4034d = x_2bc76549;
+            s1->x_a9d4034d = MEM_MAGIC;
             s1->end = end;
         } else {
             x_b264b422->flags &= ~1;
-            x_b264b422->x_a9d4034d = x_2bc76549;
-            x_090192d9(x_b264b422);
+            x_b264b422->x_a9d4034d = MEM_MAGIC;
+            mem_list_remove(x_b264b422);
         }
     } else {
-        if (x_cf9b7451 == NULL || !D_80049288) {
+        if (sMemFreeList == NULL || !sDefragNeeded) {
             return NULL;
         }
 
-        x_2c0505ad();
-        x_21ce7377 -= size;
-        goto x_3ace60b0;
+        mem_merge_free();
+        sMemAllocated -= size;
+        goto retry_alloc;
     }
 
-    x_28d4de16(s1, &x_3c86e126);
+    mem_list_prepend(s1, &sMemUsedList);
     return (u32) s1 + sizeof(x_704d55d4);
 }
 #else
-void *x_5319ff51(u32 x_cc1d0de5);
-#pragma GLOBAL_ASM("asm/nonmatchings/memory/x_5319ff51.s")
+void *mem_alloc(u32 x_cc1d0de5);
+#pragma GLOBAL_ASM("asm/nonmatchings/memory/mem_alloc.s")
 #endif
 
-void x_86715543(void *ptr) {
+void mem_free(void *ptr) {
     x_704d55d4 *x_6c87f683;
 
     x_6c87f683 = (x_704d55d4 *) ((u32) ptr - sizeof(x_704d55d4));
-    x_21ce7377 = x_21ce7377 - x_6c87f683->end + (u32) x_6c87f683 + sizeof(x_704d55d4);
-    if (x_6c87f683->x_a9d4034d == x_2bc76549) {
+    sMemAllocated = sMemAllocated - x_6c87f683->end + (u32) x_6c87f683 + sizeof(x_704d55d4);
+    if (x_6c87f683->x_a9d4034d == MEM_MAGIC) {
         x_6c87f683->x_a9d4034d = 0;
     }
 
-    x_090192d9(x_6c87f683);
+    mem_list_remove(x_6c87f683);
     x_6c87f683->flags |= 1;
-    x_28d4de16(x_6c87f683, &x_cf9b7451);
-    D_80049288 = TRUE;
+    mem_list_prepend(x_6c87f683, &sMemFreeList);
+    sDefragNeeded = TRUE;
 }
 
-void x_ad92c136(u8 *x_cc1d0de5, u8 x_84ff873b, u32 x_2092f891) {
+void mem_set(u8 *x_cc1d0de5, u8 x_84ff873b, u32 x_2092f891) {
     s32 i;
 
     for (i = 0; i < x_2092f891; i++) {
@@ -302,7 +302,7 @@ void x_ad92c136(u8 *x_cc1d0de5, u8 x_84ff873b, u32 x_2092f891) {
     }
 }
 
-void x_0be47d8a(u32 *dest, u32 *src, u32 size) {
+void mem_copy_overlap(u32 *dest, u32 *src, u32 size) {
     s32 i;
     u32 *temp = src;
 
@@ -315,21 +315,21 @@ void x_0be47d8a(u32 *dest, u32 *src, u32 size) {
     }
 }
 
-s32 x_0c316ed1(s32 size) {
+s32 mem_dma_alloc(s32 size) {
     s32 i;
 
-    if (D_8005BEB8 < x_af32df05) {
-        D_8005AEB8[D_8005BEB8].data = x_5319ff51(size);
-        D_8005AEB8[D_8005BEB8].x_af0aa1f8 = 0;
-        D_8005AEB8[D_8005BEB8].x_3c30b5f3 = 0;
-        return D_8005BEB8++;
+    if (sDmaSlotCount < DMA_SLOT_MAX) {
+        sDmaSlots[sDmaSlotCount].data = mem_alloc(size);
+        sDmaSlots[sDmaSlotCount].x_af0aa1f8 = 0;
+        sDmaSlots[sDmaSlotCount].x_3c30b5f3 = 0;
+        return sDmaSlotCount++;
     }
 
-    for (i = 0; i < x_af32df05; i++) {
-        if (D_8005AEB8[i].x_af0aa1f8 & 1) {
-            D_8005AEB8[i].data = x_5319ff51(size);
-            D_8005AEB8[i].x_af0aa1f8 = 0;
-            D_8005AEB8[i].x_3c30b5f3 = 0;
+    for (i = 0; i < DMA_SLOT_MAX; i++) {
+        if (sDmaSlots[i].x_af0aa1f8 & 1) {
+            sDmaSlots[i].data = mem_alloc(size);
+            sDmaSlots[i].x_af0aa1f8 = 0;
+            sDmaSlots[i].x_3c30b5f3 = 0;
             return i;
         }
     }
@@ -337,31 +337,32 @@ s32 x_0c316ed1(s32 size) {
     return -1;
 }
 
-void x_d5aca165(s32 x_ef190cf1) {
-    x_86715543(D_8005AEB8[x_ef190cf1].data);
-    D_8005AEB8[x_ef190cf1].x_af0aa1f8 = 1;
-    D_8005AEB8[x_ef190cf1].x_3c30b5f3 = NULL;
+void mem_dma_free(s32 x_ef190cf1) {
+    mem_free(sDmaSlots[x_ef190cf1].data);
+    sDmaSlots[x_ef190cf1].x_af0aa1f8 = 1;
+    sDmaSlots[x_ef190cf1].x_3c30b5f3 = NULL;
 }
 
-void x_07194b79(s32 romAddr, void *x_dda6dc06, s32 size) {
+void dma_read_sync(s32 romAddr, void *x_dda6dc06, s32 size) {
     osWritebackDCacheAll();
     while (osRecvMesg(&gPiMessageQueue, NULL, OS_MESG_NOBLOCK) != -1) {}
-    osPiStartDma(&D_8005AE90, 0, OS_READ, romAddr, x_dda6dc06, size, &gPiMessageQueue);
+    osPiStartDma(&sDmaMesg, 0, OS_READ, romAddr, x_dda6dc06, size, &gPiMessageQueue);
     osRecvMesg(&gPiMessageQueue, NULL, OS_MESG_BLOCK);
     osInvalDCache(0, 0x3FFFFF);
 }
 
-void x_2add4a13(s32 romAddr, void *x_dda6dc06, s32 size) {
+void dma_read_async(s32 romAddr, void *x_dda6dc06, s32 size) {
     osWritebackDCacheAll();
-    osPiStartDma(&D_8005AE90, 0, OS_READ, romAddr, x_dda6dc06, size, &gPiMessageQueue);
+    osPiStartDma(&sDmaMesg, 0, OS_READ, romAddr, x_dda6dc06, size, &gPiMessageQueue);
     osInvalDCache(0, 0x3FFFFF);
 }
 
-void x_1bf854b7(s32 x_ef190cf1, void (*x_3c30b5f3)(void *x_cc1d0de5, s32 x_84ff873b, s32 x_2092f891), s32 x_3b9aa142) {
-    D_8005AEB8[x_ef190cf1].x_3c30b5f3 = x_3c30b5f3;
-    D_8005AEB8[x_ef190cf1].x_3b9aa142 = x_3b9aa142;
+void mem_dma_set_callback(s32 x_ef190cf1, void (*x_3c30b5f3)(void *x_cc1d0de5, s32 x_84ff873b, s32 x_2092f891),
+                          s32 x_3b9aa142) {
+    sDmaSlots[x_ef190cf1].x_3c30b5f3 = x_3c30b5f3;
+    sDmaSlots[x_ef190cf1].x_3b9aa142 = x_3b9aa142;
 }
 
-void *x_56c3086a(s32 size, const char *file, s32 line) {
-    return x_5319ff51(size);
+void *mem_alloc_debug(s32 size, const char *file, s32 line) {
+    return mem_alloc(size);
 }

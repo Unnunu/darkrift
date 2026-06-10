@@ -98,19 +98,19 @@ void x_fc4a871b(void) {
     D_800814E0[7].y = y2;
     D_800814E0[7].z = -z2;
 
-    x_c188a78e.x = x_47d273d8(x_81bfdb41, x_aa1be933);
-    x_c188a78e.y = x_47d273d8(x_720f6ac9, dz);
+    x_c188a78e.x = atan2_lut(x_81bfdb41, x_aa1be933);
+    x_c188a78e.y = atan2_lut(x_720f6ac9, dz);
     x_c188a78e.z = 0;
 
-    x_948f0b9f(&D_800813E0, &x_c188a78e);
-    x_f3b449e2(&D_800814E0[0], &D_80081560[0], &D_800813E0);
-    x_f3b449e2(&D_800814E0[1], &D_80081560[1], &D_800813E0);
-    x_f3b449e2(&D_800814E0[2], &D_80081560[2], &D_800813E0);
-    x_f3b449e2(&D_800814E0[3], &D_80081560[3], &D_800813E0);
-    x_f3b449e2(&D_800814E0[4], &D_80081560[4], &D_800813E0);
-    x_f3b449e2(&D_800814E0[5], &D_80081560[5], &D_800813E0);
-    x_f3b449e2(&D_800814E0[6], &D_80081560[6], &D_800813E0);
-    x_f3b449e2(&D_800814E0[7], &D_80081560[7], &D_800813E0);
+    mat4_from_euler(&gMat4Temp, &x_c188a78e);
+    vec_transform_by_mat4(&D_800814E0[0], &D_80081560[0], &gMat4Temp);
+    vec_transform_by_mat4(&D_800814E0[1], &D_80081560[1], &gMat4Temp);
+    vec_transform_by_mat4(&D_800814E0[2], &D_80081560[2], &gMat4Temp);
+    vec_transform_by_mat4(&D_800814E0[3], &D_80081560[3], &gMat4Temp);
+    vec_transform_by_mat4(&D_800814E0[4], &D_80081560[4], &gMat4Temp);
+    vec_transform_by_mat4(&D_800814E0[5], &D_80081560[5], &gMat4Temp);
+    vec_transform_by_mat4(&D_800814E0[6], &D_80081560[6], &gMat4Temp);
+    vec_transform_by_mat4(&D_800814E0[7], &D_80081560[7], &gMat4Temp);
 
     D_80081560[0].x += x_435c561d.x;
     D_80081560[0].z += x_435c561d.z;
@@ -239,9 +239,9 @@ void x_7a8b20f2(char *name, s32 x_84ff873b) {
     D_800815F2 = D_800815E8 / 2;
     D_800815F4 = D_800815E8 / 2;
 
-    x_3004a565(&D_800813E0);
+    mat4_ident(&gMat4Temp);
     x_081c4eef.y = x_081c4eef.z = 0;
     x_081c4eef.x = -0x400;
-    x_948f0b9f(&D_800813E0, &x_081c4eef);
-    x_ba58a12b(&D_80081618, &D_800813E0);
+    mat4_from_euler(&gMat4Temp, &x_081c4eef);
+    mat4_to_mtx(&D_80081618, &gMat4Temp);
 }

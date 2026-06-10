@@ -95,7 +95,7 @@ void x_b36d80d1(x_13162abc *x_3bfb7219) {
     s32 x_5a8a4e18;
     u32 j;
 
-    header = (x_291fbc91 *) D_8005AEB8[x_3bfb7219->x_7d9f29c8].data;
+    header = (x_291fbc91 *) sDmaSlots[x_3bfb7219->x_7d9f29c8].data;
     x_3bfb7219->x_45978ecb =
         (x_c3c252eb *) ((s32) x_3bfb7219 + sizeof(x_13162abc) + x_3bfb7219->x_6dcce206 * sizeof(x_36123519));
     x_3bfb7219->header = header;
@@ -171,7 +171,7 @@ void x_36b7cd1c(x_13162abc *x_3bfb7219, s32 x_7d9f29c8) {
     x_291fbc91 *x_0fc71c4e;
 
     x_3bfb7219->x_7d9f29c8 = x_7d9f29c8;
-    x_0fc71c4e = D_8005AEB8[x_7d9f29c8].data;
+    x_0fc71c4e = sDmaSlots[x_7d9f29c8].data;
     x_09e9cd94(x_3bfb7219, x_0fc71c4e->x_1a2fc26d[0]);
 
     if ((u8) (x_3bfb7219->x_8d36349d == x_7138a497)) {
@@ -210,7 +210,7 @@ void x_0dfb8a26(x_82e80914 *x_cc1d0de5, s32 x_84ff873b) {
     s32 size;
 
     size = x_fa21689f * sizeof(Gfx) * 21 + (x_9d9b2b65 / 8) * sizeof(Gfx) + x_1256da71 * sizeof(Gfx); // TODO constant
-    x_cc1d0de5->model.x_bde24317[x_84ff873b] = x_56c3086a(size, "kmd.c", 297);
+    x_cc1d0de5->model.x_bde24317[x_84ff873b] = mem_alloc_debug(size, "kmd.c", 297);
     x_cc1d0de5->x_2640873a = size;
 }
 
@@ -322,7 +322,7 @@ void x_4126a1e6(Model *model, s32 x_7b79be4b, u8 x_6363ad21, x_d8e0705d *x_028ab
         x_35a8bfd5[x_a1c9c44b] = x_5a8a4e18;
 
         if (x_3e1f0641 <= 16U) {
-            triangle = x_5aeb5894[x_5a8a4e18] = x_56c3086a(x_8a54e96a * sizeof(x_562d2a02), "kmd.c", 421);
+            triangle = x_5aeb5894[x_5a8a4e18] = mem_alloc_debug(x_8a54e96a * sizeof(x_562d2a02), "kmd.c", 421);
             for (i = 0; i < x_8a54e96a; x_9380a502++, i++) {
                 triangle[i].x_091f00cd = x_9380a502->vi[0] - x_5ab6332d;
                 triangle[i].x_83f352dd = x_9380a502->vi[1] - x_5ab6332d;
@@ -345,7 +345,7 @@ void x_4126a1e6(Model *model, s32 x_7b79be4b, u8 x_6363ad21, x_d8e0705d *x_028ab
                 x_3016b79d[x_5a8a4e18] = x_a3bc0d9d;
                 x_2c95097b[x_5a8a4e18] = x_f74d0791;
                 triangle = x_5aeb5894[x_5a8a4e18] =
-                    x_56c3086a(x_a3bc0d9d * sizeof(x_562d2a02), "kmd.c", 449);
+                    mem_alloc_debug(x_a3bc0d9d * sizeof(x_562d2a02), "kmd.c", 449);
                 x_5a8a4e18++;
 
                 for (i = 0; i < x_a3bc0d9d; i++, x_9380a502++) {
@@ -359,8 +359,8 @@ void x_4126a1e6(Model *model, s32 x_7b79be4b, u8 x_6363ad21, x_d8e0705d *x_028ab
         }
     }
 
-    x_2e8898dd = model->x_467629e6[x_7b79be4b] = (x_320b5d80 *) x_56c3086a(x_5a8a4e18 * sizeof(x_320b5d80), "kmd.c", 469);
-    x_d6eac39a = model->x_d6eac39a[x_7b79be4b] = (x_c1cedf06 *) x_56c3086a(x_5a8a4e18 * sizeof(x_c1cedf06), "kmd.c", 470);
+    x_2e8898dd = model->x_467629e6[x_7b79be4b] = (x_320b5d80 *) mem_alloc_debug(x_5a8a4e18 * sizeof(x_320b5d80), "kmd.c", 469);
+    x_d6eac39a = model->x_d6eac39a[x_7b79be4b] = (x_c1cedf06 *) mem_alloc_debug(x_5a8a4e18 * sizeof(x_c1cedf06), "kmd.c", 470);
 
     for (i = 0; i < x_5a8a4e18; i++) {
         x_2e8898dd[i].context = NULL;
@@ -369,7 +369,7 @@ void x_4126a1e6(Model *model, s32 x_7b79be4b, u8 x_6363ad21, x_d8e0705d *x_028ab
         x_90fe6b5a += x_3016b79d[i] * 4; // ??
         x_2e8898dd[i].info = x_d6eac39a + i;
 
-        x_ad92c136(x_d6eac39a + i, 0, sizeof(x_c1cedf06));
+        mem_set(x_d6eac39a + i, 0, sizeof(x_c1cedf06));
         (x_d6eac39a + i)->header.x_09cf7a45 = x_028ab561->x_09cf7a45;
         (x_d6eac39a + i)->header.x_1256da71 = 0;
         (x_d6eac39a + i)->header.x_4c5e05f8 = x_2c95097b[i];
@@ -388,8 +388,8 @@ void x_4126a1e6(Model *model, s32 x_7b79be4b, u8 x_6363ad21, x_d8e0705d *x_028ab
     model->x_c246f31f[x_7b79be4b] = x_5a8a4e18;
 
     size = 22 * sizeof(Gfx) * x_fa21689f; // TODO: make constant
-    gfx = (Gfx *) x_56c3086a(size, "kmd.c", 501);
-    x_ad92c136(gfx, 0, size);
+    gfx = (Gfx *) mem_alloc_debug(size, "kmd.c", 501);
+    mem_set(gfx, 0, size);
     for (x_a1c9c44b = 0; x_a1c9c44b < x_fa21689f; x_a1c9c44b++) {
         x_c2df68e4 = node->x_063bc6a1 + x_a1c9c44b;
         x_746b0863 = x_35a8bfd5[x_a1c9c44b];
@@ -579,9 +579,9 @@ void x_f8c73c4c(x_82e80914 *x_cc1d0de5, x_13162abc *x_84ff873b, char *name, u8 x
         x_c9614940[3] = '\0';
         x_8c518b47(x_c9614940, "_anm.anm");
         x_d59386e0 = &x_b717ed65[x_e720f37d(x_c9614940, x_a0e63e9c)];
-        x_cc1d0de5->model.x_50771dcd = D_8005AEB8[x_d59386e0->x_d5b87ce9].data;
+        x_cc1d0de5->model.x_50771dcd = sDmaSlots[x_d59386e0->x_d5b87ce9].data;
         x_cc1d0de5->model.x_c4306fe5 = x_d59386e0->x_4962fc73;
-        x_1bf854b7(x_d59386e0->x_d5b87ce9, x_ced731f1, x_cc1d0de5->model.x_c4306fe5);
+        mem_dma_set_callback(x_d59386e0->x_d5b87ce9, x_ced731f1, x_cc1d0de5->model.x_c4306fe5);
     } else {
         x_cc1d0de5->model.x_50771dcd = NULL;
     }
@@ -620,7 +620,7 @@ s32 x_f2461a47(Model *model, s32 x_906a6dc7, s16 *x_c941fcac) {
         }
     }
 
-    x_5b386c41 = x_56c3086a(x_44140223 * sizeof(x_81d7569b), "kmd.c", 761);
+    x_5b386c41 = mem_alloc_debug(x_44140223 * sizeof(x_81d7569b), "kmd.c", 761);
     model->x_5b386c41[x_906a6dc7] = x_5b386c41;
     model->x_810b9a68[x_906a6dc7] = x_44140223;
 
@@ -715,11 +715,11 @@ void x_0aa2034a(Model *model) {
         }
     }
 
-    x_ef3c3ef7 = x_56c3086a(s0 * 12, "kmd.c", 854);
-    x_c4ba5114 = x_56c3086a(s1 * 12, "kmd.c", 855);
-    x_74b56be1 = x_56c3086a(s0 * 2, "kmd.c", 856);
-    x_ad92c136(x_ef3c3ef7, 0, s0 * 12);
-    x_ad92c136(x_c4ba5114, 0, s1 * 12);
+    x_ef3c3ef7 = mem_alloc_debug(s0 * 12, "kmd.c", 854);
+    x_c4ba5114 = mem_alloc_debug(s1 * 12, "kmd.c", 855);
+    x_74b56be1 = mem_alloc_debug(s0 * 2, "kmd.c", 856);
+    mem_set(x_ef3c3ef7, 0, s0 * 12);
+    mem_set(x_c4ba5114, 0, s1 * 12);
 
     for (i = 0; i < model->x_6dcce206; i++) {
         x_44140223 = x_f2461a47(model, i, x_74b56be1);
@@ -799,9 +799,9 @@ void x_0aa2034a(Model *model) {
         }
     }
 
-    x_86715543(x_ef3c3ef7);
-    x_86715543(x_c4ba5114);
-    x_86715543(x_74b56be1);
+    mem_free(x_ef3c3ef7);
+    mem_free(x_c4ba5114);
+    mem_free(x_74b56be1);
 }
 
 void x_1a472aba(Model *model, x_13162abc *x_6d416e72, char *name, u8 x_6363ad21,
@@ -825,7 +825,7 @@ void x_1a472aba(Model *model, x_13162abc *x_6d416e72, char *name, u8 x_6363ad21,
     }
 
     if (model->x_3bfb7219->x_e7962160 != NULL) {
-        model->x_e7962160 = x_56c3086a((model->x_6dcce206 + 1) * sizeof(x_43bd08ed), "kmd.c", 983);
+        model->x_e7962160 = mem_alloc_debug((model->x_6dcce206 + 1) * sizeof(x_43bd08ed), "kmd.c", 983);
         memcpy(model->x_e7962160, model->x_3bfb7219->x_e7962160, (model->x_6dcce206 + 1) * sizeof(x_43bd08ed));
     } else {
         model->x_e7962160 = NULL;
@@ -850,9 +850,9 @@ void x_1a472aba(Model *model, x_13162abc *x_6d416e72, char *name, u8 x_6363ad21,
     }
 
     if (x_80737ea7 >= 0) {
-        model->x_50771dcd = D_8005AEB8[x_b717ed65[x_80737ea7].x_d5b87ce9].data;
+        model->x_50771dcd = sDmaSlots[x_b717ed65[x_80737ea7].x_d5b87ce9].data;
         model->x_c4306fe5 = x_b717ed65[x_80737ea7].x_4962fc73;
-        x_1bf854b7(x_b717ed65[x_80737ea7].x_d5b87ce9, x_ced731f1, model->x_c4306fe5);
+        mem_dma_set_callback(x_b717ed65[x_80737ea7].x_d5b87ce9, x_ced731f1, model->x_c4306fe5);
     } else {
         model->x_50771dcd = NULL;
     }

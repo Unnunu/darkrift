@@ -28,7 +28,7 @@ extern u16 x_33abac12;
 
 void x_d2b7f1c2(Object *);
 void x_5638088b(Object *);
-void x_d23046bd(Object *, s32);
+void cam_ko_init(Object *, s32);
 Object *x_572f827d(x_88f11482 *, s32, void (*)(Object *), Model *);
 void x_91e62f73(Object *);
 void x_8daf2444(Object *);
@@ -38,7 +38,7 @@ void x_6eea7033(Object *, s16);
 void player_init(s16 x_cc1d0de5);
 void x_7a8b20f2(char *, s32);
 void x_41d6ae47(void);
-void x_a92790e6(Object *);
+void cam_intro_start(Object *);
 void task_remove_current(Object *);
 void x_0073afdd(Object *);
 void x_a9342b2f(Object *);
@@ -242,7 +242,7 @@ void x_5bf0e9e5(void) {
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = x_a92790e6;
+    x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
     x_7bc4ef6e();
@@ -257,7 +257,7 @@ void x_bf79c7ba(Object *obj) {
     } else if (x_59ce598c[x_6f0b3be3].x_33260da8 & x_37f8540c) {
         obj->x_224610f1.y += 10;
     }
-    x_5ff12555(obj);
+    model_lighting_apply(obj);
 }
 
 // unknown data
@@ -279,7 +279,7 @@ void x_6d8e5572(void) {
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = x_a92790e6;
+    x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
     x_7bc4ef6e();
@@ -302,7 +302,7 @@ void x_79c3a331(void) {
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = x_a92790e6;
+    x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
     x_7bc4ef6e();
@@ -325,7 +325,7 @@ void x_ac7d3df0(void) {
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = x_a92790e6;
+    x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
     x_7bc4ef6e();
@@ -348,7 +348,7 @@ void x_0f26cf14(void) {
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = x_a92790e6;
+    x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
     x_7bc4ef6e();
@@ -370,7 +370,7 @@ void x_370978d4(void) {
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = x_a92790e6;
+    x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
     x_7bc4ef6e();
@@ -390,7 +390,7 @@ void x_97f45a12(void) {
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = x_a92790e6;
+    x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
     x_7bc4ef6e();
@@ -413,7 +413,7 @@ void x_855a469e(void) {
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = x_a92790e6;
+    x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
     x_7bc4ef6e();
@@ -436,7 +436,7 @@ void x_8081616c(void) {
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = x_a92790e6;
+    x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
     x_7bc4ef6e();
@@ -459,7 +459,7 @@ void x_5f5796f4(void) {
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = x_a92790e6;
+    x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
     x_7bc4ef6e();
@@ -530,7 +530,7 @@ void x_c9523e04(Player *x_cc1d0de5, Object *x_84ff873b, s32 x_2092f891) {
             a1 = x_cc1d0de5->x_68a6b5cd[D_80049434[i]].x_43d35340;
             x_84ff873b->x_20d20338->x_50771dcd[a1] = x_b717ed65[v0].data;
             s4++;
-            x_cc1d0de5->x_68a6b5cd[D_80049434[i]].x_bab9966d = x_d8998bf6(x_84ff873b->x_20d20338, a1);
+            x_cc1d0de5->x_68a6b5cd[D_80049434[i]].x_bab9966d = model_anim_duration(x_84ff873b->x_20d20338, a1);
         }
     }
 }
@@ -590,7 +590,7 @@ void x_af961405(u8 x_cc1d0de5, s16 x_84ff873b, s32 x_2092f891) {
     TASK_END(x_824b9544[x_6f0b3be3].x_08b62e4f);
 
     x_c9523e04(x_824b9544 + 1 - s0, a1, x_2092f891);
-    x_70e8be1f(x_f4bce728);
+    cam_battle_init(x_f4bce728);
     player_exec_move(x_824b9544 + 1 - s0, x_84ff873b, 1);
     D_8008012C |= x_3309dc13;
 }
@@ -880,7 +880,7 @@ void x_526ab60f(void) {
     TASK_END(x_824b9544[x_6f0b3be3].x_08b62e4f);
 
     x_c9523e04(&x_824b9544[x_ea78ab9e], a1, 0x3000);
-    x_70e8be1f(x_f4bce728);
+    cam_battle_init(x_f4bce728);
     player_exec_move(&x_824b9544[x_ea78ab9e], x_467d52ce, 1);
     D_8008012C |= x_3309dc13;
     x_4495b42c(x_d2b7f1c2, 0x1000);
@@ -1042,7 +1042,7 @@ void x_84948d12(u8 x_cc1d0de5) {
     TASK_END(x_824b9544[x_83106b21].x_08b62e4f);
     TASK_END(x_824b9544[x_6f0b3be3].x_08b62e4f);
 
-    x_70e8be1f(x_f4bce728);
+    cam_battle_init(x_f4bce728);
     x_c9523e04(&x_824b9544[x_b3c51f8a], a3, 0x4000);
     x_c9523e04(&x_824b9544[t9], s0, 0x4000);
     D_8008012C |= x_3309dc13;
@@ -1157,7 +1157,7 @@ void x_2d92be0a(void) {
 
     D_80080129 = FALSE;
     x_e30d50d2 |= x_86c5bc33;
-    x_d23046bd(x_f4bce728, x_1a071863);
+    cam_ko_init(x_f4bce728, x_1a071863);
 }
 
 void x_6da0c319(void) {
@@ -1678,7 +1678,7 @@ void x_64d3e54a(void) {
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = x_a92790e6;
+    x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
     x_82df7d23();

@@ -104,12 +104,12 @@ void x_69c2895e(x_80d298c9 *x_cc1d0de5) {
     D_800B6428 = 0;
 
     if ((u32) D_8013C218 < (u32) x_cc1d0de5->size) {
-        x_07194b79(D_800B6438->romAddr, D_8013C208, D_800B6430);
-        x_2add4a13(D_800B6438->romAddr + D_800B6430, D_800B6410[1], D_800B6430);
+        dma_read_sync(D_800B6438->romAddr, D_8013C208, D_800B6430);
+        dma_read_async(D_800B6438->romAddr + D_800B6430, D_800B6410[1], D_800B6430);
         D_800B6424 = 2;
         D_800B6434 = 0;
     } else {
-        x_07194b79(D_800B6438->romAddr, D_8013C208, x_cc1d0de5->size);
+        dma_read_sync(D_800B6438->romAddr, D_8013C208, x_cc1d0de5->size);
         D_800B6430 = x_cc1d0de5->size;
         D_800B6434 = 1;
     }

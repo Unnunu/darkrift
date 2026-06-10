@@ -126,7 +126,7 @@ void x_330375dc(Object *obj) {
     if (player->x_7f68c36b->x_016911c1 < 0) {
         TASK_END(obj->currentTask);
     } else if (obj->frameCounter >= player->x_7f68c36b->x_71e17346) {
-        x_7d4d6609();
+        cam_save_state();
 
         x_32f1d6e2.x = (x_824b9544[x_83106b21].obj->pos.x + x_824b9544[x_6f0b3be3].obj->pos.x) >> 1;
         x_32f1d6e2.z = (x_824b9544[x_83106b21].obj->pos.z + x_824b9544[x_6f0b3be3].obj->pos.z) >> 1;
@@ -134,7 +134,7 @@ void x_330375dc(Object *obj) {
         x_434424a1(x_f4bce728, &x_32f1d6e2, obj->x_224610f1.y,
                    obj->x_20d20338->x_50771dcd[player->x_68a6b5cd[player->x_7f68c36b->x_016911c1].x_43d35340]);
 
-        x_f4bce728->currentTask->callback = x_e5f3a418;
+        x_f4bce728->currentTask->callback = cam_cinematic_update;
         x_f4bce728->currentTask->delay = 0;
         x_f4bce728->currentTask->flags = TASK_RUNNABLE;
         x_f4bce728->currentTask->delay = 1;
@@ -157,9 +157,9 @@ void x_7c333f6c(Object *obj) {
     }
 
     if (x_fc58f0f1->x_49e4c93e != -1) {
-        x_049b184b(obj, player->x_c42e3970 + x_fc58f0f1->x_49e4c93e * obj->x_20d20338->x_6dcce206);
+        model_visibility_set(obj, player->x_c42e3970 + x_fc58f0f1->x_49e4c93e * obj->x_20d20338->x_6dcce206);
     } else {
-        x_64394ce4(obj);
+        model_parts_disable_all(obj);
     }
 
     obj->currentTask->callback = x_d18c17c2;
@@ -216,9 +216,9 @@ void x_73e8f926(Object *obj) {
         }
 
         if (x_fc58f0f1->x_49e4c93e != -1) {
-            x_049b184b(obj, player->x_c42e3970 + x_fc58f0f1->x_49e4c93e * obj->x_20d20338->x_6dcce206);
+            model_visibility_set(obj, player->x_c42e3970 + x_fc58f0f1->x_49e4c93e * obj->x_20d20338->x_6dcce206);
         } else {
-            x_64394ce4(obj);
+            model_parts_disable_all(obj);
         }
 
         player->x_7f68c36b = x_fc58f0f1;
@@ -275,14 +275,14 @@ void x_6ac04b7a(Object *obj) {
     x_73e8f926(obj);
 
     if (obj->frameCounter >= 2) {
-        x_0f2c2c2a(obj);
+        model_anim_load(obj);
         obj->x_20d20338->x_2f4c4ce1 = obj->x_20d20338->x_ee205ef9;
         obj->flags |= x_56bbd9b2;
 
         s2 = obj->frameCounter;
         for (i = 0; i < s2; i += 2) {
             obj->frameCounter = i;
-            x_b6e96a17(obj);
+            model_anim_tick(obj);
         }
 
         obj->flags &= ~x_56bbd9b2;

@@ -2,8 +2,8 @@
 #define x_a378f094
 
 extern x_23580eef x_59ce598c[2];
-extern x_37652cbd D_8005AEB8[256];
-extern x_704d55d4 *x_cf9b7451;
+extern x_37652cbd sDmaSlots[256];
+extern x_704d55d4 *sMemFreeList;
 extern x_80d298c9 x_b717ed65[256];
 extern u16 x_e30d50d2;
 extern s32 D_8005BEFC;
@@ -17,7 +17,7 @@ extern s32 x_6c647b3a;
 extern s32 D_8008012C;
 extern s32 D_80081428;
 extern s32 gFrameCounter;
-extern x_f9704fd6 D_800813E0;
+extern x_f9704fd6 gMat4Temp;
 extern OSMesgQueue gRspMessageQueue;
 extern x_320b5d80 *x_8a79b283;
 extern Player x_824b9544[2];
@@ -86,7 +86,7 @@ extern s32 x_e74df613;
 extern x_acccb624 x_acab9952;
 extern x_88f11482 x_c787d34b;
 extern s32 D_80052C54;
-extern x_f752bb53 *D_8013C4E8;
+extern x_f752bb53 *sSortListHead;
 extern s16 x_c8356c60;
 extern s16 x_adcfd05c;
 extern Object *D_8013C23C;
@@ -152,7 +152,7 @@ extern x_79eacfe1 D_800B6368[11];
 extern u8 x_5c207a56;
 extern u8 x_aee302fc;
 extern u8 x_a7d9a1e8;
-extern Mtx D_8013C4A0;
+extern Mtx sUnusedMatrix;
 extern Mtx D_8005BF80;
 
 #endif

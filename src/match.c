@@ -52,7 +52,7 @@ void x_a1821d40(Object *obj) {
         obj->frameCounter++;
     }
 
-    x_0022bfc3(obj);
+    model_render(obj);
 }
 
 void x_a08bfaa4(Object *obj) {
@@ -267,7 +267,7 @@ void x_1240eb8e(Object *obj) {
         D_80081454->flags |= x_f51cb721;
     }
 
-    x_f4bce728->currentTask->callback = x_93e7a709;
+    x_f4bce728->currentTask->callback = cam_intro_start_inverse;
     x_f4bce728->currentTask->delay = 0;
     x_435c561d.x = x_435c561d.z = 0;
     x_435c561d.y = -400;
@@ -304,16 +304,16 @@ void x_1240eb8e(Object *obj) {
 
     x_824b9544[x_83106b21].obj->frameCounter = 2;
     x_824b9544[x_6f0b3be3].obj->frameCounter = 2;
-    x_0f2c2c2a(x_824b9544[x_83106b21].obj);
-    x_0f2c2c2a(x_824b9544[x_6f0b3be3].obj);
+    model_anim_load(x_824b9544[x_83106b21].obj);
+    model_anim_load(x_824b9544[x_6f0b3be3].obj);
 
-    x_e5c4361f(&x_824b9544[x_83106b21].x_a4d7c80d.x_3fde9cd9);
-    x_e5c4361f(&x_824b9544[x_83106b21].x_022dff72.x_3fde9cd9);
-    x_e5c4361f(&x_824b9544[x_6f0b3be3].x_a4d7c80d.x_3fde9cd9);
-    x_e5c4361f(&x_824b9544[x_6f0b3be3].x_022dff72.x_3fde9cd9);
+    mat4_ident_partial(&x_824b9544[x_83106b21].x_a4d7c80d.x_3fde9cd9);
+    mat4_ident_partial(&x_824b9544[x_83106b21].x_022dff72.x_3fde9cd9);
+    mat4_ident_partial(&x_824b9544[x_6f0b3be3].x_a4d7c80d.x_3fde9cd9);
+    mat4_ident_partial(&x_824b9544[x_6f0b3be3].x_022dff72.x_3fde9cd9);
 
-    x_2a8d0730(x_824b9544[x_83106b21].obj);
-    x_2a8d0730(x_824b9544[x_6f0b3be3].obj);
+    model_transforms_update(x_824b9544[x_83106b21].obj);
+    model_transforms_update(x_824b9544[x_6f0b3be3].obj);
     x_824b9544[x_83106b21].obj->x_2b06a023 = x_824b9544[x_83106b21].obj->frameCounter;
     x_824b9544[x_6f0b3be3].obj->x_2b06a023 = x_824b9544[x_6f0b3be3].obj->frameCounter;
     x_824b9544[x_83106b21].x_b9252303->flags &= ~TASK_TIME_BASED;

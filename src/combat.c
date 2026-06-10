@@ -65,7 +65,7 @@ void spawn_hit_effect(x_2758cdab *pos, u8 x_0328a4c8, Object *x_2092f891, x_6751
         if (v0 != NULL) {
             v0->x_0f4167b4[0] = 255 / (v0->x_20d20338->x_8e601526 - 2);
             v0->flags |= x_b6789b80;
-            x_371376ba(v0, &sColorBlue);
+            model_light_attach(v0, &sColorBlue);
             v0->color.a = 255;
         }
 
@@ -78,7 +78,7 @@ void spawn_hit_effect(x_2758cdab *pos, u8 x_0328a4c8, Object *x_2092f891, x_6751
         if (v0 != NULL) {
             v0->x_0f4167b4[0] = 255 / (v0->x_20d20338->x_8e601526 - 12);
             v0->flags |= x_b6789b80;
-            x_371376ba(v0, &sColorRed);
+            model_light_attach(v0, &sColorRed);
             v0->color.a = 255;
         }
     }
@@ -341,9 +341,9 @@ void hit_detect_lower(Player *x_7246d2b2, Player *x_e64ba38a) {
                 x_c9d501a3->y = x_dedb5b95.y;
             }
 
-            x_c9d501a3->x = ((x_d9b20313((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) * 100) >> 12) + x_c593269c->x;
+            x_c9d501a3->x = ((sin_fixed((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) * 100) >> 12) + x_c593269c->x;
             x_c9d501a3->z =
-                ((-x_d9b20313(((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) + 0x400) * 100) >> 12) + x_c593269c->z;
+                ((-sin_fixed(((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) + 0x400) * 100) >> 12) + x_c593269c->z;
             apply_hit(x_7246d2b2, x_e64ba38a, x_c9d501a3);
             return;
         }
@@ -351,9 +351,9 @@ void hit_detect_lower(Player *x_7246d2b2, Player *x_e64ba38a) {
         if (x_65d81f5e.y < x_dedb5b95.y) {
             x_65d81f5e.y = x_dedb5b95.y;
         }
-        x_65d81f5e.x = ((x_d9b20313((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) * 100) >> 12) + x_c593269c->x;
+        x_65d81f5e.x = ((sin_fixed((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) * 100) >> 12) + x_c593269c->x;
         x_65d81f5e.z =
-            ((-x_d9b20313(((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) + 0x400) * 100) >> 12) + x_c593269c->z;
+            ((-sin_fixed(((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) + 0x400) * 100) >> 12) + x_c593269c->z;
         apply_hit(x_7246d2b2, x_e64ba38a, &x_65d81f5e);
         return;
     }
@@ -375,9 +375,9 @@ void hit_detect_lower(Player *x_7246d2b2, Player *x_e64ba38a) {
                 x_c9d501a3->y = x_dedb5b95.y;
             }
 
-            x_c9d501a3->x = ((x_d9b20313((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) * 100) >> 12) + x_c593269c->x;
+            x_c9d501a3->x = ((sin_fixed((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) * 100) >> 12) + x_c593269c->x;
             x_c9d501a3->z =
-                ((-x_d9b20313(((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) + 0x400) * 100) >> 12) + x_c593269c->z;
+                ((-sin_fixed(((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) + 0x400) * 100) >> 12) + x_c593269c->z;
             apply_hit(x_7246d2b2, x_e64ba38a, x_c9d501a3);
             return;
         }
@@ -385,9 +385,9 @@ void hit_detect_lower(Player *x_7246d2b2, Player *x_e64ba38a) {
         if (x_7bbf202d.y < x_dedb5b95.y) {
             x_7bbf202d.y = x_dedb5b95.y;
         }
-        x_7bbf202d.x = ((x_d9b20313((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) * 100) >> 12) + x_c593269c->x;
+        x_7bbf202d.x = ((sin_fixed((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) * 100) >> 12) + x_c593269c->x;
         x_7bbf202d.z =
-            ((-x_d9b20313(((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) + 0x400) * 100) >> 12) + x_c593269c->z;
+            ((-sin_fixed(((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) + 0x400) * 100) >> 12) + x_c593269c->z;
         apply_hit(x_7246d2b2, x_e64ba38a, &x_7bbf202d);
         return;
     }
@@ -408,9 +408,9 @@ void hit_detect_lower(Player *x_7246d2b2, Player *x_e64ba38a) {
             if (x_a76dcbae.y < x_dedb5b95.y) {
                 x_a76dcbae.y = x_dedb5b95.y;
             }
-            x_a76dcbae.x = ((x_d9b20313((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) * 100) >> 12) + x_c593269c->x;
+            x_a76dcbae.x = ((sin_fixed((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) * 100) >> 12) + x_c593269c->x;
             x_a76dcbae.z =
-                ((-x_d9b20313(((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) + 0x400) * 100) >> 12) + x_c593269c->z;
+                ((-sin_fixed(((0xC00 - x_7246d2b2->obj->x_224610f1.y) & 0xFFF) + 0x400) * 100) >> 12) + x_c593269c->z;
             apply_hit(x_7246d2b2, x_e64ba38a, &x_a76dcbae);
         }
     }
@@ -719,7 +719,7 @@ void coll_volume_setup(Player *player, x_87049dce *x_46ce35c8) {
 
     if (x_46ce35c8->x_3bf3046a.x != 0 || x_46ce35c8->x_3bf3046a.y != 0 || x_46ce35c8->x_3bf3046a.z != 0) {
         player->x_5c5b1d93.x_c01445c3 = TRUE;
-        x_f2c7456d(&player->obj->x_20d20338->transforms[x_46ce35c8->x_e888d5ae], &player->x_5c5b1d93.x_cc2c17a6, -3,
+        transform_init_node(&player->obj->x_20d20338->transforms[x_46ce35c8->x_e888d5ae], &player->x_5c5b1d93.x_cc2c17a6, -3,
                    -3);
         player->x_5c5b1d93.x_cc2c17a6.x_3fde9cd9.w.x = x_46ce35c8->x_3bf3046a.x;
         player->x_5c5b1d93.x_cc2c17a6.x_3fde9cd9.w.y = x_46ce35c8->x_3bf3046a.y;
@@ -730,7 +730,7 @@ void coll_volume_setup(Player *player, x_87049dce *x_46ce35c8) {
 
     if (x_46ce35c8->x_f95a218e.x != 0 || x_46ce35c8->x_f95a218e.y != 0 || x_46ce35c8->x_f95a218e.z != 0) {
         player->x_5c5b1d93.x_a1c57a3b = TRUE;
-        x_f2c7456d(&player->obj->x_20d20338->transforms[x_46ce35c8->x_1ffa33d9], &player->x_5c5b1d93.x_0548cec6, -3,
+        transform_init_node(&player->obj->x_20d20338->transforms[x_46ce35c8->x_1ffa33d9], &player->x_5c5b1d93.x_0548cec6, -3,
                    -3);
         player->x_5c5b1d93.x_0548cec6.x_3fde9cd9.w.x = x_46ce35c8->x_f95a218e.x;
         player->x_5c5b1d93.x_0548cec6.x_3fde9cd9.w.y = x_46ce35c8->x_f95a218e.y;
@@ -741,7 +741,7 @@ void coll_volume_setup(Player *player, x_87049dce *x_46ce35c8) {
 
     if (x_46ce35c8->x_8f7663b3.x != 0 || x_46ce35c8->x_8f7663b3.y != 0 || x_46ce35c8->x_8f7663b3.z != 0) {
         player->x_5c5b1d93.x_d8ede1db = TRUE;
-        x_f2c7456d(&player->obj->x_20d20338->transforms[x_46ce35c8->x_baea923a], &player->x_5c5b1d93.x_6057c67e, -3,
+        transform_init_node(&player->obj->x_20d20338->transforms[x_46ce35c8->x_baea923a], &player->x_5c5b1d93.x_6057c67e, -3,
                    -3);
         player->x_5c5b1d93.x_6057c67e.x_3fde9cd9.w.x = x_46ce35c8->x_8f7663b3.x;
         player->x_5c5b1d93.x_6057c67e.x_3fde9cd9.w.y = x_46ce35c8->x_8f7663b3.y;
@@ -752,7 +752,7 @@ void coll_volume_setup(Player *player, x_87049dce *x_46ce35c8) {
 
     if (x_46ce35c8->x_150bdca9.x != 0 || x_46ce35c8->x_150bdca9.y != 0 || x_46ce35c8->x_150bdca9.z != 0) {
         player->x_5c5b1d93.x_22014d8c = TRUE;
-        x_f2c7456d(&player->obj->x_20d20338->transforms[x_46ce35c8->x_df4167c9], &player->x_5c5b1d93.x_45875993, -3,
+        transform_init_node(&player->obj->x_20d20338->transforms[x_46ce35c8->x_df4167c9], &player->x_5c5b1d93.x_45875993, -3,
                    -3);
         player->x_5c5b1d93.x_45875993.x_3fde9cd9.w.x = x_46ce35c8->x_150bdca9.x;
         player->x_5c5b1d93.x_45875993.x_3fde9cd9.w.y = x_46ce35c8->x_150bdca9.y;
@@ -763,7 +763,7 @@ void coll_volume_setup(Player *player, x_87049dce *x_46ce35c8) {
 
     if (x_46ce35c8->x_495dd749.x != 0 || x_46ce35c8->x_495dd749.y != 0 || x_46ce35c8->x_495dd749.z != 0) {
         player->x_5c5b1d93.x_6216b7a1 = TRUE;
-        x_f2c7456d(&player->obj->x_20d20338->transforms[x_46ce35c8->x_cc509e17], &player->x_5c5b1d93.x_20d81af7, -3,
+        transform_init_node(&player->obj->x_20d20338->transforms[x_46ce35c8->x_cc509e17], &player->x_5c5b1d93.x_20d81af7, -3,
                    -3);
         player->x_5c5b1d93.x_20d81af7.x_3fde9cd9.w.x = x_46ce35c8->x_495dd749.x;
         player->x_5c5b1d93.x_20d81af7.x_3fde9cd9.w.y = x_46ce35c8->x_495dd749.y;

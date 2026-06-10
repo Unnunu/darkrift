@@ -93,8 +93,8 @@ void x_38c80ca9(void) {
             }
         }
 
-        x_ad92c136(s2->x_38ecfcaf, 0, sizeof(s2->x_38ecfcaf));
-        x_ad92c136(s2->x_aa3a09af, 0, sizeof(s2->x_aa3a09af));
+        mem_set(s2->x_38ecfcaf, 0, sizeof(s2->x_38ecfcaf));
+        mem_set(s2->x_aa3a09af, 0, sizeof(s2->x_aa3a09af));
 
         s2->x_b050a210[0] = s2->x_38ecfcaf;
         s2->x_b050a210[1] = s2->x_38ecfcaf + 60;
@@ -145,7 +145,7 @@ void x_071f1bfa(x_2f5c3183 *x_cc1d0de5) {
 
         if (s5) {
             s5 = FALSE;
-            x_ba58a12b(&x_65cbb149->transform, &x_7eefcd11);
+            mat4_to_mtx(&x_65cbb149->transform, &x_7eefcd11);
             x_65cbb149->header.x_70b508ea = 0;
         } else {
             x_65cbb149->header.x_70b508ea = 1;
@@ -254,7 +254,7 @@ void x_dbbadf22(Object *obj) {
     x_5d45b0f8.y = 6;
     x_5d45b0f8.z = 0;
 
-    x_9b0df250(&x_5d45b0f8, &D_8013C668);
+    vec_rotate_by_euler(&x_5d45b0f8, &D_8013C668);
 
     x_ec427b59 = s2->x_b050a210[D_8005BFCE];
     a3 = s2->x_112d334c[D_8005BFCE];
@@ -335,7 +335,7 @@ void x_dbbadf22(Object *obj) {
 
         if (s3) {
             s3 = FALSE;
-            x_ba58a12b(&x_65cbb149->transform, &x_7eefcd11);
+            mat4_to_mtx(&x_65cbb149->transform, &x_7eefcd11);
             x_65cbb149->header.x_70b508ea = 0;
         } else {
             x_65cbb149->header.x_70b508ea = 1;

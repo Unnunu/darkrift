@@ -235,7 +235,10 @@ All 27 functions renamed and documented. 5 structs renamed (ReplayEntry, ReplayB
 ### Combat (combat.c) — DONE (Wave 1)
 All 12 functions renamed and documented. 7 globals renamed. Key renames: `hit_effect_fade_slow`, `hit_effect_fade_fast`, `spawn_hit_effect`, `point_in_hit_range`, `find_collision_point`, `hit_outcome`, `apply_hit`, `hit_detect_lower/upper/grounded_a/grounded_b`, `coll_volume_setup`. Globals: `sColorRed`, `sColorBlue`, `sHitModelRegular`, `sHitModelGrab`, `sScratchPos`, `sCombatPad`, `sCombatScratch`. Updated callers in eff_hit.c, projectile.c, player.c, menu.c. Updated functions.h, variables.h, nonmatching .s. Build verified.
 
-Next in queue: cam_follow.c, transform.c, model.c, memory.c
+### Battle Camera (cam_follow.c) — DONE (Wave 1)
+All 25 functions renamed and documented. Key renames: `cam_battle_update`, `cam_update`, `cam_distance_update`, `cam_save_state`, `cam_save_state_alt`, `cam_cinematic_update`, `cam_intro_skip_check`, `cam_intro_wait_input`, `cam_intro_start(_inverse)`, `cam_battle_init`, `cam_ko_orbit/init`, `cam_debug_controls/scene_input/init`, `cam_face_players`, `cam_world_shift/wrap/wrap_reset`, `cam_boundary_check`, `cam_project_point`, `lerp_int`, `angle_diff`, `iabs`. Updated callers in player.c, move.c, eff_hit.c, menu.c, match.c, present.c. Updated functions.h, nonmatching .s (x_7cdfb63d.s, x_340c2137.s). NON_EQUIVALENT asm functions noted. Build verified.
+
+Next in queue: transform.c, model.c, memory.c
 
 ## Thread Model
 | Pri | Thread | Entry | Description |

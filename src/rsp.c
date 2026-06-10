@@ -4,8 +4,8 @@
 #include "task.h"
 #include "ld_addrs.h"
 
-void x_82b801fe(void);
-extern void *x_40c4fc96;
+void mem_pool_init(void);
+extern void *sHeapBase;
 
 extern long long int gspDarkRift3DTextStart[], gspDarkRift3DTextEnd[];
 extern long long int gspDarkRift3DDataStart[], gspDarkRift3DDataEnd[];
@@ -36,13 +36,13 @@ extern x_cc16c016 D_8004937C;
 extern x_cc16c016 D_80049384;
 void x_43d722ac(void);
 void x_ab4a6fed(s32 x_cc1d0de5, s32 x_84ff873b);
-void x_342bc581(void);
+void matrix_system_init(void);
 void x_14384217(void);
 void x_3ef429e1(void);
 Object *x_7b6cfabc(void);
-void x_6491559d(void);
+void model_light_pool_init(void);
 void x_15468514(s32);
-void x_13905dd7(void);
+void model_texture_reset(void);
 void x_38c80ca9(void);
 extern s16 D_800800FA;
 
@@ -51,7 +51,7 @@ extern s32 x_6c647b3a;
 extern s32 D_80081428;
 extern s32 D_80049CF0;
 
-void x_fd701d0e(void);
+void mem_defrag(void);
 void x_29f4699a(void);
 void x_1e7c754d(void);
 void x_3c16ed51(void);
@@ -262,11 +262,11 @@ void x_16b2a52b(u16 x_7cedc3fb) {
     x_96f79785[1] = a3 + 2 * x_cf10d3eb;
 
     D_80080124 = D_80080120 = ((u32) x_9caeba2b + 0x40) & ~0x3F;
-    x_40c4fc96 = (void *) (((u32) D_80080120 + 0x25800 + 0x40) & ~0x3F);
-    x_82b801fe();
+    sHeapBase = (void *) (((u32) D_80080120 + 0x25800 + 0x40) & ~0x3F);
+    mem_pool_init();
     x_43d722ac();
     x_ab4a6fed(D_80080124, 0x25800);
-    x_342bc581();
+    matrix_system_init();
     x_14384217();
     x_3ef429e1();
     x_596c5c60();
@@ -289,14 +289,14 @@ void x_16b2a52b(u16 x_7cedc3fb) {
     D_80080116 = D_80080118 = 0;
     D_80080129 = TRUE;
     x_46665fe1();
-    x_6491559d();
+    model_light_pool_init();
     x_e30d50d2 = x_86c5bc33;
     x_15468514(0);
     x_15468514(1);
     D_8005BFF0[0].perspNorm = 0;
     D_8005BFF0[1].perspNorm = 1;
     D_8005BFCE = 0;
-    x_13905dd7();
+    model_texture_reset();
     x_38c80ca9();
 }
 #else
@@ -309,7 +309,7 @@ void x_a892f516(u16 x_7cedc3fb) {
     x_e74df613 = 0;
     x_6c647b3a = 0;
     D_80081428 = 0;
-    x_fd701d0e();
+    mem_defrag();
     x_29f4699a();
     x_1e7c754d();
     D_80080110 = x_4540c33c[x_7cedc3fb].x_b8173ab8;
@@ -331,9 +331,9 @@ void x_a892f516(u16 x_7cedc3fb) {
     D_80080118 = 0;
     D_80080129 = TRUE;
     x_46665fe1();
-    x_6491559d();
+    model_light_pool_init();
     x_e30d50d2 = x_86c5bc33;
     D_80080128 = 1;
-    x_13905dd7();
+    model_texture_reset();
     x_38c80ca9();
 }
