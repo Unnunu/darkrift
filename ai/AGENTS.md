@@ -221,12 +221,22 @@ All 49 source files renamed.
 
 Also: `kdebugserver` (already correctly named).
 
+## Wave 1 Progress
+
+### Task Scheduler (task.c/h) — DONE
+Functions renamed and documented: `task_execute`, `task_free_list`, `task_find_by_id`, `task_append`, `task_remove_current`. Globals: `gTaskLock`, `gTaskPool`. Macros: `TASK_END`. Enum entries: `TASK_RUNNABLE`, `TASK_TIME_BASED`, `TASK_FRAME_BASED`, `TASK_PUSH`, `TASK_FORCE_PUSH`, `TASK_SAVE_STACK`, `TASK_POP`.
+
+### Boot/Init (boot.c) — DONE
+Functions: `boot_entry`, `idle_thread_func`, `main_thread_func`. All 22 globals renamed: threads (sIdleThread, sMainThread, sRspThread), stacks (sIdleStack, sMainStack, sRspStack), message queues (gPiMessageQueue, gRspMessageQueue, sPiMgrMesgQueue, sViEventQueue, sSpEventQueue, sDpEventQueue, sContMesgQueue), messages arrays, padding. Macro `ARRAY_COUNT` renamed globally. Also renamed: `controller_init`, `main_game_loop`, `rsp_scheduler_thread`, `sBootFlags`. Updated symbol_addrs.txt, entry.s, functions.h, variables.h, macros.h, rsp.c, controller.c, main.c, audio.c, memory.c, huffman.c.
+
+Next in queue: player.c, combat.c, cam_follow.c, transform.c, model.c, memory.c
+
 ## Thread Model
-| Pri | Thread | Entry | Stack |
-|-----|--------|-------|-------|
-| 1 | IDLE | osInitialize idle | small |
-| 3 | MAIN | x_14ae77a0 in `main.c` | large (game loop) |
-| 4 | RSP | osSpTaskStart in `rsp.c` | — |
+| Pri | Thread | Entry | Description |
+|-----|--------|-------|-------------|
+| 1 | IDLE | boot_entry → idle_thread_func | osInitialize, VI/PI mgr, creates Thread 3+4 |
+| 3 | MAIN | main_thread_func → main_game_loop | Game init, scheduler queues, game loop |
+| 4 | RSP | rsp_scheduler_thread in `rsp.c` | RSP task dispatch, audio/SI/SP/DP/VI event handling |
 
 ## Useful Commands
 ```bash

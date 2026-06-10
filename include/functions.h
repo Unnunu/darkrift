@@ -3,8 +3,8 @@
 
 void *x_56c3086a(s32 size, const char *file, s32 line);
 void x_86715543(void *);
-s32 x_083782bc(s32);
-void x_14ae77a0(void);
+s32 controller_init(s32);
+void main_game_loop(void);
 s32 x_b30d1d21(x_704d55d4 *x_cc1d0de5);
 void x_2add4a13(s32 romAddr, void *x_dda6dc06, s32 size);
 void x_07194b79(s32 romAddr, void *x_dda6dc06, s32 size);

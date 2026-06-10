@@ -71,7 +71,7 @@ void x_fd701d0e(void) {
         x_d70d9bc9 = -1;
         x_968605c7 = NULL;
 
-        for (i = 0; i < x_e286d4b7(D_8005AEB8); i++) {
+        for (i = 0; i < ARRAY_COUNT(D_8005AEB8); i++) {
             x_37652cbd *slot = D_8005AEB8 + i;
             if (!(slot->x_af0aa1f8 & 1) && (u32) slot->data < end) {
                 void *x_d1231a38 = slot->data;
@@ -345,15 +345,15 @@ void x_d5aca165(s32 x_ef190cf1) {
 
 void x_07194b79(s32 romAddr, void *x_dda6dc06, s32 size) {
     osWritebackDCacheAll();
-    while (osRecvMesg(&x_0c7f0f6c, NULL, OS_MESG_NOBLOCK) != -1) {}
-    osPiStartDma(&D_8005AE90, 0, OS_READ, romAddr, x_dda6dc06, size, &x_0c7f0f6c);
-    osRecvMesg(&x_0c7f0f6c, NULL, OS_MESG_BLOCK);
+    while (osRecvMesg(&gPiMessageQueue, NULL, OS_MESG_NOBLOCK) != -1) {}
+    osPiStartDma(&D_8005AE90, 0, OS_READ, romAddr, x_dda6dc06, size, &gPiMessageQueue);
+    osRecvMesg(&gPiMessageQueue, NULL, OS_MESG_BLOCK);
     osInvalDCache(0, 0x3FFFFF);
 }
 
 void x_2add4a13(s32 romAddr, void *x_dda6dc06, s32 size) {
     osWritebackDCacheAll();
-    osPiStartDma(&D_8005AE90, 0, OS_READ, romAddr, x_dda6dc06, size, &x_0c7f0f6c);
+    osPiStartDma(&D_8005AE90, 0, OS_READ, romAddr, x_dda6dc06, size, &gPiMessageQueue);
     osInvalDCache(0, 0x3FFFFF);
 }
 

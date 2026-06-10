@@ -11,5 +11,57 @@
     ],
     "thread_hierarchy": "Thread 1 (IDLE) -> Thread 3 (MAIN) + Thread 4 (RSP)"
   },
-  "summary": "Boot/init: osInitialize, VI/PI manager init, thread creation (main + RSP), message queues, controller init, entry to main game loop (x_14ae77a0)."
+  "summary": "Boot/init: osInitialize, VI/PI manager init, thread creation (main + RSP), message queues, controller init, entry to main game loop (main_game_loop).",
+  "functions": [
+    {
+      "name": "boot_entry",
+      "hash": "x_74dda22f",
+      "summary": "Game entry point. Calls osInitialize(), creates idle thread (thread 1) with idle_thread_func, starts it. Equivalent to the C entry point called from the reset vector (asm/entry.s)."
+    },
+    {
+      "name": "idle_thread_func",
+      "hash": "x_9bc493d4",
+      "summary": "Idle/init thread (thread 1). Creates VI manager (with NTSC/PAL video mode setup), PI manager, then creates main thread (thread 3, main_thread_func) and RSP scheduler thread (thread 4, rsp_scheduler_thread). Flag sBootFlags can skip starting main thread. Drops priority to 0 and spins forever."
+    },
+    {
+      "name": "main_thread_func",
+      "hash": "x_e090ae0b",
+      "summary": "Main game thread (thread 3). Creates message queues for: PI DMA (gPiMessageQueue), SP events (sSpEventQueue), DP events (sDpEventQueue), VI retrace (sViEventQueue). Initializes controllers via controller_init(). Creates controller and RSP message queues, starts RSP thread, then enters the game loop via main_game_loop()."
+    }
+  ],
+  "globals": [
+    { "name": "sBootFlags", "hash": "D_80049270", "summary": "Flag to skip starting the main thread (when non-zero). Used for debugging/dev." },
+    { "name": "sIdleStack", "hash": "x_607bed22", "summary": "Stack buffer for idle thread (thread 1), size IDLE_STACK_SIZE (0x400)." },
+    { "name": "sIdleThread", "hash": "x_12856845", "summary": "OSThread for idle/init thread (thread 1)." },
+    { "name": "sMainThread", "hash": "x_e5e2fe89", "summary": "OSThread for main game thread (thread 3)." },
+    { "name": "sMainStack", "hash": "x_4882e498", "summary": "Stack buffer for main thread, size MAIN_STACK_SIZE (0x2000)." },
+    { "name": "sRspThread", "hash": "x_5cb83de5", "summary": "OSThread for RSP scheduler thread (thread 4)." },
+    { "name": "sRspStack", "hash": "x_2923a40b", "summary": "Stack buffer for RSP thread, size RSP_STACK_SIZE (0x400)." },
+    { "name": "sPad11B0", "hash": "x_d7e5a3b9", "summary": "Unused BSS padding, size 0x11B0." },
+    { "name": "sPiMgrMesgs", "hash": "x_2c62e827", "summary": "Message array (8) for PI manager message queue." },
+    { "name": "sPiMgrMesgQueue", "hash": "x_5eac317e", "summary": "Message queue for PI manager (DMA callbacks)." },
+    { "name": "sViEventQueue", "hash": "x_76074a65", "summary": "Message queue for VI retrace events." },
+    { "name": "sViMesg", "hash": "x_c35756dd", "summary": "Message (1) for VI event queue." },
+    { "name": "gPiMessageQueue", "hash": "x_0c7f0f6c", "summary": "Global PI DMA message queue. Used by memory.c (DMA wait) and huffman.c (DMA)." },
+    { "name": "sSpEventQueue", "hash": "x_a4cdf342", "summary": "Message queue for SP (RSP) completion events (OS_EVENT_SP)." },
+    { "name": "sDpEventQueue", "hash": "x_9e70b6be", "summary": "Message queue for DP (display processor) completion events (OS_EVENT_DP)." },
+    { "name": "sContMesgQueue", "hash": "x_c0f7aef0", "summary": "Message queue for controller/SI events. Drained by rsp.c during task processing." },
+    { "name": "gRspMessageQueue", "hash": "x_72d58a77", "summary": "Global RSP scheduler message queue. Used for sending/receiving RSP tasks between rsp.c and audio.c." },
+    { "name": "sSchedMesgs", "hash": "x_4af5dc00", "summary": "Message (1) for scheduler (PI DMA) queue." },
+    { "name": "sSpMesg", "hash": "D_8005AE74", "summary": "Message (1) for SP event queue." },
+    { "name": "sDpMesg", "hash": "x_76886650", "summary": "Message (1) for DP event queue." },
+    { "name": "sContMesgs", "hash": "D_8005AE7C", "summary": "Message (1) for controller event queue." },
+    { "name": "sRspMesgs", "hash": "x_ae4dbfde", "summary": "Message array (4) for RSP scheduler queue." }
+  ],
+  "macros": [
+    { "name": "IDLE_STACK_SIZE", "value": "0x400", "summary": "Idle thread stack size." },
+    { "name": "MAIN_STACK_SIZE", "value": "0x2000", "summary": "Main thread stack size." },
+    { "name": "RSP_STACK_SIZE", "value": "0x400", "summary": "RSP thread stack size." }
+  ],
+  "other_renames": {
+    "x_083782bc": "controller_init",
+    "x_14ae77a0": "main_game_loop",
+    "x_0ab76ff1": "rsp_scheduler_thread",
+    "x_e286d4b7": "ARRAY_COUNT"
+  }
 }

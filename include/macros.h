@@ -1,7 +1,7 @@
 #ifndef __MACROS_H__
 #define __MACROS_H__
 
-#define x_e286d4b7(x_2e6839f2) (s32)(sizeof(x_2e6839f2) / sizeof(x_2e6839f2[0]))
+#define ARRAY_COUNT(x_2e6839f2) (s32)(sizeof(x_2e6839f2) / sizeof(x_2e6839f2[0]))
 
 #define x_a4e17949(addr) (void *) ((u32) (addr) + 0x80000000)
 #define x_c485761a(addr) (u32)((u8 *) (addr) - 0x80000000)

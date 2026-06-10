@@ -176,7 +176,7 @@ void x_da2cde4c(void) {
     D_8005BEE0 += osGetTime() - x_de1dd2f4;
     x_d4af6341();
 
-    for (i = 0; i < x_e286d4b7(x_9d6e6e5f); i++) {
+    for (i = 0; i < ARRAY_COUNT(x_9d6e6e5f); i++) {
         if (x_9d6e6e5f[i] != NULL && x_9d6e6e5f[i](x_ba260e1b[i]) == 0) {
             x_9d6e6e5f[i] = NULL;
         }
@@ -569,7 +569,7 @@ void x_4f944650(Object *obj) {
     x_e1511bdd(D_8005BEFC, NULL);
 }
 
-void x_14ae77a0(void) {
+void main_game_loop(void) {
     x_e38a6e19 = x_c4da946c;
     x_16b2a52b(x_e38a6e19);
     x_2d5f067a();

@@ -10,11 +10,11 @@ extern void *x_40c4fc96;
 extern long long int gspDarkRift3DTextStart[], gspDarkRift3DTextEnd[];
 extern long long int gspDarkRift3DDataStart[], gspDarkRift3DDataEnd[];
 
-extern OSMesgQueue x_c0f7aef0;
-extern OSMesgQueue x_72d58a77;
-extern OSMesgQueue x_a4cdf342;
-extern OSMesgQueue x_9e70b6be;
-extern OSMesgQueue x_76074a65;
+extern OSMesgQueue sContMesgQueue;
+extern OSMesgQueue gRspMessageQueue;
+extern OSMesgQueue sSpEventQueue;
+extern OSMesgQueue sDpEventQueue;
+extern OSMesgQueue sViEventQueue;
 
 extern OSTime D_8005BEE8;
 extern OSTime D_8005BEF0;
@@ -87,7 +87,7 @@ s32 D_800801E8;
 void x_46665fe1(void) {
     s32 i;
 
-    for (i = 0; i < x_e286d4b7(x_9d6e6e5f); i++) {
+    for (i = 0; i < ARRAY_COUNT(x_9d6e6e5f); i++) {
         x_9d6e6e5f[i] = NULL;
     }
 }
@@ -95,7 +95,7 @@ void x_46665fe1(void) {
 void x_71257e81(s32 (*callback)(void *), void *arg) {
     s32 i;
 
-    for (i = 0; i < x_e286d4b7(x_9d6e6e5f); i++) {
+    for (i = 0; i < ARRAY_COUNT(x_9d6e6e5f); i++) {
         if (x_9d6e6e5f[i] == 0) {
             x_9d6e6e5f[i] = callback;
             x_ba260e1b[i] = arg;
@@ -154,24 +154,24 @@ void x_596c5c60(void) {
     D_8008011C = 0;
 }
 
-void x_0ab76ff1(void *x_cc1d0de5) {
+void rsp_scheduler_thread(void *x_cc1d0de5) {
     OSMesg task;
     OSTime x_a8947c6a;
 
     while (TRUE) {
         // receive task from task queue
-        if (osRecvMesg(&x_72d58a77, &task, OS_MESG_NOBLOCK) == -1) {
+        if (osRecvMesg(&gRspMessageQueue, &task, OS_MESG_NOBLOCK) == -1) {
             // no pending tasks
             D_800801E4 = 0;
             // notify the other threads that RCP is idle
-            osSendMesg(&x_c0f7aef0, (OSMesg) 0x7777, OS_MESG_NOBLOCK);
+            osSendMesg(&sContMesgQueue, (OSMesg) 0x7777, OS_MESG_NOBLOCK);
             // wait until at least one task appears
-            osRecvMesg(&x_72d58a77, &task, OS_MESG_BLOCK);
+            osRecvMesg(&gRspMessageQueue, &task, OS_MESG_BLOCK);
         }
 
         // clear sp and dp queues
-        while (osRecvMesg(&x_a4cdf342, NULL, OS_MESG_NOBLOCK) != -1) {}
-        while (osRecvMesg(&x_9e70b6be, NULL, OS_MESG_NOBLOCK) != -1) {}
+        while (osRecvMesg(&sSpEventQueue, NULL, OS_MESG_NOBLOCK) != -1) {}
+        while (osRecvMesg(&sDpEventQueue, NULL, OS_MESG_NOBLOCK) != -1) {}
 
         D_800801E8 = ((OSTask *) task)->t.type;
 
@@ -179,14 +179,14 @@ void x_0ab76ff1(void *x_cc1d0de5) {
         osSpTaskStart(task);
         x_a8947c6a = osGetTime();
         D_800801E4 = 1;
-        osRecvMesg(&x_a4cdf342, NULL, OS_MESG_BLOCK);
+        osRecvMesg(&sSpEventQueue, NULL, OS_MESG_BLOCK);
 
         D_8005BEE8 += osGetTime() - x_a8947c6a;
 
         // wait for RDP sync
         if (D_800801E8 != M_AUDTASK) {
             D_800801E4 = 2;
-            osRecvMesg(&x_9e70b6be, NULL, OS_MESG_BLOCK);
+            osRecvMesg(&sDpEventQueue, NULL, OS_MESG_BLOCK);
         }
 
         D_8005BEF0 += osGetTime() - x_a8947c6a;
@@ -194,7 +194,7 @@ void x_0ab76ff1(void *x_cc1d0de5) {
 }
 
 void x_9d40d8e1(void) {
-    while (osRecvMesg(&x_c0f7aef0, NULL, OS_MESG_NOBLOCK) != -1) {}
+    while (osRecvMesg(&sContMesgQueue, NULL, OS_MESG_NOBLOCK) != -1) {}
 
     osWritebackDCacheAll();
     D_8008011C = x_1790ee2a();
@@ -206,15 +206,15 @@ void x_9d40d8e1(void) {
         D_8004CC88.t.data_ptr = D_80080100->x_79588dca;
         D_8004CC88.t.data_size = (x_8a79b283 - D_80080100->x_79588dca) * sizeof(x_320b5d80);
 
-        osSendMesg(&x_72d58a77, (OSMesg) &D_8004CBC8, OS_MESG_BLOCK);
-        osSendMesg(&x_72d58a77, (OSMesg) &D_8004CC88, OS_MESG_BLOCK);
+        osSendMesg(&gRspMessageQueue, (OSMesg) &D_8004CBC8, OS_MESG_BLOCK);
+        osSendMesg(&gRspMessageQueue, (OSMesg) &D_8004CC88, OS_MESG_BLOCK);
 
         D_8008011C += 2;
 
         if (D_8008012C & x_48752861) {
             D_801389B8.t.data_ptr = D_80080100->x_a4c192ba;
             D_801389B8.t.data_size = (x_d8cbce84 - D_80080100->x_a4c192ba) * sizeof(Gfx);
-            osSendMesg(&x_72d58a77, (OSMesg) &D_801389B8, OS_MESG_BLOCK);
+            osSendMesg(&gRspMessageQueue, (OSMesg) &D_801389B8, OS_MESG_BLOCK);
             D_8008011C++;
         }
     }
@@ -224,7 +224,7 @@ void x_d4af6341(void) {
     D_800801E5 = 0;
     if (D_8008011C != 0) {
         D_800801E5 = 7;
-        osRecvMesg(&x_c0f7aef0, NULL, OS_MESG_BLOCK);
+        osRecvMesg(&sContMesgQueue, NULL, OS_MESG_BLOCK);
         D_8008011C = 0;
         D_800801E5 = 1;
         osSetTime(0);
@@ -232,12 +232,12 @@ void x_d4af6341(void) {
 }
 
 void x_08779f06(u8 x_cc1d0de5) {
-    if (MQ_IS_FULL(&x_76074a65)) {
-        osRecvMesg(&x_76074a65, NULL, OS_MESG_BLOCK);
+    if (MQ_IS_FULL(&sViEventQueue)) {
+        osRecvMesg(&sViEventQueue, NULL, OS_MESG_BLOCK);
         D_80080128 = 1;
     } else {
         D_80080128 = 0;
-        osRecvMesg(&x_76074a65, NULL, OS_MESG_BLOCK);
+        osRecvMesg(&sViEventQueue, NULL, OS_MESG_BLOCK);
         if (x_cc1d0de5) {
             osViSwapBuffer(x_96f79785[D_8005BFCE]);
             D_8005BFCE = 1 - D_8005BFCE;

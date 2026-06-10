@@ -10,7 +10,7 @@
     ],
     "ucodes": ["gspFast3DTextStart/DataStart", "gspDarkRift3DTextStart/DataStart"],
     "task_types": ["M_AUDTASK"],
-    "thread": "Thread 4 (RSP scheduler) from boot.c"
+    "thread": "Thread 4 (RSP scheduler, rsp_scheduler_thread) from boot.c"
   },
   "summary": "RSP task scheduler + GFX task manager. Thread 4 loop: receive OSTask -> osSpTaskStart -> wait SP/DP. Also VSync/buffer swap, screen clear, task submission."
 }

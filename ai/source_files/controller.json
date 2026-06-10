@@ -10,5 +10,5 @@
     ],
     "datatypes": ["OSContPad", "OSContStatus"]
   },
-  "summary": "Controller input: init (x_083782bc, called from boot.c) and per-frame read (x_bb61051c)."
+  "summary": "Controller input: init (controller_init, called from boot.c) and per-frame read (x_bb61051c)."
 }

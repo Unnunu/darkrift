@@ -194,19 +194,19 @@ void x_0edd29ad(void) {
     D_800A4538[0].prev = NULL;
     D_800A4538[0].next = NULL;
 
-    for (i = 0; i < x_e286d4b7(D_800A4538) - 1; i++) {
+    for (i = 0; i < ARRAY_COUNT(D_800A4538) - 1; i++) {
         alLink(&D_800A4538[i + 1], &D_800A4538[i]);
         D_800A4538[i].x_2b18f4e7 = alHeapDBAlloc("audio.c", 238, &x_e1d5ba1b, 1, x_5ef2b67b);
     }
     D_800A4538[i].x_2b18f4e7 = alHeapDBAlloc("audio.c", 241, &x_e1d5ba1b, 1, x_5ef2b67b);
 
-    for (i = 0; i < x_e286d4b7(D_80081840.x_8d54ede8); i++) {
+    for (i = 0; i < ARRAY_COUNT(D_80081840.x_8d54ede8); i++) {
         D_80081840.x_8d54ede8[i] = alHeapDBAlloc("audio.c", 244, &x_e1d5ba1b, 1, x_c46f8893->x_af00367e * sizeof(Acmd));
     }
 
     x_322bfd84 = x_c46f8893->x_af00367e;
 
-    for (i = 0; i < x_e286d4b7(D_80081840.x_415ed9d6); i++) {
+    for (i = 0; i < ARRAY_COUNT(D_80081840.x_415ed9d6); i++) {
         D_80081840.x_415ed9d6[i] = alHeapDBAlloc("audio.c", 250, &x_e1d5ba1b, 1, sizeof(x_64d3e7c0));
         D_80081840.x_415ed9d6[i]->x_b97435d0 = 2;
         D_80081840.x_415ed9d6[i]->x_a7753abb = D_80081840.x_415ed9d6[i];
@@ -271,7 +271,7 @@ void x_3e63f835(ALSynConfig *config) {
 
     alInit(&D_80081A78, config);
     x_0edd29ad();
-    osCreateMesgQueue(&D_800A4890, D_800A48A8, x_e286d4b7(D_800A48A8));
+    osCreateMesgQueue(&D_800A4890, D_800A48A8, ARRAY_COUNT(D_800A48A8));
 }
 
 s32 x_5b101de7(x_64d3e7c0 *x_cc1d0de5) {
@@ -421,10 +421,10 @@ s32 x_1790ee2a(void) {
     }
 
     if (D_800A45F4 != 0) {
-        osSendMesg(&x_72d58a77, (OSMesg *) &x_3ab68193, OS_MESG_BLOCK);
+        osSendMesg(&gRspMessageQueue, (OSMesg *) &x_3ab68193, OS_MESG_BLOCK);
     }
 
-    for (i = 0; i < x_e286d4b7(x_5582bbef); i++) {
+    for (i = 0; i < ARRAY_COUNT(x_5582bbef); i++) {
         if (x_5582bbef[i] >= 0) {
             x_7e194d55(i, x_5582bbef[i]);
         }

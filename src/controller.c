@@ -13,7 +13,7 @@ OSContStatus x_a11b92aa[MAXCONTROLLERS];
 OSContPad x_0cc0a659[MAXCONTROLLERS];
 OSContPad *x_f72c20e6[MAXCONTROLLERS];
 
-s32 x_083782bc(s32 maxControllers) {
+s32 controller_init(s32 maxControllers) {
     s32 i;
     u8 x_4cee67f2;
     OSMesgQueue messageQueue;
