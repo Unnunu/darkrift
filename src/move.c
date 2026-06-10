@@ -2,7 +2,7 @@
 #include "camera.h"
 #include "task.h"
 
-u8 x_fb0d2e6c(Player *);
+u8 player_force_transition(Player *);
 
 void x_d16f8fa6(Object *);
 
@@ -19,14 +19,14 @@ void x_d30a20e1(Object *obj) {
         x_5587ad5e(player);
 
         if (player->x_0a8e33d7 >= 0 && (player->flags & x_f6191783)) {
-            if (x_fb0d2e6c(player)) {
+            if (player_force_transition(player)) {
                 player->x_81570fde.x_b2c79d6e |= x_096af79a;
                 return;
             }
         }
     } else if (!(player->flags & x_030d2322) && (x_59ce598c[x_30bbe547].x_c4397934 || (player->flags & x_f6191783)) &&
                player->x_0a8e33d7 >= 0 && !(player->x_b9252303->flags & TASK_TIME_BASED)) {
-        if (x_253cc396(player, TRUE)) {
+        if (player_select_move(player, TRUE)) {
             return;
         }
     }
@@ -39,9 +39,9 @@ void x_d30a20e1(Object *obj) {
     }
 
     if (x_76041836 & x_037894c1) {
-        x_e914de48(player, x_26778114, FALSE);
+        player_exec_move(player, x_26778114, FALSE);
     } else {
-        x_e914de48(player, x_ee946ac0, FALSE);
+        player_exec_move(player, x_ee946ac0, FALSE);
     }
 
     D_80080236 = FALSE;
@@ -320,7 +320,7 @@ void x_8126b2af(Object *obj) {
     currentTask = obj->currentTask;
     obj->frameCounter++;
 
-    if (x_9d4a1d61(player, TRUE, x_0f12118c)) {
+    if (player_exec_state(player, TRUE, x_0f12118c)) {
         player->x_0a8e33d7 = x_554ac37d[x_0f12118c + 1];
         player->x_cadf184a = FALSE;
         currentTask->stackPtr--;

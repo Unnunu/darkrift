@@ -602,7 +602,7 @@ void x_f7a1a468(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
     }
 }
 
-void x_ed9e2514(x_056d4f07 *x_897abbb1, x_6fcfcf46 *x_c657ede8, x_f9704fd6 *x_2092f891, x_f9704fd6 *x_ee71e5cb,
+void shadow_init(x_056d4f07 *x_897abbb1, x_6fcfcf46 *x_c657ede8, x_f9704fd6 *x_2092f891, x_f9704fd6 *x_ee71e5cb,
                 x_88f11482 *x_a0e63e9c, x_6751d717 *x_1011f751) {
     u32 i, j;
     Gfx *gfx;

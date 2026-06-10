@@ -435,14 +435,14 @@ void x_af61e89b(void) {
     v0 = x_824b9544[x_83106b21].obj->x_9200c538;
     v1 = x_824b9544[x_6f0b3be3].obj->x_9200c538;
     if (v0 > v1) {
-        x_e914de48(&x_824b9544[x_83106b21], x_fefa7415, 1);
-        x_e914de48(&x_824b9544[x_6f0b3be3], x_f6ac8484, 1);
+        player_exec_move(&x_824b9544[x_83106b21], x_fefa7415, 1);
+        player_exec_move(&x_824b9544[x_6f0b3be3], x_f6ac8484, 1);
     } else if (v0 < v1) {
-        x_e914de48(&x_824b9544[x_83106b21], x_f6ac8484, 1);
-        x_e914de48(&x_824b9544[x_6f0b3be3], x_fefa7415, 1);
+        player_exec_move(&x_824b9544[x_83106b21], x_f6ac8484, 1);
+        player_exec_move(&x_824b9544[x_6f0b3be3], x_fefa7415, 1);
     } else {
-        x_e914de48(&x_824b9544[x_83106b21], x_f6ac8484, 1);
-        x_e914de48(&x_824b9544[x_6f0b3be3], x_f6ac8484, 1);
+        player_exec_move(&x_824b9544[x_83106b21], x_f6ac8484, 1);
+        player_exec_move(&x_824b9544[x_6f0b3be3], x_f6ac8484, 1);
     }
 }
 

@@ -424,7 +424,7 @@ u8 x_2aacdb7c(Player *x_cc1d0de5, Player *x_84ff873b, Object *x_2092f891) {
         return FALSE;
     }
 
-    v0 = x_cc2e74aa(x_cc1d0de5, x_84ff873b, a2);
+    v0 = hit_outcome(x_cc1d0de5, x_84ff873b, a2);
     x_2a9ef16e = (v0 == 270 || v0 == 271);
     return x_2a9ef16e;
 }
@@ -545,7 +545,7 @@ void x_280f655a(Object *obj) {
     x_49781937.y = obj->pos.y;
     x_49781937.z = obj->pos.z;
 
-    if (x_81c2909d(&x_081c4eef, &x_98c4e5a5->obj->pos, x_98c4e5a5->x_5c5b1d93.x_62706fff + 80000, &x_49781937)) {
+    if (point_in_hit_range(&x_081c4eef, &x_98c4e5a5->obj->pos, x_98c4e5a5->x_5c5b1d93.x_62706fff + 80000, &x_49781937)) {
         if (!(x_32f1d6e2->flags & 0x20) && !(player->flags & x_d8a402c3)) {
             x_c9614940 = player->x_e4ca14d3 + x_32f1d6e2->x_350c85ef;
             if (x_2aacdb7c(x_98c4e5a5, player, obj)) {

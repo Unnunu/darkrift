@@ -8,12 +8,39 @@
   },
   "summary": "Combat hit detection and damage resolution system. Links collision spheres to character bones, runs hit detection across volume sets, calculates damage outcomes, and spawns visual hit effects.",
   "functions": [
-    "x_747e1955", "x_1b1336fe", "x_801c8e55", "x_81c2909d", "x_9f5c9f25",
-    "x_cc2e74aa", "x_54661eb1", "x_a617fc50", "x_ec2ec20a",
-    "x_3fe0a5ec", "x_5a643f96", "x_4f2b827a"
+    "hit_effect_fade_slow", "hit_effect_fade_fast", "spawn_hit_effect", "point_in_hit_range",
+    "find_collision_point", "hit_outcome", "apply_hit", "hit_detect_lower",
+    "hit_detect_upper", "hit_detect_grounded_a", "hit_detect_grounded_b", "coll_volume_setup"
   ],
-  "key_apis": [],
-  "strings": [],
+  "globals": {
+    "sColorRed": { "type": "x_6751d717", "description": "Red RGBA color for regular hit effect flash (255,0,0,0)" },
+    "sColorBlue": { "type": "x_6751d717", "description": "Blue RGBA color for grab hit effect flash (0,0,255,0)" },
+    "sCombatPad": { "type": "s32[2]", "description": "Padding/unused" },
+    "sScratchPos": { "type": "x_2758cdab", "description": "Scratch s16 position used during midpoint subdivision in find_collision_point" },
+    "sCombatScratch": { "type": "s32", "description": "Unused scratch variable" },
+    "sHitModelRegular": { "type": "Model *", "description": "Model for regular hit effect object (comhit.k5)" },
+    "sHitModelGrab": { "type": "Model *", "description": "Model for grab hit effect object (comblock.k5)" }
+  },
+  "function_details": {
+    "hit_effect_fade_slow": "Object callback: increments frameCounter, fades alpha after frame 12, marks dead when counter reaches duration. Used for regular hit flashes.",
+    "hit_effect_fade_fast": "Object callback: same as slow but fades alpha after frame 2. Used for grab/slam hit flashes.",
+    "spawn_hit_effect": "Creates hit flash object at given position using x_572f827d. Grabs get blue color (sColorBlue, callback hit_effect_fade_fast), regular hits get red (sColorRed, callback hit_effect_fade_slow). Calls x_ae0d8704 for optional color override.",
+    "point_in_hit_range": "Checks if point is within AABB y-range ([minY-200, maxY]) and Manhattan distance (SQUARE) from center < radius. Returns TRUE/FALSE.",
+    "find_collision_point": "Searches midpoint-subdivided region between two candidate points within AABB bounds. Returns pointer to first valid collision point or NULL. Used to find where hit effect should spawn relative to defender.",
+    "hit_outcome": "NON_MATCHING (asm). Resolves hit outcome: selects reaction animation based on move flags (knockback, grab, launch, stun), applies damage/HP deduction, checks death/ring-out, updates player state. Calls player_exec_move_ai.",
+    "apply_hit": "Wrapper: calls hit_outcome, spawns hit effect at collision point, sets hitstun timers on both players (13 on attacker, 2 on defender). Entry point for hit application.",
+    "hit_detect_lower": "Lower body hit detection. Checks defender lower bone positions against attacker collision volumes (x_998ccc48). Uses find_collision_point and point_in_hit_range across multiple volume sets (extended volumes a/b, grounded volumes).",
+    "hit_detect_upper": "Upper body hit detection. Checks defender upper bone positions against attacker collision volumes. Uses find_collision_point with volume-set flags for extended reach.",
+    "hit_detect_grounded_a": "Grounded hit detection (80000/15000 radii). Runs when defender is on ground. Checks from bottom bone upward through 4 collision volume configurations.",
+    "hit_detect_grounded_b": "Grounded hit detection variant (80000/50000 radii). Same structure as grounded_a but with larger lower radii.",
+    "coll_volume_setup": "Sets up collision volume pointers on player's x_998ccc48 from x_87049dce config. Maps bone indices to transform pointers, sets up 6 extended volume slots (a/b/extended flags) with offset vectors, configures hit radii."
+  },
+  "key_apis": [
+    "x_572f827d(..., callback, model) — spawn Object at position with callback",
+    "x_371376ba(obj, color) — set object RGBA color",
+    "x_ae0d8704(pos, obj, color) — hit effect color sync",
+    "player_exec_move_ai(player, animId, pushFlag) — apply hit animation + state"
+  ],
   "subsystems": [
     "Collision volume setup: links spheres to bone transforms via x_998ccc48 and x_87049dce config",
     "Hit detection: 4 collision sets (upper body, lower body, grounded, alternate ground) using Manhattan radius and midpoint search",
@@ -21,7 +48,8 @@
     "Hit effects: spawns red (attacker) and blue (defender) flash objects"
   ],
   "open_questions": [
-    "x_cc2e74aa is NON_MATCHING (compiled from ASM) — the hit outcome logic needs decompilation",
-    "x_87049dce collision config — exact meaning of each field (bone indices, offset vectors)"
+    "hit_outcome is NON_MATCHING (compiled from ASM) — needs full decompilation to verify C logic matches",
+    "x_87049dce collision config — exact meaning of each field (bone indices, offset vectors) deferred to Wave 2/3",
+    "x_998ccc48 volume set — what each extended Transform (x_0548cec6, x_cc2c17a6, x_20d81af7, x_45875993, x_6057c67e) represents specifically"
   ]
 }

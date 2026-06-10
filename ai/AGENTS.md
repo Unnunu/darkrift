@@ -229,7 +229,13 @@ Functions renamed and documented: `task_execute`, `task_free_list`, `task_find_b
 ### Boot/Init (boot.c) — DONE
 Functions: `boot_entry`, `idle_thread_func`, `main_thread_func`. All 22 globals renamed: threads (sIdleThread, sMainThread, sRspThread), stacks (sIdleStack, sMainStack, sRspStack), message queues (gPiMessageQueue, gRspMessageQueue, sPiMgrMesgQueue, sViEventQueue, sSpEventQueue, sDpEventQueue, sContMesgQueue), messages arrays, padding. Macro `ARRAY_COUNT` renamed globally. Also renamed: `controller_init`, `main_game_loop`, `rsp_scheduler_thread`, `sBootFlags`. Updated symbol_addrs.txt, entry.s, functions.h, variables.h, macros.h, rsp.c, controller.c, main.c, audio.c, memory.c, huffman.c.
 
-Next in queue: player.c, combat.c, cam_follow.c, transform.c, model.c, memory.c
+### Player (player.c) — DONE (Wave 1)
+All 27 functions renamed and documented. 5 structs renamed (ReplayEntry, ReplayBuffer, DbFileHeader, AiTacticEntry, AiEntryHeader). Key renames: `player_init`, `player_reinit`, `player_ai_check`, `player_exec_state`, `player_exec_move_ai`, `player_select_move`, `replay_record`, `replay_playback`. Updated nonmatching .s files, symbol_addrs.txt, functions.h, and 6 caller files (menu.c, match.c, move.c, hud.c, aibrain.c, eff_hit.c, combat.c). Also renamed `shadow_init` in trail.c.
+
+### Combat (combat.c) — DONE (Wave 1)
+All 12 functions renamed and documented. 7 globals renamed. Key renames: `hit_effect_fade_slow`, `hit_effect_fade_fast`, `spawn_hit_effect`, `point_in_hit_range`, `find_collision_point`, `hit_outcome`, `apply_hit`, `hit_detect_lower/upper/grounded_a/grounded_b`, `coll_volume_setup`. Globals: `sColorRed`, `sColorBlue`, `sHitModelRegular`, `sHitModelGrab`, `sScratchPos`, `sCombatPad`, `sCombatScratch`. Updated callers in eff_hit.c, projectile.c, player.c, menu.c. Updated functions.h, variables.h, nonmatching .s. Build verified.
+
+Next in queue: cam_follow.c, transform.c, model.c, memory.c
 
 ## Thread Model
 | Pri | Thread | Entry | Description |

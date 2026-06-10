@@ -233,8 +233,8 @@ void x_1240eb8e(Object *obj) {
     x_824b9544[x_83106b21].x_cd14c741 = 0;
     x_824b9544[x_6f0b3be3].x_cd14c741 = 0;
 
-    x_84aa5a13(x_83106b21);
-    x_84aa5a13(x_6f0b3be3);
+    player_reinit(x_83106b21);
+    player_reinit(x_6f0b3be3);
 
     obj->flags |= x_f51cb721;
     x_2615d8ad = gFrameCounter % 5;
@@ -327,7 +327,7 @@ u32 x_bd5da599(Player *player, s32 x_84ff873b, u32 x_2092f891) {
     s32 temp;
     u32 res;
 
-    x_e914de48(player, x_84ff873b, TRUE);
+    player_exec_move(player, x_84ff873b, TRUE);
 
     temp = player->x_b9252303->params[1];
     if (x_2092f891 < player->x_68a6b5cd[temp].x_bab9966d + 120) {
@@ -614,25 +614,25 @@ void x_4eb395f9(Object *obj) {
         if (--x_824b9544[x_83106b21].x_448f0851 > 20) {
             x_824b9544[x_83106b21].x_448f0851 = 20;
         } else {
-            x_253cc396(&x_824b9544[x_83106b21], TRUE);
+            player_select_move(&x_824b9544[x_83106b21], TRUE);
         }
     } else if (x_824b9544[x_6f0b3be3].flags & x_22ebc053) {
         if (--x_824b9544[x_6f0b3be3].x_448f0851 > 20) {
             x_824b9544[x_6f0b3be3].x_448f0851 = 20;
         } else {
-            x_253cc396(&x_824b9544[x_6f0b3be3], TRUE);
+            player_select_move(&x_824b9544[x_6f0b3be3], TRUE);
         }
     } else if ((x_824b9544[x_83106b21].flags & x_a45101c0) && (x_824b9544[x_6f0b3be3].flags & x_a45101c0)) {
         if ((x_824b9544[x_83106b21].x_7f68c36b->flags & x_037894c1) && x_824b9544[x_83106b21].x_cd14c741 != 4) {
-            x_e914de48(&x_824b9544[x_83106b21], x_26778114, FALSE);
+            player_exec_move(&x_824b9544[x_83106b21], x_26778114, FALSE);
         } else if (x_824b9544[x_83106b21].x_cd14c741 != 17) {
-            x_e914de48(&x_824b9544[x_83106b21], x_ee946ac0, FALSE);
+            player_exec_move(&x_824b9544[x_83106b21], x_ee946ac0, FALSE);
         }
 
         if ((x_824b9544[x_6f0b3be3].x_7f68c36b->flags & x_037894c1) && x_824b9544[x_6f0b3be3].x_cd14c741 != 4) {
-            x_e914de48(&x_824b9544[x_6f0b3be3], x_26778114, FALSE);
+            player_exec_move(&x_824b9544[x_6f0b3be3], x_26778114, FALSE);
         } else if (x_824b9544[x_6f0b3be3].x_cd14c741 != 17) {
-            x_e914de48(&x_824b9544[x_6f0b3be3], x_ee946ac0, FALSE);
+            player_exec_move(&x_824b9544[x_6f0b3be3], x_ee946ac0, FALSE);
         }
 
         x_59ce598c[x_83106b21].enabled = x_59ce598c[x_6f0b3be3].enabled = TRUE;

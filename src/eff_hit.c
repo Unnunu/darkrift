@@ -307,7 +307,7 @@ void x_6098478f(Object *obj) {
 
         if (x_824b9544[x_de68d2a6].flags & x_9298c772) {
             if (!(x_824b9544[x_de68d2a6].x_7f68c36b->flags & x_cdcff2e1)) {
-                x_c05bfb58(&x_824b9544[x_de68d2a6], x_e7a14975, 1);
+                player_exec_move_ai(&x_824b9544[x_de68d2a6], x_e7a14975, 1);
             }
             return;
         }
@@ -315,8 +315,8 @@ void x_6098478f(Object *obj) {
         player->flags |= x_a45101c0;
 
         D_80080236 = TRUE;
-        x_c05bfb58(&x_824b9544[x_de68d2a6], D_8004B8F4[x_eb1fe45b].x_cd679b4c, 1);
-        x_c05bfb58(player, x_67148cc8, 1);
+        player_exec_move_ai(&x_824b9544[x_de68d2a6], D_8004B8F4[x_eb1fe45b].x_cd679b4c, 1);
+        player_exec_move_ai(player, x_67148cc8, 1);
         D_80080236 = FALSE;
         x_fc517ba8 = &player->x_68a6b5cd[player->x_cd14c741];
         player->obj->x_e2f64c57[2] = x_fc517ba8->x_6f5a5c61;
@@ -356,7 +356,7 @@ void x_602b94bb(Object *obj) {
     if (obj->frameCounter == player->x_7f68c36b->x_c53ac2df) {
         x_eb1fe45b = player->x_eb1fe45b;
         x_de68d2a6 = 1 - player->x_30bbe547;
-        x_c05bfb58(&x_824b9544[x_de68d2a6], D_8004B920[x_eb1fe45b].x_cd679b4c, 1);
+        player_exec_move_ai(&x_824b9544[x_de68d2a6], D_8004B920[x_eb1fe45b].x_cd679b4c, 1);
 
         if (player->x_eb1fe45b == x_c4ddde6d) {
             obj->currentTask->callback = x_cfb419a2;
@@ -496,9 +496,9 @@ void x_ca73900f(Object *obj) {
     if (obj->pos.y >= 0) {
         obj->pos.y = 0;
         if (player->flags & x_9298c772) {
-            x_c05bfb58(player, x_98df8f9f, 1);
+            player_exec_move_ai(player, x_98df8f9f, 1);
         } else {
-            x_c05bfb58(player, x_37718e57, 1);
+            player_exec_move_ai(player, x_37718e57, 1);
         }
     }
 }
@@ -576,7 +576,7 @@ void x_e47877a0(Object *obj) {
         if (x_98c4e5a5->x_7f68c36b->flags & x_7507aa4b) {
             a1 = x_caa30513;
         }
-        x_c05bfb58(x_98c4e5a5, a1, 1);
+        player_exec_move_ai(x_98c4e5a5, a1, 1);
         TASK_END(obj->currentTask);
     }
 }
@@ -585,7 +585,7 @@ void x_eb9bf905(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
     if (x_9a96200f < D_8004C1A4[player->x_eb1fe45b] && player->x_cd14c741 != 17) {
-        x_c05bfb58(player, x_e5ca67a6, 1);
+        player_exec_move_ai(player, x_e5ca67a6, 1);
         TASK_END(obj->currentTask);
     }
 }
@@ -820,11 +820,11 @@ void x_4a0e9b26(Object *obj) {
     if (!(v1->flags & x_f79587cb) && x_77831b2c[player->x_30bbe547].x_03604d94 &&
         (v0->x_7f68c36b->flags & x_01e3e146) && v0->obj->frameCounter < v0->x_7f68c36b->x_c53ac2df) {
         if (v0->flags & x_ed8e51a2) {
-            x_c05bfb58(player, x_e2a42ecd, 1);
+            player_exec_move_ai(player, x_e2a42ecd, 1);
             player->x_81570fde.x_ca75ac5d = x_8b270b48;
             player->x_81570fde.x_5a6554ba = 60;
         } else {
-            x_c05bfb58(player, x_8a9cd4d8, 1);
+            player_exec_move_ai(player, x_8a9cd4d8, 1);
             player->x_81570fde.x_ca75ac5d = x_a92b640d;
             player->x_81570fde.x_5a6554ba = 60;
         }
@@ -1047,7 +1047,7 @@ void x_c1018f80(x_448872e8 *x_cc1d0de5, x_998ccc48 *x_5c5b1d93, Object *x_2092f8
     x_a1fcc259.x = v0->x;
     x_a1fcc259.y = v0->y;
     x_a1fcc259.z = v0->z;
-    x_801c8e55(&x_a1fcc259, x_cc1d0de5->x_1256da71, x_2092f891, &D_8004BA14[player->x_eb1fe45b]);
+    spawn_hit_effect(&x_a1fcc259, x_cc1d0de5->x_1256da71, x_2092f891, &D_8004BA14[player->x_eb1fe45b]);
 }
 
 void x_370c7b4f(Object *obj) {
@@ -1063,7 +1063,7 @@ void x_370c7b4f(Object *obj) {
 void x_05731c3c(Object *obj) {
     Player *v0 = (Player *) obj->x_e2f64c57[0];
 
-    x_c05bfb58(v0, x_dcbb43b9, 1);
+    player_exec_move_ai(v0, x_dcbb43b9, 1);
 }
 
 void x_e9917882(Object *obj) {
@@ -1078,7 +1078,7 @@ void x_96e05dec(Object *obj) {
     Player *v0 = (Player *) obj->x_e2f64c57[0];
 
     if (v0->flags & x_9298c772) {
-        x_c05bfb58(v0, x_9f2970bc, 1);
+        player_exec_move_ai(v0, x_9f2970bc, 1);
     } else {
         obj->currentTask->delay = 60;
         obj->currentTask->callback = x_05731c3c;
@@ -1088,7 +1088,7 @@ void x_96e05dec(Object *obj) {
 void x_a3014bb9(Object *obj) {
     Player *v0 = (Player *) obj->x_e2f64c57[0];
 
-    x_c05bfb58(v0, x_445015b3, 1);
+    player_exec_move_ai(v0, x_445015b3, 1);
 }
 
 void x_fd0916cc(Object *obj) {
