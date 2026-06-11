@@ -7,28 +7,45 @@
     "rodata": "0x553F0",
     "bss": "0x80081440"
   },
-  "summary": "Match flow state machine: character select, round management, HUD (bars.sp2), pre-fight overlays, attract/demo mode, post-battle results. Glue between menu and gameplay.",
+  "summary": "Match flow state machine: round management, KO detection, winner/draw/continue routing, pre-fight overlays (round display, KO text, fade transitions), post-battle results. Glue between menu and gameplay.",
   "functions": [
-    "x_b372f4dd", "x_f0ad9b18", "x_a471eef4", "x_ae7ca939", "x_8afd5019",
-    "x_1240eb8e", "x_be1ae884", "x_1bb3ac04", "x_553d0c7f", "x_e99883b2",
-    "x_76daaaf5", "x_67392d1b", "x_72432500", "x_3651e6a0", "x_8f307638",
-    "x_0b8b6a50", "x_b6abef3b", "x_7d8fafac", "x_0e8c7faa", "x_10e34e58",
-    "x_01cd67c0", "x_9c3de8ba", "x_8ae7aa1a", "x_56cb84f5", "x_9a0f8b50",
-    "x_39674a94", "x_7e39ae70", "x_8eacc639", "x_05551fc7", "x_a9b15144",
-    "x_1f0948c1", "x_3f9acad4", "x_af7526d8", "x_b08528d0", "x_2a3667db",
-    "x_1a433f51", "x_64be6269", "x_d5fdd2f4"
+    "Match init: match_round_start, match_round_announce, match_round_start_exec, match_round_msg_show, match_task_exec",
+    "KO detection: match_ko_check, match_ko_decision, match_winner_setup, match_draw_setup, match_ko_overlay, match_ko_overlay_wait, match_post_ko_transition, match_win_input_wait",
+    "Post-round transitions: match_round_reset, match_post_ko_routing, match_fade_to_next, match_continue_wait, match_continue_handler, match_rematch_setup, match_wait_flag, match_goto_select, match_end_screen_check, match_continue_pressed",
+    "Result callbacks: match_result_callback, match_attract_result",
+    "UI models: match_msg_model_create, match_screen_msg, match_msg_model_delayed, match_set_continue_cb, match_ko_fadeout, match_model_fadeout",
+    "Animation: match_anim_play_fade, match_anim_play_fadeout, match_blink_cb, match_blink_kill_cb, match_attract_anim",
+    "Utility: match_move_time, match_kill_fighters"
   ],
-  "key_apis": [],
-  "strings": ["\"bars.sp2\""],
+  "globals": [
+    "sWinnerMsgObj — winner announcement model",
+    "sDrawMsgObj — draw message model",
+    "sKoMsgObj — KO overlay message model",
+    "sAfterKoMsgObj — after-KO continue prompt message",
+    "sContinueMsgObj — continue button prompt message",
+    "sSuddenDeathMsgObj — sudden death message model"
+  ],
+  "key_apis": [
+    "hud_score_create",
+    "hud_score_cleanup",
+    "hud_timer_start",
+    "fight_init",
+    "fight_reset",
+    "player_reinit",
+    "audio_sfx_stop_bank"
+  ],
+  "strings": [
+    "\"bars.sp2\""
+  ],
   "subsystems": [
-    "Character select: cursor movement, locking picks, CPU/2P toggle",
-    "Pre-fight overlays: round display, blinking KO text, fade-to-black",
+    "Match flow: round_start → KO check → winner/draw/continue → round_reset or goto_select",
+    "Pre-fight overlays: round display, blinking KO text, fade transitions",
     "Round management: health checks, win/loss/draw tracking, round counters",
-    "HUD: loads bars.sp2 health bar sprite",
-    "Attract/title: timeout-based demo mode with button skip"
+    "Post-ko routing: continue screen → rematch or character select",
+    "Attract: timeout-based demo mode with button skip"
   ],
   "open_questions": [
-    "line 202: obj->x_0f4167b4[1] overwritten with button state instead of decrement — is this a real bug or required-to-match?",
+    "line 202: obj->x_0f4167b4[1] overwritten with button state — is this a bug or required-to-match?",
     "What do the overlay parameter tables D_8004D604 and D_8004D744 look like?"
   ]
 }

@@ -176,7 +176,7 @@ void cam_intro_skip_check(Object *obj) {
     if (obj->frameCounter >= obj->x_20d20338->x_8e601526 - 1 || (x_59ce598c[x_83106b21].buttons & x_9cefe76c) ||
         (x_59ce598c[x_6f0b3be3].buttons & x_9cefe76c)) {
         if (x_5e4e2788 != x_79c2dc5b) {
-            x_b372f4dd();
+            match_round_start();
         } else {
             x_824b9544[x_83106b21].flags &= ~x_4d950171;
             x_824b9544[x_6f0b3be3].flags &= ~x_4d950171;
@@ -623,7 +623,7 @@ void cam_intro_wait_input(Object *obj) {
 
     if ((x_59ce598c[x_83106b21].buttons & x_9cefe76c) || (x_59ce598c[x_6f0b3be3].buttons & x_9cefe76c)) {
         if (x_5e4e2788 != x_79c2dc5b) {
-            x_b372f4dd();
+            match_round_start();
         } else {
             x_824b9544[x_83106b21].flags &= ~x_4d950171;
             x_824b9544[x_6f0b3be3].flags &= ~x_4d950171;

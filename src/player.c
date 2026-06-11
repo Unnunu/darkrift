@@ -191,7 +191,7 @@ void replay_task_exec(Object *obj) {
         obj->flags |= x_f51cb721;
         D_80080234 = 1;
         sHudRootObj->currentTask->delay = 0;
-        sHudRootObj->currentTask->callback = x_3da93607;
+        sHudRootObj->currentTask->callback = match_ko_decision;
         x_59ce598c[sWinnerIdx].x_c4397934 = FALSE;
     }
 }

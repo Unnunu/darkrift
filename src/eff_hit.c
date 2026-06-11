@@ -331,7 +331,7 @@ void hit_combo_routing(Object *obj) {
         (x_824b9544 + x_de68d2a6)->obj->x_224610f1.y = 0x400 - ((0xC00 - obj->x_224610f1.y) & 0xFFF);
 
         gGfxFlags &= ~GFX_SHADOW_MODE;
-        x_943bfef8();
+        match_kill_fighters();
 
         switch (x_eb1fe45b) {
             case x_537ef8a7:

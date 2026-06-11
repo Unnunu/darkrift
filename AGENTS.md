@@ -329,8 +329,11 @@ All 62 functions renamed and documented. 11 globals renamed: `sHitDustSpriteDef`
 ### Menu (menu.c) — DONE (Wave 1)
 48 functions renamed (11 arena stages, 10 char intros, 9 boss/ending, 5 title/logo, 4 options, 5 transitions, 4 fight init, 6 misc callbacks). 16 BSS globals renamed (sFightLocked, sFirstFight, sMenuState, gFighterDistance, sIntroPlayerObjs[2]). Updated functions.h (3 decls), present.c (2 call sites). Build verified.
 
-### Match (match.c) — NEXT (Wave 1)
-Match flow: char select → round mgmt → HUD → post-battle.
+### Match (match.c) — DONE (Wave 1)
+38 functions renamed (4 round flow, 8 KO detection, 7 post-round, 6 result callbacks, 6 UI model helpers, 5 anim callbacks, 2 misc). 6 BSS globals renamed (sWinnerMsgObj, sDrawMsgObj, sKoMsgObj, sAfterKoMsgObj, sContinueMsgObj, sSuddenDeathMsgObj). Updated functions.h (3 decls), callers in cam_follow.c, player.c, main.c, eff_hit.c, fighters.c. Build verified.
+
+### Background (background.c) — NEXT (Wave 1)
+Tiled scrolling background (.pcl + .GMD, frustum cull).
 
 ## Thread Model
 | Pri | Thread | Entry | Description |

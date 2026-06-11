@@ -234,7 +234,7 @@
     {
       "name": "sHudRootObj",
       "line": 45,
-      "summary": "Root HUD task object (created in match.c as x_a21936ef task)"
+      "summary": "Root HUD task object (created in match.c as match_task_exec task)"
     },
     {
       "name": "sTimerObj",

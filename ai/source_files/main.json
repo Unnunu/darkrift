@@ -52,7 +52,7 @@
       "name": "tr_obj_alloc",
       "old_name": "x_a1378aba",
       "line": 194,
-      "summary": "Allocates an Object from pool type 1 (x_69f86dd8). Sets callback to x_a1821d40, attaches to task slot 2. Sets gTaskLock = TRUE and sFadeAlpha = 0."
+      "summary": "Allocates an Object from pool type 1 (x_69f86dd8). Sets callback to match_ko_fadeout, attaches to task slot 2. Sets gTaskLock = TRUE and sFadeAlpha = 0."
     },
     {
       "name": "tr_player_load",

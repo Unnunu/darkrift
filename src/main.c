@@ -194,12 +194,12 @@ void gfx_render_frame(void) {
 Object *tr_obj_alloc(void) {
     Object *obj;
 
-    obj = x_68289eaa(x_69f86dd8);
+    obj = match_screen_msg(x_69f86dd8);
     if (obj == NULL) {
         return NULL;
     }
 
-    obj->x_0232396f = x_a1821d40;
+    obj->x_0232396f = match_ko_fadeout;
     audio_sfx_play(2, obj->x_0f4167b4[2]);
     gTaskLock = TRUE;
     sFadeAlpha = 0;
@@ -242,7 +242,7 @@ void tr_player_load(s16 x_ce13e71a) {
             }
         /* fallthrough */
         default:
-            v1 = x_1bb3ac04(&x_dd2c4e91[x_2d0f1752], x_2587f84f);
+            v1 = match_msg_model_create(&x_dd2c4e91[x_2d0f1752], x_2587f84f);
             if (v1 != NULL) {
                 v1->x_0f4167b4[0] = x_ce13e71a;
             } else {

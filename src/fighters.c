@@ -37,8 +37,8 @@ void closing_cutscene(void);
 void credits_screen(void);
 void ending_easywin(void);
 
-void x_ebf8a1b0(Object *obj);
-void x_fb6f79b0(Object *obj);
+void match_anim_play_fadeout(Object *obj);
+void match_attract_anim(Object *obj);
 void move_apply_vel(Object *);
 void hit_dust_skid_init(Object *);
 void hit_combo_mid_startup(Object *);
@@ -78,8 +78,8 @@ void hit_ai_juggle_dispatch(Object *);
 void hit_delay_crossup_move(Object *);
 void hit_delay_ai_move(Object *);
 void hit_face_opponent_late(Object *);
-void x_a08bfaa4(Object *);
-void x_7705be49(Object *);
+void match_anim_play_fade(Object *);
+void match_model_fadeout(Object *);
 void results_init(Object *);
 
 extern x_448872e8 D_800523FC;
@@ -342,17 +342,21 @@ ScreenProfile gScreenProfiles[] = {
 };
 
 x_3da8fdd8 x_dd2c4e91[] = {
-    { "battle", 10, 20, x_ebf8a1b0, 0 },  { "chal", 60, 20, x_ebf8a1b0, 3 },     { "cont", 240, 20, x_ebf8a1b0, 1 },
-    { "ctdown", 0, 255, x_fb6f79b0, -1 }, { "draw", 0, 20, x_a08bfaa4, 4 },      { "finalrd", 30, 20, x_ebf8a1b0, -1 },
-    { "round", 30, 20, x_7705be49, -1 },  { "gameover", 0, 20, x_a08bfaa4, 2 },  { "cont", 240, 20, x_ebf8a1b0, 1 },
-    { "pause", 0, 20, results_init, -1 }, { "timeover", 0, 20, x_ebf8a1b0, -1 }, { "perfect", 0, 80, x_ebf8a1b0, 6 },
+    { "battle", 10, 20, match_anim_play_fadeout, 0 },   { "chal", 60, 20, match_anim_play_fadeout, 3 },
+    { "cont", 240, 20, match_anim_play_fadeout, 1 },    { "ctdown", 0, 255, match_attract_anim, -1 },
+    { "draw", 0, 20, match_anim_play_fade, 4 },         { "finalrd", 30, 20, match_anim_play_fadeout, -1 },
+    { "round", 30, 20, match_model_fadeout, -1 },       { "gameover", 0, 20, match_anim_play_fade, 2 },
+    { "cont", 240, 20, match_anim_play_fadeout, 1 },    { "pause", 0, 20, results_init, -1 },
+    { "timeover", 0, 20, match_anim_play_fadeout, -1 }, { "perfect", 0, 80, match_anim_play_fadeout, 6 },
 };
 
 x_3da8fdd8 x_c2354b9b[] = {
-    { "aarowin", 110, 20, x_a08bfaa4, 5 }, { "demiwin", 110, 20, x_a08bfaa4, 5 }, { "demowin", 110, 20, x_a08bfaa4, 5 },
-    { "evewin", 110, 20, x_a08bfaa4, 5 },  { "gorewin", 110, 20, x_a08bfaa4, 5 }, { "gorewin", 110, 20, x_a08bfaa4, 5 },
-    { "morpwin", 100, 20, x_a08bfaa4, 5 }, { "niikwin", 110, 20, x_a08bfaa4, 5 }, { "scarwin", 110, 20, x_a08bfaa4, 5 },
-    { "sonowin", 110, 20, x_a08bfaa4, 5 }, { "zenmwin", 110, 20, x_a08bfaa4, 5 },
+    { "aarowin", 110, 20, match_anim_play_fade, 5 }, { "demiwin", 110, 20, match_anim_play_fade, 5 },
+    { "demowin", 110, 20, match_anim_play_fade, 5 }, { "evewin", 110, 20, match_anim_play_fade, 5 },
+    { "gorewin", 110, 20, match_anim_play_fade, 5 }, { "gorewin", 110, 20, match_anim_play_fade, 5 },
+    { "morpwin", 100, 20, match_anim_play_fade, 5 }, { "niikwin", 110, 20, match_anim_play_fade, 5 },
+    { "scarwin", 110, 20, match_anim_play_fade, 5 }, { "sonowin", 110, 20, match_anim_play_fade, 5 },
+    { "zenmwin", 110, 20, match_anim_play_fade, 5 },
 };
 
 u32 D_8004C178[] = { 430, 430, 430, 430, 430, 430, 430, 530, 470, 430, 430 };
