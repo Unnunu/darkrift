@@ -272,7 +272,19 @@ Functions renamed and documented: `mat4_ident`, `mat4_ident_partial`, `mat4_copy
 ### Main (main.c) — DONE (Wave 1)
 15 functions renamed: `main_game_loop`, `gfx_render_frame`, `gfx_init_frame`, `tr_obj_alloc`, `tr_player_load`, `tr_scene_loop`, `tr_quad_opaque` (NON_MATCHING), `tr_quad_xlu` (NON_MATCHING), `tr_fade_start`, `tr_fade_in_setup`, `tr_fade_in`, `tr_fade_hold`, `tr_scene_change`, `tr_fade_out_delay`, `tr_fade_out`, `func_80001C6C` (attract entry). 19 globals renamed: sQuadVtx, sQuadTri, sZeroVelocity, sZeroPosition, sDefaultLights, gCurrentScreenId, sPrevScreenId, sRenderTimeAccum, sFrameCounter, sFadeAlpha, sQuadBatch, sQuadDl, sScratchMtx, gFramebuffers, gOverlayDlPtr, gExtraBatchPtr, D_8005BFCE (fb index), x_e30d50d2 (state flags), x_e38a6e19 (screen ID). Macro g_PERSPNORM. Updated functions.h, variables.h. Build verification pending user.
 
-Next in queue: buttons.c, controller.c (Wave 1 analysis pending)
+### Buttons (buttons.c) — DONE (Wave 1)
+5 functions renamed: `button_remap`, `button_remap_reset`, `button_process` (NON_MATCHING), `button_update_frame`, `button_state_reset`. 5 globals renamed: `sCButtonLut[16]`, `sTriggerLut[8]`, `sDPadLut[11]`, `sFaceLut[16]`, `gRemapTable[2][8]`. Pipeline: raw OSContPad.button → 4-nibble LUT → analog→d-pad (±40) → remap → mirror (swap L↔R) → lock/filter → final buttons. Updated rsp.c (2 call sites), main.c (1 call site), select.c, menu.c. `button_update_frame` called from `gfx_render_frame`. Build verification pending user.
+
+### Controller (controller.c) — DONE (Wave 1)
+2 functions: `controller_init` (already named), `controller_read_frame` (was `x_bb61051c`). 7 globals renamed: `sNullPad`, `sControllerCount`, `sSiMessageQueue`, `sSiMesg[1]`, `sContStatus[4]`, `sContPad[4]`, `gContPadPtrs[4]`. SI event queue + osContInit/ReadData. Updated rsp.c, controller.c, buttons.c, main.c. Build verification pending user.
+
+### Huffman (huffman.c) — DONE (Wave 1)
+8 functions renamed: `lzhuf_dma_refill`, `lzhuf_read_byte`, `lzhuf_read_bit`, `lzhuf_read_byte_bits`, `lzhuf_read_bits`, `lzhuf_tree_init`, `lzhuf_tree_rebuild` (NON_EQUIVALENT), `lzhuf_tree_update`. 5 macros renamed: `THRESHOLD`, `NUM_SYMBOLS`, `TREE_SIZE` → kept as `T`, `TREE_ROOT` → kept as `R`, `MAX_FREQ`. 20 globals renamed: `sDistBase`, `sDistExtra`, `sBitBuf`, `sBitCount`, `sBitMask[17]` (@bug element 15), `sBitShift[16]`, `sHufPad[4]`, `sDecompBufs[2]`, `sDecompReadPtr`, `sDecompWritePtr`, `sDecompRemain`, `sDecompChunkIdx`, `sDecompBufIdx`, `sDecompBufPos`, `sDecompChunkSize`, `sDecompLastFlag`, `sDecompResCtx`, `sSlideWindow[4160]`, `sHufFreq[628]`, `sHufTree[944]`, `sHufMap[628]`. Updated lzss.c (all externs), wad.c (call site). Build verified.
+
+### LZSS (lzss.c) — DONE (Wave 1)
+4 functions renamed: `lzhuf_decode_symbol`, `lzhuf_decode_distance`, `lzhuf_decompress`, `lzhuf_start` (was `x_69c2895e`). All extern declarations updated to match huffman.c renames. Window N=4096, max match F=60, threshold=2, double-buffered DMA streaming. Entry called from wad.c. Build verified.
+
+Next in queue: (any remaining file — suggest one)
 
 ## Thread Model
 | Pri | Thread | Entry | Description |

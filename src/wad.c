@@ -75,7 +75,7 @@ void x_e6e6fcf8(ALBankFile *x_cc1d0de5, u8 *x_84ff873b, u32 x_2092f891);
 void mem_copy_overlap(u32 *dest, u32 *src, u32 size);
 void x_36b7cd1c(x_13162abc *, s32);
 void x_f8c73c4c(x_82e80914 *, x_13162abc *, char *, s32, u16);
-void x_69c2895e(x_80d298c9 *);
+void lzhuf_start(x_80d298c9 *);
 void x_ef5a0926(s32);
 void x_f4b1f18f(void);
 void dma_read_sync(s32 romAddr, void *x_dda6dc06, s32 size);
@@ -528,7 +528,7 @@ void x_ac647f84(x_80d298c9 *x_d59386e0) {
 void x_09120adb(x_80d298c9 *x_d59386e0) {
     x_57054f7e(x_d59386e0, x_d59386e0->x_f33d7764);
     if (x_d59386e0->flags & 2) {
-        x_69c2895e(x_d59386e0);
+        lzhuf_start(x_d59386e0);
     } else {
         dma_read_sync(x_d59386e0->romAddr, x_d59386e0->data, x_d59386e0->x_f33d7764);
     }

@@ -1,9 +1,101 @@
 {
-  "file": "src/huffman.c", "hash": "573e99f1",
-  "rom_offsets": { "text": "0x25B50", "data": "0x4D360", "bss": "0x800B6400" },
-  "summary": "Adaptive Huffman tree decoder + bit I/O: DMA refill, bit/byte reading, Huffman frequency tree management (rebuild on overflow), used by LZSS decompressor.",
-  "functions": ["x_1041b8d9", "x_86fda831", "x_dbb46089", "x_13af1d38", "x_472e02c2", "x_42b39ea8", "x_cbd0f8d7", "x_a8ae0481"],
-  "key_apis": ["osRecvMesg"], "strings": [],
-  "subsystems": ["Adaptive Huffman with frequency sorting", "Double-buffered DMA"],
-  "open_questions": ["x_cbd0f8d7 is NON_EQUIVALENT — needs matching"]
+  "hash": "573e99f1",
+  "name": "huffman",
+  "path": "src/huffman.c",
+  "lines": 277,
+  "wave": 1,
+  "evidence": {
+    "segment": "main (splat.yaml segment game)",
+    "key_functions": {
+      "lzhuf_tree_init": "Adaptive Huffman decoder: init tree, DMA streaming, bit I/O",
+      "lzhuf_tree_rebuild": "NON_EQUIVALENT — tree rebuild on frequency overflow"
+    },
+    "cross_references": "lzss.c (all Huffman functions called from LZSS decompressor)"
+  },
+  "summary": "Adaptive Huffman tree decoder (FGK algorithm) with double-buffered DMA streaming from ROM. Provides bit-level I/O (read 1/8/n bits), byte-level I/O via DMA refill, Huffman tree init/rebuild/update for adaptive decoding. Used by LZSS decompressor in lzss.c.",
+  "functions": [
+    {
+      "name": "lzhuf_dma_refill",
+      "old_name": "x_1041b8d9",
+      "line": 55,
+      "summary": "DMA refill: switches active buffer (ping-pong between sDecompBufs[0]↔[1]), waits for PI completion via osRecvMesg, then starts async DMA for next compressed chunk."
+    },
+    {
+      "name": "lzhuf_read_byte",
+      "old_name": "x_86fda831",
+      "line": 73,
+      "summary": "Read next byte from active DMA buffer. If buffer exhausted (sDecompBufPos >= sDecompChunkSize), calls lzhuf_dma_refill and resets position."
+    },
+    {
+      "name": "lzhuf_read_bit",
+      "old_name": "x_dbb46089",
+      "line": 83,
+      "summary": "Read 1 bit from bit buffer. If fewer than 9 bits remain, reads a byte via lzhuf_read_byte and shifts into buffer."
+    },
+    {
+      "name": "lzhuf_read_byte_bits",
+      "old_name": "x_13af1d38",
+      "line": 110,
+      "summary": "Read 8 bits (1 byte) from bit buffer. Same refill logic as lzhuf_read_bit."
+    },
+    {
+      "name": "lzhuf_read_bits",
+      "old_name": "x_472e02c2",
+      "line": 131,
+      "summary": "Read n bits from bit buffer (up to 16). Uses sBitShift[n] (shift = 16-n) and sBitMask[n] (mask = (1<<n)-1)."
+    },
+    {
+      "name": "lzhuf_tree_init",
+      "old_name": "x_42b39ea8",
+      "line": 152,
+      "summary": "Initialize Huffman tree: set all leaf frequencies to 1, build initial tree ordering with internal nodes = sum of children. Sets sBitCount=sBitBuf=0."
+    },
+    {
+      "name": "lzhuf_tree_rebuild",
+      "old_name": "x_cbd0f8d7",
+      "line": 175,
+      "summary": "Rebuild tree when root frequency reaches MAX_FREQ (0x8000). Halves all frequencies (freq+1)/2, re-sorts frequency table, rebuilds tree links. NON_EQUIVALENT."
+    },
+    {
+      "name": "lzhuf_tree_update",
+      "old_name": "x_a8ae0481",
+      "line": 227,
+      "summary": "Update adaptive Huffman tree after decoding a symbol: increments frequency of the decoded node, reorders if frequency ordering is disturbed (swap + update parent/child links), walks up to root."
+    }
+  ],
+  "macros": {
+    "THRESHOLD": "2 — LZSS match threshold (original x_b7847da5)",
+    "NUM_SYMBOLS": "314 = 256 - THRESHOLD + F (original x_a0981260)",
+    "T": "627 = NUM_SYMBOLS * 2 - 1 — size of Huffman table",
+    "R": "626 = T - 1 — root position in Huffman table",
+    "MAX_FREQ": "0x8000 — frequency threshold triggering tree rebuild"
+  },
+  "globals": {
+    "sDistBase": "256×u8 — LZSS distance base value table (maps code to offset base)",
+    "sDistExtra": "256×u8 — LZSS distance extra bits table (maps code to additional bits)",
+    "sBitBuf": "u16 — bit buffer for streaming bit I/O",
+    "sBitCount": "u8 — remaining valid bits in sBitBuf",
+    "sBitMask[17]": "Mask table: 0,1,3,...,0xFFFF. @bug element 15 is 0xFFF should be 0x7FFF",
+    "sBitShift[16]": "Shift table: 16,15,...,1",
+    "sHufPad[4]": "Unreferenced BSS padding (4×s32)",
+    "sDecompBufs[2]": "Double DMA buffer pointers (shared with lzss.c)",
+    "sDecompReadPtr": "Active read pointer in DMA buffer (shared)",
+    "sDecompWritePtr": "Output write pointer (shared, set by lzss_start)",
+    "sDecompRemain": "Remaining bytes to decompress (shared, set by lzss_start)",
+    "sDecompChunkIdx": "DMA chunk counter (shared)",
+    "sDecompBufIdx": "Active buffer index 0/1 ping-pong",
+    "sDecompBufPos": "Read position within active buffer",
+    "sDecompChunkSize": "DMA chunk size (half of double-buffer)",
+    "sDecompLastFlag": "Flag: 1 when last chunk loaded (no more DMA needed)",
+    "sDecompResCtx": "Resource load context ptr (x_80d298c9, shared)",
+    "sSlideWindow[4160]": "LZSS sliding window buffer N+extra (shared, N=4096)",
+    "sHufFreq[628]": "Huffman frequency table (one per tree node)",
+    "sHufTree[944]": "Huffman tree link array (parent/child ordering)",
+    "sHufMap[628]": "Huffman node-to-frequency index mapping (shared with lzss.c)"
+  },
+  "open_questions": [
+    "lzhuf_tree_rebuild is NON_EQUIVALENT — the asm doesn't match the C code. Needs further analysis.",
+    "@bug in sBitMask[15]: should be 0x7FFF, is 0xFFF. Doesn't affect anything (x_cc1d0de5 never = 15).",
+    "sHufPad[4] in BSS: declared but never referenced — dead padding?"
+  ]
 }

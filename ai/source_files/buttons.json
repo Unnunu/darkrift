@@ -1,27 +1,58 @@
 {
-  "file": "src/buttons.c",
   "hash": "40f8a510",
-  "rom_offsets": {
-    "text": "0x255B0",
-    "data": "0x4B1C0",
-    "bss": "0x800AA430"
+  "name": "buttons",
+  "path": "src/buttons.c",
+  "lines": 196,
+  "wave": 1,
+  "evidence": {
+    "segment": "main (splat.yaml segment game)",
+    "key_functions": {
+      "button_process": "Main button processing pipeline: raw OSContPad → 4-nibble LUT → analog→d-pad → remap → mirror → lock → final buttons field"
+    }
   },
-  "summary": "Controller input processor: remaps button bits via lookup table, decomposes raw word, maps analog stick (±40 threshold) to d-pad, applies swap/lock/filter, per-frame poll.",
+  "summary": "Controller input processing: remaps raw button bits via 4 nibble-based lookup tables (C-buttons, triggers, D-pad, face buttons), converts analog stick (±40 threshold) to digital d-pad, applies per-player remap table, mirror mode (swap L↔R), and lock/filter. Called from gfx_render_frame in main.c each frame.",
   "functions": [
-    "button_remap",
-    "button_remap_reset",
-    "button_process",
-    "button_update_frame",
-    "button_state_reset"
+    {
+      "name": "button_remap",
+      "old_name": "x_90d8784d",
+      "line": 71,
+      "summary": "Button remap via per-player lookup table gRemapTable[player][8]. For each of 8 low bits, if set, ORs in the remapped value. High byte (0xFF00) passes through unchanged. Called from button_process when remap enabled (x_3fb684fe)."
+    },
+    {
+      "name": "button_remap_reset",
+      "old_name": "x_15468514",
+      "line": 90,
+      "summary": "Reset remap table to identity: ptr[i] = 1 << i. Called from rsp_game_init in rsp.c for both players."
+    },
+    {
+      "name": "button_process",
+      "old_name": "x_d523d906",
+      "line": 103,
+      "summary": "Main button processing pipeline: reads raw OSContPad.button, decomposes into 4 nibbles (C-buttons/triggers/D-pad/face), looks up each in respective LUT (sCButtonLut/sTriggerLut/sDPadLut/sFaceLut). Converts analog stick (±40 threshold) to digital d-pad when analog enabled. Applies remap (button_remap), mirror mode (swap L↔R), sticky lock filter via x_33260da8/x_245d87f4. NON_MATCHING."
+    },
+    {
+      "name": "button_update_frame",
+      "old_name": "x_0dd43bb1",
+      "line": 171,
+      "summary": "Per-frame button update: increments gFrameCounter, calls controller_read_frame, then processes buttons for each enabled+connected player via button_process. Zeros buttons for disabled players. Called from gfx_render_frame (main.c:123)."
+    },
+    {
+      "name": "button_state_reset",
+      "old_name": "x_14384217",
+      "line": 188,
+      "summary": "Reset both players' button state flags: clears sticky lock (x_c4397934), zeros buttons, disables mirror mode (x_d93bcabf), enables both players, resets previous-buttons (x_33260da8), enables remap (x_3fb684fe), disables analog→d-pad (x_40ccbb76). Called from rsp_game_init and rsp_game_reinit."
+    }
   ],
-  "key_apis": [],
-  "strings": [],
-  "subsystems": [
-    "Button remap via gRemapTable[2][8]",
-    "Analog→d-pad conversion",
-    "Sticky-lock filter"
-  ],
+  "globals": {
+    "sCButtonLut": "C-button nibble lookup table (16 entries, indexed by low nibble): R/L/D/U_CBUTTONS",
+    "sTriggerLut": "Trigger nibble lookup table (8 entries, indexed by nibble 1): R/L_TRIG",
+    "sDPadLut": "D-pad nibble lookup table (11 entries, indexed by nibble 2): R/L/D/U_JPAD",
+    "sFaceLut": "Face button nibble lookup table (16 entries, indexed by nibble 3): START/Z/B/A",
+    "gRemapTable[2][8]": "Per-player button remap table — player can reassign what each of 8 physical buttons maps to (used by select.c option screen)"
+  },
   "open_questions": [
-    "4 lookup tables sCButtonLut/A530/A554/A580 formats"
+    "Nibble decomposition of raw button value: the raw u16 from OSContPad is split into 4×4-bit nibbles. This suggests the controller data isn't in standard N64 OS_CONT format, or the game pre-processes it differently. How does the raw value get formed?",
+    "Player fields x_12a7bd86 (connected), x_40ccbb76 (analog disable), x_f3756179 (pre-filter buttons), x_3fb684fe (remap enable), x_d93bcabf (mirror), x_c4397934 (sticky lock), x_245d87f4 (lock mask), x_33260da8 (prev buttons) — all need meaningful names in Player struct (Wave 2).",
+    "LUT array sizes: sTriggerLut[8] has only 4 used entries (indices 1-3); sDPadLut[11] has 10 used entries (indices 1-10); sFaceLut[16] has 7 used entries (indices 1,2,4,6,8,10,12). All have trailing zeros — leftover space or intentional padding?"
   ]
 }

@@ -1,9 +1,45 @@
 {
-  "file": "src/lzss.c", "hash": "274fc753",
-  "rom_offsets": { "text": "0x26380", "data": "0x52B50", "bss": "0x800B85B0" },
-  "summary": "LZSS decompression: sliding window N=4096, F=60 max match, double-buffered DMA streaming from ROM. Uses Huffman layer for entropy coding.",
-  "functions": ["x_679a6854", "x_1f8f58cf", "x_66cc7af3", "x_69c2895e"],
-  "key_apis": [], "strings": [],
-  "subsystems": ["LZSS with Huffman entropy coding", "Double-buffered ROM streaming"],
-  "open_questions": []
+  "hash": "274fc753",
+  "name": "lzss",
+  "path": "src/lzss.c",
+  "lines": 121,
+  "wave": 1,
+  "evidence": {
+    "segment": "main (splat.yaml segment game)",
+    "cross_references": "wad.c (entry via lzhuf_start), huffman.c (all Huffman functions)"
+  },
+  "summary": "LZSS decompression with adaptive Huffman entropy coding. Sliding window N=4096, max match F=60, threshold=2. Double-buffered DMA streaming from ROM for zero-stall decompression. Entry point lzhuf_start called from wad.c during WAD file extraction.",
+  "functions": [
+    {
+      "name": "lzhuf_decode_symbol",
+      "old_name": "x_679a6854",
+      "line": 34,
+      "summary": "Decode one Huffman symbol: traverse tree from root (sHufMap[R]), reading bits via lzhuf_read_bit, following left(0)/right(1) child pointers. When leaf reached (c >= T), returns c - T (0..NUM_SYMBOLS-1). Calls lzhuf_tree_update to maintain adaptive tree."
+    },
+    {
+      "name": "lzhuf_decode_distance",
+      "old_name": "x_1f8f58cf",
+      "line": 48,
+      "summary": "Decode LZSS match distance: reads 8-bit Huffman code via lzhuf_read_byte_bits, looks up sDistBase[i]<<6 (base) and sDistExtra[i] (extra bits), reads extra bits via lzhuf_read_bits, combines result masked to 6 bits (& 0x3f)."
+    },
+    {
+      "name": "lzhuf_decompress",
+      "old_name": "x_66cc7af3",
+      "line": 60,
+      "summary": "Main LZSS decompress loop: calls lzhuf_tree_init, fills sliding window with spaces (N-F bytes). Loops through compressed data: for literal (c < 256), copy byte to output and window. For match (c >= 256), decode distance + length (c-255+THRESHOLD), copy from window to output."
+    },
+    {
+      "name": "lzhuf_start",
+      "old_name": "x_69c2895e",
+      "line": 93,
+      "summary": "Entry point for LZSS+Huffman decompression. Takes resource context (x_80d298c9), sets up double-buffered DMA: calculates chunk size from heap size, allocates two DMA buffers, starts synchronous + asynchronous DMA reads. Calls lzhuf_decompress. Called from wad.c:531."
+    }
+  ],
+  "globals": {
+    "D_8013C208": "Heap base address (from memory.c, used for DMA buffer allocation)",
+    "D_8013C218": "Heap size (from memory.c, used to compute chunk size)"
+  },
+  "open_questions": [
+    "D_8013C208 and D_8013C218 are declared in variables.h but need meaningful names (Wave 2+)."
+  ]
 }

@@ -3,19 +3,38 @@
   "name": "controller",
   "path": "src/controller.c",
   "lines": 54,
+  "wave": 1,
   "evidence": {
+    "segment": "boot (splat.yaml segment boot)",
     "api_calls": [
-      "osContInit",
-      "osContStartReadData",
-      "osContGetReadData",
-      "osCreateMesgQueue",
-      "osSetEventMesg(OS_EVENT_SI)",
-      "osRecvMesg"
+      "osContInit", "osContStartReadData", "osContGetReadData",
+      "osCreateMesgQueue", "osSetEventMesg(OS_EVENT_SI)", "osRecvMesg"
     ],
-    "datatypes": [
-      "OSContPad",
-      "OSContStatus"
-    ]
+    "datatypes": ["OSContPad", "OSContStatus"]
   },
-  "summary": "Controller input: init (controller_init, called from boot.c) and per-frame read (controller_read_frame)."
+  "summary": "Hardware controller init and per-frame read. controller_init (called from boot.c) creates SI event queue, initializes controller via osContInit, detects connected controllers. controller_read_frame (called from buttons.c:button_update_frame) polls SI message queue for async read completion, calls osContGetReadData, triggers next async read.",
+  "functions": [
+    {
+      "name": "controller_init",
+      "old_name": "x_391ee5d1",
+      "line": 16,
+      "summary": "Controller initialization: creates temporary SI message queue, calls osContInit. Then creates permanent SI message queue (sSiMessageQueue), sets up gContPadPtrs with sNullPad fallback. Detects connected controllers (up to 2 players), connects them to sContPad entries, starts async read via osContStartReadData. Called from boot.c:main_thread_func."
+    },
+    {
+      "name": "controller_read_frame",
+      "old_name": "x_bb61051c",
+      "line": 49,
+      "summary": "Per-frame controller read: polls sSiMessageQueue with OS_MESG_NOBLOCK. If SI data ready (osRecvMesg returns != -1), calls osContGetReadData into sContPad and triggers next async read via osContStartReadData. Called from buttons.c:button_update_frame."
+    }
+  ],
+  "globals": {
+    "sNullPad": "Default zeroed OSContPad — used as placeholder for disconnected controllers",
+    "sControllerCount": "Number of successfully connected controllers detected",
+    "sSiMessageQueue": "SI (Serial Interface) event message queue for controller read completion",
+    "sSiMesg[1]": "SI event message buffer",
+    "sContStatus[MAXCONTROLLERS]": "Controller status array filled by osContInit",
+    "sContPad[MAXCONTROLLERS]": "Controller pad data array filled by osContGetReadData",
+    "gContPadPtrs[MAXCONTROLLERS]": "Global pointers to current pad data — points to sContPad[i] if connected, else sNullPad. Used by buttons.c:button_process."
+  },
+  "open_questions": []
 }
