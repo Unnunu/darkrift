@@ -131,7 +131,7 @@ void move_retry_cb(Object *);
 void spark_spawn(x_2758cdab *x_cc1d0de5, Object *x_84ff873b, x_6751d717 *x_2092f891);
 void hud_timer_start(void);
 // void func_80029044(void);
-u8 x_7dc12b61(u8 x_cc1d0de5);
+u8 char_select_random(u8 x_cc1d0de5);
 void fight_reset(void);
 void player_reinit(s16 x_30bbe547);
 void fight_init(void);

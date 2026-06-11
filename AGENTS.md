@@ -335,8 +335,11 @@ All 62 functions renamed and documented. 11 globals renamed: `sHitDustSpriteDef`
 ### Background/ground (background.c) — DONE (Wave 1)
 3 functions renamed: `ground_load`, `ground_frustum_compute` (NON_EQUIVALENT), `ground_render`. 1 struct (GroundTileHeader). ~28 BSS globals renamed (sGround*). Updated main.c, menu.c. Build verified.
 
-### Pregame (pregame.c) — NEXT (Wave 1)
-Pre-match setup: char select screen, handicap, cheats, practice.
+### Pregame (pregame.c) — IN PROGRESS (Wave 1)
+28 functions renamed: `char_select_init`, `char_select_cursor`, `char_select_cpu_scroll`, `char_select_countdown`, `char_select_confirm`, `char_select_count_avail` (NON_MATCHING), `char_select_random` (NON_EQUIVALENT), `handicap_init`, `handicap_input`, `handicap_refresh`, `handicap_digit_render`, `handicap_health_to_width`, `pregame_start_seq`, `pregame_model_flash`, `practice_transition`, `practice_input`, `debug_model_edit`, `cheat_update`, `cheat_process`, `cheat_advance`, `cheat_sequence_cmp`, `cheat_set_flags`, `cheat_goto_stage`, `cheat_switch_char`, `cheat_practice_mode`, `cheat_set_difficulty`, `cheat_switch_side`, `cheat_navigate`. 2 structs: `CheatEntry`, `CheatState`. 4 globals: `sSonorkUnlocked`, `sDemitronUnlocked`, `sPlayerCursorObj[2]`, `sLastWinnerIdx` (pending). Main cheat table `sCheatTable[30]` with 30 button sequences. Updated callers in player.c, match.c, fighters.c, menu.c, functions.h.
+
+### Next Up: Camera (camera.c)
+Core camera math: 267 lines, ~22 functions. Coordinate transforms, look-at, perspective projection. Strong cross-references with already-documented cam_follow.c, player.c, match.c.
 
 ## Thread Model
 | Pri | Thread | Entry | Description |

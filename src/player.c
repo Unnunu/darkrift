@@ -447,7 +447,7 @@ s16 D_80049394 = -1;
 
 void ai_difficulty_max(Player *);
 void ai_difficulty_increase(Player *);
-s32 x_a2f41f91(s32 x_cc1d0de5);
+s32 char_select_count_avail(s32 x_cc1d0de5);
 
 void player_ai_cfg_init(DbFileHeader *x_cc1d0de5, s16 x_30bbe547) {
     AiTacticEntry *v1;
@@ -504,7 +504,7 @@ void player_ai_cfg_init(DbFileHeader *x_cc1d0de5, s16 x_30bbe547) {
                 ai_difficulty_increase(x_824b9544 + x_30bbe547);
                 break;
             case x_8bfc1f62:
-                switch (x_a2f41f91(x_30bbe547)) {
+                switch (char_select_count_avail(x_30bbe547)) {
                     case 0:
                         ai_difficulty_max(x_824b9544 + x_30bbe547);
                         break;

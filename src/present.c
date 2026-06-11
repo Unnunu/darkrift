@@ -4,7 +4,7 @@
 
 extern s16 sRoundWinCount;
 extern s16 x_1acf99bf;
-extern u32 x_6db66fc3;
+extern u32 sLastWinnerIdx;
 
 void present_title_task(Object *);
 
@@ -50,7 +50,7 @@ void attract_menu_input(Object *obj, s16 buttons, s16 x_30bbe547) {
                     gWadCondLoad[x_30bbe547].x_03604d94 = FALSE;
                     gWadCondLoad[1 - x_30bbe547].x_03604d94 = TRUE;
                     sFirstFight = TRUE;
-                    x_6db66fc3 = 1 - x_30bbe547;
+                    sLastWinnerIdx = 1 - x_30bbe547;
                     present_set_screen(x_e483bf48 + x_30bbe547);
                     gWadCondLoad[x_83106b21].x_b2b764b3 = gWadCondLoad[x_6f0b3be3].x_b2b764b3 = FALSE;
                     for (i = 0; i < x_edb381f3; i++) {
@@ -133,7 +133,7 @@ void present_attract_cycle(void) {
     x_e38a6e19 = x_d61e86e9 + gWadCondLoad[x_83106b21].x_eb1fe45b;
 
     sRoundWinCount = sAttractCycleIdx++;
-    x_6db66fc3 = x_6f0b3be3;
+    sLastWinnerIdx = x_6f0b3be3;
 }
 
 void present_title_task(Object *obj) {

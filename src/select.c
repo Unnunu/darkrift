@@ -467,8 +467,8 @@ void select_stage_screen(Object *obj) {
     obj->x_0f4167b4[2] = 15;
     if (buttons & x_ad1aebe6) {
         x_eb1fe45b = obj->x_0f4167b4[0] = (obj->x_0f4167b4[0] + x_edb381f3 - 1) % x_edb381f3;
-        if (x_eb1fe45b == x_e235676f || x_eb1fe45b == x_968cc9a2 && !x_5c207a56 ||
-            x_eb1fe45b == x_ff5073d4 && !x_aee302fc) {
+        if (x_eb1fe45b == x_e235676f || x_eb1fe45b == x_968cc9a2 && !sSonorkUnlocked ||
+            x_eb1fe45b == x_ff5073d4 && !sDemitronUnlocked) {
             obj->x_0f4167b4[0]--;
         }
 
@@ -480,8 +480,8 @@ void select_stage_screen(Object *obj) {
         audio_sfx_play(2, 1);
     } else if (buttons & x_fc4a9735) {
         x_eb1fe45b = obj->x_0f4167b4[0] = (obj->x_0f4167b4[0] + 1) % x_edb381f3;
-        if (x_eb1fe45b == x_e235676f || x_eb1fe45b == x_968cc9a2 && !x_5c207a56 ||
-            x_eb1fe45b == x_ff5073d4 && !x_aee302fc) {
+        if (x_eb1fe45b == x_e235676f || x_eb1fe45b == x_968cc9a2 && !sSonorkUnlocked ||
+            x_eb1fe45b == x_ff5073d4 && !sDemitronUnlocked) {
             obj->x_0f4167b4[0]++;
         }
 
@@ -580,8 +580,8 @@ void select_score_display(Object *obj) {
     }
 
     x_05e00b01 = sCharSortOrder[x_634768da];
-    if (x_05e00b01 == x_e235676f || x_05e00b01 == x_968cc9a2 && !x_5c207a56 ||
-        x_05e00b01 == x_ff5073d4 && !x_aee302fc) {
+    if (x_05e00b01 == x_e235676f || x_05e00b01 == x_968cc9a2 && !sSonorkUnlocked ||
+        x_05e00b01 == x_ff5073d4 && !sDemitronUnlocked) {
         return;
     }
 

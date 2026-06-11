@@ -5,7 +5,7 @@ void options_menu(void);
 void options_controller(void);
 void options_score(void);
 void options_stage(void);
-void x_2c1b660c(void);
+void char_select_init(void);
 void arena_stage_02(void);
 void arena_stage_03(void);
 void arena_stage_04(void);
@@ -306,7 +306,7 @@ ScreenProfile gScreenProfiles[] = {
     { options_controller, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &sDefaultLights, { 192, 192, 192, 0 } },
     { options_score, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &sDefaultLights, { 192, 192, 192, 0 } },
     { options_stage, 9, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &sDefaultLights, { 192, 192, 192, 0 } },
-    { x_2c1b660c, 2, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &sDefaultLights, { 192, 192, 192, 0 } },
+    { char_select_init, 2, 0, 0, 0, 0, 0, 40, 32, 40, 0, 630, 1000, &sDefaultLights, { 192, 192, 192, 0 } },
     { arena_stage_02, 11, 0, 0, 0, 0, 0, 113, 108, 97, 0, 945, 1000, &D_8004B624, { 69, 55, 88, 0 } },
     { arena_stage_03, 11, 0, 113, 65, 59, 0, 234, 89, 69, 0, 850, 1000, &D_8004B644, { 84, 26, 25, 0 } },
     { arena_stage_04, 11, 0, 19, 32, 28, 0, 4, 4, 14, 0, 945, 1000, &D_8004B664, { 36, 77, 54, 0 } },

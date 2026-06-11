@@ -9,7 +9,7 @@ extern s16 x_adcfd05c;
 
 extern Object *sHudRootObj;
 
-extern s32 x_6db66fc3;
+extern s32 sLastWinnerIdx;
 
 /* .bss */
 
@@ -402,7 +402,7 @@ void match_post_ko_routing(Object *obj) {
             present_set_screen(x_e483bf48 + a3);
 
             gWadCondLoad[1 - a3].x_03604d94 = TRUE;
-            x_6db66fc3 = 1 - a3;
+            sLastWinnerIdx = 1 - a3;
 
             for (i = 0; i < x_edb381f3; i++) {
                 D_800B6350[a3][i] = FALSE;
@@ -489,7 +489,7 @@ x_09d6a3c8 match_result_callback(u32 x_30bbe547, u8 x_84ff873b) {
                 if (!gWadCondLoad[x_30bbe547].x_03604d94) {
                     D_800B6350[1 - x_30bbe547][x_824b9544[1 - x_30bbe547].x_eb1fe45b] = TRUE;
 
-                    if (x_7dc12b61(1 - x_30bbe547) == -1) {
+                    if (char_select_random(1 - x_30bbe547) == -1) {
                         a3 = match_end_screen_check;
                     } else {
                         x_e38a6e19 = SCREEN_WAIT;

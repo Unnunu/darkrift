@@ -1,27 +1,89 @@
 {
   "file": "src/pregame.c",
   "hash": "a7cab0a2",
-  "rom_offsets": { "text": "0x1EA10", "data": "0x4A9F0", "rodata": "0x555C0", "bss": "0x80081670" },
+  "rom_offsets": {
+    "text": "0x1EA10",
+    "data": "0x4A9F0",
+    "rodata": "0x555C0",
+    "bss": "0x80081670"
+  },
   "summary": "Pre-match setup screen: character grid nav (P1/P2), CPU AI opponent selection, handicap bar (0-400), cheat code engine (31 sequences), practice mode toggle, match start flow.",
   "functions": [
-    "x_34648a7a", "x_eb293927", "x_0f87e747", "x_0362e0e0", "x_6e0d3e38",
-    "x_a70125d9", "x_6aa7260b", "x_778bd81c", "x_e521e2f2", "x_8aee6708",
-    "x_6fa3f96e", "x_95e711cc", "x_9f82ca8d", "x_7caf7d71"
+    "char_select_init — Main char select screen: load sprites, create cursor/com/confirm objects per game mode. Branching by game_mode (1P, VS, Practice, Team, Tournament). Entry point called from fighters.c.",
+    "char_select_cursor — Nav (L/R arrow, A confirm), wraps 0-9, skips locked chars (sonokov/exhibition gates). 1P auto-confirms for CPU.",
+    "char_select_cpu_scroll — CPU AI auto-scroll through available chars toward target, random pick when scroll timer expires.",
+    "char_select_countdown — 2-digit countdown (tens/ones sprite digits), then triggers char_select_confirm and transitions to match.",
+    "char_select_confirm — Store selected char into gWadCondLoad[player].x_eb1fe45b (char ID), increment confirm counter.",
+    "char_select_count_avail — Count unlocked chars for player. NON_MATCHING (C decompilation doesn't match binary).",
+    "char_select_random — Pick random unlocked char, handles forced picks / duplicate avoids. NON_EQUIVALENT.",
+    "handicap_init — Create health bar sprites (part + fill), digit sprites (hundreds/tens/ones), set handicap_input callback.",
+    "handicap_input — L/R adjusts health (40-400 range, step 1→28 accelerating), bar sprite position update, SFX on confirm.",
+    "handicap_refresh — Calls digit_render, handles A confirm fade-out, updates bar position based on current health.",
+    "handicap_digit_render — Health % as 3 sprites (hundreds/tens/ones), leading-zero hiding, panic flash at bounds.",
+    "handicap_health_to_width — (health * 80) / 400 → pixel width of health bar fill.",
+    "pregame_start_seq — State machine (4 states): idle → model flash → hide → set fight flags + transition screen.",
+    "pregame_model_flash — Oscillate frame counter for flash effect before fight start.",
+    "practice_transition — Practice flash: fade out when model flash is active, hide sprite.",
+    "practice_input — Toggle COM control side (L/R), switch to transition state on confirm.",
+    "debug_model_edit — D-pad: move x/y/z. L/R: frame advance. Analog stick tilt: rotation/scale. Debug-only.",
+    "cheat_update — Entry point: runs cheat_process for both P1 and P2. Called from menu.c title screen.",
+    "cheat_process — Compare input button against sCheatTable, find matching sequence start or advance current.",
+    "cheat_advance — Increment step in current cheat sequence, call handler when sequence complete.",
+    "cheat_sequence_cmp — Compare two u16 button sequences, return common prefix length.",
+    "cheat_set_flags — Handler: set sSonorkUnlocked (char 8) and sDemitronUnlocked (char 1) flags.",
+    "cheat_goto_stage — Handler: force char + force CPU opponent, route to stage select screen.",
+    "cheat_switch_char — Handler: wrapper calling cheat_goto_stage with target char ID.",
+    "cheat_practice_mode — Handler: route to practice screen (char = exhibition placeholder).",
+    "cheat_set_difficulty — Handler: set gWadCondLoad difficulty for both players.",
+    "cheat_switch_side — Handler: swap P1↔P2 controllers, clear char availability flags, re-route char select.",
+    "cheat_navigate — Handler: set opponent char + route to screen ID."
   ],
-  "key_apis": [],
+  "structs": {
+    "CheatEntry": "Cheat table entry: u16* sequence (0xFFFF-terminated button list), handler func ptr, param1 (s16), param2 (s16).",
+    "CheatState": "Cheat engine state: currentEntry ptr, stepIndex, lastButton (for dedup of held buttons)."
+  },
+  "globals": {
+    "sSonorkUnlocked": "u8 — char 8 (Sonork) availability gate for char select.",
+    "sDemitronUnlocked": "u8 — char 1 (Demitron) availability gate for char select.",
+    "sPlayerCursorObj[2]": "Object* — P1/P2 cursor objects in char select grid.",
+    "sLastWinnerIdx": "u32 — last round winner index (for rematch char switching).",
+    "sCheatTable[30]": "CheatEntry[30] — 30 button sequences with handler dispatch. Includes 12 char-switch, 7 difficulty, 10 screen-route, 1 practice, 1 switch-side, 2 char-unlock entries."
+  },
+  "key_apis": [
+    "audio_sfx_play",
+    "obj_create_from_def",
+    "TASK_END",
+    "wad_load_path",
+    "wad_unload_context",
+    "tr_scene_loop",
+    "present_set_screen",
+    "char_select_random"
+  ],
   "strings": [
-    "\"bars.sp2\"", "\"grpp1.sp2\"", "\"grpp2.sp2\"", "\"options2.sp2\"", "\"practice.sp2\"",
-    "\"/plyrsel/plyrsel\"", "\"/plyrsel/music\"", "\"/plyrsel/select2\"", "\"/plyrsel/select3\""
+    "\"bars.sp2\"",
+    "\"grpp1.sp2\"",
+    "\"grpp2.sp2\"",
+    "\"options2.sp2\"",
+    "\"practice.sp2\"",
+    "\"/plyrsel/plyrsel\"",
+    "\"/plyrsel/music\"",
+    "\"/plyrsel/select\"",
+    "\"/plyrsel/select2\"",
+    "\"/plyrsel/select3\""
   ],
   "subsystems": [
     "Character grid: P1/P2 navigation, CPU AI opponent walks grid toward target",
     "Handicap: 0-400 range, sprite-based digit rendering",
-    "Cheat codes: 31 directional input sequences with handler dispatch",
+    "Cheat codes: 30 directional input sequences with handler dispatch (char unlock, char switch, difficulty, screen route, practice, side swap)",
     "Practice mode: side-swapping toggle",
     "Game mode: 1P, VS, Practice, Team, Tournament branching"
   ],
   "open_questions": [
-    "2 functions under NON_MATCHING/NON_EQUIVALENT — which?",
-    "31 cheat code sequences — what are their effects?"
+    "debug_model_edit — created/used? May be dead code or created from an external debug menu.",
+    "char_select_count_avail — NON_MATCHING: the C decompilation doesn't match the compiled binary's codegen.",
+    "char_select_random — NON_EQUIVALENT: the C decompilation may not be functionally identical.",
+    "sCheatTable[30] entries still use D_8004Axxx / x_ hashed sequence arrays — rename data array names.",
+    "CheatEntry/CheatState struct fields still hash-named — rename when field purposes clearer.",
+    "Local #define macros (x_0140ad12=x_82e2e1db=x_a44625a6=x_d0d35cc6) still hash-named."
   ]
 }
