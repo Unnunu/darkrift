@@ -290,7 +290,7 @@ void x_dd25b026(Object *obj) {
     if (controller->x_0f4167b4[x_f6733052] == 9) {
         obj->flags &= ~x_c537cafa;
         if ((x_59ce598c[x_83106b21].buttons == x_9cefe76c) || x_59ce598c[x_6f0b3be3].buttons == x_9cefe76c) {
-            x_e38a6e19 = x_901b251f;
+            x_e38a6e19 = SCREEN_ATTRACT;
             x_e30d50d2 |= x_bee364e0;
             TASK_END(obj->currentTask);
             x_7e194d55(2, 0);

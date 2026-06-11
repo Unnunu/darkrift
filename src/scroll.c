@@ -5,7 +5,7 @@ extern s32 gGfxFlags;
 extern s32 x_6c647b3a;
 extern u8 sClearZbuffer;
 extern Gfx *gF3dDisplayListPtr;
-extern Gfx *D_8005BFDC;
+extern Gfx *gOverlayDlPtr;
 extern Gfx *gF3dExtraListPtr;
 extern s16 sFogColorR;
 extern s16 sFogColorG;
@@ -316,7 +316,7 @@ void x_23e3afdf(Object *obj) {
         x_bde24317 = &gF3dExtraListPtr;
         gGfxFlags |= GFX_EXTRA_DL;
     } else {
-        x_bde24317 = &D_8005BFDC;
+        x_bde24317 = &gOverlayDlPtr;
     }
     gDPLoadTLUT_pal256((*x_bde24317)++, x_c485761a(palette));
 

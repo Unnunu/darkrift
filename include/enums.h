@@ -2,7 +2,7 @@
 #define x_6b4ada84
 
 enum x_1ef8e4ea {
-    x_901b251f,
+    SCREEN_ATTRACT,
     x_f699a14d,
     x_b84bd571,
     x_2e33c051,
@@ -35,7 +35,7 @@ enum x_1ef8e4ea {
     x_3509e8f6,
     x_b804ecb4,
     x_3dba3c6c,
-    x_c4da946c,
+    SCREEN_BOOT,
     x_fa31c524,
     x_896bb5ec,
     x_a3a32a2b,

@@ -232,7 +232,7 @@ void x_efb29a7d(void) {
                 t2 = x_dfa11b27->x_164cf1ca->x_c246f31f[i];
                 for (j = 0; j < t2; j++) {
                     if (x_dfa11b27->flags & 2) {
-                        x_50746900(x_ee137e39, NULL, (j != 0) ? v0->info : x_dfa11b27->x_415ed9d6[i], v0->vertices,
+                        x_50746900(gExtraBatchPtr, NULL, (j != 0) ? v0->info : x_dfa11b27->x_415ed9d6[i], v0->vertices,
                                    v0->triangles);
                         v0++;
                     } else {
@@ -375,15 +375,15 @@ Object *x_745c5ce2(x_88f11482 *x_cc1d0de5, char *x_84ff873b, x_aece7675 *propert
     if (x_84ff873b == NULL) {
         obj = x_5283664d(properties->x_95ee18a8);
         x_dab0846a(x_dcab8ab0, properties->name);
-        x_6d41c91d(obj, x_cc1d0de5, &x_acab9952, NULL, properties->x_08ae3bb4);
+        x_6d41c91d(obj, x_cc1d0de5, &sZeroVelocity, NULL, properties->x_08ae3bb4);
     } else {
         x_dab0846a(x_dcab8ab0, x_84ff873b);
         if (properties != NULL) {
             obj = x_5283664d(properties->x_95ee18a8);
-            x_6d41c91d(obj, x_cc1d0de5, &x_acab9952, NULL, properties->x_08ae3bb4);
+            x_6d41c91d(obj, x_cc1d0de5, &sZeroVelocity, NULL, properties->x_08ae3bb4);
         } else {
             obj = x_5283664d(0x1000);
-            x_6d41c91d(obj, x_cc1d0de5, &x_acab9952, NULL, NULL);
+            x_6d41c91d(obj, x_cc1d0de5, &sZeroVelocity, NULL, NULL);
         }
     }
 
@@ -418,7 +418,7 @@ Object *x_4495b42c(void (*x_0232396f)(Object *), s16 x_84ff873b) {
     Object *obj;
 
     obj = x_5283664d(x_84ff873b);
-    x_6d41c91d(obj, &x_c787d34b, &x_acab9952, NULL, NULL);
+    x_6d41c91d(obj, &sZeroPosition, &sZeroVelocity, NULL, NULL);
     obj->x_0232396f = x_0232396f;
     obj->flags = x_f2c38774;
     return obj;
@@ -428,7 +428,7 @@ Object *x_12014163(x_88f11482 *pos, x_f0d7e70f *def, s32 context) {
     Object *obj;
 
     obj = x_5283664d(def->x_95ee18a8);
-    x_6d41c91d(obj, pos, &x_acab9952, NULL, def->callback);
+    x_6d41c91d(obj, pos, &sZeroVelocity, NULL, def->callback);
     obj->x_0232396f = x_23e3afdf;
     obj->flags = def->flags;
     obj->flags |= x_3d723236;
@@ -449,15 +449,15 @@ Object *x_8e3c7e83(x_88f11482 *pos, char *name, x_aece7675 *properties, u32 cont
     if (name == NULL) {
         obj = x_5283664d(properties->x_95ee18a8);
         x_dab0846a(x_c02b5734, properties->name);
-        x_6d41c91d(obj, pos, &x_acab9952, NULL, properties->x_08ae3bb4);
+        x_6d41c91d(obj, pos, &sZeroVelocity, NULL, properties->x_08ae3bb4);
     } else {
         x_dab0846a(x_c02b5734, name);
         if (properties != NULL) {
             obj = x_5283664d(properties->x_95ee18a8);
-            x_6d41c91d(obj, pos, &x_acab9952, NULL, properties->x_08ae3bb4);
+            x_6d41c91d(obj, pos, &sZeroVelocity, NULL, properties->x_08ae3bb4);
         } else {
             obj = x_5283664d(x_9d442987);
-            x_6d41c91d(obj, pos, &x_acab9952, NULL, NULL);
+            x_6d41c91d(obj, pos, &sZeroVelocity, NULL, NULL);
         }
     }
 
@@ -532,7 +532,7 @@ Object *x_572f827d(x_88f11482 *pos, s32 x_95ee18a8, void (*x_08ae3bb4)(Object *)
     s32 unused[5];
 
     obj = x_5283664d(x_95ee18a8);
-    x_6d41c91d(obj, pos, &x_acab9952, NULL, x_08ae3bb4);
+    x_6d41c91d(obj, pos, &sZeroVelocity, NULL, x_08ae3bb4);
 
     obj->x_0232396f = model_render;
     obj->flags = x_3434f870;

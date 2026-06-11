@@ -873,7 +873,7 @@ void x_2c1b660c(void) {
             break;
     }
 
-    x_82df7d23();
+    tr_scene_loop();
     x_ad9889cf(x_24b231d4);
 }
 

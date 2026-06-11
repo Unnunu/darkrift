@@ -2,7 +2,7 @@
 #include "PR/gt.h"
 #include "task.h"
 
-#define x_d8fc928a(pkt, dl)                         \
+#define g_PERSPNORM(pkt, dl)                        \
     {                                               \
         Gfx *_g = (Gfx *) (pkt);                    \
         _g->words.w0 = _SHIFTL(G_PERSPNORM, 24, 8); \
@@ -25,7 +25,7 @@ extern u16 x_e30d50d2;
 extern u16 x_e38a6e19;
 extern u16 D_8005BFCE;
 
-extern Gfx *D_8005BFDC;
+extern Gfx *gOverlayDlPtr;
 extern s16 sOverlayBrightness;
 extern s32 gGfxFlags;
 extern RenderCallback sRenderCallbacks[20];
@@ -35,34 +35,34 @@ extern s32 sRenderCallbackArgs[20];
 
 s16 D_80049290[] = { 0, 0, 0, 0, 0, 0, 0, 1000, 0, 0, 0, 0, 1000, 0 };
 s32 gFrameCounter = 0;
-Vtx D_800492B0[2][4] = { { { { { 0, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
-                           { { { x_56e08f29 << 2, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
-                           { { { 0, x_84e8ddf2 << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
-                           { { { x_56e08f29 << 2, x_84e8ddf2 << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } } },
-                         { { { { 0, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
-                           { { { x_56e08f29 << 2, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
-                           { { { 0, x_84e8ddf2 << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
-                           { { { x_56e08f29 << 2, x_84e8ddf2 << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } } } };
-x_562d2a02 D_80049330[] = { { 0, 1, 2, 0 }, { 2, 1, 3, 0 } };
+Vtx sQuadVtx[2][4] = { { { { { 0, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
+                         { { { x_56e08f29 << 2, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
+                         { { { 0, x_84e8ddf2 << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
+                         { { { x_56e08f29 << 2, x_84e8ddf2 << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } } },
+                       { { { { 0, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
+                         { { { x_56e08f29 << 2, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
+                         { { { 0, x_84e8ddf2 << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
+                         { { { x_56e08f29 << 2, x_84e8ddf2 << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } } } };
+x_562d2a02 sQuadTri[] = { { 0, 1, 2, 0 }, { 2, 1, 3, 0 } };
 s32 D_80049338[] = { 0, 0, 0 };
-x_acccb624 x_acab9952 = { 0, 0, 0 };
-x_88f11482 x_c787d34b = { 0, 0, 0, 0 };
-x_2bb4cf6f D_8004935C = { { { { 255, 255, 255, 255 }, 0, 0, -127 }, { { 0, 0, 0, 255 }, 73, -73, -73 } } };
+x_acccb624 sZeroVelocity = { 0, 0, 0 };
+x_88f11482 sZeroPosition = { 0, 0, 0, 0 };
+x_2bb4cf6f sDefaultLights = { { { { 255, 255, 255, 255 }, 0, 0, -127 }, { { 0, 0, 0, 255 }, 73, -73, -73 } } };
 UnkStruct10 D_8004937C = { 0, 90, 0, 0 };
 UnkStruct10 D_80049384 = { 0, 233, 500, 0 };
 
 /* .bss */
-s16 x_f71086e0;
-s16 x_4090e698;
+s16 gCurrentScreenId;
+s16 sPrevScreenId;
 OSTime unused;
-OSTime D_8005BEE0;
+OSTime sRenderTimeAccum;
 OSTime gRspTimeTotal;
 OSTime gRdpTimeTotal;
-s32 D_8005BEF8;
-s32 D_8005BEFC;
-x_c1cedf06 D_8005BF00;
-Gfx D_8005BF58[5];
-Mtx D_8005BF80;
+s32 sFrameCounter;
+s32 sFadeAlpha;
+x_c1cedf06 sQuadBatch;
+Gfx sQuadDl[5];
+Mtx sScratchMtx;
 u16 x_e30d50d2;
 u16 x_e38a6e19;
 s32 D_8005BFC4;
@@ -70,12 +70,12 @@ u16 x_c84980f9;
 u16 x_a4f5fb93;
 u16 D_8005BFCC;
 u16 D_8005BFCE;
-void *x_96f79785[2];
+void *gFramebuffers[2];
 Gfx *gF3dDisplayListPtr;
-Gfx *D_8005BFDC;
+Gfx *gOverlayDlPtr;
 Gfx *gF3dExtraListPtr;
 x_320b5d80 *gDrBatchPtr;
-x_320b5d80 *x_ee137e39;
+x_320b5d80 *gExtraBatchPtr;
 x_ee01e8c6 D_8005BFF0[2];
 x_ee01e8c6 *D_80080100;
 
@@ -89,18 +89,18 @@ void rsp_clear_screen(void);
 void x_77751af8(void);
 void x_ff4031b5(void);
 void x_06fa0af9(void);
-void x_4f944650(Object *obj);
+void tr_fade_start(Object *obj);
 
-void x_225c77c4(void) {
+void gfx_init_frame(void) {
     D_80080100 = &D_8005BFF0[D_8005BFCE];
     gF3dDisplayListPtr = D_80080100->x_700a6ea1;
     gDrBatchPtr = D_80080100->x_79588dca;
 
-    gSPSegment(gF3dDisplayListPtr++, 0x01, x_96f79785[D_8005BFCE]);
+    gSPSegment(gF3dDisplayListPtr++, 0x01, gFramebuffers[D_8005BFCE]);
     gSPSegment(gF3dDisplayListPtr++, 0x00, 0x00000000);
 
     D_8004CC20.x_cf1ea5d1[0] = 0;
-    D_8004CC20.x_cf1ea5d1[1] = x_a4e17949(x_96f79785[D_8005BFCE]);
+    D_8004CC20.x_cf1ea5d1[1] = x_a4e17949(gFramebuffers[D_8005BFCE]);
 
     x_50746900(gDrBatchPtr, (x_3e2f9cf1 *) osVirtualToPhysical(&D_8004CC20), &D_8004CCC8, NULL, NULL);
     gDPFullSync(gF3dDisplayListPtr++);
@@ -114,7 +114,7 @@ void x_225c77c4(void) {
     D_80080100 = &D_8005BFF0[D_8005BFCE];
 }
 
-void x_da2cde4c(void) {
+void gfx_render_frame(void) {
     OSTime x_de1dd2f4;
     x_320b5d80 *ptr;
     s32 i;
@@ -124,16 +124,16 @@ void x_da2cde4c(void) {
 
     D_80080100 = &D_8005BFF0[D_8005BFCE];
     gF3dDisplayListPtr = D_80080100->x_700a6ea1;
-    D_8005BFDC = D_80080100->x_5b2cc439;
+    gOverlayDlPtr = D_80080100->x_5b2cc439;
     gF3dExtraListPtr = D_80080100->x_a4c192ba;
     gDrBatchPtr = D_80080100->x_79588dca;
-    x_ee137e39 = D_80080100->x_b8131490;
+    gExtraBatchPtr = D_80080100->x_b8131490;
 
-    gSPSegment(gF3dDisplayListPtr++, 0x01, x_96f79785[D_8005BFCE]);
+    gSPSegment(gF3dDisplayListPtr++, 0x01, gFramebuffers[D_8005BFCE]);
     gSPSegment(gF3dDisplayListPtr++, 0x00, 0x00000000);
 
     D_8004CC20.x_cf1ea5d1[0] = 0;
-    D_8004CC20.x_cf1ea5d1[1] = x_c485761a(x_96f79785[D_8005BFCE]);
+    D_8004CC20.x_cf1ea5d1[1] = x_c485761a(gFramebuffers[D_8005BFCE]);
 
     if (gGfxFlags & GFX_EXTRA_DL) {
         gSPDisplayList(gF3dExtraListPtr++, D_8004CA68);
@@ -150,7 +150,7 @@ void x_da2cde4c(void) {
     }
     gSPDisplayList(gF3dDisplayListPtr++, D_8004CB00);
     gSPMatrix(gF3dDisplayListPtr++, x_c485761a(&D_80080100->x_0f39faa7), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    x_d8fc928a(gF3dDisplayListPtr++, D_80080100->perspNorm);
+    g_PERSPNORM(gF3dDisplayListPtr++, D_80080100->perspNorm);
     D_8004CC20.perspNorm = D_80080100->perspNorm;
     gDPSetFogColor(gF3dDisplayListPtr++, sFogColorR, sFogColorG, sFogColorB, 255);
     gSPFogPosition(gF3dDisplayListPtr++, sFogMin, sFogMax);
@@ -159,13 +159,13 @@ void x_da2cde4c(void) {
     }
     x_06fa0af9();
 
-    for (ptr = D_80080100->x_b8131490; ptr != x_ee137e39; ptr++) {
+    for (ptr = D_80080100->x_b8131490; ptr != gExtraBatchPtr; ptr++) {
         x_50746900(gDrBatchPtr, ptr->context, ptr->info, ptr->vertices, ptr->triangles);
     }
     gDPFullSync(gF3dDisplayListPtr++);
     gSPEndDisplayList(gF3dDisplayListPtr++);
 
-    gSPEndDisplayList(D_8005BFDC++);
+    gSPEndDisplayList(gOverlayDlPtr++);
 
     gDPFullSync(gF3dExtraListPtr++);
     gSPEndDisplayList(gF3dExtraListPtr++);
@@ -173,7 +173,7 @@ void x_da2cde4c(void) {
     x_50746900(gDrBatchPtr, NULL, &D_8004CD30, NULL, NULL);
     x_50746900(gDrBatchPtr, NULL, NULL, NULL, NULL);
 
-    D_8005BEE0 += osGetTime() - x_de1dd2f4;
+    sRenderTimeAccum += osGetTime() - x_de1dd2f4;
     rsp_wait_idle();
 
     for (i = 0; i < ARRAY_COUNT(sRenderCallbacks); i++) {
@@ -185,13 +185,13 @@ void x_da2cde4c(void) {
     rsp_vi_sync(TRUE);
     rsp_submit_gfx_tasks();
 
-    if (++D_8005BEF8 >= 0x100) {
-        D_8005BEF8 = 0;
-        gRdpTimeTotal = gRspTimeTotal = D_8005BEE0 = 0;
+    if (++sFrameCounter >= 0x100) {
+        sFrameCounter = 0;
+        gRdpTimeTotal = gRspTimeTotal = sRenderTimeAccum = 0;
     }
 }
 
-Object *x_a1378aba(void) {
+Object *tr_obj_alloc(void) {
     Object *obj;
 
     obj = x_68289eaa(x_69f86dd8);
@@ -202,11 +202,11 @@ Object *x_a1378aba(void) {
     obj->x_0232396f = x_a1821d40;
     x_7e194d55(2, obj->x_0f4167b4[2]);
     gTaskLock = TRUE;
-    D_8005BEFC = 0;
+    sFadeAlpha = 0;
     return obj;
 }
 
-void x_14a106cd(s16 x_ce13e71a) {
+void tr_player_load(s16 x_ce13e71a) {
     Object *v0;
     Object *v1;
     s16 pad;
@@ -222,7 +222,7 @@ void x_14a106cd(s16 x_ce13e71a) {
     x_59ce598c[x_ce13e71a].x_c4397934 = FALSE;
 
     while (gTaskPool.count < 10 || x_5c163218.count <= 0) {
-        x_da2cde4c();
+        gfx_render_frame();
     }
 
     switch (x_5e4e2788) {
@@ -232,7 +232,7 @@ void x_14a106cd(s16 x_ce13e71a) {
         case x_e483bf48:
         case x_557d3dd6:
             if (x_77831b2c[x_ce13e71a].x_03604d94) {
-                v0 = x_a1378aba();
+                v0 = tr_obj_alloc();
                 if (v0 == NULL) {
                     x_5cb3a50d = TRUE;
                 } else {
@@ -255,7 +255,7 @@ void x_14a106cd(s16 x_ce13e71a) {
         x_62551fe9(0, 0);
         x_62551fe9(1, 0);
         x_20c52092(1800);
-        x_da2cde4c();
+        gfx_render_frame();
 
         alSeqpStop(x_85a4d96f);
 
@@ -268,7 +268,7 @@ void x_14a106cd(s16 x_ce13e71a) {
             if (x_5e4e2788 != x_79c2dc5b) {
                 x_59ce598c[x_83106b21].x_d93bcabf = x_59ce598c[x_6f0b3be3].x_d93bcabf = FALSE;
             }
-            x_da2cde4c();
+            gfx_render_frame();
         }
 
         if (!x_5aee6615) {
@@ -288,55 +288,55 @@ void x_14a106cd(s16 x_ce13e71a) {
     } else {
 
         while (--counter > 0) {
-            x_da2cde4c();
+            gfx_render_frame();
         }
     }
 }
 
-void x_60affc72(void) {
+void func_80001C6C(void) {
     x_e30d50d2 = 0;
     gTaskLock = TRUE;
     x_aec099eb = x_b5cc849a = 1800;
 
-    x_4495b42c(x_4f944650, 0x1000);
+    x_4495b42c(tr_fade_start, 0x1000);
     while (!(x_e30d50d2 & x_bee364e0)) {
-        x_da2cde4c();
+        gfx_render_frame();
     }
     gTaskLock = FALSE;
 
     while (x_59ce598c[x_83106b21].buttons == (x_9cefe76c | x_1c9950cc) ||
            x_59ce598c[x_6f0b3be3].buttons == (x_9cefe76c | x_1c9950cc)) {
-        x_da2cde4c();
+        gfx_render_frame();
     }
 
-    x_e38a6e19 = x_901b251f;
+    x_e38a6e19 = SCREEN_ATTRACT;
 
     while (x_59ce598c[x_83106b21].buttons == (x_9cefe76c | x_1c9950cc) ||
            x_59ce598c[x_6f0b3be3].buttons == (x_9cefe76c | x_1c9950cc)) {
-        x_da2cde4c();
+        gfx_render_frame();
     }
 
     rsp_wait_idle();
     rsp_vi_sync(FALSE);
 }
 
-void x_82df7d23(void) {
-    D_8005BFCE = D_8005BEF8 = gRdpTimeTotal = gRspTimeTotal = D_8005BEE0 = 0;
+void tr_scene_loop(void) {
+    D_8005BFCE = sFrameCounter = gRdpTimeTotal = gRspTimeTotal = sRenderTimeAccum = 0;
 
     while (!(x_e30d50d2 & x_bee364e0) || !(x_e30d50d2 & x_e3ff543d)) {
         if (!(x_e30d50d2 & x_dd99cbfb) && !(x_e30d50d2 & x_86c5bc33) && x_59ce598c[x_83106b21].buttons == x_9cefe76c &&
             x_59ce598c[x_83106b21].enabled && x_59ce598c[x_83106b21].x_c4397934) {
-            x_14a106cd(x_83106b21);
+            tr_player_load(x_83106b21);
         } else if (!(x_e30d50d2 & x_dd99cbfb) && !(x_e30d50d2 & x_86c5bc33) &&
                    x_59ce598c[x_6f0b3be3].buttons == x_9cefe76c && x_59ce598c[x_6f0b3be3].enabled &&
                    x_59ce598c[x_6f0b3be3].x_c4397934) {
-            x_14a106cd(x_6f0b3be3);
+            tr_player_load(x_6f0b3be3);
         }
 
         if (x_e30d50d2 & x_dd99cbfb) {
             gTaskLock = 1 - gTaskLock;
         }
-        x_da2cde4c();
+        gfx_render_frame();
     }
 
     x_e30d50d2 &= ~(x_dd99cbfb | x_bee364e0);
@@ -346,17 +346,17 @@ void x_82df7d23(void) {
         if (!(x_e30d50d2 & x_b9be821f)) {
             gTaskLock = TRUE;
         }
-        x_4495b42c(x_4f944650, 0x1000);
+        x_4495b42c(tr_fade_start, 0x1000);
         while (!(x_e30d50d2 & x_bee364e0)) {
-            x_da2cde4c();
+            gfx_render_frame();
         }
         gTaskLock = FALSE;
     }
 
     x_e30d50d2 &= ~x_520a704c;
 
-    x_225c77c4();
-    x_225c77c4();
+    gfx_init_frame();
+    gfx_init_frame();
 
     rsp_wait_idle();
     rsp_vi_sync(FALSE);
@@ -366,29 +366,29 @@ void x_82df7d23(void) {
 }
 
 #ifdef NON_MATCHING
-void x_b7eeb04a(s32 x_cc1d0de5, Vtx *x_84ff873b) {
+void tr_quad_opaque(s32 x_cc1d0de5, Vtx *x_84ff873b) {
     if (x_84ff873b == NULL) {
-        x_84ff873b = &D_800492B0[D_8005BFCE];
+        x_84ff873b = &sQuadVtx[D_8005BFCE];
     }
 
-    D_8005BF00.header.x_09cf7a45 = 0;
-    D_8005BF00.header.x_1256da71 = 0;
-    D_8005BF00.header.x_4c5e05f8 = 4;
-    D_8005BF00.header.x_ed66866b = 0;
-    D_8005BF00.header.x_8a54e96a = 2;
-    D_8005BF00.header.x_70b508ea = 2;
-    D_8005BF00.header.x_b7ba6d35 = D_8005BF58;
+    sQuadBatch.header.x_09cf7a45 = 0;
+    sQuadBatch.header.x_1256da71 = 0;
+    sQuadBatch.header.x_4c5e05f8 = 4;
+    sQuadBatch.header.x_ed66866b = 0;
+    sQuadBatch.header.x_8a54e96a = 2;
+    sQuadBatch.header.x_70b508ea = 2;
+    sQuadBatch.header.x_b7ba6d35 = sQuadDl;
 
-    gDPPipeSync(&D_8005BF58[0]);
-    gDPSetCombineMode(&D_8005BF58[1], G_CC_SHADE, G_CC_SHADE);
+    gDPPipeSync(&sQuadDl[0]);
+    gDPSetCombineMode(&sQuadDl[1], G_CC_SHADE, G_CC_SHADE);
 
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_RENDERMODE, G_RM_OPA_SURF | G_RM_OPA_SURF2);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_CYCLETYPE, G_CYC_1CYCLE);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTFILT, G_TF_BILERP);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTCONV, G_TC_FILT);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTPERSP, G_TP_PERSP);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTLUT, G_TT_RGBA16);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_RENDERMODE, G_RM_OPA_SURF | G_RM_OPA_SURF2);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_CYCLETYPE, G_CYC_1CYCLE);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_TEXTFILT, G_TF_BILERP);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_TEXTCONV, G_TC_FILT);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_TEXTPERSP, G_TP_PERSP);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_TEXTLUT, G_TT_RGBA16);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
 
     x_84ff873b[0].v.cn[3] = x_cc1d0de5;
     x_84ff873b[0].v.cn[0] = x_84ff873b[0].v.cn[1] = x_84ff873b[0].v.cn[2] = sOverlayBrightness;
@@ -399,39 +399,39 @@ void x_b7eeb04a(s32 x_cc1d0de5, Vtx *x_84ff873b) {
     x_84ff873b[3].v.cn[3] = x_cc1d0de5;
     x_84ff873b[3].v.cn[0] = x_84ff873b[3].v.cn[1] = x_84ff873b[3].v.cn[2] = sOverlayBrightness;
 
-    x_50746900(x_ee137e39, NULL, &D_8005BF00, x_84ff873b, D_80049330);
+    x_50746900(gExtraBatchPtr, NULL, &sQuadBatch, x_84ff873b, sQuadTri);
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/main/x_b7eeb04a.s")
-void x_b7eeb04a(s32 x_cc1d0de5, Vtx *x_84ff873b);
+#pragma GLOBAL_ASM("asm/nonmatchings/main/tr_quad_opaque.s")
+void tr_quad_opaque(s32 x_cc1d0de5, Vtx *x_84ff873b);
 #endif
 
 #ifdef NON_MATCHING
-void x_e1511bdd(s32 x_cc1d0de5, Vtx *vertices) {
-    Gfx *gfx = D_8005BF58;
+void tr_quad_xlu(s32 x_cc1d0de5, Vtx *vertices) {
+    Gfx *gfx = sQuadDl;
 
     if (vertices == NULL) {
-        vertices = D_800492B0[D_8005BFCE];
+        vertices = sQuadVtx[D_8005BFCE];
     }
 
-    D_8005BF00.header.x_09cf7a45 = 0;
-    D_8005BF00.header.x_1256da71 = 0;
-    D_8005BF00.header.x_4c5e05f8 = 4;
-    D_8005BF00.header.x_ed66866b = 0;
-    D_8005BF00.header.x_8a54e96a = 2;
-    D_8005BF00.header.x_70b508ea = 2;
-    D_8005BF00.header.x_b7ba6d35 = D_8005BF58;
+    sQuadBatch.header.x_09cf7a45 = 0;
+    sQuadBatch.header.x_1256da71 = 0;
+    sQuadBatch.header.x_4c5e05f8 = 4;
+    sQuadBatch.header.x_ed66866b = 0;
+    sQuadBatch.header.x_8a54e96a = 2;
+    sQuadBatch.header.x_70b508ea = 2;
+    sQuadBatch.header.x_b7ba6d35 = sQuadDl;
 
     gDPPipeSync(gfx++);
     gDPSetCombineMode(gfx++, G_CC_SHADE, G_CC_SHADE);
 
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_RENDERMODE, G_RM_XLU_SURF | G_RM_XLU_SURF2);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_CYCLETYPE, G_CYC_1CYCLE);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTFILT, G_TF_BILERP);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTCONV, G_TC_FILT);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTPERSP, G_TP_PERSP);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTLUT, G_TT_RGBA16);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_RENDERMODE, G_RM_XLU_SURF | G_RM_XLU_SURF2);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_CYCLETYPE, G_CYC_1CYCLE);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_TEXTFILT, G_TF_BILERP);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_TEXTCONV, G_TC_FILT);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_TEXTPERSP, G_TP_PERSP);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_TEXTLUT, G_TT_RGBA16);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
 
     vertices[0].v.cn[3] = x_cc1d0de5;
     vertices[0].v.cn[0] = vertices[0].v.cn[1] = vertices[0].v.cn[2] = sOverlayBrightness;
@@ -442,15 +442,15 @@ void x_e1511bdd(s32 x_cc1d0de5, Vtx *vertices) {
     vertices[3].v.cn[3] = x_cc1d0de5;
     vertices[3].v.cn[0] = vertices[3].v.cn[1] = vertices[3].v.cn[2] = sOverlayBrightness;
 
-    x_50746900(x_ee137e39, NULL, &D_8005BF00, vertices, D_80049330);
+    x_50746900(gExtraBatchPtr, NULL, &sQuadBatch, vertices, sQuadTri);
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/main/x_e1511bdd.s")
-void x_e1511bdd(s32 x_cc1d0de5, Vtx *x_84ff873b);
+#pragma GLOBAL_ASM("asm/nonmatchings/main/tr_quad_xlu.s")
+void tr_quad_xlu(s32 x_cc1d0de5, Vtx *x_84ff873b);
 #endif
 
-void x_ce9e82b1(Object *obj) {
-    if (D_8005BEFC - 8 < sFadeThreshold) {
+void tr_fade_out(Object *obj) {
+    if (sFadeAlpha - 8 < sFadeThreshold) {
         gGfxFlags &= ~GFX_SHADOW_MODE;
         obj->flags |= x_f51cb721;
         x_e30d50d2 |= x_80ca0761;
@@ -460,23 +460,23 @@ void x_ce9e82b1(Object *obj) {
         }
         x_e30d50d2 |= x_e3ff543d;
     } else {
-        D_8005BEFC -= 8;
-        x_e1511bdd(D_8005BEFC, NULL);
+        sFadeAlpha -= 8;
+        tr_quad_xlu(sFadeAlpha, NULL);
     }
 }
 
-void x_5e57d033(Object *obj) {
+void tr_fade_out_delay(Object *obj) {
     obj->x_0f4167b4[0]++;
     if (obj->x_0f4167b4[0] >= 7) {
         osViBlack(0);
-        D_8005BEFC = 255;
-        obj->x_0232396f = x_ce9e82b1;
+        sFadeAlpha = 255;
+        obj->x_0232396f = tr_fade_out;
     }
 
-    x_e1511bdd(255, NULL);
+    tr_quad_xlu(255, NULL);
 }
 
-void x_6b09ed5a(Object *obj) {
+void tr_scene_change(Object *obj) {
     x_292e1d02(obj, 0);
     if (x_e30d50d2 & x_23ebd6b0) {
         x_e30d50d2 |= x_e3ff543d;
@@ -493,13 +493,13 @@ void x_6b09ed5a(Object *obj) {
     x_e30d50d2 |= x_86c5bc33;
     if (obj->flags & x_f51cb721) {
         obj->flags &= ~x_f51cb721;
-        obj->x_0232396f = x_5e57d033;
+        obj->x_0232396f = tr_fade_out_delay;
     }
-    x_e1511bdd(255, NULL);
+    tr_quad_xlu(255, NULL);
 }
 
-void x_f73a506e(Object *obj) {
-    x_b7eeb04a(D_8005BEFC, NULL);
+void tr_fade_hold(Object *obj) {
+    tr_quad_opaque(sFadeAlpha, NULL);
     obj->x_0f4167b4[0]++;
 
     if (obj->x_0f4167b4[0] >= 5) {
@@ -508,82 +508,82 @@ void x_f73a506e(Object *obj) {
     }
 }
 
-void x_8cc3627e(Object *obj) {
-    if (D_8005BEFC + 8 < 255) {
-        D_8005BEFC += 8;
-        x_e1511bdd(D_8005BEFC, NULL);
+void tr_fade_in(Object *obj) {
+    if (sFadeAlpha + 8 < 255) {
+        sFadeAlpha += 8;
+        tr_quad_xlu(sFadeAlpha, NULL);
         return;
     }
 
-    if (D_8005BEFC + 1 < 255) {
-        D_8005BEFC++;
-        x_e1511bdd(D_8005BEFC, NULL);
+    if (sFadeAlpha + 1 < 255) {
+        sFadeAlpha++;
+        tr_quad_xlu(sFadeAlpha, NULL);
         return;
     }
 
-    obj->x_0232396f = x_f73a506e;
+    obj->x_0232396f = tr_fade_hold;
     if (!(x_e30d50d2 & x_3b812e44)) {
         osViBlack(1);
     }
 
-    x_b7eeb04a(D_8005BEFC, NULL);
+    tr_quad_opaque(sFadeAlpha, NULL);
     obj->x_0f4167b4[0] = 0;
 }
 
-void x_6e9e48e4(Object *obj) {
+void tr_fade_in_setup(Object *obj) {
     gGfxFlags |= GFX_SHADOW_MODE;
     x_f1ca6ba2(obj, 0);
 
-    if (obj->x_0232396f != x_6e9e48e4) {
-        obj->x_0232396f = x_8cc3627e;
+    if (obj->x_0232396f != tr_fade_in_setup) {
+        obj->x_0232396f = tr_fade_in;
     }
 
-    if (D_8005BEFC + 8 < 255) {
-        D_8005BEFC += 8;
-        x_e1511bdd(D_8005BEFC, NULL);
+    if (sFadeAlpha + 8 < 255) {
+        sFadeAlpha += 8;
+        tr_quad_xlu(sFadeAlpha, NULL);
         return;
     }
 
-    if (D_8005BEFC + 1 < 255) {
-        D_8005BEFC++;
-        x_e1511bdd(D_8005BEFC, NULL);
+    if (sFadeAlpha + 1 < 255) {
+        sFadeAlpha++;
+        tr_quad_xlu(sFadeAlpha, NULL);
         return;
     }
 
-    obj->x_0232396f = x_f73a506e;
+    obj->x_0232396f = tr_fade_hold;
     if (!(x_e30d50d2 & x_3b812e44)) {
         osViBlack(1);
     }
 
-    x_b7eeb04a(D_8005BEFC, NULL);
+    tr_quad_opaque(sFadeAlpha, NULL);
     obj->x_0f4167b4[0] = 0;
 }
 
-void x_4f944650(Object *obj) {
+void tr_fade_start(Object *obj) {
     if (!(x_e30d50d2 & x_ecbcd14e)) {
-        D_8005BEFC = 0;
+        sFadeAlpha = 0;
     }
 
     x_e30d50d2 &= ~x_ecbcd14e;
-    obj->x_0232396f = x_6e9e48e4;
-    x_e1511bdd(D_8005BEFC, NULL);
+    obj->x_0232396f = tr_fade_in_setup;
+    tr_quad_xlu(sFadeAlpha, NULL);
 }
 
 void main_game_loop(void) {
-    x_e38a6e19 = x_c4da946c;
+    x_e38a6e19 = SCREEN_BOOT;
     rsp_game_init(x_e38a6e19);
     x_2d5f067a();
 
     while (TRUE) {
-        x_f71086e0 = x_e38a6e19;
-        x_4495b42c(x_6b09ed5a, 0x1100);
+        gCurrentScreenId = x_e38a6e19;
+        x_4495b42c(tr_scene_change, 0x1100);
         gScreenProfiles[x_e38a6e19].initFunc();
         if (!(x_e30d50d2 & x_3b812e44)) {
             osViBlack(1);
         }
         rsp_wait_idle();
         rsp_vi_sync(FALSE);
-        x_4090e698 = x_f71086e0;
+        sPrevScreenId = gCurrentScreenId;
         rsp_game_reinit(x_e38a6e19);
     }
 }

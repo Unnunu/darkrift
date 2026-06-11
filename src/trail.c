@@ -578,7 +578,7 @@ void x_f7a1a468(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
         }
 
         if (x_94b671c9->x_6f6a6d94 > 0 && x_94b671c9->x_24fe8ee6) {
-            x_ee137e39->context = NULL;
+            gExtraBatchPtr->context = NULL;
 
             if (!x_d647d552) {
                 x_a52ba8b1 = x_cc1d0de5->x_ad2af5d9 + 2 + D_8005BFCE;
@@ -590,10 +590,10 @@ void x_f7a1a468(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
             }
             x_a52ba8b1->header.x_4c5e05f8 = x_94b671c9->x_723971cf;
             x_a52ba8b1->header.x_8a54e96a = x_94b671c9->x_a1256713;
-            x_ee137e39->info = x_a52ba8b1;
-            x_ee137e39->vertices = x_94b671c9->vertices;
-            x_ee137e39->triangles = x_94b671c9->triangles;
-            x_ee137e39++;
+            gExtraBatchPtr->info = x_a52ba8b1;
+            gExtraBatchPtr->vertices = x_94b671c9->vertices;
+            gExtraBatchPtr->triangles = x_94b671c9->triangles;
+            gExtraBatchPtr++;
         }
     }
 

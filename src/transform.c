@@ -497,7 +497,7 @@ void matrix_system_init(void) {
     mat4_ident(&gMat4RotZ);
     mat4_ident(&gMat4Scale);
     mat4_ident_loop(&gMat4RotY);
-    mtx_ident(&D_8005BF80);
+    mtx_ident(&sScratchMtx);
     guMtxIdent(&sUnusedMatrix);
     osWritebackDCache(&sUnusedMatrix, sizeof(Mtx));
 }

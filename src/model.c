@@ -770,7 +770,7 @@ void model_shadow_spawn(Object *x_4a65b74c, char *x_15887b2b, u32 context) {
     Object *shadow;
 
     x_dab0846a(sShadowDesc.name, x_15887b2b);
-    shadow = x_8e3c7e83(&x_c787d34b, NULL, &sShadowDesc, context);
+    shadow = x_8e3c7e83(&sZeroPosition, NULL, &sShadowDesc, context);
 
     shadow->x_0f4167b4[0] = shadow->x_20d20338->transforms;
     shadow->x_0f4167b4[1] = x_4a65b74c;
@@ -1601,7 +1601,7 @@ void model_lighting_apply(Object *obj) {
 
     v1 = obj->x_20d20338;
     t6 = gFrameCounter & 7;
-    a2 = &gScreenProfiles[x_f71086e0];
+    a2 = &gScreenProfiles[gCurrentScreenId];
 
     t2 = v1->x_6dcce206;
     t0 = v1->model;

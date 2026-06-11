@@ -135,7 +135,7 @@ void x_3c859f4e(s32 x_30bbe547) {
     Object *v0;
 
     while (gTaskPool.count < 10 || x_11f3efb0.count < 10) {
-        x_da2cde4c();
+        gfx_render_frame();
     }
 
     D_8013C464 = x_12014163(&D_80052E60, &D_80052DAC, x_2587f84f);
@@ -210,7 +210,7 @@ void x_5430cd84(Object *obj) {
     x_30bbe547 = obj->x_0f4167b4[0];
     buttons = 0;
 
-    x_e1511bdd(160, NULL);
+    tr_quad_xlu(160, NULL);
 
     if (x_59ce598c[x_30bbe547].x_c4397934) {
         buttons = x_59ce598c[x_30bbe547].x_f3756179;
@@ -311,7 +311,7 @@ void x_5430cd84(Object *obj) {
         switch (x_1de5ff40) {
             case 118:
                 x_e30d50d2 |= x_ecbcd14e | x_700de048 | x_bee364e0;
-                x_e38a6e19 = x_901b251f;
+                x_e38a6e19 = SCREEN_ATTRACT;
                 obj->flags |= x_f51cb721;
                 return;
             case 112:

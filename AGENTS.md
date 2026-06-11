@@ -269,6 +269,9 @@ Functions renamed and documented: `mat4_ident`, `mat4_ident_partial`, `mat4_copy
 ### ScreenProfile struct (common_structs.h) — Renamed
 `x_d0fba50a` → `ScreenProfile`. Fields renamed: `x_b8173ab8` → `clearColorR`, `x_d863406f` → `clearColorG`, `x_f6c089c5` → `clearColorB`, `x_f74c4cfa` → `clearColorA`, `x_60c27ea9` → `fogColorR`, `x_ee25ce89` → `fogColorG`, `x_747e2503` → `fogColorB`, `x_876a16f1` → `fogColorA`, `x_d23de2ad` → `fogMin`, `x_55739355` → `fogMax`, `x_08b62e4f` → `cameraBounds`, `x_389f2997` → `ambientColor`. Array `x_4540c33c[]` → `gScreenProfiles[]`.
 
+### Main (main.c) — DONE (Wave 1)
+15 functions renamed: `main_game_loop`, `gfx_render_frame`, `gfx_init_frame`, `tr_obj_alloc`, `tr_player_load`, `tr_scene_loop`, `tr_quad_opaque` (NON_MATCHING), `tr_quad_xlu` (NON_MATCHING), `tr_fade_start`, `tr_fade_in_setup`, `tr_fade_in`, `tr_fade_hold`, `tr_scene_change`, `tr_fade_out_delay`, `tr_fade_out`, `func_80001C6C` (attract entry). 19 globals renamed: sQuadVtx, sQuadTri, sZeroVelocity, sZeroPosition, sDefaultLights, gCurrentScreenId, sPrevScreenId, sRenderTimeAccum, sFrameCounter, sFadeAlpha, sQuadBatch, sQuadDl, sScratchMtx, gFramebuffers, gOverlayDlPtr, gExtraBatchPtr, D_8005BFCE (fb index), x_e30d50d2 (state flags), x_e38a6e19 (screen ID). Macro g_PERSPNORM. Updated functions.h, variables.h. Build verification pending user.
+
 Next in queue: buttons.c, controller.c (Wave 1 analysis pending)
 
 ## Thread Model

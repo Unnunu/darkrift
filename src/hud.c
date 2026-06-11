@@ -197,7 +197,7 @@ void x_ebe27fa0(Object *obj) {
     Object *v0;
     s16 s0 = ((Player *) obj->x_e2f64c57[0])->x_30bbe547;
 
-    v0 = x_1d5cf6e2(&x_c787d34b, &D_80051F50, x_2587f84f);
+    v0 = x_1d5cf6e2(&sZeroPosition, &D_80051F50, x_2587f84f);
     if (v0 == NULL) {
         return;
     } else {
@@ -211,7 +211,7 @@ void x_ebe27fa0(Object *obj) {
         v0->flags |= x_c537cafa;
     }
 
-    v0 = x_1d5cf6e2(&x_c787d34b, &D_80051F50, x_2587f84f);
+    v0 = x_1d5cf6e2(&sZeroPosition, &D_80051F50, x_2587f84f);
     if (v0 == NULL) {
         return;
     } else {
@@ -225,7 +225,7 @@ void x_ebe27fa0(Object *obj) {
         v0->flags |= x_c537cafa;
     }
 
-    v0 = x_1d5cf6e2(&x_c787d34b, &D_80051F50, x_2587f84f);
+    v0 = x_1d5cf6e2(&sZeroPosition, &D_80051F50, x_2587f84f);
     if (v0 == NULL) {
         return;
     } else {
@@ -239,7 +239,7 @@ void x_ebe27fa0(Object *obj) {
         v0->flags |= x_c537cafa;
     }
 
-    v0 = x_1d5cf6e2(&x_c787d34b, &D_80051F50, x_2587f84f);
+    v0 = x_1d5cf6e2(&sZeroPosition, &D_80051F50, x_2587f84f);
     if (v0 == NULL) {
         return;
     } else {
@@ -253,7 +253,7 @@ void x_ebe27fa0(Object *obj) {
         v0->flags |= x_c537cafa;
     }
 
-    v0 = x_1d5cf6e2(&x_c787d34b, &D_80051F50, x_2587f84f);
+    v0 = x_1d5cf6e2(&sZeroPosition, &D_80051F50, x_2587f84f);
     if (v0 == NULL) {
         return;
     } else {
@@ -277,7 +277,7 @@ void x_7621a350(Object *obj) {
     a = 0;
     b = -250;
     for (i = 0; i < 13; i++) {
-        v0 = x_1d5cf6e2(&x_c787d34b, &D_80051F50, x_2587f84f);
+        v0 = x_1d5cf6e2(&sZeroPosition, &D_80051F50, x_2587f84f);
         if (v0 == NULL) {
             return;
         }
@@ -318,32 +318,32 @@ s16 x_c0a56b97(s16 x_30bbe547) {
 }
 
 void x_e7887022(Vtx *vtx) {
-    Gfx *gfx = D_8005BF58;
+    Gfx *gfx = sQuadDl;
 
     if (gGfxFlags & GFX_SKIP_SCENE) {
         return;
     }
 
-    D_8005BF00.header.x_09cf7a45 = 0;
-    D_8005BF00.header.x_1256da71 = 0;
-    D_8005BF00.header.x_4c5e05f8 = 4;
-    D_8005BF00.header.x_ed66866b = 0;
-    D_8005BF00.header.x_8a54e96a = 2;
-    D_8005BF00.header.x_70b508ea = 2;
-    D_8005BF00.header.x_b7ba6d35 = D_8005BF58;
+    sQuadBatch.header.x_09cf7a45 = 0;
+    sQuadBatch.header.x_1256da71 = 0;
+    sQuadBatch.header.x_4c5e05f8 = 4;
+    sQuadBatch.header.x_ed66866b = 0;
+    sQuadBatch.header.x_8a54e96a = 2;
+    sQuadBatch.header.x_70b508ea = 2;
+    sQuadBatch.header.x_b7ba6d35 = sQuadDl;
 
     gDPPipeSync(gfx++);
     gDPSetCombineMode(gfx++, G_CC_SHADE, G_CC_SHADE);
 
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_RENDERMODE, G_RM_XLU_SURF | G_RM_XLU_SURF2);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_CYCLETYPE, G_CYC_1CYCLE);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTFILT, G_TF_BILERP);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTCONV, G_TC_FILT);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTPERSP, G_TP_PERSP);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTLUT, G_TT_RGBA16);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_RENDERMODE, G_RM_XLU_SURF | G_RM_XLU_SURF2);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_CYCLETYPE, G_CYC_1CYCLE);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_TEXTFILT, G_TF_BILERP);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_TEXTCONV, G_TC_FILT);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_TEXTPERSP, G_TP_PERSP);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_TEXTLUT, G_TT_RGBA16);
+    gtStateSetOthermode(&sQuadBatch.header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
 
-    x_50746900(x_ee137e39, NULL, &D_8005BF00, vtx, D_80049330);
+    x_50746900(gExtraBatchPtr, NULL, &sQuadBatch, vtx, sQuadTri);
 }
 
 void x_fb66828a(Object *obj) {
@@ -737,26 +737,26 @@ void x_1f0fbecd(Object *obj) {
         obj->flags |= x_f51cb721;
     }
 
-    D_8005BEFC -= 2;
-    x_e1511bdd(D_8005BEFC, NULL);
+    sFadeAlpha -= 2;
+    tr_quad_xlu(sFadeAlpha, NULL);
     model_render(obj);
 }
 
 void x_7a336326(Object *obj) {
-    x_e1511bdd(D_8005BEFC, NULL);
+    tr_quad_xlu(sFadeAlpha, NULL);
     obj->flags |= x_f51cb721;
 }
 
 void x_58906f63(Object *obj) {
     if (++obj->frameCounter >= 130) {
         x_e30d50d2 |= x_700de048 | x_bee364e0;
-        x_e38a6e19 = x_901b251f;
+        x_e38a6e19 = SCREEN_ATTRACT;
         x_e30d50d2 |= x_ecbcd14e;
         obj->flags &= ~x_e411fefb;
         obj->x_0232396f = x_7a336326;
     }
 
-    x_e1511bdd(D_8005BEFC, NULL);
+    tr_quad_xlu(sFadeAlpha, NULL);
     model_render(obj);
 }
 
@@ -765,7 +765,7 @@ void x_7ab6c8e2(Object *obj) {
         obj->x_0232396f = x_9564f634;
     }
 
-    x_e1511bdd(D_8005BEFC, NULL);
+    tr_quad_xlu(sFadeAlpha, NULL);
     model_render(obj);
 }
 
@@ -787,7 +787,7 @@ void x_a1847541(Object *obj) {
         obj->x_0232396f = x_f058b0f7;
     }
 
-    x_e1511bdd(D_8005BEFC, NULL);
+    tr_quad_xlu(sFadeAlpha, NULL);
     model_render(obj);
 }
 
@@ -809,7 +809,7 @@ void x_f058b0f7(Object *obj) {
         obj->x_0232396f = x_a1847541;
     }
 
-    x_e1511bdd(D_8005BEFC, NULL);
+    tr_quad_xlu(sFadeAlpha, NULL);
     model_render(obj);
 }
 
@@ -820,7 +820,7 @@ void x_22da107b(Object *obj) {
         obj->frameCounter++;
     }
 
-    x_e1511bdd(D_8005BEFC, NULL);
+    tr_quad_xlu(sFadeAlpha, NULL);
     model_render(obj);
 }
 
@@ -842,7 +842,7 @@ void x_9564f634(Object *obj) {
         obj->frameCounter = 58;
     }
 
-    x_e1511bdd(D_8005BEFC, NULL);
+    tr_quad_xlu(sFadeAlpha, NULL);
     model_render(obj);
 }
 
@@ -864,7 +864,7 @@ void x_4740163c(Object *obj) {
         obj->frameCounter = 60;
     }
 
-    x_e1511bdd(D_8005BEFC, NULL);
+    tr_quad_xlu(sFadeAlpha, NULL);
     model_render(obj);
 }
 
@@ -874,8 +874,8 @@ void x_d9c3c170(Object *obj) {
     } else {
         obj->frameCounter++;
     }
-    D_8005BEFC += 2;
-    x_e1511bdd(D_8005BEFC, NULL);
+    sFadeAlpha += 2;
+    tr_quad_xlu(sFadeAlpha, NULL);
     model_render(obj);
 }
 
@@ -886,7 +886,7 @@ void x_751dec03(Object *obj) {
     obj->currentTask->callback = task_remove_current;
     gTaskLock = TRUE;
     obj->flags |= x_e411fefb;
-    D_8005BEFC = 0;
+    sFadeAlpha = 0;
 }
 
 void x_c85182b9(Object *obj) {

@@ -390,7 +390,7 @@ void x_ae7ca939(Object *obj) {
 
     if (x_77831b2c[x_83106b21].x_03604d94 || x_77831b2c[x_6f0b3be3].x_03604d94) {
         a2 = x_68289eaa(x_692a98c7);
-        x_e38a6e19 = x_901b251f;
+        x_e38a6e19 = SCREEN_ATTRACT;
         x_77831b2c[x_83106b21].x_7d8e7a6f = x_77831b2c[x_6f0b3be3].x_7d8e7a6f = 0;
     } else {
         a2 = x_68289eaa(x_692a98c7);
@@ -503,7 +503,7 @@ x_09d6a3c8 x_9503a93c(u32 x_30bbe547, u8 x_84ff873b) {
                 a3 = x_be1ae884;
                 break;
             case x_3658fb97:
-                x_e38a6e19 = x_901b251f;
+                x_e38a6e19 = SCREEN_ATTRACT;
                 break;
         }
     }
@@ -773,7 +773,7 @@ void x_8f307638(Object *obj) {
         obj->flags |= x_f51cb721;
     } else if ((x_59ce598c[x_83106b21].buttons & x_9cefe76c) || (x_59ce598c[x_6f0b3be3].buttons & x_9cefe76c)) {
         x_e30d50d2 |= x_bee364e0;
-        x_e38a6e19 = x_901b251f;
+        x_e38a6e19 = SCREEN_ATTRACT;
         obj->flags |= x_f51cb721;
     }
 }

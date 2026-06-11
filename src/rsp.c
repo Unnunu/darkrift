@@ -26,7 +26,7 @@ extern x_ee01e8c6 *D_80080100;
 extern Gfx *gF3dDisplayListPtr;
 extern Gfx *gF3dExtraListPtr;
 extern x_320b5d80 *gDrBatchPtr;
-extern u8 *x_96f79785[];
+extern u8 *gFramebuffers[];
 extern u16 D_8005BFCE;
 extern u16 x_a4f5fb93;
 extern s32 D_8013F0B0;
@@ -239,7 +239,7 @@ void rsp_vi_sync(u8 x_cc1d0de5) {
         sFbBusy = FALSE;
         osRecvMesg(&sViEventQueue, NULL, OS_MESG_BLOCK);
         if (x_cc1d0de5) {
-            osViSwapBuffer(x_96f79785[D_8005BFCE]);
+            osViSwapBuffer(gFramebuffers[D_8005BFCE]);
             D_8005BFCE = 1 - D_8005BFCE;
         }
     }
@@ -257,9 +257,9 @@ void rsp_game_init(u16 x_7cedc3fb) {
     x_a4f5fb93 = 240;
     a3 = 0x80400000 - 2 * 2 * 320 * 240 - 64;
 
-    x_96f79785[0] = a3;
+    gFramebuffers[0] = a3;
     x_cf10d3eb = x_a4f5fb93 * x_c84980f9;
-    x_96f79785[1] = a3 + 2 * x_cf10d3eb;
+    gFramebuffers[1] = a3 + 2 * x_cf10d3eb;
 
     sZbuffer = sFramebuffer = ((u32) x_9caeba2b + 0x40) & ~0x3F;
     sHeapBase = (void *) (((u32) sFramebuffer + 0x25800 + 0x40) & ~0x3F);

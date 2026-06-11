@@ -96,7 +96,7 @@ void cam_save_state(void) {
     D_8013C336 = D_8013C828;
     D_8013C338 = D_8013C5A0;
 
-    if (x_f71086e0 <= x_cc464edc) {
+    if (gCurrentScreenId <= x_cc464edc) {
         gGfxFlags |= GFX_SKIP_SCENE;
     }
 }
@@ -242,7 +242,7 @@ void cam_debug_scene_input(Object *obj) {
     u32 a1;
     x_2bb4cf6f *v0;
 
-    v0 = gScreenProfiles[x_f71086e0].cameraBounds;
+    v0 = gScreenProfiles[gCurrentScreenId].cameraBounds;
     x_8c5f8c03 = x_59ce598c[x_83106b21].buttons;
     v1 = x_8c5f8c03 & 0xFFFF;
     a1 = x_8c5f8c03 >> 16;

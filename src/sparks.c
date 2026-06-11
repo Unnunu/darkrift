@@ -138,10 +138,10 @@ void x_071f1bfa(x_2f5c3183 *x_cc1d0de5) {
             x_65cbb149->header.x_8a54e96a = 5;
         }
 
-        x_ee137e39->info = x_65cbb149;
-        x_ee137e39->context = NULL;
-        x_ee137e39->vertices = s4;
-        x_ee137e39->triangles = D_8004A4D0;
+        gExtraBatchPtr->info = x_65cbb149;
+        gExtraBatchPtr->context = NULL;
+        gExtraBatchPtr->vertices = s4;
+        gExtraBatchPtr->triangles = D_8004A4D0;
 
         if (s5) {
             s5 = FALSE;
@@ -150,7 +150,7 @@ void x_071f1bfa(x_2f5c3183 *x_cc1d0de5) {
         } else {
             x_65cbb149->header.x_70b508ea = 1;
         }
-        x_ee137e39++;
+        gExtraBatchPtr++;
 
         s4 += 15;
         x_cc1d0de5->x_0f978d0c++;
