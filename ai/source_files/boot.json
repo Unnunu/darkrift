@@ -47,7 +47,7 @@
     { "name": "sDpEventQueue", "hash": "x_9e70b6be", "summary": "Message queue for DP (display processor) completion events (OS_EVENT_DP)." },
     { "name": "sContMesgQueue", "hash": "x_c0f7aef0", "summary": "Message queue for controller/SI events. Drained by rsp.c during task processing." },
     { "name": "gRspMessageQueue", "hash": "x_72d58a77", "summary": "Global RSP scheduler message queue. Used for sending/receiving RSP tasks between rsp.c and audio.c." },
-    { "name": "sSchedMesgs", "hash": "x_4af5dc00", "summary": "Message (1) for scheduler (PI DMA) queue." },
+    { "name": "sPiMesgs", "hash": "x_4af5dc00", "summary": "Message (1) for PI DMA queue (backing gPiMessageQueue)." },
     { "name": "sSpMesg", "hash": "D_8005AE74", "summary": "Message (1) for SP event queue." },
     { "name": "sDpMesg", "hash": "x_76886650", "summary": "Message (1) for DP event queue." },
     { "name": "sContMesgs", "hash": "D_8005AE7C", "summary": "Message (1) for controller event queue." },

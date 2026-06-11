@@ -5,12 +5,123 @@
   "lines": 339,
   "evidence": {
     "api_calls": [
-      "osSpTaskStart", "osSpTaskLoad", "osGetTime", "osSetTime",
+      "osSpTaskStart", "osGetTime", "osSetTime",
       "osRecvMesg", "osSendMesg", "osViSwapBuffer", "osWritebackDCacheAll"
     ],
-    "ucodes": ["gspFast3DTextStart/DataStart", "gspDarkRift3DTextStart/DataStart"],
-    "task_types": ["M_AUDTASK"],
+    "ucodes": ["gspFast3DTextStart/DataStart", "gspDarkRift3DTextStart/DataStart", "rspbootTextStart/End"],
+    "task_types": ["M_AUDTASK", "M_GFXTASK"],
     "thread": "Thread 4 (RSP scheduler, rsp_scheduler_thread) from boot.c"
   },
-  "summary": "RSP task scheduler + GFX task manager. Thread 4 loop: receive OSTask -> osSpTaskStart -> wait SP/DP. Also VSync/buffer swap, screen clear, task submission."
+  "summary": "RSP scheduler thread + GFX task manager + screen clear + VI sync. Thread 4 loop: receive OSTask -> osSpTaskStart -> wait SP/DP. Also VSync/buffer swap (rsp_vi_sync), framebuffer/zbuffer clear (rsp_clear_screen), task submission (rsp_submit_gfx_tasks), per-frame render callbacks (rsp_register_callback).",
+  "functions": [
+    {
+      "name": "rsp_clear_callbacks",
+      "hash": "x_46665fe1",
+      "summary": "Clears all 20 render callback slots (sRenderCallbacks) to NULL. Called during game init and reinit."
+    },
+    {
+      "name": "rsp_register_callback",
+      "hash": "x_71257e81",
+      "summary": "Registers a render setup callback (s32 (*)(void *)) with its argument into the first free slot of the sRenderCallbacks array. Used by model.c (texture DMA, render mode, prim color), player.c (replay), cam_follow.c (world wrap)."
+    },
+    {
+      "name": "rsp_clear_screen",
+      "hash": "x_bdf191dd",
+      "summary": "Sets up display list to clear framebuffer and zbuffer. Uses G_CYC_FILL for zbuffer (writes G_MAXFBZ), then G_CYC_COPY for color fill with clear color (sClearColorR/G/B). Checks gGfxFlags & GFX_NO_ZCLEAR to skip zbuffer fill. If sClearZbuffer is TRUE, optionally clears only partial height (x_6c647b3a + 20 lines)."
+    },
+    {
+      "name": "rsp_task_init",
+      "hash": "x_596c5c60",
+      "summary": "Initializes three OSTask structures with ucode pointers: sGfxTaskF3D (Fast3D), sGfxTaskDR (DarkRift 3D), sGfxTaskExtra (extra F3D). Resets sGfxTaskCount to 0."
+    },
+    {
+      "name": "rsp_scheduler_thread",
+      "hash": "x_0ab76ff1",
+      "summary": "Thread 4 entry. Infinite loop: receive OSTask from gRspMessageQueue, clear SP/DP event queues, start task via osSpTaskStart, wait for SP completion, then wait for DP completion (unless M_AUDTASK). Tracks timing in gRspTimeTotal/gRdpTimeTotal. Notifies other threads via sContMesgQueue when idle."
+    },
+    {
+      "name": "rsp_submit_gfx_tasks",
+      "hash": "x_9d40d8e1",
+      "summary": "Drains sContMesgQueue, writes back dcache, then sends GFX tasks to RSP queue: always sends sGfxTaskF3D + sGfxTaskDR, optionally sGfxTaskExtra if gGfxFlags & GFX_EXTRA_DL. Tasks are built from current GFX context (D_80080100) with write pointers gF3dDisplayListPtr/gDrBatchPtr/gF3dExtraListPtr. Only submits if sFbBusy is FALSE."
+    },
+    {
+      "name": "rsp_wait_idle",
+      "hash": "x_d4af6341",
+      "summary": "Waits for all pending GFX tasks to complete. If sGfxTaskCount > 0, waits on sContMesgQueue, resets count and time via osSetTime(0). Sync states: 0=done, 1=syncing, 7=start."
+    },
+    {
+      "name": "rsp_vi_sync",
+      "hash": "x_08779f06",
+      "summary": "Vertical retrace sync: waits for VI event via osRecvMesg on sViEventQueue. If queue was full, sets sFbBusy=TRUE. If swap flag arg is set, calls osViSwapBuffer to toggle framebuffers."
+    },
+    {
+      "name": "rsp_game_init",
+      "hash": "x_16b2a52b",
+      "summary": "Full game initialization: sets resolution (320x240), allocates framebuffer/zbuffer/heap, calls all subsystem inits (WAD, matrix, buttons, audio, task pool, object pool, camera, lights, player slots, textures, sparks). Reads screen config from gScreenProfiles[profile_id] for colors and fog params. NON_EQUIVALENT — asm fallback."
+    },
+    {
+      "name": "rsp_game_reinit",
+      "hash": "x_a892f516",
+      "summary": "Post-match/subsystem reinitialization: defrags heap, reloads WAD resources, reinitializes audio, buttons, task pool, object pool, camera, lights. Reads screen config colors/fog from gScreenProfiles[profile_id]. Sets sFbBusy=TRUE."
+    }
+  ],
+  "globals": [
+    { "hash": "D_80080110", "name": "sClearColorR", "summary": "Clear color red component (from ScreenProfile.clearColorR)" },
+    { "hash": "D_80080112", "name": "sClearColorG", "summary": "Clear color green component" },
+    { "hash": "D_80080114", "name": "sClearColorB", "summary": "Clear color blue component" },
+    { "hash": "D_80080116", "name": "sOverlayBrightness", "summary": "Vertex color brightness for overlay geometry (0/200). Set during init, used in main.c for Vtx color" },
+    { "hash": "D_80080118", "name": "sFadeThreshold", "summary": "Fade transition threshold (100). Compared with D_8005BEFC (fade alpha counter) in present.c and main.c" },
+    { "hash": "D_8008011C", "name": "sGfxTaskCount", "summary": "Graphics task counter: incremented when submitting, checked when waiting for idle" },
+    { "hash": "D_80080120", "name": "sFramebuffer", "summary": "Framebuffer virtual address (u16*)" },
+    { "hash": "D_80080124", "name": "sZbuffer", "summary": "Z-buffer virtual address (u16*)" },
+    { "hash": "D_80080128", "name": "sFbBusy", "summary": "Framebuffer busy flag: TRUE when VI swap is in progress, FALSE when ready" },
+    { "hash": "D_80080129", "name": "sClearZbuffer", "summary": "Whether to clear zbuffer each frame (TRUE/FALSE). Set by menu/init, checked by rsp_clear_screen" },
+    { "hash": "D_8008012C", "name": "gGfxFlags", "summary": "Global graphics control flags. Bits: GFX_SKIP_SCENE(1), GFX_EXTRA_DL(2), GFX_FLAG_4(4), GFX_NO_ZCLEAR(8), GFX_SHADOW_MODE(0x10), GFX_MENU_OVERLAY(0x20), GFX_BORDER_AROUND(0x40). Used across 10+ files." },
+    { "hash": "D_80080130", "name": "sFogColorR", "summary": "Fog color red (from ScreenProfile.fogColorR)" },
+    { "hash": "D_80080132", "name": "sFogColorG", "summary": "Fog color green" },
+    { "hash": "D_80080134", "name": "sFogColorB", "summary": "Fog color blue" },
+    { "hash": "D_80080136", "name": "sFogMin", "summary": "Fog min distance (from ScreenProfile.fogMin)" },
+    { "hash": "D_80080138", "name": "sFogMax", "summary": "Fog max distance (from ScreenProfile.fogMax)" },
+    { "hash": "x_9d6e6e5f[20]", "name": "sRenderCallbacks", "summary": "Array of 20 render setup callbacks. Iterated in main.c render loop; callback returns 0 to be removed. Registered via rsp_register_callback" },
+    { "hash": "x_ba260e1b[20]", "name": "sRenderCallbackArgs", "summary": "Per-callback argument pointers" },
+    { "hash": "D_800801E0", "name": "D_800801E0", "summary": "Unused BSS variable — never read or written" },
+    { "hash": "D_800801E2", "name": "sZbufFillSkipped", "summary": "TRUE when zbuffer fill was skipped (gGfxFlags & GFX_NO_ZCLEAR). Checked by model.c render mode setup" },
+    { "hash": "D_800801E3", "name": "D_800801E3", "summary": "Unused BSS padding" },
+    { "hash": "D_800801E4", "name": "sRspStatus", "summary": "RSP scheduler state: 0=idle, 1=SP busy, 2=RDP busy" },
+    { "hash": "D_800801E5", "name": "sRspSyncState", "summary": "Sync state for rsp_wait_idle: 0=done, 1=syncing, 7=start" },
+    { "hash": "D_800801E8", "name": "sCurrentTaskType", "summary": "Current OSTask type (M_AUDTASK or M_GFXTASK)" }
+  ],
+  "types": [
+    { "hash": "x_1c3c0f22", "name": "RenderCallback", "summary": "s32 (*)(void *) — render setup callback signature" },
+    { "hash": "x_cc16c016", "name": "UnkStruct10", "summary": "8-byte timing config struct: {s16 start1, s16 end1, s16 start2, s16 end2}. Used for fade/timing pairs (0,90,0,0) and (0,233,500,0)" }
+  ],
+  "enum_renames": {
+    "x_a58c44e6": {
+      "name": "GfxFlags",
+      "entries": {
+        "x_0745dc0e": "GFX_NONE",
+        "x_f846a903": "GFX_SKIP_SCENE",
+        "x_48752861": "GFX_EXTRA_DL",
+        "x_3309dc13": "GFX_FLAG_4",
+        "x_666c9508": "GFX_NO_ZCLEAR",
+        "x_c626209d": "GFX_SHADOW_MODE",
+        "x_8df87377": "GFX_MENU_OVERLAY",
+        "x_bbfa9667": "GFX_BORDER_AROUND"
+      }
+    }
+  },
+  "cross_file_references": {
+    "gF3dDisplayListPtr": "extern in main.c, read in background.c, rsp.c, scroll.c, model.c, main.c",
+    "gF3dExtraListPtr": "extern in main.c, read in rsp.c, main.c",
+    "gDrBatchPtr": "extern in main.c, read in rsp.c, model.c, main.c, trail.c, item.c, sparks.c",
+    "gRspTimeTotal": "OSTime accumulator in main.c for RSP task timing",
+    "gRdpTimeTotal": "OSTime accumulator in main.c for RDP task timing",
+    "sGfxTaskF3D": "OSTask defined in gfx_data.c, referenced in rsp.c",
+    "sGfxTaskDR": "OSTask defined in gfx_data.c, referenced in rsp.c",
+    "sGfxTaskExtra": "OSTask defined in gfx_data.c, referenced in rsp.c"
+  },
+  "open_questions": [
+    "UnkStruct10 field meanings — only used as timing/fade init pairs",
+    "TASK_FLAG_10/TASK_FLAG_20 exact semantics — user kept hash-like names pending further analysis"
+  ]
 }
