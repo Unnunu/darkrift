@@ -395,22 +395,22 @@ void cam_world_shift(s32 x_cc1d0de5, s32 x_84ff873b) {
             x_824b9544[x_6f0b3be3].x_d8a19723.x_b1f57d55 = x_824b9544[x_6f0b3be3].x_238ba16f.x_b1f57d55 =
                 x_824b9544[x_6f0b3be3].x_29c9094f.x_b1f57d55 = x_824b9544[x_6f0b3be3].x_a241ea2a.x_b1f57d55 = 0;
 
-    x_3c2e0c67(&x_824b9544[x_83106b21].x_d8a19723.x_1091fcc6);
-    x_3c2e0c67(&x_824b9544[x_83106b21].x_d8a19723.x_60635a2d);
-    x_3c2e0c67(&x_824b9544[x_83106b21].x_238ba16f.x_1091fcc6);
-    x_3c2e0c67(&x_824b9544[x_83106b21].x_238ba16f.x_60635a2d);
-    x_3c2e0c67(&x_824b9544[x_83106b21].x_29c9094f.x_1091fcc6);
-    x_3c2e0c67(&x_824b9544[x_83106b21].x_29c9094f.x_60635a2d);
-    x_3c2e0c67(&x_824b9544[x_83106b21].x_a241ea2a.x_1091fcc6);
-    x_3c2e0c67(&x_824b9544[x_83106b21].x_a241ea2a.x_60635a2d);
-    x_3c2e0c67(&x_824b9544[x_6f0b3be3].x_d8a19723.x_1091fcc6);
-    x_3c2e0c67(&x_824b9544[x_6f0b3be3].x_d8a19723.x_60635a2d);
-    x_3c2e0c67(&x_824b9544[x_6f0b3be3].x_238ba16f.x_1091fcc6);
-    x_3c2e0c67(&x_824b9544[x_6f0b3be3].x_238ba16f.x_60635a2d);
-    x_3c2e0c67(&x_824b9544[x_6f0b3be3].x_29c9094f.x_1091fcc6);
-    x_3c2e0c67(&x_824b9544[x_6f0b3be3].x_29c9094f.x_60635a2d);
-    x_3c2e0c67(&x_824b9544[x_6f0b3be3].x_a241ea2a.x_1091fcc6);
-    x_3c2e0c67(&x_824b9544[x_6f0b3be3].x_a241ea2a.x_60635a2d);
+    spline_init(&x_824b9544[x_83106b21].x_d8a19723.x_1091fcc6);
+    spline_init(&x_824b9544[x_83106b21].x_d8a19723.x_60635a2d);
+    spline_init(&x_824b9544[x_83106b21].x_238ba16f.x_1091fcc6);
+    spline_init(&x_824b9544[x_83106b21].x_238ba16f.x_60635a2d);
+    spline_init(&x_824b9544[x_83106b21].x_29c9094f.x_1091fcc6);
+    spline_init(&x_824b9544[x_83106b21].x_29c9094f.x_60635a2d);
+    spline_init(&x_824b9544[x_83106b21].x_a241ea2a.x_1091fcc6);
+    spline_init(&x_824b9544[x_83106b21].x_a241ea2a.x_60635a2d);
+    spline_init(&x_824b9544[x_6f0b3be3].x_d8a19723.x_1091fcc6);
+    spline_init(&x_824b9544[x_6f0b3be3].x_d8a19723.x_60635a2d);
+    spline_init(&x_824b9544[x_6f0b3be3].x_238ba16f.x_1091fcc6);
+    spline_init(&x_824b9544[x_6f0b3be3].x_238ba16f.x_60635a2d);
+    spline_init(&x_824b9544[x_6f0b3be3].x_29c9094f.x_1091fcc6);
+    spline_init(&x_824b9544[x_6f0b3be3].x_29c9094f.x_60635a2d);
+    spline_init(&x_824b9544[x_6f0b3be3].x_a241ea2a.x_1091fcc6);
+    spline_init(&x_824b9544[x_6f0b3be3].x_a241ea2a.x_60635a2d);
 }
 
 s32 cam_world_wrap(void *x_cc1d0de5) {

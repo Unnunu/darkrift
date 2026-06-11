@@ -308,7 +308,10 @@ All 62 functions renamed and documented. 11 globals renamed: `sHitDustSpriteDef`
 ### Sparks/Debris (sparks.c) — DONE (Wave 1)
 5 functions renamed: `spark_gt_state_init`, `spark_init_all`, `spark_submit_occluded`, `spark_frame_update` (NON_MATCHING), `spark_spawn`. 2 structs: `SparkParticle`, `SparkInstance`. 5 globals: `sSparkTriangleDef`, `sSparkInstances[4]`, `sSparkActive[4]`, `sSparkEmptyBatch`, `sSparkInitDl`. Updated rsp.c (3 sites), combat.c (1), functions.h (1), symbol_addrs.txt (3). Build verification pending.
 
-Next in queue: `trail.c` (weapon trail afterimage — Catmull-Rom spline, triangle-strip ribbon)
+### Trail Afterimage (trail.c) — DONE (Wave 1)
+9 functions renamed: `ringbuf_init`, `ringbuf_push`, `ringbuf_pop`, `spline_init`, `spline_compute`, `spline_add_point`, `spline_get_point`, `trail_gt_init`, `trail_update`. 9 globals renamed: `sTriStrip4_0..3`, `sTriStrip5_0..4`, `sTriStripLong[]`, `sTriStripShort[]`, `sCatmullRomBasis`, `sTrailDl[4]`. Updated functions.h (2 decls), player.c (4 call sites), cam_follow.c (16 init sites). Build verified.
+
+Next in queue: `hud.c` (HUD: health bars, score digits, portraits, timer, results)
 
 ## Thread Model
 | Pri | Thread | Entry | Description |

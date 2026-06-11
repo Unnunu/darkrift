@@ -3,48 +3,48 @@
 #include "task.h"
 #include "camera.h"
 
-x_562d2a02 D_800499B0[] = {
+x_562d2a02 sTriStrip4_0[] = {
     { 0, 1, 4, 0 },
     { 1, 2, 4, 0 },
     { 2, 3, 4, 0 },
 };
-x_562d2a02 D_800499BC[] = {
+x_562d2a02 sTriStrip4_1[] = {
     { 0, 1, 4, 0 },
     { 4, 1, 5, 0 },
     { 1, 2, 5, 0 },
     { 2, 3, 5, 0 },
 };
-x_562d2a02 D_800499CC[] = {
+x_562d2a02 sTriStrip4_2[] = {
     { 0, 1, 4, 0 }, { 4, 1, 5, 0 }, { 5, 1, 2, 0 }, { 5, 2, 6, 0 }, { 6, 2, 3, 0 },
 };
-x_562d2a02 D_800499E0[] = {
+x_562d2a02 sTriStrip4_3[] = {
     { 0, 1, 4, 0 }, { 4, 1, 5, 0 }, { 5, 1, 2, 0 }, { 5, 2, 6, 0 }, { 6, 2, 3, 0 }, { 6, 3, 7, 0 },
 };
 
-x_562d2a02 D_800499F8[] = {
+x_562d2a02 sTriStrip5_0[] = {
     { 0, 2, 1, 0 },
     { 2, 3, 1, 0 },
     { 3, 4, 1, 0 },
     { 4, 5, 1, 0 },
 };
-x_562d2a02 D_80049A08[] = {
+x_562d2a02 sTriStrip5_1[] = {
     { 0, 2, 1, 0 }, { 1, 2, 6, 0 }, { 2, 3, 6, 0 }, { 3, 4, 6, 0 }, { 4, 5, 6, 0 },
 };
-x_562d2a02 D_80049A1C[] = {
+x_562d2a02 sTriStrip5_2[] = {
     { 0, 2, 1, 0 }, { 1, 2, 6, 0 }, { 2, 3, 6, 0 }, { 6, 3, 7, 0 }, { 3, 4, 7, 0 }, { 4, 5, 7, 0 },
 };
-x_562d2a02 D_80049A34[] = {
+x_562d2a02 sTriStrip5_3[] = {
     { 0, 2, 1, 0 }, { 1, 2, 6, 0 }, { 6, 2, 3, 0 }, { 6, 3, 7, 0 }, { 7, 3, 4, 0 }, { 7, 4, 8, 0 }, { 8, 4, 5, 0 },
 };
-x_562d2a02 D_80049A50[] = {
+x_562d2a02 sTriStrip5_4[] = {
     { 0, 2, 1, 0 }, { 1, 2, 6, 0 }, { 6, 2, 3, 0 }, { 6, 3, 7, 0 },
     { 7, 3, 4, 0 }, { 7, 4, 8, 0 }, { 8, 4, 5, 0 }, { 8, 5, 9, 0 },
 };
 
-x_562d2a02 *D_80049A70[] = { D_800499F8, D_80049A08, D_80049A1C, D_80049A34, D_80049A50 };
-x_562d2a02 *D_80049A84[] = { D_800499B0, D_800499BC, D_800499CC, D_800499E0 };
+x_562d2a02 *sTriStripLong[] = { sTriStrip5_0, sTriStrip5_1, sTriStrip5_2, sTriStrip5_3, sTriStrip5_4 };
+x_562d2a02 *sTriStripShort[] = { sTriStrip4_0, sTriStrip4_1, sTriStrip4_2, sTriStrip4_3 };
 
-x_f9704fd6 D_80049A94 = {
+x_f9704fd6 sCatmullRomBasis = {
     { -0.5, 1.5, -1.5, 0.5 },
     { 1, -2.5, 2, -0.5 },
     { -0.5, 0, 0.5, 0 },
@@ -52,16 +52,16 @@ x_f9704fd6 D_80049A94 = {
 };
 
 /* .bss */
-Gfx D_80081280[4];
+Gfx sTrailDl[4];
 
-void x_51d7e40d(x_c2fa3c06 *x_cc1d0de5, s32 x_84ff873b) {
+void ringbuf_init(x_c2fa3c06 *x_cc1d0de5, s32 x_84ff873b) {
     x_cc1d0de5->x_5e0afed5 = 0;
     x_cc1d0de5->x_e7f3bb4b = 0;
     x_cc1d0de5->x_e8bea4b4 = x_84ff873b;
     x_cc1d0de5->count = 0;
 }
 
-void x_339d85cc(x_c2fa3c06 *x_cc1d0de5, x_88f11482 *x_84ff873b) {
+void ringbuf_push(x_c2fa3c06 *x_cc1d0de5, x_88f11482 *x_84ff873b) {
     s32 v0;
 
     v0 = x_cc1d0de5->x_e7f3bb4b;
@@ -82,7 +82,7 @@ void x_339d85cc(x_c2fa3c06 *x_cc1d0de5, x_88f11482 *x_84ff873b) {
     x_cc1d0de5->x_e7f3bb4b = v0;
 }
 
-s32 x_fa3a2a63(x_c2fa3c06 *x_cc1d0de5, x_88f11482 **x_84ff873b) {
+s32 ringbuf_pop(x_c2fa3c06 *x_cc1d0de5, x_88f11482 **x_84ff873b) {
     s32 v1;
 
     v1 = x_cc1d0de5->x_5e0afed5;
@@ -103,12 +103,12 @@ s32 x_fa3a2a63(x_c2fa3c06 *x_cc1d0de5, x_88f11482 **x_84ff873b) {
     }
 }
 
-void x_3c2e0c67(x_12f9ebc0 *x_cc1d0de5) {
-    x_51d7e40d(&x_cc1d0de5->x_646d43df, 3);
-    x_51d7e40d(&x_cc1d0de5->x_48fb4701, 3);
+void spline_init(x_12f9ebc0 *x_cc1d0de5) {
+    ringbuf_init(&x_cc1d0de5->x_646d43df, 3);
+    ringbuf_init(&x_cc1d0de5->x_48fb4701, 3);
 }
 
-s32 x_61a58c70(x_12f9ebc0 *x_cc1d0de5) {
+s32 spline_compute(x_12f9ebc0 *x_cc1d0de5) {
     x_f9704fd6 *A0;
     x_88f11482 *x_c9614940;
     x_88f11482 *x_32f1d6e2;
@@ -121,46 +121,46 @@ s32 x_61a58c70(x_12f9ebc0 *x_cc1d0de5) {
         return FALSE;
     }
 
-    x_fa3a2a63(&x_cc1d0de5->x_646d43df, &x_c9614940);
-    x_fa3a2a63(&x_cc1d0de5->x_646d43df, &x_32f1d6e2);
-    x_fa3a2a63(&x_cc1d0de5->x_646d43df, &x_5aee6615);
-    x_fa3a2a63(&x_cc1d0de5->x_646d43df, &x_5bbba600);
+    ringbuf_pop(&x_cc1d0de5->x_646d43df, &x_c9614940);
+    ringbuf_pop(&x_cc1d0de5->x_646d43df, &x_32f1d6e2);
+    ringbuf_pop(&x_cc1d0de5->x_646d43df, &x_5aee6615);
+    ringbuf_pop(&x_cc1d0de5->x_646d43df, &x_5bbba600);
 
-    A0->x.x = D_80049A94.x.x * x_c9614940->x + D_80049A94.x.y * x_32f1d6e2->x + D_80049A94.x.z * x_5aee6615->x +
-              D_80049A94.x.w * x_5bbba600->x;
-    A0->y.x = D_80049A94.y.x * x_c9614940->x + D_80049A94.y.y * x_32f1d6e2->x + D_80049A94.y.z * x_5aee6615->x +
-              D_80049A94.y.w * x_5bbba600->x;
-    A0->z.x = D_80049A94.z.x * x_c9614940->x + D_80049A94.z.y * x_32f1d6e2->x + D_80049A94.z.z * x_5aee6615->x +
-              D_80049A94.z.w * x_5bbba600->x;
-    A0->w.x = D_80049A94.w.x * x_c9614940->x + D_80049A94.w.y * x_32f1d6e2->x + D_80049A94.w.z * x_5aee6615->x +
-              D_80049A94.w.w * x_5bbba600->x;
+    A0->x.x = sCatmullRomBasis.x.x * x_c9614940->x + sCatmullRomBasis.x.y * x_32f1d6e2->x +
+              sCatmullRomBasis.x.z * x_5aee6615->x + sCatmullRomBasis.x.w * x_5bbba600->x;
+    A0->y.x = sCatmullRomBasis.y.x * x_c9614940->x + sCatmullRomBasis.y.y * x_32f1d6e2->x +
+              sCatmullRomBasis.y.z * x_5aee6615->x + sCatmullRomBasis.y.w * x_5bbba600->x;
+    A0->z.x = sCatmullRomBasis.z.x * x_c9614940->x + sCatmullRomBasis.z.y * x_32f1d6e2->x +
+              sCatmullRomBasis.z.z * x_5aee6615->x + sCatmullRomBasis.z.w * x_5bbba600->x;
+    A0->w.x = sCatmullRomBasis.w.x * x_c9614940->x + sCatmullRomBasis.w.y * x_32f1d6e2->x +
+              sCatmullRomBasis.w.z * x_5aee6615->x + sCatmullRomBasis.w.w * x_5bbba600->x;
 
-    A0->x.y = D_80049A94.x.x * x_c9614940->y + D_80049A94.x.y * x_32f1d6e2->y + D_80049A94.x.z * x_5aee6615->y +
-              D_80049A94.x.w * x_5bbba600->y;
-    A0->y.y = D_80049A94.y.x * x_c9614940->y + D_80049A94.y.y * x_32f1d6e2->y + D_80049A94.y.z * x_5aee6615->y +
-              D_80049A94.y.w * x_5bbba600->y;
-    A0->z.y = D_80049A94.z.x * x_c9614940->y + D_80049A94.z.y * x_32f1d6e2->y + D_80049A94.z.z * x_5aee6615->y +
-              D_80049A94.z.w * x_5bbba600->y;
-    A0->w.y = D_80049A94.w.x * x_c9614940->y + D_80049A94.w.y * x_32f1d6e2->y + D_80049A94.w.z * x_5aee6615->y +
-              D_80049A94.w.w * x_5bbba600->y;
+    A0->x.y = sCatmullRomBasis.x.x * x_c9614940->y + sCatmullRomBasis.x.y * x_32f1d6e2->y +
+              sCatmullRomBasis.x.z * x_5aee6615->y + sCatmullRomBasis.x.w * x_5bbba600->y;
+    A0->y.y = sCatmullRomBasis.y.x * x_c9614940->y + sCatmullRomBasis.y.y * x_32f1d6e2->y +
+              sCatmullRomBasis.y.z * x_5aee6615->y + sCatmullRomBasis.y.w * x_5bbba600->y;
+    A0->z.y = sCatmullRomBasis.z.x * x_c9614940->y + sCatmullRomBasis.z.y * x_32f1d6e2->y +
+              sCatmullRomBasis.z.z * x_5aee6615->y + sCatmullRomBasis.z.w * x_5bbba600->y;
+    A0->w.y = sCatmullRomBasis.w.x * x_c9614940->y + sCatmullRomBasis.w.y * x_32f1d6e2->y +
+              sCatmullRomBasis.w.z * x_5aee6615->y + sCatmullRomBasis.w.w * x_5bbba600->y;
 
-    A0->x.z = D_80049A94.x.x * x_c9614940->z + D_80049A94.x.y * x_32f1d6e2->z + D_80049A94.x.z * x_5aee6615->z +
-              D_80049A94.x.w * x_5bbba600->z;
-    A0->y.z = D_80049A94.y.x * x_c9614940->z + D_80049A94.y.y * x_32f1d6e2->z + D_80049A94.y.z * x_5aee6615->z +
-              D_80049A94.y.w * x_5bbba600->z;
-    A0->z.z = D_80049A94.z.x * x_c9614940->z + D_80049A94.z.y * x_32f1d6e2->z + D_80049A94.z.z * x_5aee6615->z +
-              D_80049A94.z.w * x_5bbba600->z;
-    A0->w.z = D_80049A94.w.x * x_c9614940->z + D_80049A94.w.y * x_32f1d6e2->z + D_80049A94.w.z * x_5aee6615->z +
-              D_80049A94.w.w * x_5bbba600->z;
+    A0->x.z = sCatmullRomBasis.x.x * x_c9614940->z + sCatmullRomBasis.x.y * x_32f1d6e2->z +
+              sCatmullRomBasis.x.z * x_5aee6615->z + sCatmullRomBasis.x.w * x_5bbba600->z;
+    A0->y.z = sCatmullRomBasis.y.x * x_c9614940->z + sCatmullRomBasis.y.y * x_32f1d6e2->z +
+              sCatmullRomBasis.y.z * x_5aee6615->z + sCatmullRomBasis.y.w * x_5bbba600->z;
+    A0->z.z = sCatmullRomBasis.z.x * x_c9614940->z + sCatmullRomBasis.z.y * x_32f1d6e2->z +
+              sCatmullRomBasis.z.z * x_5aee6615->z + sCatmullRomBasis.z.w * x_5bbba600->z;
+    A0->w.z = sCatmullRomBasis.w.x * x_c9614940->z + sCatmullRomBasis.w.y * x_32f1d6e2->z +
+              sCatmullRomBasis.w.z * x_5aee6615->z + sCatmullRomBasis.w.w * x_5bbba600->z;
 
-    x_339d85cc(&x_cc1d0de5->x_646d43df, x_32f1d6e2);
-    x_339d85cc(&x_cc1d0de5->x_646d43df, x_5aee6615);
-    x_339d85cc(&x_cc1d0de5->x_646d43df, x_5bbba600);
+    ringbuf_push(&x_cc1d0de5->x_646d43df, x_32f1d6e2);
+    ringbuf_push(&x_cc1d0de5->x_646d43df, x_5aee6615);
+    ringbuf_push(&x_cc1d0de5->x_646d43df, x_5bbba600);
 
     return TRUE;
 }
 
-void x_90ab8f92(x_12f9ebc0 *x_cc1d0de5, x_88f11482 *x_84ff873b) {
+void spline_add_point(x_12f9ebc0 *x_cc1d0de5, x_88f11482 *x_84ff873b) {
     f32 fs0, fs1, fs2;
     f32 fs3, fs4, fs5;
     s32 i;
@@ -171,9 +171,9 @@ void x_90ab8f92(x_12f9ebc0 *x_cc1d0de5, x_88f11482 *x_84ff873b) {
 
     A0 = &x_cc1d0de5->x_1996624f;
 
-    x_339d85cc(x_cc1d0de5, x_84ff873b);
+    ringbuf_push(x_cc1d0de5, x_84ff873b);
 
-    if (x_61a58c70(x_cc1d0de5)) {
+    if (spline_compute(x_cc1d0de5)) {
         fs0 = 0.015625f * A0->x.x + 0.0625f * A0->y.x + 0.25f * A0->z.x;
         fs1 = 0.015625f * A0->x.y + 0.0625f * A0->y.y + 0.25f * A0->z.y;
         fs2 = 0.015625f * A0->x.z + 0.0625f * A0->y.z + 0.25f * A0->z.z;
@@ -206,16 +206,16 @@ void x_90ab8f92(x_12f9ebc0 *x_cc1d0de5, x_88f11482 *x_84ff873b) {
             fs4 += x_30a44af1;
             fs5 += x_0ae713be;
 
-            x_339d85cc(&x_cc1d0de5->x_48fb4701, &x_5b215acc);
+            ringbuf_push(&x_cc1d0de5->x_48fb4701, &x_5b215acc);
         }
     }
 }
 
-s32 x_0643a037(x_12f9ebc0 *x_cc1d0de5, x_88f11482 **x_84ff873b) {
-    return x_fa3a2a63(&x_cc1d0de5->x_48fb4701, x_84ff873b);
+s32 spline_get_point(x_12f9ebc0 *x_cc1d0de5, x_88f11482 **x_84ff873b) {
+    return ringbuf_pop(&x_cc1d0de5->x_48fb4701, x_84ff873b);
 }
 
-void x_19200409(x_c1cedf06 *x_4bb24efc) {
+void trail_gt_init(x_c1cedf06 *x_4bb24efc) {
     x_4bb24efc->header.x_09cf7a45 = 0x200;
     x_4bb24efc->header.x_70b508ea = 1;
     x_4bb24efc->header.x_1256da71 = 0;
@@ -233,7 +233,7 @@ void x_19200409(x_c1cedf06 *x_4bb24efc) {
     gtStateSetOthermode(&x_4bb24efc->header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
 }
 
-void x_f7a1a468(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
+void trail_update(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
     x_88f11482 x_fd599243;
     x_88f11482 *x_ec0139c7;
     u8 x_d647d552;
@@ -273,7 +273,7 @@ void x_f7a1a468(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
     x_cc1d0de5->x_c08ab25c = x_fd599243.x;
     x_cc1d0de5->x_9810c807 = x_fd599243.y;
     x_cc1d0de5->x_b8fd00e2 = x_fd599243.z;
-    x_90ab8f92(&x_cc1d0de5->x_1091fcc6, &x_fd599243);
+    spline_add_point(&x_cc1d0de5->x_1091fcc6, &x_fd599243);
 
     temp = s0->w.x * s0->w.x + s0->w.y * s0->w.y + s0->w.z * s0->w.z + s0->w.z; // @FAKE
     if (temp == 0) {}                                                           // @FAKE
@@ -283,7 +283,7 @@ void x_f7a1a468(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
     x_cc1d0de5->x_bc587679 = x_fd599243.x;
     x_cc1d0de5->x_fc05a02f = x_fd599243.y;
     x_cc1d0de5->x_1ba29927 = x_fd599243.z;
-    x_90ab8f92(&x_cc1d0de5->x_60635a2d, &x_fd599243);
+    spline_add_point(&x_cc1d0de5->x_60635a2d, &x_fd599243);
 
     if (!gTaskLock && x_84ff873b && !(x_e30d50d2 & x_dd99cbfb) && x_cc1d0de5->x_b1f57d55 < 16) {
         s5 = &x_cc1d0de5->x_08fddbc8[x_cc1d0de5->x_b1f57d55];
@@ -334,35 +334,35 @@ void x_f7a1a468(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
             s5->x_6f6a6d94 = 14;
         }
 
-        x_0643a037(&x_cc1d0de5->x_1091fcc6, &x_ec0139c7);
+        spline_get_point(&x_cc1d0de5->x_1091fcc6, &x_ec0139c7);
         s2[s3].v.cn[3] = 200;
         s2[s3].v.ob[0] = x_ec0139c7->x;
         s2[s3].v.ob[1] = x_ec0139c7->y;
         s2[s3].v.ob[2] = x_ec0139c7->z;
         s3++;
 
-        x_0643a037(&x_cc1d0de5->x_1091fcc6, &x_ec0139c7);
+        spline_get_point(&x_cc1d0de5->x_1091fcc6, &x_ec0139c7);
         s2[s3].v.cn[3] = 200;
         s2[s3].v.ob[0] = x_ec0139c7->x;
         s2[s3].v.ob[1] = x_ec0139c7->y;
         s2[s3].v.ob[2] = x_ec0139c7->z;
         s3++;
 
-        x_0643a037(&x_cc1d0de5->x_1091fcc6, &x_ec0139c7);
+        spline_get_point(&x_cc1d0de5->x_1091fcc6, &x_ec0139c7);
         s2[s3].v.cn[3] = 200;
         s2[s3].v.ob[0] = x_ec0139c7->x;
         s2[s3].v.ob[1] = x_ec0139c7->y;
         s2[s3].v.ob[2] = x_ec0139c7->z;
         s3++;
 
-        x_0643a037(&x_cc1d0de5->x_1091fcc6, &x_ec0139c7);
+        spline_get_point(&x_cc1d0de5->x_1091fcc6, &x_ec0139c7);
         s2[s3].v.cn[3] = 200;
         s2[s3].v.ob[0] = x_ec0139c7->x;
         s2[s3].v.ob[1] = x_ec0139c7->y;
         s2[s3].v.ob[2] = x_ec0139c7->z;
         s3++;
 
-        if (x_0643a037(&x_cc1d0de5->x_60635a2d, &x_ec0139c7)) {
+        if (spline_get_point(&x_cc1d0de5->x_60635a2d, &x_ec0139c7)) {
             if (x_cc1d0de5->x_b1f57d55 == 1 || x_ec0139c7->x != s2[1].v.ob[0] || x_ec0139c7->y != s2[1].v.ob[1] ||
                 x_ec0139c7->z != s2[1].v.ob[2]) {
                 s2[s3].v.cn[3] = 200;
@@ -383,21 +383,21 @@ void x_f7a1a468(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
             return;
         }
 
-        if (x_0643a037(&x_cc1d0de5->x_60635a2d, &x_ec0139c7)) {
+        if (spline_get_point(&x_cc1d0de5->x_60635a2d, &x_ec0139c7)) {
             s2[s3].v.cn[3] = 200;
             s2[s3].v.ob[0] = x_ec0139c7->x;
             s2[s3].v.ob[1] = x_ec0139c7->y;
             s2[s3].v.ob[2] = x_ec0139c7->z;
             s3++;
         }
-        if (x_0643a037(&x_cc1d0de5->x_60635a2d, &x_ec0139c7)) {
+        if (spline_get_point(&x_cc1d0de5->x_60635a2d, &x_ec0139c7)) {
             s2[s3].v.cn[3] = 200;
             s2[s3].v.ob[0] = x_ec0139c7->x;
             s2[s3].v.ob[1] = x_ec0139c7->y;
             s2[s3].v.ob[2] = x_ec0139c7->z;
             s3++;
         }
-        if (x_0643a037(&x_cc1d0de5->x_60635a2d, &x_ec0139c7)) {
+        if (spline_get_point(&x_cc1d0de5->x_60635a2d, &x_ec0139c7)) {
             s2[s3].v.cn[3] = 200;
             s2[s3].v.ob[0] = x_ec0139c7->x;
             s2[s3].v.ob[1] = x_ec0139c7->y;
@@ -408,9 +408,9 @@ void x_f7a1a468(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
         s5->x_723971cf = s3;
         s5->x_a1256713 = s3 - 2;
         if (x_cc1d0de5->x_b1f57d55 == 1) {
-            s5->triangles = D_80049A84[s3 - 5];
+            s5->triangles = sTriStripShort[s3 - 5];
         } else {
-            s5->triangles = D_80049A70[s3 - 6];
+            s5->triangles = sTriStripLong[s3 - 6];
         }
     }
 
@@ -614,28 +614,28 @@ void shadow_init(x_056d4f07 *x_897abbb1, x_6fcfcf46 *x_c657ede8, x_f9704fd6 *x_2
     x_897abbb1->x_89f63109 = x_2092f891;
     x_897abbb1->x_007a9250 = x_ee71e5cb;
 
-    x_3c2e0c67(&x_897abbb1->x_1091fcc6);
-    x_3c2e0c67(&x_897abbb1->x_60635a2d);
+    spline_init(&x_897abbb1->x_1091fcc6);
+    spline_init(&x_897abbb1->x_60635a2d);
 
     x_897abbb1->x_30459015 = 0;
     x_897abbb1->x_b1f57d55 = 0;
     x_897abbb1->x_36bb3f9b = x_a0e63e9c;
 
-    gfx = D_80081280;
+    gfx = sTrailDl;
     gDPSetPrimColor(gfx++, 0, 0, 255, 255, 255, 255);
     gDPSetCombineMode(gfx++, G_CC_SHADE, G_CC_SHADE);
     gSPNoOp(gfx++);
 
     for (i = 0; i < 4; i++) {
         s2 = x_897abbb1->x_ad2af5d9 + i;
-        x_19200409(s2);
-        s2->header.x_b7ba6d35 = D_80081280;
+        trail_gt_init(s2);
+        s2->header.x_b7ba6d35 = sTrailDl;
         s2->header.x_70b508ea = 0;
     }
 
     for (i = 0; i < 16; i++) {
         s6 = &x_897abbb1->x_08fddbc8[i];
-        x_19200409(&s6->x_3ab7202f);
+        trail_gt_init(&s6->x_3ab7202f);
         mem_set(s6->vertices, 0, sizeof(Vtx) * 8);
 
         a = 200;

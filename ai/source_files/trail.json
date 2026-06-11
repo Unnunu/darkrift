@@ -8,20 +8,78 @@
   },
   "summary": "Weapon/sword trail afterimage renderer. Catmull-Rom spline interpolation, triangle-strip ribbon with alpha/color fade, separate front/back face collections for proper translucency sorting.",
   "functions": [
-    "x_51d7e40d", "x_339d85cc", "x_fa3a2a63", "x_3c2e0c67",
-    "x_61a58c70", "x_90ab8f92", "x_0643a037", "x_19200409",
-    "x_f7a1a468", "x_ed9e2514"
+    {
+      "name": "ringbuf_init",
+      "line": 57,
+      "summary": "Init ring buffer — head=0, tail=0, stores pointer+capacity for spline control points."
+    },
+    {
+      "name": "ringbuf_push",
+      "line": 64,
+      "summary": "Push a 3D point into ring buffer, increment head with mask wrap. Returns 1 on success, 0 if full."
+    },
+    {
+      "name": "ringbuf_pop",
+      "line": 85,
+      "summary": "Pop a point from ring buffer via output pointer. Returns 1 on success, 0 if empty. @bug: copy-paste error — returns 0 instead of 1 on success, required-to-match."
+    },
+    {
+      "name": "spline_init",
+      "line": 106,
+      "summary": "Init Catmull-Rom spline state: initialise both ring buffers (control points + output) with capacity 3."
+    },
+    {
+      "name": "spline_compute",
+      "line": 111,
+      "summary": "Pop 4 control points, multiply by Catmull-Rom basis matrix (sCatmullRomBasis), produce 4 output coefficients. Push 3 back to control buffer (ring rotation)."
+    },
+    {
+      "name": "spline_add_point",
+      "line": 163,
+      "summary": "Add new point to spline. If >= 4 control points, run spline_compute + interpolate 4 output points via forward differencing."
+    },
+    {
+      "name": "spline_get_point",
+      "line": 214,
+      "summary": "Pop an interpolated output point from the spline's output buffer. Wraps ringbuf_pop."
+    },
+    {
+      "name": "trail_gt_init",
+      "line": 218,
+      "summary": "Init GT ucode state for trail render: mode G_RM_XLU_SURF, 1-cycle, bilinear, RGBA16 LUT, no primitive."
+    },
+    {
+      "name": "trail_update",
+      "line": 236,
+      "summary": "Main trail update. Reads weapon tip/base transforms, adds spline points, builds triangle-strip vertices with alpha fade (255→0), submits to front/back draw lists for proper XLU sorting."
+    },
+    {
+      "name": "shadow_init",
+      "line": 605,
+      "summary": "Alias: initialize shadow/trail renderer state. Inits 2 splines per player per trail, 4 GT states for trail segments, 16 shadow instances with vertex colours from character config."
+    }
   ],
-  "key_apis": [],
-  "strings": [],
+  "globals": [
+    { "name": "sTriStrip4_0", "line": 6, "summary": "Triangle strip topology for 4-vertex trail (3 tris, fan pattern)" },
+    { "name": "sTriStrip4_1", "line": 11, "summary": "Triangle strip topology for 5-vertex trail (4 tris)" },
+    { "name": "sTriStrip4_2", "line": 17, "summary": "Triangle strip topology for 6-vertex trail (5 tris)" },
+    { "name": "sTriStrip4_3", "line": 20, "summary": "Triangle strip topology for 7-vertex trail (6 tris)" },
+    { "name": "sTriStrip5_0", "line": 24, "summary": "Alternate strip topology for 5-vertex trail (4 tris, cross pattern)" },
+    { "name": "sTriStrip5_1", "line": 30, "summary": "Alternate strip for 6-vertex trail (5 tris)" },
+    { "name": "sTriStrip5_2", "line": 33, "summary": "Alternate strip for 7-vertex trail (6 tris)" },
+    { "name": "sTriStrip5_3", "line": 36, "summary": "Alternate strip for 8-vertex trail (7 tris)" },
+    { "name": "sTriStrip5_4", "line": 39, "summary": "Alternate strip for 9-vertex trail (8 tris)" },
+    { "name": "sTriStripLong", "line": 44, "summary": "Pointer array to sTriStrip5_0..5_4 (used when trail length ≥ 6)" }
+  ],
   "subsystems": [
-    "Ring buffer: manages tail/head/mask/count for spline control points",
+    "Ring buffer: manages tail/head/mask for spline control points",
     "Catmull-Rom spline: fixed 4x4 Hermite basis, forward differencing, 4 midpoints per segment",
     "Trail render: reads weapon tip/base transforms, builds alpha-faded vertex strip, submits to front/back draw lists",
     "XLU mode: G_RM_XLU_SURF, translucent ribbon with alpha from 255 → 0"
   ],
   "open_questions": [
-    "x_fa3a2a63 has a bug (missing return 1) — is this required-to-match?",
-    "How is the weapon tip/base transform (x_007a9250, x_89f63109) linked to specific bones?"
+    "ringbuf_pop has a bug (returns 0 instead of 1 on success) — is this required-to-match?",
+    "How is the weapon tip/base transform linked to specific bones?",
+    "What distinguishes TriStrip4 vs TriStrip5 patterns (fan vs cross)?"
   ]
 }

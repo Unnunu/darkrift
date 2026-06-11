@@ -351,12 +351,12 @@ void player_ai_check(Object *obj) {
     x_36512335 = (x_8cc4f7df->x_6f5a5c61 != 0) && (obj->frameCounter >= x_8cc4f7df->x_946f41d3) &&
                  (obj->frameCounter < x_8cc4f7df->x_79b8e870);
 
-    x_f7a1a468(&player->x_d8a19723, (x_8cc4f7df->flags & x_74a8ee84) && x_36512335);
+    trail_update(&player->x_d8a19723, (x_8cc4f7df->flags & x_74a8ee84) && x_36512335);
     if (player->x_8bc5a2ac) {
-        x_f7a1a468(&player->x_238ba16f, (x_8cc4f7df->flags & x_3e0e6012) && x_36512335);
+        trail_update(&player->x_238ba16f, (x_8cc4f7df->flags & x_3e0e6012) && x_36512335);
     }
-    x_f7a1a468(&player->x_29c9094f, (x_8cc4f7df->flags & x_0fe9e7f2) && x_36512335);
-    x_f7a1a468(&player->x_a241ea2a, (x_8cc4f7df->flags & (x_a83332f6 | x_bd969186)) && x_36512335);
+    trail_update(&player->x_29c9094f, (x_8cc4f7df->flags & x_0fe9e7f2) && x_36512335);
+    trail_update(&player->x_a241ea2a, (x_8cc4f7df->flags & (x_a83332f6 | x_bd969186)) && x_36512335);
 
     if (player->x_eb1fe45b != x_b52da315) {
         model_lighting_apply(obj);
