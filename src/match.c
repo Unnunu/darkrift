@@ -112,7 +112,7 @@ Object *x_1bb3ac04(x_3da8fdd8 *msg, s32 context) {
 
     a3 = x_b717ed65[x_e720f37d(x_f974a07e, context)].x_4962fc73;
     pos.x = pos.y = pos.z = 0;
-    obj = x_572f827d(&pos, 0x1000, msg->x_5cb18fd3, a3);
+    obj = obj_create_with_model_ptr(&pos, 0x1000, msg->x_5cb18fd3, a3);
 
     if (obj != NULL) {
         obj->flags |= x_a816b63b;
@@ -218,7 +218,7 @@ void x_fb6f79b0(Object *obj) {
 void x_943bfef8(void) {
     Object *obj;
 
-    for (obj = x_8cdb365e; obj != NULL; obj = obj->x_2d5f3fbd) {
+    for (obj = gObjectList; obj != NULL; obj = obj->x_2d5f3fbd) {
         if ((obj->flags & x_215d3747) || (obj->flags & x_0b94e8d0)) {
             obj->flags |= x_f51cb721;
         }
@@ -814,7 +814,7 @@ void x_a21936ef(Object *obj) {
 }
 
 void x_b372f4dd(void) {
-    D_8013C23C = x_4495b42c(x_a21936ef, 1);
+    D_8013C23C = obj_create_task(x_a21936ef, 1);
     x_9df63a90 = FALSE;
     x_6f8aa7af = 0;
 

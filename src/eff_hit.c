@@ -81,7 +81,7 @@ void x_5dea773a(Object *obj) {
         x_5aee6615.x = obj->pos.x;
         x_5aee6615.z = obj->pos.z;
         x_5aee6615.y = 0;
-        v0 = x_1d5cf6e2(&x_5aee6615, &D_80052CF0, x_2587f84f);
+        v0 = obj_create_from_props(&x_5aee6615, &D_80052CF0, x_2587f84f);
         if (v0 != NULL) {
             v0->color.a = 60;
         }
@@ -434,7 +434,7 @@ Object *x_24276d64(void) {
         D_80052D60->flags |= x_f51cb721;
     }
 
-    D_80052D60 = x_4495b42c(x_b6853055, 0x1000);
+    D_80052D60 = obj_create_task(x_b6853055, 0x1000);
     return D_80052D60;
 }
 

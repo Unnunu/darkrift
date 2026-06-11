@@ -129,7 +129,7 @@ void model_collect_textures(Object *obj, u8 x_44c2855d) {
 
 void model_light_pool_init(void) {
     sLightListHead = NULL;
-    x_7824740c(&sLightFreeList, 5, sizeof(x_a8b4b5ce));
+    pool_init(&sLightFreeList, 5, sizeof(x_a8b4b5ce));
 }
 
 void model_light_attach(Object *obj, x_6751d717 *x_84ff873b) {
@@ -770,7 +770,7 @@ void model_shadow_spawn(Object *x_4a65b74c, char *x_15887b2b, u32 context) {
     Object *shadow;
 
     x_dab0846a(sShadowDesc.name, x_15887b2b);
-    shadow = x_8e3c7e83(&sZeroPosition, NULL, &sShadowDesc, context);
+    shadow = obj_create_with_model(&sZeroPosition, NULL, &sShadowDesc, context);
 
     shadow->x_0f4167b4[0] = shadow->x_20d20338->transforms;
     shadow->x_0f4167b4[1] = x_4a65b74c;

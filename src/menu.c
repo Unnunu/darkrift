@@ -29,7 +29,7 @@ extern u16 x_33abac12;
 void x_d2b7f1c2(Object *);
 void x_5638088b(Object *);
 void cam_ko_init(Object *, s32);
-Object *x_572f827d(x_88f11482 *, s32, void (*)(Object *), Model *);
+Object *obj_create_with_model_ptr(x_88f11482 *, s32, void (*)(Object *), Model *);
 void x_91e62f73(Object *);
 void x_8daf2444(Object *);
 void x_37361bf1(Object *);
@@ -181,7 +181,7 @@ void x_005cc66f(void) {
     x_e30d50d2 |= x_23ebd6b0 | x_d4c59644;
     gGfxFlags |= GFX_MENU_OVERLAY;
 
-    obj = x_4495b42c(&x_d5d8f7a7, 0x1000);
+    obj = obj_create_task(&x_d5d8f7a7, 0x1000);
     obj->x_0f4167b4[0] = 6;
     tr_scene_loop();
 
@@ -551,7 +551,7 @@ void x_af961405(u8 x_cc1d0de5, s16 x_84ff873b, s32 x_2092f891) {
     }
 
     if (x_cc1d0de5) {
-        obj = x_4495b42c(x_3253cdf0, 0x1000);
+        obj = obj_create_task(x_3253cdf0, 0x1000);
         obj->x_0f4167b4[0] = 480;
     }
 
@@ -811,7 +811,7 @@ void x_d7f2443f(void) {
 
     x_0928eec2("/sono/prize", x_46bec5bf);
     x_3f14db6e = x_a0e73601("prize", 0, 100, 0, 0, x_8ce7ef70, 0x3000);
-    obj = x_4495b42c(x_d5d8f7a7, 0x1000);
+    obj = obj_create_task(x_d5d8f7a7, 0x1000);
     obj->x_0f4167b4[0] = 6;
     tr_scene_loop();
 
@@ -823,10 +823,10 @@ void x_d7f2443f(void) {
     x_a0e73601("bg0", 0, -24, 0x1000, 0x10000, x_96186256, 0);
     x_7a8b20f2("arena", 0);
     a3 = x_b717ed65[x_e720f37d("relic.k2", 0x3000)].x_4962fc73;
-    x_942c59c7 = x_572f827d(&x_93463df6, 0x1000, x_cb578282, a3);
+    x_942c59c7 = obj_create_with_model_ptr(&x_93463df6, 0x1000, x_cb578282, a3);
     x_942c59c7->x_224610f1.y = 0x400;
     x_942c59c7->color.a = 80;
-    x_4495b42c(x_317f92d9, 0x1000);
+    obj_create_task(x_317f92d9, 0x1000);
     x_25025961(x_3f14db6e);
     tr_scene_loop();
 
@@ -883,11 +883,11 @@ void x_526ab60f(void) {
     cam_battle_init(x_f4bce728);
     player_exec_move(&x_824b9544[x_ea78ab9e], x_467d52ce, 1);
     gGfxFlags |= GFX_FLAG_4;
-    x_4495b42c(x_d2b7f1c2, 0x1000);
+    obj_create_task(x_d2b7f1c2, 0x1000);
     x_7bc4ef6e();
 
     a3 = x_b717ed65[x_e720f37d("relic.k5", 0x3000)].x_4962fc73;
-    obj = x_572f827d(&x_54406eae, 0x1000, x_cb578282, a3);
+    obj = obj_create_with_model_ptr(&x_54406eae, 0x1000, x_cb578282, a3);
     obj->x_224610f1.y = 0x400;
     obj->color.a = 80;
 
@@ -919,7 +919,7 @@ void x_97d4c18e(void) {
     x_8c518b47(x_fc517ba8, "end");
     x_0928eec2(x_fc517ba8, x_f238a878);
 
-    obj = x_4495b42c(x_5638088b, 0x1000);
+    obj = obj_create_task(x_5638088b, 0x1000);
     obj->x_0f4167b4[0] = 60;
 
     x_dab0846a(x_49781937, D_8004B844[x_de61763c].x_1256da71->name);
@@ -940,7 +940,7 @@ void x_0f62bcb4(void) {
     x_0928eec2("/title/credit", x_f238a878);
     D_80081254 = x_a0e73601("credit", 0, 250, 0, 0, x_8ce7ef70, 0x4000);
     D_80081250 = D_80081254->height;
-    x_87eba76e = x_4495b42c(x_070b94ab, 0x1000);
+    x_87eba76e = obj_create_task(x_070b94ab, 0x1000);
     x_87eba76e->x_0f4167b4[2] = 4;
     x_6eea7033(x_87eba76e, 0x4000);
     sClearZbuffer = FALSE;
@@ -961,7 +961,7 @@ void x_39ec2f37(void) {
     x_40b36af5();
     x_0928eec2("/title/easywin", x_f238a878);
     x_a0e73601("easyimg", 0, 0, 0, 0, x_96186256, 0x4000);
-    x_4495b42c(x_e8d61695, 0x1000);
+    obj_create_task(x_e8d61695, 0x1000);
     sClearZbuffer = TRUE;
     x_e30d50d2 |= x_86c5bc33;
     gGfxFlags |= GFX_MENU_OVERLAY;
@@ -1107,11 +1107,11 @@ void x_5f08f251(void) {
     switch (x_77831b2c[x_5bbba600].x_eb1fe45b) {
         case x_73cf9ceb:
             x_0928eec2("/demi/demigen3", x_f238a878);
-            x_4495b42c(x_64109585, 0x1000);
+            obj_create_task(x_64109585, 0x1000);
             break;
         case x_968cc9a2:
             x_0928eec2("/demi/demigen2", x_f238a878);
-            x_4495b42c(x_64109585, 0x1000);
+            obj_create_task(x_64109585, 0x1000);
             break;
     }
 
@@ -1119,7 +1119,7 @@ void x_5f08f251(void) {
     x_0928eec2("/demi/demidust", x_2587f84f);
     player_exec_move(&x_824b9544[x_21e2fc34], x_9b1bc46c, 1);
     player_exec_move(&x_824b9544[x_5bbba600], x_41323a8a, 1);
-    x_4495b42c(x_bc6a41ae, 0x1000);
+    obj_create_task(x_bc6a41ae, 0x1000);
     tr_scene_loop();
     x_ad9889cf(0x4000);
     x_ad9889cf(x_2587f84f);
@@ -1150,7 +1150,7 @@ void x_2d92be0a(void) {
     D_80081254 = x_a0e73601(x_d16311d7, 0, 250, 0, 0, x_8ce7ef70, 0x4000);
     D_80081250 = D_80081254->height;
 
-    obj = x_4495b42c(x_070b94ab, 0x1000);
+    obj = obj_create_task(x_070b94ab, 0x1000);
     obj->x_0f4167b4[2] = 5;
     obj->x_0f4167b4[1] = 0;
     obj->x_0f4167b4[0] = 0;
@@ -1231,7 +1231,7 @@ void x_6da0c319(void) {
 
     x_0928eec2("/demi/relic", x_f238a878);
     a3 = x_b717ed65[x_e720f37d("relic.k5", 0x4000)].x_4962fc73;
-    obj = x_572f827d(&x_dcccc364, 0x1000, x_cb578282, a3);
+    obj = obj_create_with_model_ptr(&x_dcccc364, 0x1000, x_cb578282, a3);
     obj->color.a = 80;
 
     if (x_77831b2c[x_5bbba600].x_eb1fe45b == x_968cc9a2 || x_77831b2c[x_5bbba600].x_eb1fe45b == x_73cf9ceb) {
@@ -1240,7 +1240,7 @@ void x_6da0c319(void) {
         } else {
             a3 = x_b717ed65[x_e720f37d("dheadp1.k2", 0x4000)].x_4962fc73;
         }
-        obj = x_572f827d(&x_dcccc364, 0x1000, NULL, a3);
+        obj = obj_create_with_model_ptr(&x_dcccc364, 0x1000, NULL, a3);
         obj->x_224610f1.y = -1179;
         obj->color.a = 255;
         obj->flags |= x_3e24eba7;
@@ -1281,15 +1281,15 @@ void x_da1161b7(void) {
 
     if (sPrevScreenId == x_f699a14d) {
         Model *x_2ac4abbe = x_b717ed65[x_e720f37d("title.k2", x_35b88489)].x_4962fc73;
-        x_a7ef4a30 = x_572f827d(&sZeroPosition, 0x1000, x_91e62f73, x_2ac4abbe);
+        x_a7ef4a30 = obj_create_with_model_ptr(&sZeroPosition, 0x1000, x_91e62f73, x_2ac4abbe);
         x_a7ef4a30->flags |= x_a816b63b;
     } else {
-        x_a7ef4a30 = x_12014163(&x_c9614940, &x_081c4eef, x_35b88489);
+        x_a7ef4a30 = obj_create_from_def(&x_c9614940, &x_081c4eef, x_35b88489);
     }
 
     x_a7ef4a30->currentTask->delay = 30;
 
-    x_4495b42c(x_8daf2444, 0x1000);
+    obj_create_task(x_8daf2444, 0x1000);
     x_c9505e23();
     tr_scene_loop();
 
@@ -1327,10 +1327,10 @@ void x_200fa268(Object *obj) {
     x_f3da6ca2(0x2000, 8);
     obj->x_0232396f = x_cb95930b;
     x_a0e73601("dr_title", 0, 0, 0, 0, x_96186256, x_35b88489);
-    v0 = x_12014163(&x_93463df6, &x_fc517ba8, 0x2000);
+    v0 = obj_create_from_def(&x_93463df6, &x_fc517ba8, 0x2000);
     v0->currentTask->delay = 60;
     x_f4bce728->pos.z = -2200;
-    x_4495b42c(x_8daf2444, 0x1000);
+    obj_create_task(x_8daf2444, 0x1000);
 }
 
 void x_2c292a7b(void) {
@@ -1344,7 +1344,7 @@ void x_2c292a7b(void) {
     x_e30d50d2 |= x_86c5bc33;
     x_0928eec2("/title/tit_int", x_35b88489);
     x_0928eec2("/plyrsel/plyrsel", x_24b231d4);
-    v0 = x_4495b42c(x_37361bf1, 0x1000);
+    v0 = obj_create_task(x_37361bf1, 0x1000);
     x_59ce598c[x_83106b21].x_40ccbb76 = x_59ce598c[x_6f0b3be3].x_40ccbb76 = TRUE;
     x_6eea7033(v0, 0x2000);
 
@@ -1377,7 +1377,7 @@ void x_cbafccd1(void) {
     x_0928eec2("/title/logo", x_35b88489);
     x_a0e73601("vic", 0, 30, 0, 180, x_96186256, x_35b88489);
     x_a0e73601("n64lic", 0, 190, 0, 240, x_96186256, x_35b88489);
-    x_4495b42c(x_baaaa706, 0x1000);
+    obj_create_task(x_baaaa706, 0x1000);
     tr_scene_loop();
     x_ad9889cf(0x2000);
 }
@@ -1414,42 +1414,42 @@ void x_3ecc4edc(void) {
     gGfxFlags |= GFX_MENU_OVERLAY;
     x_e30d50d2 |= x_86c5bc33;
 
-    controller = x_12014163(&x_7b3384f3, &x_910f3493, x_35b88489);
+    controller = obj_create_from_def(&x_7b3384f3, &x_910f3493, x_35b88489);
 
-    obj = x_12014163(&x_98eec76d, &x_dfcbab92, x_35b88489);
+    obj = obj_create_from_def(&x_98eec76d, &x_dfcbab92, x_35b88489);
     obj->frameCounter = x_028e5846 + x_be30259d;
     obj->x_0f4167b4[x_0371940a] = controller;
 
-    obj = x_12014163(&x_39a42620, &x_3d280011, x_35b88489);
+    obj = obj_create_from_def(&x_39a42620, &x_3d280011, x_35b88489);
     obj->frameCounter = x_c8356c60 + x_336693df;
     obj->x_0f4167b4[x_0371940a] = controller;
 
-    obj = x_12014163(&x_4ff52ceb, &x_f2490cb2, x_35b88489);
+    obj = obj_create_from_def(&x_4ff52ceb, &x_f2490cb2, x_35b88489);
     obj->frameCounter = x_adcfd05c + x_afcff1b4;
     obj->x_0f4167b4[x_0371940a] = controller;
 
-    obj = x_12014163(&x_867609ad, &x_4b76305b, x_35b88489);
+    obj = obj_create_from_def(&x_867609ad, &x_4b76305b, x_35b88489);
     obj->frameCounter = x_a7d9a1e8 + x_4b8a6796;
     obj->x_0f4167b4[x_0371940a] = controller;
 
-    obj = x_12014163(&x_49ea79b4, &x_d252ddf2, x_35b88489);
+    obj = obj_create_from_def(&x_49ea79b4, &x_d252ddf2, x_35b88489);
     obj->frameCounter = x_66ddef46 / (0x8000 / 9) + x_afcff1b4;
     obj->x_0f4167b4[x_0371940a] = controller;
 
-    obj = x_12014163(&x_eeea4d36, &x_7b5eb252, x_35b88489);
+    obj = obj_create_from_def(&x_eeea4d36, &x_7b5eb252, x_35b88489);
     obj->frameCounter = x_15814eea / (0x8000 / 9) + x_afcff1b4;
     obj->x_0f4167b4[x_0371940a] = controller;
 
-    obj = x_12014163(&x_375e794a, &x_6a701386, x_35b88489);
+    obj = obj_create_from_def(&x_375e794a, &x_6a701386, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = controller;
 
-    obj = x_12014163(&x_ac1eaa4d, &x_4ae9ab69, x_35b88489);
+    obj = obj_create_from_def(&x_ac1eaa4d, &x_4ae9ab69, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = controller;
 
-    obj = x_12014163(&x_5a64842d, &x_f4b84c7c, x_35b88489);
+    obj = obj_create_from_def(&x_5a64842d, &x_f4b84c7c, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = controller;
 
-    obj = x_12014163(&x_cdcf9ce9, &x_e8326674, x_35b88489);
+    obj = obj_create_from_def(&x_cdcf9ce9, &x_e8326674, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = controller;
 
     tr_scene_loop();
@@ -1534,90 +1534,90 @@ void x_35ffeb22(void) {
     gGfxFlags |= GFX_MENU_OVERLAY;
     x_e30d50d2 |= x_86c5bc33;
 
-    x_12014163(&x_0bef2693, &x_d772ebb4, x_35b88489);
+    obj_create_from_def(&x_0bef2693, &x_d772ebb4, x_35b88489);
 
-    x_6dc41566 = x_12014163(&x_bf23db74, &x_43f9ca3f, x_35b88489);
+    x_6dc41566 = obj_create_from_def(&x_bf23db74, &x_43f9ca3f, x_35b88489);
     x_6dc41566->x_0f4167b4[x_0371940a] = x_6dc41566;
     x_6dc41566->x_0f4167b4[x_13266785] = 0;
     x_038a90c5(x_6dc41566, 0);
 
-    obj = x_12014163(&x_e725bb19, &x_fa93fe6a, x_35b88489);
+    obj = obj_create_from_def(&x_e725bb19, &x_fa93fe6a, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_6dc41566;
     obj->x_0f4167b4[x_13266785] = 1;
     x_038a90c5(obj, 0);
 
-    obj = x_12014163(&x_77027484, &x_c592c457, x_35b88489);
+    obj = obj_create_from_def(&x_77027484, &x_c592c457, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_6dc41566;
     obj->x_0f4167b4[x_13266785] = 2;
     x_038a90c5(obj, 0);
 
-    obj = x_12014163(&x_ebe59286, &x_f13e2bec, x_35b88489);
+    obj = obj_create_from_def(&x_ebe59286, &x_f13e2bec, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_6dc41566;
     obj->x_0f4167b4[x_13266785] = 3;
     x_038a90c5(obj, 0);
 
-    obj = x_12014163(&x_c9b06339, &x_1ccec23b, x_35b88489);
+    obj = obj_create_from_def(&x_c9b06339, &x_1ccec23b, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_6dc41566;
     obj->x_0f4167b4[x_13266785] = 4;
     x_038a90c5(obj, 0);
 
-    obj = x_12014163(&x_887b975c, &x_23c4e7d3, x_35b88489);
+    obj = obj_create_from_def(&x_887b975c, &x_23c4e7d3, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_6dc41566;
     obj->x_0f4167b4[x_13266785] = 5;
     x_038a90c5(obj, 0);
 
-    obj = x_12014163(&x_aa4f74c9, &x_c1e64f43, x_35b88489);
+    obj = obj_create_from_def(&x_aa4f74c9, &x_c1e64f43, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_6dc41566;
     obj->x_0f4167b4[x_13266785] = 6;
     x_038a90c5(obj, 0);
 
-    obj = x_12014163(&x_fde88f40, &x_1c7346b1, x_35b88489);
+    obj = obj_create_from_def(&x_fde88f40, &x_1c7346b1, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_6dc41566;
     obj->x_0f4167b4[x_13266785] = 7;
     x_038a90c5(obj, 0);
 
-    x_abfe8d41 = x_12014163(&x_7e4f6c9d, &x_43f9ca3f, x_35b88489);
+    x_abfe8d41 = obj_create_from_def(&x_7e4f6c9d, &x_43f9ca3f, x_35b88489);
     x_abfe8d41->x_0f4167b4[x_0371940a] = x_abfe8d41;
     x_abfe8d41->x_0f4167b4[x_13266785] = 0;
     x_abfe8d41->x_0f4167b4[x_283009b1] = x_6f0b3be3;
     x_038a90c5(x_abfe8d41, 1);
 
-    obj = x_12014163(&x_fef76a74, &x_fa93fe6a, x_35b88489);
+    obj = obj_create_from_def(&x_fef76a74, &x_fa93fe6a, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_abfe8d41;
     obj->x_0f4167b4[x_13266785] = 1;
     x_038a90c5(obj, 1);
 
-    obj = x_12014163(&x_e0e052f7, &x_c592c457, x_35b88489);
+    obj = obj_create_from_def(&x_e0e052f7, &x_c592c457, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_abfe8d41;
     obj->x_0f4167b4[x_13266785] = 2;
     x_038a90c5(obj, 1);
 
-    obj = x_12014163(&x_b42630db, &x_f13e2bec, x_35b88489);
+    obj = obj_create_from_def(&x_b42630db, &x_f13e2bec, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_abfe8d41;
     obj->x_0f4167b4[x_13266785] = 3;
     x_038a90c5(obj, 1);
 
-    obj = x_12014163(&x_2a8bc04d, &x_1ccec23b, x_35b88489);
+    obj = obj_create_from_def(&x_2a8bc04d, &x_1ccec23b, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_abfe8d41;
     obj->x_0f4167b4[x_13266785] = 4;
     x_038a90c5(obj, 1);
 
-    obj = x_12014163(&x_03f0364f, &x_23c4e7d3, x_35b88489);
+    obj = obj_create_from_def(&x_03f0364f, &x_23c4e7d3, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_abfe8d41;
     obj->x_0f4167b4[x_13266785] = 5;
     x_038a90c5(obj, 1);
 
-    obj = x_12014163(&x_48fb41dd, &x_c1e64f43, x_35b88489);
+    obj = obj_create_from_def(&x_48fb41dd, &x_c1e64f43, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_abfe8d41;
     obj->x_0f4167b4[x_13266785] = 6;
     x_038a90c5(obj, 1);
 
-    obj = x_12014163(&x_09ae4a39, &x_1c7346b1, x_35b88489);
+    obj = obj_create_from_def(&x_09ae4a39, &x_1c7346b1, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_abfe8d41;
     obj->x_0f4167b4[x_13266785] = 7;
     x_038a90c5(obj, 1);
 
-    obj = x_12014163(&x_20652c2f, &x_cc88bd06, x_35b88489);
+    obj = obj_create_from_def(&x_20652c2f, &x_cc88bd06, x_35b88489);
     obj->x_0f4167b4[x_f2901470] = x_6dc41566;
     obj->x_0f4167b4[x_88d435fa] = x_abfe8d41;
 
@@ -1632,7 +1632,7 @@ void x_9450f821(void) {
     x_59ce598c[x_83106b21].x_40ccbb76 = x_59ce598c[x_6f0b3be3].x_40ccbb76 = TRUE;
     x_0928eec2("/title/rank", x_35b88489);
     x_a0e73601("bgrank", 0, 4, 0, 0, x_96186256, x_35b88489);
-    x_fa7941af = x_12014163(&x_b0e0e2fc, &x_b97c1d15, x_35b88489);
+    x_fa7941af = obj_create_from_def(&x_b0e0e2fc, &x_b97c1d15, x_35b88489);
     x_8da34614();
     gGfxFlags |= GFX_MENU_OVERLAY;
     x_e30d50d2 |= x_86c5bc33;
@@ -1650,7 +1650,7 @@ void x_2288fd1a(void) {
     x_a0e73601("aarost", 0, 13, 0, 0, x_96186256, x_35b88489);
     gGfxFlags |= GFX_MENU_OVERLAY;
     x_e30d50d2 |= x_86c5bc33;
-    x_4495b42c(x_8383794c, x_9d442987);
+    obj_create_task(x_8383794c, x_9d442987);
     tr_scene_loop();
     x_ad9889cf(x_35b88489);
 }

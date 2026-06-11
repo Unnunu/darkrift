@@ -37,7 +37,7 @@ void x_9191631f(Object *obj) {
         x_fc517ba8.x = x_9b380833->x;
         x_fc517ba8.z = x_9b380833->z;
         x_fc517ba8.y = 0;
-        x_49781937 = x_572f827d(&x_fc517ba8, 0x1000, x_c0cfb7d5, player->x_dd32bc14[6]);
+        x_49781937 = obj_create_with_model_ptr(&x_fc517ba8, 0x1000, x_c0cfb7d5, player->x_dd32bc14[6]);
         if (x_49781937 != NULL) {
             model_light_attach(x_49781937, &x_c9614940[player->x_30bbe547]);
             x_49781937->color.a = 160;
@@ -65,7 +65,7 @@ void x_ff5d42d3(Object *obj) {
         x_49781937.x = obj->x_20d20338->transforms[0].x_0c1a9bdd.w.x;
         x_49781937.y = obj->x_20d20338->transforms[0].x_0c1a9bdd.w.y;
         x_49781937.z = obj->x_20d20338->transforms[0].x_0c1a9bdd.w.z;
-        v0 = x_572f827d(&x_49781937, 0x1000, x_9191631f, player->x_dd32bc14[4]);
+        v0 = obj_create_with_model_ptr(&x_49781937, 0x1000, x_9191631f, player->x_dd32bc14[4]);
         if (v0 != NULL) {
             v0->color.a = 160;
             v0->x_0f4167b4[1] = 160 / v0->x_20d20338->x_8e601526;
@@ -83,7 +83,7 @@ void x_ff5d42d3(Object *obj) {
         x_49781937.x = obj->x_20d20338->transforms[1].x_0c1a9bdd.w.x;
         x_49781937.y = obj->x_20d20338->transforms[1].x_0c1a9bdd.w.y;
         x_49781937.z = obj->x_20d20338->transforms[1].x_0c1a9bdd.w.z;
-        v0 = x_572f827d(&x_49781937, 0x1000, x_9191631f, player->x_dd32bc14[4]);
+        v0 = obj_create_with_model_ptr(&x_49781937, 0x1000, x_9191631f, player->x_dd32bc14[4]);
         if (v0 != NULL) {
             v0->color.a = 160;
             v0->x_0f4167b4[1] = 160 / v0->x_20d20338->x_8e601526;
@@ -97,7 +97,7 @@ void x_ff5d42d3(Object *obj) {
         x_49781937.x = obj->x_20d20338->transforms[2].x_0c1a9bdd.w.x;
         x_49781937.y = obj->x_20d20338->transforms[2].x_0c1a9bdd.w.y;
         x_49781937.z = obj->x_20d20338->transforms[2].x_0c1a9bdd.w.z;
-        v0 = x_572f827d(&x_49781937, 0x1000, x_9191631f, player->x_dd32bc14[4]);
+        v0 = obj_create_with_model_ptr(&x_49781937, 0x1000, x_9191631f, player->x_dd32bc14[4]);
         if (v0 != NULL) {
             v0->color.a = 160;
             v0->x_0f4167b4[1] = 160 / v0->x_20d20338->x_8e601526;

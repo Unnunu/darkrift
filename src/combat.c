@@ -61,7 +61,7 @@ void spawn_hit_effect(x_2758cdab *pos, u8 x_0328a4c8, Object *x_2092f891, x_6751
     x_5bbba600.z = pos->z;
 
     if (x_0328a4c8) {
-        v0 = x_572f827d(&x_5bbba600, x_9d442987, hit_effect_fade_fast, sHitModelGrab);
+        v0 = obj_create_with_model_ptr(&x_5bbba600, x_9d442987, hit_effect_fade_fast, sHitModelGrab);
         if (v0 != NULL) {
             v0->x_0f4167b4[0] = 255 / (v0->x_20d20338->x_8e601526 - 2);
             v0->flags |= x_b6789b80;
@@ -74,7 +74,7 @@ void spawn_hit_effect(x_2758cdab *pos, u8 x_0328a4c8, Object *x_2092f891, x_6751
         }
         x_ae0d8704(pos, x_2092f891, x_ee71e5cb);
     } else {
-        v0 = x_572f827d(&x_5bbba600, x_9d442987, hit_effect_fade_slow, sHitModelRegular);
+        v0 = obj_create_with_model_ptr(&x_5bbba600, x_9d442987, hit_effect_fade_slow, sHitModelRegular);
         if (v0 != NULL) {
             v0->x_0f4167b4[0] = 255 / (v0->x_20d20338->x_8e601526 - 12);
             v0->flags |= x_b6789b80;

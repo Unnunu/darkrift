@@ -284,6 +284,9 @@ Functions renamed and documented: `mat4_ident`, `mat4_ident_partial`, `mat4_copy
 ### LZSS (lzss.c) — DONE (Wave 1)
 4 functions renamed: `lzhuf_decode_symbol`, `lzhuf_decode_distance`, `lzhuf_decompress`, `lzhuf_start` (was `x_69c2895e`). All extern declarations updated to match huffman.c renames. Window N=4096, max match F=60, threshold=2, double-buffered DMA streaming. Entry called from wad.c. Build verified.
 
+### Item/Object Pool (item.c) — DONE (Wave 1)
+19 functions renamed: `pool_init`, `pool_expand`, `pool_expand_both`, `pool_init_core`, `obj_alloc`, `obj_free`, `obj_init` (NON_EQUIVALENT), `obj_setup_transforms`, `obj_create_anim`, `obj_create_task`, `obj_create_from_def`, `obj_create_with_model`, `obj_create_from_props`, `obj_create_with_model_ptr`, `obj_create_frame_render`, `obj_collide_all`, `obj_scene_update`, `batch_ident`, `batch_null_iter` (last 2 unused). 5 globals renamed: `gObjectList`, `sObjectCount`, `gObjectPool`, `gPhysicsPool`, `sItemUnused`. Updated main.c, match.c, cam_follow.c, practice.c, functions.h, variables.h. Build verified.
+
 Next in queue: (any remaining file — suggest one)
 
 ## Thread Model

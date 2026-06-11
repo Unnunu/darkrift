@@ -414,11 +414,11 @@ void x_0362e0e0(Object *obj) {
 
     s1 = obj->x_0f4167b4[0];
 
-    s3 = x_12014163(&x_522f451d[s1], &x_d65a2f4e, x_24b231d4);
-    v0 = x_12014163(&x_dcab8ab0[s1], &x_15702e8a, x_24b231d4);
+    s3 = obj_create_from_def(&x_522f451d[s1], &x_d65a2f4e, x_24b231d4);
+    v0 = obj_create_from_def(&x_dcab8ab0[s1], &x_15702e8a, x_24b231d4);
     v0->x_0f4167b4[0] = s1;
     v0->x_0f4167b4[3] = s3;
-    s3 = x_12014163(&x_d753d975[s1], &x_d65a2f4e, x_24b231d4);
+    s3 = obj_create_from_def(&x_d753d975[s1], &x_d65a2f4e, x_24b231d4);
     s3->frameCounter = 15 - s1;
     v0->x_0f4167b4[4] = s3;
 
@@ -436,11 +436,11 @@ void x_0362e0e0(Object *obj) {
         v0->pos.x = 0xD1 + x_464d68e5;
     }
 
-    s2 = x_12014163(&x_fd09f53e[s1], &x_f4254db5, x_24b231d4);
+    s2 = obj_create_from_def(&x_fd09f53e[s1], &x_f4254db5, x_24b231d4);
     x_fd09f53e[s1].x += 10;
-    x_2bf9ce78 = x_12014163(&x_fd09f53e[s1], &x_f4254db5, x_24b231d4);
+    x_2bf9ce78 = obj_create_from_def(&x_fd09f53e[s1], &x_f4254db5, x_24b231d4);
     x_fd09f53e[s1].x += 10;
-    x_7f4af95e = x_12014163(&x_fd09f53e[s1], &x_f4254db5, x_24b231d4);
+    x_7f4af95e = obj_create_from_def(&x_fd09f53e[s1], &x_f4254db5, x_24b231d4);
     x_7f4af95e->x_0f4167b4[0] = s1;
 
     x_a70125d9(x_7f4af95e, x_2bf9ce78, s2);
@@ -770,13 +770,13 @@ void x_2c1b660c(void) {
 
     switch (x_5e4e2788) {
         case x_e483bf48:
-            obj = x_12014163(&x_4a1fd4d1, &x_8fcab22c, x_24b231d4);
+            obj = obj_create_from_def(&x_4a1fd4d1, &x_8fcab22c, x_24b231d4);
             obj->x_0f4167b4[0] = x_83106b21;
             obj->x_0f4167b4[1] = 167;
             x_0928eec2("/plyrsel/select", x_24b231d4);
             break;
         case x_557d3dd6:
-            obj = x_12014163(&x_331089fa, &x_8fcab22c, x_24b231d4);
+            obj = obj_create_from_def(&x_331089fa, &x_8fcab22c, x_24b231d4);
             obj->x_0f4167b4[0] = x_6f0b3be3;
             obj->x_0f4167b4[1] = 167;
             x_0928eec2("/plyrsel/select", x_24b231d4);
@@ -784,21 +784,21 @@ void x_2c1b660c(void) {
         case x_96f25e0a:
         case x_3658fb97:
         case x_a5f164ca:
-            obj = x_12014163(&x_4a1fd4d1, &x_8fcab22c, x_24b231d4);
+            obj = obj_create_from_def(&x_4a1fd4d1, &x_8fcab22c, x_24b231d4);
             obj->x_0f4167b4[0] = 0;
             obj->x_0f4167b4[1] = 167;
-            obj = x_12014163(&x_331089fa, &x_8fcab22c, x_24b231d4);
+            obj = obj_create_from_def(&x_331089fa, &x_8fcab22c, x_24b231d4);
             obj->x_0f4167b4[0] = 1;
             obj->x_0f4167b4[1] = 167;
             x_0928eec2("/plyrsel/select2", x_24b231d4);
             break;
         case x_79c2dc5b:
             if (x_08051143 == x_83106b21) {
-                obj = x_12014163(&x_2a89e429, &x_3bfdbaa4, x_24b231d4);
+                obj = obj_create_from_def(&x_2a89e429, &x_3bfdbaa4, x_24b231d4);
                 obj->x_0f4167b4[x_0140ad12] = x_83106b21;
                 obj->x_0f4167b4[x_82e2e1db] = x_b4568ba1 * 2 + 1;
             } else {
-                obj = x_12014163(&x_081c4eef, &x_93121a84, x_24b231d4);
+                obj = obj_create_from_def(&x_081c4eef, &x_93121a84, x_24b231d4);
                 obj->x_0f4167b4[x_0140ad12] = x_6f0b3be3;
                 obj->x_0f4167b4[x_82e2e1db] = x_823ba8a7 * 2 + 1;
             }
@@ -808,29 +808,29 @@ void x_2c1b660c(void) {
 
     x_a0e73601("select", 0, 8, 0, 0, x_96186256, x_24b231d4);
 
-    x_696804c5[0] = x_12014163(&x_5c2a3a42, &x_c3be5f96, x_24b231d4);
+    x_696804c5[0] = obj_create_from_def(&x_5c2a3a42, &x_c3be5f96, x_24b231d4);
     x_696804c5[0]->x_0f4167b4[0] = x_83106b21;
     x_696804c5[0]->frameCounter = x_c16a42f3;
     x_696804c5[0]->currentTask->delay = 20;
 
-    x_696804c5[1] = x_12014163(&x_0cbc7c1c, &x_a8ee65ba, x_24b231d4);
+    x_696804c5[1] = obj_create_from_def(&x_0cbc7c1c, &x_a8ee65ba, x_24b231d4);
     x_696804c5[1]->x_0f4167b4[0] = x_6f0b3be3;
     x_696804c5[1]->frameCounter = x_fb97b65c;
     x_696804c5[1]->currentTask->delay = 20;
 
-    x_523933cc[0] = x_12014163(&x_a3f0c785, &x_37539a8c, x_24b231d4);
+    x_523933cc[0] = obj_create_from_def(&x_a3f0c785, &x_37539a8c, x_24b231d4);
     x_523933cc[0]->x_0f4167b4[0] = x_83106b21;
 
-    x_523933cc[1] = x_12014163(&x_3dfff383, &x_b610af55, x_24b231d4);
+    x_523933cc[1] = obj_create_from_def(&x_3dfff383, &x_b610af55, x_24b231d4);
     x_523933cc[1]->x_0f4167b4[0] = x_6f0b3be3;
 
-    x_fd096fa8 = x_12014163(&x_3eeec712, &x_5601faec, x_24b231d4);
+    x_fd096fa8 = obj_create_from_def(&x_3eeec712, &x_5601faec, x_24b231d4);
     x_fd096fa8->flags |= x_c537cafa;
     x_fd096fa8->x_0f4167b4[11] = -1;
     x_fd096fa8->flags |= x_5a44854c;
 
-    x_994c79b3 = x_12014163(&x_9e7fdb6b, &x_4fea1147, x_24b231d4);
-    obj = x_12014163(&x_9d69f44f, &x_652f5000, x_24b231d4);
+    x_994c79b3 = obj_create_from_def(&x_9e7fdb6b, &x_4fea1147, x_24b231d4);
+    obj = obj_create_from_def(&x_9d69f44f, &x_652f5000, x_24b231d4);
     obj->x_0f4167b4[2] = 60;
     obj->x_e2f64c57[1] = x_994c79b3;
     obj->x_e2f64c57[5] = x_fd096fa8;

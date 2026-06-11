@@ -240,7 +240,7 @@ s32 replay_start(void *x_cc1d0de5) {
 
     if (temp) {}
 
-    v0 = x_4495b42c(replay_task_exec, -0x7001 + temp * 0);
+    v0 = obj_create_task(replay_task_exec, -0x7001 + temp * 0);
     v0->currentTask->callback = replay_playback;
     v0->currentTask->delay = 0;
     v0->currentTask->flags = TASK_RUNNABLE;
@@ -788,25 +788,25 @@ void light_spawn_by_type(u16 x_cc1d0de5, u16 x_84ff873b) {
 
     switch (x_84ff873b) {
         case x_6a049984:
-            x_32f1d6e2 = x_4495b42c(light_follow_bone5, 0x1000);
+            x_32f1d6e2 = obj_create_task(light_follow_bone5, 0x1000);
             model_light_attach(x_32f1d6e2, &x_49781937[x_cc1d0de5]);
             x_32f1d6e2->x_e2f64c57[0] = &x_824b9544[x_cc1d0de5];
             break;
         case x_b52da315:
-            x_32f1d6e2 = x_4495b42c(light_follow_root, 0x1000);
+            x_32f1d6e2 = obj_create_task(light_follow_root, 0x1000);
             model_light_attach(x_32f1d6e2, &x_c9614940[x_cc1d0de5]);
             x_32f1d6e2->x_e2f64c57[0] = &x_824b9544[x_cc1d0de5];
             break;
         case x_ff5073d4:
             if (x_77831b2c[x_cc1d0de5].x_fb21ca8c) {
-                x_32f1d6e2 = x_4495b42c(light_flicker, 0x1000);
+                x_32f1d6e2 = obj_create_task(light_flicker, 0x1000);
                 x_32f1d6e2->x_e2f64c57[0] = &D_8004B764.lights[1].color;
                 x_32f1d6e2->x_e2f64c57[1] = &D_8004B644.lights[1].color;
             }
             break;
         case x_73cf9ceb:
             if (x_77831b2c[x_cc1d0de5].x_fb21ca8c) {
-                x_32f1d6e2 = x_4495b42c(light_flicker, 0x1000);
+                x_32f1d6e2 = obj_create_task(light_flicker, 0x1000);
                 x_32f1d6e2->x_e2f64c57[0] = &D_8004B784.lights[1].color;
                 x_32f1d6e2->x_e2f64c57[1] = &D_8004B664.lights[1].color;
             }
@@ -854,7 +854,7 @@ void player_init(s16 x_30bbe547) {
     }
 
     obj = x_824b9544[x_30bbe547].obj =
-        x_8e3c7e83(&x_70eb54d5[x_30bbe547], x_5d45b0f8, D_8004B844[x_eb1fe45b].x_1256da71, x_30bbe547);
+        obj_create_with_model(&x_70eb54d5[x_30bbe547], x_5d45b0f8, D_8004B844[x_eb1fe45b].x_1256da71, x_30bbe547);
     obj->flags |= x_dd6fc445;
 
     if (x_eb1fe45b == x_b52da315 && !x_77831b2c[x_30bbe547].x_178eafa6) {

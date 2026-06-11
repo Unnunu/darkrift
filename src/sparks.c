@@ -380,7 +380,7 @@ void x_ae0d8704(x_2758cdab *x_cc1d0de5, Object *x_84ff873b, x_6751d717 *x_2092f8
             a2->x_db6e53e7[j].x_034f3eb1 = FALSE;
         }
 
-        v0 = x_4495b42c(x_dbbadf22, 0xE00);
+        v0 = obj_create_task(x_dbbadf22, 0xE00);
         v0->x_e2f64c57[0] = a2;
         v0->x_e2f64c57[1] = x_2092f891;
 

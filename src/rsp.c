@@ -54,7 +54,7 @@ extern s32 D_80049CF0;
 void mem_defrag(void);
 void x_29f4699a(void);
 void x_1e7c754d(void);
-void x_3c16ed51(void);
+void pool_init_core(void);
 
 s32 x_1790ee2a(void);
 
@@ -273,8 +273,8 @@ void rsp_game_init(u16 x_7cedc3fb) {
     sClearColorR = gScreenProfiles[x_7cedc3fb].clearColorR;
     sClearColorG = gScreenProfiles[x_7cedc3fb].clearColorG;
     sClearColorB = gScreenProfiles[x_7cedc3fb].clearColorB;
-    x_7824740c(&gTaskPool, 50, sizeof(TaskNode));
-    x_3c16ed51();
+    pool_init(&gTaskPool, 50, sizeof(TaskNode));
+    pool_init_core();
     x_f4bce728 = x_7b6cfabc();
     sFogMin = gScreenProfiles[x_7cedc3fb].fogMin;
     sFogMax = gScreenProfiles[x_7cedc3fb].fogMax;
@@ -315,8 +315,8 @@ void rsp_game_reinit(u16 x_7cedc3fb) {
     sClearColorR = gScreenProfiles[x_7cedc3fb].clearColorR;
     sClearColorG = gScreenProfiles[x_7cedc3fb].clearColorG;
     sClearColorB = gScreenProfiles[x_7cedc3fb].clearColorB;
-    x_7824740c(&gTaskPool, 50, sizeof(TaskNode));
-    x_3c16ed51();
+    pool_init(&gTaskPool, 50, sizeof(TaskNode));
+    pool_init_core();
     x_f4bce728 = x_7b6cfabc();
     button_state_reset();
     rsp_task_init();

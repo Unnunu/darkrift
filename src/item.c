@@ -2,14 +2,14 @@
 #include "task.h"
 #include "string.h"
 
-Object *x_8cdb365e = NULL;
-s32 D_80052C54 = 0;
+Object *gObjectList = NULL;
+s32 sObjectCount = 0;
 
-x_b57dc591 x_11f3efb0;
-x_b57dc591 x_5c163218;
-s32 x_f1d278c5;
+x_b57dc591 gObjectPool;
+x_b57dc591 gPhysicsPool;
+s32 sItemUnused;
 
-void x_7824740c(x_b57dc591 *x_cc1d0de5, u32 count, u32 x_52f03926) {
+void pool_init(x_b57dc591 *x_cc1d0de5, u32 count, u32 x_52f03926) {
     s16 i;
     u8 *buffer;
 
@@ -25,7 +25,7 @@ void x_7824740c(x_b57dc591 *x_cc1d0de5, u32 count, u32 x_52f03926) {
     }
 }
 
-void x_24bc1a84(x_b57dc591 *x_cc1d0de5, u32 count, u32 x_52f03926) {
+void pool_expand(x_b57dc591 *x_cc1d0de5, u32 count, u32 x_52f03926) {
     u32 i;
     u32 j;
     u32 x_9d95bf71;
@@ -54,34 +54,34 @@ void x_24bc1a84(x_b57dc591 *x_cc1d0de5, u32 count, u32 x_52f03926) {
     x_cc1d0de5->x_b8173ab8 = x_55e411ea - 1;
 }
 
-void x_8e6b5db0(s32 count) {
-    x_24bc1a84(&x_11f3efb0, count, sizeof(Object));
-    x_24bc1a84(&gTaskPool, count, sizeof(TaskNode));
+void pool_expand_both(s32 count) {
+    pool_expand(&gObjectPool, count, sizeof(Object));
+    pool_expand(&gTaskPool, count, sizeof(TaskNode));
 }
 
-void x_3c16ed51(void) {
-    x_7824740c(&x_11f3efb0, 50, sizeof(Object));
-    x_7824740c(&x_5c163218, 16, sizeof(x_6fcfcf46));
-    x_8cdb365e = NULL;
-    D_80052C54 = 0;
+void pool_init_core(void) {
+    pool_init(&gObjectPool, 50, sizeof(Object));
+    pool_init(&gPhysicsPool, 16, sizeof(x_6fcfcf46));
+    gObjectList = NULL;
+    sObjectCount = 0;
 }
 
-Object *x_5283664d(s16 priority) {
+Object *obj_alloc(s16 priority) {
     Object *obj;
     Object *x_5ad2b76c;
 
-    D_80052C54++;
-    if (x_11f3efb0.x_b8173ab8 <= 0) {
+    sObjectCount++;
+    if (gObjectPool.x_b8173ab8 <= 0) {
         return NULL;
     }
 
-    if (x_8cdb365e == NULL) {
-        obj = x_8cdb365e = (Object *) x_6d619dce(x_11f3efb0);
+    if (gObjectList == NULL) {
+        obj = gObjectList = (Object *) x_6d619dce(gObjectPool);
 
         obj->x_d0268c0d = NULL;
         obj->x_2d5f3fbd = NULL;
     } else {
-        obj = x_8cdb365e;
+        obj = gObjectList;
 
         while (obj != NULL && obj->priority >= priority) {
             x_5ad2b76c = obj;
@@ -89,21 +89,21 @@ Object *x_5283664d(s16 priority) {
         }
 
         if (obj == NULL) {
-            x_5ad2b76c->x_2d5f3fbd = (Object *) x_6d619dce(x_11f3efb0);
+            x_5ad2b76c->x_2d5f3fbd = (Object *) x_6d619dce(gObjectPool);
 
             obj = x_5ad2b76c->x_2d5f3fbd;
             obj->x_d0268c0d = x_5ad2b76c;
             obj->x_2d5f3fbd = NULL;
         } else if (obj->x_d0268c0d == NULL) {
-            obj = (Object *) x_6d619dce(x_11f3efb0);
+            obj = (Object *) x_6d619dce(gObjectPool);
 
-            obj->x_2d5f3fbd = x_8cdb365e;
-            x_8cdb365e->x_d0268c0d = obj;
-            x_8cdb365e = obj;
+            obj->x_2d5f3fbd = gObjectList;
+            gObjectList->x_d0268c0d = obj;
+            gObjectList = obj;
             obj->x_d0268c0d = NULL;
         } else {
             if ((!obj->x_2d5f3fbd) != 0) {} // required to match
-            x_5ad2b76c = (Object *) x_6d619dce(x_11f3efb0);
+            x_5ad2b76c = (Object *) x_6d619dce(gObjectPool);
 
             obj->x_d0268c0d->x_2d5f3fbd = x_5ad2b76c;
             x_5ad2b76c->x_2d5f3fbd = obj;
@@ -117,11 +117,11 @@ Object *x_5283664d(s16 priority) {
     return obj;
 }
 
-void x_63b616bf(Object *obj) {
-    D_80052C54--;
+void obj_free(Object *obj) {
+    sObjectCount--;
     if (obj->x_d0268c0d == NULL) {
         obj->x_2d5f3fbd->x_d0268c0d = NULL;
-        x_8cdb365e = obj->x_2d5f3fbd;
+        gObjectList = obj->x_2d5f3fbd;
     } else if (obj->x_2d5f3fbd == NULL) {
         obj->x_d0268c0d->x_2d5f3fbd = NULL;
     } else {
@@ -130,41 +130,41 @@ void x_63b616bf(Object *obj) {
     }
 
     if (obj->flags & x_3434f870) {
-        x_5c163218.x_b8173ab8++;
-        x_5c163218.elements[x_5c163218.x_b8173ab8] = obj->x_20d20338;
-        x_5c163218.count++;
+        gPhysicsPool.x_b8173ab8++;
+        gPhysicsPool.elements[gPhysicsPool.x_b8173ab8] = obj->x_20d20338;
+        gPhysicsPool.count++;
 
         if (obj->x_20d20338->transforms != NULL) {
             mem_free(obj->x_20d20338->transforms);
         }
     }
 
-    x_11f3efb0.x_b8173ab8++;
-    x_11f3efb0.elements[x_11f3efb0.x_b8173ab8] = obj;
-    x_11f3efb0.count++;
+    gObjectPool.x_b8173ab8++;
+    gObjectPool.elements[gObjectPool.x_b8173ab8] = obj;
+    gObjectPool.count++;
 }
 
 // unused
-void x_f8781320(x_c1cedf06 *x_cc1d0de5) {
+void batch_ident(x_c1cedf06 *x_cc1d0de5) {
     mtx_ident_loop(&x_cc1d0de5->transform);
 }
 
 // unused
-void x_454a13ef(x_320b5d80 *x_cc1d0de5) {
+void batch_null_iter(x_320b5d80 *x_cc1d0de5) {
     u32 i;
 
-    x_f8781320(x_cc1d0de5->info);
+    batch_ident(x_cc1d0de5->info);
 
     for (i = 0; i < x_cc1d0de5->info->header.x_4c5e05f8; i++) {}
     for (i = 0; i < x_cc1d0de5->info->header.x_8a54e96a; i++) {}
 }
 
-void x_581070ad(Object *obj) {
+void obj_collide_all(Object *obj) {
     u32 x_5d21c78b, x_b7cc9533;
     s32 x_df21a243;
     Object *x_7cdc2f34;
 
-    for (x_7cdc2f34 = x_8cdb365e; x_7cdc2f34 != NULL; x_7cdc2f34 = x_7cdc2f34->x_2d5f3fbd) {
+    for (x_7cdc2f34 = gObjectList; x_7cdc2f34 != NULL; x_7cdc2f34 = x_7cdc2f34->x_2d5f3fbd) {
         if (x_7cdc2f34 != obj && (obj->x_b1e624ba & x_7cdc2f34->x_e4466eca)) {
             x_5d21c78b = ABS(obj->pos.x - x_7cdc2f34->pos.x);
             x_b7cc9533 = ABS(obj->pos.z - x_7cdc2f34->pos.z);
@@ -182,7 +182,7 @@ void x_581070ad(Object *obj) {
     }
 }
 
-void x_efb29a7d(void) {
+void obj_scene_update(void) {
     Object *obj;
     Object *x_a58b9b64;
     x_f752bb53 *x_dfa11b27;
@@ -194,10 +194,10 @@ void x_efb29a7d(void) {
     s32 x_df21a243;
 
     sSortListHead = NULL;
-    obj = x_8cdb365e;
+    obj = gObjectList;
     while (obj != NULL) {
         if (obj->x_b1e624ba != 0) {
-            x_581070ad(obj);
+            obj_collide_all(obj);
         }
 
         if ((obj->flags & x_f51cb721) && !(obj->flags & x_c537cafa)) {
@@ -214,7 +214,7 @@ void x_efb29a7d(void) {
             obj->taskListHead = NULL;
             x_a58b9b64 = obj;
             obj = obj->x_2d5f3fbd;
-            x_63b616bf(x_a58b9b64);
+            obj_free(x_a58b9b64);
         } else {
             obj->x_0232396f(obj);
             obj = obj->x_2d5f3fbd;
@@ -254,8 +254,8 @@ void x_efb29a7d(void) {
 }
 
 #ifdef NON_EQUIVALENT
-void x_6d41c91d(Object *x_cc1d0de5, x_88f11482 *x_84ff873b, x_acccb624 *x_2092f891, Transform *x_ee71e5cb,
-                void (*x_08ae3bb4)(Object *)) {
+void obj_init(Object *x_cc1d0de5, x_88f11482 *x_84ff873b, x_acccb624 *x_2092f891, Transform *x_ee71e5cb,
+              void (*x_08ae3bb4)(Object *)) {
     s16 i;
     s32 temp;
 
@@ -326,12 +326,12 @@ void x_6d41c91d(Object *x_cc1d0de5, x_88f11482 *x_84ff873b, x_acccb624 *x_2092f8
     x_cc1d0de5->light = NULL;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/item/x_6d41c91d.s")
-void x_6d41c91d(Object *x_cc1d0de5, x_88f11482 *x_84ff873b, x_acccb624 *x_2092f891, Transform *x_ee71e5cb,
-                void (*x_a0e63e9c)(Object *));
+#pragma GLOBAL_ASM("asm/nonmatchings/item/obj_init.s")
+void obj_init(Object *x_cc1d0de5, x_88f11482 *x_84ff873b, x_acccb624 *x_2092f891, Transform *x_ee71e5cb,
+              void (*x_a0e63e9c)(Object *));
 #endif
 
-void x_9c540986(Object *obj, Model *model) {
+void obj_setup_transforms(Object *obj, Model *model) {
     x_6fcfcf46 *x_20d20338;
     u32 x_6dcce206;
     Transform *x_abd7b3c4;
@@ -366,24 +366,24 @@ void x_9c540986(Object *obj, Model *model) {
     }
 }
 
-Object *x_745c5ce2(x_88f11482 *x_cc1d0de5, char *x_84ff873b, x_aece7675 *properties, s32 x_ee71e5cb) {
+Object *obj_create_anim(x_88f11482 *x_cc1d0de5, char *x_84ff873b, x_aece7675 *properties, s32 x_ee71e5cb) {
     Object *obj;
     char x_dcab8ab0[20];
     x_6fcfcf46 *x_20d20338;
     x_82e80914 *s5;
 
     if (x_84ff873b == NULL) {
-        obj = x_5283664d(properties->x_95ee18a8);
+        obj = obj_alloc(properties->x_95ee18a8);
         x_dab0846a(x_dcab8ab0, properties->name);
-        x_6d41c91d(obj, x_cc1d0de5, &sZeroVelocity, NULL, properties->x_08ae3bb4);
+        obj_init(obj, x_cc1d0de5, &sZeroVelocity, NULL, properties->x_08ae3bb4);
     } else {
         x_dab0846a(x_dcab8ab0, x_84ff873b);
         if (properties != NULL) {
-            obj = x_5283664d(properties->x_95ee18a8);
-            x_6d41c91d(obj, x_cc1d0de5, &sZeroVelocity, NULL, properties->x_08ae3bb4);
+            obj = obj_alloc(properties->x_95ee18a8);
+            obj_init(obj, x_cc1d0de5, &sZeroVelocity, NULL, properties->x_08ae3bb4);
         } else {
-            obj = x_5283664d(0x1000);
-            x_6d41c91d(obj, x_cc1d0de5, &sZeroVelocity, NULL, NULL);
+            obj = obj_alloc(0x1000);
+            obj_init(obj, x_cc1d0de5, &sZeroVelocity, NULL, NULL);
         }
     }
 
@@ -397,7 +397,7 @@ Object *x_745c5ce2(x_88f11482 *x_cc1d0de5, char *x_84ff873b, x_aece7675 *propert
     x_20d20338->x_6dcce206 = s5->model.x_6dcce206;
 
     if (s5->model.x_e7962160 != NULL) {
-        x_9c540986(obj, &s5->model);
+        obj_setup_transforms(obj, &s5->model);
     } else {
         obj->x_20d20338->transforms = NULL;
     }
@@ -414,21 +414,21 @@ Object *x_745c5ce2(x_88f11482 *x_cc1d0de5, char *x_84ff873b, x_aece7675 *propert
     return obj;
 }
 
-Object *x_4495b42c(void (*x_0232396f)(Object *), s16 x_84ff873b) {
+Object *obj_create_task(void (*x_0232396f)(Object *), s16 x_84ff873b) {
     Object *obj;
 
-    obj = x_5283664d(x_84ff873b);
-    x_6d41c91d(obj, &sZeroPosition, &sZeroVelocity, NULL, NULL);
+    obj = obj_alloc(x_84ff873b);
+    obj_init(obj, &sZeroPosition, &sZeroVelocity, NULL, NULL);
     obj->x_0232396f = x_0232396f;
     obj->flags = x_f2c38774;
     return obj;
 }
 
-Object *x_12014163(x_88f11482 *pos, x_f0d7e70f *def, s32 context) {
+Object *obj_create_from_def(x_88f11482 *pos, x_f0d7e70f *def, s32 context) {
     Object *obj;
 
-    obj = x_5283664d(def->x_95ee18a8);
-    x_6d41c91d(obj, pos, &sZeroVelocity, NULL, def->callback);
+    obj = obj_alloc(def->x_95ee18a8);
+    obj_init(obj, pos, &sZeroVelocity, NULL, def->callback);
     obj->x_0232396f = x_23e3afdf;
     obj->flags = def->flags;
     obj->flags |= x_3d723236;
@@ -438,7 +438,7 @@ Object *x_12014163(x_88f11482 *pos, x_f0d7e70f *def, s32 context) {
     return obj;
 }
 
-Object *x_8e3c7e83(x_88f11482 *pos, char *name, x_aece7675 *properties, u32 context) {
+Object *obj_create_with_model(x_88f11482 *pos, char *name, x_aece7675 *properties, u32 context) {
     Object *obj;
     char x_c02b5734[20];
     x_6fcfcf46 *x_20d20338;
@@ -447,23 +447,23 @@ Object *x_8e3c7e83(x_88f11482 *pos, char *name, x_aece7675 *properties, u32 cont
     s32 i;
 
     if (name == NULL) {
-        obj = x_5283664d(properties->x_95ee18a8);
+        obj = obj_alloc(properties->x_95ee18a8);
         x_dab0846a(x_c02b5734, properties->name);
-        x_6d41c91d(obj, pos, &sZeroVelocity, NULL, properties->x_08ae3bb4);
+        obj_init(obj, pos, &sZeroVelocity, NULL, properties->x_08ae3bb4);
     } else {
         x_dab0846a(x_c02b5734, name);
         if (properties != NULL) {
-            obj = x_5283664d(properties->x_95ee18a8);
-            x_6d41c91d(obj, pos, &sZeroVelocity, NULL, properties->x_08ae3bb4);
+            obj = obj_alloc(properties->x_95ee18a8);
+            obj_init(obj, pos, &sZeroVelocity, NULL, properties->x_08ae3bb4);
         } else {
-            obj = x_5283664d(x_9d442987);
-            x_6d41c91d(obj, pos, &sZeroVelocity, NULL, NULL);
+            obj = obj_alloc(x_9d442987);
+            obj_init(obj, pos, &sZeroVelocity, NULL, NULL);
         }
     }
 
     obj->x_0232396f = model_render;
     obj->flags = x_3434f870;
-    obj->x_20d20338 = (x_6fcfcf46 *) x_6d619dce(x_5c163218);
+    obj->x_20d20338 = (x_6fcfcf46 *) x_6d619dce(gPhysicsPool);
 
     x_20d20338 = obj->x_20d20338;
     model = x_20d20338->model = x_b717ed65[x_e720f37d(x_c02b5734, context)].x_4962fc73;
@@ -477,7 +477,7 @@ Object *x_8e3c7e83(x_88f11482 *pos, char *name, x_aece7675 *properties, u32 cont
     }
 
     if (model->x_e7962160 != NULL) {
-        x_9c540986(obj, model);
+        obj_setup_transforms(obj, model);
     } else {
         obj->x_20d20338->transforms = NULL;
     }
@@ -497,12 +497,12 @@ Object *x_8e3c7e83(x_88f11482 *pos, char *name, x_aece7675 *properties, u32 cont
     return obj;
 }
 
-Object *x_1d5cf6e2(x_88f11482 *pos, x_8b39d614 *properties, s32 context) {
+Object *obj_create_from_props(x_88f11482 *pos, x_8b39d614 *properties, s32 context) {
     Object *obj;
     x_257b53b4 *x_23b71842;
 
-    if (x_5c163218.count >= 2) {
-        obj = x_8e3c7e83(pos, NULL, &properties->base, context);
+    if (gPhysicsPool.count >= 2) {
+        obj = obj_create_with_model(pos, NULL, &properties->base, context);
         obj->x_0232396f = model_frame_render;
         obj->frameCounter = properties->x_14033586;
         obj->flags |= properties->flags | x_0b94e8d0;
@@ -524,27 +524,27 @@ Object *x_1d5cf6e2(x_88f11482 *pos, x_8b39d614 *properties, s32 context) {
     }
 }
 
-Object *x_572f827d(x_88f11482 *pos, s32 x_95ee18a8, void (*x_08ae3bb4)(Object *), Model *model) {
+Object *obj_create_with_model_ptr(x_88f11482 *pos, s32 x_95ee18a8, void (*x_08ae3bb4)(Object *), Model *model) {
     u32 x_6dcce206;
     Object *obj;
     x_6fcfcf46 *x_20d20338;
     u32 i;
     s32 unused[5];
 
-    obj = x_5283664d(x_95ee18a8);
-    x_6d41c91d(obj, pos, &sZeroVelocity, NULL, x_08ae3bb4);
+    obj = obj_alloc(x_95ee18a8);
+    obj_init(obj, pos, &sZeroVelocity, NULL, x_08ae3bb4);
 
     obj->x_0232396f = model_render;
     obj->flags = x_3434f870;
 
-    if (x_5c163218.count == 0) {
+    if (gPhysicsPool.count == 0) {
         obj->x_0232396f = task_remove_current;
         obj->flags = x_f51cb721;
         obj->x_20d20338 = NULL;
         return NULL;
     }
 
-    obj->x_20d20338 = (x_6fcfcf46 *) x_6d619dce(x_5c163218);
+    obj->x_20d20338 = (x_6fcfcf46 *) x_6d619dce(gPhysicsPool);
 
     x_20d20338 = obj->x_20d20338;
     x_20d20338->model = model;
@@ -559,7 +559,7 @@ Object *x_572f827d(x_88f11482 *pos, s32 x_95ee18a8, void (*x_08ae3bb4)(Object *)
     }
 
     if (model->x_e7962160 != NULL) {
-        x_9c540986(obj, model);
+        obj_setup_transforms(obj, model);
     } else {
         obj->x_20d20338->transforms = NULL;
         transform_init_node(&obj->transform, &x_20d20338->x_abd7b3c4, -1, -2);
@@ -593,15 +593,15 @@ Object *x_572f827d(x_88f11482 *pos, s32 x_95ee18a8, void (*x_08ae3bb4)(Object *)
     return obj;
 }
 
-Object *x_6f2f6fab(x_88f11482 *pos, s32 x_95ee18a8, void (*x_08ae3bb4)(Object *), Model *model) {
+Object *obj_create_frame_render(x_88f11482 *pos, s32 x_95ee18a8, void (*x_08ae3bb4)(Object *), Model *model) {
     Object *obj;
     x_257b53b4 *x_23b71842;
 
-    if (x_5c163218.count == 0) {
+    if (gPhysicsPool.count == 0) {
         return NULL;
     }
 
-    obj = x_572f827d(pos, x_95ee18a8, x_08ae3bb4, model);
+    obj = obj_create_with_model_ptr(pos, x_95ee18a8, x_08ae3bb4, model);
     obj->x_0232396f = model_frame_render;
     obj->frameCounter = 0;
     obj->flags |= x_215d3747 | x_b6789b80 | x_0b94e8d0;

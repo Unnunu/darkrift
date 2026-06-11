@@ -203,7 +203,7 @@ void x_80ee4395(void) {
 Object *x_7b6cfabc(void) {
     Object *obj;
 
-    obj = x_5283664d(0x1200);
+    obj = obj_alloc(0x1200);
 
     obj->x_8da078cc.x = obj->x_8da078cc.y = obj->x_8da078cc.z = 0;
     obj->velocity.x = obj->velocity.y = obj->velocity.z = 0;

@@ -610,7 +610,7 @@ void x_8da34614(void) {
     x_6c6f1601.y = 71;
 
     for (i = 0; i < x_7fe97e23; i++) {
-        x_f80fc81d[i] = x_12014163(&x_6c6f1601, &x_0aeac7e8, x_35b88489);
+        x_f80fc81d[i] = obj_create_from_def(&x_6c6f1601, &x_0aeac7e8, x_35b88489);
         x_f80fc81d[i]->flags |= x_c537cafa;
     }
 

@@ -84,7 +84,7 @@ void rsp_wait_idle(void);
 void rsp_game_init(u16);
 void x_2d5f067a(void);
 void rsp_game_reinit(u16);
-void x_efb29a7d(void);
+void obj_scene_update(void);
 void rsp_clear_screen(void);
 void x_77751af8(void);
 void x_ff4031b5(void);
@@ -140,7 +140,7 @@ void gfx_render_frame(void) {
     }
 
     x_50746900(gDrBatchPtr, (x_3e2f9cf1 *) osVirtualToPhysical(&D_8004CC20), &D_8004CCC8, NULL, NULL);
-    x_efb29a7d();
+    obj_scene_update();
     gSPDisplayList(gF3dDisplayListPtr++, D_8004CA68);
     rsp_clear_screen();
     x_77751af8();
@@ -221,7 +221,7 @@ void tr_player_load(s16 x_ce13e71a) {
     x_5cb3a50d = FALSE;
     x_59ce598c[x_ce13e71a].x_c4397934 = FALSE;
 
-    while (gTaskPool.count < 10 || x_5c163218.count <= 0) {
+    while (gTaskPool.count < 10 || gPhysicsPool.count <= 0) {
         gfx_render_frame();
     }
 
@@ -298,7 +298,7 @@ void func_80001C6C(void) {
     gTaskLock = TRUE;
     x_aec099eb = x_b5cc849a = 1800;
 
-    x_4495b42c(tr_fade_start, 0x1000);
+    obj_create_task(tr_fade_start, 0x1000);
     while (!(x_e30d50d2 & x_bee364e0)) {
         gfx_render_frame();
     }
@@ -346,7 +346,7 @@ void tr_scene_loop(void) {
         if (!(x_e30d50d2 & x_b9be821f)) {
             gTaskLock = TRUE;
         }
-        x_4495b42c(tr_fade_start, 0x1000);
+        obj_create_task(tr_fade_start, 0x1000);
         while (!(x_e30d50d2 & x_bee364e0)) {
             gfx_render_frame();
         }
@@ -576,7 +576,7 @@ void main_game_loop(void) {
 
     while (TRUE) {
         gCurrentScreenId = x_e38a6e19;
-        x_4495b42c(tr_scene_change, 0x1100);
+        obj_create_task(tr_scene_change, 0x1100);
         gScreenProfiles[x_e38a6e19].initFunc();
         if (!(x_e30d50d2 & x_3b812e44)) {
             osViBlack(1);

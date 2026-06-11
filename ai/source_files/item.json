@@ -2,11 +2,142 @@
   "hash": "346e1e19",
   "name": "item",
   "path": "src/item.c",
-  "lines": 812,
+  "lines": 617,
+  "wave": 1,
   "evidence": {
-    "strings": [
-      "item.c"
-    ]
+    "strings": ["item.c"],
+    "key_functions": {
+      "obj_scene_update": "Per-frame scene traversal — called from gfx_render_frame (main.c:143)",
+      "obj_create_task": "FSM task entry point — called 30+ times across menu/main/present/hud"
+    }
   },
-  "summary": "Object/item system (TaskNode pool), entity creation/destruction, scene management."
+  "summary": "Object pool management, entity creation/destruction, and per-frame scene update. Manages two core pools (gObjectPool — 50 Objects, gPhysicsPool — 16 physics states), priority-sorted Object linked list, collision detection, and per-frame cleanup + callback execution. Used by every subsystem that creates game entities.",
+  "functions": [
+    {
+      "name": "pool_init",
+      "old_name": "x_7824740c",
+      "line": 12,
+      "summary": "Initialize pool: allocates pointer array + element buffer via mem_alloc_debug, zeros buffer, fills elements array with offset pointers. Sets count and free stack index (x_b8173ab8 = count-1)."
+    },
+    {
+      "name": "pool_expand",
+      "old_name": "x_24bc1a84",
+      "line": 28,
+      "summary": "Expand pool: allocates larger pointer array + new element buffer, copies existing pointers, frees old array. Used to grow object/task pools at runtime."
+    },
+    {
+      "name": "pool_expand_both",
+      "old_name": "x_8e6b5db0",
+      "line": 57,
+      "summary": "Expand both gObjectPool and gTaskPool by count. Called from rsp_game_reinit."
+    },
+    {
+      "name": "pool_init_core",
+      "old_name": "x_3c16ed51",
+      "line": 62,
+      "summary": "Initialize core pools: 50 Objects in gObjectPool, 16 physics states in gPhysicsPool. Resets gObjectList and sObjectCount. Called from rsp_game_init."
+    },
+    {
+      "name": "obj_alloc",
+      "old_name": "x_5283664d",
+      "line": 69,
+      "summary": "Allocate Object from gObjectPool (pop from free stack). Inserts into priority-sorted linked list (head = gObjectList). Walk list to find correct insertion point based on obj->priority. Returns NULL if pool exhausted."
+    },
+    {
+      "name": "obj_free",
+      "old_name": "x_63b616bf",
+      "line": 120,
+      "summary": "Free Object: remove from linked list (patch prev/next pointers). If has physics flag (x_3434f870), return physics state to gPhysicsPool and free transforms. Push Object back to gObjectPool free stack."
+    },
+    {
+      "name": "batch_ident",
+      "old_name": "x_f8781320",
+      "line": 148,
+      "summary": "Set GT batch transform to identity matrix. UNUSED (never called)."
+    },
+    {
+      "name": "batch_null_iter",
+      "old_name": "x_454a13ef",
+      "line": 153,
+      "summary": "Loop through batch vertices and triangles (no-op). UNUSED (never called)."
+    },
+    {
+      "name": "obj_collide_all",
+      "old_name": "x_581070ad",
+      "line": 162,
+      "summary": "Collision detection: iterate all Objects, check collision mask (x_b1e624ba & x_e4466eca), compute 2D distance (x/z, ABS + lerped sum), call each Object's collision callback if overlapping."
+    },
+    {
+      "name": "obj_scene_update",
+      "old_name": "x_efb29a7d",
+      "line": 185,
+      "summary": "Per-frame scene update: iterate all Objects, run collision for objects with non-zero mask, clean up flagged objects (call finalizer, detach light, free tasks, return to pool), execute alive objects' callbacks, then render sorted objects (sort list → F3D SP display list or extra batch). Called from gfx_render_frame (main.c:143)."
+    },
+    {
+      "name": "obj_init",
+      "old_name": "x_6d41c91d",
+      "line": 257,
+      "summary": "Initialize Object fields: attach transform to hierarchy, zero velocity/scale/rotation, set default color (160,160,160,128), allocate task from gTaskPool, set callback, build transform matrix from euler+position. NON_EQUIVALENT."
+    },
+    {
+      "name": "obj_setup_transforms",
+      "old_name": "x_9c540986",
+      "line": 334,
+      "summary": "Set up model transform hierarchy: allocates Transform array from KMD bone count, links each transform to parent (per KMD hierarchy data), sets translation from model's bone offsets."
+    },
+    {
+      "name": "obj_create_anim",
+      "old_name": "x_745c5ce2",
+      "line": 369,
+      "summary": "Create Object with animated model render: load .kmd resource, call obj_init + obj_setup_transforms, set up animation data. Sets callback to model_anim_render."
+    },
+    {
+      "name": "obj_create_task",
+      "old_name": "x_4495b42c",
+      "line": 417,
+      "summary": "Create Object with FSM callback task: alloc + init, set callback to provided function, flags = x_f2c38774. Used as entry point for scene/task spawning (called 30+ times from menu/main/present/hud)."
+    },
+    {
+      "name": "obj_create_from_def",
+      "old_name": "x_12014163",
+      "line": 427,
+      "summary": "Create Object from definition table (x_f0d7e70f): loads resource data, sets flags/frameCounter/color. Called 50+ times from menu/hud/practice/select."
+    },
+    {
+      "name": "obj_create_with_model",
+      "old_name": "x_8e3c7e83",
+      "line": 441,
+      "summary": "Create Object with model render + physics state: alloc physics from gPhysicsPool, load model resource, copy batch headers, set up transforms and animation. Sets callback to model_render."
+    },
+    {
+      "name": "obj_create_from_props",
+      "old_name": "x_1d5cf6e2",
+      "line": 500,
+      "summary": "Create Object from properties struct (x_8b39d614): wraps obj_create_with_model, sets frame render callback, configures sort/range bounds."
+    },
+    {
+      "name": "obj_create_with_model_ptr",
+      "old_name": "x_572f827d",
+      "line": 527,
+      "summary": "Create Object from pre-loaded Model* pointer (no resource load): alloc physics from gPhysicsPool, copy batch headers, set up transforms, load animation if present. Returns NULL if pool empty."
+    },
+    {
+      "name": "obj_create_frame_render",
+      "old_name": "x_6f2f6fab",
+      "line": 596,
+      "summary": "Create Object with frame render + forced sort: wraps obj_create_with_model_ptr, sets callback to model_frame_render, configures frame-based sort priority."
+    }
+  ],
+  "globals": {
+    "gObjectList": "Head of priority-sorted Object linked list (used by item.c, match.c, cam_follow.c)",
+    "sObjectCount": "Active Object allocation counter (increment on alloc, decrement on free)",
+    "gObjectPool": "Object free-list pool (50 items, type x_b57dc591). Used by item.c, main.c, practice.c, menu, etc.",
+    "gPhysicsPool": "Physics/collision state pool (16 items of x_6fcfcf46). Used by model.c, move.c, player.c, trail.c, etc.",
+    "sItemUnused": "Dead BSS variable — never referenced"
+  },
+  "open_questions": [
+    "obj_init is NON_EQUIVALENT — asm doesn't match C. Likely compiler quirk with the large struct initialization.",
+    "batch_ident / batch_null_iter — unused functions, probably left from development.",
+    "sItemUnused — BSS padding or leftover from cut feature."
+  ]
 }

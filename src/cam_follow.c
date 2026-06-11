@@ -382,7 +382,7 @@ s16 angle_diff(s16 x_cc1d0de5, s16 x_84ff873b) {
 void cam_world_shift(s32 x_cc1d0de5, s32 x_84ff873b) {
     Object *obj;
 
-    for (obj = x_8cdb365e; obj != NULL; obj = obj->x_2d5f3fbd) {
+    for (obj = gObjectList; obj != NULL; obj = obj->x_2d5f3fbd) {
         if (!(obj->flags & x_3d723236)) {
             obj->pos.x += x_cc1d0de5;
             obj->pos.z += x_84ff873b;

@@ -107,15 +107,15 @@ void x_78e49744(void) {
     x_824b9544[1 - x_08051143].flags |= x_20efa43e;
     x_77831b2c[1 - x_08051143].x_03604d94 = FALSE;
 
-    x_59e6d217 = x_12014163(&D_80052ED0, &D_80052E4C, x_2587f84f);
+    x_59e6d217 = obj_create_from_def(&D_80052ED0, &D_80052E4C, x_2587f84f);
     x_59e6d217->frameCounter = x_18e8de7c;
     x_59e6d217->currentTask->callback = x_d361fcd2;
 
-    D_8013C480 = x_12014163(&D_80052EE0, &D_80052E4C, x_2587f84f);
-    D_8013C484 = x_12014163(&D_80052EF0, &D_80052E4C, x_2587f84f);
-    D_8013C488 = x_12014163(&D_80052F00, &D_80052E4C, x_2587f84f);
-    D_8013C48C = x_12014163(&D_80052F10, &D_80052E4C, x_2587f84f);
-    D_8013C490 = x_12014163(&D_80052F20, &D_80052E4C, x_2587f84f);
+    D_8013C480 = obj_create_from_def(&D_80052EE0, &D_80052E4C, x_2587f84f);
+    D_8013C484 = obj_create_from_def(&D_80052EF0, &D_80052E4C, x_2587f84f);
+    D_8013C488 = obj_create_from_def(&D_80052F00, &D_80052E4C, x_2587f84f);
+    D_8013C48C = obj_create_from_def(&D_80052F10, &D_80052E4C, x_2587f84f);
+    D_8013C490 = obj_create_from_def(&D_80052F20, &D_80052E4C, x_2587f84f);
     task_free_list(D_8013C480->taskListHead);
     D_8013C480->taskListHead = NULL;
     task_free_list(D_8013C484->taskListHead);
@@ -134,46 +134,46 @@ void x_78e49744(void) {
 void x_3c859f4e(s32 x_30bbe547) {
     Object *v0;
 
-    while (gTaskPool.count < 10 || x_11f3efb0.count < 10) {
+    while (gTaskPool.count < 10 || gObjectPool.count < 10) {
         gfx_render_frame();
     }
 
-    D_8013C464 = x_12014163(&D_80052E60, &D_80052DAC, x_2587f84f);
+    D_8013C464 = obj_create_from_def(&D_80052E60, &D_80052DAC, x_2587f84f);
     D_8013C464->x_0232396f = x_5f59e443;
     task_free_list(D_8013C464->taskListHead);
     D_8013C464->taskListHead = NULL;
 
-    D_8013C468 = x_12014163(&D_80052E70, &D_80052DC0, x_2587f84f);
+    D_8013C468 = obj_create_from_def(&D_80052E70, &D_80052DC0, x_2587f84f);
     D_8013C468->x_0232396f = x_49eeb523;
     task_free_list(D_8013C468->taskListHead);
     D_8013C468->taskListHead = NULL;
 
-    D_8013C46C = x_12014163(&D_80052E80, &D_80052DD4, x_2587f84f);
+    D_8013C46C = obj_create_from_def(&D_80052E80, &D_80052DD4, x_2587f84f);
     D_8013C46C->x_0232396f = x_44e15b24;
     task_free_list(D_8013C46C->taskListHead);
     D_8013C46C->taskListHead = NULL;
 
-    D_8013C470 = x_12014163(&D_80052E90, &D_80052DE8, x_2587f84f);
+    D_8013C470 = obj_create_from_def(&D_80052E90, &D_80052DE8, x_2587f84f);
     D_8013C470->x_0232396f = x_9a37e70c;
     task_free_list(D_8013C470->taskListHead);
     D_8013C470->taskListHead = NULL;
 
-    D_8013C474 = x_12014163(&D_80052EA0, &D_80052DFC, x_2587f84f);
+    D_8013C474 = obj_create_from_def(&D_80052EA0, &D_80052DFC, x_2587f84f);
     D_8013C474->x_0232396f = x_4b9731fd;
     task_free_list(D_8013C474->taskListHead);
     D_8013C474->taskListHead = NULL;
 
-    D_8013C478 = x_12014163(&D_80052EB0, &D_80052E10, x_2587f84f);
+    D_8013C478 = obj_create_from_def(&D_80052EB0, &D_80052E10, x_2587f84f);
     D_8013C478->x_0232396f = x_05cf4b38;
     task_free_list(D_8013C478->taskListHead);
     D_8013C478->taskListHead = NULL;
 
-    D_8013C47C = x_12014163(&D_80052EC0, &D_80052E24, x_2587f84f);
+    D_8013C47C = obj_create_from_def(&D_80052EC0, &D_80052E24, x_2587f84f);
     D_8013C47C->x_0232396f = x_01c341c9;
     task_free_list(D_8013C47C->taskListHead);
     D_8013C47C->taskListHead = NULL;
 
-    v0 = x_4495b42c(x_5430cd84, 0x1064);
+    v0 = obj_create_task(x_5430cd84, 0x1064);
     task_free_list(v0->taskListHead);
     v0->taskListHead = NULL;
     v0->x_0f4167b4[0] = x_30bbe547;
@@ -524,7 +524,7 @@ void x_39ab32e6(void) {
     x_88f11482 x_d16311d7 = { 24, 177, 0, 0 };
 
     for (i = 0; i < 12; i++) {
-        D_8013C3D8[i] = x_12014163(&x_54406eae, &D_80052E38, x_2587f84f);
+        D_8013C3D8[i] = obj_create_from_def(&x_54406eae, &D_80052E38, x_2587f84f);
         D_8013C3D8[i]->flags |= x_c537cafa;
         task_free_list(D_8013C3D8[i]->taskListHead);
         D_8013C3D8[i]->taskListHead = NULL;
@@ -535,7 +535,7 @@ void x_39ab32e6(void) {
 
     D_8013C408 = 0;
     x_54406eae.y -= 20;
-    D_8013C460 = x_12014163(&x_d16311d7, &D_80052DAC, x_2587f84f);
+    D_8013C460 = obj_create_from_def(&x_d16311d7, &D_80052DAC, x_2587f84f);
     D_8013C460->frameCounter = x_fa3d736d;
     D_8013C460->currentTask->callback = x_8a4def91;
 }
