@@ -2,14 +2,14 @@
 #include "camera.h"
 #include "PR/gt.h"
 
-typedef struct x_6548b963 {
+typedef struct SparkParticle {
     /* 0x00 */ x_88f11482 pos;
     /* 0x10 */ x_88f11482 x_4a6530b1;
     /* 0x20 */ u8 x_034f3eb1;
     /* 0x24 */ s32 x_817784f2;
-} x_6548b963; // size = 0x28
+} SparkParticle; // size = 0x28
 
-typedef struct x_2f5c3183 {
+typedef struct SparkInstance {
     /* 0x0000 */ x_c1cedf06 x_af0aa1f8[12];
     /* 0x0420 */ Vtx x_aa3a09af[120];
     /* 0x0BA0 */ Vtx x_38ecfcaf[120];
@@ -18,7 +18,7 @@ typedef struct x_2f5c3183 {
     /* 0x1328 */ s32 x_0f978d0c;
     /* 0x132C */ Vtx *x_b050a210[2];
     /* 0x1334 */ Vtx *x_112d334c[2];
-    /* 0x133C */ x_6548b963 x_db6e53e7[20];
+    /* 0x133C */ SparkParticle x_db6e53e7[20];
     /* 0x165C */ char x_e168a0c4[4];
     /* 0x1660 */ Gfx x_e4004f0d[4];
     /* 0x1680 */ s32 x_261d2b52;
@@ -29,18 +29,18 @@ typedef struct x_2f5c3183 {
     /* 0x1694 */ u32 x_0a7ceb42;
     /* 0x1698 */ s32 x_737c37b5;
     /* 0x169C */ s32 x_49531f72;
-} x_2f5c3183; // size = 0x16A0
+} SparkInstance; // size = 0x16A0
 
-x_562d2a02 D_8004A4D0[] = {
+x_562d2a02 sSparkTriangleDef[] = {
     { 0, 1, 2, 0 }, { 3, 4, 5, 0 }, { 6, 7, 8, 0 }, { 9, 10, 11, 0 }, { 12, 13, 14, 0 },
 };
 
-x_2f5c3183 D_800A4930[4];
-u8 D_800AA3B0[4];
-x_c1cedf06 D_800AA3B8;
-Gfx D_800AA410[4];
+SparkInstance sSparkInstances[4];
+u8 sSparkActive[4];
+x_c1cedf06 sSparkEmptyBatch;
+Gfx sSparkInitDl[4];
 
-void x_31ea5572(x_c1cedf06 *x_4bb24efc, Gfx *gfx) {
+void spark_gt_state_init(x_c1cedf06 *x_4bb24efc, Gfx *gfx) {
     x_4bb24efc->header.x_09cf7a45 = 0;
     x_4bb24efc->header.x_70b508ea = 1;
     x_4bb24efc->header.x_1256da71 = 0;
@@ -62,21 +62,21 @@ void x_31ea5572(x_c1cedf06 *x_4bb24efc, Gfx *gfx) {
     gtStateSetOthermode(&x_4bb24efc->header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
 }
 
-void x_38c80ca9(void) {
+void spark_init_all(void) {
     s16 j;
     s16 i;
     s32 k;
-    x_2f5c3183 *s2;
-    x_6548b963 *s0;
+    SparkInstance *s2;
+    SparkParticle *s0;
     Vtx *x_d8f5cfb2;
     Vtx *x_4cf2fcb6;
 
     for (i = 0; i < 4; i++) {
-        s2 = &D_800A4930[i];
-        D_800AA3B0[i] = FALSE;
+        s2 = &sSparkInstances[i];
+        sSparkActive[i] = FALSE;
 
         for (j = 0; j < 12; j++) {
-            x_31ea5572(&s2->x_af0aa1f8[j], s2->x_e4004f0d);
+            spark_gt_state_init(&s2->x_af0aa1f8[j], s2->x_e4004f0d);
         }
 
         for (j = 0; j < 20; j++) {
@@ -111,13 +111,13 @@ void x_38c80ca9(void) {
         }
     }
 
-    x_31ea5572(&D_800AA3B8, D_800AA410);
+    spark_gt_state_init(&sSparkEmptyBatch, sSparkInitDl);
 
-    D_800AA3B8.header.x_8a54e96a = D_800AA3B8.header.x_4c5e05f8 = 0;
-    gDPSetPrimColor(&D_800AA410[0], 0, 0, 255, 255, 255, 255);
+    sSparkEmptyBatch.header.x_8a54e96a = sSparkEmptyBatch.header.x_4c5e05f8 = 0;
+    gDPSetPrimColor(&sSparkInitDl[0], 0, 0, 255, 255, 255, 255);
 }
 
-void x_071f1bfa(x_2f5c3183 *x_cc1d0de5) {
+void spark_submit_occluded(SparkInstance *x_cc1d0de5) {
     s32 s2;
     s32 s5;
     Vtx *s4;
@@ -141,7 +141,7 @@ void x_071f1bfa(x_2f5c3183 *x_cc1d0de5) {
         gExtraBatchPtr->info = x_65cbb149;
         gExtraBatchPtr->context = NULL;
         gExtraBatchPtr->vertices = s4;
-        gExtraBatchPtr->triangles = D_8004A4D0;
+        gExtraBatchPtr->triangles = sSparkTriangleDef;
 
         if (s5) {
             s5 = FALSE;
@@ -158,7 +158,7 @@ void x_071f1bfa(x_2f5c3183 *x_cc1d0de5) {
 }
 
 #ifdef NON_MATCHING
-void x_dbbadf22(Object *obj) {
+void spark_frame_update(Object *obj) {
     s32 pad[7];
     Vtx *temp;
     Vtx *x_ec427b59;
@@ -167,12 +167,12 @@ void x_dbbadf22(Object *obj) {
     x_88f11482 x_5d45b0f8;
     s32 v1; // spA0
     s32 pad2[11];
-    x_2f5c3183 *s2 = (x_2f5c3183 *) obj->x_e2f64c57[0];
+    SparkInstance *s2 = (SparkInstance *) obj->x_e2f64c57[0];
     x_6751d717 *color;
     s32 s3;
     s16 i;
     Vtx *a3;
-    x_6548b963 *s0;
+    SparkParticle *s0;
     s16 x, y, z;
     s32 d1, d2;
     x_c1cedf06 *x_65cbb149;
@@ -180,7 +180,7 @@ void x_dbbadf22(Object *obj) {
     x_88f11482 *x_4a6530b1;
 
     if (x_e30d50d2 & x_520a704c) {
-        D_800AA3B0[s2->x_261d2b52] = FALSE;
+        sSparkActive[s2->x_261d2b52] = FALSE;
         obj->flags |= x_f51cb721;
         return;
     }
@@ -245,7 +245,7 @@ void x_dbbadf22(Object *obj) {
     }
 
     if (t0) {
-        D_800AA3B0[s2->x_261d2b52] = FALSE;
+        sSparkActive[s2->x_261d2b52] = FALSE;
         obj->flags |= x_f51cb721;
         return;
     }
@@ -327,11 +327,11 @@ void x_dbbadf22(Object *obj) {
             x_65cbb149->header.x_8a54e96a = 5;
         }
 
-        // gSPTriBatch(gMainBatchPos, NULL, s00, t03, D_8004A4D0);
+        // gSPTriBatch(gMainBatchPos, NULL, s00, t03, sSparkTriangleDef);
         gDrBatchPtr->info = x_65cbb149;
         gDrBatchPtr->context = NULL;
         gDrBatchPtr->vertices = x_ec427b59;
-        gDrBatchPtr->triangles = D_8004A4D0;
+        gDrBatchPtr->triangles = sSparkTriangleDef;
 
         if (s3) {
             s3 = FALSE;
@@ -346,31 +346,31 @@ void x_dbbadf22(Object *obj) {
         s2->x_0f978d0c++;
     }
 
-    // gSPTriBatch(gMainBatchPos, NULL, &D_800AA3B8, NULL, NULL);
-    gDrBatchPtr->info = &D_800AA3B8;
+    // gSPTriBatch(gMainBatchPos, NULL, &sSparkEmptyBatch, NULL, NULL);
+    gDrBatchPtr->info = &sSparkEmptyBatch;
     gDrBatchPtr->context = NULL;
     gDrBatchPtr->vertices = NULL;
     gDrBatchPtr->triangles = NULL;
     gDrBatchPtr++;
-    x_071f1bfa(s2);
+    spark_submit_occluded(s2);
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/sparks/x_dbbadf22.s")
-void x_dbbadf22(Object *);
+#pragma GLOBAL_ASM("asm/nonmatchings/sparks/spark_frame_update.s")
+void spark_frame_update(Object *);
 #endif
 
-void x_ae0d8704(x_2758cdab *x_cc1d0de5, Object *x_84ff873b, x_6751d717 *x_2092f891) {
+void spark_spawn(x_2758cdab *x_cc1d0de5, Object *x_84ff873b, x_6751d717 *x_2092f891) {
     s16 i;
     s16 j;
     Object *v0;
     s32 pad[2];
-    x_2f5c3183 *a2;
+    SparkInstance *a2;
 
-    for (i = 0; D_800AA3B0[i] && i < 4; i++) {}
+    for (i = 0; sSparkActive[i] && i < 4; i++) {}
 
     if (i != 4) {
-        D_800AA3B0[i] = TRUE;
-        a2 = &D_800A4930[i];
+        sSparkActive[i] = TRUE;
+        a2 = &sSparkInstances[i];
 
         for (j = 0; j < 20; j++) {
             a2->x_db6e53e7[j].pos.x = x_cc1d0de5->x << 16;
@@ -380,7 +380,7 @@ void x_ae0d8704(x_2758cdab *x_cc1d0de5, Object *x_84ff873b, x_6751d717 *x_2092f8
             a2->x_db6e53e7[j].x_034f3eb1 = FALSE;
         }
 
-        v0 = obj_create_task(x_dbbadf22, 0xE00);
+        v0 = obj_create_task(spark_frame_update, 0xE00);
         v0->x_e2f64c57[0] = a2;
         v0->x_e2f64c57[1] = x_2092f891;
 

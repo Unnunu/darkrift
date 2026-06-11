@@ -1,9 +1,42 @@
 {
-  "file": "src/sparks.c", "hash": "698a4622",
-  "rom_offsets": { "text": "0x23D00", "data": "0x4B0D0", "bss": "0x800A4930" },
-  "summary": "Spark/debris particle system: 20 triangular billboard particles per emitter (4 slots), gravity, ground bounce, color-fade white→blue, GT ucode batch submit.",
-  "functions": ["x_31ea5572", "x_38c80ca9", "x_dbbadf22", "x_071f1bfa", "x_ae0d8704"],
-  "key_apis": ["gtStateSetOthermode", "guRandom"],
-  "strings": [], "subsystems": ["GT microcode", "particle physics", "2-bucket depth sort"],
-  "open_questions": []
+  "file": "src/sparks.c",
+  "hash": "698a4622",
+  "rom_offsets": {
+    "text": "0x23D00",
+    "data": "0x4B0D0",
+    "bss": "0x800A4930"
+  },
+  "summary": "Spark/debris particle system: 20 triangular billboard particles per emitter (4 slots), gravity, ground bounce, color-fade white→blue, GT ucode batch submit. 5 functions, 5 globals, 2 structs.",
+  "functions": [
+    "spark_gt_state_init",
+    "spark_init_all",
+    "spark_submit_occluded",
+    "spark_frame_update",
+    "spark_spawn"
+  ],
+  "globals": [
+    "sSparkTriangleDef",
+    "sSparkInstances[4]",
+    "sSparkActive[4]",
+    "sSparkEmptyBatch",
+    "sSparkInitDl[4]"
+  ],
+  "structs": [
+    "SparkParticle",
+    "SparkInstance"
+  ],
+  "key_apis": [
+    "gtStateSetOthermode",
+    "guRandom"
+  ],
+  "strings": [],
+  "subsystems": [
+    "GT microcode",
+    "particle physics",
+    "2-bucket depth sort"
+  ],
+  "open_questions": [
+    "spark_frame_update (x_dbbadf22) is NON_MATCHING — asm only",
+    "struct fields in SparkParticle/SparkInstance still have x_ hash names"
+  ]
 }

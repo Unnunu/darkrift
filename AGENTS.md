@@ -305,7 +305,10 @@ All 62 functions renamed and documented. 11 globals renamed: `sHitDustSpriteDef`
 ### Fire Effects (eff_fire.c) — DONE (Wave 1)
 4 functions renamed: `fire_null_cb`, `fire_ring_update_cb`, `fire_wave_spawn_cb`, `fire_wave_init_cb`. 2 globals: `sFireFlag`, `sFireCounter`. Updated projectile.c (1 call site), functions.h (1 decl). Build verification pending.
 
-Next in queue: `sparks.c` (spark/debris particles — GT ucode, gravity, bounce, white→blue fade)
+### Sparks/Debris (sparks.c) — DONE (Wave 1)
+5 functions renamed: `spark_gt_state_init`, `spark_init_all`, `spark_submit_occluded`, `spark_frame_update` (NON_MATCHING), `spark_spawn`. 2 structs: `SparkParticle`, `SparkInstance`. 5 globals: `sSparkTriangleDef`, `sSparkInstances[4]`, `sSparkActive[4]`, `sSparkEmptyBatch`, `sSparkInitDl`. Updated rsp.c (3 sites), combat.c (1), functions.h (1), symbol_addrs.txt (3). Build verification pending.
+
+Next in queue: `trail.c` (weapon trail afterimage — Catmull-Rom spline, triangle-strip ribbon)
 
 ## Thread Model
 | Pri | Thread | Entry | Description |

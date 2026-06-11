@@ -43,7 +43,7 @@ Object *x_7b6cfabc(void);
 void model_light_pool_init(void);
 void button_remap_reset(s32);
 void model_texture_reset(void);
-void x_38c80ca9(void);
+void spark_init_all(void);
 extern s16 D_800800FA;
 
 extern s32 x_e74df613;
@@ -297,7 +297,7 @@ void rsp_game_init(u16 x_7cedc3fb) {
     D_8005BFF0[1].perspNorm = 1;
     D_8005BFCE = 0;
     model_texture_reset();
-    x_38c80ca9();
+    spark_init_all();
 }
 #else
 #pragma GLOBAL_ASM("asm/nonmatchings/rsp/rsp_game_init.s")
@@ -335,5 +335,5 @@ void rsp_game_reinit(u16 x_7cedc3fb) {
     x_e30d50d2 = x_86c5bc33;
     sFbBusy = TRUE;
     model_texture_reset();
-    x_38c80ca9();
+    spark_init_all();
 }

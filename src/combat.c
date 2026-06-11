@@ -72,7 +72,7 @@ void spawn_hit_effect(x_2758cdab *pos, u8 x_0328a4c8, Object *x_2092f891, x_6751
         if (x_ee71e5cb == NULL) {
             x_ee71e5cb = &D_8004B844[x_4346f5cb->x_eb1fe45b].x_732aef72[x_4346f5cb->x_30bbe547];
         }
-        x_ae0d8704(pos, x_2092f891, x_ee71e5cb);
+        spark_spawn(pos, x_2092f891, x_ee71e5cb);
     } else {
         v0 = obj_create_with_model_ptr(&x_5bbba600, x_9d442987, hit_effect_fade_slow, sHitModelRegular);
         if (v0 != NULL) {

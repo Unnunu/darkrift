@@ -128,7 +128,7 @@ void move_init_cb(Object *obj);
 void move_anim_change(Object *);
 u8 x_96d3a31b(Player *player, s16 x_84ff873b);
 void move_retry_cb(Object *);
-void x_ae0d8704(x_2758cdab *x_cc1d0de5, Object *x_84ff873b, x_6751d717 *x_2092f891);
+void spark_spawn(x_2758cdab *x_cc1d0de5, Object *x_84ff873b, x_6751d717 *x_2092f891);
 void x_fd44eb65(void);
 // void func_80029044(void);
 u8 x_7dc12b61(u8 x_cc1d0de5);
