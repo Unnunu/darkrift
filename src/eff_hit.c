@@ -287,7 +287,7 @@ void hit_combo_routing(Object *obj) {
     x_388306ba *x_fc517ba8;
     x_88f11482 x_93463df6;
 
-    if (x_9df63a90 && x_33abac12 == 0) {
+    if (x_9df63a90 && sHudActive == 0) {
         TASK_END(obj->currentTask);
         return;
     }
@@ -440,7 +440,7 @@ Object *hit_effect_get(void) {
 
 void hit_rebound_check(Object *obj) {
     if (obj->x_20d20338->x_abd7b3c4.x_3fde9cd9.w.y > -200.0f) {
-        x_7621a350(obj);
+        hud_dust_line_spawn(obj);
         obj->currentTask->callback = hit_rebound_above_ground;
         obj->currentTask->delay = 20;
     }
@@ -458,7 +458,7 @@ void hit_rebound_spawn(Object *obj) {
     Object *v0;
 
     if (obj->x_20d20338->x_abd7b3c4.x_3fde9cd9.w.y > -200.0f) {
-        x_7621a350(obj);
+        hud_dust_line_spawn(obj);
         v0 = hit_effect_get();
         if (v0 != NULL) {
             v0->x_0f4167b4[1] = 50;
@@ -631,7 +631,7 @@ void hit_set_attacked_flag(Object *obj) {
 
 void hit_land_set_flag(Object *obj) {
     if (obj->pos.y == 0) {
-        x_ebe27fa0(obj);
+        hud_dust_ring_spawn(obj);
     }
 
     obj->currentTask->callback = hit_set_attacked_flag;

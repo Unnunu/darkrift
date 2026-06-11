@@ -100,7 +100,7 @@ void projectile_ring_update(Object *obj) {
     x_b3c3622a = player->obj;
 
     if ((s0->flags & 2) && s0->x_32485e13 >= 0) {
-        x_342a32f9(x_b3c3622a, s0, &x_5aee6615);
+        hud_bone_to_world(x_b3c3622a, s0, &x_5aee6615);
         obj->pos.x = x_5aee6615.x;
         obj->pos.y = x_5aee6615.y;
         obj->pos.z = x_5aee6615.z;
@@ -169,7 +169,7 @@ void projectile_homing_update(Object *obj) {
     gGfxFlags |= GFX_SHADOW_MODE;
 
     if ((effect->flags & 2) && effect->x_32485e13 >= 0) {
-        x_342a32f9(x_b3c3622a, effect, &x_32f1d6e2);
+        hud_bone_to_world(x_b3c3622a, effect, &x_32f1d6e2);
         obj->pos.x = x_32f1d6e2.x;
         obj->pos.y = x_32f1d6e2.y;
         obj->pos.z = x_32f1d6e2.z;
@@ -316,7 +316,7 @@ Object *projectile_spawn(Object *obj, s32 x_d7ce6b8d) {
     s32 pad[2];
 
     if (effect->x_32485e13 >= 0) {
-        x_342a32f9(obj, effect, &pos);
+        hud_bone_to_world(obj, effect, &pos);
     } else {
         pos.x = effect->x_1422e8f9;
         pos.y = effect->x_6f7546e4;
@@ -422,7 +422,7 @@ u8 guard_prediction_check(Player *x_cc1d0de5, Player *x_84ff873b, Object *x_2092
 
     a2 = (x_388306ba *) x_2092f891->x_0f4167b4[6];
 
-    if (x_9df63a90 && !x_33abac12) {
+    if (x_9df63a90 && !sHudActive) {
         return FALSE;
     }
 

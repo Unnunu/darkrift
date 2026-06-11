@@ -2,7 +2,7 @@
 #include "camera.h"
 #include "task.h"
 
-extern s16 D_80051F68;
+extern s16 sRoundWinCount;
 extern s16 x_1acf99bf;
 extern u32 x_6db66fc3;
 
@@ -114,7 +114,7 @@ void x_676f15d0(void) {
     gWadCondLoad[x_6f0b3be3].x_03604d94 = TRUE;
 
     x_e38a6e19 = x_2a3e474b;
-    D_80051F68++;
+    sRoundWinCount++;
 }
 
 void x_4ffceeac(void) {
@@ -132,7 +132,7 @@ void x_4ffceeac(void) {
     gWadCondLoad[x_6f0b3be3].x_eb1fe45b = D_80049B70[D_80049B90][x_6f0b3be3];
     x_e38a6e19 = x_d61e86e9 + gWadCondLoad[x_83106b21].x_eb1fe45b;
 
-    D_80051F68 = D_80049B90++;
+    sRoundWinCount = D_80049B90++;
     x_6db66fc3 = x_6f0b3be3;
 }
 
@@ -355,7 +355,7 @@ void x_6eea7033(Object *obj, s16 x_84ff873b) {
 }
 
 void x_dbd7d03e(Object *obj) {
-    if (x_59ce598c[D_8013C24C].buttons & x_9cefe76c) {
+    if (x_59ce598c[sWinnerIdx].buttons & x_9cefe76c) {
         x_e30d50d2 |= x_bee364e0;
         x_e38a6e19 = x_a3a32a2b;
         obj->flags |= x_f51cb721;
@@ -517,7 +517,7 @@ void x_bc6a41ae(Object *obj) {
         i = 0;
         while (D_80049CA8[i] != 0) {
             if (s1->obj->frameCounter == D_80049CA8[i]) {
-                x_7621a350(s->obj);
+                hud_dust_line_spawn(s->obj);
             }
             i++;
         }

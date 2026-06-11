@@ -236,7 +236,7 @@ s32 hit_outcome(Player *x_7246d2b2, Player *x_e64ba38a, x_388306ba *x_0deedaaf) 
 
     v12 = (x_0f12118c == x_3cc3613b) || (x_0f12118c == x_5a136108);
 
-    if (x_0f12118c != 0 && !x_33abac12) {
+    if (x_0f12118c != 0 && !sHudActive) {
         x_e64ba38a->x_6f5a5c61 = x_0deedaaf->x_6f5a5c61;
         if (x_e64ba38a->obj->x_0f4167b4[3] < 0) {
             x_e64ba38a->x_95a50856 += x_e64ba38a->x_6f5a5c61;
@@ -291,7 +291,7 @@ void apply_hit(Player *x_7246d2b2, Player *x_e64ba38a, x_2758cdab *x_c9d501a3) {
 
     x_ed035b81 = x_e64ba38a->x_7f68c36b;
 
-    if (!x_9df63a90 || x_33abac12) {
+    if (!x_9df63a90 || sHudActive) {
         x_0f12118c = hit_outcome(x_7246d2b2, x_e64ba38a, x_ed035b81);
         x_2a9ef16e = x_0f12118c == 270 || x_0f12118c == 271;
         if (x_0f12118c != 0) {

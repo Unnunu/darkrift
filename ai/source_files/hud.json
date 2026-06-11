@@ -1,17 +1,208 @@
 {
-  "file": "src/hud.c", "hash": "992e0686",
-  "rom_offsets": { "text": "0x28C10", "data": "0x52E20", "rodata": "0x55B70", "bss": "0x8013C230" },
+  "file": "src/hud.c",
+  "hash": "992e0686",
+  "rom_offsets": {
+    "text": "0x28C10",
+    "data": "0x52E20",
+    "rodata": "0x55B70",
+    "bss": "0x8013C230"
+  },
   "summary": "HUD module: health bars with smooth tween/shrink, score digits, stock icons, character portraits, round timer, results overlay (KO/victory/defeat), dust hit effects.",
   "functions": [
-    "x_bf666432", "x_27a93dac", "x_73651cea", "x_709712b3", "x_ebe27fa0",
-    "x_7621a350", "x_342a32f9", "x_47cbb2c0", "x_ad14714d", "x_eff6c1a4",
-    "x_c0a56b97", "x_e7887022", "x_fb66828a", "x_ea2a7987", "x_41d6ae47",
-    "x_34018036", "x_fd44eb65", "x_a1847541", "x_58906f63", "x_f058b0f7",
-    "x_7ab6c8e2", "x_9564f634", "x_4740163c", "x_1f0fbecd", "x_d9c3c170",
-    "x_751dec03", "x_af61e89b", "x_d265c713", "x_c85182b9", "x_7a336326"
+    {
+      "name": "hud_dust_fade_cb",
+      "line": 62,
+      "summary": "Dust particle slow fade: alpha–8 for first 12 frames, then alpha–3, mark dead."
+    },
+    {
+      "name": "hud_dust_fast_fade_cb",
+      "line": 78,
+      "summary": "Dust particle fast fade: wait on x_0f4167b4[1] timer, then alpha–8/–2 for 8 frames."
+    },
+    {
+      "name": "hud_bone_to_world",
+      "line": 96,
+      "summary": "Transform a bone's local position to world coordinates via mat4 chain."
+    },
+    {
+      "name": "hud_circular_offset",
+      "line": 112,
+      "summary": "Offset a position by radius+angle: sqrt(horizontal distance) × sin/cos from atan2_lut."
+    },
+    {
+      "name": "hud_dust_spawn_cb",
+      "line": 130,
+      "summary": "Timer callback: spawns a dust hit sprite at reference object position, tracks count in x_0f4167b4[1]."
+    },
+    {
+      "name": "hud_dust_spawner",
+      "line": 150,
+      "summary": "Init dust spawner: creates a task with hud_dust_spawn_cb, configures timing (delay=4, interval=3)."
+    },
+    {
+      "name": "hud_dust_follow_player",
+      "line": 167,
+      "summary": "Attach dust object to player's feet position (takes bone transform from x_abd7b3c4), then switch to fast fade."
+    },
+    {
+      "name": "hud_dust_sp3_init",
+      "line": 192,
+      "summary": "Sprite init callback from 'dusthit.sp3': sets follow-player as first callback."
+    },
+    {
+      "name": "hud_dust_ring_spawn",
+      "line": 196,
+      "summary": "Spawn ring of 5 dust hit effects at player position. Each has different radius (150/50/-200/100/-250) and alpha (60/60/40/40/30). Called from eff_hit.c on hit impact."
+    },
+    {
+      "name": "hud_dust_line_spawn",
+      "line": 271,
+      "summary": "Spawn line of 13 dust hit effects at increasing radius (−250 to +350, step 50). Called from eff_hit.c for heavy hits."
+    },
+    {
+      "name": "hud_ko_countdown",
+      "line": 298,
+      "summary": "Round end timer: disable controllers, wait 240 frames (KO display), then trigger x_bee364e0 transition."
+    },
+    {
+      "name": "hud_health_width",
+      "line": 316,
+      "summary": "Calculate health bar pixel width: player HP × 80 ÷ 400 (returns fixed-point s16)."
+    },
+    {
+      "name": "hud_quad_submit",
+      "line": 320,
+      "summary": "Submit an XLU vertex quad to the extra batch for health bar rendering. Uses GT ucode with G_RM_XLU_SURF."
+    },
+    {
+      "name": "hud_health_bar_update",
+      "line": 349,
+      "summary": "Continuous health bar update task. Slides the bar left (P1) / right (P2) toward target width with a 30-frame flash animation. Renders via hud_quad_submit."
+    },
+    {
+      "name": "hud_round_win_anim",
+      "line": 432,
+      "summary": "Compare HP → play win/lose moves: player_exec_move with x_fefa7415 (win) or x_f6ac8484 (lose). Tie → both get lose."
+    },
+    {
+      "name": "hud_timer_cb",
+      "line": 449,
+      "summary": "Match countdown: 60-frame delay, decrements timer object's frameCounter 0→9 cyclically. When done, set x_9df63a90 = TRUE (time over)."
+    },
+    {
+      "name": "hud_timer_start",
+      "line": 470,
+      "summary": "Start the match timer: inject hud_timer_cb into sTimerObj, set initial delay 0."
+    },
+    {
+      "name": "hud_score_cleanup",
+      "line": 479,
+      "summary": "Free score digit objects and their children by setting x_f51cb721 flag. Increments D_80081434/D_80081438 counters."
+    },
+    {
+      "name": "hud_score_create",
+      "line": 501,
+      "summary": "Create score digit sprites from 'bars.sp2'. Handles hundreds/tens/ones per player, assigns frameCounter for digit glyph, frees task list for static display."
+    },
+    {
+      "name": "hud_setup",
+      "line": 613,
+      "summary": "Main HUD initialisation. Creates: timer sprite, round indicator icons (bars.sp2), health bar model parts (P1 left, P2 right), character portraits from D_8004A5D0/D_8004A680, score digits, and launches hud_health_bar_update task. Called from menu.c scene transitions."
+    },
+    {
+      "name": "results_ko_fade",
+      "line": 734,
+      "summary": "KO overlay: renders model with decreasing sFadeAlpha (sAlpha−2 per frame), triggers x_700de048 transition when frameCounter hits 2."
+    },
+    {
+      "name": "results_final_fade",
+      "line": 745,
+      "summary": "Final fade-out: render XLU quad at current sFadeAlpha, then mark object dead."
+    },
+    {
+      "name": "results_attract_skip",
+      "line": 750,
+      "summary": "Result screen state: wait 130 frames, then transition to attract mode (SCREEN_ATTRACT)."
+    },
+    {
+      "name": "results_wait_timer",
+      "line": 763,
+      "summary": "Result screen state: after timer runs down (frameCounter ≤ 60), switch to controls-hint mode."
+    },
+    {
+      "name": "results_p1_control_skip",
+      "line": 772,
+      "summary": "P1: wait for start button → skip the result or switch to controls-continue mode."
+    },
+    {
+      "name": "results_p1_control_continue",
+      "line": 794,
+      "summary": "P1: wait for start → show controls, or other → go back to skip mode."
+    },
+    {
+      "name": "results_show_controls",
+      "line": 816,
+      "summary": "Transition state: after 118 frames, switch to controls-continue mode."
+    },
+    {
+      "name": "results_p1_controls_hint",
+      "line": 827,
+      "summary": "P1 initial state: wait for start → show controls, or back → switch to pause menu."
+    },
+    {
+      "name": "results_p1_pause",
+      "line": 849,
+      "summary": "P1: start → trigger KO fade-out, or back → return to controls hint (with 60-frame delay)."
+    },
+    {
+      "name": "results_fade_in",
+      "line": 871,
+      "summary": "Fade-in overlay: sFadeAlpha+2 per frame until 58, then switch to pause mode."
+    },
+    {
+      "name": "results_init",
+      "line": 882,
+      "summary": "Initialise result screen: set first callback to fade-in, unlock task queue, clear flag x_c537cafa, set sFadeAlpha=0."
+    },
+    {
+      "name": "results_portrait_flicker",
+      "line": 892,
+      "summary": "Character portrait flicker: 16 frames with delay=2, then hide."
+    }
   ],
-  "key_apis": ["gDPPipeSync", "gDPSetCombineMode", "gtStateSetOthermode"],
-  "strings": ["\"dusthit.sp3\"", "\"bars.sp2\""],
-  "subsystems": ["Health bar tween", "Score digit rendering", "Result screen FSM", "Dust hit particles"],
-  "open_questions": []
+  "globals": [
+    { "name": "sDustHitObjDef", "line": 13, "summary": "Object prototype for dust hit sprite (dusthit.sp3)" },
+    { "name": "sRoundWinCount", "line": 14, "summary": "Round win counter, inc from present.c on victory" },
+    { "name": "sHealthBarSlideL", "line": 15, "summary": "Left health bar slide offset (shrink animation)" },
+    { "name": "sHealthBarSlideR", "line": 16, "summary": "Right health bar slide offset (shrink animation)" },
+    { "name": "sHealthBarVtxL", "line": 17, "summary": "Left health bar vertex template (2 framebuffers × 4 verts)" },
+    { "name": "sHealthBarVtxR", "line": 25, "summary": "Right health bar vertex template (2 framebuffers × 4 verts)" },
+    { "name": "sDigitPos", "line": 33, "summary": "Score digit screen positions (6 entries: P1 units/tens/hundreds, P2 hundreds/tens/units)" },
+    { "name": "sDigitPosPtr", "line": 39, "summary": "Pointer array to sDigitPos entries" },
+    { "name": "sCachedHealthL", "line": 41, "summary": "Cached P1 health bar width (for delta detection)" },
+    { "name": "sCachedHealthR", "line": 42, "summary": "Cached P2 health bar width" },
+    { "name": "sHealthPartL", "line": 43, "summary": "P1 health bar model part pointer" },
+    { "name": "sHealthPartR", "line": 44, "summary": "P2 health bar model part pointer" },
+    { "name": "sHudRootObj", "line": 45, "summary": "Root HUD task object (created in match.c as x_a21936ef task)" },
+    { "name": "sTimerObj", "line": 46, "summary": "Timer display object" },
+    { "name": "sHealthBarTask", "line": 47, "summary": "Health bar update task object" },
+    { "name": "sScoreObj", "line": 48, "summary": "Score digit container object" },
+    { "name": "sWinnerIdx", "line": 49, "summary": "Current round winner player index" },
+    { "name": "sIsDraw", "line": 50, "summary": "Draw/tie flag" },
+    { "name": "sHudActive", "line": 51, "summary": "HUD active flag — checked by combat/projectile/eff_hit to skip hit effects during HUD fades" },
+    { "name": "sHudUnused", "line": 52, "summary": "Unused BSS variable" },
+    { "name": "sRoundIndicators", "line": 53, "summary": "Round indicator stock icons (2 players × 10 max)" },
+    { "name": "sHealthFlashL", "line": 54, "summary": "Left health bar flash timer (30-frame animation)" },
+    { "name": "sHealthFlashR", "line": 55, "summary": "Right health bar flash timer" }
+  ],
+  "subsystems": [
+    "Health bar tween: delta-driven slide with flash animation (30 frames), GT ucode XLU quad",
+    "Score digit rendering: hundreds/tens/ones from bars.sp2 sprite sheet",
+    "Result screen FSM: fade-in → controls-hint → skip → pause/continue → attract",
+    "Dust hit particles: ring (5) and line (13) spawns triggered from eff_hit.c on impact",
+    "Timer: 60 fps countdown, triggers time-over flag x_9df63a90"
+  ],
+  "open_questions": [
+    "D_80081434/D_80081438 referenced in hud_score_cleanup — where defined? Are they debug alloc counters?"
+  ]
 }

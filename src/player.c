@@ -130,7 +130,7 @@ void replay_set_overflow(Object *obj) {
  * Params: obj - replay Object
  */
 void replay_check_timeout(Object *obj) {
-    if (x_824b9544[1 - D_8013C24C].obj->x_9200c538 <= 0 || --obj->x_0f4167b4[0] <= 0) {
+    if (x_824b9544[1 - sWinnerIdx].obj->x_9200c538 <= 0 || --obj->x_0f4167b4[0] <= 0) {
         obj->currentTask->delay = 55;
         obj->currentTask->callback = replay_set_overflow;
     }
@@ -187,12 +187,12 @@ void replay_playback(Object *obj);
 void replay_task_exec(Object *obj) {
     task_execute(obj);
 
-    if (x_59ce598c[D_8013C24C].buttons & x_9cefe76c) {
+    if (x_59ce598c[sWinnerIdx].buttons & x_9cefe76c) {
         obj->flags |= x_f51cb721;
         D_80080234 = 1;
-        D_8013C23C->currentTask->delay = 0;
-        D_8013C23C->currentTask->callback = x_3da93607;
-        x_59ce598c[D_8013C24C].x_c4397934 = FALSE;
+        sHudRootObj->currentTask->delay = 0;
+        sHudRootObj->currentTask->callback = x_3da93607;
+        x_59ce598c[sWinnerIdx].x_c4397934 = FALSE;
     }
 }
 
@@ -205,7 +205,7 @@ s32 replay_start(void *x_cc1d0de5) {
     s3 = gFrameCounter - D_80080238.x_77f7a44f;
 
     D_80080238.x_d0d13a9c = 0;
-    x_33abac12 = 1;
+    sHudActive = 1;
     x_824b9544[x_83106b21].x_cd14c741 = 0;
     x_824b9544[x_6f0b3be3].x_cd14c741 = 0;
 

@@ -80,7 +80,7 @@ void hit_delay_ai_move(Object *);
 void hit_face_opponent_late(Object *);
 void x_a08bfaa4(Object *);
 void x_7705be49(Object *);
-void x_751dec03(Object *);
+void results_init(Object *);
 
 extern x_448872e8 D_800523FC;
 extern x_448872e8 D_8005254C;
@@ -345,7 +345,7 @@ x_3da8fdd8 x_dd2c4e91[] = {
     { "battle", 10, 20, x_ebf8a1b0, 0 },  { "chal", 60, 20, x_ebf8a1b0, 3 },     { "cont", 240, 20, x_ebf8a1b0, 1 },
     { "ctdown", 0, 255, x_fb6f79b0, -1 }, { "draw", 0, 20, x_a08bfaa4, 4 },      { "finalrd", 30, 20, x_ebf8a1b0, -1 },
     { "round", 30, 20, x_7705be49, -1 },  { "gameover", 0, 20, x_a08bfaa4, 2 },  { "cont", 240, 20, x_ebf8a1b0, 1 },
-    { "pause", 0, 20, x_751dec03, -1 },   { "timeover", 0, 20, x_ebf8a1b0, -1 }, { "perfect", 0, 80, x_ebf8a1b0, 6 },
+    { "pause", 0, 20, results_init, -1 }, { "timeover", 0, 20, x_ebf8a1b0, -1 }, { "perfect", 0, 80, x_ebf8a1b0, 6 },
 };
 
 x_3da8fdd8 x_c2354b9b[] = {

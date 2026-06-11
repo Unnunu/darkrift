@@ -490,7 +490,7 @@ void cam_update(Object *obj, u8 x_84ff873b) {
     f32 ft5;
     s32 temp;
 
-    if (x_33abac12 == 0) {
+    if (sHudActive == 0) {
         gGfxFlags |= GFX_MENU_OVERLAY;
     } else {
         gGfxFlags &= ~GFX_MENU_OVERLAY;
@@ -926,7 +926,7 @@ void cam_battle_update(Object *obj) {
     x_88f11482 x_93463df6;
 
     x_91b5b40f = FALSE;
-    if (x_33abac12 == 0) {
+    if (sHudActive == 0) {
         gGfxFlags |= GFX_MENU_OVERLAY;
     } else {
         gGfxFlags &= ~GFX_MENU_OVERLAY;
@@ -1158,7 +1158,7 @@ void cam_battle_update(Object *obj) {
 
     if (*x_f4bce728->x_20d20338->x_50771dcd == NULL && !(x_824b9544[x_83106b21].flags & x_c865be3f) &&
             !(x_824b9544[x_6f0b3be3].flags & x_c865be3f) ||
-        x_33abac12 != 0) {
+        sHudActive != 0) {
         cam_boundary_check(obj);
     }
 }

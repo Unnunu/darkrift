@@ -3,7 +3,7 @@
 #include "sprite_ids.h"
 #include "task.h"
 
-extern s16 D_80051F68;
+extern s16 sRoundWinCount;
 
 extern s32 gGfxFlags;
 extern Object *x_fa7941af;
@@ -24,7 +24,7 @@ extern s32 D_800AA480;
 extern s16 x_1acf99bf;
 
 extern u32 x_6db66fc3;
-extern u16 x_33abac12;
+extern u16 sHudActive;
 
 void x_d2b7f1c2(Object *);
 void x_5638088b(Object *);
@@ -37,7 +37,7 @@ void x_6eea7033(Object *, s16);
 // s32 menu_rank_init(void);
 void player_init(s16 x_cc1d0de5);
 void x_7a8b20f2(char *, s32);
-void x_41d6ae47(void);
+void hud_setup(void);
 void cam_intro_start(Object *);
 void task_remove_current(Object *);
 void x_0073afdd(Object *);
@@ -94,8 +94,8 @@ void x_7bc4ef6e(void) {
     x_9df63a90 = FALSE;
     x_824b9544[x_83106b21].flags |= x_4d950171;
     x_824b9544[x_6f0b3be3].flags |= x_4d950171;
-    D_80051F6C = D_80051F70 = D_8013C2A8 = D_8013C2AA = 0;
-    x_33abac12 = 0;
+    sHealthBarSlideL = sHealthBarSlideR = sHealthFlashL = sHealthFlashR = 0;
+    sHudActive = 0;
 }
 
 void x_91192da2(void) {
@@ -112,7 +112,7 @@ void x_91192da2(void) {
     x_824b9544[x_83106b21].flags |= x_4d950171;
     x_824b9544[x_6f0b3be3].flags |= x_4d950171;
     D_800801F1 = FALSE;
-    D_80051F6C = D_80051F70 = D_8013C2A8 = D_8013C2AA = 0;
+    sHealthBarSlideL = sHealthBarSlideR = sHealthFlashL = sHealthFlashR = 0;
 }
 
 void x_2d5f067a(void) {
@@ -238,7 +238,7 @@ void x_5bf0e9e5(void) {
     x_a0e73601("bg0", 0, 15, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
     x_7a8b20f2("arena", x_32f1d6e2);
-    x_41d6ae47();
+    hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
@@ -275,7 +275,7 @@ void x_6d8e5572(void) {
     x_a0e73601("bg0", 0, 15, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
     x_7a8b20f2("arena", x_32f1d6e2);
-    x_41d6ae47();
+    hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
@@ -298,7 +298,7 @@ void x_79c3a331(void) {
     x_a0e73601("bg0", 0, 8, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
     x_7a8b20f2("arena", x_32f1d6e2);
-    x_41d6ae47();
+    hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
@@ -321,7 +321,7 @@ void x_ac7d3df0(void) {
     x_a0e73601("bg0", 0, -24, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
     x_7a8b20f2("arena", x_32f1d6e2);
-    x_41d6ae47();
+    hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
@@ -344,7 +344,7 @@ void x_0f26cf14(void) {
     x_a0e73601("bg0", 0, 0, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
     x_7a8b20f2("arena", x_32f1d6e2);
-    x_41d6ae47();
+    hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
@@ -366,7 +366,7 @@ void x_370978d4(void) {
     x_a0e73601("bg0", 0, 8, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
     x_7a8b20f2("arena", x_32f1d6e2);
-    x_41d6ae47();
+    hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
@@ -386,7 +386,7 @@ void x_97f45a12(void) {
     x_a0e73601("bg0", 0, -8, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
     x_7a8b20f2("arena", x_32f1d6e2);
-    x_41d6ae47();
+    hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
@@ -409,7 +409,7 @@ void x_855a469e(void) {
     x_a0e73601("bg0", 0, -64, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
     x_7a8b20f2("arena", x_32f1d6e2);
-    x_41d6ae47();
+    hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
@@ -432,7 +432,7 @@ void x_8081616c(void) {
     x_a0e73601("bg0", 0, -24, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
     x_7a8b20f2("arena", x_32f1d6e2);
-    x_41d6ae47();
+    hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
@@ -455,7 +455,7 @@ void x_5f5796f4(void) {
     x_a0e73601("bg0", 0, 4, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
     x_7a8b20f2("arena", x_32f1d6e2);
-    x_41d6ae47();
+    hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
@@ -833,7 +833,7 @@ void x_d7f2443f(void) {
     wad_unload_context(0x3000);
     wad_unload_context(0);
     wad_unload_context(1);
-    if (D_80051F68 == 0) {
+    if (sRoundWinCount == 0) {
         x_e38a6e19 = x_3dba3c6c;
     }
 }
@@ -951,7 +951,7 @@ void x_0f62bcb4(void) {
 }
 
 void x_e8d61695(Object *obj) {
-    if (x_59ce598c[D_8013C24C].buttons & x_9cefe76c) {
+    if (x_59ce598c[sWinnerIdx].buttons & x_9cefe76c) {
         x_e30d50d2 |= x_bee364e0;
         obj->flags |= x_f51cb721;
     }
@@ -1674,7 +1674,7 @@ void x_64d3e54a(void) {
     x_a0e73601("bg2", 0, 74, 0x2000, 0x10000, 0, x_54406eae);
     x_a0e73601("bg0", 0, 15, 0x1000, 0x10000, x_96186256, x_54406eae);
     x_7a8b20f2("arena", x_54406eae);
-    x_41d6ae47();
+    hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;

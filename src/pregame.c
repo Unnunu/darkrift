@@ -23,8 +23,8 @@ typedef struct x_5aaa1a5b {
 
 extern s16 x_5e4e2788;
 extern s16 D_80049390;
-extern x_425d6ed3 *D_8013C234;
-extern x_425d6ed3 *D_8013C238;
+extern x_425d6ed3 *sHealthPartL;
+extern x_425d6ed3 *sHealthPartR;
 
 u8 x_5c207a56 = FALSE;
 u8 x_aee302fc = FALSE;
@@ -287,11 +287,11 @@ void x_6aa7260b(Object *obj) {
 
         x_464d68e5 = x_ff9be353(x_30bbe547);
         if (x_30bbe547 == x_83106b21) {
-            D_8013C234->x_e7f1952a =
-                D_8013C234->x_e7f1952a - D_8013C234->x_b88b3756 + D_8013C234->rightS - x_464d68e5 - 8;
-            D_8013C234->x_b88b3756 = D_8013C234->rightS - x_464d68e5 - 8;
+            sHealthPartL->x_e7f1952a =
+                sHealthPartL->x_e7f1952a - sHealthPartL->x_b88b3756 + sHealthPartL->rightS - x_464d68e5 - 8;
+            sHealthPartL->x_b88b3756 = sHealthPartL->rightS - x_464d68e5 - 8;
         } else {
-            D_8013C238->rightS = D_8013C238->x_b88b3756 + x_464d68e5;
+            sHealthPartR->rightS = sHealthPartR->x_b88b3756 + x_464d68e5;
         }
 
         if (obj->x_0f4167b4[8]-- < 1) {
@@ -424,14 +424,15 @@ void x_0362e0e0(Object *obj) {
 
     x_464d68e5 = x_ff9be353(s1);
     if (s1 == 0) {
-        D_8013C234 = s3->x_904eaf67->x_a34b89cc[15].parts;
-        D_8013C234->x_e7f1952a = D_8013C234->x_e7f1952a - D_8013C234->x_b88b3756 + D_8013C234->rightS - x_464d68e5 - 8;
-        D_8013C234->x_b88b3756 = D_8013C234->rightS - x_464d68e5 - 8;
+        sHealthPartL = s3->x_904eaf67->x_a34b89cc[15].parts;
+        sHealthPartL->x_e7f1952a =
+            sHealthPartL->x_e7f1952a - sHealthPartL->x_b88b3756 + sHealthPartL->rightS - x_464d68e5 - 8;
+        sHealthPartL->x_b88b3756 = sHealthPartL->rightS - x_464d68e5 - 8;
         v0->x_0f4167b4[1] = 119;
         v0->pos.x = 119 - x_464d68e5;
     } else {
-        D_8013C238 = s3->x_904eaf67->x_a34b89cc[14].parts;
-        D_8013C238->rightS = D_8013C238->x_b88b3756 + x_464d68e5;
+        sHealthPartR = s3->x_904eaf67->x_a34b89cc[14].parts;
+        sHealthPartR->rightS = sHealthPartR->x_b88b3756 + x_464d68e5;
         v0->x_0f4167b4[1] = 0xD1;
         v0->pos.x = 0xD1 + x_464d68e5;
     }

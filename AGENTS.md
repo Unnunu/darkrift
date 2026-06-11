@@ -311,7 +311,10 @@ All 62 functions renamed and documented. 11 globals renamed: `sHitDustSpriteDef`
 ### Trail Afterimage (trail.c) — DONE (Wave 1)
 9 functions renamed: `ringbuf_init`, `ringbuf_push`, `ringbuf_pop`, `spline_init`, `spline_compute`, `spline_add_point`, `spline_get_point`, `trail_gt_init`, `trail_update`. 9 globals renamed: `sTriStrip4_0..3`, `sTriStrip5_0..4`, `sTriStripLong[]`, `sTriStripShort[]`, `sCatmullRomBasis`, `sTrailDl[4]`. Updated functions.h (2 decls), player.c (4 call sites), cam_follow.c (16 init sites). Build verified.
 
-Next in queue: `hud.c` (HUD: health bars, score digits, portraits, timer, results)
+### HUD (hud.c) — DONE (Wave 1)
+32 functions renamed (20 HUD + 12 Results): `hud_dust_fade_cb`, `hud_dust_fast_fade_cb`, `hud_bone_to_world`, `hud_circular_offset`, `hud_dust_spawn_cb`, `hud_dust_spawner`, `hud_dust_follow_player`, `hud_dust_sp3_init`, `hud_dust_ring_spawn`, `hud_dust_line_spawn`, `hud_ko_countdown`, `hud_health_width`, `hud_quad_submit`, `hud_health_bar_update`, `hud_round_win_anim`, `hud_timer_cb`, `hud_timer_start`, `hud_score_cleanup`, `hud_score_create`, `hud_setup`, `results_ko_fade`, `results_final_fade`, `results_attract_skip`, `results_wait_timer`, `results_p1_control_skip`, `results_p1_control_continue`, `results_show_controls`, `results_p1_controls_hint`, `results_p1_pause`, `results_fade_in`, `results_init`, `results_portrait_flicker`. 23 globals renamed. Updated functions.h (5 decls), menu.c (3 externs + calls), match.c (~30 refs), player.c (2 refs), cam_follow.c (3), combat.c (2), projectile.c (4), eff_hit.c (3), present.c (3), pregame.c (4), fighters.c (1 array entry). Build verified.
+
+Next in queue: `present.c` (presentation screens: title, Kronos, attract, win results, The End)
 
 ## Thread Model
 | Pri | Thread | Entry | Description |
