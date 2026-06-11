@@ -895,7 +895,7 @@ void x_9f82ca8d(s16 x_05e00b01, s16 x_30bbe547) {
     gWadCondLoad[1 - x_30bbe547].x_03604d94 = TRUE;
     gWadCondLoad[1 - x_30bbe547].x_fb21ca8c = 1;
 
-    x_49d7310c(x_30bbe547 + x_e483bf48);
+    present_set_screen(x_30bbe547 + x_e483bf48);
 }
 
 void x_47955556(s16 x_30bbe547, u16 x_05e00b01, u16 x_2092f891) {
@@ -925,7 +925,7 @@ void x_7caf7d71(s16 x_30bbe547, u16 x_84ff873b, u16 x_2092f891) {
     }
 
     x_e30d50d2 |= x_bee364e0;
-    x_49d7310c(x_30bbe547 + x_e483bf48);
+    present_set_screen(x_30bbe547 + x_e483bf48);
 }
 
 void x_d8d91897(s16 x_30bbe547, u16 x_05e00b01, u16 x_7cedc3fb) {

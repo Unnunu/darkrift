@@ -26,7 +26,7 @@ void x_3da93607(Object *);
 void x_97edc3db(Object *obj) {
     x_e30d50d2 |= x_ecbcd14e | x_700de048 | x_bee364e0;
     x_e38a6e19 = x_802d9c2e;
-    x_49d7310c(x_a5f164ca);
+    present_set_screen(x_a5f164ca);
     if (gWadCondLoad[x_83106b21].x_03604d94) {
         D_80049390 = gWadCondLoad[x_83106b21].x_eb1fe45b;
     } else {
@@ -399,7 +399,7 @@ void x_ae7ca939(Object *obj) {
 
         if (x_5e4e2788 == x_a5f164ca) {
             a3 = x_adcfd05c == gWadCondLoad[x_6f0b3be3].x_b2b764b3;
-            x_49d7310c(x_e483bf48 + a3);
+            present_set_screen(x_e483bf48 + a3);
 
             gWadCondLoad[1 - a3].x_03604d94 = TRUE;
             x_6db66fc3 = 1 - a3;

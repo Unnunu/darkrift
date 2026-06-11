@@ -24,7 +24,7 @@ void wad_unload_all(void);
 void wad_load_path(char *x_a0af9f86, s32 context);
 x_4a7d6dd4 *x_a0e73601(char *, s32, s32, s32, s32, s32, s32);
 Object *obj_create_task(void (*)(Object *), s16);
-void x_baaaa706(Object *);
+void present_kronos_logo(Object *);
 void tr_scene_loop(void);
 void wad_unload_context(s32 x_cc1d0de5);
 void tr_quad_xlu(s32 x_cc1d0de5, Vtx *x_84ff873b);

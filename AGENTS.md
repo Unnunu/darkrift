@@ -314,7 +314,10 @@ All 62 functions renamed and documented. 11 globals renamed: `sHitDustSpriteDef`
 ### HUD (hud.c) — DONE (Wave 1)
 32 functions renamed (20 HUD + 12 Results): `hud_dust_fade_cb`, `hud_dust_fast_fade_cb`, `hud_bone_to_world`, `hud_circular_offset`, `hud_dust_spawn_cb`, `hud_dust_spawner`, `hud_dust_follow_player`, `hud_dust_sp3_init`, `hud_dust_ring_spawn`, `hud_dust_line_spawn`, `hud_ko_countdown`, `hud_health_width`, `hud_quad_submit`, `hud_health_bar_update`, `hud_round_win_anim`, `hud_timer_cb`, `hud_timer_start`, `hud_score_cleanup`, `hud_score_create`, `hud_setup`, `results_ko_fade`, `results_final_fade`, `results_attract_skip`, `results_wait_timer`, `results_p1_control_skip`, `results_p1_control_continue`, `results_show_controls`, `results_p1_controls_hint`, `results_p1_pause`, `results_fade_in`, `results_init`, `results_portrait_flicker`. 23 globals renamed. Updated functions.h (5 decls), menu.c (3 externs + calls), match.c (~30 refs), player.c (2 refs), cam_follow.c (3), combat.c (2), projectile.c (4), eff_hit.c (3), present.c (3), pregame.c (4), fighters.c (1 array entry). Build verified.
 
-Next in queue: `present.c` (presentation screens: title, Kronos, attract, win results, The End)
+### Presentation Screens (present.c) — DONE (Wave 1)
+27 functions renamed: `present_set_screen`, `attract_blink_cb`, `attract_menu_input`, `present_single_win`, `present_attract_cycle`, `present_title_task`, `present_attract_loop`, `present_skip_to_attract`, `present_digi_element`, `present_kronos_fade_out`, `present_kronos_fade_in`, `present_kronos_logo`, `present_title_open_anim`, `present_title_sfx`, `present_title_open`, `present_haze_anim`, `present_haze_init`, `present_theend_skip`, `present_theend_anim_end`, `present_theend_init`, `present_transition_screen`, `present_win_fade_out`, `present_win_result_loop`, `present_winner_wait`, `present_result_timer`, `present_intro_presents`, `present_demo_action`, `present_demo_sfx`. 9 globals + 1 type renamed. Updated functions.h (1 decl), menu.c (2 externs), match.c (2 calls), pregame.c (2 calls). Build verified.
+
+Next in queue: `select.c` (selection UI: options, char select grid, stage select, digit render)
 
 ## Thread Model
 | Pri | Thread | Entry | Description |
