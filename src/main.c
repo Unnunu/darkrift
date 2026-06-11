@@ -9,7 +9,7 @@
         _g->words.w1 = (dl);                        \
     }
 
-extern s32 D_80049CF0;
+extern s32 sGroundTileDlTable;
 extern ScreenProfile gScreenProfiles[];
 extern Gfx D_8004CA68[];
 extern Gfx D_8004CB00[];
@@ -87,7 +87,7 @@ void rsp_game_reinit(u16);
 void obj_scene_update(void);
 void rsp_clear_screen(void);
 void x_77751af8(void);
-void x_ff4031b5(void);
+void ground_render(void);
 void audio_frame_update(void);
 void tr_fade_start(Object *obj);
 
@@ -154,8 +154,8 @@ void gfx_render_frame(void) {
     D_8004CC20.perspNorm = D_80080100->perspNorm;
     gDPSetFogColor(gF3dDisplayListPtr++, sFogColorR, sFogColorG, sFogColorB, 255);
     gSPFogPosition(gF3dDisplayListPtr++, sFogMin, sFogMax);
-    if (D_80049CF0 != 0) {
-        x_ff4031b5();
+    if (sGroundTileDlTable != 0) {
+        ground_render();
     }
     audio_frame_update();
 

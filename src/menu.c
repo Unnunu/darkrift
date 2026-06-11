@@ -36,7 +36,7 @@ void present_title_open(Object *);
 void present_haze_init(Object *, s16);
 // s32 menu_rank_init(void);
 void player_init(s16 x_cc1d0de5);
-void x_7a8b20f2(char *, s32);
+void ground_load(char *, s32);
 void hud_setup(void);
 void cam_intro_start(Object *);
 void task_remove_current(Object *);
@@ -237,7 +237,7 @@ void arena_stage_01(void) {
 
     x_a0e73601("bg0", 0, 15, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
-    x_7a8b20f2("arena", x_32f1d6e2);
+    ground_load("arena", x_32f1d6e2);
     hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
@@ -274,7 +274,7 @@ void arena_stage_02(void) {
 
     x_a0e73601("bg0", 0, 15, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
-    x_7a8b20f2("arena", x_32f1d6e2);
+    ground_load("arena", x_32f1d6e2);
     hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
@@ -297,7 +297,7 @@ void arena_stage_03(void) {
 
     x_a0e73601("bg0", 0, 8, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
-    x_7a8b20f2("arena", x_32f1d6e2);
+    ground_load("arena", x_32f1d6e2);
     hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
@@ -320,7 +320,7 @@ void arena_stage_04(void) {
 
     x_a0e73601("bg0", 0, -24, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
-    x_7a8b20f2("arena", x_32f1d6e2);
+    ground_load("arena", x_32f1d6e2);
     hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
@@ -343,7 +343,7 @@ void arena_stage_05(void) {
 
     x_a0e73601("bg0", 0, 0, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
-    x_7a8b20f2("arena", x_32f1d6e2);
+    ground_load("arena", x_32f1d6e2);
     hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
@@ -365,7 +365,7 @@ void arena_stage_06(void) {
     x_3f14db6e->height -= 16;
     x_a0e73601("bg0", 0, 8, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
-    x_7a8b20f2("arena", x_32f1d6e2);
+    ground_load("arena", x_32f1d6e2);
     hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
@@ -385,7 +385,7 @@ void arena_stage_07(void) {
     x_a0e73601("bg2", 0, 94, 0x2000, 0x10000, 0, x_32f1d6e2);
     x_a0e73601("bg0", 0, -8, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
-    x_7a8b20f2("arena", x_32f1d6e2);
+    ground_load("arena", x_32f1d6e2);
     hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
@@ -408,7 +408,7 @@ void arena_stage_08(void) {
 
     x_a0e73601("bg0", 0, -64, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
-    x_7a8b20f2("arena", x_32f1d6e2);
+    ground_load("arena", x_32f1d6e2);
     hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
@@ -431,7 +431,7 @@ void arena_stage_09(void) {
 
     x_a0e73601("bg0", 0, -24, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
-    x_7a8b20f2("arena", x_32f1d6e2);
+    ground_load("arena", x_32f1d6e2);
     hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
@@ -454,7 +454,7 @@ void arena_stage_10(void) {
 
     x_a0e73601("bg0", 0, 4, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
-    x_7a8b20f2("arena", x_32f1d6e2);
+    ground_load("arena", x_32f1d6e2);
     hud_setup();
 
     x_f4bce728->currentTask->delay = 0;
@@ -604,7 +604,7 @@ void intro_gore(void) {
     D_80081250 = D_80081254->height;
     x_a0e73601("bg3", 0, 74, 0x2000, 0x10000, 0, x_a7710cd7);
     x_a0e73601("bg0", 0, 15, 0x1000, 0x10000, x_96186256, x_a7710cd7);
-    x_7a8b20f2("arena", x_a7710cd7);
+    ground_load("arena", x_a7710cd7);
     tr_scene_loop();
 
     wad_unload_context(0x3000);
@@ -623,7 +623,7 @@ void intro_aaro(void) {
     D_80081250 = D_80081254->height;
     x_a0e73601("bg2", 0, 74, 0x10000, 0x10000, 0, x_a7710cd7);
     x_a0e73601("bg0", 0, 15, 0x8000, 0x10000, x_96186256, x_a7710cd7);
-    x_7a8b20f2("arena", x_a7710cd7);
+    ground_load("arena", x_a7710cd7);
     tr_scene_loop();
 
     wad_unload_context(0x3000);
@@ -642,7 +642,7 @@ void intro_demi(void) {
     D_80081250 = D_80081254->height;
     x_a0e73601("bg2", 0, -8, 0x2000, 0x10000, 0, x_a7710cd7);
     x_a0e73601("bg0", 0, 8, 0x1000, 0x10000, x_96186256, x_a7710cd7);
-    x_7a8b20f2("arena", x_a7710cd7);
+    ground_load("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
     arena_cleanup();
@@ -660,7 +660,7 @@ void intro_demo(void) {
     D_80081250 = D_80081254->height;
     x_a0e73601("bg2", 0, 32, 0x2000, 0x10000, 0, x_a7710cd7);
     x_a0e73601("bg0", 0, -24, 0x1000, 0x10000, x_96186256, x_a7710cd7);
-    x_7a8b20f2("arena", x_a7710cd7);
+    ground_load("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
     arena_cleanup();
@@ -678,7 +678,7 @@ void intro_eve(void) {
     D_80081250 = D_80081254->height;
     x_a0e73601("bg2", 0, 52, 0x2000, 0x10000, 0, x_a7710cd7);
     x_a0e73601("bg0", 0, 0, 0x1000, 0x10000, x_96186256, x_a7710cd7);
-    x_7a8b20f2("arena", x_a7710cd7);
+    ground_load("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
     arena_cleanup();
@@ -696,7 +696,7 @@ void intro_morp(void) {
     D_80081250 = D_80081254->height;
     x_a0e73601("bg2", 0, 96, 0x2000, 0x10000, 0, x_a7710cd7);
     x_a0e73601("bg0", 0, 8, 0x1000, 0x10000, x_96186256, x_a7710cd7);
-    x_7a8b20f2("arena", x_a7710cd7);
+    ground_load("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
     arena_cleanup();
@@ -714,7 +714,7 @@ void intro_niik(void) {
     D_80081250 = D_80081254->height;
     x_a0e73601("bg2", 0, 94, 0x2000, 0x10000, 0, x_a7710cd7);
     x_a0e73601("bg0", 0, -8, 0x1000, 0x10000, x_96186256, x_a7710cd7);
-    x_7a8b20f2("arena", x_a7710cd7);
+    ground_load("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
     arena_cleanup();
@@ -732,7 +732,7 @@ void intro_scar(void) {
     D_80081250 = D_80081254->height;
     x_a0e73601("bg2", 0, 0, 0x2000, 0x10000, 0, x_a7710cd7);
     x_a0e73601("bg0", 0, -64, 0x1000, 0x10000, x_96186256, x_a7710cd7);
-    x_7a8b20f2("arena", x_a7710cd7);
+    ground_load("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
     arena_cleanup();
@@ -750,7 +750,7 @@ void intro_sono(void) {
     D_80081250 = D_80081254->height;
     x_a0e73601("bg2", 0, 26, 0x2000, 0x10000, 0, x_a7710cd7);
     x_a0e73601("bg0", 0, -24, 0x1000, 0x10000, x_96186256, x_a7710cd7);
-    x_7a8b20f2("arena", x_a7710cd7);
+    ground_load("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
     arena_cleanup();
@@ -768,7 +768,7 @@ void intro_zenm(void) {
     D_80081250 = D_80081254->height;
     x_a0e73601("bg2", 0, -6, 0x2000, 0x10000, 0, x_a7710cd7);
     x_a0e73601("bg0", 0, 4, 0x1000, 0x10000, x_96186256, x_a7710cd7);
-    x_7a8b20f2("arena", x_a7710cd7);
+    ground_load("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
     arena_cleanup();
@@ -821,7 +821,7 @@ void boss_sono(void) {
     fight_intro_setup(FALSE, 346, 0x3000);
     x_a0e73601("bg2", 0, 26, 0x2000, 0x10000, 0, 0);
     x_a0e73601("bg0", 0, -24, 0x1000, 0x10000, x_96186256, 0);
-    x_7a8b20f2("arena", 0);
+    ground_load("arena", 0);
     a3 = sWadEntries[wad_entry_find("relic.k2", 0x3000)].x_4962fc73;
     x_942c59c7 = obj_create_with_model_ptr(&x_93463df6, 0x1000, anim_loop, a3);
     x_942c59c7->x_224610f1.y = 0x400;
@@ -893,7 +893,7 @@ void boss_demi(void) {
 
     x_a0e73601("bg2", 0, -32, 0x2000, 0x10000, 0, x_fc517ba8);
     x_a0e73601("bg0", 0, 8, 0x1000, 0x10000, x_96186256, x_fc517ba8);
-    x_7a8b20f2("arena", x_fc517ba8);
+    ground_load("arena", x_fc517ba8);
     sFightLocked = TRUE;
     tr_scene_loop();
     wad_unload_context(0x3000);
@@ -1049,7 +1049,7 @@ void demo_fight_setup(u8 x_cc1d0de5) {
     x_a0e73601("bg2", 0, -27, 0x2000, 0x10000, 0, x_b3c51f8a);
     x_a0e73601("bg0", x_b3c51f8a * 0, 8, 0x1000, 0x10000, x_96186256, x_b3c51f8a);
     screen_profile_apply(SCREEN_PRACTICE);
-    x_7a8b20f2("arena", x_b3c51f8a);
+    ground_load("arena", x_b3c51f8a);
     sFightLocked = TRUE;
 }
 
@@ -1673,7 +1673,7 @@ void arena_stage_default(void) {
     player_init(1);
     x_a0e73601("bg2", 0, 74, 0x2000, 0x10000, 0, x_54406eae);
     x_a0e73601("bg0", 0, 15, 0x1000, 0x10000, x_96186256, x_54406eae);
-    x_7a8b20f2("arena", x_54406eae);
+    ground_load("arena", x_54406eae);
     hud_setup();
 
     x_f4bce728->currentTask->delay = 0;

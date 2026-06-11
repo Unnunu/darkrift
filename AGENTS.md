@@ -332,8 +332,11 @@ All 62 functions renamed and documented. 11 globals renamed: `sHitDustSpriteDef`
 ### Match (match.c) — DONE (Wave 1)
 38 functions renamed (4 round flow, 8 KO detection, 7 post-round, 6 result callbacks, 6 UI model helpers, 5 anim callbacks, 2 misc). 6 BSS globals renamed (sWinnerMsgObj, sDrawMsgObj, sKoMsgObj, sAfterKoMsgObj, sContinueMsgObj, sSuddenDeathMsgObj). Updated functions.h (3 decls), callers in cam_follow.c, player.c, main.c, eff_hit.c, fighters.c. Build verified.
 
-### Background (background.c) — NEXT (Wave 1)
-Tiled scrolling background (.pcl + .GMD, frustum cull).
+### Background/ground (background.c) — DONE (Wave 1)
+3 functions renamed: `ground_load`, `ground_frustum_compute` (NON_EQUIVALENT), `ground_render`. 1 struct (GroundTileHeader). ~28 BSS globals renamed (sGround*). Updated main.c, menu.c. Build verified.
+
+### Pregame (pregame.c) — NEXT (Wave 1)
+Pre-match setup: char select screen, handicap, cheats, practice.
 
 ## Thread Model
 | Pri | Thread | Entry | Description |

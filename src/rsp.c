@@ -49,7 +49,7 @@ extern s16 D_800800FA;
 extern s32 x_e74df613;
 extern s32 x_6c647b3a;
 extern s32 D_80081428;
-extern s32 D_80049CF0;
+extern s32 sGroundTileDlTable;
 
 void mem_defrag(void);
 void wad_sync_dma_slots(void);
@@ -320,7 +320,7 @@ void rsp_game_reinit(u16 x_7cedc3fb) {
     x_f4bce728 = x_7b6cfabc();
     button_state_reset();
     rsp_task_init();
-    D_80049CF0 = 0;
+    sGroundTileDlTable = 0;
     sFogMin = gScreenProfiles[x_7cedc3fb].fogMin;
     sFogMax = gScreenProfiles[x_7cedc3fb].fogMax;
     sFogColorR = gScreenProfiles[x_7cedc3fb].fogColorR;
