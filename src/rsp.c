@@ -38,7 +38,7 @@ void wad_entries_reset(void);
 void wad_load_area_init(s32 x_cc1d0de5, s32 x_84ff873b);
 void matrix_system_init(void);
 void button_state_reset(void);
-void x_3ef429e1(void);
+void audio_init(void);
 Object *x_7b6cfabc(void);
 void model_light_pool_init(void);
 void button_remap_reset(s32);
@@ -53,10 +53,10 @@ extern s32 D_80049CF0;
 
 void mem_defrag(void);
 void wad_sync_dma_slots(void);
-void x_1e7c754d(void);
+void audio_reinit(void);
 void pool_init_core(void);
 
-s32 x_1790ee2a(void);
+s32 audio_submit_task(void);
 
 /* .bss */
 s16 sClearColorR;
@@ -197,7 +197,7 @@ void rsp_submit_gfx_tasks(void) {
     while (osRecvMesg(&sContMesgQueue, NULL, OS_MESG_NOBLOCK) != -1) {}
 
     osWritebackDCacheAll();
-    sGfxTaskCount = x_1790ee2a();
+    sGfxTaskCount = audio_submit_task();
     if (!sFbBusy) {
         // prepare two graphics task, one for f3d ucode, and the other for dr ucode
         sGfxTaskF3D.t.data_ptr = D_80080100->x_700a6ea1;
@@ -268,7 +268,7 @@ void rsp_game_init(u16 x_7cedc3fb) {
     wad_load_area_init(sZbuffer, 0x25800);
     matrix_system_init();
     button_state_reset();
-    x_3ef429e1();
+    audio_init();
     rsp_task_init();
     sClearColorR = gScreenProfiles[x_7cedc3fb].clearColorR;
     sClearColorG = gScreenProfiles[x_7cedc3fb].clearColorG;
@@ -311,7 +311,7 @@ void rsp_game_reinit(u16 x_7cedc3fb) {
     D_80081428 = 0;
     mem_defrag();
     wad_sync_dma_slots();
-    x_1e7c754d();
+    audio_reinit();
     sClearColorR = gScreenProfiles[x_7cedc3fb].clearColorR;
     sClearColorG = gScreenProfiles[x_7cedc3fb].clearColorG;
     sClearColorB = gScreenProfiles[x_7cedc3fb].clearColorB;

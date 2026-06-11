@@ -4,7 +4,9 @@
   "path": "src/wad.c",
   "lines": 1091,
   "evidence": {
-    "strings": ["wad.c"],
+    "strings": [
+      "wad.c"
+    ],
     "summary": "WAD archive loader + resource manager. 256-slot cache, 22 asset types (TMD/KMD models, textures, BGM, SFX, banks). Path-based WAD navigation (ROOT/SCAR/SCAR1_H/...)."
   },
   "enums": [
@@ -136,7 +138,7 @@
   },
   "open_questions": [
     "x_eec8b086 / x_bb5426b0 / x_fc23f083 / x_fd763f4f — render function pointers for model types; semantic difference unknown",
-    "x_f90c9091 (gAlBankFileBuffer) — ALBankFile buffer, exact relationship to context unclear",
+    "sAlBankFile (gAlBankFileBuffer) — ALBankFile buffer, exact relationship to context unclear",
     "x_f12166b8 (gSfxBanks) — SFX bank slot array; mapping of slot index to context ID (0/1/2) unclear",
     "x_77831b2c (gWadCondLoad) — conditional load enable flags per context; exact usage pattern unclear",
     "WAD type 3 (WAD_UNUSED_3) — never appears in any WAD; dead code or legacy type",

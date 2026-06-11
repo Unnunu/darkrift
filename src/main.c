@@ -14,8 +14,8 @@ extern ScreenProfile gScreenProfiles[];
 extern Gfx D_8004CA68[];
 extern Gfx D_8004CB00[];
 
-extern s32 x_b5cc849a;
-extern s32 x_aec099eb;
+extern s32 sMusicVolume;
+extern s32 sSfxVolume;
 
 extern x_3e2f9cf1 D_8004CC20;
 extern x_c1cedf06 D_8004CCC8;
@@ -88,7 +88,7 @@ void obj_scene_update(void);
 void rsp_clear_screen(void);
 void x_77751af8(void);
 void x_ff4031b5(void);
-void x_06fa0af9(void);
+void audio_frame_update(void);
 void tr_fade_start(Object *obj);
 
 void gfx_init_frame(void) {
@@ -157,7 +157,7 @@ void gfx_render_frame(void) {
     if (D_80049CF0 != 0) {
         x_ff4031b5();
     }
-    x_06fa0af9();
+    audio_frame_update();
 
     for (ptr = D_80080100->x_b8131490; ptr != gExtraBatchPtr; ptr++) {
         x_50746900(gDrBatchPtr, ptr->context, ptr->info, ptr->vertices, ptr->triangles);
@@ -200,7 +200,7 @@ Object *tr_obj_alloc(void) {
     }
 
     obj->x_0232396f = x_a1821d40;
-    x_7e194d55(2, obj->x_0f4167b4[2]);
+    audio_sfx_play(2, obj->x_0f4167b4[2]);
     gTaskLock = TRUE;
     sFadeAlpha = 0;
     return obj;
@@ -252,12 +252,12 @@ void tr_player_load(s16 x_ce13e71a) {
     }
 
     if (!x_5cb3a50d) {
-        x_62551fe9(0, 0);
-        x_62551fe9(1, 0);
-        x_20c52092(1800);
+        audio_sfx_set_vol(0, 0);
+        audio_sfx_set_vol(1, 0);
+        audio_bgm_set_vol(1800);
         gfx_render_frame();
 
-        alSeqpStop(x_85a4d96f);
+        alSeqpStop(sAlSeqPlayerPtr);
 
         x_93463df6 = x_59ce598c[x_83106b21].x_d93bcabf;
         x_235d81c7 = x_59ce598c[x_6f0b3be3].x_d93bcabf;
@@ -280,11 +280,11 @@ void tr_player_load(s16 x_ce13e71a) {
         x_59ce598c[x_ce13e71a].x_c4397934 = FALSE;
         gTaskLock = FALSE;
         x_e30d50d2 &= ~x_700de048;
-        alSeqSetLoc(x_d896e1bb, &x_9ae0d7c5);
-        alSeqpPlay(x_85a4d96f);
-        x_20c52092(x_66ddef46);
-        x_62551fe9(0, x_15814eea);
-        x_62551fe9(1, x_15814eea);
+        alSeqSetLoc(sAlSeqPtr, &sAlSeqMarkerStart);
+        alSeqpPlay(sAlSeqPlayerPtr);
+        audio_bgm_set_vol(sMusicVolumeSetting);
+        audio_sfx_set_vol(0, gSfxVolumeSetting);
+        audio_sfx_set_vol(1, gSfxVolumeSetting);
     } else {
 
         while (--counter > 0) {
@@ -296,7 +296,7 @@ void tr_player_load(s16 x_ce13e71a) {
 void func_80001C6C(void) {
     x_e30d50d2 = 0;
     gTaskLock = TRUE;
-    x_aec099eb = x_b5cc849a = 1800;
+    sSfxVolume = sMusicVolume = 1800;
 
     obj_create_task(tr_fade_start, 0x1000);
     while (!(x_e30d50d2 & x_bee364e0)) {
@@ -477,7 +477,7 @@ void tr_fade_out_delay(Object *obj) {
 }
 
 void tr_scene_change(Object *obj) {
-    x_292e1d02(obj, 0);
+    audio_fade_in_task(obj, 0);
     if (x_e30d50d2 & x_23ebd6b0) {
         x_e30d50d2 |= x_e3ff543d;
         return;
@@ -486,7 +486,7 @@ void tr_scene_change(Object *obj) {
     gGfxFlags |= GFX_SHADOW_MODE;
     osViBlack(TRUE);
     x_e30d50d2 &= ~x_e3ff543d;
-    x_292e1d02(obj, 0);
+    audio_fade_in_task(obj, 0);
     if (x_e30d50d2 & x_86c5bc33) {
         obj->x_0f4167b4[4] = 1;
     }
@@ -532,7 +532,7 @@ void tr_fade_in(Object *obj) {
 
 void tr_fade_in_setup(Object *obj) {
     gGfxFlags |= GFX_SHADOW_MODE;
-    x_f1ca6ba2(obj, 0);
+    audio_fade_out_task(obj, 0);
 
     if (obj->x_0232396f != tr_fade_in_setup) {
         obj->x_0232396f = tr_fade_in;

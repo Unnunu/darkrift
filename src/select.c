@@ -48,7 +48,7 @@ void x_08d315fd(Object *obj, s16 buttons, s16 x_30bbe547) {
     }
 
     if (x_e15348ae) {
-        x_7e194d55(2, 1);
+        audio_sfx_play(2, 1);
     }
 }
 
@@ -151,7 +151,7 @@ void x_c1c0a10d(Object *obj) {
         if (x_68fff389 != 0) {
             obj->frameCounter = x_75706032 + ((obj->frameCounter + x_68fff389 + 1) % 2);
             controller->x_0f4167b4[x_399d646a] = 0;
-            x_a7d9a1e8 = obj->frameCounter - x_75706032;
+            sAudioMuted = obj->frameCounter - x_75706032;
         }
     } else {
         if (obj->frameCounter == x_75706032 || obj->frameCounter == x_7c7b1540) {
@@ -184,10 +184,10 @@ void x_ff609efb(Object *obj) {
                 volume = 1;
             }
 
-            if (volume != x_66ddef46) {
-                x_20c52092(volume);
+            if (volume != sMusicVolumeSetting) {
+                audio_bgm_set_vol(volume);
             }
-            x_b5cc849a = x_66ddef46 = volume;
+            sMusicVolume = sMusicVolumeSetting = volume;
         }
     } else {
         if (obj->frameCounter >= x_9042e738 && obj->frameCounter <= x_bb2ebaaa) {
@@ -220,10 +220,10 @@ void x_28ceb562(Object *obj) {
                 volume = 1;
             }
 
-            if (volume != x_15814eea) {
-                x_62551fe9(2, volume);
+            if (volume != gSfxVolumeSetting) {
+                audio_sfx_set_vol(2, volume);
             }
-            x_aec099eb = x_15814eea = volume;
+            sSfxVolume = gSfxVolumeSetting = volume;
         }
     } else {
         if (obj->frameCounter >= x_9042e738 && obj->frameCounter <= x_bb2ebaaa) {
@@ -242,7 +242,7 @@ void x_12081995(Object *obj) {
             x_e38a6e19 = x_b84bd571;
             x_e30d50d2 |= x_bee364e0;
             TASK_END(obj->currentTask);
-            x_7e194d55(2, 0);
+            audio_sfx_play(2, 0);
         }
     } else {
         obj->flags |= x_c537cafa;
@@ -259,7 +259,7 @@ void x_53598eda(Object *obj) {
             x_e38a6e19 = x_2e33c051;
             x_e30d50d2 |= x_bee364e0;
             TASK_END(obj->currentTask);
-            x_7e194d55(2, 0);
+            audio_sfx_play(2, 0);
         }
     } else {
         obj->flags |= x_c537cafa;
@@ -276,7 +276,7 @@ void x_b5c125fc(Object *obj) {
             x_e38a6e19 = x_c63c063f;
             x_e30d50d2 |= x_bee364e0;
             TASK_END(obj->currentTask);
-            x_7e194d55(2, 0);
+            audio_sfx_play(2, 0);
         }
     } else {
         obj->flags |= x_c537cafa;
@@ -293,7 +293,7 @@ void x_dd25b026(Object *obj) {
             x_e38a6e19 = SCREEN_ATTRACT;
             x_e30d50d2 |= x_bee364e0;
             TASK_END(obj->currentTask);
-            x_7e194d55(2, 0);
+            audio_sfx_play(2, 0);
         }
     } else {
         obj->flags |= x_c537cafa;
@@ -348,7 +348,7 @@ void x_d1cd74f9(Object *obj, s16 buttons, s16 x_30bbe547) {
     }
     if (x_350d585b) {} // @fake
     if (x_e15348ae) {
-        x_7e194d55(2, 1);
+        audio_sfx_play(2, 1);
     }
 }
 
@@ -443,7 +443,7 @@ void x_2cae892b(Object *obj) {
     }
 
     if (v1 != 0) {
-        x_7e194d55(2, 0);
+        audio_sfx_play(2, 0);
     }
 }
 
@@ -475,7 +475,7 @@ void x_8383794c(Object *obj) {
         wad_strcpy(x_c309f013, D_8004B844[obj->x_0f4167b4[0]].x_1256da71->name);
         wad_strcat(x_c309f013, "st");
         x_a0e73601(x_c309f013, 0, 13, 0, 0, x_96186256, x_35b88489);
-        x_7e194d55(2, 1);
+        audio_sfx_play(2, 1);
     } else if (buttons & x_fc4a9735) {
         x_eb1fe45b = obj->x_0f4167b4[0] = (obj->x_0f4167b4[0] + 1) % x_edb381f3;
         if (x_eb1fe45b == x_e235676f || x_eb1fe45b == x_968cc9a2 && !x_5c207a56 ||
@@ -488,12 +488,12 @@ void x_8383794c(Object *obj) {
         wad_strcpy(x_c309f013, D_8004B844[obj->x_0f4167b4[0]].x_1256da71->name);
         wad_strcat(x_c309f013, "st");
         x_a0e73601(x_c309f013, 0, 13, 0, 0, x_96186256, x_35b88489);
-        x_7e194d55(2, 1);
+        audio_sfx_play(2, 1);
     } else if (buttons & x_9cefe76c) {
         x_e38a6e19 = x_f699a14d;
         x_e30d50d2 |= x_bee364e0;
         TASK_END(obj->currentTask);
-        x_7e194d55(2, 0);
+        audio_sfx_play(2, 0);
     }
 }
 
@@ -505,7 +505,7 @@ void x_a9b3a737(Object *obj) {
         x_e38a6e19 = x_f699a14d;
         x_e30d50d2 |= x_bee364e0;
         TASK_END(obj->currentTask);
-        x_7e194d55(2, 0);
+        audio_sfx_play(2, 0);
     }
 }
 
@@ -583,7 +583,7 @@ void x_0073afdd(Object *obj) {
         return;
     }
 
-    x_7e194d55(2, 0);
+    audio_sfx_play(2, 0);
     x_e7bcb342 = 0;
 
     x_c309f013 = x_f80fc81d[x_e7bcb342++];

@@ -10,9 +10,16 @@
       "osGetTime",
       "osViBlack",
       "osVirtualToPhysical",
-      "gSPSegment", "gSPDisplayList", "gSPMatrix", "gDPFullSync",
-      "gSPEndDisplayList", "gDPPipeSync", "gDPSetCombineMode",
-      "gSPSetOtherMode", "gDPSetFogColor", "gSPFogPosition",
+      "gSPSegment",
+      "gSPDisplayList",
+      "gSPMatrix",
+      "gDPFullSync",
+      "gSPEndDisplayList",
+      "gDPPipeSync",
+      "gDPSetCombineMode",
+      "gSPSetOtherMode",
+      "gDPSetFogColor",
+      "gSPFogPosition",
       "gtStateSetOthermode"
     ],
     "key_functions": {
@@ -93,7 +100,7 @@
       "name": "tr_scene_change",
       "old_name": "x_6b09ed5a",
       "line": 479,
-      "summary": "Scene change entry: calls x_292e1d02 to init task. If abort flag (x_23ebd6b0) set, signals done and returns. Otherwise enables GFX_SHADOW_MODE, blacks out VI, sets up transition flags, chains to tr_fade_out_delay or tr_fade_out. Renders opaque black quad."
+      "summary": "Scene change entry: calls audio_fade_in_task to init task. If abort flag (x_23ebd6b0) set, signals done and returns. Otherwise enables GFX_SHADOW_MODE, blacks out VI, sets up transition flags, chains to tr_fade_out_delay or tr_fade_out. Renders opaque black quad."
     },
     {
       "name": "tr_fade_hold",
@@ -111,7 +118,7 @@
       "name": "tr_fade_in_setup",
       "old_name": "x_6e9e48e4",
       "line": 533,
-      "summary": "Fade-in with shadow mode: enables GFX_SHADOW_MODE, runs task setup via x_f1ca6ba2. Then fades in same logic as tr_fade_in but with shadow mode active."
+      "summary": "Fade-in with shadow mode: enables GFX_SHADOW_MODE, runs task setup via audio_fade_out_task. Then fades in same logic as tr_fade_in but with shadow mode active."
     },
     {
       "name": "tr_fade_start",

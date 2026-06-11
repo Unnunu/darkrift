@@ -4,7 +4,7 @@
 
 extern s16 D_80049390;
 extern x_3da8fdd8 x_c2354b9b[];
-extern u8 D_8004A42C;
+extern u8 sAudioForceMute;
 extern s16 x_adcfd05c;
 
 extern Object *D_8013C23C;
@@ -59,7 +59,7 @@ void x_a08bfaa4(Object *obj) {
     if (--obj->x_0f4167b4[1] <= 0) {
         obj->flags &= ~x_c537cafa;
         if (obj->frameCounter == 0 && obj->x_0f4167b4[2] != -1) {
-            x_7e194d55(2, obj->x_0f4167b4[2]);
+            audio_sfx_play(2, obj->x_0f4167b4[2]);
         }
 
         if (obj->frameCounter < obj->x_20d20338->x_8e601526 - 1) {
@@ -71,7 +71,7 @@ void x_a08bfaa4(Object *obj) {
 void x_ebf8a1b0(Object *obj) {
     obj->flags &= ~x_c537cafa;
     if (obj->frameCounter == 0 && obj->x_0f4167b4[2] != -1) {
-        x_7e194d55(2, obj->x_0f4167b4[2]);
+        audio_sfx_play(2, obj->x_0f4167b4[2]);
     }
 
     if (obj->frameCounter >= obj->x_20d20338->x_8e601526) {
@@ -106,7 +106,7 @@ Object *x_1bb3ac04(x_3da8fdd8 *msg, s32 context) {
     Model *a3;
     char x_f974a07e[80];
 
-    x_14d52001(2);
+    audio_sfx_stop_bank(2);
     wad_strcpy(x_f974a07e, msg->name);
     wad_strcat(x_f974a07e, ".k2");
 
@@ -164,9 +164,9 @@ Object *x_22ac1eb3(s32 x_eb1fe45b, s32 x_84ff873b, u32 x_30bbe547) {
         }
     }
 
-    x_84221e64(0, 64);
-    x_84221e64(1, 64);
-    D_8004A42C = TRUE;
+    audio_sfx_set_pan(0, 64);
+    audio_sfx_set_pan(1, 64);
+    sAudioForceMute = TRUE;
     return obj;
 }
 
@@ -243,7 +243,7 @@ void x_1240eb8e(Object *obj) {
 
     x_943bfef8();
     x_7bc4ef6e();
-    x_073e79bc();
+    audio_unmute();
 
     v0 = obj->x_e2f64c57[4];
     if (v0 != NULL) {

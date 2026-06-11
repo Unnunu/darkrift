@@ -18,5 +18,116 @@
     "task_type": "M_AUDTASK",
     "ucode": "aspMainTextStart / aspMainDataStart"
   },
-  "summary": "Audio subsystem: BGM (ALSeqPlayer), SFX (3x ALSndPlayer), audio heap, AI hardware DMA, ASP RSP ucode task."
+  "summary": "Audio subsystem: BGM (ALSeqPlayer), SFX (3x ALSndPlayer), audio heap, AI hardware DMA, ASP RSP ucode task.",
+  "structs": [
+    {
+      "old": "x_2f176497",
+      "new": "AudioConfig",
+      "fields": "frequency, channels, cmdLen"
+    },
+    {
+      "old": "x_64d3e7c0",
+      "new": "AudioDmaBuf",
+      "fields": "data, len, pad[90], aiBufSize(=2), selfLink, pad[6]"
+    },
+    {
+      "old": "x_64e0fd68",
+      "new": "AudioBufEntry",
+      "fields": "next, prev, romAddr, frameUsed, data"
+    },
+    {
+      "old": "x_3eed2154",
+      "new": "AudioBufPool",
+      "fields": "initialized, head, tail"
+    },
+    {
+      "old": "x_5ecda142",
+      "new": "AudioFrameCtx",
+      "fields": "cmdBufs[2], aiBufs[3]"
+    }
+  ],
+  "functions": {
+    "audio_ostask_init": "Init OSTask with ASP ucode addresses for RSP audio processing",
+    "audio_state_reset": "Reset all audio state globals to defaults",
+    "audio_init": "Main audio init: alHeapInit → state_reset → synth config → seq+snd player new",
+    "audio_heap_alloc": "Allocate audio heap buffers: DMA pool, cmd bufs, AI bufs, ALBankFile, SFX banks",
+    "audio_reinit": "Reinit audio: unload all SFX banks, flush DMA, alClose, audio_init",
+    "audio_synth_config": "Configure AL synth: set DMA proc, output rate (osAiSetFrequency), alloc frames, alInit",
+    "audio_frame_render": "Render one audio frame: alAudioFrame → setup OSTask with cmd list + AI buffer",
+    "audio_dma_callback": "Audio DMA proc for alAudioFrame: manages 8-entry DMA buffer pool with LRU aging",
+    "audio_get_dma_proc": "Return DMA proc wrapper, init pool if first call",
+    "audio_dma_wait": "Wait for pending DMAs, age out old buffers (based on frame counter)",
+    "audio_frame_update": "Frame update: call render + dma_wait if any audio active (BGM or SFX)",
+    "audio_submit_task": "Submit audio OSTask to RSP via gRspMessageQueue, play pending SFX sounds",
+    "audio_sfx_play": "Play SFX by bank index + sound index; handles pan (mono/stereo per player config)",
+    "audio_sfx_stop": "Stop a specific SFX by bank + sound index",
+    "audio_sfx_stop_bank": "Stop all sounds in one bank",
+    "audio_sfx_stop_all": "Stop all sounds in all 3 banks",
+    "audio_bgm_stop": "Stop BGM sequence player",
+    "audio_fade_complete": "Task callback: decrement counter, TASK_END when < 0",
+    "audio_fade_out_task": "Fade out task: decrement SFX+BGM volume over ~27 frames, clean up at 0",
+    "audio_fade_in_task": "Fade in task: wait 16 frames or until unmute, then play BGM",
+    "audio_sfx_set_pan": "Set pan for all sounds in a bank",
+    "audio_sfx_set_vol": "Set volume for all sounds in a bank",
+    "audio_bgm_set_vol": "Set BGM volume via alSeqpSetVol",
+    "audio_unmute": "Clear sAudioForceMute flag",
+    "wad_setup_sfx_bank": "Setup SFX bank from WAD: alBnkfNew, allocate all sounds, set volume"
+  },
+  "globals": {
+    "sAudioConfig": "Audio config: freq=11025, channels=1, cmdLen=0x1100",
+    "sAlSeqPlayer": "BGM ALSeqPlayer instance",
+    "sAlSeq": "BGM ALSeq instance",
+    "sAlSndPlayers": "SFX ALSndPlayer instances (3 banks)",
+    "sAlHeap": "AL heap",
+    "sAudioFrameCtx": "Frame context: 2 cmd buffers + 3 AI buffer descriptors",
+    "sAudioHeapData": "Audio heap storage pool (0x22A00 bytes)",
+    "sAlBankFile": "ALBankFile buffer (0x800 bytes)",
+    "sAlBankFileSize": "Size of loaded ALBankFile data",
+    "sAlSeqData": "BGM sequence data pointer",
+    "sAlSeqSize": "BGM sequence data size",
+    "sAlSeqMarkerStart": "BGM loop start marker",
+    "sAlSeqMarkerEnd": "BGM loop end marker (0xFFFFFFFF)",
+    "sMusicVolume": "Current BGM volume during fade",
+    "sAlSndpConfig": "ALSndpConfig: maxSounds=42, maxEvents=60",
+    "sSfxVolume": "Current SFX volume during fade",
+    "sSfxPanState": "Per-player (0/1) pan mode (0=mono, 1=stereo)",
+    "sAudioBufPool": "DMA buffer pool queue (initialized flag + linked list)",
+    "sAudioBufEntries": "8 DMA buffer pool entries",
+    "sAudioFrameCount": "Audio frame counter (increments after each DMA flush)",
+    "sAudioDmaPending": "Number of pending DMA requests",
+    "sAudioCmdBufIndex": "Command buffer index (0/1, toggles each frame)",
+    "sAudioBufMinLen": "Minimum AI buffer length (bufLen - 0x10)",
+    "sAudioBufLen": "Computed AI buffer length (rounded to 16)",
+    "sAudioHeapBufLen": "Heap allocation len per AI buffer (bufLen + 0x60)",
+    "sAudioCmdBufSize": "Command buffer size in Acmd units",
+    "sAudioFramesRendered": "Number of frames rendered in current audio_submit_task call",
+    "sAudioBusy": "Audio busy flag (counts pending stop/start ops)",
+    "sPendingSfxId": "Pending SFX sound IDs per bank (-1 = none)",
+    "sAudioMuteReq": "Mute request flag (set by fade_out task)",
+    "sAudioDmaIOMesgs": "32 DMA IO message structs for osPiStartDma",
+    "sAudioDmaMQ": "DMA message queue",
+    "sAudioDmaMsgBuf": "32 DMA message buffer entries",
+    "sBgmPlaying": "BGM is playing / music enabled flag",
+    "sSfxPlaying": "SFX is playing / sound effects enabled flag",
+    "sAudioMuted": "Audio mute flag (all audio disabled when set)",
+    "sAudioForceMute": "Force mute flag (set externally, cleared by audio_unmute)",
+    "sAudioAiBufPtr": "Pointer to current AI DMA buffer descriptor",
+    "sAudioConfigPtr": "Pointer to AudioConfig struct",
+    "sAlSeqPlayerPtr": "Pointer to ALSeqPlayer (BGM)",
+    "sAlSeqPtr": "Pointer to ALSeq (BGM)",
+    "sCurSndPlayerPtr": "Current ALSndPlayer pointer (switches per bank)",
+    "sMusicVolumeSetting": "BGM volume setting (default 0x7FFF)",
+    "sSfxSndIds": "SFX sound ID arrays (30 ALSndId per bank)",
+    "sSfxBankLoaded": "SFX bank loaded flags per slot (0/1/2)",
+    "sSfxSoundCount": "Number of sounds in each SFX bank",
+    "sSfxVolumeSetting": "SFX default volume setting (0x7FFF)",
+    "sAudioTask": "Audio OSTask (M_AUDTASK, ASP ucode)"
+  },
+  "open_questions": [
+    "sAudioUnk1 (D_800A4514), sAudioUnk2 (D_800A4518) — unknown counters, never checked externally?",
+    "sAudioBufEntry.aiBufSize field = 2 — hardcoded, what does 2 mean?",
+    "sSfxPanState[2] — relationship to PlayerInputState.x_d93bcabf pan mode is clear but exact values (20 vs 100) are heuristics",
+    "@bug at audio_sfx_stop line 487: sSfxPlaying = TRUE set but no sound is played",
+    "@bug at audio_fade_in_task line 573: sBgmPlaying checked twice instead of different conditions"
+  ]
 }

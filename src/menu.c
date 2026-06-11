@@ -9,9 +9,9 @@ extern s32 gGfxFlags;
 extern Object *x_fa7941af;
 extern s16 D_80049B30[];
 
-extern u8 x_a7d9a1e8;
-extern s32 x_66ddef46;
-extern s32 x_15814eea;
+extern u8 sAudioMuted;
+extern s32 sMusicVolumeSetting;
+extern s32 gSfxVolumeSetting;
 extern u8 sClearZbuffer;
 extern s16 D_80081250;
 extern x_4a7d6dd4 *D_80081254;
@@ -1324,7 +1324,7 @@ void x_200fa268(Object *obj) {
         return;
     }
 
-    x_f3da6ca2(0x2000, 8);
+    audio_sfx_stop(0x2000, 8);
     obj->x_0232396f = x_cb95930b;
     x_a0e73601("dr_title", 0, 0, 0, 0, x_96186256, x_35b88489);
     v0 = obj_create_from_def(&x_93463df6, &x_fc517ba8, 0x2000);
@@ -1429,15 +1429,15 @@ void x_3ecc4edc(void) {
     obj->x_0f4167b4[x_0371940a] = controller;
 
     obj = obj_create_from_def(&x_867609ad, &x_4b76305b, x_35b88489);
-    obj->frameCounter = x_a7d9a1e8 + x_4b8a6796;
+    obj->frameCounter = sAudioMuted + x_4b8a6796;
     obj->x_0f4167b4[x_0371940a] = controller;
 
     obj = obj_create_from_def(&x_49ea79b4, &x_d252ddf2, x_35b88489);
-    obj->frameCounter = x_66ddef46 / (0x8000 / 9) + x_afcff1b4;
+    obj->frameCounter = sMusicVolumeSetting / (0x8000 / 9) + x_afcff1b4;
     obj->x_0f4167b4[x_0371940a] = controller;
 
     obj = obj_create_from_def(&x_eeea4d36, &x_7b5eb252, x_35b88489);
-    obj->frameCounter = x_15814eea / (0x8000 / 9) + x_afcff1b4;
+    obj->frameCounter = gSfxVolumeSetting / (0x8000 / 9) + x_afcff1b4;
     obj->x_0f4167b4[x_0371940a] = controller;
 
     obj = obj_create_from_def(&x_375e794a, &x_6a701386, x_35b88489);

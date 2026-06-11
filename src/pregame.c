@@ -266,7 +266,7 @@ void x_6aa7260b(Object *obj) {
     obj->x_0f4167b4[1] = buttons = x_59ce598c[x_30bbe547].buttons;
 
     if (buttons & x_9cefe76c) {
-        x_7e194d55(2, x_a7d9a1e8 != 0 ? 0 : x_30bbe547 + 4);
+        audio_sfx_play(2, sAudioMuted != 0 ? 0 : x_30bbe547 + 4);
         x_35e81a03(obj, obj->x_e2f64c57[5]);
         TASK_END(obj->currentTask);
     } else if (buttons & (x_ad1aebe6 | x_fc4a9735)) {
@@ -488,7 +488,7 @@ void x_0f87e747(Object *obj) {
     }
 
     if (v1 == obj->x_0f4167b4[6]) {
-        x_7e194d55(2, x_a7d9a1e8 != 0 ? 0 : x_30bbe547 + 4);
+        audio_sfx_play(2, sAudioMuted != 0 ? 0 : x_30bbe547 + 4);
         x_35e81a03(obj, x_aaadc3e8);
         x_aaadc3e8 = obj->x_e2f64c57[4];
         x_aaadc3e8->x_0f4167b4[7] = 20;
@@ -496,7 +496,7 @@ void x_0f87e747(Object *obj) {
         return;
     }
 
-    x_7e194d55(2, 6 + x_30bbe547);
+    audio_sfx_play(2, 6 + x_30bbe547);
 
     if (abs(v1 - obj->x_0f4167b4[6]) <= 5) {
         if (v1 < obj->x_0f4167b4[6]) {
@@ -568,7 +568,7 @@ void x_34648a7a(Object *obj) {
         obj->x_0f4167b4[2] = 15;
         if (v1 & x_9cefe76c) {
             Object *x_aaadc3e8;
-            x_7e194d55(2, x_a7d9a1e8 != 0 ? 0 : a3 + 4);
+            audio_sfx_play(2, sAudioMuted != 0 ? 0 : a3 + 4);
             x_aaadc3e8 = obj->x_e2f64c57[4];
             x_aaadc3e8->x_0f4167b4[7] = 20;
 
@@ -582,7 +582,7 @@ void x_34648a7a(Object *obj) {
                 TASK_END(obj->currentTask);
             }
         } else if (v1 & (x_ad1aebe6 | x_fc4a9735)) {
-            x_7e194d55(2, 6 + a3);
+            audio_sfx_play(2, 6 + a3);
 
             v0 = obj->frameCounter;
             if (v1 & x_ad1aebe6) {
@@ -1045,7 +1045,7 @@ void x_81cbe10a(x_5aaa1a5b *state, s16 x_30bbe547) {
 
     state->x_e4b35e9b++;
     if (x_3a1b45d4->sequence[state->x_e4b35e9b] == x_d0d35cc6) {
-        x_7e194d55(2, 9);
+        audio_sfx_play(2, 9);
         x_3a1b45d4->handler(x_30bbe547, x_3a1b45d4->x_273c58c6, x_3a1b45d4->x_08455b9a);
         state->x_3a1b45d4 = NULL;
         state->x_e4b35e9b = 0;

@@ -910,32 +910,32 @@ void wad_resolve_gmd(x_80d298c9 *x_d59386e0) {
 void wad_load_ctl(x_80d298c9 *x_d59386e0) {
     wad_entry_load_data(x_d59386e0);
     if (x_d59386e0->data != NULL) {
-        x_f133710d = x_d59386e0->x_f33d7764;
-        mem_copy_overlap(x_f90c9091, x_d59386e0->data, x_f133710d);
+        sAlBankFileSize = x_d59386e0->x_f33d7764;
+        mem_copy_overlap(sAlBankFile, x_d59386e0->data, sAlBankFileSize);
         wad_entry_free(x_d59386e0);
     }
 }
 
 void wad_resolve_tbl(x_80d298c9 *x_d59386e0) {
     if (x_d59386e0->data != 0) {
-        alBnkfNew(x_f90c9091, x_d59386e0->data);
+        alBnkfNew(sAlBankFile, x_d59386e0->data);
     }
 }
 
 void wad_resolve_seq(x_80d298c9 *x_d59386e0) {
     if (x_d59386e0->data != NULL) {
-        x_032a146b = x_d59386e0->x_f33d7764;
-        x_adb8fe7f = x_d59386e0->data;
-        alSeqNew(x_d896e1bb, x_adb8fe7f, x_032a146b);
-        alSeqNewMarker(x_d896e1bb, &x_9ae0d7c5, 0);
-        alSeqNewMarker(x_d896e1bb, &x_d452fc32, 0xFFFFFFFF);
-        alSeqpLoop(x_85a4d96f, &x_9ae0d7c5, &x_d452fc32, -1);
+        sAlSeqSize = x_d59386e0->x_f33d7764;
+        sAlSeqData = x_d59386e0->data;
+        alSeqNew(sAlSeqPtr, sAlSeqData, sAlSeqSize);
+        alSeqNewMarker(sAlSeqPtr, &sAlSeqMarkerStart, 0);
+        alSeqNewMarker(sAlSeqPtr, &sAlSeqMarkerEnd, 0xFFFFFFFF);
+        alSeqpLoop(sAlSeqPlayerPtr, &sAlSeqMarkerStart, &sAlSeqMarkerEnd, -1);
 
-        alSeqpSetBank(x_85a4d96f, x_f90c9091->bankArray[0]);
-        alSeqpSetSeq(x_85a4d96f, x_d896e1bb);
-        alSeqpSetVol(x_85a4d96f, x_66ddef46);
-        x_24b82fef = TRUE;
-        x_b5cc849a = x_66ddef46;
+        alSeqpSetBank(sAlSeqPlayerPtr, sAlBankFile->bankArray[0]);
+        alSeqpSetSeq(sAlSeqPlayerPtr, sAlSeqPtr);
+        alSeqpSetVol(sAlSeqPlayerPtr, sMusicVolumeSetting);
+        sBgmPlaying = TRUE;
+        sMusicVolume = sMusicVolumeSetting;
     }
 }
 
@@ -943,7 +943,7 @@ void wad_load_vox(x_80d298c9 *x_d59386e0) {
     wad_entry_load_data(x_d59386e0);
     if (x_d59386e0->data != NULL) {
         mem_copy_overlap(gSfxBanks[2], x_d59386e0->data, x_d59386e0->x_f33d7764);
-        x_df816944[2] = 1;
+        gSfxBankLoaded[2] = 1;
         wad_entry_free(x_d59386e0);
         wad_setup_sfx_bank(gSfxBanks[2], D_7DE880, 2);
     }
@@ -960,7 +960,7 @@ void wad_load_sfb(x_80d298c9 *x_d59386e0) {
     wad_entry_load_data(x_d59386e0);
     if (x_d59386e0->data != NULL) {
         mem_copy_overlap(gSfxBanks[x_3a540ba4], x_d59386e0->data, x_d59386e0->x_f33d7764);
-        x_df816944[x_3a540ba4] = TRUE;
+        gSfxBankLoaded[x_3a540ba4] = TRUE;
         wad_entry_free(x_d59386e0);
     }
 }

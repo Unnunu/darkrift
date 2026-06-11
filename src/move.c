@@ -348,16 +348,16 @@ void x_9a2e218f(Object *obj) {
         x_429c730a += x_9e993e2f;
         if (obj->frameCounter != 0) {
             if (obj->frameCounter == x_429c730a->x_70149fad) {
-                x_7e194d55(x_30bbe547, x_429c730a->x_6c6074c0);
+                audio_sfx_play(x_30bbe547, x_429c730a->x_6c6074c0);
             }
             if (obj->frameCounter == x_429c730a->x_bf6039d8) {
-                x_7e194d55(x_30bbe547, x_429c730a->x_a1942e25);
+                audio_sfx_play(x_30bbe547, x_429c730a->x_a1942e25);
             }
             if (obj->frameCounter == x_429c730a->x_8c856b1f) {
-                x_7e194d55(x_30bbe547, x_429c730a->x_94e185f0);
+                audio_sfx_play(x_30bbe547, x_429c730a->x_94e185f0);
             }
             if (obj->frameCounter == x_429c730a->x_851b801d) {
-                x_7e194d55(x_30bbe547, x_429c730a->x_155a7631);
+                audio_sfx_play(x_30bbe547, x_429c730a->x_155a7631);
             }
         }
     }

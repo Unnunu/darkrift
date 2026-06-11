@@ -73,7 +73,7 @@ void x_ff5d42d3(Object *obj) {
             v0->x_e2f64c57[0] = player;
             v0->x_0f4167b4[6] = obj->x_0f4167b4[6];
             model_light_attach(v0, &x_5aee6615[player->x_30bbe547]);
-            x_7e194d55(player->x_30bbe547, 10);
+            audio_sfx_play(player->x_30bbe547, 10);
             v0 = x_24276d64();
             if (v0 != NULL) {
                 v0->x_0f4167b4[0] = v0->x_0f4167b4[1] = 40;
@@ -91,7 +91,7 @@ void x_ff5d42d3(Object *obj) {
             v0->x_e2f64c57[0] = player;
             v0->x_0f4167b4[6] = obj->x_0f4167b4[6];
             model_light_attach(v0, &x_5aee6615[player->x_30bbe547]);
-            x_7e194d55(player->x_30bbe547, 10);
+            audio_sfx_play(player->x_30bbe547, 10);
         }
     } else if (obj->x_0f4167b4[1] == 16) {
         x_49781937.x = obj->x_20d20338->transforms[2].x_0c1a9bdd.w.x;
@@ -105,7 +105,7 @@ void x_ff5d42d3(Object *obj) {
             v0->x_e2f64c57[0] = player;
             v0->x_0f4167b4[6] = obj->x_0f4167b4[6];
             model_light_attach(v0, &x_5aee6615[player->x_30bbe547]);
-            x_7e194d55(player->x_30bbe547, 10);
+            audio_sfx_play(player->x_30bbe547, 10);
         }
     } else if (obj->x_0f4167b4[1] == 24) {
         obj->flags |= x_f51cb721;

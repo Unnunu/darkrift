@@ -290,7 +290,10 @@ Functions renamed and documented: `mat4_ident`, `mat4_ident_partial`, `mat4_copy
 ### WAD Archive (wad.c) — DONE (Wave 1)
 Enum `WadFileType` (22 types mapped by extension: WAD_ANM, WAD_TEX, WAD_SP2, WAD_DB, WAD_PCL, WAD_GMD, WAD_TMD, WAD_SEQ, WAD_CTL, WAD_TBL, WAD_SP3, WAD_SFB, WAD_SFX, WAD_K2/K3/K4/K5, WAD_MOV, WAD_OC, WAD_SYM, WAD_VOX, WAD_NESTED). 4 structs: `WadFolder`, `WadFileEntry`, `WadHeader`, `WadAnmHeader`. 42 functions renamed: loaders per type (`wad_load_anm/tex/sp2/kmd_0/gmd/tmd/ctl/vox/sfb/sp3/oc/k2/k3/k4/k5/mov/sym`), resolvers (`wad_resolve_*`), management (`wad_open/open_path/load_path/unload_*`), entry mgmt (`wad_entry_*`), helpers (`wad_streq/strcat/strcpy/strupr`). 14 globals: `sWadEntries`, `sWadEntryCount`, `sWadHeader`, `sWadDataPtr`, `sWadFolder`, etc. Updated functions.h, variables.h, symbol_addrs.txt, 30+ caller files.
 
-Next in queue: `audio.c` (most remaining cross-references to wad.c externs live in audio globals)
+### Audio (audio.c) — DONE (Wave 1)
+25 functions renamed: `audio_ostask_init`, `audio_state_reset`, `audio_init`, `audio_heap_alloc`, `audio_reinit`, `audio_synth_config`, `audio_frame_render`, `audio_dma_callback`, `audio_get_dma_proc`, `audio_dma_wait`, `audio_frame_update`, `audio_submit_task`, `audio_sfx_play`, `audio_sfx_stop`, `audio_sfx_stop_bank`, `audio_sfx_stop_all`, `audio_bgm_stop`, `audio_fade_complete`, `audio_fade_out_task`, `audio_fade_in_task`, `audio_sfx_set_pan`, `audio_sfx_set_vol`, `audio_bgm_set_vol`, `audio_unmute`, `wad_setup_sfx_bank`. 5 structs: `AudioConfig`, `AudioDmaBuf`, `AudioBufEntry`, `AudioBufPool`, `AudioFrameCtx`. ~50 globals: `sAudioConfig`, `sAlSeqPlayer`, `sAlSndPlayers`, `sAlHeap`, `sAudioHeapData`, `sAlBankFile`, `sMusicVolume`, `sSfxVolume`, `sBgmPlaying`, `sSfxPlaying`, `sAudioMuted`, `sSfxBankLoaded`, `sSfxSoundCount`, `sSfxVolumeSetting`, `sMusicVolumeSetting`, `sAudioTask`, etc. Updated functions.h, variables.h, symbol_addrs.txt, wad.c, present.c, match.c, move.c, hud.c. Build verified.
+
+Next in queue: `move.c` (move/attack state machine — most complex FSM, cross-references with player, combat, audio, wad)
 
 ## Thread Model
 | Pri | Thread | Entry | Description |
