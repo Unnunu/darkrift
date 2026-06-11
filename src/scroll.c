@@ -34,10 +34,10 @@ x_4a7d6dd4 *x_a0e73601(char *x_2b0c3984, s32 x_84ff873b, s32 x_64a8566c, s32 x_a
 
     x_8dddde0e = mem_alloc_debug(sizeof(x_4a7d6dd4), "scroll.c", 21);
 
-    x_dab0846a(x_7244b466, x_2b0c3984);
-    x_8c518b47(x_7244b466, ".tex");
+    wad_strcpy(x_7244b466, x_2b0c3984);
+    wad_strcat(x_7244b466, ".tex");
 
-    x_d59386e0 = (x_3b6b80ec *) x_b717ed65[x_e720f37d(x_7244b466, x_fb21ca8c)].data;
+    x_d59386e0 = (x_3b6b80ec *) sWadEntries[wad_entry_find(x_7244b466, x_fb21ca8c)].data;
 
     x_8dddde0e->width = x_d59386e0->width;
     x_8dddde0e->height = x_d59386e0->height;
@@ -270,7 +270,7 @@ void x_08216b8b(x_8ab35fe5 *x_cc1d0de5) {
     x_7cc7ad58 *sprite;
     s32 x_5b30c492;
 
-    x_33b084c7();
+    wad_debug_loop();
     sprite = x_cc1d0de5->x_a34b89cc;
     x_5b30c492 = x_cc1d0de5->x_5b30c492;
     for (i = 0; i < x_5b30c492; i++, sprite++) {

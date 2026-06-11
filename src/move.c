@@ -11,7 +11,7 @@ void x_d30a20e1(Object *obj) {
     u16 x_30bbe547 = player->x_30bbe547;
     s32 x_76041836;
 
-    if (x_77831b2c[x_30bbe547].x_03604d94 && !x_9df63a90) {
+    if (gWadCondLoad[x_30bbe547].x_03604d94 && !x_9df63a90) {
         if (x_12c88671(player) || x_bed222e0(player, TRUE)) {
             return;
         }

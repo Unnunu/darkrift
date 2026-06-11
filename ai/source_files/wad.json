@@ -6,5 +6,141 @@
   "evidence": {
     "strings": ["wad.c"],
     "summary": "WAD archive loader + resource manager. 256-slot cache, 22 asset types (TMD/KMD models, textures, BGM, SFX, banks). Path-based WAD navigation (ROOT/SCAR/SCAR1_H/...)."
-  }
+  },
+  "enums": [
+    {
+      "old": "x_94e9bb96",
+      "new": "WadFileType",
+      "entries": [
+        "WAD_ANM = 0",
+        "WAD_TEX = 1",
+        "WAD_SP2 = 2",
+        "WAD_UNUSED_3 = 3",
+        "WAD_NESTED = 4",
+        "WAD_DB = 5",
+        "WAD_PCL = 6",
+        "WAD_GMD = 7",
+        "WAD_TMD = 8",
+        "WAD_SEQ = 9",
+        "WAD_CTL = 10",
+        "WAD_TBL = 11",
+        "WAD_SP3 = 12",
+        "WAD_SFB = 13",
+        "WAD_SFX = 14",
+        "WAD_K2 = 15",
+        "WAD_MOV = 16",
+        "WAD_OC = 17",
+        "WAD_SYM = 18",
+        "WAD_VOX = 19",
+        "WAD_K3 = 20",
+        "WAD_K4 = 21",
+        "WAD_K5 = 22"
+      ]
+    }
+  ],
+  "structs": [
+    {
+      "old": "x_f56bf0e5",
+      "new": "WadFolder",
+      "fields": "name[20], offset, fileCount, folderIndex"
+    },
+    {
+      "old": "x_e28b4412",
+      "new": "WadFileEntry",
+      "fields": "name[20], offset, type, size, unpackedSize"
+    },
+    {
+      "old": "x_909544ae",
+      "new": "WadHeader",
+      "fields": "numFolders, unknown, folders[1]"
+    },
+    {
+      "old": "x_8e2f21bf",
+      "new": "WadAnmHeader",
+      "fields": "count, offsets[1]"
+    }
+  ],
+  "functions": {
+    "wad_debug_loop": "Empty loop with obfuscation — used to match original compiler output",
+    "wad_strcat": "Concatenate src string onto dst, uppercase both",
+    "wad_strcpy": "Copy src string to dst (simple overwrite)",
+    "wad_streq": "Compare two strings for equality, return 0 if equal",
+    "wad_strupr": "Convert string to uppercase in-place",
+    "wad_entry_find": "Hash-based lookup: uppercase name, return index or -1",
+    "wad_entries_reset": "Reset/init all 256 resource entries (flags=1, indices=-1, name='')",
+    "wad_load_area_init": "Set up WAD load area: split buffer into header + data regions",
+    "wad_open_nested": "Find nested .WAD file by name in current folder, set data pointer",
+    "wad_select_folder": "Select folder entry by name in current WAD header",
+    "wad_open": "Open WAD by name: root ('') or folder within current or nested file",
+    "wad_open_path": "Open path like 'SCAR/SCAR1_H' — split by '/', traverse folders",
+    "wad_sync_dma_slots": "Copy DMA slot data pointers into resource entries after defrag",
+    "wad_load_path": "Entry point: compact, open path, load all files for context, clear buffer",
+    "wad_unload_context": "Free all resource entries matching a given context ID",
+    "wad_unload_all": "Free all resource entries unconditionally",
+    "wad_unload_type": "Free all resource entries of a given WadFileType",
+    "wad_load_all": "Main dispatcher: iterate current folder's files, add + load by type",
+    "wad_entry_alloc_dma": "Allocate DMA slot for entry's primary data",
+    "wad_entry_free_dma": "Free entry's primary DMA slot",
+    "wad_entry_free_unpacked": "Free entry's unpacked/secondary DMA slot",
+    "wad_entry_alloc_unpacked": "Allocate DMA slot for entry's unpacked data",
+    "wad_entry_free": "Free entry: mark flags=1, free both DMA slots, clear name/data",
+    "wad_entry_load_data": "Load entry data: DMA + optional LZHUF decompress if packed",
+    "wad_compact_entries": "Compact entry table: remove freed (flags&1) entries, shift remaining",
+    "wad_load_anm": "Load type 0 ANM: DMA raw, then reloc pointer array header",
+    "wad_load_tex": "Load type 1 TEX: DMA raw (texture data)",
+    "wad_load_sp2": "Load type 2 SP2: DMA, reloc sprite parts ptrs, fix palette entry 0 transparency",
+    "wad_load_kmd_0": "Load type 3: KMD data → anim buffer → model scaffold (param 0)",
+    "wad_load_gmd": "Load type 7 GMD: KMD data → anim buffer → model scaffold (param 1)",
+    "wad_load_k3": "Load type 20 K3: KMD → anim buffer → Model (render=eec8b086, flags=0x10)",
+    "wad_load_k4": "Load type 21 K4: KMD → anim buffer → Model (render=bb5426b0, flags=2)",
+    "wad_load_k5": "Load type 22 K5: KMD → anim buffer → Model (render=fc23f083, flags=1, bone_setup)",
+    "wad_load_tmd": "Load type 8 TMD: KMD → anim buffer → Model (render=fd763f4f, flags=8, anim_setup)",
+    "wad_load_ctl": "Load type 10 CTL: DMA, copy to gAlBankFileBuffer, free entry",
+    "wad_load_vox": "Load type 19 VOX: DMA, copy to SFX bank slot 2, setup bank",
+    "wad_load_sfb": "Load type 13 SFB: DMA, copy to SFX bank slot[context], mark loaded",
+    "wad_sfx_rendermode": "Set GT render mode for SFX (XLU_SURF or white prim color)",
+    "wad_load_sp3": "Load type 12 SP3: KMD → anim buffer → Model (render=fc23f083, no flags)",
+    "wad_load_oc": "Load type 17 OC: DMA raw (open camera data)",
+    "wad_load_k2": "Load type 15 K2: KMD → anim buffer → Model (render=fc23f083, flags=4, bone_setup)",
+    "wad_load_mov": "Load type 16 MOV: callback or DMA raw if no callback registered",
+    "wad_load_sym": "Load type 18 SYM: conditional load (only if gWadCondLoad[ctx] is set)",
+    "wad_resolve_sp2": "Re-resolve type 2 SP2: fix texture pointers after reload",
+    "wad_relocate_sp2": "SP2 relocation callback — adjust sprite parts ptrs after DMA",
+    "wad_resolve_kmd_0": "Re-resolve type 3: re-register model scaffold (param 0)",
+    "wad_resolve_tmd": "Re-resolve type 8 TMD: rebuild Model from existing data",
+    "wad_resolve_k3": "Re-resolve type 20 K3: rebuild Model (eec8b086, flags=0x10)",
+    "wad_resolve_k4": "Re-resolve type 21 K4: rebuild Model (bb5426b0, flags=2)",
+    "wad_resolve_k5": "Re-resolve type 22 K5: rebuild Model (fc23f083, flags=1, bone_setup)",
+    "wad_resolve_gmd": "Re-resolve type 7 GMD: re-register model scaffold (param 1)",
+    "wad_resolve_tbl": "Re-resolve type 11 TBL: alBnkfNew on loaded bank data",
+    "wad_resolve_seq": "Re-resolve type 9 SEQ: set up audio sequence player from entry data",
+    "wad_resolve_sfx": "Re-resolve type 14 SFX: set up SFX bank for context",
+    "wad_resolve_sp3": "Re-resolve type 12 SP3: rebuild Model (fc23f083)",
+    "wad_resolve_k2": "Re-resolve type 15 K2: rebuild Model (fc23f083, flags=4, bone_setup)"
+  },
+  "globals": {
+    "sWadEntryCount": "Number of active resource entries in sWadEntries",
+    "sWadEntries": "Resource entry table (256 x ResourceLoadCtx)",
+    "sWadHeader": "Pointer to loaded WAD header in buffer",
+    "sWadHeaderPtr": "Alias of sWadHeader (WadHeader*)",
+    "sWadDataEnd": "End of WAD data region in buffer",
+    "sWadDataPtr": "Current WAD data pointer (for DMA offsets)",
+    "sWadFolder": "Current folder entry pointer",
+    "sWadBufferSizeHdr": "Size of buffer region reserved for WAD header",
+    "sWadBufferSizeData": "Size of buffer region reserved for WAD data",
+    "sWadFileCount": "Number of files in current folder",
+    "sWadFolderCount": "Number of folders in current WAD",
+    "sWadUnk1": "Unknown short 1",
+    "sWadUnk2": "Unknown short 2",
+    "sWadMovCallback": "Callback function pointer for MOV (type 16) loading"
+  },
+  "open_questions": [
+    "x_eec8b086 / x_bb5426b0 / x_fc23f083 / x_fd763f4f — render function pointers for model types; semantic difference unknown",
+    "x_f90c9091 (gAlBankFileBuffer) — ALBankFile buffer, exact relationship to context unclear",
+    "x_f12166b8 (gSfxBanks) — SFX bank slot array; mapping of slot index to context ID (0/1/2) unclear",
+    "x_77831b2c (gWadCondLoad) — conditional load enable flags per context; exact usage pattern unclear",
+    "WAD type 3 (WAD_UNUSED_3) — never appears in any WAD; dead code or legacy type",
+    "Type 5 (WAD_DB) and type 6 (WAD_PCL) — fall through to default raw loader; no specific parsing in wad.c",
+    "sWadUnk1, sWadUnk2 — accessed by unknown code paths; purpose unclear"
+  ]
 }

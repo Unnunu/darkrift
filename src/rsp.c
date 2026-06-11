@@ -34,8 +34,8 @@ extern x_ee01e8c6 D_8005BFF0[2];
 
 extern UnkStruct10 D_8004937C;
 extern UnkStruct10 D_80049384;
-void x_43d722ac(void);
-void x_ab4a6fed(s32 x_cc1d0de5, s32 x_84ff873b);
+void wad_entries_reset(void);
+void wad_load_area_init(s32 x_cc1d0de5, s32 x_84ff873b);
 void matrix_system_init(void);
 void button_state_reset(void);
 void x_3ef429e1(void);
@@ -52,7 +52,7 @@ extern s32 D_80081428;
 extern s32 D_80049CF0;
 
 void mem_defrag(void);
-void x_29f4699a(void);
+void wad_sync_dma_slots(void);
 void x_1e7c754d(void);
 void pool_init_core(void);
 
@@ -264,8 +264,8 @@ void rsp_game_init(u16 x_7cedc3fb) {
     sZbuffer = sFramebuffer = ((u32) x_9caeba2b + 0x40) & ~0x3F;
     sHeapBase = (void *) (((u32) sFramebuffer + 0x25800 + 0x40) & ~0x3F);
     mem_pool_init();
-    x_43d722ac();
-    x_ab4a6fed(sZbuffer, 0x25800);
+    wad_entries_reset();
+    wad_load_area_init(sZbuffer, 0x25800);
     matrix_system_init();
     button_state_reset();
     x_3ef429e1();
@@ -285,7 +285,7 @@ void rsp_game_init(u16 x_7cedc3fb) {
     if (!x_cf10d3eb) {}
     memcpy(&sGfxTaskExtra, &sGfxTaskF3D, sizeof(OSTask));
 
-    D_8013C228 = NULL;
+    sWadMovCallback = NULL;
     sOverlayBrightness = sFadeThreshold = 0;
     sClearZbuffer = TRUE;
     rsp_clear_callbacks();
@@ -310,7 +310,7 @@ void rsp_game_reinit(u16 x_7cedc3fb) {
     x_6c647b3a = 0;
     D_80081428 = 0;
     mem_defrag();
-    x_29f4699a();
+    wad_sync_dma_slots();
     x_1e7c754d();
     sClearColorR = gScreenProfiles[x_7cedc3fb].clearColorR;
     sClearColorG = gScreenProfiles[x_7cedc3fb].clearColorG;
@@ -327,7 +327,7 @@ void rsp_game_reinit(u16 x_7cedc3fb) {
     sFogColorG = gScreenProfiles[x_7cedc3fb].fogColorG;
     sFogColorB = gScreenProfiles[x_7cedc3fb].fogColorB;
     gGfxFlags = GFX_NONE;
-    D_8013C228 = NULL;
+    sWadMovCallback = NULL;
     sFadeThreshold = 0;
     sClearZbuffer = TRUE;
     rsp_clear_callbacks();

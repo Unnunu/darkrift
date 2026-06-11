@@ -94,22 +94,22 @@ void lzhuf_start(x_80d298c9 *x_cc1d0de5) {
     sDecompWritePtr = x_cc1d0de5->data;
     sDecompResCtx = x_cc1d0de5;
     sDecompRemain = x_cc1d0de5->size;
-    sDecompChunkSize = (u32) D_8013C218 >> 1;
+    sDecompChunkSize = (u32) sWadBufferSizeData >> 1;
 
-    sDecompBufs[0] = D_8013C208;
-    sDecompReadPtr = D_8013C208;
-    sDecompBufs[1] = D_8013C208 + sDecompChunkSize;
+    sDecompBufs[0] = sWadDataEnd;
+    sDecompReadPtr = sWadDataEnd;
+    sDecompBufs[1] = sWadDataEnd + sDecompChunkSize;
 
     sDecompBufPos = 0;
     sDecompBufIdx = 0;
 
-    if ((u32) D_8013C218 < (u32) x_cc1d0de5->size) {
-        dma_read_sync(sDecompResCtx->romAddr, D_8013C208, sDecompChunkSize);
+    if ((u32) sWadBufferSizeData < (u32) x_cc1d0de5->size) {
+        dma_read_sync(sDecompResCtx->romAddr, sWadDataEnd, sDecompChunkSize);
         dma_read_async(sDecompResCtx->romAddr + sDecompChunkSize, sDecompBufs[1], sDecompChunkSize);
         sDecompChunkIdx = 2;
         sDecompLastFlag = 0;
     } else {
-        dma_read_sync(sDecompResCtx->romAddr, D_8013C208, x_cc1d0de5->size);
+        dma_read_sync(sDecompResCtx->romAddr, sWadDataEnd, x_cc1d0de5->size);
         sDecompChunkSize = x_cc1d0de5->size;
         sDecompLastFlag = 1;
     }

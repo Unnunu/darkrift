@@ -441,6 +441,6 @@ x_edf8d3f1 D_8004C1E8[] = {
 s32 D_800AA470[4];
 s32 D_800AA480;
 Player x_824b9544[2];
-x_7bac7836 x_77831b2c[2];
+x_7bac7836 gWadCondLoad[2];
 u8 D_800B6350[2][11];
 x_79eacfe1 D_800B6368[x_edb381f3];

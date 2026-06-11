@@ -209,13 +209,13 @@ void x_7a8b20f2(char *name, s32 x_84ff873b) {
     x_36123519 *x_9a110419;
     x_88f11482 x_5bbba600 = { 0, 0, 6000, 0 };
 
-    x_dab0846a(x_840385a0, name);
-    x_8c518b47(x_840385a0, ".pcl");
-    x_8a9089b3 = x_b717ed65[x_e720f37d(x_840385a0, x_84ff873b)].data;
+    wad_strcpy(x_840385a0, name);
+    wad_strcat(x_840385a0, ".pcl");
+    x_8a9089b3 = sWadEntries[wad_entry_find(x_840385a0, x_84ff873b)].data;
 
-    x_dab0846a(x_f10a928a, name);
-    x_8c518b47(x_f10a928a, ".GMD");
-    D_8008160C = x_b717ed65[x_e720f37d(x_f10a928a, x_84ff873b)].x_4962fc73;
+    wad_strcpy(x_f10a928a, name);
+    wad_strcat(x_f10a928a, ".GMD");
+    D_8008160C = sWadEntries[wad_entry_find(x_f10a928a, x_84ff873b)].x_4962fc73;
     D_80049CF0 = &D_8008160C->model.x_bde24317;
 
     x_94b671c9 = D_8008160C->model.x_3bfb7219->x_45978ecb;

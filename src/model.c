@@ -769,7 +769,7 @@ void model_shadow_render(Object *obj) {
 void model_shadow_spawn(Object *x_4a65b74c, char *x_15887b2b, u32 context) {
     Object *shadow;
 
-    x_dab0846a(sShadowDesc.name, x_15887b2b);
+    wad_strcpy(sShadowDesc.name, x_15887b2b);
     shadow = obj_create_with_model(&sZeroPosition, NULL, &sShadowDesc, context);
 
     shadow->x_0f4167b4[0] = shadow->x_20d20338->transforms;

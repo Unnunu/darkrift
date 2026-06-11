@@ -105,7 +105,7 @@ void x_78e49744(void) {
     D_8013C40A = 0;
     D_8013C444 = 0;
     x_824b9544[1 - x_08051143].flags |= x_20efa43e;
-    x_77831b2c[1 - x_08051143].x_03604d94 = FALSE;
+    gWadCondLoad[1 - x_08051143].x_03604d94 = FALSE;
 
     x_59e6d217 = obj_create_from_def(&D_80052ED0, &D_80052E4C, x_2587f84f);
     x_59e6d217->frameCounter = x_18e8de7c;

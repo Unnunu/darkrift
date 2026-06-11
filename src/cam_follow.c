@@ -654,10 +654,10 @@ void cam_intro_start(Object *obj) {
     cam_battle_init(obj);
     cam_save_state();
 
-    x_dab0846a(x_a1fcc259, x_9f3b452d);
-    x_a1fcc259[7] = '1' + x_2615d8ad;
-    x_7b42bed5 = x_e720f37d(x_a1fcc259, x_2587f84f);
-    x_7bb27e6e(x_f4bce728, (x_a05f18ad *) x_b717ed65[x_7b42bed5].data);
+    wad_strcpy(x_a1fcc259, x_9f3b452d);
+    x_a1fcc259[7] = '1' + sWadUnk1;
+    x_7b42bed5 = wad_entry_find(x_a1fcc259, x_2587f84f);
+    x_7bb27e6e(x_f4bce728, (x_a05f18ad *) sWadEntries[x_7b42bed5].data);
     x_f4bce728->currentTask->callback = cam_intro_wait_input;
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;
@@ -673,10 +673,10 @@ void cam_intro_start_inverse(Object *obj) {
     cam_battle_init(obj);
     cam_save_state();
 
-    x_dab0846a(x_a1fcc259, x_9f3b452d);
-    x_a1fcc259[7] = '1' + x_2615d8ad;
-    x_7b42bed5 = x_e720f37d(x_a1fcc259, x_2587f84f);
-    x_7bb27e6e(x_f4bce728, (x_a05f18ad *) x_b717ed65[x_7b42bed5].data);
+    wad_strcpy(x_a1fcc259, x_9f3b452d);
+    x_a1fcc259[7] = '1' + sWadUnk1;
+    x_7b42bed5 = wad_entry_find(x_a1fcc259, x_2587f84f);
+    x_7bb27e6e(x_f4bce728, (x_a05f18ad *) sWadEntries[x_7b42bed5].data);
     x_f4bce728->currentTask->callback = cam_intro_skip_check;
     x_f4bce728->currentTask->delay = 0;
     x_f4bce728->currentTask->flags = TASK_RUNNABLE;

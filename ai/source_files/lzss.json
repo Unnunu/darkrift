@@ -36,10 +36,10 @@
     }
   ],
   "globals": {
-    "D_8013C208": "Heap base address (from memory.c, used for DMA buffer allocation)",
-    "D_8013C218": "Heap size (from memory.c, used to compute chunk size)"
+    "sWadDataEnd": "Heap base address (from memory.c, used for DMA buffer allocation)",
+    "sWadBufferSizeData": "Heap size (from memory.c, used to compute chunk size)"
   },
   "open_questions": [
-    "D_8013C208 and D_8013C218 are declared in variables.h but need meaningful names (Wave 2+)."
+    "sWadDataEnd and sWadBufferSizeData are declared in variables.h but need meaningful names (Wave 2+)."
   ]
 }

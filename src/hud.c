@@ -509,7 +509,7 @@ void x_ea2a7987(void) {
     Object *v0;
 
     D_8013C248 = NULL;
-    s0 = x_77831b2c[x_83106b21].x_7d8e7a6f;
+    s0 = gWadCondLoad[x_83106b21].x_7d8e7a6f;
     if (s0 != 0) {
         D_8013C248 = obj_create_from_def(&x_2a89e429, &x_331089fa, x_2587f84f);
         D_80081438--;
@@ -519,7 +519,7 @@ void x_ea2a7987(void) {
 
         if (s0 >= 1000) {
             s0 = 1;
-            x_77831b2c[x_83106b21].x_7d8e7a6f = 1;
+            gWadCondLoad[x_83106b21].x_7d8e7a6f = 1;
         }
 
         if (s0 >= 100) {
@@ -534,7 +534,7 @@ void x_ea2a7987(void) {
             v0->taskListHead = NULL;
         }
 
-        if (x_77831b2c[x_83106b21].x_7d8e7a6f >= 10) {
+        if (gWadCondLoad[x_83106b21].x_7d8e7a6f >= 10) {
             v0 = obj_create_from_def(D_800520D8[s3], &x_8a9089b3, x_2587f84f);
             D_80081438--;
             v0->frameCounter = 28 + (s0 / 10);
@@ -559,7 +559,7 @@ void x_ea2a7987(void) {
         D_8013C248->taskListHead = NULL;
     }
 
-    s0 = x_77831b2c[x_6f0b3be3].x_7d8e7a6f;
+    s0 = gWadCondLoad[x_6f0b3be3].x_7d8e7a6f;
     if (s0 != 0) {
         D_8013C248 = obj_create_from_def(&x_081c4eef, &x_331089fa, x_2587f84f);
         D_80081438--;
@@ -568,7 +568,7 @@ void x_ea2a7987(void) {
 
         if (s0 >= 1000) {
             s0 = 1;
-            x_77831b2c[x_6f0b3be3].x_7d8e7a6f = 1;
+            gWadCondLoad[x_6f0b3be3].x_7d8e7a6f = 1;
         }
 
         if (s0 >= 100) {
@@ -583,7 +583,7 @@ void x_ea2a7987(void) {
             v0->taskListHead = NULL;
         }
 
-        if (x_77831b2c[x_6f0b3be3].x_7d8e7a6f >= 10) {
+        if (gWadCondLoad[x_6f0b3be3].x_7d8e7a6f >= 10) {
             v0 = obj_create_from_def(D_800520D8[s3], &x_8a9089b3, x_2587f84f);
             D_80081438--;
             v0->frameCounter = 28 + (s0 / 10);
@@ -660,7 +660,7 @@ void x_41d6ae47(void) {
     v0->taskListHead = NULL;
 
     s0 = 0;
-    for (s1 = 0; s1 < x_77831b2c[x_83106b21].x_b2b764b3; s1++) {
+    for (s1 = 0; s1 < gWadCondLoad[x_83106b21].x_b2b764b3; s1++) {
         D_8013C258[x_83106b21][s1] = v0 = obj_create_from_def(&x_5c787447, &x_4fc490a9, x_2587f84f);
         v0->frameCounter = 13;
         x_5c787447.x -= 8;
@@ -678,7 +678,7 @@ void x_41d6ae47(void) {
     }
 
     s0 = 0;
-    for (s1 = 0; s1 < x_77831b2c[x_6f0b3be3].x_b2b764b3; s1++) {
+    for (s1 = 0; s1 < gWadCondLoad[x_6f0b3be3].x_b2b764b3; s1++) {
         D_8013C258[x_6f0b3be3][s1] = v0 = obj_create_from_def(&x_af0e6490, &x_4fc490a9, x_2587f84f);
         v0->frameCounter = 13;
         x_af0e6490.x += 8;
@@ -706,20 +706,20 @@ void x_41d6ae47(void) {
     D_8013C238 = v0->x_904eaf67->x_a34b89cc[14].parts;
     D_8013C238->rightS = D_8013C238->x_b88b3756 + 80;
 
-    v0 = obj_create_from_def(&D_8004A5D0[x_77831b2c[x_83106b21].x_eb1fe45b], &x_4fc490a9, x_2587f84f);
-    if (x_77831b2c[x_83106b21].x_eb1fe45b < x_e235676f) {
-        v0->frameCounter = 16 + x_77831b2c[x_83106b21].x_eb1fe45b;
+    v0 = obj_create_from_def(&D_8004A5D0[gWadCondLoad[x_83106b21].x_eb1fe45b], &x_4fc490a9, x_2587f84f);
+    if (gWadCondLoad[x_83106b21].x_eb1fe45b < x_e235676f) {
+        v0->frameCounter = 16 + gWadCondLoad[x_83106b21].x_eb1fe45b;
     } else {
-        v0->frameCounter = 16 + x_77831b2c[x_83106b21].x_eb1fe45b - 1;
+        v0->frameCounter = 16 + gWadCondLoad[x_83106b21].x_eb1fe45b - 1;
     }
     task_free_list(v0->taskListHead);
     v0->taskListHead = NULL;
 
-    v0 = obj_create_from_def(&D_8004A680[x_77831b2c[x_6f0b3be3].x_eb1fe45b], &x_4fc490a9, x_2587f84f);
-    if (x_77831b2c[x_6f0b3be3].x_eb1fe45b < x_e235676f) {
-        v0->frameCounter = 16 + x_77831b2c[x_6f0b3be3].x_eb1fe45b;
+    v0 = obj_create_from_def(&D_8004A680[gWadCondLoad[x_6f0b3be3].x_eb1fe45b], &x_4fc490a9, x_2587f84f);
+    if (gWadCondLoad[x_6f0b3be3].x_eb1fe45b < x_e235676f) {
+        v0->frameCounter = 16 + gWadCondLoad[x_6f0b3be3].x_eb1fe45b;
     } else {
-        v0->frameCounter = 16 + x_77831b2c[x_6f0b3be3].x_eb1fe45b - 1;
+        v0->frameCounter = 16 + gWadCondLoad[x_6f0b3be3].x_eb1fe45b - 1;
     }
     task_free_list(v0->taskListHead);
     v0->taskListHead = NULL;

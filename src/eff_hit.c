@@ -32,7 +32,7 @@ s32 D_8013C3C8[2];
 u8 x_82bfe825(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
-    return (player->flags & x_cf6c9b89) || x_77831b2c[player->x_30bbe547].x_03604d94;
+    return (player->flags & x_cf6c9b89) || gWadCondLoad[player->x_30bbe547].x_03604d94;
 }
 
 void x_19fed2ac(Object *obj) {
@@ -225,7 +225,7 @@ void x_82fdb659(Object *obj) {
             x_c3947955(obj);
             break;
         case x_73cf9ceb:
-            if (x_77831b2c[1 - player->x_30bbe547].x_eb1fe45b == x_13ed828f &&
+            if (gWadCondLoad[1 - player->x_30bbe547].x_eb1fe45b == x_13ed828f &&
                 obj->frameCounter < player->x_7f68c36b->x_bab9966d - 1) {
                 obj->pos.y = 100;
             } else {
@@ -779,7 +779,7 @@ void x_d87a4f6e(Object *obj) {
 u8 x_5127226c(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
-    if (x_77831b2c[player->x_30bbe547].x_03604d94) {
+    if (gWadCondLoad[player->x_30bbe547].x_03604d94) {
         return TRUE;
     }
 
@@ -789,7 +789,7 @@ u8 x_5127226c(Object *obj) {
 u8 x_a8ff9909(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
-    if (x_77831b2c[player->x_30bbe547].x_03604d94) {
+    if (gWadCondLoad[player->x_30bbe547].x_03604d94) {
         return TRUE;
     }
 
@@ -817,7 +817,7 @@ void x_4a0e9b26(Object *obj) {
     v0 = x_824b9544 + (1 - player->x_30bbe547);
     v1 = &player->x_68a6b5cd[player->x_cd14c741];
 
-    if (!(v1->flags & x_f79587cb) && x_77831b2c[player->x_30bbe547].x_03604d94 &&
+    if (!(v1->flags & x_f79587cb) && gWadCondLoad[player->x_30bbe547].x_03604d94 &&
         (v0->x_7f68c36b->flags & x_01e3e146) && v0->obj->frameCounter < v0->x_7f68c36b->x_c53ac2df) {
         if (v0->flags & x_ed8e51a2) {
             player_exec_move_ai(player, x_e2a42ecd, 1);
@@ -1094,7 +1094,7 @@ void x_a3014bb9(Object *obj) {
 void x_fd0916cc(Object *obj) {
     Player *v0 = (Player *) obj->x_e2f64c57[0];
 
-    if (x_77831b2c[x_83106b21].x_eb1fe45b == x_77831b2c[x_6f0b3be3].x_eb1fe45b && v0->x_30bbe547 != 0) {
+    if (gWadCondLoad[x_83106b21].x_eb1fe45b == gWadCondLoad[x_6f0b3be3].x_eb1fe45b && v0->x_30bbe547 != 0) {
         obj->currentTask->delay = 15;
     }
 

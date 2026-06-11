@@ -374,10 +374,10 @@ Object *obj_create_anim(x_88f11482 *x_cc1d0de5, char *x_84ff873b, x_aece7675 *pr
 
     if (x_84ff873b == NULL) {
         obj = obj_alloc(properties->x_95ee18a8);
-        x_dab0846a(x_dcab8ab0, properties->name);
+        wad_strcpy(x_dcab8ab0, properties->name);
         obj_init(obj, x_cc1d0de5, &sZeroVelocity, NULL, properties->x_08ae3bb4);
     } else {
-        x_dab0846a(x_dcab8ab0, x_84ff873b);
+        wad_strcpy(x_dcab8ab0, x_84ff873b);
         if (properties != NULL) {
             obj = obj_alloc(properties->x_95ee18a8);
             obj_init(obj, x_cc1d0de5, &sZeroVelocity, NULL, properties->x_08ae3bb4);
@@ -391,8 +391,8 @@ Object *obj_create_anim(x_88f11482 *x_cc1d0de5, char *x_84ff873b, x_aece7675 *pr
     obj->flags = x_3434f870;
     x_20d20338 = obj->x_20d20338 = mem_alloc_debug(sizeof(x_6fcfcf46), "item.c", 523);
 
-    x_8c518b47(x_dcab8ab0, ".kmd");
-    s5 = x_20d20338->x_305a60f8 = x_b717ed65[x_e720f37d(x_dcab8ab0, x_ee71e5cb)].x_4962fc73;
+    wad_strcat(x_dcab8ab0, ".kmd");
+    s5 = x_20d20338->x_305a60f8 = sWadEntries[wad_entry_find(x_dcab8ab0, x_ee71e5cb)].x_4962fc73;
     x_20d20338->model = NULL;
     x_20d20338->x_6dcce206 = s5->model.x_6dcce206;
 
@@ -433,7 +433,7 @@ Object *obj_create_from_def(x_88f11482 *pos, x_f0d7e70f *def, s32 context) {
     obj->flags = def->flags;
     obj->flags |= x_3d723236;
     obj->frameCounter = def->x_f85f1359;
-    obj->x_904eaf67 = x_b717ed65[x_e720f37d(def->x_6870fa4a, context)].data;
+    obj->x_904eaf67 = sWadEntries[wad_entry_find(def->x_6870fa4a, context)].data;
 
     return obj;
 }
@@ -448,10 +448,10 @@ Object *obj_create_with_model(x_88f11482 *pos, char *name, x_aece7675 *propertie
 
     if (name == NULL) {
         obj = obj_alloc(properties->x_95ee18a8);
-        x_dab0846a(x_c02b5734, properties->name);
+        wad_strcpy(x_c02b5734, properties->name);
         obj_init(obj, pos, &sZeroVelocity, NULL, properties->x_08ae3bb4);
     } else {
-        x_dab0846a(x_c02b5734, name);
+        wad_strcpy(x_c02b5734, name);
         if (properties != NULL) {
             obj = obj_alloc(properties->x_95ee18a8);
             obj_init(obj, pos, &sZeroVelocity, NULL, properties->x_08ae3bb4);
@@ -466,7 +466,7 @@ Object *obj_create_with_model(x_88f11482 *pos, char *name, x_aece7675 *propertie
     obj->x_20d20338 = (x_6fcfcf46 *) x_6d619dce(gPhysicsPool);
 
     x_20d20338 = obj->x_20d20338;
-    model = x_20d20338->model = x_b717ed65[x_e720f37d(x_c02b5734, context)].x_4962fc73;
+    model = x_20d20338->model = sWadEntries[wad_entry_find(x_c02b5734, context)].x_4962fc73;
     x_20d20338->x_305a60f8 = NULL;
     x_6dcce206 = x_20d20338->x_6dcce206 = model->x_6dcce206;
 

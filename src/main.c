@@ -231,7 +231,7 @@ void tr_player_load(s16 x_ce13e71a) {
             break;
         case x_e483bf48:
         case x_557d3dd6:
-            if (x_77831b2c[x_ce13e71a].x_03604d94) {
+            if (gWadCondLoad[x_ce13e71a].x_03604d94) {
                 v0 = tr_obj_alloc();
                 if (v0 == NULL) {
                     x_5cb3a50d = TRUE;

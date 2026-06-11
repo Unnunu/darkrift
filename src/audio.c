@@ -94,7 +94,7 @@ ALSeq *x_d896e1bb = &D_80081708;
 ALSndPlayer *x_e2b79a2c = &x_ef25bafe[0];
 s32 x_66ddef46 = 0x7FFF;
 ALSndId *x_7188dab8[3] = { NULL, NULL, NULL };
-ALBankFile *x_f12166b8[3] = { NULL, NULL, NULL };
+ALBankFile *gSfxBanks[3] = { NULL, NULL, NULL };
 s32 D_8004A464[3] = { 0, 0, 0 }; // unused
 u8 x_df816944[3] = { FALSE, FALSE, FALSE };
 s8 x_af0cb8e3[3] = { -1, -1, -1 };
@@ -217,7 +217,7 @@ void x_0edd29ad(void) {
 
     for (i = 0; i < 3; i++) {
         x_7188dab8[i] = alHeapDBAlloc("audio.c", 259, &x_e1d5ba1b, 1, 30 * sizeof(ALSndId));
-        x_f12166b8[i] = alHeapDBAlloc("audio.c", 260, &x_e1d5ba1b, 1, 0x1600);
+        gSfxBanks[i] = alHeapDBAlloc("audio.c", 260, &x_e1d5ba1b, 1, 0x1600);
         x_df816944[i] = FALSE;
     }
 }
@@ -632,7 +632,7 @@ void x_20c52092(s16 volume) {
     alSeqpSetVol(x_85a4d96f, volume);
 }
 
-void x_e6e6fcf8(ALBankFile *f, u8 *table, u32 x_30bbe547) {
+void wad_setup_sfx_bank(ALBankFile *f, u8 *table, u32 x_30bbe547) {
     ALSndId *x_429c730a;
     ALInstrument *inst;
     u32 i;

@@ -472,8 +472,8 @@ void x_8383794c(Object *obj) {
 
         mem_free(x_3b49183f);
         x_3b49183f = NULL;
-        x_dab0846a(x_c309f013, D_8004B844[obj->x_0f4167b4[0]].x_1256da71->name);
-        x_8c518b47(x_c309f013, "st");
+        wad_strcpy(x_c309f013, D_8004B844[obj->x_0f4167b4[0]].x_1256da71->name);
+        wad_strcat(x_c309f013, "st");
         x_a0e73601(x_c309f013, 0, 13, 0, 0, x_96186256, x_35b88489);
         x_7e194d55(2, 1);
     } else if (buttons & x_fc4a9735) {
@@ -485,8 +485,8 @@ void x_8383794c(Object *obj) {
 
         mem_free(x_3b49183f);
         x_3b49183f = NULL;
-        x_dab0846a(x_c309f013, D_8004B844[obj->x_0f4167b4[0]].x_1256da71->name);
-        x_8c518b47(x_c309f013, "st");
+        wad_strcpy(x_c309f013, D_8004B844[obj->x_0f4167b4[0]].x_1256da71->name);
+        wad_strcat(x_c309f013, "st");
         x_a0e73601(x_c309f013, 0, 13, 0, 0, x_96186256, x_35b88489);
         x_7e194d55(2, 1);
     } else if (buttons & x_9cefe76c) {
