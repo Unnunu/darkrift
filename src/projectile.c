@@ -300,7 +300,7 @@ void projectile_guard_ring(Object *obj, s32 x_84ff873b, Object *x_2092f891) {
 
     if (player->x_eb1fe45b == x_537ef8a7 && x_84ff873b == 0) {
         x_2092f891->x_450fdcd0 = projectile_guard_spawn;
-        v0 = x_24276d64();
+        v0 = hit_effect_get();
         if (v0 != NULL) {
             v0->x_0f4167b4[1] = 50;
             v0->x_0f4167b4[0] = 30;

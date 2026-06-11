@@ -92,7 +92,7 @@ void x_da66d1d5(Player *player) {
             player->x_448f0851 = 512;
         }
     } else if (!(player->x_b9252303->flags & TASK_TIME_BASED) && !(player->flags & x_030d2322)) {
-        if (x_af5ccc8a(player->obj) && !(player->x_7f68c36b->flags & x_cdcff2e1) &&
+        if (hit_check_facing_away(player->obj) && !(player->x_7f68c36b->flags & x_cdcff2e1) &&
             !(player->obj->flags & x_da584e3c)) {
             if (player->x_7f68c36b->flags & x_037894c1) {
                 x_96d3a31b(player, x_1d1fc609);

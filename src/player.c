@@ -279,7 +279,7 @@ void player_tick(Object *obj) {
     s32 unused[7];
     x_6fcfcf46 *x_3bae2428 = obj->x_20d20338;
 
-    if (x_af5ccc8a(obj)) {
+    if (hit_check_facing_away(obj)) {
         player->flags |= x_9298c772;
     } else {
         player->flags &= ~x_9298c772;
@@ -298,7 +298,7 @@ void player_tick(Object *obj) {
         obj->x_2b06a023 = obj->frameCounter;
     }
 
-    if (x_af5ccc8a(obj)) {
+    if (hit_check_facing_away(obj)) {
         player->flags |= x_9298c772;
     } else {
         player->flags &= ~x_9298c772;
@@ -334,7 +334,7 @@ void player_ai_check(Object *obj) {
     x_0efa5bb1 = x_98c4e5a5->x_7f68c36b;
     x_44d73ae1 = x_98c4e5a5->obj;
 
-    if (x_af5ccc8a(obj)) {
+    if (hit_check_facing_away(obj)) {
         player->flags |= x_9298c772;
     } else {
         player->flags &= ~x_9298c772;
@@ -342,7 +342,7 @@ void player_ai_check(Object *obj) {
 
     model_render(obj);
 
-    if (x_af5ccc8a(obj)) {
+    if (hit_check_facing_away(obj)) {
         player->flags |= x_9298c772;
     } else {
         player->flags &= ~x_9298c772;
@@ -921,7 +921,7 @@ void player_init(s16 x_30bbe547) {
     x_824b9544[x_30bbe547].x_b9252303 = task_append(obj, task_remove_current, TASK_RUNNABLE);
     x_824b9544[x_30bbe547].x_50a9ff14 = task_append(obj, move_sfx_trig, TASK_RUNNABLE);
     x_824b9544[x_30bbe547].x_cdb23d89 = task_append(obj, task_remove_current, TASK_RUNNABLE);
-    x_824b9544[x_30bbe547].x_08b62e4f = task_append(obj, x_340c2137, TASK_RUNNABLE);
+    x_824b9544[x_30bbe547].x_08b62e4f = task_append(obj, hit_effect_angle_anim, TASK_RUNNABLE);
     x_824b9544[x_30bbe547].x_f003fafb = D_8004C1E8;
 
     D_80080214 = D_8004A730[gWadCondLoad[x_83106b21].x_eb1fe45b] + D_8004A730[gWadCondLoad[x_6f0b3be3].x_eb1fe45b];
@@ -1029,7 +1029,7 @@ void player_reinit(s16 x_30bbe547) {
     x_824b9544[x_30bbe547].x_cdb23d89->stackPtr = 0;
     x_824b9544[x_30bbe547].x_08b62e4f->delay = 0;
     x_824b9544[x_30bbe547].x_08b62e4f->flags = TASK_RUNNABLE;
-    x_824b9544[x_30bbe547].x_08b62e4f->callback = x_340c2137;
+    x_824b9544[x_30bbe547].x_08b62e4f->callback = hit_effect_angle_anim;
     x_824b9544[x_30bbe547].x_08b62e4f->stackPtr = 0;
 
     D_80080214 = D_8004A730[gWadCondLoad[x_83106b21].x_eb1fe45b] + D_8004A730[gWadCondLoad[x_6f0b3be3].x_eb1fe45b];

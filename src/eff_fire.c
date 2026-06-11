@@ -74,7 +74,7 @@ void x_ff5d42d3(Object *obj) {
             v0->x_0f4167b4[6] = obj->x_0f4167b4[6];
             model_light_attach(v0, &x_5aee6615[player->x_30bbe547]);
             audio_sfx_play(player->x_30bbe547, 10);
-            v0 = x_24276d64();
+            v0 = hit_effect_get();
             if (v0 != NULL) {
                 v0->x_0f4167b4[0] = v0->x_0f4167b4[1] = 40;
             }

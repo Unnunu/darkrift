@@ -5,19 +5,19 @@
 s16 x_8b270b48(Player *);
 s16 x_a92b640d(Player *);
 
-void x_f1e3e841(Object *obj);
-void x_d5db0c41(Object *);
-void x_e47877a0(Object *);
-void x_67a3a840(Object *);
-void x_adf28f33(Object *);
-void x_b6853055(Object *);
-void x_17ad7985(Object *);
-void x_77f7ce0e(Object *);
-void x_c1018f80(x_448872e8 *, x_998ccc48 *, Object *);
+void dust_spawn_cb(Object *obj);
+void dust_wait_cb(Object *);
+void dust_speed_cb(Object *);
+void hit_sync_attacked_flag(Object *);
+void hit_rebound_above_ground(Object *);
+void hit_effect_fade_in(Object *);
+void hit_rebound_spawn(Object *);
+void hit_effect_iter_hitboxes(Object *);
+void hit_effect_spawn_from_frame(x_448872e8 *, x_998ccc48 *, Object *);
 
-x_8b39d614 D_80052CF0 = { "dusthit.sp3", x_f1e3e841, 0, 0x1100, 0, 0x2800, 0 };
-s32 D_80052D08[] = { 14, 17, 18, 21, 21, 24, 12, 15, 11, 14, 0, 0, 14, 17, 18, 21, 11, 14, 14, 17, 11, 14 };
-Object *D_80052D60 = NULL;
+x_8b39d614 sHitDustSpriteDef = { "dusthit.sp3", dust_spawn_cb, 0, 0x1100, 0, 0x2800, 0 };
+s32 sHitDustFrameTable[] = { 14, 17, 18, 21, 21, 24, 12, 15, 11, 14, 0, 0, 14, 17, 18, 21, 11, 14, 14, 17, 11, 14 };
+Object *sHitEffectObj = NULL;
 s16 D_80052D64[] = { 0, 0 };
 s16 D_80052D68[] = { 0, 0 };
 s16 D_80052D6C[] = { 0, 0 };
@@ -59,7 +59,7 @@ void x_56d15e8a(Object *obj) {
     obj->currentTask->callback = x_f95cb1c9;
 }
 
-void x_f1e3e841(Object *obj) {
+void dust_spawn_cb(Object *obj) {
     obj->color.a -= 5;
     obj->frameCounter++;
     if (obj->frameCounter > 9) {
@@ -68,7 +68,7 @@ void x_f1e3e841(Object *obj) {
     obj->currentTask->delay = 2;
 }
 
-void x_5dea773a(Object *obj) {
+void hit_dust_trail(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     s16 x_30bbe547 = player->x_30bbe547;
     x_88f11482 *s1;
@@ -81,7 +81,7 @@ void x_5dea773a(Object *obj) {
         x_5aee6615.x = obj->pos.x;
         x_5aee6615.z = obj->pos.z;
         x_5aee6615.y = 0;
-        v0 = obj_create_from_props(&x_5aee6615, &D_80052CF0, x_2587f84f);
+        v0 = obj_create_from_props(&x_5aee6615, &sHitDustSpriteDef, x_2587f84f);
         if (v0 != NULL) {
             v0->color.a = 60;
         }
@@ -94,7 +94,7 @@ void x_5dea773a(Object *obj) {
     }
 }
 
-void x_8a61a432(Object *obj) {
+void hit_dust_set_radius(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     s32 v0;
     s32 x_720f6ac9, dz;
@@ -115,14 +115,14 @@ void x_8a61a432(Object *obj) {
     player->x_5c5b1d93.x_62706fff = x_84ce1cfb(v0);
 
     if (player->x_7f68c36b->flags & x_ff05097f) {
-        obj->currentTask->callback = x_5dea773a;
+        obj->currentTask->callback = hit_dust_trail;
     } else {
         x_56d15e8a(obj);
     }
     obj->x_0f4167b4[3] = 50;
 }
 
-void x_9891654e(Object *obj) {
+void hit_dust_skid_init(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     s16 x_30bbe547 = player->x_30bbe547;
 
@@ -130,13 +130,13 @@ void x_9891654e(Object *obj) {
     obj->x_20d20338->x_3aefae96 = D_8004BA98[player->x_eb1fe45b].x;
     obj->x_20d20338->x_713417ac = D_8004BA98[player->x_eb1fe45b].z;
     obj->currentTask->delay = 2;
-    obj->currentTask->callback = x_8a61a432;
+    obj->currentTask->callback = hit_dust_set_radius;
     obj->currentTask->delay = 2;
     D_8013C3A0[x_30bbe547].x = obj->pos.x;
     D_8013C3A0[x_30bbe547].z = obj->pos.z;
 }
 
-void x_afe56bcd(Object *obj) {
+void hit_dust_skid_alt_init(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     s16 x_30bbe547 = player->x_30bbe547;
 
@@ -144,20 +144,20 @@ void x_afe56bcd(Object *obj) {
     obj->x_20d20338->x_713417ac = D_8004BAF0[player->x_eb1fe45b].z;
     obj->x_20d20338->x_3aefae96 = D_8004BAF0[player->x_eb1fe45b].x;
     obj->currentTask->delay = 2;
-    obj->currentTask->callback = x_8a61a432;
+    obj->currentTask->callback = hit_dust_set_radius;
     D_8013C3A0[x_30bbe547].x = obj->pos.x;
     D_8013C3A0[x_30bbe547].z = obj->pos.z;
 }
 
-void x_aa63f018(Object *obj) {
+void hit_combo_break_1(Object *obj) {
     TASK_END(obj->currentTask);
 }
 
-void x_01a2aa4d(Object *obj) {
+void hit_combo_break_2(Object *obj) {
     TASK_END(obj->currentTask);
 }
 
-void x_efd0ce39(Object *obj) {
+void hit_cam_rotate_to_opponent(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     s16 x_7d3ef158;
     s32 temp;
@@ -176,7 +176,7 @@ void x_efd0ce39(Object *obj) {
     TASK_END(obj->currentTask);
 }
 
-u8 x_52c80142(Object *obj) {
+u8 hit_push_opponent_away(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     s32 pad[3];
     s16 x_eb1fe45b;
@@ -198,7 +198,7 @@ u8 x_52c80142(Object *obj) {
     return TRUE;
 }
 
-void x_82fdb659(Object *obj) {
+void hit_combo_damage_vfx(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     Player *x_98c4e5a5 = x_824b9544 + 1 - player->x_30bbe547;
     s16 x_eb1fe45b = player->x_eb1fe45b;
@@ -231,17 +231,17 @@ void x_82fdb659(Object *obj) {
             } else {
                 obj->pos.y = 0;
             }
-            x_77f7ce0e(obj);
+            hit_effect_iter_hitboxes(obj);
             break;
         default:
             if (D_8004BA40[x_eb1fe45b] != NULL) {
-                x_77f7ce0e(obj);
+                hit_effect_iter_hitboxes(obj);
             }
             break;
     }
 }
 
-void x_82196a2e(Object *obj) {
+void hit_combo_damage_accum(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
     if (obj->frameCounter >= player->x_7f68c36b->x_bab9966d - 2) {
@@ -260,24 +260,24 @@ void x_82196a2e(Object *obj) {
             player->obj->x_9200c538 = 0;
         }
 
-        player->x_08b62e4f->callback = x_340c2137;
+        player->x_08b62e4f->callback = hit_effect_angle_anim;
     }
 }
 
-void x_6c979ff3(Object *obj) {
+void hit_combo_init(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     s16 x_de68d2a6 = 1 - player->x_30bbe547;
 
-    player->x_08b62e4f->callback = x_82196a2e;
+    player->x_08b62e4f->callback = hit_combo_damage_accum;
 
     if (x_824b9544[x_de68d2a6].x_eb1fe45b != x_c4ddde6d) {
-        obj->currentTask->callback = x_17ad7985;
+        obj->currentTask->callback = hit_rebound_spawn;
     } else {
         TASK_END(obj->currentTask);
     }
 }
 
-void x_6098478f(Object *obj) {
+void hit_combo_routing(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     s32 pad[2];
     s16 x_eb1fe45b;
@@ -347,7 +347,7 @@ void x_6098478f(Object *obj) {
     }
 }
 
-void x_602b94bb(Object *obj) {
+void hit_combo_startup_projectile(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     s32 x_eb1fe45b;
     s16 x_de68d2a6;
@@ -361,26 +361,26 @@ void x_602b94bb(Object *obj) {
         if (player->x_eb1fe45b == x_c4ddde6d) {
             obj->currentTask->callback = projectile_init;
         } else if (D_8004BA6C[x_eb1fe45b] != NULL) {
-            obj->currentTask->callback = x_d5db0c41;
+            obj->currentTask->callback = dust_wait_cb;
         } else {
             TASK_END(obj->currentTask);
         }
     }
 }
 
-void x_23eecff5(Object *obj) {
+void hit_combo_startup_alt(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
     if (player->x_eb1fe45b == x_968cc9a2) {
         obj->currentTask->callback = projectile_init;
     } else if (D_8004BA6C[player->x_eb1fe45b] != NULL) {
-        obj->currentTask->callback = x_d5db0c41;
+        obj->currentTask->callback = dust_wait_cb;
     } else {
         TASK_END(obj->currentTask);
     }
 }
 
-u8 x_e0b539de(Object *obj) {
+u8 hit_check_opp_grabbing(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     Player *x_98c4e5a5 = &x_824b9544[1 - player->x_30bbe547];
 
@@ -391,7 +391,7 @@ u8 x_e0b539de(Object *obj) {
     }
 }
 
-u8 x_d52f4e7d(Object *obj) {
+u8 hit_check_opp_falling(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     Player *x_98c4e5a5 = &x_824b9544[1 - player->x_30bbe547];
 
@@ -402,74 +402,74 @@ u8 x_d52f4e7d(Object *obj) {
     }
 }
 
-void x_05bc3408(Object *obj) {
+void hit_effect_fade_out(Object *obj) {
     obj->x_0f4167b4[0]++;
     if (obj->x_0f4167b4[0] > 60) {
         obj->flags |= x_f51cb721;
         x_cf60a652 = 0;
-        D_80052D60 = 0;
+        sHitEffectObj = 0;
     } else if (x_cf60a652 > 0) {
         x_cf60a652 -= 10;
     } else {
-        obj->x_0232396f = x_b6853055;
+        obj->x_0232396f = hit_effect_fade_in;
     }
 }
 
-void x_b6853055(Object *obj) {
+void hit_effect_fade_in(Object *obj) {
     obj->x_0f4167b4[0]++;
     if (obj->x_0f4167b4[0] > 60) {
         obj->flags |= x_f51cb721;
         x_cf60a652 = 0;
-        D_80052D60 = 0;
+        sHitEffectObj = 0;
     } else if (x_cf60a652 < obj->x_0f4167b4[1]) {
         x_cf60a652 += 10;
     } else {
-        obj->x_0232396f = x_05bc3408;
+        obj->x_0232396f = hit_effect_fade_out;
         obj->x_0f4167b4[1] -= 15;
     }
 }
 
-Object *x_24276d64(void) {
-    if (D_80052D60 != NULL) {
-        D_80052D60->flags |= x_f51cb721;
+Object *hit_effect_get(void) {
+    if (sHitEffectObj != NULL) {
+        sHitEffectObj->flags |= x_f51cb721;
     }
 
-    D_80052D60 = obj_create_task(x_b6853055, 0x1000);
-    return D_80052D60;
+    sHitEffectObj = obj_create_task(hit_effect_fade_in, 0x1000);
+    return sHitEffectObj;
 }
 
-void x_507d2a70(Object *obj) {
+void hit_rebound_check(Object *obj) {
     if (obj->x_20d20338->x_abd7b3c4.x_3fde9cd9.w.y > -200.0f) {
         x_7621a350(obj);
-        obj->currentTask->callback = x_adf28f33;
+        obj->currentTask->callback = hit_rebound_above_ground;
         obj->currentTask->delay = 20;
     }
 }
 
-void x_adf28f33(Object *obj) {
+void hit_rebound_above_ground(Object *obj) {
     if (obj->x_20d20338->x_abd7b3c4.x_3fde9cd9.w.y > -200.0f) {
         return;
     }
 
-    obj->currentTask->callback = x_507d2a70;
+    obj->currentTask->callback = hit_rebound_check;
 }
 
-void x_17ad7985(Object *obj) {
+void hit_rebound_spawn(Object *obj) {
     Object *v0;
 
     if (obj->x_20d20338->x_abd7b3c4.x_3fde9cd9.w.y > -200.0f) {
         x_7621a350(obj);
-        v0 = x_24276d64();
+        v0 = hit_effect_get();
         if (v0 != NULL) {
             v0->x_0f4167b4[1] = 50;
         }
 
-        obj->currentTask->callback = x_adf28f33;
+        obj->currentTask->callback = hit_rebound_above_ground;
         obj->currentTask->delay = 20;
     }
 }
 
-void x_5b5c4189(Object *obj) {
+void hit_combo_mid_startup(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
     if (obj->frameCounter > (player->x_7f68c36b->x_bab9966d >> 1)) {
@@ -487,7 +487,7 @@ void x_5b5c4189(Object *obj) {
     TASK_END(obj->currentTask);
 }
 
-void x_ca73900f(Object *obj) {
+void hit_knockback_gravity(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
     obj->velocity.y += obj->x_8da078cc.y;
@@ -503,14 +503,14 @@ void x_ca73900f(Object *obj) {
     }
 }
 
-void x_297fd9f3(Object *obj) {
+void hit_knockback_launch(Object *obj) {
     obj->velocity.y = 0xFFEC0000;
     obj->x_8da078cc.y = 0x20000;
-    obj->currentTask->callback = x_ca73900f;
-    x_67a3a840(obj);
+    obj->currentTask->callback = hit_knockback_gravity;
+    hit_sync_attacked_flag(obj);
 }
 
-u8 x_af5ccc8a(Object *obj) {
+u8 hit_check_facing_away(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     u8 x_cd986d3c;
     s32 t8;
@@ -535,14 +535,14 @@ u8 x_af5ccc8a(Object *obj) {
     return x_cd986d3c;
 }
 
-void x_c946d6b1(Object *obj) {
+void hit_flip_rotation(Object *obj) {
     s16 v0;
 
     v0 = (0xC00 - obj->x_224610f1.y) & 0xFFF;
     obj->x_224610f1.y = 0x400 - v0;
 }
 
-u8 x_8c8da256(Object *obj) {
+u8 hit_check_opp_blockstun(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     Player *x_98c4e5a5 = &x_824b9544[player->x_30bbe547 != x_83106b21 ? x_83106b21 : x_6f0b3be3];
 
@@ -559,14 +559,14 @@ u8 x_8c8da256(Object *obj) {
     }
 }
 
-void x_d76c20a9(Object *obj) {
+void hit_delay_then_check_hitstun(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
     obj->currentTask->delay = player->x_68a6b5cd[player->x_cd14c741].x_887b6be9 - obj->frameCounter + 2;
-    obj->currentTask->callback = x_e47877a0;
+    obj->currentTask->callback = dust_speed_cb;
 }
 
-void x_e47877a0(Object *obj) {
+void dust_speed_cb(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     Player *x_98c4e5a5 = &x_824b9544[player->x_30bbe547 != x_83106b21 ? x_83106b21 : x_6f0b3be3];
     s16 a1 = x_dba71d7e;
@@ -581,7 +581,7 @@ void x_e47877a0(Object *obj) {
     }
 }
 
-void x_eb9bf905(Object *obj) {
+void hit_ai_counter_check(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
     if (x_9a96200f < D_8004C1A4[player->x_eb1fe45b] && player->x_cd14c741 != 17) {
@@ -590,7 +590,7 @@ void x_eb9bf905(Object *obj) {
     }
 }
 
-void x_af431a0a(Object *obj) {
+void hit_delay_ai_counter(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
     if (player->x_eb1fe45b == x_b52da315) {
@@ -598,14 +598,14 @@ void x_af431a0a(Object *obj) {
     } else {
         obj->currentTask->delay = 6;
     }
-    obj->currentTask->callback = x_eb9bf905;
+    obj->currentTask->callback = hit_ai_counter_check;
 }
 
-u8 x_e821cb83(s32 x_cc1d0de5) {
+u8 hit_check_late_round(s32 x_cc1d0de5) {
     return x_9a96200f > 550;
 }
 
-void x_31926e97(Object *obj) {
+void hit_face_opponent_immediate(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     Player *x_98c4e5a5 = &x_824b9544[player->x_30bbe547 != x_83106b21 ? x_83106b21 : x_6f0b3be3];
     s16 x_434431dd;
@@ -622,22 +622,22 @@ void x_31926e97(Object *obj) {
     x_98c4e5a5->obj->x_224610f1.y = 0xC00 - (x_434431dd + x_7d3ef158);
 }
 
-void x_e1ae01d8(Object *obj) {
+void hit_set_attacked_flag(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     Player *x_98c4e5a5 = &x_824b9544[player->x_30bbe547 != x_83106b21 ? x_83106b21 : x_6f0b3be3];
 
     x_98c4e5a5->flags |= x_188f9cec;
 }
 
-void x_df5751ad(Object *obj) {
+void hit_land_set_flag(Object *obj) {
     if (obj->pos.y == 0) {
         x_ebe27fa0(obj);
     }
 
-    obj->currentTask->callback = x_e1ae01d8;
+    obj->currentTask->callback = hit_set_attacked_flag;
 }
 
-void x_67a3a840(Object *obj) {
+void hit_sync_attacked_flag(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     Player *x_98c4e5a5 = &x_824b9544[player->x_30bbe547 != x_83106b21 ? x_83106b21 : x_6f0b3be3];
 
@@ -648,15 +648,15 @@ void x_67a3a840(Object *obj) {
     }
 }
 
-void x_02f6f8ad(Object *obj) {
+void hit_set_flag_on_frame(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
     if (obj->frameCounter == player->x_7f68c36b->x_bab9966d - 1) {
-        x_67a3a840(obj);
+        hit_sync_attacked_flag(obj);
     }
 }
 
-void x_18bd9b95(Object *obj) {
+void hit_clear_flag_delayed(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     Player *x_98c4e5a5 = &x_824b9544[player->x_30bbe547 != x_83106b21 ? x_83106b21 : x_6f0b3be3];
 
@@ -669,7 +669,7 @@ void x_18bd9b95(Object *obj) {
     }
 }
 
-void x_ca4d8099(Object *obj) {
+void hit_combo_spin_opponent(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     Player *x_98c4e5a5 = &x_824b9544[player->x_30bbe547 != x_83106b21 ? x_83106b21 : x_6f0b3be3];
     Object *x_5bbba600 = x_3ac11521[x_83106b21];
@@ -712,7 +712,7 @@ void x_ca4d8099(Object *obj) {
     }
 }
 
-void x_7ef99aca(Object *obj) {
+void hit_face_opponent_late(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     Object *x_13d65ace = x_3ac11521[x_83106b21];
     Object *x_c48d15e0 = x_3ac11521[x_6f0b3be3];
@@ -726,7 +726,7 @@ void x_7ef99aca(Object *obj) {
     }
 }
 
-void x_d87a4f6e(Object *obj) {
+void hit_combo_unblockable_check(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     Player *x_98c4e5a5;
     s32 v12;
@@ -776,7 +776,7 @@ void x_d87a4f6e(Object *obj) {
     }
 }
 
-u8 x_5127226c(Object *obj) {
+u8 hit_check_button_same(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
     if (gWadCondLoad[player->x_30bbe547].x_03604d94) {
@@ -786,7 +786,7 @@ u8 x_5127226c(Object *obj) {
     return x_59ce598c[player->x_30bbe547].x_d93bcabf;
 }
 
-u8 x_a8ff9909(Object *obj) {
+u8 hit_check_button_opposite(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
     if (gWadCondLoad[player->x_30bbe547].x_03604d94) {
@@ -796,7 +796,7 @@ u8 x_a8ff9909(Object *obj) {
     return ~x_59ce598c[player->x_30bbe547].x_d93bcabf;
 }
 
-u8 x_29d2787d(Object *obj) {
+u8 hit_check_opp_punishable(Object *obj) {
     Player *player;
     Player *v1;
     s32 a1;
@@ -809,7 +809,7 @@ u8 x_29d2787d(Object *obj) {
     return a1 > 0;
 }
 
-void x_4a0e9b26(Object *obj) {
+void hit_combo_counter_attack(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     Player *v0;
     x_388306ba *v1;
@@ -832,7 +832,7 @@ void x_4a0e9b26(Object *obj) {
 }
 
 #ifdef NON_EQUIVALENT
-void x_340c2137(Object *x_cc1d0de5) {
+void hit_effect_angle_anim(Object *x_cc1d0de5) {
     x_2758cdab x_331089fa;
     x_2758cdab x_fd09f53e;
     Player *x_3be4fcf3;
@@ -989,32 +989,32 @@ void x_340c2137(Object *x_cc1d0de5) {
     mat4_from_euler(&x_3be4fcf3->x_022dff72.x_3fde9cd9, &x_fd09f53e);
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/eff_hit/x_340c2137.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/eff_hit/hit_effect_angle_anim.s")
 #endif
 
-void x_77f7ce0e(Object *obj) {
+void hit_effect_iter_hitboxes(Object *obj) {
     Player *v0 = (Player *) obj->x_e2f64c57[0];
     x_448872e8 *s0;
 
     for (s0 = D_8004BA40[v0->x_eb1fe45b]; s0->x_af0aa1f8 != 0; s0++) {
         if (obj->frameCounter == s0->x_af0aa1f8) {
-            x_c1018f80(s0, &v0->x_5c5b1d93, obj);
+            hit_effect_spawn_from_frame(s0, &v0->x_5c5b1d93, obj);
         }
     }
 }
 
-void x_d5db0c41(Object *obj) {
+void dust_wait_cb(Object *obj) {
     Player *v0 = (Player *) obj->x_e2f64c57[0];
     x_448872e8 *s0;
 
     for (s0 = D_8004BA6C[v0->x_eb1fe45b]; s0->x_af0aa1f8 != 0; s0++) {
         if (obj->frameCounter == s0->x_af0aa1f8) {
-            x_c1018f80(s0, &v0->x_5c5b1d93, obj);
+            hit_effect_spawn_from_frame(s0, &v0->x_5c5b1d93, obj);
         }
     }
 }
 
-void x_c1018f80(x_448872e8 *x_cc1d0de5, x_998ccc48 *x_5c5b1d93, Object *x_2092f891) {
+void hit_effect_spawn_from_frame(x_448872e8 *x_cc1d0de5, x_998ccc48 *x_5c5b1d93, Object *x_2092f891) {
     Player *player = (Player *) x_2092f891->x_e2f64c57[0];
     x_123b8fa2 *v0;
     x_acccb624 x_a1fcc259;
@@ -1050,7 +1050,7 @@ void x_c1018f80(x_448872e8 *x_cc1d0de5, x_998ccc48 *x_5c5b1d93, Object *x_2092f8
     spawn_hit_effect(&x_a1fcc259, x_cc1d0de5->x_1256da71, x_2092f891, &D_8004BA14[player->x_eb1fe45b]);
 }
 
-void x_370c7b4f(Object *obj) {
+void hit_projectile_or_end(Object *obj) {
     Player *v0 = (Player *) obj->x_e2f64c57[0];
 
     if (v0->x_eb1fe45b == x_c4ddde6d) {
@@ -1060,48 +1060,48 @@ void x_370c7b4f(Object *obj) {
     }
 }
 
-void x_05731c3c(Object *obj) {
+void hit_exec_ai_move(Object *obj) {
     Player *v0 = (Player *) obj->x_e2f64c57[0];
 
     player_exec_move_ai(v0, x_dcbb43b9, 1);
 }
 
-void x_e9917882(Object *obj) {
+void hit_delay_ai_move(Object *obj) {
     Player *v0 = (Player *) obj->x_e2f64c57[0];
 
     if (obj->frameCounter == v0->x_7f68c36b->x_bab9966d - 2) {
-        obj->currentTask->callback = x_05731c3c;
+        obj->currentTask->callback = hit_exec_ai_move;
     }
 }
 
-void x_96e05dec(Object *obj) {
+void hit_ai_juggle_dispatch(Object *obj) {
     Player *v0 = (Player *) obj->x_e2f64c57[0];
 
     if (v0->flags & x_9298c772) {
         player_exec_move_ai(v0, x_9f2970bc, 1);
     } else {
         obj->currentTask->delay = 60;
-        obj->currentTask->callback = x_05731c3c;
+        obj->currentTask->callback = hit_exec_ai_move;
     }
 }
 
-void x_a3014bb9(Object *obj) {
+void hit_exec_crossup_move(Object *obj) {
     Player *v0 = (Player *) obj->x_e2f64c57[0];
 
     player_exec_move_ai(v0, x_445015b3, 1);
 }
 
-void x_fd0916cc(Object *obj) {
+void hit_delay_crossup_move(Object *obj) {
     Player *v0 = (Player *) obj->x_e2f64c57[0];
 
     if (gWadCondLoad[x_83106b21].x_eb1fe45b == gWadCondLoad[x_6f0b3be3].x_eb1fe45b && v0->x_30bbe547 != 0) {
         obj->currentTask->delay = 15;
     }
 
-    obj->currentTask->callback = x_a3014bb9;
+    obj->currentTask->callback = hit_exec_crossup_move;
 }
 
-void x_c1c8c6a7(Object *obj) {
+void hit_projectile_pushback(Object *obj) {
     x_88f11482 x_dd7ffac5;
     Player *v0 = (Player *) obj->x_e2f64c57[0];
     s32 v1 = v0->x_30bbe547;
@@ -1118,7 +1118,7 @@ void x_c1c8c6a7(Object *obj) {
     projectile_frame_update(obj);
 }
 
-void x_bc38049f(Object *obj) {
+void hit_projectile_zenmuron(Object *obj) {
     Player *v0 = (Player *) obj->x_e2f64c57[0];
     s32 v1 = v0->x_30bbe547;
 
@@ -1128,6 +1128,6 @@ void x_bc38049f(Object *obj) {
     } else {
         D_8013C3C8[v1] = x_9a96200f;
         projectile_init(obj);
-        obj->currentTask->callback = x_c1c8c6a7;
+        obj->currentTask->callback = hit_projectile_pushback;
     }
 }

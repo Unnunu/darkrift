@@ -206,7 +206,7 @@ s32 hit_outcome(Player *x_7246d2b2, Player *x_e64ba38a, x_388306ba *x_0deedaaf) 
         } else {
             x_0f12118c = x_dba71d7e; // slammed face up
         }
-    } else if (x_af5ccc8a(x_7246d2b2->obj) && !v1) {
+    } else if (hit_check_facing_away(x_7246d2b2->obj) && !v1) {
         if (x_b0a612ba & (x_025a12b8 | x_ff05097f | x_36377d70)) {
             x_0f12118c = x_0deedaaf->x_c33946bb;
         } else if (x_b0a612ba & x_037894c1) {

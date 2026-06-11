@@ -40,44 +40,44 @@ void x_39ec2f37(void);
 void x_ebf8a1b0(Object *obj);
 void x_fb6f79b0(Object *obj);
 void move_apply_vel(Object *);
-void x_9891654e(Object *);
-void x_5b5c4189(Object *);
+void hit_dust_skid_init(Object *);
+void hit_combo_mid_startup(Object *);
 void x_19fed2ac(Object *);
 void x_56d15e8a(Object *);
-void x_af431a0a(Object *);
-void x_df5751ad(Object *);
-void x_afe56bcd(Object *);
+void hit_delay_ai_counter(Object *);
+void hit_land_set_flag(Object *);
+void hit_dust_skid_alt_init(Object *);
 void move_state_change(Object *);
-void x_6098478f(Object *);
-void x_17ad7985(Object *);
-void x_aa63f018(Object *);
-void x_4a0e9b26(Object *);
+void hit_combo_routing(Object *);
+void hit_rebound_spawn(Object *);
+void hit_combo_break_1(Object *);
+void hit_combo_counter_attack(Object *);
 void move_count_up(Object *);
 void move_osc_down(Object *);
-void x_297fd9f3(Object *);
+void hit_knockback_launch(Object *);
 void move_exec_current(Object *);
-u8 x_8c8da256(Object *);
-void x_18bd9b95(Object *);
-u8 x_5127226c(Object *);
-u8 x_a8ff9909(Object *);
-void x_efd0ce39(Object *);
-void x_602b94bb(Object *);
-u8 x_e0b539de(Object *);
-u8 x_52c80142(Object *);
-void x_23eecff5(Object *);
-void x_370c7b4f(Object *);
-u8 x_29d2787d(Object *);
-void x_6c979ff3(Object *);
+u8 hit_check_opp_blockstun(Object *);
+void hit_clear_flag_delayed(Object *);
+u8 hit_check_button_same(Object *);
+u8 hit_check_button_opposite(Object *);
+void hit_cam_rotate_to_opponent(Object *);
+void hit_combo_startup_projectile(Object *);
+u8 hit_check_opp_grabbing(Object *);
+u8 hit_push_opponent_away(Object *);
+void hit_combo_startup_alt(Object *);
+void hit_projectile_or_end(Object *);
+u8 hit_check_opp_punishable(Object *);
+void hit_combo_init(Object *);
 u8 x_82bfe825(Object *);
-void x_82fdb659(Object *);
-void x_bc38049f(Object *);
-void x_ca4d8099(Object *);
-void x_d87a4f6e(Object *);
-void x_02f6f8ad(Object *);
-void x_96e05dec(Object *);
-void x_fd0916cc(Object *);
-void x_e9917882(Object *);
-void x_7ef99aca(Object *);
+void hit_combo_damage_vfx(Object *);
+void hit_projectile_zenmuron(Object *);
+void hit_combo_spin_opponent(Object *);
+void hit_combo_unblockable_check(Object *);
+void hit_set_flag_on_frame(Object *);
+void hit_ai_juggle_dispatch(Object *);
+void hit_delay_crossup_move(Object *);
+void hit_delay_ai_move(Object *);
+void hit_face_opponent_late(Object *);
 void x_a08bfaa4(Object *);
 void x_7705be49(Object *);
 void x_751dec03(Object *);
@@ -366,74 +366,74 @@ u8 D_8004C1D8[] = { 6, 7, 9, 6, 5, 5, 6, 8, 5, 8, 5 };
 s16 x_028e5846 = x_c74743bd;
 
 x_edf8d3f1 D_8004C1E8[] = {
-    /* idle */ { 0x0040010, move_apply_vel, x_9891654e, NULL, 0x2700208 },
-    /* unknown step */ { 0x0041010, task_remove_current, x_5b5c4189, NULL, 0x2700208 },
+    /* idle */ { 0x0040010, move_apply_vel, hit_dust_skid_init, NULL, 0x2700208 },
+    /* unknown step */ { 0x0041010, task_remove_current, hit_combo_mid_startup, NULL, 0x2700208 },
     /* dash */ { 0x0001010, move_to_next, x_19fed2ac, NULL, 0x2700208 },
     /* step */ { 0x0040010, move_apply_vel, x_56d15e8a, NULL, 0x2F00208 },
     /* ----- */ { 0x0040000, move_apply_vel, task_remove_current, NULL, 0x2700208 },
-    /* run */ { 0x0040000, move_apply_vel, x_af431a0a, NULL, 0x2700208 },
-    /* jump */ { 0x0001010, move_to_next, x_df5751ad, NULL, 0x2700208 },
-    /* crouch */ { 0x0040010, move_apply_vel, x_afe56bcd, NULL, 0x2F00208 },
+    /* run */ { 0x0040000, move_apply_vel, hit_delay_ai_counter, NULL, 0x2700208 },
+    /* jump */ { 0x0001010, move_to_next, hit_land_set_flag, NULL, 0x2700208 },
+    /* crouch */ { 0x0040010, move_apply_vel, hit_dust_skid_alt_init, NULL, 0x2F00208 },
     /* crouch exit*/ { 0x0001810, move_delay_cb, task_remove_current, NULL, 0x2F00208 },
     /* crouch restart */ { 0x0001010, move_state_change, task_remove_current, NULL, 0x2700208 },
     /* stand block */ { 0x0801010, move_to_next, task_remove_current, NULL, 0x2700208 },
     /* crouch abort */ { 0x0005000, move_delay_cb, task_remove_current, NULL, 0x2F00208 },
     /* SB reabort */ { 0x0000000, move_state_change, task_remove_current, NULL, 0x2700208 },
-    /* grab */ { 0x0000010, move_to_next, x_6098478f, NULL, 0x2700208 },
-    /* grabbed */ { 0x1003090, move_to_next, x_17ad7985, NULL, 0x2700208 },
+    /* grab */ { 0x0000010, move_to_next, hit_combo_routing, NULL, 0x2700208 },
+    /* grabbed */ { 0x1003090, move_to_next, hit_rebound_spawn, NULL, 0x2700208 },
     /* co-grabbed */ { 0x0000000, move_to_next, task_remove_current, NULL, 0x2700208 },
     /* intro */ { 0x0040000, move_apply_vel, task_remove_current, NULL, 0x2700208 },
     /* key up */ { 0x0040000, move_apply_vel, task_remove_current, NULL, 0x2700208 },
-    /* various SP */ { 0x0000000, move_to_next, x_aa63f018, NULL, 0x2700208 },
-    /* damaged */ { 0x0003010, move_to_next, x_4a0e9b26, NULL, 0x2700208 },
+    /* various SP */ { 0x0000000, move_to_next, hit_combo_break_1, NULL, 0x2700208 },
+    /* damaged */ { 0x0003010, move_to_next, hit_combo_counter_attack, NULL, 0x2700208 },
     /* end */ { 0x0041000, move_count_up, task_remove_current, NULL, 0x2700208 },
     /* lying down */ { 0x0040090, move_apply_vel, task_remove_current, NULL, 0x2700208 },
     { 0x0040000, move_osc_down, task_remove_current, NULL, 0x2700208 },
-    /* dmg jump */ { 0x0003000, move_count_up, x_297fd9f3, NULL, 0x2700208 },
+    /* dmg jump */ { 0x0003000, move_count_up, hit_knockback_launch, NULL, 0x2700208 },
     /* timeout to idle */ { 0x0000000, task_remove_current, move_exec_current, NULL, 0x2700208 },
-    /* body slam */ { 0x0001000, move_to_next, task_remove_current, x_8c8da256, 0x2700208 },
+    /* body slam */ { 0x0001000, move_to_next, task_remove_current, hit_check_opp_blockstun, 0x2700208 },
     { 0x0003000, move_to_next, task_remove_current, NULL, 0x2700208 },
-    /* turn to opponent */ { 0x0001018, move_to_next, task_remove_current, x_af5ccc8a, 0x2700208 },
+    /* turn to opponent */ { 0x0001018, move_to_next, task_remove_current, hit_check_facing_away, 0x2700208 },
     { 0x0000010, move_to_next, projectile_init, NULL, 0x2700208 },
     /* intro projecti */ { 0x0001000, move_to_next, task_remove_current, NULL, 0x2700208 },
-    /* various */ { 0x0001010, move_to_next, x_18bd9b95, x_5127226c, 0x2700208 },
-    /* roll */ { 0x0001010, move_to_next, x_18bd9b95, x_a8ff9909, 0x2700208 },
-    /* roll 2*/ { 0x0000010, move_to_next, x_18bd9b95, x_5127226c, 0x2700208 },
-    /* side step */ { 0x0000010, move_to_next, x_18bd9b95, x_a8ff9909, 0x2700208 },
-    /* side step 2 */ { 0x0000010, move_to_next, x_efd0ce39, x_af5ccc8a, 0x2700208 },
-    /* turn around */ { 0x0008010, move_to_next, x_aa63f018, NULL, 0x2700208 },
+    /* various */ { 0x0001010, move_to_next, hit_clear_flag_delayed, hit_check_button_same, 0x2700208 },
+    /* roll */ { 0x0001010, move_to_next, hit_clear_flag_delayed, hit_check_button_opposite, 0x2700208 },
+    /* roll 2*/ { 0x0000010, move_to_next, hit_clear_flag_delayed, hit_check_button_same, 0x2700208 },
+    /* side step */ { 0x0000010, move_to_next, hit_clear_flag_delayed, hit_check_button_opposite, 0x2700208 },
+    /* side step 2 */ { 0x0000010, move_to_next, hit_cam_rotate_to_opponent, hit_check_facing_away, 0x2700208 },
+    /* turn around */ { 0x0008010, move_to_next, hit_combo_break_1, NULL, 0x2700208 },
     { 0x0000010, move_to_next, task_remove_current, NULL, 0x2700208 },
     { 0x0040010, move_osc_down, task_remove_current, NULL, 0x2700208 },
     { 0x0040010, move_apply_vel, task_remove_current, NULL, 0x2700208 },
-    { 0x0008010, move_to_next, x_602b94bb, x_e0b539de, 0x2700208 },
-    /* Aaron specific */ { 0x1013090, move_to_next, x_6c979ff3, x_52c80142, 0x2700208 },
-    { 0x0000010, move_to_next, x_23eecff5, x_e0b539de, 0x2700208 },
+    { 0x0008010, move_to_next, hit_combo_startup_projectile, hit_check_opp_grabbing, 0x2700208 },
+    /* Aaron specific */ { 0x1013090, move_to_next, hit_combo_init, hit_push_opponent_away, 0x2700208 },
+    { 0x0000010, move_to_next, hit_combo_startup_alt, hit_check_opp_grabbing, 0x2700208 },
     { 0x0000080, move_to_next, task_remove_current, NULL, 0x2700208 },
     { 0x0003000, move_to_next, task_remove_current, NULL, 0x2700208 },
     { 0x0040090, move_count_up, task_remove_current, NULL, 0x2700208 },
     { 0x0008000, move_to_next, task_remove_current, NULL, 0x2700208 },
     { 0x0029010, move_to_next, task_remove_current, NULL, 0x2700208 },
     { 0x0068010, move_apply_vel, task_remove_current, NULL, 0x2700208 },
-    { 0x0029010, move_to_next, x_370c7b4f, NULL, 0x2700208 },
-    { 0x0003090, move_to_next, x_17ad7985, NULL, 0x2700208 },
+    { 0x0029010, move_to_next, hit_projectile_or_end, NULL, 0x2700208 },
+    { 0x0003090, move_to_next, hit_rebound_spawn, NULL, 0x2700208 },
     { 0x0041000, move_count_up, task_remove_current, NULL, 0x2700208 },
-    { 0x0000010, move_to_next, x_18bd9b95, NULL, 0x2700208 },
-    { 0x0041010, move_to_next, task_remove_current, x_29d2787d, 0x2700208 },
+    { 0x0000010, move_to_next, hit_clear_flag_delayed, NULL, 0x2700208 },
+    { 0x0041010, move_to_next, task_remove_current, hit_check_opp_punishable, 0x2700208 },
     { 0x0001000, move_to_next, projectile_init, x_82bfe825, 0x2F00208 },
-    { 0x1000010, move_to_next, x_82fdb659, NULL, 0x2700208 },
-    { 0x1021000, move_to_next, x_bc38049f, NULL, 0x2700208 },
+    { 0x1000010, move_to_next, hit_combo_damage_vfx, NULL, 0x2700208 },
+    { 0x1021000, move_to_next, hit_projectile_zenmuron, NULL, 0x2700208 },
     { 0x0000010, move_count_up, projectile_init, NULL, 0x2700208 },
-    { 0x0001000, move_to_next, x_ca4d8099, x_5127226c, 0x2700208 },
-    { 0x0001000, move_to_next, x_ca4d8099, x_a8ff9909, 0x2700208 },
-    { 0x1003090, move_to_next, x_6c979ff3, NULL, 0x2700208 },
-    { 0x1013090, move_to_next, task_remove_current, x_52c80142, 0x2700208 },
-    { 0x0008010, move_to_next, x_18bd9b95, NULL, 0x2700208 },
-    { 0x0000000, move_to_next, x_d87a4f6e, NULL, 0x2700208 },
-    { 0x0061010, move_to_next, x_02f6f8ad, NULL, 0x2700208 },
-    { 0x0008000, move_apply_vel, x_96e05dec, NULL, 0x2700208 },
-    { 0x0000000, move_count_up, x_e9917882, NULL, 0x2700208 },
-    { 0x0000000, move_apply_vel, x_fd0916cc, NULL, 0x2700208 },
-    { 0x0001000, move_to_next, x_7ef99aca, NULL, 0x2700208 },
+    { 0x0001000, move_to_next, hit_combo_spin_opponent, hit_check_button_same, 0x2700208 },
+    { 0x0001000, move_to_next, hit_combo_spin_opponent, hit_check_button_opposite, 0x2700208 },
+    { 0x1003090, move_to_next, hit_combo_init, NULL, 0x2700208 },
+    { 0x1013090, move_to_next, task_remove_current, hit_push_opponent_away, 0x2700208 },
+    { 0x0008010, move_to_next, hit_clear_flag_delayed, NULL, 0x2700208 },
+    { 0x0000000, move_to_next, hit_combo_unblockable_check, NULL, 0x2700208 },
+    { 0x0061010, move_to_next, hit_set_flag_on_frame, NULL, 0x2700208 },
+    { 0x0008000, move_apply_vel, hit_ai_juggle_dispatch, NULL, 0x2700208 },
+    { 0x0000000, move_count_up, hit_delay_ai_move, NULL, 0x2700208 },
+    { 0x0000000, move_apply_vel, hit_delay_crossup_move, NULL, 0x2700208 },
+    { 0x0001000, move_to_next, hit_face_opponent_late, NULL, 0x2700208 },
     { 0x8005000, move_delay_cb, task_remove_current, NULL, 0x2F00208 },
 };
 
