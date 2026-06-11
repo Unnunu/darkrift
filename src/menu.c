@@ -1462,7 +1462,7 @@ void x_038a90c5(Object *obj, s16 x_30bbe547) {
 
     button = D_80049B30[obj->x_0f4167b4[x_13266785]];
     for (i = 0; i < 8; i++) {
-        if (x_013307ec[x_30bbe547][i] == button) {
+        if (gRemapTable[x_30bbe547][i] == button) {
             break;
         }
     }

@@ -98,7 +98,7 @@ void model_collect_textures(Object *obj, u8 x_84ff873b);
 Object *x_24276d64(void);
 void x_c0cfb7d5(Object *obj);
 u8 x_2aacdb7c(Player *x_cc1d0de5, Player *x_84ff873b, Object *x_2092f891);
-void x_bb61051c(void);
+void controller_read_frame(void);
 u8 player_exec_state(Player *, u8, u16);
 void model_visibility_set(Object *obj, u8 *x_84ff873b);
 void model_parts_disable_all(Object *obj);

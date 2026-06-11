@@ -376,7 +376,7 @@ void x_d4ae14dc(Object *obj) {
             w = D_80049B30[obj->x_0f4167b4[x_13266785]];
             q = D_80049B20[controller->x_0f4167b4[x_4ba680cf] - x_810a8a6e];
 
-            x_013307ec[x_30bbe547][q] = w;
+            gRemapTable[x_30bbe547][q] = w;
             for (i = 0; i < 8; i++) {}
         }
     } else {
@@ -390,7 +390,7 @@ void x_d4ae14dc(Object *obj) {
             x_30bbe547 = controller->x_0f4167b4[x_283009b1];
             w = D_80049B30[obj->x_0f4167b4[x_13266785]];
             q = D_80049B20[controller->x_0f4167b4[x_d1a83f73] - x_7eb4b3f4];
-            x_013307ec[x_30bbe547][q] = w;
+            gRemapTable[x_30bbe547][q] = w;
             for (i = 0; i < 8; i++) {}
         }
     }

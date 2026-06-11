@@ -5,10 +5,17 @@
   "lines": 54,
   "evidence": {
     "api_calls": [
-      "osContInit", "osContStartReadData", "osContGetReadData",
-      "osCreateMesgQueue", "osSetEventMesg(OS_EVENT_SI)", "osRecvMesg"
+      "osContInit",
+      "osContStartReadData",
+      "osContGetReadData",
+      "osCreateMesgQueue",
+      "osSetEventMesg(OS_EVENT_SI)",
+      "osRecvMesg"
     ],
-    "datatypes": ["OSContPad", "OSContStatus"]
+    "datatypes": [
+      "OSContPad",
+      "OSContStatus"
+    ]
   },
-  "summary": "Controller input: init (controller_init, called from boot.c) and per-frame read (x_bb61051c)."
+  "summary": "Controller input: init (controller_init, called from boot.c) and per-frame read (controller_read_frame)."
 }

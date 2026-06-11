@@ -120,7 +120,7 @@ void gfx_render_frame(void) {
     s32 i;
 
     x_de1dd2f4 = osGetTime();
-    x_0dd43bb1();
+    button_update_frame();
 
     D_80080100 = &D_8005BFF0[D_8005BFCE];
     gF3dDisplayListPtr = D_80080100->x_700a6ea1;
