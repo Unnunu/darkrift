@@ -473,11 +473,11 @@ void x_5b5c4189(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
     if (obj->frameCounter > (player->x_7f68c36b->x_bab9966d >> 1)) {
-        player->x_b9252303->callback = x_d18c17c2;
+        player->x_b9252303->callback = move_to_next;
         player->x_b9252303->delay = 0;
         player->x_b9252303->flags = TASK_RUNNABLE;
     } else {
-        player->x_b9252303->callback = x_55af5110;
+        player->x_b9252303->callback = move_delay_cb;
         player->x_b9252303->delay = 0;
         player->x_b9252303->flags = TASK_RUNNABLE;
         obj->flags |= x_56bbd9b2;

@@ -1,11 +1,49 @@
 {
-  "file": "src/move.c", "hash": "8b713856",
-  "rom_offsets": { "text": "0x24930", "bss": "0x800B63A0" },
+  "file": "src/move.c",
+  "hash": "8b713856",
+  "rom_offsets": {
+    "text": "0x24930",
+    "bss": "0x800B63A0"
+  },
   "summary": "Fighting game move/attack state machine: animation sequence scheduler via cooperative task swapping, combo chains, sound triggers at specific animation frames, move initialization and cleanup.",
-  "functions": ["x_d30a20e1", "x_55af5110", "x_209f3063", "x_d16f8fa6", "x_fe7e2137",
-    "x_378d4f8e", "x_d18c17c2", "x_330375dc", "x_7c333f6c", "x_73e8f926",
-    "x_6ac04b7a", "x_46bebbb5", "x_8126b2af", "x_9a2e218f", "x_cdd4d8f3"],
-  "key_apis": [], "strings": [],
-  "subsystems": ["Move task scheduler via function-pointer swapping", "Combo chain processing", "Sound timing per animation frame"],
+  "functions": {
+    "move_exec_current": "Main move execution entry. Checks AI/interrupt conditions, then calls player_exec_move for current attack entry",
+    "move_delay_cb": "Task callback: waits for animation startup delay frames, then calls move_exec_current",
+    "move_osc_up": "Task callback: animation oscillation phase 1 — counts up to entry duration",
+    "move_osc_down": "Task callback: animation oscillation phase 2 — counts down from entry duration",
+    "move_count_up": "Task callback: simple count-up until entry duration, then TASK_END",
+    "move_apply_vel": "Task callback: waits for startup frames, then applies Z-velocity from entry data",
+    "move_to_next": "Task callback: counts frames then transitions to next move via move_exec_current",
+    "move_camera_trig": "Task callback: triggers cinematic camera at specified frame of attack entry",
+    "move_state_change": "Transition to new move/attack state. Sets up new x_388306ba entry, model visibility, camera triggers",
+    "move_anim_change": "Change animation within same move (combo chain). Manages frame counters, model visibility, sync",
+    "move_exec_init": "Initialize move execution: wait startup frames, then load animation, apply velocity, set flags",
+    "move_init_cb": "Move init callback: sets initial move state, pushes to task stack",
+    "move_retry_cb": "Move retry/continuation: push task stack, try player_exec_state, handle failure or return",
+    "move_sfx_trig": "Frame-triggered sound effects: checks 4 frame match points and plays SFX via audio_sfx_play",
+    "move_null_cb": "No-op task callback (empty function)"
+  },
+  "key_apis": [
+    "player_exec_move",
+    "player_exec_state",
+    "player_select_move",
+    "audio_sfx_play",
+    "task_append",
+    "model_anim_load",
+    "model_anim_tick",
+    "model_visibility_set",
+    "cam_save_state",
+    "cam_cinematic_update"
+  ],
+  "structs_used": [
+    "x_388306ba (0x38) — move/attack entry: frame timings, flags, anim ID, camera state, visibility mask, SFX trigger index",
+    "x_c8184673 (0x8) — SFX frame trigger: 4 pairs of {frame, soundId}"
+  ],
+  "subsystems": [
+    "Move task scheduler via function-pointer swapping",
+    "Combo chain processing",
+    "Sound timing per animation frame",
+    "Animation oscillation (ping-pong between up/down counters)"
+  ],
   "open_questions": []
 }

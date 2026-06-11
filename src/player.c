@@ -919,7 +919,7 @@ void player_init(s16 x_30bbe547) {
 
     x_824b9544[x_30bbe547].x_147ade82 = obj->currentTask;
     x_824b9544[x_30bbe547].x_b9252303 = task_append(obj, task_remove_current, TASK_RUNNABLE);
-    x_824b9544[x_30bbe547].x_50a9ff14 = task_append(obj, x_9a2e218f, TASK_RUNNABLE);
+    x_824b9544[x_30bbe547].x_50a9ff14 = task_append(obj, move_sfx_trig, TASK_RUNNABLE);
     x_824b9544[x_30bbe547].x_cdb23d89 = task_append(obj, task_remove_current, TASK_RUNNABLE);
     x_824b9544[x_30bbe547].x_08b62e4f = task_append(obj, x_340c2137, TASK_RUNNABLE);
     x_824b9544[x_30bbe547].x_f003fafb = D_8004C1E8;
@@ -1021,7 +1021,7 @@ void player_reinit(s16 x_30bbe547) {
     x_824b9544[x_30bbe547].x_b9252303->stackPtr = 0;
     x_824b9544[x_30bbe547].x_50a9ff14->delay = 0;
     x_824b9544[x_30bbe547].x_50a9ff14->flags = TASK_RUNNABLE;
-    x_824b9544[x_30bbe547].x_50a9ff14->callback = x_9a2e218f;
+    x_824b9544[x_30bbe547].x_50a9ff14->callback = move_sfx_trig;
     x_824b9544[x_30bbe547].x_50a9ff14->stackPtr = 0;
     x_824b9544[x_30bbe547].x_cdb23d89->delay = 0;
     x_824b9544[x_30bbe547].x_cdb23d89->flags = TASK_RUNNABLE;
@@ -1113,7 +1113,7 @@ u8 player_exec_state(Player *player, u8 x_84ff873b, u16 x_1e30fe60) {
             if (player->obj->frameCounter < x_fc517ba8->frameCounter) {
                 x_b9252303->flags |= TASK_TIME_BASED;
                 x_b9252303->triggerTime = x_fc517ba8->frameCounter;
-                x_b9252303->pushState.callback = x_46bebbb5;
+                x_b9252303->pushState.callback = move_init_cb;
                 x_b9252303->pushState.flags = TASK_RUNNABLE;
 
                 player->x_147ade82->callback = task_remove_current;
@@ -1124,7 +1124,7 @@ u8 player_exec_state(Player *player, u8 x_84ff873b, u16 x_1e30fe60) {
                 x_4e8001a8[3] = x_fc517ba8->x_300600ea;
                 x_4e8001a8[4] = x_08bf2418->x_9ac0a1c4;
             } else {
-                x_b9252303->callback = x_46bebbb5;
+                x_b9252303->callback = move_init_cb;
                 x_b9252303->delay = 0;
                 x_b9252303->flags = 1;
 
@@ -1146,7 +1146,7 @@ u8 player_exec_state(Player *player, u8 x_84ff873b, u16 x_1e30fe60) {
     player->x_147ade82->delay = 0;
     player->x_147ade82->flags = TASK_RUNNABLE;
     if (x_cd14c741 >= 0) {
-        x_b9252303->callback = x_73e8f926;
+        x_b9252303->callback = move_anim_change;
         x_b9252303->delay = 0;
         x_b9252303->flags = TASK_RUNNABLE;
     }
@@ -1293,7 +1293,7 @@ u8 player_select_move(Player *player, u8 x_84ff873b) {
                     x_b9252303->params[1] = x_a8d41374;
                     x_b9252303->flags |= TASK_TIME_BASED;
                     x_b9252303->triggerTime = player->x_7f68c36b->x_bab9966d - 1;
-                    x_b9252303->pushState.callback = x_8126b2af;
+                    x_b9252303->pushState.callback = move_retry_cb;
                     x_b9252303->pushState.flags = TASK_SAVE_STACK | TASK_RUNNABLE;
 
                     return TRUE;
@@ -1336,7 +1336,7 @@ u8 player_select_move(Player *player, u8 x_84ff873b) {
                 x_b9252303->params[1] = x_a8d41374;
                 x_b9252303->flags |= TASK_TIME_BASED;
                 x_b9252303->triggerTime = player->x_7f68c36b->x_bab9966d - 1;
-                x_b9252303->pushState.callback = x_8126b2af;
+                x_b9252303->pushState.callback = move_retry_cb;
                 x_b9252303->pushState.flags = TASK_SAVE_STACK | TASK_RUNNABLE;
                 return TRUE;
             }

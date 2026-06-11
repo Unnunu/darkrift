@@ -4,9 +4,9 @@
 
 u8 player_force_transition(Player *);
 
-void x_d16f8fa6(Object *);
+void move_osc_down(Object *);
 
-void x_d30a20e1(Object *obj) {
+void move_exec_current(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     u16 x_30bbe547 = player->x_30bbe547;
     s32 x_76041836;
@@ -48,36 +48,36 @@ void x_d30a20e1(Object *obj) {
     player->flags |= x_030d2322;
 }
 
-void x_55af5110(Object *obj) {
+void move_delay_cb(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
     if (obj->frameCounter > player->x_7f68c36b->x_887b6be9 + 1) {
         obj->frameCounter--;
     } else {
         obj->frameCounter--;
-        x_d30a20e1(obj);
+        move_exec_current(obj);
     }
 }
 
-void x_209f3063(Object *obj) {
+void move_osc_up(Object *obj) {
     if (obj->frameCounter != 0) {
         obj->frameCounter--;
     } else {
         obj->frameCounter++;
-        obj->currentTask->callback = x_d16f8fa6;
+        obj->currentTask->callback = move_osc_down;
     }
 }
 
-void x_d16f8fa6(Object *obj) {
+void move_osc_down(Object *obj) {
     if (obj->frameCounter < obj->x_20d20338->x_8e601526 - 1) {
         obj->frameCounter++;
     } else {
         obj->frameCounter--;
-        obj->currentTask->callback = x_209f3063;
+        obj->currentTask->callback = move_osc_up;
     }
 }
 
-void x_fe7e2137(Object *obj) {
+void move_count_up(Object *obj) {
     if (obj->frameCounter < obj->x_20d20338->x_8e601526 - 1) {
         obj->frameCounter++;
     } else {
@@ -85,7 +85,7 @@ void x_fe7e2137(Object *obj) {
     }
 }
 
-void x_378d4f8e(Object *obj) {
+void move_apply_vel(Object *obj) {
     Player *player;
     s16 x_eb1fe45b;
 
@@ -110,16 +110,16 @@ void x_378d4f8e(Object *obj) {
     }
 }
 
-void x_d18c17c2(Object *obj) {
+void move_to_next(Object *obj) {
     if (obj->frameCounter < ((Player *) obj->x_e2f64c57[0])->x_7f68c36b->x_bab9966d - 1) {
         obj->frameCounter++;
     } else {
         obj->frameCounter++;
-        x_d30a20e1(obj);
+        move_exec_current(obj);
     }
 }
 
-void x_330375dc(Object *obj) {
+void move_camera_trig(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     x_88f11482 x_32f1d6e2;
 
@@ -142,7 +142,7 @@ void x_330375dc(Object *obj) {
     }
 }
 
-void x_7c333f6c(Object *obj) {
+void move_state_change(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     s32 unused[2];
     x_388306ba *x_fc58f0f1;
@@ -151,7 +151,7 @@ void x_7c333f6c(Object *obj) {
     player->x_7f68c36b = x_fc58f0f1;
 
     if (x_fc58f0f1->x_016911c1 >= 0 && x_fc58f0f1->x_71e17346 != -1) {
-        player->x_cdb23d89->callback = x_330375dc;
+        player->x_cdb23d89->callback = move_camera_trig;
         player->x_cdb23d89->delay = 0;
         player->x_cdb23d89->flags = TASK_RUNNABLE;
     }
@@ -162,7 +162,7 @@ void x_7c333f6c(Object *obj) {
         model_parts_disable_all(obj);
     }
 
-    obj->currentTask->callback = x_d18c17c2;
+    obj->currentTask->callback = move_to_next;
     obj->frameCounter++;
 
     if (x_fc58f0f1->flags & x_c979afe4) {
@@ -183,7 +183,7 @@ void x_7c333f6c(Object *obj) {
     }
 }
 
-void x_73e8f926(Object *obj) {
+void move_anim_change(Object *obj) {
     s32 *params;
     Player *player = (Player *) obj->x_e2f64c57[0];
     x_388306ba *x_fc58f0f1;
@@ -199,18 +199,18 @@ void x_73e8f926(Object *obj) {
             player->x_b9252303->flags |= TASK_TIME_BASED;
             player->x_b9252303->triggerTime = x_fc58f0f1->x_887b6be9 - 2;
             player->x_b9252303->pushState.flags = TASK_RUNNABLE;
-            player->x_b9252303->pushState.callback = x_7c333f6c;
-            obj->currentTask->callback = x_d18c17c2;
+            player->x_b9252303->pushState.callback = move_state_change;
+            obj->currentTask->callback = move_to_next;
             return;
         }
 
         if (x_fc58f0f1->x_43d35340 == obj->x_20d20338->x_ee205ef9 && obj->frameCounter == x_fc58f0f1->x_887b6be9 - 1) {
-            x_7c333f6c(obj);
+            move_state_change(obj);
             return;
         }
 
         if (x_fc58f0f1->x_016911c1 >= 0 && x_fc58f0f1->x_71e17346 != -1) {
-            player->x_cdb23d89->callback = x_330375dc;
+            player->x_cdb23d89->callback = move_camera_trig;
             player->x_cdb23d89->delay = 0;
             player->x_cdb23d89->flags = TASK_RUNNABLE;
         }
@@ -256,7 +256,7 @@ void x_73e8f926(Object *obj) {
     }
 }
 
-void x_6ac04b7a(Object *obj) {
+void move_exec_init(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     s32 i;
     s32 s2;
@@ -272,7 +272,7 @@ void x_6ac04b7a(Object *obj) {
     player->x_147ade82->callback = v0[4];
     player->x_147ade82->delay = 0;
     player->x_147ade82->flags = TASK_RUNNABLE;
-    x_73e8f926(obj);
+    move_anim_change(obj);
 
     if (obj->frameCounter >= 2) {
         model_anim_load(obj);
@@ -292,11 +292,11 @@ void x_6ac04b7a(Object *obj) {
     player->x_81570fde.x_b2c79d6e &= ~x_c74d666c;
 }
 
-void x_46bebbb5(Object *obj) {
+void move_init_cb(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     x_388306ba *temp;
 
-    obj->currentTask->callback = x_6ac04b7a;
+    obj->currentTask->callback = move_exec_init;
     obj->frameCounter = 1;
     temp = obj->currentTask->params[3] + player->x_68a6b5cd; // required to match
     player->x_7f68c36b = temp;
@@ -305,7 +305,7 @@ void x_46bebbb5(Object *obj) {
     player->x_81570fde.x_b2c79d6e |= x_c74d666c;
 }
 
-void x_8126b2af(Object *obj) {
+void move_retry_cb(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     TaskNode *v0;
     s32 pad2;
@@ -338,7 +338,7 @@ void x_8126b2af(Object *obj) {
     }
 }
 
-void x_9a2e218f(Object *obj) {
+void move_sfx_trig(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     s16 x_9e993e2f = player->x_7f68c36b->x_9e993e2f;
     x_c8184673 *x_429c730a = player->x_429c730a;
@@ -363,5 +363,5 @@ void x_9a2e218f(Object *obj) {
     }
 }
 
-void x_cdd4d8f3(Object *obj) {
+void move_null_cb(Object *obj) {
 }

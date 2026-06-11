@@ -293,7 +293,10 @@ Enum `WadFileType` (22 types mapped by extension: WAD_ANM, WAD_TEX, WAD_SP2, WAD
 ### Audio (audio.c) — DONE (Wave 1)
 25 functions renamed: `audio_ostask_init`, `audio_state_reset`, `audio_init`, `audio_heap_alloc`, `audio_reinit`, `audio_synth_config`, `audio_frame_render`, `audio_dma_callback`, `audio_get_dma_proc`, `audio_dma_wait`, `audio_frame_update`, `audio_submit_task`, `audio_sfx_play`, `audio_sfx_stop`, `audio_sfx_stop_bank`, `audio_sfx_stop_all`, `audio_bgm_stop`, `audio_fade_complete`, `audio_fade_out_task`, `audio_fade_in_task`, `audio_sfx_set_pan`, `audio_sfx_set_vol`, `audio_bgm_set_vol`, `audio_unmute`, `wad_setup_sfx_bank`. 5 structs: `AudioConfig`, `AudioDmaBuf`, `AudioBufEntry`, `AudioBufPool`, `AudioFrameCtx`. ~50 globals: `sAudioConfig`, `sAlSeqPlayer`, `sAlSndPlayers`, `sAlHeap`, `sAudioHeapData`, `sAlBankFile`, `sMusicVolume`, `sSfxVolume`, `sBgmPlaying`, `sSfxPlaying`, `sAudioMuted`, `sSfxBankLoaded`, `sSfxSoundCount`, `sSfxVolumeSetting`, `sMusicVolumeSetting`, `sAudioTask`, etc. Updated functions.h, variables.h, symbol_addrs.txt, wad.c, present.c, match.c, move.c, hud.c. Build verified.
 
-Next in queue: `move.c` (move/attack state machine — most complex FSM, cross-references with player, combat, audio, wad)
+### Move/Attack (move.c) — DONE (Wave 1)
+15 functions renamed: `move_exec_current`, `move_delay_cb`, `move_osc_up`, `move_osc_down`, `move_count_up`, `move_apply_vel`, `move_to_next`, `move_camera_trig`, `move_state_change`, `move_anim_change`, `move_exec_init`, `move_init_cb`, `move_retry_cb`, `move_sfx_trig`, `move_null_cb`. Used x_388306ba (attack entry) and x_c8184673 (SFX frame trigger) structs. Updated callers in player.c, eff_hit.c, fighters.c. Build verified.
+
+Next in queue: `projectile.c` (projectile/effect system — cross-references with combat, player, model)
 
 ## Thread Model
 | Pri | Thread | Entry | Description |
