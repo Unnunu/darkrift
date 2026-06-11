@@ -98,7 +98,7 @@
         "effects"
     ],
     "open_questions": [
-        "x_8b270b48 / x_a92b640d are externs defined in aibrain.c as hit_get_dust_frames / hit_get_dust_speed",
+        "ai_tactic_retreat / ai_tactic_aggressive are externs defined in aibrain.c as hit_get_dust_frames / hit_get_dust_speed",
         "hit_effect_angle_anim (x_340c2137) is NON_EQUIVALENT — asm only"
     ]
 }

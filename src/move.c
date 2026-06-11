@@ -12,11 +12,11 @@ void move_exec_current(Object *obj) {
     s32 x_76041836;
 
     if (gWadCondLoad[x_30bbe547].x_03604d94 && !x_9df63a90) {
-        if (x_12c88671(player) || x_bed222e0(player, TRUE)) {
+        if (ai_advance_action(player) || ai_select_action_full(player, TRUE)) {
             return;
         }
 
-        x_5587ad5e(player);
+        ai_state_reset(player);
 
         if (player->x_0a8e33d7 >= 0 && (player->flags & x_f6191783)) {
             if (player_force_transition(player)) {

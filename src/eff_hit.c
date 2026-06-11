@@ -2,8 +2,8 @@
 #include "camera.h"
 #include "task.h"
 
-s16 x_8b270b48(Player *);
-s16 x_a92b640d(Player *);
+s16 ai_tactic_retreat(Player *);
+s16 ai_tactic_aggressive(Player *);
 
 void dust_spawn_cb(Object *obj);
 void dust_wait_cb(Object *);
@@ -821,11 +821,11 @@ void hit_combo_counter_attack(Object *obj) {
         (v0->x_7f68c36b->flags & x_01e3e146) && v0->obj->frameCounter < v0->x_7f68c36b->x_c53ac2df) {
         if (v0->flags & x_ed8e51a2) {
             player_exec_move_ai(player, x_e2a42ecd, 1);
-            player->x_81570fde.x_ca75ac5d = x_8b270b48;
+            player->x_81570fde.x_ca75ac5d = ai_tactic_retreat;
             player->x_81570fde.x_5a6554ba = 60;
         } else {
             player_exec_move_ai(player, x_8a9cd4d8, 1);
-            player->x_81570fde.x_ca75ac5d = x_a92b640d;
+            player->x_81570fde.x_ca75ac5d = ai_tactic_aggressive;
             player->x_81570fde.x_5a6554ba = 60;
         }
     }

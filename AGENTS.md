@@ -323,7 +323,11 @@ All 62 functions renamed and documented. 11 globals renamed: `sHitDustSpriteDef`
 ### Player Init (ply_init.c) — DONE (Wave 1)
 1 function: `ply_collect_textures`. Updated functions.h (1 decl), player.c (1 call site). Build verified.
 
-Next in queue: `aibrain.c` (AI opponent behavior — reaction tables, difficulty, distance)
+### AI Brain (aibrain.c) — DONE (Wave 1)
+37 functions renamed (15 core AI engine + 16 tactic table + 6 extra callbacks). 9 globals renamed (sAiDelayTable, sAiRandDelayTable, sAiAttemptCapTable, sAiTimerBaseTable, sAiInterruptBaseTable, sAiInterruptRandTable, sAiOpenWindowTable, sAiCloseWindowTable, sAiTacticTable). 1 enum (AiReactionFlag) + 1 struct (AiCandidate) renamed. Updated functions.h (5 decls), player.c (7 call sites), eff_hit.c (2 decls + 2 refs), symbol_addrs.txt (3 entries), nonmatching .s file renamed. Build verified.
+
+### Menu (menu.c) — NEXT (Wave 1)
+Screen/menu flow: logos → title → char select → options → endings.
 
 ## Thread Model
 | Pri | Thread | Entry | Description |

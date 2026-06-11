@@ -1,19 +1,81 @@
 {
   "file": "src/aibrain.c",
   "hash": "d5fd353d",
-  "rom_offsets": { "text": "0x1C3D0", "data": "0x4A910", "rodata": "0x55540", "bss": "0x80081660" },
-  "summary": "AI opponent behavior system: reaction tables, action sequence parser, 16 behavior functions (pursuit/retreat/sidestep), difficulty 0-7 cooldowns, distance management, guRandom PRNG.",
-  "functions": ["x_da66d1d5", "x_9f09065b", "x_0d580d2b"],
-  "key_apis": ["guRandom"],
-  "strings": [],
+  "rom_offsets": {
+    "text": "0x1C3D0",
+    "data": "0x4A910",
+    "rodata": "0x55540",
+    "bss": "0x80081660"
+  },
+  "summary": "AI opponent behavior system: main update loop (ai_update), reaction table lookup, action sequence parser, 16 tactic functions (sAiTacticTable[]), difficulty 0-7 scaling, distance management, guRandom PRNG.",
+  "functions": {
+    "Core AI engine": [
+      "ai_move_force — Reset AI + force specific move execution",
+      "ai_update — Main per-frame AI update (decision loop)",
+      "ai_state_reset — Reset all AI action state (clear pointers/flags)",
+      "ai_advance_action — Advance to next action in action sequence",
+      "ai_execute_action — Execute current action from sequence",
+      "ai_select_action — Select action from sequence (NON_MATCHING)",
+      "ai_difficulty_increase — Increment difficulty + repopulate reaction tables",
+      "ai_difficulty_reset — Reset difficulty to 0",
+      "ai_tables_clear — Clear all reaction tables to difficulty 0",
+      "ai_difficulty_max — Set max difficulty (8) + repopulate",
+      "ai_reaction_lookup — Look up reaction by enemy action + char config",
+      "ai_enemy_action_check — Check enemy's current action for reaction",
+      "ai_self_action_reaction — Check reaction triggered by self action",
+      "ai_select_action_full — Main selector: candidate search → filter → random pick",
+      "ai_random_chance — Random success check vs difficulty"
+    ],
+    "Tactic functions (sAiTacticTable[16])": [
+      "ai_tactic_guard_far — Guard when enemy is far + past mid-anim",
+      "ai_tactic_approach — Approach enemy when close + past mid-anim",
+      "ai_tactic_reject — Always reject (0) — no-op placeholder",
+      "ai_tactic_delay — Wait with countdown timer",
+      "ai_tactic_mid_guard — Guard in first half of animation only",
+      "ai_tactic_aggressive — Aggressive rushdown (track opponent anim)",
+      "ai_tactic_fail — Always fail (-1) — force sequence advance",
+      "ai_tactic_retreat — Defensive retreat / back off",
+      "ai_tactic_special_decide — Special move decision (delegates)",
+      "ai_tactic_aggressive_decide — Aggressive decision (delegates)",
+      "ai_tactic_delay_reset — Reset delay timer + set timer callback",
+      "ai_tactic_guard — Guard variant (no frame check)",
+      "ai_tactic_wait_interrupt — Wait for chain end (variant 1)",
+      "ai_tactic_wait_interrupt2 — Wait for chain end (variant 2)",
+      "ai_tactic_check_reaction — Check reaction entry active 0/1/-1",
+      "ai_tactic_rewind — Rewind action sequence pointer by 2"
+    ],
+    "Extra callbacks (not in array)": [
+      "ai_tactic_timer — Countdown timer callback (1 while >0, -1 when done)",
+      "ai_tactic_passive — Passive delay (retreat if enemy action found)",
+      "ai_tactic_opener — Punish/opener tactic (track opponent anim)",
+      "ai_tactic_special_delay — Special move delay (wait for special flag)",
+      "ai_tactic_special_approach — Special approach (anim windows + difficulty)",
+      "ai_tactic_default_move — Default movement check (sidestep/dash cancel)"
+    ]
+  },
+  "globals": [
+    "sAiDelayTable[10] — Frame delay by difficulty",
+    "sAiRandDelayTable[8] — Random delay jitter by difficulty",
+    "sAiAttemptCapTable[8] — Max attack attempts before AI backs off",
+    "sAiTimerBaseTable[8] — Timer base value by difficulty",
+    "sAiInterruptBaseTable[8] — Interrupt wait base frames",
+    "sAiInterruptRandTable[8] — Interrupt wait random jitter",
+    "sAiOpenWindowTable[12] — Opponent open window by char ID",
+    "sAiCloseWindowTable[18] — Opponent close window by char ID",
+    "sAiTacticTable[16] — Tactic function pointer table"
+  ],
+  "types": [
+    "enum AiReactionFlag { AI_REACT_ACTIVE=1, AI_REACT_CHAIN_ONLY=2, AI_REACT_SPECIAL=4 }",
+    "typedef struct { s16 index; x_eea787ea *entry; } AiCandidate"
+  ],
   "subsystems": [
     "Reaction tables: maps enemy actions → response via x_acda7e96[]",
     "Difficulty: rounds 0-7 control cooldowns, patience, aggression",
     "Distance: inter-fighter distance vs character-specific thresholds",
-    "16 behavior fns: pursuit, retreat, sidestep, delay, re-eval, aggression"
+    "sAiTacticTable[16]: guard, approach, reject, delay, mid_guard, aggressive, fail, retreat, special_decide, aggressive_decide, delay_reset, guard, wait_interrupt(x2), check_reaction, rewind + extra callbacks"
   ],
   "open_questions": [
-    "x_9f09065b is NON_MATCHING — needs decompilation",
-    "What are the 10 difficulty entry names in D_80049D34?"
+    "ai_select_action is NON_MATCHING — needs decompilation",
+    "What controls the sAiDelayTable[10] having 10 entries vs 8 for other tables?"
   ]
 }

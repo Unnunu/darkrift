@@ -1,55 +1,57 @@
 #include "common.h"
 #include "task.h"
 
-enum x_997a3c36 { x_79afbc9f = 1, x_42f9acb6 = 2, x_43a0d261 = 4 };
+enum x_997a3c36 { AI_REACT_ACTIVE = 1, AI_REACT_CHAIN_ONLY = 2, AI_REACT_SPECIAL = 4 };
 
 typedef struct {
     s16 index;
     x_eea787ea *entry;
-} x_2559abd9; // wrapping for candidate selection
+} AiCandidate; // wrapping for candidate selection
 
-u8 x_99de1125(Player *, x_ccb3bba0 **);
-u8 x_c41ec21f(Player *);
-u8 x_9f09065b(Player *, x_1e5e42da *);
-s16 x_c292dfa6(Player *);
+u8 ai_enemy_action_check(Player *, x_ccb3bba0 **);
+u8 ai_execute_action(Player *);
+u8 ai_select_action(Player *, x_1e5e42da *);
+s16 ai_tactic_default_move(Player *);
 
-s16 x_96d51072(Player *);
-s16 x_456d0051(Player *);
-s16 x_30f96d57(Player *);
-s16 x_09f9ea13(Player *);
-s16 x_02127c90(Player *);
-s16 x_a92b640d(Player *);
-s16 x_54e2b66c(Player *);
-s16 x_8b270b48(Player *);
-s16 x_8985d3ca(Player *);
-s16 x_9aa019dc(Player *);
-s16 x_b8c2dd87(Player *);
-s16 x_96cd9330(Player *);
-s16 x_f7322749(Player *);
-s16 x_4f67a505(Player *);
-s16 x_449f1966(Player *);
-s16 x_61604a34(Player *);
+s16 ai_tactic_guard_far(Player *);
+s16 ai_tactic_approach(Player *);
+s16 ai_tactic_reject(Player *);
+s16 ai_tactic_delay(Player *);
+s16 ai_tactic_mid_guard(Player *);
+s16 ai_tactic_aggressive(Player *);
+s16 ai_tactic_fail(Player *);
+s16 ai_tactic_retreat(Player *);
+s16 ai_tactic_special_decide(Player *);
+s16 ai_tactic_aggressive_decide(Player *);
+s16 ai_tactic_delay_reset(Player *);
+s16 ai_tactic_guard(Player *);
+s16 ai_tactic_wait_interrupt(Player *);
+s16 ai_tactic_wait_interrupt2(Player *);
+s16 ai_tactic_check_reaction(Player *);
+s16 ai_tactic_rewind(Player *);
 
-s16 D_80049D10[] = { 30, 20, 20, 10, 10, 10, 0, 0, 0, 0 };
-s16 D_80049D24[] = { 30, 30, 10, 6, 5, 2, 2, 0 };
-s16 D_80049D34[] = { 1, 2, 3, 4, 8, 10, 20, 1000 };
-s16 D_80049D44[] = { 70, 60, 60, 55, 50, 45, 40, 40 };
-s16 D_80049D54[] = { 8, 6, 4, 2, 0, 0, 0, 0 };
-s16 D_80049D64[] = { 2, 2, 2, 1, 1, 1, 1, 1 };
-s16 (*x_0d580d2b[])(struct Player *) = {
-    x_96d51072, x_456d0051, x_30f96d57, x_09f9ea13, x_02127c90, x_a92b640d, x_54e2b66c, x_8b270b48,
-    x_8985d3ca, x_9aa019dc, x_b8c2dd87, x_96cd9330, x_f7322749, x_4f67a505, x_449f1966, x_61604a34,
+s16 sAiDelayTable[] = { 30, 20, 20, 10, 10, 10, 0, 0, 0, 0 };
+s16 sAiRandDelayTable[] = { 30, 30, 10, 6, 5, 2, 2, 0 };
+s16 sAiAttemptCapTable[] = { 1, 2, 3, 4, 8, 10, 20, 1000 };
+s16 sAiTimerBaseTable[] = { 70, 60, 60, 55, 50, 45, 40, 40 };
+s16 sAiInterruptBaseTable[] = { 8, 6, 4, 2, 0, 0, 0, 0 };
+s16 sAiInterruptRandTable[] = { 2, 2, 2, 1, 1, 1, 1, 1 };
+s16 (*sAiTacticTable[])(struct Player *) = {
+    ai_tactic_guard_far,      ai_tactic_approach,          ai_tactic_reject,         ai_tactic_delay,
+    ai_tactic_mid_guard,      ai_tactic_aggressive,        ai_tactic_fail,           ai_tactic_retreat,
+    ai_tactic_special_decide, ai_tactic_aggressive_decide, ai_tactic_delay_reset,    ai_tactic_guard,
+    ai_tactic_wait_interrupt, ai_tactic_wait_interrupt2,   ai_tactic_check_reaction, ai_tactic_rewind,
 };
-s16 D_80049DB4[] = { 13, 13, 13, 10, 19, 19, 10, 10, 19, 10, 10, 0 };
-s16 D_80049DCC[] = { 10, 10, 10, 7, 12, 12, 10, 10, 12, 10, 10, 0, 0, 0, 0, 0, 0, 0 };
+s16 sAiOpenWindowTable[] = { 13, 13, 13, 10, 19, 19, 10, 10, 19, 10, 10, 0 };
+s16 sAiCloseWindowTable[] = { 10, 10, 10, 7, 12, 12, 10, 10, 12, 10, 10, 0, 0, 0, 0, 0, 0, 0 };
 
-u8 x_96d3a31b(Player *player, s16 x_0f12118c) {
-    x_5587ad5e(player);
+u8 ai_move_force(Player *player, s16 x_0f12118c) {
+    ai_state_reset(player);
     player->x_81570fde.x_b2c79d6e |= x_096af79a;
     return player_exec_move(player, x_0f12118c, TRUE);
 }
 
-void x_da66d1d5(Player *player) {
+void ai_update(Player *player) {
     u8 x_4b1172f5;
     x_ccb3bba0 *x_73dff70e;
     x_1e5e42da *x_81570fde;
@@ -69,7 +71,7 @@ void x_da66d1d5(Player *player) {
     if (player->x_81570fde.x_b2c79d6e & x_096af79a) {
         x_81570fde = &player->x_81570fde;
         if (player->x_448f0851 != 0 && --player->x_448f0851 == 0) {
-            x_5587ad5e(player);
+            ai_state_reset(player);
             if (player->x_0a8e33d7 >= 0 && (player->flags & x_f6191783)) {
                 if (player_force_transition(player)) {
                     player->x_81570fde.x_b2c79d6e |= x_096af79a;
@@ -84,9 +86,9 @@ void x_da66d1d5(Player *player) {
             x_81570fde->x_ca75ac5d = NULL;
             player->x_81570fde.x_b2c79d6e &= ~x_096af79a;
             if (x_300a844c < 0) {
-                x_5587ad5e(player);
+                ai_state_reset(player);
             } else {
-                x_12c88671(player);
+                ai_advance_action(player);
             }
         } else if (player->x_448f0851 == 0 && player->obj->frameCounter >= player->x_7f68c36b->x_bab9966d - 1) {
             player->x_448f0851 = 512;
@@ -95,34 +97,34 @@ void x_da66d1d5(Player *player) {
         if (hit_check_facing_away(player->obj) && !(player->x_7f68c36b->flags & x_cdcff2e1) &&
             !(player->obj->flags & x_da584e3c)) {
             if (player->x_7f68c36b->flags & x_037894c1) {
-                x_96d3a31b(player, x_1d1fc609);
+                ai_move_force(player, x_1d1fc609);
                 return;
             }
             if (player->x_7f68c36b->flags & x_ff05097f) {
-                x_96d3a31b(player, x_1fed1650);
+                ai_move_force(player, x_1fed1650);
                 return;
             }
         }
 
-        x_4b1172f5 = x_99de1125(player, &x_73dff70e);
+        x_4b1172f5 = ai_enemy_action_check(player, &x_73dff70e);
         if ((player->obj->flags & x_da584e3c) || (player->flags & x_d8a402c3)) {
             return;
         }
 
-        if ((--player->x_0b34e01a <= 0 || x_4b1172f5 && !(x_73dff70e->flags & x_42f9acb6)) &&
+        if ((--player->x_0b34e01a <= 0 || x_4b1172f5 && !(x_73dff70e->flags & AI_REACT_CHAIN_ONLY)) &&
                 (player->x_7f68c36b->flags & (x_037894c1 | x_ff05097f)) ||
             player->transition->x_18eb6c3d != 0xFF) {
-            player->x_0b34e01a = D_80049D10[x_cc57155e];
-            player->x_0b34e01a += guRandom() & D_80049D24[x_cc57155e];
+            player->x_0b34e01a = sAiDelayTable[x_cc57155e];
+            player->x_0b34e01a += guRandom() & sAiRandDelayTable[x_cc57155e];
 
-            if (!x_bed222e0(player, (player->flags & x_20efa43e) != 0)) {
+            if (!ai_select_action_full(player, (player->flags & x_20efa43e) != 0)) {
                 player->x_0b34e01a = 0;
             }
         }
     }
 }
 
-void x_5587ad5e(Player *player) {
+void ai_state_reset(Player *player) {
     player->x_81570fde.x_14906c66[2] = player->x_81570fde.x_14906c66[1];
     player->x_81570fde.x_14906c66[1] = player->x_81570fde.x_14906c66[0];
     player->x_81570fde.x_14906c66[0] = NULL;
@@ -137,37 +139,37 @@ void x_5587ad5e(Player *player) {
     }
 }
 
-u8 x_12c88671(Player *player) {
+u8 ai_advance_action(Player *player) {
     x_1e5e42da *x_81570fde = &player->x_81570fde;
 
     if (player->flags & x_d8a402c3 || (player->x_101ebc50 > 0x100 && !(x_81570fde->x_d098505c & 0x1000)) ||
         player->transition->x_86977b23 != player->x_cd14c741) {
-        x_5587ad5e(player);
+        ai_state_reset(player);
         return FALSE;
     }
 
-    if (x_c41ec21f(player)) {
+    if (ai_execute_action(player)) {
         return TRUE;
     }
 
     if (x_81570fde->x_9daba480 == NULL || *x_81570fde->x_9daba480 == -1 ||
         (player->x_81570fde.x_b2c79d6e & x_f90d2b7b)) {
-        x_5587ad5e(player);
+        ai_state_reset(player);
         return FALSE;
     }
 
     x_81570fde->x_9daba480++;
 
     if (x_81570fde->x_9daba480 == NULL || *x_81570fde->x_9daba480 == -1) {
-        x_5587ad5e(player);
+        ai_state_reset(player);
         return FALSE;
     }
 
-    x_9f09065b(player, x_81570fde);
-    return x_c41ec21f(player);
+    ai_select_action(player, x_81570fde);
+    return ai_execute_action(player);
 }
 
-u8 x_c41ec21f(Player *player) {
+u8 ai_execute_action(Player *player) {
     x_1e5e42da *x_81570fde = &player->x_81570fde;
     s16 x_de68d2a6 = (player->x_30bbe547 != x_83106b21) ? x_83106b21 : x_6f0b3be3;
 
@@ -179,14 +181,14 @@ u8 x_c41ec21f(Player *player) {
             return TRUE;
         }
 
-        x_5587ad5e(player);
+        ai_state_reset(player);
         return FALSE;
     }
     return FALSE;
 }
 
 #ifdef NON_MATCHING
-u8 x_9f09065b(Player *player, x_1e5e42da *x_81570fde) {
+u8 ai_select_action(Player *player, x_1e5e42da *x_81570fde) {
     s32 x_7d78dd2d;
     s32 x_d7f0204f;
     u8 a3;
@@ -199,7 +201,7 @@ u8 x_9f09065b(Player *player, x_1e5e42da *x_81570fde) {
 
         // read AiAction header
         x_81570fde->x_76cf2d04 = player->x_994b73a7 + player->x_4ec7bbf8[*x_81570fde->x_9daba480];
-        x_81570fde->x_ca75ac5d = ((s16) *x_81570fde->x_76cf2d04 == -1) ? NULL : x_0d580d2b[*x_81570fde->x_76cf2d04];
+        x_81570fde->x_ca75ac5d = ((s16) *x_81570fde->x_76cf2d04 == -1) ? NULL : sAiTacticTable[*x_81570fde->x_76cf2d04];
         x_81570fde->x_76cf2d04++;
         x_81570fde->x_5a6554ba = *x_81570fde->x_76cf2d04++;
         x_81570fde->x_5c398490 = *x_81570fde->x_76cf2d04++;
@@ -227,14 +229,14 @@ u8 x_9f09065b(Player *player, x_1e5e42da *x_81570fde) {
         x_81570fde->x_9daba480++;
     } while (*x_81570fde->x_9daba480 >= 0);
 
-    x_5587ad5e(player);
+    ai_state_reset(player);
     return FALSE;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/aibrain/x_9f09065b.s")
+#pragma GLOBAL_ASM("asm/nonmatchings/aibrain/ai_select_action.s")
 #endif
 
-void x_c94a154b(Player *player) {
+void ai_difficulty_increase(Player *player) {
     s16 x_261980db;
     s16 i;
     s16 x_b129ae42;
@@ -254,11 +256,11 @@ void x_c94a154b(Player *player) {
         x_73dff70e->x_1256da71 = x_73dff70e->x_cd679b4c;
     }
 
-    x_5587ad5e(player);
+    ai_state_reset(player);
     player->x_81570fde.x_b2c79d6e = x_c74d666c;
 }
 
-void x_b5611eaf(Player *player) {
+void ai_difficulty_reset(Player *player) {
     s16 x_261980db;
     s16 i;
     x_ccb3bba0 *x_73dff70e;
@@ -271,7 +273,7 @@ void x_b5611eaf(Player *player) {
         x_73dff70e->x_1256da71 = x_73dff70e->x_cd679b4c;
     }
 
-    x_5587ad5e(player);
+    ai_state_reset(player);
 
     x_cc57155e = gWadCondLoad[player->x_30bbe547].x_cc57155e;
     if (x_cc57155e == 0x7FFF) {
@@ -280,13 +282,13 @@ void x_b5611eaf(Player *player) {
 
     gWadCondLoad[player->x_30bbe547].x_cc57155e = 0;
     for (i = 0; i < x_cc57155e; i++) {
-        x_c94a154b(player);
+        ai_difficulty_increase(player);
     }
 
     player->x_81570fde.x_b2c79d6e = x_c74d666c;
 }
 
-void x_9308b483(Player *player) {
+void ai_tables_clear(Player *player) {
     s16 x_261980db;
     s16 i;
     x_ccb3bba0 *x_73dff70e;
@@ -298,13 +300,13 @@ void x_9308b483(Player *player) {
         x_73dff70e->x_1256da71 = x_73dff70e->x_cd679b4c;
     }
 
-    x_5587ad5e(player);
+    ai_state_reset(player);
     gWadCondLoad[player->x_30bbe547].x_cc57155e = 0;
     gWadCondLoad[player->x_30bbe547].x_cc57155e = 0;
     player->x_81570fde.x_b2c79d6e = x_c74d666c;
 }
 
-void x_5ca8f576(Player *player) {
+void ai_difficulty_max(Player *player) {
     s16 x_261980db;
     s16 i;
     x_ccb3bba0 *x_73dff70e;
@@ -317,20 +319,20 @@ void x_5ca8f576(Player *player) {
         x_73dff70e->x_1256da71 = x_73dff70e->x_cd679b4c;
     }
 
-    x_5587ad5e(player);
+    ai_state_reset(player);
 
     gWadCondLoad[player->x_30bbe547].x_cc57155e = 8;
     x_cc57155e = gWadCondLoad[player->x_30bbe547].x_cc57155e;
 
     gWadCondLoad[player->x_30bbe547].x_cc57155e = 0;
     for (i = 0; i < x_cc57155e; i++) {
-        x_c94a154b(player);
+        ai_difficulty_increase(player);
     }
 
     player->x_81570fde.x_b2c79d6e = x_c74d666c;
 }
 
-u8 x_cb6a0d41(Player *player, x_ccb3bba0 **x_73dff70e, u8 x_852d4cff) {
+u8 ai_reaction_lookup(Player *player, x_ccb3bba0 **x_73dff70e, u8 x_852d4cff) {
     s32 x_0475899f;
     s16 x_00e4973c;
     x_ccb3bba0 *x_621dd544;
@@ -355,7 +357,7 @@ u8 x_cb6a0d41(Player *player, x_ccb3bba0 **x_73dff70e, u8 x_852d4cff) {
     }
 
     x_621dd544 = (x_ccb3bba0 *) (player->x_0bc74042 + player->x_78242925[x_00e4973c]);
-    if (!(x_621dd544->flags & x_79afbc9f)) {
+    if (!(x_621dd544->flags & AI_REACT_ACTIVE)) {
         x_00e4973c += x_621dd544->x_b129ae42;
         x_621dd544 = (x_ccb3bba0 *) (player->x_0bc74042 + player->x_78242925[x_00e4973c]);
     }
@@ -363,7 +365,7 @@ u8 x_cb6a0d41(Player *player, x_ccb3bba0 **x_73dff70e, u8 x_852d4cff) {
     return TRUE;
 }
 
-u8 x_99de1125(Player *player, x_ccb3bba0 **x_73dff70e) {
+u8 ai_enemy_action_check(Player *player, x_ccb3bba0 **x_73dff70e) {
     s16 x_00e4973c;
     x_ccb3bba0 *x_621dd544;
 
@@ -377,7 +379,7 @@ u8 x_99de1125(Player *player, x_ccb3bba0 **x_73dff70e) {
     return TRUE;
 }
 
-u8 x_574aae97(Player *player, x_ccb3bba0 **x_73dff70e) {
+u8 ai_self_action_reaction(Player *player, x_ccb3bba0 **x_73dff70e) {
     s16 x_00e4973c;
     x_ccb3bba0 *x_621dd544;
 
@@ -387,7 +389,7 @@ u8 x_574aae97(Player *player, x_ccb3bba0 **x_73dff70e) {
     }
 
     x_621dd544 = (x_ccb3bba0 *) (player->x_0bc74042 + player->x_78242925[x_00e4973c]);
-    if (!(x_621dd544->flags & x_79afbc9f)) {
+    if (!(x_621dd544->flags & AI_REACT_ACTIVE)) {
         x_00e4973c += x_621dd544->x_b129ae42;
         x_621dd544 = (x_ccb3bba0 *) (player->x_0bc74042 + player->x_78242925[x_00e4973c]);
     }
@@ -396,13 +398,13 @@ u8 x_574aae97(Player *player, x_ccb3bba0 **x_73dff70e) {
     return TRUE;
 }
 
-u8 x_bed222e0(Player *player, u8 x_84ff873b) {
+u8 ai_select_action_full(Player *player, u8 x_84ff873b) {
     x_ccb3bba0 *x_73dff70e;
     s32 x_de68d2a6;
     s16 x_35bfa5f2;
     x_1e5e42da *x_81570fde;
     s16 *x_cf2c3c6e;
-    x_2559abd9 x_ba159dbf[100];
+    AiCandidate x_ba159dbf[100];
     u8 x_5ad6e307;
     x_eea787ea *x_1fd4d41c;
     s32 pad;
@@ -415,18 +417,18 @@ u8 x_bed222e0(Player *player, u8 x_84ff873b) {
     x_de68d2a6 = (player->x_30bbe547 != x_83106b21) ? x_83106b21 : x_6f0b3be3;
 
     if (!(player->flags & x_d8a402c3) && (player->x_cd14c741 == 216 || player->x_cd14c741 == 42) &&
-        x_cb6a0d41(player, &x_73dff70e, TRUE)) {
+        ai_reaction_lookup(player, &x_73dff70e, TRUE)) {
         x_5ad6e307 = FALSE;
-    } else if (x_574aae97(player, &x_73dff70e)) {
+    } else if (ai_self_action_reaction(player, &x_73dff70e)) {
         x_5ad6e307 = TRUE;
-    } else if (x_cb6a0d41(player, &x_73dff70e, FALSE)) {
+    } else if (ai_reaction_lookup(player, &x_73dff70e, FALSE)) {
         x_5ad6e307 = FALSE;
     } else {
-        x_5587ad5e(player);
+        ai_state_reset(player);
         return FALSE;
     }
 
-    if (x_5ad6e307 && (x_73dff70e->flags & x_42f9acb6) &&
+    if (x_5ad6e307 && (x_73dff70e->flags & AI_REACT_CHAIN_ONLY) &&
         (x_824b9544[x_de68d2a6].x_7f68c36b->flags & (x_7507aa4b | x_eac5209f)) &&
         !gWadCondLoad[x_de68d2a6].x_03604d94 && !(x_824b9544[x_de68d2a6].flags & x_6de2d515)) {
         return FALSE;
@@ -483,7 +485,7 @@ u8 x_bed222e0(Player *player, u8 x_84ff873b) {
                     if (gWadCondLoad[player->x_30bbe547].x_cc57155e <= 3) {
                         player_exec_move(player, x_4a0f5c6c, TRUE);
                         wad_strcpy(x_824b9544[x_6f0b3be3].x_81570fde.x_599a5202, "Default ss fwd");
-                        player->x_81570fde.x_ca75ac5d = x_c292dfa6;
+                        player->x_81570fde.x_ca75ac5d = ai_tactic_default_move;
                     } else {
                         player_exec_move(player, x_a8ddcce3, TRUE);
                         wad_strcpy(x_824b9544[x_6f0b3be3].x_81570fde.x_599a5202, "Default dash fwd");
@@ -495,7 +497,7 @@ u8 x_bed222e0(Player *player, u8 x_84ff873b) {
                     if (gWadCondLoad[player->x_30bbe547].x_cc57155e <= 3) {
                         player_exec_move(player, x_96d30734, TRUE);
                         wad_strcpy(x_824b9544[x_6f0b3be3].x_81570fde.x_599a5202, "Default ss bak");
-                        player->x_81570fde.x_ca75ac5d = x_c292dfa6;
+                        player->x_81570fde.x_ca75ac5d = ai_tactic_default_move;
                     } else {
                         player_exec_move(player, x_6cd07703, TRUE);
                         wad_strcpy(x_824b9544[x_6f0b3be3].x_81570fde.x_599a5202, "Default dash bak");
@@ -527,7 +529,7 @@ u8 x_bed222e0(Player *player, u8 x_84ff873b) {
                 return TRUE;
             }
 
-            if (x_cb6a0d41(player, &x_73dff70e, FALSE)) {
+            if (ai_reaction_lookup(player, &x_73dff70e, FALSE)) {
                 x_5ad6e307 = FALSE;
             } else {
                 player->x_81570fde.x_14906c66[0] = NULL;
@@ -545,10 +547,10 @@ u8 x_bed222e0(Player *player, u8 x_84ff873b) {
     x_81570fde->x_d098505c = x_81570fde->x_14906c66[0]->x_c3afc384;
     x_81570fde->x_011116d7 = x_73dff70e;
 
-    return x_9f09065b(player, x_81570fde) && x_c41ec21f(player);
+    return ai_select_action(player, x_81570fde) && ai_execute_action(player);
 }
 
-s16 x_96d51072(Player *player) {
+s16 ai_tactic_guard_far(Player *player) {
     x_ccb3bba0 *x_73dff70e;
     u8 x_4b1172f5;
 
@@ -556,53 +558,53 @@ s16 x_96d51072(Player *player) {
         return TRUE;
     }
 
-    x_4b1172f5 = x_99de1125(player, &x_73dff70e);
+    x_4b1172f5 = ai_enemy_action_check(player, &x_73dff70e);
     return (x_9a96200f > player->x_81570fde.x_5a6554ba) && !(player->flags & x_9298c772) &&
-           (!x_4b1172f5 || (x_73dff70e->flags & x_42f9acb6));
+           (!x_4b1172f5 || (x_73dff70e->flags & AI_REACT_CHAIN_ONLY));
 }
 
-s16 x_96cd9330(Player *player) {
+s16 ai_tactic_guard(Player *player) {
     x_ccb3bba0 *x_73dff70e;
     u8 x_4b1172f5;
 
-    x_4b1172f5 = x_99de1125(player, &x_73dff70e);
+    x_4b1172f5 = ai_enemy_action_check(player, &x_73dff70e);
     return (x_9a96200f > player->x_81570fde.x_5a6554ba) && !(player->flags & x_9298c772) &&
-           (!x_4b1172f5 || (x_73dff70e->flags & x_42f9acb6));
+           (!x_4b1172f5 || (x_73dff70e->flags & AI_REACT_CHAIN_ONLY));
 }
 
-s16 x_456d0051(Player *player) {
+s16 ai_tactic_approach(Player *player) {
     x_ccb3bba0 *x_73dff70e;
     u8 x_4b1172f5;
 
-    x_4b1172f5 = x_99de1125(player, &x_73dff70e);
+    x_4b1172f5 = ai_enemy_action_check(player, &x_73dff70e);
 
     if (player->obj->frameCounter < (player->x_7f68c36b->x_bab9966d >> 1)) {
         return TRUE;
     }
 
     return (x_9a96200f < player->x_81570fde.x_5a6554ba) && !(player->flags & x_9298c772) &&
-           (!x_4b1172f5 || (x_73dff70e->flags & x_42f9acb6));
+           (!x_4b1172f5 || (x_73dff70e->flags & AI_REACT_CHAIN_ONLY));
 }
 
-s16 x_30f96d57(Player *player) {
+s16 ai_tactic_reject(Player *player) {
     return 0;
 }
 
-s16 x_09f9ea13(Player *player) {
+s16 ai_tactic_delay(Player *player) {
     x_ccb3bba0 *x_73dff70e;
     u8 x_4b1172f5;
 
-    x_4b1172f5 = x_99de1125(player, &x_73dff70e);
+    x_4b1172f5 = ai_enemy_action_check(player, &x_73dff70e);
 
     if (player->x_81570fde.x_5a6554ba) {
         player->x_81570fde.x_5a6554ba--;
     }
 
     return (player->x_81570fde.x_5a6554ba) && !(player->flags & x_9298c772) &&
-           (!x_4b1172f5 || (x_73dff70e->flags & x_42f9acb6));
+           (!x_4b1172f5 || (x_73dff70e->flags & AI_REACT_CHAIN_ONLY));
 }
 
-s16 x_02127c90(Player *player) {
+s16 ai_tactic_mid_guard(Player *player) {
     if (player->obj->frameCounter < (player->x_7f68c36b->x_bab9966d >> 1)) {
         return TRUE;
     }
@@ -610,7 +612,7 @@ s16 x_02127c90(Player *player) {
     return FALSE;
 }
 
-s16 x_9b936c80(Player *player) {
+s16 ai_tactic_timer(Player *player) {
     if (--player->x_81570fde.x_5a6554ba > 0) {
         return TRUE;
     } else {
@@ -618,11 +620,11 @@ s16 x_9b936c80(Player *player) {
     }
 }
 
-s16 x_54e2b66c(Player *player) {
+s16 ai_tactic_fail(Player *player) {
     return -1;
 }
 
-s16 x_a92b640d(Player *player) {
+s16 ai_tactic_aggressive(Player *player) {
     x_ccb3bba0 *x_73dff70e;
     s16 x_de68d2a6;
     s16 frameCounter;
@@ -638,15 +640,15 @@ s16 x_a92b640d(Player *player) {
     if (player->flags & x_d8a402c3) {
         return TRUE;
     }
-    if (player->x_81570fde.x_60227f92 >= D_80049D34[gWadCondLoad[player->x_30bbe547].x_cc57155e] &&
+    if (player->x_81570fde.x_60227f92 >= sAiAttemptCapTable[gWadCondLoad[player->x_30bbe547].x_cc57155e] &&
         !(x_824b9544[1 - player->x_30bbe547].flags & x_c15491f2)) {
         return FALSE;
     }
 
     player->x_81570fde.x_5a6554ba--;
 
-    if (x_99de1125(player, &x_73dff70e) && !(x_73dff70e->flags & x_42f9acb6)) {
-        if (x_73dff70e->flags & x_43a0d261) {
+    if (ai_enemy_action_check(player, &x_73dff70e) && !(x_73dff70e->flags & AI_REACT_CHAIN_ONLY)) {
+        if (x_73dff70e->flags & AI_REACT_SPECIAL) {
             player_exec_move_ai(player, x_28ed5d80, TRUE);
         }
         return TRUE;
@@ -655,19 +657,19 @@ s16 x_a92b640d(Player *player) {
     x_98c4e5a5 = x_824b9544 + x_de68d2a6;
     if ((x_824b9544[x_de68d2a6].flags & x_9298c772) ||
         !(x_98c4e5a5->flags & x_c15491f2) && player->x_81570fde.x_5a6554ba < 20 &&
-            ((frameCounter < x_c53ac2df && D_80049DB4[x_98c4e5a5->x_eb1fe45b] < x_c53ac2df - frameCounter) ||
-             (x_fedecf5c < frameCounter &&
-              D_80049DCC[x_98c4e5a5->x_eb1fe45b] < x_824b9544[x_de68d2a6].x_7f68c36b->x_bab9966d - x_fedecf5c) ||
+            ((frameCounter < x_c53ac2df && sAiOpenWindowTable[x_98c4e5a5->x_eb1fe45b] < x_c53ac2df - frameCounter) ||
+             (x_fedecf5c < frameCounter && sAiCloseWindowTable[x_98c4e5a5->x_eb1fe45b] <
+                                               x_824b9544[x_de68d2a6].x_7f68c36b->x_bab9966d - x_fedecf5c) ||
              ((x_824b9544[1 - player->x_30bbe547].flags & x_030d2322) &&
               x_824b9544[1 - player->x_30bbe547].obj->frameCounter < 6))) {
         player->x_cd14c741 = 216;
         return -1;
     }
 
-    return player->x_81570fde.x_5a6554ba > 0 || !(x_73dff70e->flags & x_42f9acb6);
+    return player->x_81570fde.x_5a6554ba > 0 || !(x_73dff70e->flags & AI_REACT_CHAIN_ONLY);
 }
 
-s16 x_8b270b48(Player *player) {
+s16 ai_tactic_retreat(Player *player) {
     s16 x_de68d2a6 = 1 - player->x_30bbe547;
     s32 pad;
     x_ccb3bba0 *x_73dff70e;
@@ -677,15 +679,15 @@ s16 x_8b270b48(Player *player) {
         return TRUE;
     }
 
-    if (player->x_81570fde.x_60227f92 >= D_80049D34[gWadCondLoad[player->x_30bbe547].x_cc57155e] &&
+    if (player->x_81570fde.x_60227f92 >= sAiAttemptCapTable[gWadCondLoad[player->x_30bbe547].x_cc57155e] &&
         !(x_824b9544[1 - player->x_30bbe547].flags & x_c15491f2)) {
         return FALSE;
     }
 
     player->x_81570fde.x_5a6554ba--;
-    v0 = x_99de1125(player, &x_73dff70e);
-    if (v0 && !(x_73dff70e->flags & x_42f9acb6)) {
-        if (!(x_73dff70e->flags & x_43a0d261)) {
+    v0 = ai_enemy_action_check(player, &x_73dff70e);
+    if (v0 && !(x_73dff70e->flags & AI_REACT_CHAIN_ONLY)) {
+        if (!(x_73dff70e->flags & AI_REACT_SPECIAL)) {
             player_exec_move_ai(player, x_01ff67cd, TRUE);
         }
         return TRUE;
@@ -696,10 +698,10 @@ s16 x_8b270b48(Player *player) {
         return -1;
     }
 
-    return (player->x_81570fde.x_5a6554ba > 0) || !(x_73dff70e->flags & x_42f9acb6);
+    return (player->x_81570fde.x_5a6554ba > 0) || !(x_73dff70e->flags & AI_REACT_CHAIN_ONLY);
 }
 
-u8 x_463aa1ee(Player *player) {
+u8 ai_random_chance(Player *player) {
     switch (x_028e5846) {
         case x_8bfc1f62:
             switch (gWadCondLoad[player->x_30bbe547].x_cc57155e) {
@@ -736,7 +738,7 @@ u8 x_463aa1ee(Player *player) {
     return TRUE;
 }
 
-s16 x_92798f35(Player *player) {
+s16 ai_tactic_passive(Player *player) {
     x_ccb3bba0 *x_73dff70e;
     s32 pad[2];
     u8 v0;
@@ -744,9 +746,9 @@ s16 x_92798f35(Player *player) {
 
     player->x_81570fde.x_5a6554ba--;
 
-    if (player->x_81570fde.x_60227f92 < D_80049D34[gWadCondLoad[x_30bbe547].x_cc57155e]) {
-        v0 = x_99de1125(player, &x_73dff70e);
-        if (v0 && !(x_73dff70e->flags & x_42f9acb6) && !(x_73dff70e->flags & x_43a0d261)) {
+    if (player->x_81570fde.x_60227f92 < sAiAttemptCapTable[gWadCondLoad[x_30bbe547].x_cc57155e]) {
+        v0 = ai_enemy_action_check(player, &x_73dff70e);
+        if (v0 && !(x_73dff70e->flags & AI_REACT_CHAIN_ONLY) && !(x_73dff70e->flags & AI_REACT_SPECIAL)) {
             player_exec_move_ai(player, x_01ff67cd, TRUE);
             return 1;
         }
@@ -755,7 +757,7 @@ s16 x_92798f35(Player *player) {
     return 1;
 }
 
-s16 x_88a987a4(Player *player) {
+s16 ai_tactic_opener(Player *player) {
     x_ccb3bba0 *x_73dff70e;
     s16 x_de68d2a6;
     s16 x_c9614940;
@@ -770,9 +772,9 @@ s16 x_88a987a4(Player *player) {
 
     player->x_81570fde.x_5a6554ba--;
 
-    if (player->x_81570fde.x_60227f92 < D_80049D34[gWadCondLoad[player->x_30bbe547].x_cc57155e]) {
-        if (x_99de1125(player, &x_73dff70e)) {
-            if (!(x_73dff70e->flags & x_42f9acb6) && !(x_73dff70e->flags & x_43a0d261)) {
+    if (player->x_81570fde.x_60227f92 < sAiAttemptCapTable[gWadCondLoad[player->x_30bbe547].x_cc57155e]) {
+        if (ai_enemy_action_check(player, &x_73dff70e)) {
+            if (!(x_73dff70e->flags & AI_REACT_CHAIN_ONLY) && !(x_73dff70e->flags & AI_REACT_SPECIAL)) {
                 player_exec_move_ai(player, x_01ff67cd, TRUE);
                 return 1;
             }
@@ -781,9 +783,9 @@ s16 x_88a987a4(Player *player) {
 
     x_98c4e5a5 = x_824b9544 + x_de68d2a6;
     if (!(x_98c4e5a5->flags & x_c15491f2)) {
-        if ((x_c9614940 < x_32f1d6e2 && D_80049DB4[x_98c4e5a5->x_eb1fe45b] < x_32f1d6e2 - x_c9614940) ||
-            (x_18643961 < x_c9614940 &&
-             D_80049DCC[x_98c4e5a5->x_eb1fe45b] < x_824b9544[x_de68d2a6].x_7f68c36b->x_bab9966d - x_18643961) ||
+        if ((x_c9614940 < x_32f1d6e2 && sAiOpenWindowTable[x_98c4e5a5->x_eb1fe45b] < x_32f1d6e2 - x_c9614940) ||
+            (x_18643961 < x_c9614940 && sAiCloseWindowTable[x_98c4e5a5->x_eb1fe45b] <
+                                            x_824b9544[x_de68d2a6].x_7f68c36b->x_bab9966d - x_18643961) ||
             ((x_824b9544[1 - player->x_30bbe547].flags & x_030d2322) &&
              x_824b9544[1 - player->x_30bbe547].obj->frameCounter < 6)) {
             player->flags &= ~x_d8a402c3;
@@ -794,20 +796,20 @@ s16 x_88a987a4(Player *player) {
     return 1;
 }
 
-s16 x_9aa019dc(Player *player) {
+s16 ai_tactic_aggressive_decide(Player *player) {
     player->x_81570fde.x_4390a1c3 = 0;
     player->x_81570fde.x_60227f92++;
 
-    if (x_463aa1ee(player)) {
-        player->x_81570fde.x_ca75ac5d = x_88a987a4;
-        return x_88a987a4(player);
+    if (ai_random_chance(player)) {
+        player->x_81570fde.x_ca75ac5d = ai_tactic_opener;
+        return ai_tactic_opener(player);
     } else {
-        player->x_81570fde.x_ca75ac5d = x_92798f35;
-        return x_92798f35(player);
+        player->x_81570fde.x_ca75ac5d = ai_tactic_passive;
+        return ai_tactic_passive(player);
     }
 }
 
-s16 x_01906465(Player *player) {
+s16 ai_tactic_special_delay(Player *player) {
     s32 pad[2];
     x_ccb3bba0 *x_73dff70e;
     u8 v0;
@@ -815,9 +817,9 @@ s16 x_01906465(Player *player) {
 
     player->x_81570fde.x_5a6554ba--;
 
-    if (player->x_81570fde.x_60227f92 < D_80049D34[gWadCondLoad[x_30bbe547].x_cc57155e]) {
-        v0 = x_99de1125(player, &x_73dff70e);
-        if (v0 && !(x_73dff70e->flags & x_42f9acb6) && (x_73dff70e->flags & x_43a0d261)) {
+    if (player->x_81570fde.x_60227f92 < sAiAttemptCapTable[gWadCondLoad[x_30bbe547].x_cc57155e]) {
+        v0 = ai_enemy_action_check(player, &x_73dff70e);
+        if (v0 && !(x_73dff70e->flags & AI_REACT_CHAIN_ONLY) && (x_73dff70e->flags & AI_REACT_SPECIAL)) {
             player_exec_move_ai(player, x_28ed5d80, TRUE);
             return 1;
         }
@@ -826,7 +828,7 @@ s16 x_01906465(Player *player) {
     return 1;
 }
 
-s16 x_3f4966fe(Player *player) {
+s16 ai_tactic_special_approach(Player *player) {
     s16 x_de68d2a6;
     s16 x_c9614940;
     s16 x_18643961;
@@ -841,9 +843,9 @@ s16 x_3f4966fe(Player *player) {
 
     player->x_81570fde.x_5a6554ba--;
 
-    if (player->x_81570fde.x_60227f92 < D_80049D34[gWadCondLoad[player->x_30bbe547].x_cc57155e]) {
-        if (x_99de1125(player, &x_73dff70e)) {
-            if (!(x_73dff70e->flags & x_42f9acb6) && (x_73dff70e->flags & x_43a0d261)) {
+    if (player->x_81570fde.x_60227f92 < sAiAttemptCapTable[gWadCondLoad[player->x_30bbe547].x_cc57155e]) {
+        if (ai_enemy_action_check(player, &x_73dff70e)) {
+            if (!(x_73dff70e->flags & AI_REACT_CHAIN_ONLY) && (x_73dff70e->flags & AI_REACT_SPECIAL)) {
                 player_exec_move_ai(player, x_28ed5d80, TRUE);
                 return 1;
             }
@@ -851,10 +853,10 @@ s16 x_3f4966fe(Player *player) {
     }
 
     x_98c4e5a5 = x_824b9544 + x_de68d2a6;
-    if (!(x_98c4e5a5->flags & x_c15491f2) && x_463aa1ee(player)) {
-        if ((x_c9614940 < x_32f1d6e2 && D_80049DB4[x_98c4e5a5->x_eb1fe45b] < x_32f1d6e2 - x_c9614940) ||
-            (x_18643961 < x_c9614940 &&
-             D_80049DCC[x_98c4e5a5->x_eb1fe45b] < x_824b9544[x_de68d2a6].x_7f68c36b->x_bab9966d - x_18643961) ||
+    if (!(x_98c4e5a5->flags & x_c15491f2) && ai_random_chance(player)) {
+        if ((x_c9614940 < x_32f1d6e2 && sAiOpenWindowTable[x_98c4e5a5->x_eb1fe45b] < x_32f1d6e2 - x_c9614940) ||
+            (x_18643961 < x_c9614940 && sAiCloseWindowTable[x_98c4e5a5->x_eb1fe45b] <
+                                            x_824b9544[x_de68d2a6].x_7f68c36b->x_bab9966d - x_18643961) ||
             ((x_824b9544[1 - player->x_30bbe547].flags & x_030d2322) &&
              x_824b9544[1 - player->x_30bbe547].obj->frameCounter < 6)) {
             player->flags &= ~x_d8a402c3;
@@ -865,61 +867,62 @@ s16 x_3f4966fe(Player *player) {
     return 1;
 }
 
-s16 x_8985d3ca(Player *player) {
+s16 ai_tactic_special_decide(Player *player) {
     player->x_81570fde.x_4390a1c3 = 0;
     player->x_81570fde.x_60227f92++;
 
-    if (x_463aa1ee(player)) {
-        player->x_81570fde.x_ca75ac5d = x_3f4966fe;
-        return x_3f4966fe(player);
+    if (ai_random_chance(player)) {
+        player->x_81570fde.x_ca75ac5d = ai_tactic_special_approach;
+        return ai_tactic_special_approach(player);
     } else {
-        player->x_81570fde.x_ca75ac5d = x_01906465;
-        return x_01906465(player);
+        player->x_81570fde.x_ca75ac5d = ai_tactic_special_delay;
+        return ai_tactic_special_delay(player);
     }
 }
 
-s16 x_b8c2dd87(Player *player) {
+s16 ai_tactic_delay_reset(Player *player) {
     s16 x_f6289181;
 
     x_f6289181 = gWadCondLoad[player->x_30bbe547].x_cc57155e;
-    player->x_81570fde.x_5a6554ba = D_80049D44[x_f6289181] + (guRandom() & D_80049D24[x_f6289181]); // @BUG ??
-    player->x_81570fde.x_ca75ac5d = x_9b936c80;
+    player->x_81570fde.x_5a6554ba =
+        sAiTimerBaseTable[x_f6289181] + (guRandom() & sAiRandDelayTable[x_f6289181]); // @BUG ??
+    player->x_81570fde.x_ca75ac5d = ai_tactic_timer;
     return 1;
 }
 
-s16 x_c292dfa6(Player *player) {
+s16 ai_tactic_default_move(Player *player) {
     x_ccb3bba0 *x_73dff70e;
     s32 x_4b1172f5;
 
-    x_4b1172f5 = x_99de1125(player, &x_73dff70e);
+    x_4b1172f5 = ai_enemy_action_check(player, &x_73dff70e);
 
     if (player->obj->frameCounter < (player->x_7f68c36b->x_bab9966d >> 1) && !(player->flags & x_9298c772)) {
         return TRUE;
     }
 
     if (player->obj->frameCounter < player->x_7f68c36b->x_bab9966d - 1 && !(player->flags & x_9298c772) &&
-        (!x_4b1172f5 || (x_73dff70e->flags & x_42f9acb6))) {
+        (!x_4b1172f5 || (x_73dff70e->flags & AI_REACT_CHAIN_ONLY))) {
         return TRUE;
     }
 
     return FALSE;
 }
 
-s16 x_f7322749(Player *player) {
+s16 ai_tactic_wait_interrupt(Player *player) {
     s16 x_5bbba600;
     s32 pad;
     s16 pad2;
     s16 x_32f1d6e2;
 
     x_5bbba600 = gWadCondLoad[player->x_30bbe547].x_cc57155e;
-    x_32f1d6e2 = D_80049D54[x_5bbba600];
-    x_32f1d6e2 += guRandom() % D_80049D64[x_5bbba600];
+    x_32f1d6e2 = sAiInterruptBaseTable[x_5bbba600];
+    x_32f1d6e2 += guRandom() % sAiInterruptRandTable[x_5bbba600];
     player->x_81570fde.x_4390a1c3++;
 
     if (x_32f1d6e2 < player->x_81570fde.x_4390a1c3 || (x_824b9544[1 - player->x_30bbe547].flags & x_4d950171)) {
         player->x_81570fde.x_9daba480++;
-        x_9f09065b(player, &player->x_81570fde);
-        x_c41ec21f(player);
+        ai_select_action(player, &player->x_81570fde);
+        ai_execute_action(player);
         player->x_81570fde.x_5a6554ba = 90;
         return 1;
     } else {
@@ -927,21 +930,21 @@ s16 x_f7322749(Player *player) {
     }
 }
 
-s16 x_4f67a505(Player *player) {
+s16 ai_tactic_wait_interrupt2(Player *player) {
     s16 x_cc57155e;
     s32 pad;
     s16 pad2;
     s16 x_32f1d6e2;
 
     x_cc57155e = gWadCondLoad[player->x_30bbe547].x_cc57155e;
-    x_32f1d6e2 = D_80049D54[x_cc57155e];
-    x_32f1d6e2 += guRandom() % D_80049D64[x_cc57155e];
+    x_32f1d6e2 = sAiInterruptBaseTable[x_cc57155e];
+    x_32f1d6e2 += guRandom() % sAiInterruptRandTable[x_cc57155e];
     player->x_81570fde.x_4390a1c3++;
 
     if (x_32f1d6e2 < player->x_81570fde.x_4390a1c3 || (x_824b9544[1 - player->x_30bbe547].flags & x_4d950171)) {
         player->x_81570fde.x_9daba480++;
-        x_9f09065b(player, &player->x_81570fde);
-        x_c41ec21f(player);
+        ai_select_action(player, &player->x_81570fde);
+        ai_execute_action(player);
         player->x_81570fde.x_5a6554ba = 90;
         return 1;
     } else {
@@ -949,11 +952,11 @@ s16 x_4f67a505(Player *player) {
     }
 }
 
-s16 x_449f1966(Player *player) {
+s16 ai_tactic_check_reaction(Player *player) {
     x_ccb3bba0 *x_73dff70e;
 
-    if (x_99de1125(player, &x_73dff70e)) {
-        if (!(x_73dff70e->flags & x_42f9acb6)) {
+    if (ai_enemy_action_check(player, &x_73dff70e)) {
+        if (!(x_73dff70e->flags & AI_REACT_CHAIN_ONLY)) {
             return 0;
         } else {
             return -1;
@@ -963,7 +966,7 @@ s16 x_449f1966(Player *player) {
     }
 }
 
-s16 x_61604a34(Player *player) {
+s16 ai_tactic_rewind(Player *player) {
     player->x_81570fde.x_ca75ac5d = NULL;
     player->x_81570fde.x_9daba480 -= 2;
     return 1;
