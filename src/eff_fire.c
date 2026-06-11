@@ -4,10 +4,10 @@
 s32 D_80052310 = 0x10000000;
 s32 D_80052314 = 0;
 
-void x_8c093820(Object *obj) {
+void fire_null_cb(Object *obj) {
 }
 
-void x_9191631f(Object *obj) {
+void fire_ring_update_cb(Object *obj) {
     s32 pad[1];
     u32 x_720f6ac9, dz;
     Player *player = (Player *) obj->x_e2f64c57[0];
@@ -55,7 +55,7 @@ void x_9191631f(Object *obj) {
     obj->x_de73d1d5 += 16;
 }
 
-void x_ff5d42d3(Object *obj) {
+void fire_wave_spawn_cb(Object *obj) {
     x_88f11482 x_49781937;
     Object *v0;
     Player *player = (Player *) obj->x_e2f64c57[0];
@@ -65,7 +65,7 @@ void x_ff5d42d3(Object *obj) {
         x_49781937.x = obj->x_20d20338->transforms[0].x_0c1a9bdd.w.x;
         x_49781937.y = obj->x_20d20338->transforms[0].x_0c1a9bdd.w.y;
         x_49781937.z = obj->x_20d20338->transforms[0].x_0c1a9bdd.w.z;
-        v0 = obj_create_with_model_ptr(&x_49781937, 0x1000, x_9191631f, player->x_dd32bc14[4]);
+        v0 = obj_create_with_model_ptr(&x_49781937, 0x1000, fire_ring_update_cb, player->x_dd32bc14[4]);
         if (v0 != NULL) {
             v0->color.a = 160;
             v0->x_0f4167b4[1] = 160 / v0->x_20d20338->x_8e601526;
@@ -83,7 +83,7 @@ void x_ff5d42d3(Object *obj) {
         x_49781937.x = obj->x_20d20338->transforms[1].x_0c1a9bdd.w.x;
         x_49781937.y = obj->x_20d20338->transforms[1].x_0c1a9bdd.w.y;
         x_49781937.z = obj->x_20d20338->transforms[1].x_0c1a9bdd.w.z;
-        v0 = obj_create_with_model_ptr(&x_49781937, 0x1000, x_9191631f, player->x_dd32bc14[4]);
+        v0 = obj_create_with_model_ptr(&x_49781937, 0x1000, fire_ring_update_cb, player->x_dd32bc14[4]);
         if (v0 != NULL) {
             v0->color.a = 160;
             v0->x_0f4167b4[1] = 160 / v0->x_20d20338->x_8e601526;
@@ -97,7 +97,7 @@ void x_ff5d42d3(Object *obj) {
         x_49781937.x = obj->x_20d20338->transforms[2].x_0c1a9bdd.w.x;
         x_49781937.y = obj->x_20d20338->transforms[2].x_0c1a9bdd.w.y;
         x_49781937.z = obj->x_20d20338->transforms[2].x_0c1a9bdd.w.z;
-        v0 = obj_create_with_model_ptr(&x_49781937, 0x1000, x_9191631f, player->x_dd32bc14[4]);
+        v0 = obj_create_with_model_ptr(&x_49781937, 0x1000, fire_ring_update_cb, player->x_dd32bc14[4]);
         if (v0 != NULL) {
             v0->color.a = 160;
             v0->x_0f4167b4[1] = 160 / v0->x_20d20338->x_8e601526;
@@ -114,7 +114,7 @@ void x_ff5d42d3(Object *obj) {
     obj->x_0f4167b4[1]++;
 }
 
-void x_38d41ba7(Object *obj) {
+void fire_wave_init_cb(Object *obj) {
     obj->x_0f4167b4[1] = 0;
-    obj->currentTask->callback = x_ff5d42d3;
+    obj->currentTask->callback = fire_wave_spawn_cb;
 }

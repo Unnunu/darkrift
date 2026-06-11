@@ -65,7 +65,7 @@ void projectile_end(Object *obj, x_6fc0b62f *effect) {
         case x_c4ddde6d:
             obj->x_0f4167b4[1] = 0;
             if (obj->x_0f4167b4[3] == 1) {
-                obj->currentTask->callback = x_38d41ba7;
+                obj->currentTask->callback = fire_wave_init_cb;
             } else {
                 TASK_END(obj->currentTask);
                 obj->flags |= x_f51cb721;

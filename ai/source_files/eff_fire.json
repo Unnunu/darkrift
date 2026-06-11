@@ -1,1 +1,28 @@
-{"file":"src/eff_fire.c","hash":"4e62f251","rom_offsets":{"text":"0x2AE80","data":"0x52F30"},"summary":"3-stage fire attack VFX: expanding shockwave rings at body anchors (hands+foot), distance check to opponent, spawns fire particle on contact, screen shake.","functions":["x_8c093820","x_9191631f","x_ff5d42d3","x_38d41ba7"],"key_apis":[],"strings":[],"subsystems":[],"open_questions":[]}
+{
+    "file": "src/eff_fire.c",
+    "hash": "4e62f251",
+    "rom_offsets": {
+        "text": "0x2AE80",
+        "data": "0x52F30"
+    },
+    "summary": "Fire attack VFX: 3-stage shockwave rings expanding from body anchors (hands+foot), distance check to opponent, spawns fire particle on contact. 4 functions, 2 globals.",
+    "functions": [
+        "fire_null_cb",
+        "fire_ring_update_cb",
+        "fire_wave_spawn_cb",
+        "fire_wave_init_cb"
+    ],
+    "globals": [
+        "D_80052310 (sFireFlag — 0x10000000)",
+        "D_80052314 (sFireCounter — 0)"
+    ],
+    "key_apis": [],
+    "strings": [],
+    "subsystems": [
+        "effects",
+        "combat"
+    ],
+    "open_questions": [
+        "2 globals still with D_ names (D_80052310, D_80052314)"
+    ]
+}

@@ -146,7 +146,7 @@ void x_200fa268(Object *obj);
 void audio_sfx_stop(u32 x_30bbe547, u32 x_1dc13257);
 void cam_ko_init(Object *, s32);
 Object *projectile_spawn(Object *, s32);
-void x_38d41ba7(Object *obj);
+void fire_wave_init_cb(Object *obj);
 void x_342a32f9(Object *, x_6fc0b62f *, x_88f11482 *);
 Object *obj_create_frame_render(x_88f11482 *pos, s32 x_95ee18a8, void (*x_08ae3bb4)(Object *), Model *model);
 s32 hit_outcome(Player *x_13d65ace, Player *x_c48d15e0, x_388306ba *x_2092f891);

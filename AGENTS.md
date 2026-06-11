@@ -302,7 +302,10 @@ Enum `WadFileType` (22 types mapped by extension: WAD_ANM, WAD_TEX, WAD_SP2, WAD
 ### Hit Effects (eff_hit.c) — DONE (Wave 1)
 All 62 functions renamed and documented. 11 globals renamed: `sHitDustSpriteDef`, `sHitDustFrameTable`, `sHitEffectObj`, `sHitAngleA/B/Target/Vel/Accel/Step[2]`, `sHitDustLastPos[2]`, `sHitAngleSum[2]`, `sHitPushbackDist[2]`. Key renames: `hit_task_override`, `hit_clear_attacked_flag`, `hit_combo_routing`, `hit_dust_trail`, `hit_cam_rotate_to_opponent`, `hit_effect_angle_anim` (NON_EQUIVALENT), `hit_check_facing_away`, `hit_knockback_gravity`, `hit_combo_counter_attack`. Updated fighters.c (30 decls + 50 call sites), functions.h (3 decls), variables.h (6 decls), player.c (6 + 4), aibrain.c (1), combat.c (1), eff_fire.c (1), projectile.c (1), match.c (3). Build verification pending.
 
-Next in queue: `eff_fire.c` (fire attack VFX, shockwave rings — closely related to hit effects)
+### Fire Effects (eff_fire.c) — DONE (Wave 1)
+4 functions renamed: `fire_null_cb`, `fire_ring_update_cb`, `fire_wave_spawn_cb`, `fire_wave_init_cb`. 2 globals: `sFireFlag`, `sFireCounter`. Updated projectile.c (1 call site), functions.h (1 decl). Build verification pending.
+
+Next in queue: `sparks.c` (spark/debris particles — GT ucode, gravity, bounce, white→blue fade)
 
 ## Thread Model
 | Pri | Thread | Entry | Description |
