@@ -320,7 +320,10 @@ All 62 functions renamed and documented. 11 globals renamed: `sHitDustSpriteDef`
 ### Selection UI (select.c) — DONE (Wave 1)
 21 functions renamed (12 Options + 3 Char Select + 2 Stage Select + 4 Score): `options_input_handler`, `options_menu_task`, `option_game_mode`, `option_round_count`, `option_rounds_win`, `option_sound_mute`, `option_bgm_volume`, `option_sfx_volume`, `option_controller_setup`, `option_char_config`, `option_stage_select`, `option_back_attract`, `select_char_input`, `select_char_update`, `select_char_task`, `select_stage_task`, `select_stage_screen`, `select_score_confirm`, `select_digit_render`, `select_score_display`, `select_score_init`. 10 globals renamed. Updated functions.h (1 decl), menu.c (15 extern decls + ~30 call sites). Build verified.
 
-Next in queue: `ply_init.c` (player model/render state init wrapper — small file, quick win)
+### Player Init (ply_init.c) — DONE (Wave 1)
+1 function: `ply_collect_textures`. Updated functions.h (1 decl), player.c (1 call site). Build verified.
+
+Next in queue: `aibrain.c` (AI opponent behavior — reaction tables, difficulty, distance)
 
 ## Thread Model
 | Pri | Thread | Entry | Description |

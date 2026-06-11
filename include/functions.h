@@ -66,7 +66,7 @@ void vec_transform_by_mat4(x_88f11482 *x_cc1d0de5, x_88f11482 *x_84ff873b, x_f97
 void wad_debug_loop(void);
 void mat4_ident_partial(x_f9704fd6 *);
 Object *obj_create_with_model(x_88f11482 *, char *, x_aece7675 *, u32);
-void x_43d30ad8(Player *);
+void ply_collect_textures(Player *);
 void model_shadow_spawn(Object *x_cc1d0de5, char *x_84ff873b, u32 x_2092f891);
 void move_sfx_trig(Object *);
 void hit_effect_angle_anim(Object *);

@@ -858,7 +858,7 @@ void player_init(s16 x_30bbe547) {
     obj->flags |= x_dd6fc445;
 
     if (x_eb1fe45b == x_b52da315 && !gWadCondLoad[x_30bbe547].x_178eafa6) {
-        x_43d30ad8(x_824b9544 + x_30bbe547);
+        ply_collect_textures(x_824b9544 + x_30bbe547);
     }
 
     if (gWadCondLoad[x_30bbe547].x_178eafa6) {
