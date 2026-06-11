@@ -296,7 +296,10 @@ Enum `WadFileType` (22 types mapped by extension: WAD_ANM, WAD_TEX, WAD_SP2, WAD
 ### Move/Attack (move.c) — DONE (Wave 1)
 15 functions renamed: `move_exec_current`, `move_delay_cb`, `move_osc_up`, `move_osc_down`, `move_count_up`, `move_apply_vel`, `move_to_next`, `move_camera_trig`, `move_state_change`, `move_anim_change`, `move_exec_init`, `move_init_cb`, `move_retry_cb`, `move_sfx_trig`, `move_null_cb`. Used x_388306ba (attack entry) and x_c8184673 (SFX frame trigger) structs. Updated callers in player.c, eff_hit.c, fighters.c. Build verified.
 
-Next in queue: `projectile.c` (projectile/effect system — cross-references with combat, player, model)
+### Projectile/Effects (projectile.c) — DONE (Wave 1)
+16 functions renamed: `projectile_fade_cb`, `projectile_frame_update`, `projectile_init`, `projectile_null_cb`, `projectile_hit_dispatch`, `projectile_end`, `projectile_ring_update`, `projectile_homing_update`, `projectile_hit_spawn`, `projectile_guard_spawn`, `projectile_special_check`, `projectile_spawn`, `guard_prediction_check`, `projectile_homing_setup`, `projectile_guard_homing` (NON_EQUIVALENT), `projectile_impact_check`. 1 global: `sProjectileTypeTable` (unused). Updated callers in eff_hit.c, eff_fire.c, fighters.c, present.c. Build verified.
+
+Next in queue: `eff_hit.c` (hit impact VFX, dust, camera shake — closely related to projectile system)
 
 ## Thread Model
 | Pri | Thread | Entry | Description |

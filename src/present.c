@@ -523,7 +523,7 @@ void x_bc6a41ae(Object *obj) {
         }
 
         if (s1->obj->frameCounter == 278) {
-            x_86c0b63f(s->obj, 9);
+            projectile_spawn(s->obj, 9);
         }
     }
 }

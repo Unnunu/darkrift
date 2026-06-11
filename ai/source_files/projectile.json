@@ -7,22 +7,32 @@
     "bss": "0x800801F0"
   },
   "summary": "Projectile/combat-effect subsystem: ring/ground projectiles with byte-array timeline, held/body-attached projectiles, homing tracking, hit collision handler, guard prediction, counter-hit throw spawn.",
-  "functions": [
-    "x_86c0b63f",
+  "functions": {
+    "projectile_fade_cb": "Generic effect fade: decrement alpha each frame, TASK_END when 0",
+    "projectile_frame_update": "Check x_b842de24 frame table, spawn sub-projectiles at matched frames",
+    "projectile_init": "Init projectile from attack state: read move state's projectile table index, set up frame_update callback",
+    "projectile_null_cb": "No-op callback for guard projectiles with no active effect",
+    "projectile_hit_dispatch": "Hit collision dispatch: route to guard callback or hit effect spawn",
+    "projectile_end": "Projectile cleanup: clear player flag, check character type for special cleanup",
+    "projectile_ring_update": "Ring projectile update (bone-attached model): read animation frame table, apply velocity, handle fade",
+    "projectile_homing_update": "Homing/pursuit projectile update: follow target, handle gravity, fade, model switching, shadow mode",
+    "projectile_hit_spawn": "Spawn hit effect object on projectile collision: create child projectile, set flags",
+    "projectile_guard_spawn": "Spawn guard prediction indicator: create fade-out object at offset position",
+    "projectile_special_check": "Character-specific projectile init: Sono's guard ring tracking",
+    "projectile_spawn": "Core projectile spawner: create Object from x_6fc0b62f effect data (ring or homing type), set velocity, rotation, light, flags",
+    "guard_prediction_check": "Check if opponent would guard the incoming hit via hit_outcome",
+    "projectile_homing_setup": "Set up homing activate/deactivate flags, spawn indicator effect",
+    "projectile_guard_homing": "NON_EQUIVALENT: guard ring homing logic — distance check, angle check, guard break activation",
+    "projectile_impact_check": "Detect projectile impact with opponent: collision range check, guard prediction, spawn hit effect"
+  },
+  "key_apis": [
+    "hit_outcome",
+    "point_in_hit_range",
     "obj_create_frame_render",
-    "x_0de5e23a",
-    "x_35e86baf",
-    "x_280f655a",
-    "x_a10f6c7a",
-    "x_fbfba96d",
-    "x_2aacdb7c",
-    "x_f5f769f6",
-    "x_4b88b87a",
-    "x_6ce73fcf",
-    "x_c0cfb7d5"
+    "obj_create_with_model_ptr",
+    "vec_rotate_by_euler",
+    "model_light_attach"
   ],
-  "key_apis": [],
-  "strings": [],
   "subsystems": [
     "Ring projectiles: timeline-based sub-effect spawning, homing tracking",
     "Held projectiles: body-attached, bone-linked, frame counter, global flag",
@@ -30,7 +40,7 @@
     "Counter-hit throw spawn"
   ],
   "open_questions": [
-    "D_8004A4C8 unused table of 2 update fn pointers?",
+    "sProjectileTypeTable — unused table of 2 update fn pointers?",
     "x_6fc0b62f effect descriptor — exact field meanings"
   ]
 }

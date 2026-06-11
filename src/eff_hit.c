@@ -222,7 +222,7 @@ void x_82fdb659(Object *obj) {
 
     switch (x_eb1fe45b) {
         case x_c4ddde6d:
-            x_c3947955(obj);
+            projectile_frame_update(obj);
             break;
         case x_73cf9ceb:
             if (gWadCondLoad[1 - player->x_30bbe547].x_eb1fe45b == x_13ed828f &&
@@ -359,7 +359,7 @@ void x_602b94bb(Object *obj) {
         player_exec_move_ai(&x_824b9544[x_de68d2a6], D_8004B920[x_eb1fe45b].x_cd679b4c, 1);
 
         if (player->x_eb1fe45b == x_c4ddde6d) {
-            obj->currentTask->callback = x_cfb419a2;
+            obj->currentTask->callback = projectile_init;
         } else if (D_8004BA6C[x_eb1fe45b] != NULL) {
             obj->currentTask->callback = x_d5db0c41;
         } else {
@@ -372,7 +372,7 @@ void x_23eecff5(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
     if (player->x_eb1fe45b == x_968cc9a2) {
-        obj->currentTask->callback = x_cfb419a2;
+        obj->currentTask->callback = projectile_init;
     } else if (D_8004BA6C[player->x_eb1fe45b] != NULL) {
         obj->currentTask->callback = x_d5db0c41;
     } else {
@@ -1054,7 +1054,7 @@ void x_370c7b4f(Object *obj) {
     Player *v0 = (Player *) obj->x_e2f64c57[0];
 
     if (v0->x_eb1fe45b == x_c4ddde6d) {
-        obj->currentTask->callback = x_cfb419a2;
+        obj->currentTask->callback = projectile_init;
     } else {
         TASK_END(obj->currentTask);
     }
@@ -1112,10 +1112,10 @@ void x_c1c8c6a7(Object *obj) {
         vec_rotate_by_euler(&x_dd7ffac5, &obj->x_224610f1);
         obj->pos.x += x_dd7ffac5.x;
         obj->pos.z += x_dd7ffac5.z;
-        obj->currentTask->callback = x_c3947955;
+        obj->currentTask->callback = projectile_frame_update;
     }
 
-    x_c3947955(obj);
+    projectile_frame_update(obj);
 }
 
 void x_bc38049f(Object *obj) {
@@ -1123,11 +1123,11 @@ void x_bc38049f(Object *obj) {
     s32 v1 = v0->x_30bbe547;
 
     if (v0->x_eb1fe45b == x_ff5073d4 && obj->frameCounter > 50) {
-        x_c3947955(obj);
-        obj->currentTask->callback = x_c3947955;
+        projectile_frame_update(obj);
+        obj->currentTask->callback = projectile_frame_update;
     } else {
         D_8013C3C8[v1] = x_9a96200f;
-        x_cfb419a2(obj);
+        projectile_init(obj);
         obj->currentTask->callback = x_c1c8c6a7;
     }
 }

@@ -37,11 +37,11 @@ void x_9191631f(Object *obj) {
         x_fc517ba8.x = x_9b380833->x;
         x_fc517ba8.z = x_9b380833->z;
         x_fc517ba8.y = 0;
-        x_49781937 = obj_create_with_model_ptr(&x_fc517ba8, 0x1000, x_c0cfb7d5, player->x_dd32bc14[6]);
+        x_49781937 = obj_create_with_model_ptr(&x_fc517ba8, 0x1000, projectile_fade_cb, player->x_dd32bc14[6]);
         if (x_49781937 != NULL) {
             model_light_attach(x_49781937, &x_c9614940[player->x_30bbe547]);
             x_49781937->color.a = 160;
-            if (x_2aacdb7c(x_98c4e5a5, player, obj)) {
+            if (guard_prediction_check(x_98c4e5a5, player, obj)) {
                 x_49781937->x_0f4167b4[0] = 32;
             } else {
                 x_49781937->x_0f4167b4[0] = 160 / x_49781937->x_20d20338->x_8e601526;
