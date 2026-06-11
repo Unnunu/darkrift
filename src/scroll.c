@@ -1,15 +1,15 @@
 #include "common.h"
 #include "task.h"
 
-extern s32 D_8008012C;
+extern s32 gGfxFlags;
 extern s32 x_6c647b3a;
-extern u8 D_80080129;
-extern Gfx *x_9a3c07b8;
+extern u8 sClearZbuffer;
+extern Gfx *gF3dDisplayListPtr;
 extern Gfx *D_8005BFDC;
-extern Gfx *x_d8cbce84;
-extern s16 D_80080130;
-extern s16 D_80080132;
-extern s16 D_80080134;
+extern Gfx *gF3dExtraListPtr;
+extern s16 sFogColorR;
+extern s16 sFogColorG;
+extern s16 sFogColorB;
 
 x_4a7d6dd4 *x_3b49183f = NULL;
 s32 x_e74df613 = 0;
@@ -65,7 +65,7 @@ x_4a7d6dd4 *x_a0e73601(char *x_2b0c3984, s32 x_84ff873b, s32 x_64a8566c, s32 x_a
         x_8dddde0e->palette[temp + 1] = 0;
     }
     if (flags & x_8ce7ef70) {
-        D_8008012C |= x_48752861;
+        gGfxFlags |= GFX_EXTRA_DL;
     }
 
     return x_8dddde0e;
@@ -105,7 +105,7 @@ void x_fde7a84d(x_4a7d6dd4 *x_8dddde0e, s32 x_ace80dba, s32 x_64a8566c, u32 heig
     image = x_8dddde0e->x_925c481a;
     image += x_ace80dba * x_8dddde0e->width;
     x_9dc253a1 = x_8dddde0e->width;
-    x_bde24317 = (x_8dddde0e->flags & x_8ce7ef70) ? &x_d8cbce84 : &x_9a3c07b8;
+    x_bde24317 = (x_8dddde0e->flags & x_8ce7ef70) ? &gF3dExtraListPtr : &gF3dDisplayListPtr;
 
     gDPLoadTLUT_pal256((*x_bde24317)++, x_c485761a(x_8dddde0e->palette));
 
@@ -250,16 +250,16 @@ void x_77751af8(void) {
         x_8dddde0e = x_8dddde0e->next;
     }
 
-    if (x_16201079 > 0 && D_80080129 && !(D_8008012C & x_bbfa9667)) {
+    if (x_16201079 > 0 && sClearZbuffer && !(gGfxFlags & GFX_BORDER_AROUND)) {
         s32 t3 = MIN(64, x_84e8ddf2 - x_16201079);
 
-        gDPPipeSync(x_9a3c07b8++);
-        gDPSetCycleType(x_9a3c07b8++, G_CYC_FILL);
-        gDPSetFillColor(x_9a3c07b8++, (GPACK_RGBA5551(D_80080130, D_80080132, D_80080134, 1) << 16) |
-                                          GPACK_RGBA5551(D_80080130, D_80080132, D_80080134, 1));
-        gDPFillRectangle(x_9a3c07b8++, 0, x_16201079, x_c84980f9 - 1, x_16201079 + t3 - 1);
-        gDPPipeSync(x_9a3c07b8++);
-        gDPSetCycleType(x_9a3c07b8++, G_CYC_COPY);
+        gDPPipeSync(gF3dDisplayListPtr++);
+        gDPSetCycleType(gF3dDisplayListPtr++, G_CYC_FILL);
+        gDPSetFillColor(gF3dDisplayListPtr++, (GPACK_RGBA5551(sFogColorR, sFogColorG, sFogColorB, 1) << 16) |
+                                                  GPACK_RGBA5551(sFogColorR, sFogColorG, sFogColorB, 1));
+        gDPFillRectangle(gF3dDisplayListPtr++, 0, x_16201079, x_c84980f9 - 1, x_16201079 + t3 - 1);
+        gDPPipeSync(gF3dDisplayListPtr++);
+        gDPSetCycleType(gF3dDisplayListPtr++, G_CYC_COPY);
     }
 }
 
@@ -313,8 +313,8 @@ void x_23e3afdf(Object *obj) {
     palette = (u16 *) (v1->texture->data + width * v1->texture->height);
 
     if (obj->flags & x_5a44854c) {
-        x_bde24317 = &x_d8cbce84;
-        D_8008012C |= x_48752861;
+        x_bde24317 = &gF3dExtraListPtr;
+        gGfxFlags |= GFX_EXTRA_DL;
     } else {
         x_bde24317 = &D_8005BFDC;
     }

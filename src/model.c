@@ -107,9 +107,9 @@ void model_collect_textures(Object *obj, u8 x_44c2855d) {
 
     if (sFurTextureCount == 0) {
         if (x_44c2855d) {
-            x_71257e81(texture_shift_full, NULL);
+            rsp_register_callback(texture_shift_full, NULL);
         } else {
-            x_71257e81(texture_shift_line, NULL);
+            rsp_register_callback(texture_shift_line, NULL);
         }
     }
 
@@ -236,7 +236,7 @@ s32 model_render_mode_setup(Object *obj) {
     for (i = 0; i < count; x_67f2cdea++, x_cc6990d0++, i++) {
         s32 x_773702e7 = x_c8099ad6[i];
 
-        if (x_773702e7 && !D_800801E2) {
+        if (x_773702e7 && !sZbufFillSkipped) {
             model_render_mode_zbuf(x_67f2cdea, transparent);
             model_render_mode_zbuf(x_cc6990d0, transparent);
         } else {
@@ -246,7 +246,7 @@ s32 model_render_mode_setup(Object *obj) {
 
         x_3ab7202f = model->x_d6eac39a[i];
         for (j = 1; j < model->x_c246f31f[i]; j++) {
-            if (x_773702e7 && !D_800801E2) {
+            if (x_773702e7 && !sZbufFillSkipped) {
                 model_render_mode_zbuf(&x_3ab7202f[j], transparent);
             } else {
                 model_render_mode_standard(&x_3ab7202f[j], x_1652bbb1, transparent);
@@ -289,23 +289,23 @@ void model_visibility_sync(Object *obj) {
     x_4cf2fcb6 = model->x_c8099ad6;
     x_d8f5cfb2 = model->x_8f151cd3;
 
-    if (D_8008012C & x_c626209d) {
+    if (gGfxFlags & GFX_SHADOW_MODE) {
         if (!(obj->flags & x_0488a75b)) {
             memcpy(x_d8f5cfb2, x_4cf2fcb6, x_6dcce206);
             model_parts_disable_all(obj);
-            x_71257e81(model_render_mode_setup, obj);
+            rsp_register_callback(model_render_mode_setup, obj);
             obj->flags |= x_0488a75b;
-            D_8008012C |= x_666c9508;
+            gGfxFlags |= GFX_NO_ZCLEAR;
         }
         return;
     }
 
-    if (!(D_8008012C & x_c626209d) && (obj->flags & x_0488a75b)) {
-        if (D_800801E2) {
-            D_8008012C &= ~x_666c9508;
+    if (!(gGfxFlags & GFX_SHADOW_MODE) && (obj->flags & x_0488a75b)) {
+        if (sZbufFillSkipped) {
+            gGfxFlags &= ~GFX_NO_ZCLEAR;
         } else {
             memcpy(x_4cf2fcb6, x_d8f5cfb2, x_6dcce206);
-            x_71257e81(model_render_mode_setup, obj);
+            rsp_register_callback(model_render_mode_setup, obj);
             obj->flags &= ~x_0488a75b;
         }
         return;
@@ -314,7 +314,7 @@ void model_visibility_sync(Object *obj) {
     for (i = 0; i < x_6dcce206; i++) {
         if (x_d8f5cfb2[i] != x_4cf2fcb6[i]) {
             memcpy(x_d8f5cfb2, x_4cf2fcb6, x_6dcce206);
-            x_71257e81(model_render_mode_setup, obj);
+            rsp_register_callback(model_render_mode_setup, obj);
             break;
         }
     }
@@ -327,7 +327,7 @@ void model_visibility_set(Object *obj, u8 *x_84ff873b) {
     u8 *x_d8f5cfb2 = model->x_8f151cd3;
     u8 *x_4cf2fcb6 = model->x_c8099ad6;
 
-    if (D_8008012C & x_c626209d) {
+    if (gGfxFlags & GFX_SHADOW_MODE) {
         for (i = 0; i < count; i++) {
             x_d8f5cfb2[i] = x_4cf2fcb6[i] = x_84ff873b[i];
         }
@@ -368,7 +368,7 @@ void model_prim_color_check(Object *obj) {
 
     if (x_bd706c81->r != x_5086c3f0->r || x_bd706c81->g != x_5086c3f0->g || x_bd706c81->b != x_5086c3f0->b ||
         x_bd706c81->a != x_5086c3f0->a) {
-        x_71257e81(model_prim_color_update, obj);
+        rsp_register_callback(model_prim_color_update, obj);
         memcpy(&obj->x_da940449, &obj->x_47e6a04c, sizeof(x_6751d717));
     }
 }
@@ -707,7 +707,7 @@ void model_part_draw(Model *x_cc1d0de5, s32 x_a1c9c44b) {
     count = x_cc1d0de5->x_c246f31f[x_a1c9c44b];
 
     for (i = 0; i < count; i++) {
-        x_50746900(x_8a79b283, NULL, x_4bb24efc->info, x_4bb24efc->vertices, x_4bb24efc->triangles);
+        x_50746900(gDrBatchPtr, NULL, x_4bb24efc->info, x_4bb24efc->vertices, x_4bb24efc->triangles);
         x_4bb24efc++;
     }
 }
@@ -793,9 +793,9 @@ void model_traverse_transforms(Transform *x_cc1d0de5, Transform *x_84ff873b) {
     x_84ff873b->x_834cdf4f = &s0->m[1][2];
 
     if (x_cc1d0de5 != NULL) {
-        gSPMatrix(x_9a3c07b8++, x_c485761a(s0), G_MTX_PUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gSPMatrix(gF3dDisplayListPtr++, x_c485761a(s0), G_MTX_PUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     } else {
-        gSPMatrix(x_9a3c07b8++, x_c485761a(s0), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gSPMatrix(gF3dDisplayListPtr++, x_c485761a(s0), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     }
 
     for (x_82439cbe = x_84ff873b->x_171183e4; x_82439cbe != NULL; x_82439cbe = x_82439cbe->x_fda6b96a) {
@@ -803,10 +803,10 @@ void model_traverse_transforms(Transform *x_cc1d0de5, Transform *x_84ff873b) {
     }
 
     if (x_84ff873b->id >= 0) {
-        gSPDisplayList(x_9a3c07b8++, x_c485761a(sDisplayList[x_84ff873b->id]));
+        gSPDisplayList(gF3dDisplayListPtr++, x_c485761a(sDisplayList[x_84ff873b->id]));
     }
 
-    gSPPopMatrix(x_9a3c07b8++, G_MTX_MODELVIEW);
+    gSPPopMatrix(gF3dDisplayListPtr++, G_MTX_MODELVIEW);
 }
 
 void model_transforms_update(Object *obj) {
@@ -1473,16 +1473,16 @@ void model_anim_render(Object *obj) {
             for (i = 0; i < x_af0e6490; i++) {
                 s6 = &s5[i].mtx[D_8005BFCE];
                 mat4_to_mtx(s6, &s5[i].x_0c1a9bdd);
-                gSPMatrix(x_9a3c07b8++, x_c485761a(s6), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-                gSPDisplayList(x_9a3c07b8++, x_c485761a(sDisplayList[i]));
+                gSPMatrix(gF3dDisplayListPtr++, x_c485761a(s6), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+                gSPDisplayList(gF3dDisplayListPtr++, x_c485761a(sDisplayList[i]));
             }
         }
     } else {
         s6 = &s1->mtx[D_8005BFCE];
         mat4_to_mtx(s6, &s1->x_0c1a9bdd);
-        gSPMatrix(x_9a3c07b8++, x_c485761a(s6), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gSPMatrix(gF3dDisplayListPtr++, x_c485761a(s6), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         for (i = 0; i < x_af0e6490; i++) {
-            gSPDisplayList(x_9a3c07b8++, x_c485761a(sDisplayList[i]));
+            gSPDisplayList(gF3dDisplayListPtr++, x_c485761a(sDisplayList[i]));
         }
     }
 }
@@ -1545,7 +1545,7 @@ void model_frame_render(Object *obj) {
 
 #ifdef NON_EQUIVALENT
 void model_lighting_apply(Object *obj) {
-    x_d0fba50a *a2;
+    ScreenProfile *a2;
     x_6fcfcf46 *v1;
     x_2bb4cf6f *v0;
     u32 t6;    // sp160
@@ -1601,13 +1601,13 @@ void model_lighting_apply(Object *obj) {
 
     v1 = obj->x_20d20338;
     t6 = gFrameCounter & 7;
-    a2 = &x_4540c33c[x_f71086e0];
+    a2 = &gScreenProfiles[x_f71086e0];
 
     t2 = v1->x_6dcce206;
     t0 = v1->model;
-    x_389f2997 = &a2->x_389f2997;
+    x_389f2997 = &a2->ambientColor;
 
-    v0 = a2->x_08b62e4f;
+    v0 = a2->cameraBounds;
     x_af0e6490 = v0->lights[0].color.r;
     x_20b9213f = v0->lights[0].color.g;
     x_7d0aaee0 = v0->lights[0].color.b;

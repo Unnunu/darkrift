@@ -311,7 +311,7 @@ void x_8126b2af(Object *obj) {
     s32 pad2;
     s16 x_0f12118c;
     s16 *x_554ac37d;
-    FsmState *stack;
+    TaskFrame *stack;
     TaskNode *currentTask;
 
     v0 = player->x_b9252303;

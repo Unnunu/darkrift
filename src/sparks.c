@@ -328,10 +328,10 @@ void x_dbbadf22(Object *obj) {
         }
 
         // gSPTriBatch(gMainBatchPos, NULL, s00, t03, D_8004A4D0);
-        x_8a79b283->info = x_65cbb149;
-        x_8a79b283->context = NULL;
-        x_8a79b283->vertices = x_ec427b59;
-        x_8a79b283->triangles = D_8004A4D0;
+        gDrBatchPtr->info = x_65cbb149;
+        gDrBatchPtr->context = NULL;
+        gDrBatchPtr->vertices = x_ec427b59;
+        gDrBatchPtr->triangles = D_8004A4D0;
 
         if (s3) {
             s3 = FALSE;
@@ -340,18 +340,18 @@ void x_dbbadf22(Object *obj) {
         } else {
             x_65cbb149->header.x_70b508ea = 1;
         }
-        x_8a79b283++;
+        gDrBatchPtr++;
 
         x_ec427b59 += 15;
         s2->x_0f978d0c++;
     }
 
     // gSPTriBatch(gMainBatchPos, NULL, &D_800AA3B8, NULL, NULL);
-    x_8a79b283->info = &D_800AA3B8;
-    x_8a79b283->context = NULL;
-    x_8a79b283->vertices = NULL;
-    x_8a79b283->triangles = NULL;
-    x_8a79b283++;
+    gDrBatchPtr->info = &D_800AA3B8;
+    gDrBatchPtr->context = NULL;
+    gDrBatchPtr->vertices = NULL;
+    gDrBatchPtr->triangles = NULL;
+    gDrBatchPtr++;
     x_071f1bfa(s2);
 }
 #else

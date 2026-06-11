@@ -320,7 +320,7 @@ s16 x_c0a56b97(s16 x_30bbe547) {
 void x_e7887022(Vtx *vtx) {
     Gfx *gfx = D_8005BF58;
 
-    if (D_8008012C & x_f846a903) {
+    if (gGfxFlags & GFX_SKIP_SCENE) {
         return;
     }
 

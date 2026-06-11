@@ -542,12 +542,12 @@ void x_f7a1a468(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
         if (!gTaskLock) {
             x_94b671c9->x_6f6a6d94--;
         }
-        if (D_8008012C & x_c626209d) {
+        if (gGfxFlags & GFX_SHADOW_MODE) {
             x_94b671c9->x_6f6a6d94 -= 2;
         }
 
         if (x_94b671c9->x_6f6a6d94 > 0 && !x_94b671c9->x_24fe8ee6) {
-            x_8a79b283->context = NULL;
+            gDrBatchPtr->context = NULL;
 
             if (!x_d647d552) {
                 x_a52ba8b1 = x_cc1d0de5->x_ad2af5d9 + D_8005BFCE;
@@ -559,10 +559,10 @@ void x_f7a1a468(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
             }
             x_a52ba8b1->header.x_4c5e05f8 = x_94b671c9->x_723971cf;
             x_a52ba8b1->header.x_8a54e96a = x_94b671c9->x_a1256713;
-            x_8a79b283->info = x_a52ba8b1;
-            x_8a79b283->vertices = x_94b671c9->vertices;
-            x_8a79b283->triangles = x_94b671c9->triangles;
-            x_8a79b283++;
+            gDrBatchPtr->info = x_a52ba8b1;
+            gDrBatchPtr->vertices = x_94b671c9->vertices;
+            gDrBatchPtr->triangles = x_94b671c9->triangles;
+            gDrBatchPtr++;
         }
     }
 
@@ -573,7 +573,7 @@ void x_f7a1a468(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
         if (!gTaskLock) {
             x_94b671c9->x_6f6a6d94--;
         }
-        if (D_8008012C & x_c626209d) {
+        if (gGfxFlags & GFX_SHADOW_MODE) {
             x_94b671c9->x_6f6a6d94 -= 2;
         }
 
@@ -603,7 +603,7 @@ void x_f7a1a468(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
 }
 
 void shadow_init(x_056d4f07 *x_897abbb1, x_6fcfcf46 *x_c657ede8, x_f9704fd6 *x_2092f891, x_f9704fd6 *x_ee71e5cb,
-                x_88f11482 *x_a0e63e9c, x_6751d717 *x_1011f751) {
+                 x_88f11482 *x_a0e63e9c, x_6751d717 *x_1011f751) {
     u32 i, j;
     Gfx *gfx;
     u32 a;

@@ -69,17 +69,17 @@ void x_fbfba96d(Object *obj, x_6fc0b62f *effect) {
             } else {
                 TASK_END(obj->currentTask);
                 obj->flags |= x_f51cb721;
-                D_8008012C &= ~x_c626209d;
+                gGfxFlags &= ~GFX_SHADOW_MODE;
             }
             return;
         case x_537ef8a7:
             TASK_END(obj->currentTask);
             obj->flags |= x_f51cb721;
-            D_8008012C &= ~x_c626209d;
+            gGfxFlags &= ~GFX_SHADOW_MODE;
             return;
     }
 
-    D_8008012C &= ~x_c626209d;
+    gGfxFlags &= ~GFX_SHADOW_MODE;
     TASK_END(obj->currentTask);
     obj->flags |= x_f51cb721;
 }
@@ -166,7 +166,7 @@ void x_35e86baf(Object *obj) {
     player = (Player *) obj->x_0f4167b4[0];
     x_b3c3622a = player->obj;
 
-    D_8008012C |= x_c626209d;
+    gGfxFlags |= GFX_SHADOW_MODE;
 
     if ((effect->flags & 2) && effect->x_32485e13 >= 0) {
         x_342a32f9(x_b3c3622a, effect, &x_32f1d6e2);
@@ -545,7 +545,8 @@ void x_280f655a(Object *obj) {
     x_49781937.y = obj->pos.y;
     x_49781937.z = obj->pos.z;
 
-    if (point_in_hit_range(&x_081c4eef, &x_98c4e5a5->obj->pos, x_98c4e5a5->x_5c5b1d93.x_62706fff + 80000, &x_49781937)) {
+    if (point_in_hit_range(&x_081c4eef, &x_98c4e5a5->obj->pos, x_98c4e5a5->x_5c5b1d93.x_62706fff + 80000,
+                           &x_49781937)) {
         if (!(x_32f1d6e2->flags & 0x20) && !(player->flags & x_d8a402c3)) {
             x_c9614940 = player->x_e4ca14d3 + x_32f1d6e2->x_350c85ef;
             if (x_2aacdb7c(x_98c4e5a5, player, obj)) {

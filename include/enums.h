@@ -64,7 +64,8 @@ enum Buttons {
 };
 
 #define x_0684c746 (x_f7763ed8 | x_fc4a9735 | x_b8c91680 | x_ad1aebe6)
-#define x_b1ef0708 (x_84d0a51b | x_37f8540c | x_b2ae561b | x_ffe9ce36 | x_29dbff14 | x_c7089780 | x_af0e0a9f | x_64a28e7d)
+#define x_b1ef0708 \
+    (x_84d0a51b | x_37f8540c | x_b2ae561b | x_ffe9ce36 | x_29dbff14 | x_c7089780 | x_af0e0a9f | x_64a28e7d)
 
 enum x_45d4fa4a {
     x_929f65dc = 0x0000,
@@ -142,14 +143,14 @@ enum x_7d83e301 {
 };
 
 enum x_a58c44e6 {
-    x_0745dc0e = 0,
-    x_f846a903 = 0x1,
-    x_48752861 = 0x2,
-    x_3309dc13 = 0x4,
-    x_666c9508 = 0x8,
-    x_c626209d = 0x10,
-    x_8df87377 = 0x20,
-    x_bbfa9667 = 0x40
+    GFX_NONE = 0,
+    GFX_SKIP_SCENE = 0x1,
+    GFX_EXTRA_DL = 0x2,
+    GFX_FLAG_4 = 0x4,
+    GFX_NO_ZCLEAR = 0x8,
+    GFX_SHADOW_MODE = 0x10,
+    GFX_MENU_OVERLAY = 0x20,
+    GFX_BORDER_AROUND = 0x40
 };
 
 enum x_178c6822 {

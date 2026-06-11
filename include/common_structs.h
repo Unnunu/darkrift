@@ -103,23 +103,23 @@ typedef struct x_2bb4cf6f {
     /* 0x00 */ x_885b9582 lights[2];
 } x_2bb4cf6f; // size = 0x20
 
-typedef struct x_d0fba50a {
-    /* 0x00 */ void (*x_bdfdc522)(void);
+typedef struct ScreenProfile {
+    /* 0x00 */ void (*initFunc)(void);
     /* 0x04 */ s16 x_1256da71;
     /* 0x08 */ s32 x_415ed9d6;
-    /* 0x0C */ u8 x_b8173ab8;
-    /* 0x0D */ u8 x_d863406f;
-    /* 0x0E */ u8 x_f6c089c5;
-    /* 0x0F */ u8 x_f74c4cfa;
-    /* 0x10 */ u8 x_60c27ea9;
-    /* 0x11 */ u8 x_ee25ce89;
-    /* 0x12 */ u8 x_747e2503;
-    /* 0x13 */ u8 x_876a16f1;
-    /* 0x14 */ u16 x_d23de2ad;
-    /* 0x16 */ u16 x_55739355;
-    /* 0x18 */ x_2bb4cf6f *x_08b62e4f;
-    /* 0x1C */ x_6751d717 x_389f2997;
-} x_d0fba50a; // size = 0x20
+    /* 0x0C */ u8 clearColorR;
+    /* 0x0D */ u8 clearColorG;
+    /* 0x0E */ u8 clearColorB;
+    /* 0x0F */ u8 clearColorA;
+    /* 0x10 */ u8 fogColorR;
+    /* 0x11 */ u8 fogColorG;
+    /* 0x12 */ u8 fogColorB;
+    /* 0x13 */ u8 fogColorA;
+    /* 0x14 */ u16 fogMin;
+    /* 0x16 */ u16 fogMax;
+    /* 0x18 */ x_2bb4cf6f *cameraBounds;
+    /* 0x1C */ x_6751d717 ambientColor;
+} ScreenProfile; // size = 0x20
 
 typedef struct x_23580eef {
     /* 0x00 */ u16 buttons;
@@ -445,11 +445,11 @@ typedef struct Object {
     /* 0x214 */ struct Object *x_d0268c0d;
 } Object; // size = 0x218
 
-typedef struct FsmState {
+typedef struct TaskFrame {
     /* 0x00 */ u32 flags;
     /* 0x04 */ x_09d6a3c8 callback;
     /* 0x08 */ s16 delay;
-} FsmState; // size = 0xC
+} TaskFrame; // size = 0xC
 
 typedef struct x_e0b9a726 {
     /* 0x00 */ s16 x_4f311d1d;
@@ -469,12 +469,12 @@ typedef struct TaskNode {
     /* 0x04 */ x_09d6a3c8 callback;
     /* 0x08 */ s32 params[6];
     /* 0x20 */ u16 stackPtr;
-    /* 0x24 */ FsmState stack[8];
+    /* 0x24 */ TaskFrame stack[8];
     /* 0x84 */ s16 delay;
     /* 0x86 */ s16 triggerTime;
     /* 0x88 */ s16 id;
     /* 0x8A */ char x_5f7c7171[6];
-    /* 0x90 */ FsmState pushState;
+    /* 0x90 */ TaskFrame pushState;
     /* 0x9C */ struct TaskNode *next;
 } TaskNode; // size = 0xA0
 
@@ -922,18 +922,18 @@ typedef struct x_6dac5499 {
     /* 0x04 */ char *x_1256da71;
 } x_6dac5499; // size = 8
 
-typedef struct x_cc16c016 {
+typedef struct UnkStruct10 {
     /* 0x00 */ s16 x_af0aa1f8;
     /* 0x02 */ s16 x_cd679b4c;
     /* 0x04 */ s16 x_1256da71;
     /* 0x06 */ s16 x_8b47d6ce;
-} x_cc16c016; // size = 0x08
+} UnkStruct10; // size = 0x08
 
 typedef struct x_79eacfe1 {
     /* 0x00 */ s16 x_a962826d;
     /* 0x02 */ s16 x_3f3ac621;
 } x_79eacfe1; // size = 0x4
 
-typedef s32 (*x_1c3c0f22)(void *);
+typedef s32 (*RenderCallback)(void *);
 
 #endif

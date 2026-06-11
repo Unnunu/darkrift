@@ -38,9 +38,9 @@ darkrift/
 │   └── nonmatchings/      # .s files for non-matched functions (per source hash)
 ├── tools/                 # splat_ext, extract_assets.py, obfuscation
 ├── game_assets/extracted/ # ROM asset dumps (SYM.txt, DB.txt — readable names)
-└── ai/
-    ├── AGENTS.md
-    └── source_files/      # Per-file documentation JSON
+├── ai/
+│   └── source_files/      # Per-file documentation JSON
+└── AGENTS.md              # This file (agent documentation)
 ```
 
 ## Asset Formats
@@ -62,8 +62,10 @@ darkrift/
 | `Player` | 0x5F50 | Full player state — Object ptr, move tables, AI state, 4x physics, models |
 | `Transform` | 0x118 | Render transform — 2 Mtx + hierarchy links + quaternions |
 | `Model` | 0x3D0 | 3D model — KMD data, batch transforms, per-part render info |
-| `TaskNode` | 0xA0 | FSM controller — flags, callback stack (8 deep), params, next link |
-| `FsmState` | 0x0C | FSM state — flags, callback, duration counter |
+| `TaskNode` | 0xA0 | Task controller — flags, callback, TaskFrame stack (8 deep), params, next link |
+| `TaskFrame` | 0x0C | Task stack frame — flags, callback, duration counter. Renamed from `FsmState` (was a semantic mismatch — it's a stack frame, not an FSM state). |
+| `ScreenProfile` | 0x20 | Screen/config profile — init func, clear/fog colors, fog distances, camera bounds, ambient color |
+| `RenderCallback` | — | `s32 (*)(void *)` — render setup callback function pointer type |
 | `x_6fcfcf46` | 0x1F90 | Physics/collision state — velocity, transforms, batch info |
 | `x_056d4f07` | 0x1458 | Shadow/effect renderer — projections, mesh data, 16 shadow instances |
 | `x_ee01e8c6` | 0x12088 | Global GFX context — projection matrix, display list buffers, batch arrays |
@@ -80,11 +82,58 @@ If unsure, **ask the user**.
 
 ## Workflow Rules
 1. **Only rename when 100% confident** — verify with build
-2. **One file at a time** — rename → `./configure.py -c && ninja` → next
-3. **No logic changes** — matching decompilation constraint
-4. **Document "required to match" quirks** — compiler artifacts, not bugs
-5. **Use extracted assets** as ground truth for naming
-6. **Preserve @fake / @bug comments**
+2. **No logic changes** — matching decompilation constraint
+3. **Document "required to match" quirks** — compiler artifacts, not bugs
+4. **Use extracted assets** as ground truth for naming
+5. **Preserve @fake / @bug comments**
+
+## Collaboration Model (Wave 1+)
+
+**Agent proposes rename mapping → User applies in source → Agent updates docs only.**
+
+The agent **never writes code** during renaming — only updates `ai/source_files/*.json` documentation.
+
+### Process:
+1. Agent analyzes files and produces a complete rename mapping (old → new)
+2. User applies all renames in VS Code / sed / manually
+3. User runs `ninja` to verify the build
+4. On success, Agent updates `ai/source_files/<name>.json` for affected files
+5. Agent updates the Wave Progress section in AGENTS.md
+
+### What Agent owns:
+- `ai/source_files/*.json` — function summaries, renamed identifiers, open questions
+- `AGENTS.md` — Wave Progress section
+
+### What User owns:
+- All code edits: `.c` files, `.h` files, `.s` files, `symbol_addrs.txt`, `splat.yaml`
+- Build verification: `ninja`
+
+### All names tentative
+Can be renamed again if better understanding emerges.
+
+## Documentation Review
+
+Run on demand via command `Сделай проверку файла <name>` (or `Review file <name>`).
+
+**Act as a human reading the code.** Review the named source file and identify:
+
+1. **Unclear names** — functions, structs, fields, flags, globals that still have obfuscated hash names or **misleading names**. Also check **name consistency across related declarations** — does a message queue and its backing buffer share a coherent naming theme? Does a function's name match what it actually does at every call site? Watch for **semantic mismatches**: a name implying one pattern (FSM, singleton, manager, handler, state) when the code actually does something else (stack frame, utility, allocator, flag).
+2. **Missing comments** — functions without `// what it does and how` header comments
+3. **Opaque logic** — blocks of code where the intent isn't obvious from names alone
+4. **Weird/buggy patterns** — `@bug` / `@fake` / `NON_EQUIVALENT` / dead code, compiler artifacts that need documenting
+5. **Unclear cross-references** — calls to external functions whose purpose in this context isn't obvious
+6. **Open questions** — anything you can't figure out within ~5 min of analysis
+
+### Output format
+For each issue found:
+```
+- `<file.c>:<line>` — <what's wrong> → <suggested fix / question>
+```
+
+### Caveats
+- Matching decompilation constraint: **no logic changes**, only renames + comments
+- If something is unclear after 5 min, flag it and move on
+- If the file is clean (all names clear, well-commented, no opaque logic), say "Файл чист, нареканий нет"
 
 ## Wave Methodology (Iterative Loose Deepening)
 
@@ -108,44 +157,11 @@ Cyclically revisit `open_questions` in each file's JSON as new context accumulat
 - **Open questions list**: each file JSON has an `open_questions` array updated as analysis progresses
 - **Commit when asked only** — never commit without user request
 
-## Renaming Policy (Wave 1+)
-
-When a function/struct/field/enum/global is **understood with confidence**:
-
-### Safe for global search/replace (bash/sed):
-1. **Functions** — unique names, rename across .c, .h, functions.h, variables.h, JSON docs
-2. **Struct/Type names** — unique, rename in common_structs.h, functions.h, variables.h, all .c files, JSON docs
-3. **Enums** — unique names, rename in enums.h, all .c files, JSON docs
-4. **Global variables** — unique names, rename in variables.h, all .c files, JSON docs
-5. **Static variables** — unique names, rename in their .c file only
-6. **Macros** — unique names, rename globally
-
-### DO NOT bulk replace (user renames in VS Code via F2):
-- **Struct fields** — same field name may exist in multiple structs (e.g., `flags`, `callback`, `next`). User must use go-to-definition (F2) to rename only the intended struct's field.
-
-### In-place within function body:
-- **Function parameters & local variables** — rename directly in the function where used.
-
-### Process:
-1. Agent proposes renames for safe identifiers → user approves
-2. Agent runs bash/sed to apply globally
-3. Agent provides struct field rename list → user applies in VS Code
-4. Build verify: `./configure.py -c && ninja`
-5. Update JSON docs
-
-All names tentative — can be renamed again if better understanding emerges.
-
-## Documentation Sync
-
-After documenting/renaming in a file:
-- Update `ai/source_files/<name>.json` with function summaries, renamed identifiers, and open questions.
-- Keep JSON in sync with source code.
-
 ## Naming Conventions (Casing)
 
 | Category | Convention | Example |
 |----------|------------|---------|
-| Struct/Type names | PascalCase | `TaskNode`, `FsmState`, `TaskPool` |
+| Struct/Type names | PascalCase | `TaskNode`, `TaskFrame`, `TaskPool` |
 | Function names | snake_case | `task_execute`, `task_append` |
 | Global variables | camelCase with `g` prefix | `gTaskPool`, `gTaskLock` |
 | Static variables | camelCase with `s` prefix | `sFrameCounter`, `sDebugMode` |
@@ -224,10 +240,10 @@ Also: `kdebugserver` (already correctly named).
 ## Wave 1 Progress
 
 ### Task Scheduler (task.c/h) — DONE
-Functions renamed and documented: `task_execute`, `task_free_list`, `task_find_by_id`, `task_append`, `task_remove_current`. Globals: `gTaskLock`, `gTaskPool`. Macros: `TASK_END`. Enum entries: `TASK_RUNNABLE`, `TASK_TIME_BASED`, `TASK_FRAME_BASED`, `TASK_PUSH`, `TASK_FORCE_PUSH`, `TASK_SAVE_STACK`, `TASK_POP`.
+Functions renamed and documented: `task_execute`, `task_free_list`, `task_find_by_id`, `task_append`, `task_remove_current`. Globals: `gTaskLock`, `gTaskPool`. Struct: `FsmState` → `TaskFrame` (semantic mismatch — it's a stack frame, not FSM state). Macros: `TASK_END`. Enum entries: `TASK_RUNNABLE`, `TASK_TIME_BASED`, `TASK_FRAME_BASED`, `TASK_FLAG_10`, `TASK_FLAG_20`, `TASK_SAVE_STACK`, `TASK_POP`.
 
 ### Boot/Init (boot.c) — DONE
-Functions: `boot_entry`, `idle_thread_func`, `main_thread_func`. All 22 globals renamed: threads (sIdleThread, sMainThread, sRspThread), stacks (sIdleStack, sMainStack, sRspStack), message queues (gPiMessageQueue, gRspMessageQueue, sPiMgrMesgQueue, sViEventQueue, sSpEventQueue, sDpEventQueue, sContMesgQueue), messages arrays, padding. Macro `ARRAY_COUNT` renamed globally. Also renamed: `controller_init`, `main_game_loop`, `rsp_scheduler_thread`, `sBootFlags`. Updated symbol_addrs.txt, entry.s, functions.h, variables.h, macros.h, rsp.c, controller.c, main.c, audio.c, memory.c, huffman.c.
+Functions: `boot_entry`, `idle_thread_func`, `main_thread_func`. All 22 globals renamed: threads (sIdleThread, sMainThread, sRspThread), stacks (sIdleStack, sMainStack, sRspStack), message queues (gPiMessageQueue, gRspMessageQueue, sPiMgrMesgQueue, sViEventQueue, sSpEventQueue, sDpEventQueue, sContMesgQueue), messages arrays (sSchedMesgs → sPiMesgs), padding. Macro `ARRAY_COUNT` renamed globally. Also renamed: `controller_init`, `main_game_loop`, `rsp_scheduler_thread`, `sBootFlags`. Updated symbol_addrs.txt, entry.s, functions.h, variables.h, macros.h, rsp.c, controller.c, main.c, audio.c, memory.c, huffman.c.
 
 ### Player (player.c) — DONE (Wave 1)
 All 27 functions renamed and documented. 5 structs renamed (ReplayEntry, ReplayBuffer, DbFileHeader, AiTacticEntry, AiEntryHeader). Key renames: `player_init`, `player_reinit`, `player_ai_check`, `player_exec_state`, `player_exec_move_ai`, `player_select_move`, `replay_record`, `replay_playback`. Updated nonmatching .s files, symbol_addrs.txt, functions.h, and 6 caller files (menu.c, match.c, move.c, hud.c, aibrain.c, eff_hit.c, combat.c). Also renamed `shadow_init` in trail.c.
@@ -238,7 +254,22 @@ All 12 functions renamed and documented. 7 globals renamed. Key renames: `hit_ef
 ### Battle Camera (cam_follow.c) — DONE (Wave 1)
 All 25 functions renamed and documented. Key renames: `cam_battle_update`, `cam_update`, `cam_distance_update`, `cam_save_state`, `cam_save_state_alt`, `cam_cinematic_update`, `cam_intro_skip_check`, `cam_intro_wait_input`, `cam_intro_start(_inverse)`, `cam_battle_init`, `cam_ko_orbit/init`, `cam_debug_controls/scene_input/init`, `cam_face_players`, `cam_world_shift/wrap/wrap_reset`, `cam_boundary_check`, `cam_project_point`, `lerp_int`, `angle_diff`, `iabs`. Updated callers in player.c, move.c, eff_hit.c, menu.c, match.c, present.c. Updated functions.h, nonmatching .s (x_7cdfb63d.s, x_340c2137.s). NON_EQUIVALENT asm functions noted. Build verified.
 
-Next in queue: transform.c, model.c, memory.c
+### Transform (transform.c) — DONE (Wave 1)
+Functions renamed and documented: `mat4_ident`, `mat4_ident_partial`, `mat4_copy`, `mat4_mult`, `quat_from_axis`, `quat_from_euler`, `quat_to_matrix`, `transform_set_identity`, `transform_update_node`, `transform_update_model`, `anim_setup_bone_matrix`, `anim_bone_matrix_mul`. Globals: `sSinTable`, `sCosTable`, `gTrigTable`. Updated all callers across 7 files. Updated functions.h, variables.h, nonmatching .s (x_e36ec0fe.s). Build verified.
+
+### Model (model.c) — DONE (Wave 1)
+40 functions renamed: `model_texture_register`, `texture_shift_full/line`, `model_texture_reset`, `model_collect_textures`, `model_light_pool_init/attach/detach`, `model_render_mode_zbuf/standard/setup`, `model_parts_enable_all/disable_all`, `model_visibility_sync/set`, `model_prim_color_update/check`, `model_node_centroid(_direct)`, `model_anim_setup_transforms/sort/setup_dl`, `model_bone_setup`, `model_part_draw`, `model_shadow_render/spawn`, `model_traverse_transforms`, `model_transforms_update`, `model_anim_blend_weighted/absolute/additive`, `model_anim_tick/duration`, `model_bones_reset`, `model_anim_load`, `model_sort_entries`, `model_anim_render`, `model_frame_render`, `model_lighting_apply`, `model_render`. Globals: `sShadowDesc`, `sUnusedMatrix`, `sDisplayList`, `sSortListHead`, `sLightListHead`, `sLightFreeList`, `sFurTextures`, `sFurTextureCount`. Build verified.
+
+### Memory (memory.c) — DONE (Wave 1)
+19 functions renamed: `mem_delay`, `mem_pool_init`, `mem_defrag`, `mem_free_add`, `mem_validate`, `mem_free_space`, `mem_list_prepend/remove`, `mem_merge_free`, `mem_alloc/free`, `mem_set`, `mem_copy_overlap`, `mem_dma_alloc/free`, `dma_read_sync/async`, `mem_dma_set_callback`, `mem_alloc_debug`. 11 globals: `sMemFreeList`, `sMemUsedList`, `sDefragNeeded`, `sDmaMesg`, `sMemAllocated`, `sMemFreeBytes`, `sDmaSlots`, `sDmaSlotCount`, `sHeapBase`. Build verified.
+
+### RSP (rsp.c) — DONE (Wave 1)
+10 functions renamed: `rsp_clear_callbacks`, `rsp_register_callback`, `rsp_clear_screen`, `rsp_task_init`, `rsp_scheduler_thread`, `rsp_submit_gfx_tasks`, `rsp_wait_idle`, `rsp_vi_sync`, `rsp_game_init` (NON_EQUIVALENT), `rsp_game_reinit`. 24 globals renamed: static BSS (sClearColorR/G/B, sOverlayBrightness, sFadeThreshold, sGfxTaskCount, sFramebuffer, sZbuffer, sFbBusy, sClearZbuffer, gGfxFlags, sFogColorR/G/B, sFogMin, sFogMax, sRenderCallbacks[20], sRenderCallbackArgs[20], sZbufFillSkipped, sRspStatus, sRspSyncState, sCurrentTaskType), OSTasks (sGfxTaskF3D, sGfxTaskDR, sGfxTaskExtra), timing (gRspTimeTotal, gRdpTimeTotal), write pointers (gF3dDisplayListPtr, gF3dExtraListPtr, gDrBatchPtr). Types: `x_1c3c0f22` → `RenderCallback`, `x_cc16c016` → `UnkStruct10`. Enum `x_a58c44e6` → `GfxFlags` renamed (GFX_NONE, GFX_SKIP_SCENE, GFX_EXTRA_DL, GFX_FLAG_4, GFX_NO_ZCLEAR, GFX_SHADOW_MODE, GFX_MENU_OVERLAY, GFX_BORDER_AROUND). Updated 35 files across the codebase. Build verification pending user.
+
+### ScreenProfile struct (common_structs.h) — Renamed
+`x_d0fba50a` → `ScreenProfile`. Fields renamed: `x_b8173ab8` → `clearColorR`, `x_d863406f` → `clearColorG`, `x_f6c089c5` → `clearColorB`, `x_f74c4cfa` → `clearColorA`, `x_60c27ea9` → `fogColorR`, `x_ee25ce89` → `fogColorG`, `x_747e2503` → `fogColorB`, `x_876a16f1` → `fogColorA`, `x_d23de2ad` → `fogMin`, `x_55739355` → `fogMax`, `x_08b62e4f` → `cameraBounds`, `x_389f2997` → `ambientColor`. Array `x_4540c33c[]` → `gScreenProfiles[]`.
+
+Next in queue: buttons.c, controller.c (Wave 1 analysis pending)
 
 ## Thread Model
 | Pri | Thread | Entry | Description |

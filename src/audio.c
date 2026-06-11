@@ -245,9 +245,9 @@ void x_1e7c754d(void) {
     x_914b0697();
     alClose(&D_80081A78);
     x_3ef429e1();
-    x_08779f06(FALSE);
-    x_08779f06(FALSE);
-    x_08779f06(FALSE);
+    rsp_vi_sync(FALSE);
+    rsp_vi_sync(FALSE);
+    rsp_vi_sync(FALSE);
 }
 
 void x_3e63f835(ALSynConfig *config) {

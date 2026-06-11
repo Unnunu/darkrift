@@ -25,14 +25,14 @@ void task_free_list(TaskNode *list) {
  * delay counters, and executes runnable callbacks.
  * If global lock (gTaskLock) is set, returns immediately.
  * Push conditions: time-based (TASK_TIME_BASED), frame-based (TASK_FRAME_BASED),
- * or forced push (TASK_PUSH | TASK_FORCE_PUSH).
+ * or forced push (TASK_FLAG_10 | TASK_FLAG_20).
  * Pop flag (TASK_POP) restores previous state from stack.
  * Runnable flag (TASK_RUNNABLE) triggers callback execution.
  * Params: obj - Object whose task list to process
  */
 void task_execute(Object *obj) {
     TaskNode *task;
-    FsmState *stack;
+    TaskFrame *stack;
     s16 flags;
 
     task = obj->taskListHead;
@@ -47,8 +47,8 @@ void task_execute(Object *obj) {
 
         if (((flags & TASK_TIME_BASED) && obj->frameCounter >= task->triggerTime) ||
             ((flags & TASK_FRAME_BASED) && task->triggerTime < (gFrameCounter & 0xFFFF)) ||
-            ((flags & TASK_PUSH) && (flags & TASK_FORCE_PUSH))) {
-            FsmState *slot = &task->pushState;
+            ((flags & TASK_FLAG_10) && (flags & TASK_FLAG_20))) {
+            TaskFrame *slot = &task->pushState;
 
             if (slot->flags & TASK_SAVE_STACK) {
                 // push active task on stack
@@ -66,7 +66,7 @@ void task_execute(Object *obj) {
 
         if (flags & TASK_POP) {
             // pop task from stack
-            FsmState *stack = task->stack;
+            TaskFrame *stack = task->stack;
             if (task->stackPtr != 0) {
                 task->stackPtr--;
                 task->callback = (stack + task->stackPtr)->callback;

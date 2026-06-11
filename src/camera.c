@@ -186,7 +186,7 @@ void x_2b791dba(Object *obj) {
     D_8013C668.y = -0xC00 - x_4c17a2ba;
     D_8013C668.x = -atan2_lut(x_86fee161, x_d16311d7);
 
-    if (!(D_8008012C & x_8df87377) || model->x_50771dcd[0]) {
+    if (!(gGfxFlags & GFX_MENU_OVERLAY) || model->x_50771dcd[0]) {
         D_80081428 = D_8013C828;
         x_6c647b3a = D_8013C82C - (s32) (x_cf60a652 * 0.2f);
     }

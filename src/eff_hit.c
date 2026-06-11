@@ -330,7 +330,7 @@ void x_6098478f(Object *obj) {
         (x_824b9544 + x_de68d2a6)->obj->pos.z = obj->pos.z + x_93463df6.z;
         (x_824b9544 + x_de68d2a6)->obj->x_224610f1.y = 0x400 - ((0xC00 - obj->x_224610f1.y) & 0xFFF);
 
-        D_8008012C &= ~x_c626209d;
+        gGfxFlags &= ~GFX_SHADOW_MODE;
         x_943bfef8();
 
         switch (x_eb1fe45b) {

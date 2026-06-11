@@ -10,7 +10,7 @@
     }
 
 extern s32 D_80049CF0;
-extern x_d0fba50a x_4540c33c[];
+extern ScreenProfile gScreenProfiles[];
 extern Gfx D_8004CA68[];
 extern Gfx D_8004CB00[];
 
@@ -26,10 +26,10 @@ extern u16 x_e38a6e19;
 extern u16 D_8005BFCE;
 
 extern Gfx *D_8005BFDC;
-extern s16 D_80080116;
-extern s32 D_8008012C;
-extern x_1c3c0f22 x_9d6e6e5f[20];
-extern s32 x_ba260e1b[20];
+extern s16 sOverlayBrightness;
+extern s32 gGfxFlags;
+extern RenderCallback sRenderCallbacks[20];
+extern s32 sRenderCallbackArgs[20];
 
 /* .data */
 
@@ -48,16 +48,16 @@ s32 D_80049338[] = { 0, 0, 0 };
 x_acccb624 x_acab9952 = { 0, 0, 0 };
 x_88f11482 x_c787d34b = { 0, 0, 0, 0 };
 x_2bb4cf6f D_8004935C = { { { { 255, 255, 255, 255 }, 0, 0, -127 }, { { 0, 0, 0, 255 }, 73, -73, -73 } } };
-x_cc16c016 D_8004937C = { 0, 90, 0, 0 };
-x_cc16c016 D_80049384 = { 0, 233, 500, 0 };
+UnkStruct10 D_8004937C = { 0, 90, 0, 0 };
+UnkStruct10 D_80049384 = { 0, 233, 500, 0 };
 
 /* .bss */
 s16 x_f71086e0;
 s16 x_4090e698;
 OSTime unused;
 OSTime D_8005BEE0;
-OSTime D_8005BEE8;
-OSTime D_8005BEF0;
+OSTime gRspTimeTotal;
+OSTime gRdpTimeTotal;
 s32 D_8005BEF8;
 s32 D_8005BEFC;
 x_c1cedf06 D_8005BF00;
@@ -71,21 +71,21 @@ u16 x_a4f5fb93;
 u16 D_8005BFCC;
 u16 D_8005BFCE;
 void *x_96f79785[2];
-Gfx *x_9a3c07b8;
+Gfx *gF3dDisplayListPtr;
 Gfx *D_8005BFDC;
-Gfx *x_d8cbce84;
-x_320b5d80 *x_8a79b283;
+Gfx *gF3dExtraListPtr;
+x_320b5d80 *gDrBatchPtr;
 x_320b5d80 *x_ee137e39;
 x_ee01e8c6 D_8005BFF0[2];
 x_ee01e8c6 *D_80080100;
 
-void x_d4af6341(void);
+void rsp_wait_idle(void);
 // void execute_scheduled_tasks(void);
-void x_16b2a52b(u16);
+void rsp_game_init(u16);
 void x_2d5f067a(void);
-void x_a892f516(u16);
+void rsp_game_reinit(u16);
 void x_efb29a7d(void);
-void x_bdf191dd(void);
+void rsp_clear_screen(void);
 void x_77751af8(void);
 void x_ff4031b5(void);
 void x_06fa0af9(void);
@@ -93,23 +93,23 @@ void x_4f944650(Object *obj);
 
 void x_225c77c4(void) {
     D_80080100 = &D_8005BFF0[D_8005BFCE];
-    x_9a3c07b8 = D_80080100->x_700a6ea1;
-    x_8a79b283 = D_80080100->x_79588dca;
+    gF3dDisplayListPtr = D_80080100->x_700a6ea1;
+    gDrBatchPtr = D_80080100->x_79588dca;
 
-    gSPSegment(x_9a3c07b8++, 0x01, x_96f79785[D_8005BFCE]);
-    gSPSegment(x_9a3c07b8++, 0x00, 0x00000000);
+    gSPSegment(gF3dDisplayListPtr++, 0x01, x_96f79785[D_8005BFCE]);
+    gSPSegment(gF3dDisplayListPtr++, 0x00, 0x00000000);
 
     D_8004CC20.x_cf1ea5d1[0] = 0;
     D_8004CC20.x_cf1ea5d1[1] = x_a4e17949(x_96f79785[D_8005BFCE]);
 
-    x_50746900(x_8a79b283, (x_3e2f9cf1 *) osVirtualToPhysical(&D_8004CC20), &D_8004CCC8, NULL, NULL);
-    gDPFullSync(x_9a3c07b8++);
-    gSPEndDisplayList(x_9a3c07b8++);
-    x_50746900(x_8a79b283, NULL, &D_8004CD30, NULL, NULL);
-    x_50746900(x_8a79b283, NULL, NULL, NULL, NULL);
-    x_d4af6341();
-    x_08779f06(TRUE);
-    x_9d40d8e1();
+    x_50746900(gDrBatchPtr, (x_3e2f9cf1 *) osVirtualToPhysical(&D_8004CC20), &D_8004CCC8, NULL, NULL);
+    gDPFullSync(gF3dDisplayListPtr++);
+    gSPEndDisplayList(gF3dDisplayListPtr++);
+    x_50746900(gDrBatchPtr, NULL, &D_8004CD30, NULL, NULL);
+    x_50746900(gDrBatchPtr, NULL, NULL, NULL, NULL);
+    rsp_wait_idle();
+    rsp_vi_sync(TRUE);
+    rsp_submit_gfx_tasks();
 
     D_80080100 = &D_8005BFF0[D_8005BFCE];
 }
@@ -123,71 +123,71 @@ void x_da2cde4c(void) {
     x_0dd43bb1();
 
     D_80080100 = &D_8005BFF0[D_8005BFCE];
-    x_9a3c07b8 = D_80080100->x_700a6ea1;
+    gF3dDisplayListPtr = D_80080100->x_700a6ea1;
     D_8005BFDC = D_80080100->x_5b2cc439;
-    x_d8cbce84 = D_80080100->x_a4c192ba;
-    x_8a79b283 = D_80080100->x_79588dca;
+    gF3dExtraListPtr = D_80080100->x_a4c192ba;
+    gDrBatchPtr = D_80080100->x_79588dca;
     x_ee137e39 = D_80080100->x_b8131490;
 
-    gSPSegment(x_9a3c07b8++, 0x01, x_96f79785[D_8005BFCE]);
-    gSPSegment(x_9a3c07b8++, 0x00, 0x00000000);
+    gSPSegment(gF3dDisplayListPtr++, 0x01, x_96f79785[D_8005BFCE]);
+    gSPSegment(gF3dDisplayListPtr++, 0x00, 0x00000000);
 
     D_8004CC20.x_cf1ea5d1[0] = 0;
     D_8004CC20.x_cf1ea5d1[1] = x_c485761a(x_96f79785[D_8005BFCE]);
 
-    if (D_8008012C & x_48752861) {
-        gSPDisplayList(x_d8cbce84++, D_8004CA68);
+    if (gGfxFlags & GFX_EXTRA_DL) {
+        gSPDisplayList(gF3dExtraListPtr++, D_8004CA68);
     }
 
-    x_50746900(x_8a79b283, (x_3e2f9cf1 *) osVirtualToPhysical(&D_8004CC20), &D_8004CCC8, NULL, NULL);
+    x_50746900(gDrBatchPtr, (x_3e2f9cf1 *) osVirtualToPhysical(&D_8004CC20), &D_8004CCC8, NULL, NULL);
     x_efb29a7d();
-    gSPDisplayList(x_9a3c07b8++, D_8004CA68);
-    x_bdf191dd();
+    gSPDisplayList(gF3dDisplayListPtr++, D_8004CA68);
+    rsp_clear_screen();
     x_77751af8();
 
-    if (!(D_8008012C & x_f846a903)) {
-        gSPDisplayList(x_9a3c07b8++, D_80080100->x_5b2cc439);
+    if (!(gGfxFlags & GFX_SKIP_SCENE)) {
+        gSPDisplayList(gF3dDisplayListPtr++, D_80080100->x_5b2cc439);
     }
-    gSPDisplayList(x_9a3c07b8++, D_8004CB00);
-    gSPMatrix(x_9a3c07b8++, x_c485761a(&D_80080100->x_0f39faa7), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    x_d8fc928a(x_9a3c07b8++, D_80080100->perspNorm);
+    gSPDisplayList(gF3dDisplayListPtr++, D_8004CB00);
+    gSPMatrix(gF3dDisplayListPtr++, x_c485761a(&D_80080100->x_0f39faa7), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    x_d8fc928a(gF3dDisplayListPtr++, D_80080100->perspNorm);
     D_8004CC20.perspNorm = D_80080100->perspNorm;
-    gDPSetFogColor(x_9a3c07b8++, D_80080130, D_80080132, D_80080134, 255);
-    gSPFogPosition(x_9a3c07b8++, D_80080136, D_80080138);
+    gDPSetFogColor(gF3dDisplayListPtr++, sFogColorR, sFogColorG, sFogColorB, 255);
+    gSPFogPosition(gF3dDisplayListPtr++, sFogMin, sFogMax);
     if (D_80049CF0 != 0) {
         x_ff4031b5();
     }
     x_06fa0af9();
 
     for (ptr = D_80080100->x_b8131490; ptr != x_ee137e39; ptr++) {
-        x_50746900(x_8a79b283, ptr->context, ptr->info, ptr->vertices, ptr->triangles);
+        x_50746900(gDrBatchPtr, ptr->context, ptr->info, ptr->vertices, ptr->triangles);
     }
-    gDPFullSync(x_9a3c07b8++);
-    gSPEndDisplayList(x_9a3c07b8++);
+    gDPFullSync(gF3dDisplayListPtr++);
+    gSPEndDisplayList(gF3dDisplayListPtr++);
 
     gSPEndDisplayList(D_8005BFDC++);
 
-    gDPFullSync(x_d8cbce84++);
-    gSPEndDisplayList(x_d8cbce84++);
+    gDPFullSync(gF3dExtraListPtr++);
+    gSPEndDisplayList(gF3dExtraListPtr++);
 
-    x_50746900(x_8a79b283, NULL, &D_8004CD30, NULL, NULL);
-    x_50746900(x_8a79b283, NULL, NULL, NULL, NULL);
+    x_50746900(gDrBatchPtr, NULL, &D_8004CD30, NULL, NULL);
+    x_50746900(gDrBatchPtr, NULL, NULL, NULL, NULL);
 
     D_8005BEE0 += osGetTime() - x_de1dd2f4;
-    x_d4af6341();
+    rsp_wait_idle();
 
-    for (i = 0; i < ARRAY_COUNT(x_9d6e6e5f); i++) {
-        if (x_9d6e6e5f[i] != NULL && x_9d6e6e5f[i](x_ba260e1b[i]) == 0) {
-            x_9d6e6e5f[i] = NULL;
+    for (i = 0; i < ARRAY_COUNT(sRenderCallbacks); i++) {
+        if (sRenderCallbacks[i] != NULL && sRenderCallbacks[i](sRenderCallbackArgs[i]) == 0) {
+            sRenderCallbacks[i] = NULL;
         }
     }
 
-    x_08779f06(TRUE);
-    x_9d40d8e1();
+    rsp_vi_sync(TRUE);
+    rsp_submit_gfx_tasks();
 
     if (++D_8005BEF8 >= 0x100) {
         D_8005BEF8 = 0;
-        D_8005BEF0 = D_8005BEE8 = D_8005BEE0 = 0;
+        gRdpTimeTotal = gRspTimeTotal = D_8005BEE0 = 0;
     }
 }
 
@@ -261,8 +261,8 @@ void x_14a106cd(s16 x_ce13e71a) {
 
         x_93463df6 = x_59ce598c[x_83106b21].x_d93bcabf;
         x_235d81c7 = x_59ce598c[x_6f0b3be3].x_d93bcabf;
-        x_5aee6615 = D_8008012C & x_c626209d;
-        D_8008012C |= x_c626209d;
+        x_5aee6615 = gGfxFlags & GFX_SHADOW_MODE;
+        gGfxFlags |= GFX_SHADOW_MODE;
 
         while (!(x_e30d50d2 & x_700de048)) {
             if (x_5e4e2788 != x_79c2dc5b) {
@@ -272,7 +272,7 @@ void x_14a106cd(s16 x_ce13e71a) {
         }
 
         if (!x_5aee6615) {
-            D_8008012C &= ~x_c626209d;
+            gGfxFlags &= ~GFX_SHADOW_MODE;
         }
         x_59ce598c[x_83106b21].x_d93bcabf = x_93463df6;
         x_59ce598c[x_6f0b3be3].x_d93bcabf = x_235d81c7;
@@ -316,12 +316,12 @@ void x_60affc72(void) {
         x_da2cde4c();
     }
 
-    x_d4af6341();
-    x_08779f06(FALSE);
+    rsp_wait_idle();
+    rsp_vi_sync(FALSE);
 }
 
 void x_82df7d23(void) {
-    D_8005BFCE = D_8005BEF8 = D_8005BEF0 = D_8005BEE8 = D_8005BEE0 = 0;
+    D_8005BFCE = D_8005BEF8 = gRdpTimeTotal = gRspTimeTotal = D_8005BEE0 = 0;
 
     while (!(x_e30d50d2 & x_bee364e0) || !(x_e30d50d2 & x_e3ff543d)) {
         if (!(x_e30d50d2 & x_dd99cbfb) && !(x_e30d50d2 & x_86c5bc33) && x_59ce598c[x_83106b21].buttons == x_9cefe76c &&
@@ -358,11 +358,11 @@ void x_82df7d23(void) {
     x_225c77c4();
     x_225c77c4();
 
-    x_d4af6341();
-    x_08779f06(FALSE);
+    rsp_wait_idle();
+    rsp_vi_sync(FALSE);
 
-    x_d4af6341();
-    x_08779f06(FALSE);
+    rsp_wait_idle();
+    rsp_vi_sync(FALSE);
 }
 
 #ifdef NON_MATCHING
@@ -391,13 +391,13 @@ void x_b7eeb04a(s32 x_cc1d0de5, Vtx *x_84ff873b) {
     gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
 
     x_84ff873b[0].v.cn[3] = x_cc1d0de5;
-    x_84ff873b[0].v.cn[0] = x_84ff873b[0].v.cn[1] = x_84ff873b[0].v.cn[2] = D_80080116;
+    x_84ff873b[0].v.cn[0] = x_84ff873b[0].v.cn[1] = x_84ff873b[0].v.cn[2] = sOverlayBrightness;
     x_84ff873b[1].v.cn[3] = x_cc1d0de5;
-    x_84ff873b[1].v.cn[0] = x_84ff873b[1].v.cn[1] = x_84ff873b[1].v.cn[2] = D_80080116;
+    x_84ff873b[1].v.cn[0] = x_84ff873b[1].v.cn[1] = x_84ff873b[1].v.cn[2] = sOverlayBrightness;
     x_84ff873b[2].v.cn[3] = x_cc1d0de5;
-    x_84ff873b[2].v.cn[0] = x_84ff873b[2].v.cn[1] = x_84ff873b[2].v.cn[2] = D_80080116;
+    x_84ff873b[2].v.cn[0] = x_84ff873b[2].v.cn[1] = x_84ff873b[2].v.cn[2] = sOverlayBrightness;
     x_84ff873b[3].v.cn[3] = x_cc1d0de5;
-    x_84ff873b[3].v.cn[0] = x_84ff873b[3].v.cn[1] = x_84ff873b[3].v.cn[2] = D_80080116;
+    x_84ff873b[3].v.cn[0] = x_84ff873b[3].v.cn[1] = x_84ff873b[3].v.cn[2] = sOverlayBrightness;
 
     x_50746900(x_ee137e39, NULL, &D_8005BF00, x_84ff873b, D_80049330);
 }
@@ -434,13 +434,13 @@ void x_e1511bdd(s32 x_cc1d0de5, Vtx *vertices) {
     gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
 
     vertices[0].v.cn[3] = x_cc1d0de5;
-    vertices[0].v.cn[0] = vertices[0].v.cn[1] = vertices[0].v.cn[2] = D_80080116;
+    vertices[0].v.cn[0] = vertices[0].v.cn[1] = vertices[0].v.cn[2] = sOverlayBrightness;
     vertices[1].v.cn[3] = x_cc1d0de5;
-    vertices[1].v.cn[0] = vertices[1].v.cn[1] = vertices[1].v.cn[2] = D_80080116;
+    vertices[1].v.cn[0] = vertices[1].v.cn[1] = vertices[1].v.cn[2] = sOverlayBrightness;
     vertices[2].v.cn[3] = x_cc1d0de5;
-    vertices[2].v.cn[0] = vertices[2].v.cn[1] = vertices[2].v.cn[2] = D_80080116;
+    vertices[2].v.cn[0] = vertices[2].v.cn[1] = vertices[2].v.cn[2] = sOverlayBrightness;
     vertices[3].v.cn[3] = x_cc1d0de5;
-    vertices[3].v.cn[0] = vertices[3].v.cn[1] = vertices[3].v.cn[2] = D_80080116;
+    vertices[3].v.cn[0] = vertices[3].v.cn[1] = vertices[3].v.cn[2] = sOverlayBrightness;
 
     x_50746900(x_ee137e39, NULL, &D_8005BF00, vertices, D_80049330);
 }
@@ -450,8 +450,8 @@ void x_e1511bdd(s32 x_cc1d0de5, Vtx *x_84ff873b);
 #endif
 
 void x_ce9e82b1(Object *obj) {
-    if (D_8005BEFC - 8 < D_80080118) {
-        D_8008012C &= ~x_c626209d;
+    if (D_8005BEFC - 8 < sFadeThreshold) {
+        gGfxFlags &= ~GFX_SHADOW_MODE;
         obj->flags |= x_f51cb721;
         x_e30d50d2 |= x_80ca0761;
 
@@ -483,7 +483,7 @@ void x_6b09ed5a(Object *obj) {
         return;
     }
 
-    D_8008012C |= x_c626209d;
+    gGfxFlags |= GFX_SHADOW_MODE;
     osViBlack(TRUE);
     x_e30d50d2 &= ~x_e3ff543d;
     x_292e1d02(obj, 0);
@@ -531,7 +531,7 @@ void x_8cc3627e(Object *obj) {
 }
 
 void x_6e9e48e4(Object *obj) {
-    D_8008012C |= x_c626209d;
+    gGfxFlags |= GFX_SHADOW_MODE;
     x_f1ca6ba2(obj, 0);
 
     if (obj->x_0232396f != x_6e9e48e4) {
@@ -571,19 +571,19 @@ void x_4f944650(Object *obj) {
 
 void main_game_loop(void) {
     x_e38a6e19 = x_c4da946c;
-    x_16b2a52b(x_e38a6e19);
+    rsp_game_init(x_e38a6e19);
     x_2d5f067a();
 
     while (TRUE) {
         x_f71086e0 = x_e38a6e19;
         x_4495b42c(x_6b09ed5a, 0x1100);
-        x_4540c33c[x_e38a6e19].x_bdfdc522();
+        gScreenProfiles[x_e38a6e19].initFunc();
         if (!(x_e30d50d2 & x_3b812e44)) {
             osViBlack(1);
         }
-        x_d4af6341();
-        x_08779f06(FALSE);
+        rsp_wait_idle();
+        rsp_vi_sync(FALSE);
         x_4090e698 = x_f71086e0;
-        x_a892f516(x_e38a6e19);
+        rsp_game_reinit(x_e38a6e19);
     }
 }

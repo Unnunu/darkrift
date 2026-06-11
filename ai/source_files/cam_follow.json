@@ -47,7 +47,7 @@
     "cam_world_shift": "Shifts all world objects (backgrounds, players, shadow renderers) by (dx, dz) for world wrapping",
     "cam_world_wrap": "Boundary wrap callback: checks if camera or player exceeds ±0x2300 bounds, shifts world by stored offset, recalculates lookAt matrix",
     "cam_world_wrap_reset": "Resets world position to origin after boundary wrap",
-    "cam_boundary_check": "Checks camera/player position against ±0x2300 arena boundary, schedules world wrap callback via x_71257e81",
+    "cam_boundary_check": "Checks camera/player position against ±0x2300 arena boundary, schedules world wrap callback via rsp_register_callback",
     "cam_update": "Main camera update: calculates orbit position around midpoint of both players, handles zoom interpolation based on player distance, angle following, lookAt matrix. Called from battle and cinematic loops",
     "cam_battle_init": "Initializes battle camera: sets initial position, computes zoom/distance params from random angle, stores player position pointers",
     "cam_intro_wait_input": "Intro camera state: waits for button press or timeout, then transitions to battle camera (cam_battle_update)",

@@ -22,7 +22,7 @@ void x_9191631f(Object *obj) {
     if (obj->frameCounter >= obj->x_20d20338->x_8e601526) {
         TASK_END(obj->currentTask);
         obj->flags |= x_f51cb721;
-        D_8008012C &= ~x_c626209d;
+        gGfxFlags &= ~GFX_SHADOW_MODE;
     }
 
     if (obj->color.a >= 4) {

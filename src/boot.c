@@ -13,7 +13,7 @@ u8 sMainStack[MAIN_STACK_SIZE];
 OSThread sRspThread;
 u8 sRspStack[RSP_STACK_SIZE];
 
-u8 sPad11B0[0x15b0 - 0x400];
+u8 sPad11B0[0x11b0];
 
 OSMesg sPiMgrMesgs[8];
 OSMesgQueue sPiMgrMesgQueue;
@@ -24,7 +24,7 @@ OSMesgQueue sSpEventQueue;
 OSMesgQueue sDpEventQueue;
 OSMesgQueue sContMesgQueue;
 OSMesgQueue gRspMessageQueue;
-OSMesg sSchedMesgs[1];
+OSMesg sPiMesgs[1];
 OSMesg sSpMesg[1];
 OSMesg sDpMesg[1];
 OSMesg sContMesgs[1];
@@ -61,7 +61,7 @@ void idle_thread_func(void *arg) {
         osViModeTable[OS_VI_NTSC_LAN1].comRegs.burst |= 76;
         osViSetMode(&osViModeTable[OS_VI_NTSC_LAN1]);
     } else if (osTvType == OS_TV_PAL || osTvType == OS_TV_MPAL) {
-        osViSetMode(&osViModeTable[OS_VI_MPAL_LAN1 - 14]);
+        osViSetMode(&osViModeTable[OS_VI_PAL_LAN1]);
     }
     osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON | OS_VI_GAMMA_DITHER_OFF | OS_VI_GAMMA_OFF);
     osViBlack(1);
@@ -71,7 +71,7 @@ void idle_thread_func(void *arg) {
     if (sBootFlags == 0) {
         osStartThread(&sMainThread);
     }
-    osSetThreadPri(NULL, 0);
+    osSetThreadPri(NULL, OS_PRIORITY_IDLE);
 
     while (1) {}
 }
@@ -85,7 +85,7 @@ void idle_thread_func(void *arg) {
  * @param arg0 Unused argument (standard for thread entry points)
  */
 void main_thread_func(void *arg) {
-    osCreateMesgQueue(&gPiMessageQueue, sSchedMesgs, ARRAY_COUNT(sSchedMesgs));
+    osCreateMesgQueue(&gPiMessageQueue, sPiMesgs, ARRAY_COUNT(sPiMesgs));
 
     osCreateMesgQueue(&sSpEventQueue, sSpMesg, ARRAY_COUNT(sSpMesg));
     osSetEventMesg(OS_EVENT_SP, &sSpEventQueue, 0);

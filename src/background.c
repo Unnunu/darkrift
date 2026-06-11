@@ -170,8 +170,8 @@ void x_ff4031b5(void) {
 
     x_fc4a871b();
 
-    gDPLoadTLUT_pal16(x_9a3c07b8++, 0, x_c485761a(D_80081610));
-    gSPMatrix(x_9a3c07b8++, x_c485761a(&D_80081618), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gDPLoadTLUT_pal16(gF3dDisplayListPtr++, 0, x_c485761a(D_80081610));
+    gSPMatrix(gF3dDisplayListPtr++, x_c485761a(&D_80081618), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     for (i = D_80081602 - 1; i < D_80081604 + 1; i++) {
         for (j = D_800815FE; j < D_80081600 + 1; j++) {
@@ -193,7 +193,7 @@ void x_ff4031b5(void) {
                 }
             }
 
-            gSPDisplayList(x_9a3c07b8++, x_c485761a(D_80049CF0[v0 * D_800815E8 + a0]));
+            gSPDisplayList(gF3dDisplayListPtr++, x_c485761a(D_80049CF0[v0 * D_800815E8 + a0]));
         }
     }
 }

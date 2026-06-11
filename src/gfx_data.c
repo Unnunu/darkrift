@@ -5,7 +5,7 @@
 u64 D_800B85B0[SP_DRAM_STACK_SIZE64];
 Gfx D_800B89B0[0x10000];
 u64 D_801389B0;
-OSTask D_801389B8;
+OSTask sGfxTaskExtra;
 
 /* .data */
 
@@ -92,7 +92,7 @@ Gfx D_8004CB00[] = {
     gsDPPipeSync(), // ????
 };
 
-OSTask D_8004CBC8 = {
+OSTask sGfxTaskF3D = {
     M_GFXTASK,           OS_TASK_DP_WAIT, NULL,        0,    NULL, SP_UCODE_SIZE, NULL, SP_UCODE_DATA_SIZE, D_800B85B0,
     SP_DRAM_STACK_SIZE8, D_800B89B0,      &D_801389B0, NULL, 0,    NULL,          0,
 };
@@ -115,7 +115,7 @@ x_3e2f9cf1 D_8004CC20 = {
     D_8004CC08,
 };
 
-OSTask D_8004CC88 = {
+OSTask sGfxTaskDR = {
     M_GFXTASK, OS_TASK_DP_WAIT,
     NULL,      0,
     NULL,      SP_UCODE_SIZE,

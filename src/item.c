@@ -236,7 +236,7 @@ void x_efb29a7d(void) {
                                    v0->triangles);
                         v0++;
                     } else {
-                        x_50746900(x_8a79b283, NULL, (j != 0) ? v0->info : x_dfa11b27->x_415ed9d6[i], v0->vertices,
+                        x_50746900(gDrBatchPtr, NULL, (j != 0) ? v0->info : x_dfa11b27->x_415ed9d6[i], v0->vertices,
                                    v0->triangles);
                         v0++;
                     }
@@ -245,9 +245,9 @@ void x_efb29a7d(void) {
         } else {
             s32 temp = D_8005BFCE * s1;
             for (i = 0; i < s1; i++) {
-                gSPMatrix(x_9a3c07b8++, x_c485761a(x_dfa11b27->x_164cf1ca->transforms[i + temp]),
+                gSPMatrix(gF3dDisplayListPtr++, x_c485761a(x_dfa11b27->x_164cf1ca->transforms[i + temp]),
                           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-                gSPDisplayList(x_9a3c07b8++, x_c485761a(x_dfa11b27->x_164cf1ca->x_1aae351f[i]));
+                gSPDisplayList(gF3dDisplayListPtr++, x_c485761a(x_dfa11b27->x_164cf1ca->x_1aae351f[i]));
             }
         }
     }

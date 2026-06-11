@@ -5,7 +5,7 @@
   "lines": 152,
   "evidence": {
     "globals": [
-      "OSTask D_8004CBC8 (M_GFXTASK)",
+      "OSTask sGfxTaskF3D (M_GFXTASK)",
       "Gfx D_8004C9C0 (viewport + geom mode)",
       "Gfx D_8004C9E8 (render mode presets)",
       "Gfx D_8004CA68 (copy mode)",

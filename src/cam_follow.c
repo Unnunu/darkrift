@@ -97,7 +97,7 @@ void cam_save_state(void) {
     D_8013C338 = D_8013C5A0;
 
     if (x_f71086e0 <= x_cc464edc) {
-        D_8008012C |= x_f846a903;
+        gGfxFlags |= GFX_SKIP_SCENE;
     }
 }
 
@@ -144,7 +144,7 @@ void cam_cinematic_update(Object *obj) {
             if (!x_9df63a90 || D_80080234 == 0) {
                 obj->currentTask->callback = cam_battle_update;
                 obj->currentTask->delay = 1;
-                D_8008012C &= ~x_f846a903;
+                gGfxFlags &= ~GFX_SKIP_SCENE;
                 x_824b9544[x_83106b21].obj->flags &= ~x_060adf1c;
                 x_824b9544[x_6f0b3be3].obj->flags &= ~x_060adf1c;
                 return;
@@ -153,7 +153,7 @@ void cam_cinematic_update(Object *obj) {
         }
     }
 
-    D_8008012C &= ~x_8df87377;
+    gGfxFlags &= ~GFX_MENU_OVERLAY;
 
     obj->pos.x = x_f8a5b34e.x;
     obj->pos.y = x_f8a5b34e.y;
@@ -192,7 +192,7 @@ void cam_intro_skip_check(Object *obj) {
         obj->currentTask->callback = cam_battle_update;
         obj->x_20d20338->x_50771dcd[0] = NULL;
         x_59ce598c[x_83106b21].x_c4397934 = x_59ce598c[x_6f0b3be3].x_c4397934 = FALSE;
-        D_8008012C &= ~(x_f846a903 | x_c626209d);
+        gGfxFlags &= ~(GFX_SKIP_SCENE | GFX_SHADOW_MODE);
     }
 
     x_824b9544[x_83106b21].obj->flags |= x_060adf1c;
@@ -242,7 +242,7 @@ void cam_debug_scene_input(Object *obj) {
     u32 a1;
     x_2bb4cf6f *v0;
 
-    v0 = x_4540c33c[x_f71086e0].x_08b62e4f;
+    v0 = gScreenProfiles[x_f71086e0].cameraBounds;
     x_8c5f8c03 = x_59ce598c[x_83106b21].buttons;
     v1 = x_8c5f8c03 & 0xFFFF;
     a1 = x_8c5f8c03 >> 16;
@@ -461,7 +461,7 @@ void cam_boundary_check(Object *obj) {
     if (a2 != 0 || a3 != 0) {
         obj->x_0f4167b4[3] = a2;
         obj->x_0f4167b4[4] = a3;
-        x_71257e81(cam_world_wrap, NULL);
+        rsp_register_callback(cam_world_wrap, NULL);
     }
 }
 
@@ -491,9 +491,9 @@ void cam_update(Object *obj, u8 x_84ff873b) {
     s32 temp;
 
     if (x_33abac12 == 0) {
-        D_8008012C |= x_8df87377;
+        gGfxFlags |= GFX_MENU_OVERLAY;
     } else {
-        D_8008012C &= ~x_8df87377;
+        gGfxFlags &= ~GFX_MENU_OVERLAY;
     }
 
     cam_distance_update(FALSE);
@@ -639,7 +639,7 @@ void cam_intro_wait_input(Object *obj) {
         obj->currentTask->callback = cam_battle_update;
         obj->x_20d20338->x_50771dcd[0] = NULL;
         x_59ce598c[x_83106b21].x_c4397934 = x_59ce598c[x_6f0b3be3].x_c4397934 = FALSE;
-        D_8008012C &= ~(x_f846a903 | x_c626209d);
+        gGfxFlags &= ~(GFX_SKIP_SCENE | GFX_SHADOW_MODE);
     } else {
         if (--obj->x_0f4167b4[10] <= 0) {
             obj->currentTask->callback = cam_intro_skip_check;
@@ -927,9 +927,9 @@ void cam_battle_update(Object *obj) {
 
     x_91b5b40f = FALSE;
     if (x_33abac12 == 0) {
-        D_8008012C |= x_8df87377;
+        gGfxFlags |= GFX_MENU_OVERLAY;
     } else {
-        D_8008012C &= ~x_8df87377;
+        gGfxFlags &= ~GFX_MENU_OVERLAY;
     }
 
     cam_distance_update(FALSE);

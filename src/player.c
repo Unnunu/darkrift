@@ -37,7 +37,7 @@ u16 D_80080236;
 ReplayBuffer D_80080238;
 
 void shadow_init(x_056d4f07 *x_cc1d0de5, x_6fcfcf46 *x_84ff873b, x_f9704fd6 *x_2092f891, x_f9704fd6 *x_ee71e5cb,
-                x_88f11482 *x_a0e63e9c, x_6751d717 *x_1011f751);
+                 x_88f11482 *x_a0e63e9c, x_6751d717 *x_1011f751);
 
 void player_reinit(s16 x_30bbe547);
 void player_tick(Object *obj);
@@ -245,7 +245,7 @@ s32 replay_start(void *x_cc1d0de5) {
     v0->currentTask->delay = 0;
     v0->currentTask->flags = TASK_RUNNABLE;
 
-    D_8008012C |= x_f846a903;
+    gGfxFlags |= GFX_SKIP_SCENE;
     x_e30d50d2 &= ~x_dd99cbfb;
 
     if (s3 > 960) {
@@ -268,7 +268,7 @@ s32 replay_init_delay(void) {
     if (x_df087996 < 60) {
         return FALSE;
     } else {
-        x_71257e81(replay_start, NULL);
+        rsp_register_callback(replay_start, NULL);
         return TRUE;
     }
 }
@@ -956,28 +956,28 @@ void player_init(s16 x_30bbe547) {
     }
 
     shadow_init(&x_824b9544[x_30bbe547].x_d8a19723, obj->x_20d20338,
-               &obj->x_20d20338->transforms[D_8004B844[x_eb1fe45b].x_46ce35c8->x_8680658c].x_0c1a9bdd,
-               &x_824b9544[x_30bbe547].x_5c5b1d93.x_cc2c17a6.x_0c1a9bdd, &obj->pos,
-               &D_8004B844[x_eb1fe45b].x_732aef72[x_30bbe547]);
+                &obj->x_20d20338->transforms[D_8004B844[x_eb1fe45b].x_46ce35c8->x_8680658c].x_0c1a9bdd,
+                &x_824b9544[x_30bbe547].x_5c5b1d93.x_cc2c17a6.x_0c1a9bdd, &obj->pos,
+                &D_8004B844[x_eb1fe45b].x_732aef72[x_30bbe547]);
 
     if (D_8004B844[x_eb1fe45b].x_46ce35c8->x_1ffa33d9 >= 0) {
         shadow_init(&x_824b9544[x_30bbe547].x_238ba16f, obj->x_20d20338,
-                   &obj->x_20d20338->transforms[D_8004B844[x_eb1fe45b].x_46ce35c8->x_41b5ccd6].x_0c1a9bdd,
-                   &x_824b9544[x_30bbe547].x_5c5b1d93.x_0548cec6.x_0c1a9bdd, &obj->pos,
-                   &D_8004B844[x_eb1fe45b].x_732aef72[x_30bbe547]);
+                    &obj->x_20d20338->transforms[D_8004B844[x_eb1fe45b].x_46ce35c8->x_41b5ccd6].x_0c1a9bdd,
+                    &x_824b9544[x_30bbe547].x_5c5b1d93.x_0548cec6.x_0c1a9bdd, &obj->pos,
+                    &D_8004B844[x_eb1fe45b].x_732aef72[x_30bbe547]);
         x_824b9544[x_30bbe547].x_8bc5a2ac = TRUE;
     } else {
         x_824b9544[x_30bbe547].x_8bc5a2ac = FALSE;
     }
 
     shadow_init(&x_824b9544[x_30bbe547].x_29c9094f, obj->x_20d20338,
-               &obj->x_20d20338->transforms[D_8004B844[x_eb1fe45b].x_46ce35c8->x_35b6f6e0].x_0c1a9bdd,
-               &obj->x_20d20338->transforms[D_8004B844[x_eb1fe45b].x_46ce35c8->x_cc509e17].x_0c1a9bdd, &obj->pos,
-               &D_8004B844[x_eb1fe45b].x_732aef72[x_30bbe547]);
+                &obj->x_20d20338->transforms[D_8004B844[x_eb1fe45b].x_46ce35c8->x_35b6f6e0].x_0c1a9bdd,
+                &obj->x_20d20338->transforms[D_8004B844[x_eb1fe45b].x_46ce35c8->x_cc509e17].x_0c1a9bdd, &obj->pos,
+                &D_8004B844[x_eb1fe45b].x_732aef72[x_30bbe547]);
     shadow_init(&x_824b9544[x_30bbe547].x_a241ea2a, obj->x_20d20338,
-               &obj->x_20d20338->transforms[D_8004B844[x_eb1fe45b].x_46ce35c8->x_71801879].x_0c1a9bdd,
-               &obj->x_20d20338->transforms[D_8004B844[x_eb1fe45b].x_46ce35c8->x_df4167c9].x_0c1a9bdd, &obj->pos,
-               &D_8004B844[x_eb1fe45b].x_732aef72[x_30bbe547]);
+                &obj->x_20d20338->transforms[D_8004B844[x_eb1fe45b].x_46ce35c8->x_71801879].x_0c1a9bdd,
+                &obj->x_20d20338->transforms[D_8004B844[x_eb1fe45b].x_46ce35c8->x_df4167c9].x_0c1a9bdd, &obj->pos,
+                &D_8004B844[x_eb1fe45b].x_732aef72[x_30bbe547]);
 
     x_824b9544[x_30bbe547].x_cadf184a = FALSE;
 

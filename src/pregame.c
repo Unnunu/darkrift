@@ -760,7 +760,7 @@ void x_2c1b660c(void) {
     }
 
     x_59ce598c[x_83106b21].x_40ccbb76 = x_59ce598c[x_6f0b3be3].x_40ccbb76 = TRUE;
-    D_8008012C |= x_8df87377;
+    gGfxFlags |= GFX_MENU_OVERLAY;
     x_e30d50d2 |= x_86c5bc33;
 
     x_0928eec2("/plyrsel/plyrsel", x_24b231d4);

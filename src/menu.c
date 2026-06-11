@@ -5,17 +5,17 @@
 
 extern s16 D_80051F68;
 
-extern s32 D_8008012C;
+extern s32 gGfxFlags;
 extern Object *x_fa7941af;
 extern s16 D_80049B30[];
 
 extern u8 x_a7d9a1e8;
 extern s32 x_66ddef46;
 extern s32 x_15814eea;
-extern u8 D_80080129;
+extern u8 sClearZbuffer;
 extern s16 D_80081250;
 extern x_4a7d6dd4 *D_80081254;
-extern s16 D_80080116;
+extern s16 sOverlayBrightness;
 extern s16 x_4090e698;
 extern s16 x_2615d8ad;
 extern s16 D_8013C226;
@@ -169,27 +169,27 @@ void x_005cc66f(void) {
     u16 x_32f1d6e2;
     u16 x_1c32c793;
 
-    x_18643961 = D_80080110;
-    x_1c32c793 = D_80080114;
-    x_32f1d6e2 = D_80080112;
+    x_18643961 = sClearColorR;
+    x_1c32c793 = sClearColorB;
+    x_32f1d6e2 = sClearColorG;
 
-    D_80080110 = D_80080112 = D_80080114 = 0;
+    sClearColorR = sClearColorG = sClearColorB = 0;
     x_6c647b3a = 0;
 
     x_0928eec2("/title/wait", x_30af3448);
     x_c9614940 = x_a0e73601("wait", 0, 0, 0, 0, x_96186256, 0x6000);
     x_e30d50d2 |= x_23ebd6b0 | x_d4c59644;
-    D_8008012C |= x_8df87377;
+    gGfxFlags |= GFX_MENU_OVERLAY;
 
     obj = x_4495b42c(&x_d5d8f7a7, 0x1000);
     obj->x_0f4167b4[0] = 6;
     x_82df7d23();
 
-    D_80080110 = x_18643961;
-    D_80080112 = x_32f1d6e2;
-    D_80080114 = x_1c32c793;
+    sClearColorR = x_18643961;
+    sClearColorG = x_32f1d6e2;
+    sClearColorB = x_1c32c793;
     x_e30d50d2 &= ~(x_23ebd6b0 | x_d4c59644 | x_bee364e0);
-    D_8008012C &= ~x_8df87377;
+    gGfxFlags &= ~GFX_MENU_OVERLAY;
     x_ad9889cf(0x6000);
     x_25025961(x_c9614940);
 }
@@ -471,7 +471,7 @@ void x_3253cdf0(Object *obj) {
     s16 a3;
 
     a3 = 1 - x_77831b2c[x_6f0b3be3].x_03604d94; // @bug maybe
-    D_80080118 = 100;
+    sFadeThreshold = 100;
 
     if (x_e30d50d2 & x_80ca0761) {
         obj->x_0f4167b4[1]++;
@@ -592,7 +592,7 @@ void x_af961405(u8 x_cc1d0de5, s16 x_84ff873b, s32 x_2092f891) {
     x_c9523e04(x_824b9544 + 1 - s0, a1, x_2092f891);
     cam_battle_init(x_f4bce728);
     player_exec_move(x_824b9544 + 1 - s0, x_84ff873b, 1);
-    D_8008012C |= x_3309dc13;
+    gGfxFlags |= GFX_FLAG_4;
 }
 
 void x_de15f6f9(void) {
@@ -807,7 +807,7 @@ void x_d7f2443f(void) {
 
     x_ad9889cf(0);
     x_e30d50d2 |= x_23ebd6b0 | x_d4c59644;
-    D_8008012C |= x_8df87377;
+    gGfxFlags |= GFX_MENU_OVERLAY;
 
     x_0928eec2("/sono/prize", x_46bec5bf);
     x_3f14db6e = x_a0e73601("prize", 0, 100, 0, 0, x_8ce7ef70, 0x3000);
@@ -816,7 +816,7 @@ void x_d7f2443f(void) {
     x_82df7d23();
 
     x_e30d50d2 &= ~(x_d4c59644 | x_bee364e0);
-    D_8008012C &= ~x_8df87377;
+    gGfxFlags &= ~GFX_MENU_OVERLAY;
     x_0928eec2("/sono/sonoboss", x_46bec5bf);
     x_af961405(FALSE, 346, 0x3000);
     x_a0e73601("bg2", 0, 26, 0x2000, 0x10000, 0, 0);
@@ -882,7 +882,7 @@ void x_526ab60f(void) {
     x_c9523e04(&x_824b9544[x_ea78ab9e], a1, 0x3000);
     cam_battle_init(x_f4bce728);
     player_exec_move(&x_824b9544[x_ea78ab9e], x_467d52ce, 1);
-    D_8008012C |= x_3309dc13;
+    gGfxFlags |= GFX_FLAG_4;
     x_4495b42c(x_d2b7f1c2, 0x1000);
     x_7bc4ef6e();
 
@@ -928,7 +928,7 @@ void x_97d4c18e(void) {
     D_80081254 = x_a0e73601(x_49781937, 0, 40, 0, 0, x_96186256, 0x4000);
     D_80081254 = x_a0e73601("passwd", 0, 205, 0, 0, x_96186256, 0x4000);
     x_e30d50d2 |= x_86c5bc33;
-    D_8008012C |= x_8df87377;
+    gGfxFlags |= GFX_MENU_OVERLAY;
     x_82df7d23();
     x_ad9889cf(0x4000);
 }
@@ -943,9 +943,9 @@ void x_0f62bcb4(void) {
     x_87eba76e = x_4495b42c(x_070b94ab, 0x1000);
     x_87eba76e->x_0f4167b4[2] = 4;
     x_6eea7033(x_87eba76e, 0x4000);
-    D_80080129 = FALSE;
+    sClearZbuffer = FALSE;
     x_e30d50d2 |= x_86c5bc33;
-    D_8008012C |= x_8df87377;
+    gGfxFlags |= GFX_MENU_OVERLAY;
     x_82df7d23();
     x_ad9889cf(0x4000);
 }
@@ -962,23 +962,23 @@ void x_39ec2f37(void) {
     x_0928eec2("/title/easywin", x_f238a878);
     x_a0e73601("easyimg", 0, 0, 0, 0, x_96186256, 0x4000);
     x_4495b42c(x_e8d61695, 0x1000);
-    D_80080129 = TRUE;
+    sClearZbuffer = TRUE;
     x_e30d50d2 |= x_86c5bc33;
-    D_8008012C |= x_8df87377;
+    gGfxFlags |= GFX_MENU_OVERLAY;
     x_82df7d23();
     x_ad9889cf(0x4000);
     x_e38a6e19 = x_a3a32a2b;
 }
 
 void x_a7b2701f(s32 x_cc1d0de5) {
-    D_80080136 = x_4540c33c[x_cc1d0de5].x_d23de2ad;
-    D_80080138 = x_4540c33c[x_cc1d0de5].x_55739355;
-    D_80080130 = x_4540c33c[x_cc1d0de5].x_60c27ea9;
-    D_80080132 = x_4540c33c[x_cc1d0de5].x_ee25ce89;
-    D_80080134 = x_4540c33c[x_cc1d0de5].x_747e2503;
-    D_80080110 = x_4540c33c[x_cc1d0de5].x_b8173ab8;
-    D_80080112 = x_4540c33c[x_cc1d0de5].x_d863406f;
-    D_80080114 = x_4540c33c[x_cc1d0de5].x_f6c089c5;
+    sFogMin = gScreenProfiles[x_cc1d0de5].fogMin;
+    sFogMax = gScreenProfiles[x_cc1d0de5].fogMax;
+    sFogColorR = gScreenProfiles[x_cc1d0de5].fogColorR;
+    sFogColorG = gScreenProfiles[x_cc1d0de5].fogColorG;
+    sFogColorB = gScreenProfiles[x_cc1d0de5].fogColorB;
+    sClearColorR = gScreenProfiles[x_cc1d0de5].clearColorR;
+    sClearColorG = gScreenProfiles[x_cc1d0de5].clearColorG;
+    sClearColorB = gScreenProfiles[x_cc1d0de5].clearColorB;
 }
 
 void x_84948d12(u8 x_cc1d0de5) {
@@ -1045,7 +1045,7 @@ void x_84948d12(u8 x_cc1d0de5) {
     cam_battle_init(x_f4bce728);
     x_c9523e04(&x_824b9544[x_b3c51f8a], a3, 0x4000);
     x_c9523e04(&x_824b9544[t9], s0, 0x4000);
-    D_8008012C |= x_3309dc13;
+    gGfxFlags |= GFX_FLAG_4;
     x_a0e73601("bg2", 0, -27, 0x2000, 0x10000, 0, x_b3c51f8a);
     x_a0e73601("bg0", x_b3c51f8a * 0, 8, 0x1000, 0x10000, x_96186256, x_b3c51f8a);
     x_a7b2701f(x_1a4de9e0);
@@ -1155,7 +1155,7 @@ void x_2d92be0a(void) {
     obj->x_0f4167b4[1] = 0;
     obj->x_0f4167b4[0] = 0;
 
-    D_80080129 = FALSE;
+    sClearZbuffer = FALSE;
     x_e30d50d2 |= x_86c5bc33;
     cam_ko_init(x_f4bce728, x_1a071863);
 }
@@ -1276,7 +1276,7 @@ void x_da1161b7(void) {
     x_59ce598c[x_83106b21].x_40ccbb76 = x_59ce598c[x_6f0b3be3].x_40ccbb76 = TRUE;
     x_0928eec2("/title", x_35b88489);
     x_a0e73601("dr_title", 0, 0, 0, 0, x_96186256, x_35b88489);
-    D_8008012C |= x_8df87377;
+    gGfxFlags |= GFX_MENU_OVERLAY;
     x_e30d50d2 |= x_86c5bc33;
 
     if (x_4090e698 == x_f699a14d) {
@@ -1308,7 +1308,7 @@ void x_cb95930b(Object *obj) {
     }
 
     obj->flags |= x_f51cb721;
-    D_80080116 = 0;
+    sOverlayBrightness = 0;
 }
 
 void x_200fa268(Object *obj) {
@@ -1316,7 +1316,7 @@ void x_200fa268(Object *obj) {
     x_88f11482 x_93463df6 = { 160, 155, 0, 0 };
     Object *v0;
 
-    D_80080116 = 200;
+    sOverlayBrightness = 200;
     x_e1511bdd(D_8005BEFC, NULL);
 
     if (D_8005BEFC + 32 < 255) {
@@ -1339,8 +1339,8 @@ void x_2c292a7b(void) {
     x_f0d7e70f x_d16311d7 = { 83, x_f9bb9d72, 0, 0x1000, "options2.sp2" };
     x_88f11482 x_32f1d6e2 = { 160, 155, 0, 0 };
 
-    D_80080129 = FALSE;
-    D_8008012C |= x_8df87377;
+    sClearZbuffer = FALSE;
+    gGfxFlags |= GFX_MENU_OVERLAY;
     x_e30d50d2 |= x_86c5bc33;
     x_0928eec2("/title/tit_int", x_35b88489);
     x_0928eec2("/plyrsel/plyrsel", x_24b231d4);
@@ -1368,8 +1368,8 @@ void x_1c76abdb(void) {
 void x_cbafccd1(void) {
     x_40b36af5();
     x_e30d50d2 |= x_86c5bc33;
-    D_8008012C |= x_8df87377;
-    D_8008012C |= x_bbfa9667;
+    gGfxFlags |= GFX_MENU_OVERLAY;
+    gGfxFlags |= GFX_BORDER_AROUND;
     if (!x_59ce598c[x_83106b21].x_12a7bd86 && !x_59ce598c[x_6f0b3be3].x_12a7bd86) {
         x_1c76abdb();
     }
@@ -1411,7 +1411,7 @@ void x_3ecc4edc(void) {
     x_59ce598c[x_83106b21].x_40ccbb76 = x_59ce598c[x_6f0b3be3].x_40ccbb76 = TRUE;
     x_0928eec2("/title/option", x_35b88489);
     x_a0e73601("bgopt", 0, 0, 0, 0, x_96186256, x_35b88489);
-    D_8008012C |= x_8df87377;
+    gGfxFlags |= GFX_MENU_OVERLAY;
     x_e30d50d2 |= x_86c5bc33;
 
     controller = x_12014163(&x_7b3384f3, &x_910f3493, x_35b88489);
@@ -1531,7 +1531,7 @@ void x_35ffeb22(void) {
     x_59ce598c[x_83106b21].x_40ccbb76 = x_59ce598c[x_6f0b3be3].x_40ccbb76 = TRUE;
     x_0928eec2("/title/control", x_35b88489);
     x_a0e73601("bgcont", 0, 0, 0, 0, x_96186256, x_35b88489);
-    D_8008012C |= x_8df87377;
+    gGfxFlags |= GFX_MENU_OVERLAY;
     x_e30d50d2 |= x_86c5bc33;
 
     x_12014163(&x_0bef2693, &x_d772ebb4, x_35b88489);
@@ -1634,7 +1634,7 @@ void x_9450f821(void) {
     x_a0e73601("bgrank", 0, 4, 0, 0, x_96186256, x_35b88489);
     x_fa7941af = x_12014163(&x_b0e0e2fc, &x_b97c1d15, x_35b88489);
     x_8da34614();
-    D_8008012C |= x_8df87377;
+    gGfxFlags |= GFX_MENU_OVERLAY;
     x_e30d50d2 |= x_86c5bc33;
     x_82df7d23();
     x_ad9889cf(x_35b88489);
@@ -1648,7 +1648,7 @@ void x_2288fd1a(void) {
     x_59ce598c[x_83106b21].x_40ccbb76 = x_59ce598c[x_6f0b3be3].x_40ccbb76 = TRUE;
     x_0928eec2("/title/stats", x_35b88489);
     x_a0e73601("aarost", 0, 13, 0, 0, x_96186256, x_35b88489);
-    D_8008012C |= x_8df87377;
+    gGfxFlags |= GFX_MENU_OVERLAY;
     x_e30d50d2 |= x_86c5bc33;
     x_4495b42c(x_8383794c, x_9d442987);
     x_82df7d23();

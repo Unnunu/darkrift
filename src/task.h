@@ -2,12 +2,12 @@
 #define x_6dbe68f0
 #include "common.h"
 
-enum x_c8712694 {
+enum TaskFlags {
     TASK_RUNNABLE = 0x1,
     TASK_TIME_BASED = 0x4,
     TASK_FRAME_BASED = 0x8,
-    TASK_PUSH = 0x10,
-    TASK_FORCE_PUSH = 0x20,
+    TASK_FLAG_10 = 0x10,
+    TASK_FLAG_20 = 0x20,
     TASK_SAVE_STACK = 0x40,
     TASK_POP = 0x80
 };
