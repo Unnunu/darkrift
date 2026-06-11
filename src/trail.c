@@ -371,10 +371,10 @@ void trail_update(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
                 s2[s3].v.ob[2] = x_ec0139c7->z;
                 s3++;
             }
-            x_df21a243 = x_7eefcd11.x.z * x_30a44af1->x + x_7eefcd11.y.z * x_30a44af1->y +
-                         x_7eefcd11.z.z * x_30a44af1->z + x_7eefcd11.w.z;
-            x_8c5f8c03 = x_7eefcd11.x.z * x_ec0139c7->x + x_7eefcd11.y.z * x_ec0139c7->y +
-                         x_7eefcd11.z.z * x_ec0139c7->z + x_7eefcd11.w.z;
+            x_df21a243 = sCamViewProjMtx.x.z * x_30a44af1->x + sCamViewProjMtx.y.z * x_30a44af1->y +
+                         sCamViewProjMtx.z.z * x_30a44af1->z + sCamViewProjMtx.w.z;
+            x_8c5f8c03 = sCamViewProjMtx.x.z * x_ec0139c7->x + sCamViewProjMtx.y.z * x_ec0139c7->y +
+                         sCamViewProjMtx.z.z * x_ec0139c7->z + sCamViewProjMtx.w.z;
             s5->x_24fe8ee6 = x_8c5f8c03 < x_df21a243;
         } else if (s4 != NULL) {
             s5->x_24fe8ee6 = s4->x_24fe8ee6;
@@ -551,7 +551,7 @@ void trail_update(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
 
             if (!x_d647d552) {
                 x_a52ba8b1 = x_cc1d0de5->x_ad2af5d9 + D_8005BFCE;
-                mat4_to_mtx(&x_a52ba8b1->transform, &x_7eefcd11);
+                mat4_to_mtx(&x_a52ba8b1->transform, &sCamViewProjMtx);
                 x_d647d552 = TRUE;
                 x_5c10660a = FALSE;
             } else {
@@ -582,7 +582,7 @@ void trail_update(x_056d4f07 *x_cc1d0de5, u8 x_84ff873b) {
 
             if (!x_d647d552) {
                 x_a52ba8b1 = x_cc1d0de5->x_ad2af5d9 + 2 + D_8005BFCE;
-                mat4_to_mtx(&x_a52ba8b1->transform, &x_7eefcd11);
+                mat4_to_mtx(&x_a52ba8b1->transform, &sCamViewProjMtx);
                 x_d647d552 = TRUE;
                 x_5c10660a = FALSE;
             } else {

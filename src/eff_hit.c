@@ -406,10 +406,10 @@ void hit_effect_fade_out(Object *obj) {
     obj->x_0f4167b4[0]++;
     if (obj->x_0f4167b4[0] > 60) {
         obj->flags |= x_f51cb721;
-        x_cf60a652 = 0;
+        sCamHeightOffs = 0;
         sHitEffectObj = 0;
-    } else if (x_cf60a652 > 0) {
-        x_cf60a652 -= 10;
+    } else if (sCamHeightOffs > 0) {
+        sCamHeightOffs -= 10;
     } else {
         obj->x_0232396f = hit_effect_fade_in;
     }
@@ -419,10 +419,10 @@ void hit_effect_fade_in(Object *obj) {
     obj->x_0f4167b4[0]++;
     if (obj->x_0f4167b4[0] > 60) {
         obj->flags |= x_f51cb721;
-        x_cf60a652 = 0;
+        sCamHeightOffs = 0;
         sHitEffectObj = 0;
-    } else if (x_cf60a652 < obj->x_0f4167b4[1]) {
-        x_cf60a652 += 10;
+    } else if (sCamHeightOffs < obj->x_0f4167b4[1]) {
+        sCamHeightOffs += 10;
     } else {
         obj->x_0232396f = hit_effect_fade_out;
         obj->x_0f4167b4[1] -= 15;

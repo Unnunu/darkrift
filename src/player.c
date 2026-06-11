@@ -229,12 +229,12 @@ s32 replay_start(void *x_cc1d0de5) {
     x_824b9544[x_6f0b3be3].x_b9252303->flags &= ~TASK_TIME_BASED;
 
     sMenuState = 0x800;
-    cam_battle_init(x_f4bce728);
-    x_f4bce728->currentTask->callback = cam_battle_update;
-    x_f4bce728->currentTask->delay = 0;
-    x_435c561d.x = x_435c561d.z = 0;
-    x_435c561d.y = -400;
-    x_6f8aa7af = FALSE;
+    cam_battle_init(gCamTargetObj);
+    gCamTargetObj->currentTask->callback = cam_battle_update;
+    gCamTargetObj->currentTask->delay = 0;
+    sCamLookAt.x = sCamLookAt.z = 0;
+    sCamLookAt.y = -400;
+    sCamFlag = FALSE;
 
     temp = guRandom() % 2;
 
@@ -256,7 +256,7 @@ s32 replay_start(void *x_cc1d0de5) {
             replay_task_exec(v0);
         }
 
-        cam_update(x_f4bce728, TRUE);
+        cam_update(gCamTargetObj, TRUE);
     }
 
     return 0;
@@ -1162,11 +1162,11 @@ label:
         x_5b695729 = player->x_68a6b5cd + x_cd14c741;
         if (x_5b695729->x_016911c1 >= 0 && x_5b695729->x_71e17346 == -1) {
             cam_save_state();
-            x_7bb27e6e(x_f4bce728,
-                       player->obj->x_20d20338->x_50771dcd[player->x_68a6b5cd[x_5b695729->x_016911c1].x_43d35340]);
-            x_f4bce728->currentTask->callback = cam_cinematic_update;
-            x_f4bce728->currentTask->delay = 0;
-            x_f4bce728->currentTask->flags = TASK_RUNNABLE;
+            cam_init(gCamTargetObj,
+                     player->obj->x_20d20338->x_50771dcd[player->x_68a6b5cd[x_5b695729->x_016911c1].x_43d35340]);
+            gCamTargetObj->currentTask->callback = cam_cinematic_update;
+            gCamTargetObj->currentTask->delay = 0;
+            gCamTargetObj->currentTask->flags = TASK_RUNNABLE;
         }
     } else {
         x_b9252303->callback = x_08bf2418->x_9ed41890;

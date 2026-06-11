@@ -443,8 +443,8 @@ void present_win_result_loop(Object *obj) {
 }
 
 void present_winner_wait(Object *obj) {
-    if (x_f4bce728->x_20d20338->x_50771dcd[0] == NULL) {
-        cam_ko_init(x_f4bce728, obj->x_0f4167b4[1]);
+    if (gCamTargetObj->x_20d20338->x_50771dcd[0] == NULL) {
+        cam_ko_init(gCamTargetObj, obj->x_0f4167b4[1]);
         TASK_END(obj->currentTask);
         obj->flags |= x_f51cb721;
     }

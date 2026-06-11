@@ -49,9 +49,9 @@ void ground_frustum_compute(void) {
     s32 x1, y1, z1;
     s32 x2, y2, z2;
 
-    x_720f6ac9 = x_435c561d.x - x_f4bce728->pos.x;
-    x_aa1be933 = x_435c561d.y - x_f4bce728->pos.y;
-    dz = x_435c561d.z - x_f4bce728->pos.z;
+    x_720f6ac9 = sCamLookAt.x - gCamTargetObj->pos.x;
+    x_aa1be933 = sCamLookAt.y - gCamTargetObj->pos.y;
+    dz = sCamLookAt.z - gCamTargetObj->pos.z;
 
     x_5d21c78b = ABS(x_720f6ac9);
     x_b7cc9533 = ABS(dz);
@@ -60,27 +60,27 @@ void ground_frustum_compute(void) {
     t1 = -x_4a9e7834(x_81bfdb41, x_2dc9f256);
     t5 = 7500 - t1;
 
-    x1 = ((x_c84980f9 * (D_8013C588 + 1000) / D_8013C588) >> 1);
+    x1 = ((x_c84980f9 * (sCamUnkParam + 1000) / sCamUnkParam) >> 1);
     sGroundFrustumLocal[0].x = x1;
     sGroundFrustumLocal[1].x = -x1;
     sGroundFrustumLocal[2].x = x1;
     sGroundFrustumLocal[3].x = -x1;
 
-    y1 = D_8013C588 + 1000 + t1;
+    y1 = sCamUnkParam + 1000 + t1;
     sGroundFrustumLocal[0].y = y1;
     sGroundFrustumLocal[1].y = y1;
     sGroundFrustumLocal[2].y = y1;
     sGroundFrustumLocal[3].y = y1;
 
-    z1 = ((x_a4f5fb93 * (D_8013C588 + 1000) / D_8013C588) >> 1);
+    z1 = ((x_a4f5fb93 * (sCamUnkParam + 1000) / sCamUnkParam) >> 1);
     sGroundFrustumLocal[0].z = z1;
     sGroundFrustumLocal[1].z = z1;
     sGroundFrustumLocal[2].z = -z1;
     sGroundFrustumLocal[3].z = -z1;
 
-    x2 = ((x_c84980f9 * t5 / D_8013C588) >> 1);
+    x2 = ((x_c84980f9 * t5 / sCamUnkParam) >> 1);
     y2 = 7500;
-    z2 = ((x_a4f5fb93 * t5 / D_8013C588) >> 1);
+    z2 = ((x_a4f5fb93 * t5 / sCamUnkParam) >> 1);
 
     sGroundFrustumLocal[4].x = x2;
     sGroundFrustumLocal[4].y = y2;
@@ -112,15 +112,15 @@ void ground_frustum_compute(void) {
     vec_transform_by_mat4(&sGroundFrustumLocal[6], &sGroundFrustumWorld[6], &gMat4Temp);
     vec_transform_by_mat4(&sGroundFrustumLocal[7], &sGroundFrustumWorld[7], &gMat4Temp);
 
-    sGroundFrustumWorld[0].x += x_435c561d.x;
-    sGroundFrustumWorld[0].z += x_435c561d.z;
+    sGroundFrustumWorld[0].x += sCamLookAt.x;
+    sGroundFrustumWorld[0].z += sCamLookAt.z;
     sGroundFrustumMaxX = sGroundFrustumMinX = sGroundFrustumWorld[0].x;
     sGroundFrustumMaxZ = sGroundFrustumMinZ = sGroundFrustumWorld[0].z;
 
     for (i = 1; i < 8; i++) {
-        sGroundFrustumWorld[i].x += x_435c561d.x;
-        sGroundFrustumWorld[i].y += x_435c561d.y;
-        sGroundFrustumWorld[i].z += x_435c561d.z;
+        sGroundFrustumWorld[i].x += sCamLookAt.x;
+        sGroundFrustumWorld[i].y += sCamLookAt.y;
+        sGroundFrustumWorld[i].z += sCamLookAt.z;
 
         if (sGroundFrustumMinX > sGroundFrustumWorld[i].x) {
             sGroundFrustumMinX = sGroundFrustumWorld[i].x;

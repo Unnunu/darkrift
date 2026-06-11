@@ -268,11 +268,11 @@ void match_round_reset(Object *obj) {
         sSuddenDeathMsgObj->flags |= x_f51cb721;
     }
 
-    x_f4bce728->currentTask->callback = cam_intro_start_inverse;
-    x_f4bce728->currentTask->delay = 0;
-    x_435c561d.x = x_435c561d.z = 0;
-    x_435c561d.y = -400;
-    x_6f8aa7af = FALSE;
+    gCamTargetObj->currentTask->callback = cam_intro_start_inverse;
+    gCamTargetObj->currentTask->delay = 0;
+    sCamLookAt.x = sCamLookAt.z = 0;
+    sCamLookAt.y = -400;
+    sCamFlag = FALSE;
 
     if (x_c8356c60 != 0) {
         sTimerObj->frameCounter = 3 + x_c8356c60 * 3;
@@ -536,8 +536,8 @@ void match_winner_setup(Object *obj) {
     x_824b9544[x_83106b21].flags |= x_c865be3f;
     x_824b9544[x_6f0b3be3].flags |= x_c865be3f;
 
-    x_435c561d.x = x_435c561d.z = 0;
-    x_435c561d.y = -400;
+    sCamLookAt.x = sCamLookAt.z = 0;
+    sCamLookAt.y = -400;
 
     if (gWadCondLoad[sWinnerIdx].x_eb1fe45b != x_b52da315) {
         x_824b9544[sWinnerIdx].obj->flags |= x_3e24eba7;
@@ -818,7 +818,7 @@ void match_task_exec(Object *obj) {
 void match_round_start(void) {
     sHudRootObj = obj_create_task(match_task_exec, 1);
     sFightLocked = FALSE;
-    x_6f8aa7af = 0;
+    sCamFlag = 0;
 
     x_59ce598c[x_83106b21].enabled = x_59ce598c[x_6f0b3be3].enabled = FALSE;
     x_824b9544[x_83106b21].flags |= x_4d950171;

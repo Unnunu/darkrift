@@ -240,10 +240,10 @@ void arena_stage_01(void) {
     ground_load("arena", x_32f1d6e2);
     hud_setup();
 
-    x_f4bce728->currentTask->delay = 0;
-    x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = cam_intro_start;
-    x_f4bce728->currentTask->stackPtr = 0;
+    gCamTargetObj->currentTask->delay = 0;
+    gCamTargetObj->currentTask->flags = TASK_RUNNABLE;
+    gCamTargetObj->currentTask->callback = cam_intro_start;
+    gCamTargetObj->currentTask->stackPtr = 0;
 
     fight_init();
     tr_scene_loop();
@@ -277,10 +277,10 @@ void arena_stage_02(void) {
     ground_load("arena", x_32f1d6e2);
     hud_setup();
 
-    x_f4bce728->currentTask->delay = 0;
-    x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = cam_intro_start;
-    x_f4bce728->currentTask->stackPtr = 0;
+    gCamTargetObj->currentTask->delay = 0;
+    gCamTargetObj->currentTask->flags = TASK_RUNNABLE;
+    gCamTargetObj->currentTask->callback = cam_intro_start;
+    gCamTargetObj->currentTask->stackPtr = 0;
 
     fight_init();
     tr_scene_loop();
@@ -300,10 +300,10 @@ void arena_stage_03(void) {
     ground_load("arena", x_32f1d6e2);
     hud_setup();
 
-    x_f4bce728->currentTask->delay = 0;
-    x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = cam_intro_start;
-    x_f4bce728->currentTask->stackPtr = 0;
+    gCamTargetObj->currentTask->delay = 0;
+    gCamTargetObj->currentTask->flags = TASK_RUNNABLE;
+    gCamTargetObj->currentTask->callback = cam_intro_start;
+    gCamTargetObj->currentTask->stackPtr = 0;
 
     fight_init();
     tr_scene_loop();
@@ -323,10 +323,10 @@ void arena_stage_04(void) {
     ground_load("arena", x_32f1d6e2);
     hud_setup();
 
-    x_f4bce728->currentTask->delay = 0;
-    x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = cam_intro_start;
-    x_f4bce728->currentTask->stackPtr = 0;
+    gCamTargetObj->currentTask->delay = 0;
+    gCamTargetObj->currentTask->flags = TASK_RUNNABLE;
+    gCamTargetObj->currentTask->callback = cam_intro_start;
+    gCamTargetObj->currentTask->stackPtr = 0;
 
     fight_init();
     tr_scene_loop();
@@ -346,10 +346,10 @@ void arena_stage_05(void) {
     ground_load("arena", x_32f1d6e2);
     hud_setup();
 
-    x_f4bce728->currentTask->delay = 0;
-    x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = cam_intro_start;
-    x_f4bce728->currentTask->stackPtr = 0;
+    gCamTargetObj->currentTask->delay = 0;
+    gCamTargetObj->currentTask->flags = TASK_RUNNABLE;
+    gCamTargetObj->currentTask->callback = cam_intro_start;
+    gCamTargetObj->currentTask->stackPtr = 0;
 
     fight_init();
     tr_scene_loop();
@@ -368,10 +368,10 @@ void arena_stage_06(void) {
     ground_load("arena", x_32f1d6e2);
     hud_setup();
 
-    x_f4bce728->currentTask->delay = 0;
-    x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = cam_intro_start;
-    x_f4bce728->currentTask->stackPtr = 0;
+    gCamTargetObj->currentTask->delay = 0;
+    gCamTargetObj->currentTask->flags = TASK_RUNNABLE;
+    gCamTargetObj->currentTask->callback = cam_intro_start;
+    gCamTargetObj->currentTask->stackPtr = 0;
 
     fight_init();
     tr_scene_loop();
@@ -388,10 +388,10 @@ void arena_stage_07(void) {
     ground_load("arena", x_32f1d6e2);
     hud_setup();
 
-    x_f4bce728->currentTask->delay = 0;
-    x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = cam_intro_start;
-    x_f4bce728->currentTask->stackPtr = 0;
+    gCamTargetObj->currentTask->delay = 0;
+    gCamTargetObj->currentTask->flags = TASK_RUNNABLE;
+    gCamTargetObj->currentTask->callback = cam_intro_start;
+    gCamTargetObj->currentTask->stackPtr = 0;
 
     fight_init();
     tr_scene_loop();
@@ -411,10 +411,10 @@ void arena_stage_08(void) {
     ground_load("arena", x_32f1d6e2);
     hud_setup();
 
-    x_f4bce728->currentTask->delay = 0;
-    x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = cam_intro_start;
-    x_f4bce728->currentTask->stackPtr = 0;
+    gCamTargetObj->currentTask->delay = 0;
+    gCamTargetObj->currentTask->flags = TASK_RUNNABLE;
+    gCamTargetObj->currentTask->callback = cam_intro_start;
+    gCamTargetObj->currentTask->stackPtr = 0;
 
     fight_init();
     tr_scene_loop();
@@ -434,10 +434,10 @@ void arena_stage_09(void) {
     ground_load("arena", x_32f1d6e2);
     hud_setup();
 
-    x_f4bce728->currentTask->delay = 0;
-    x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = cam_intro_start;
-    x_f4bce728->currentTask->stackPtr = 0;
+    gCamTargetObj->currentTask->delay = 0;
+    gCamTargetObj->currentTask->flags = TASK_RUNNABLE;
+    gCamTargetObj->currentTask->callback = cam_intro_start;
+    gCamTargetObj->currentTask->stackPtr = 0;
 
     fight_init();
     tr_scene_loop();
@@ -457,10 +457,10 @@ void arena_stage_10(void) {
     ground_load("arena", x_32f1d6e2);
     hud_setup();
 
-    x_f4bce728->currentTask->delay = 0;
-    x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = cam_intro_start;
-    x_f4bce728->currentTask->stackPtr = 0;
+    gCamTargetObj->currentTask->delay = 0;
+    gCamTargetObj->currentTask->flags = TASK_RUNNABLE;
+    gCamTargetObj->currentTask->callback = cam_intro_start;
+    gCamTargetObj->currentTask->stackPtr = 0;
 
     fight_init();
     tr_scene_loop();
@@ -590,7 +590,7 @@ void fight_intro_setup(u8 x_cc1d0de5, s16 x_84ff873b, s32 x_2092f891) {
     TASK_END(x_824b9544[x_6f0b3be3].x_08b62e4f);
 
     intro_movies_load(x_824b9544 + 1 - s0, a1, x_2092f891);
-    cam_battle_init(x_f4bce728);
+    cam_battle_init(gCamTargetObj);
     player_exec_move(x_824b9544 + 1 - s0, x_84ff873b, 1);
     gGfxFlags |= GFX_FLAG_4;
 }
@@ -880,7 +880,7 @@ void boss_demi(void) {
     TASK_END(x_824b9544[x_6f0b3be3].x_08b62e4f);
 
     intro_movies_load(&x_824b9544[x_ea78ab9e], a1, 0x3000);
-    cam_battle_init(x_f4bce728);
+    cam_battle_init(gCamTargetObj);
     player_exec_move(&x_824b9544[x_ea78ab9e], x_467d52ce, 1);
     gGfxFlags |= GFX_FLAG_4;
     obj_create_task(present_intro_presents, 0x1000);
@@ -1042,7 +1042,7 @@ void demo_fight_setup(u8 x_cc1d0de5) {
     TASK_END(x_824b9544[x_83106b21].x_08b62e4f);
     TASK_END(x_824b9544[x_6f0b3be3].x_08b62e4f);
 
-    cam_battle_init(x_f4bce728);
+    cam_battle_init(gCamTargetObj);
     intro_movies_load(&x_824b9544[x_b3c51f8a], a3, 0x4000);
     intro_movies_load(&x_824b9544[t9], s0, 0x4000);
     gGfxFlags |= GFX_FLAG_4;
@@ -1157,7 +1157,7 @@ void ending_open(void) {
 
     sClearZbuffer = FALSE;
     x_e30d50d2 |= x_86c5bc33;
-    cam_ko_init(x_f4bce728, x_1a071863);
+    cam_ko_init(gCamTargetObj, x_1a071863);
 }
 
 void closing_cutscene(void) {
@@ -1329,7 +1329,7 @@ void fade_in_cb(Object *obj) {
     x_a0e73601("dr_title", 0, 0, 0, 0, x_96186256, x_35b88489);
     v0 = obj_create_from_def(&x_93463df6, &x_fc517ba8, 0x2000);
     v0->currentTask->delay = 60;
-    x_f4bce728->pos.z = -2200;
+    gCamTargetObj->pos.z = -2200;
     obj_create_task(cheat_update, 0x1000);
 }
 
@@ -1676,10 +1676,10 @@ void arena_stage_default(void) {
     ground_load("arena", x_54406eae);
     hud_setup();
 
-    x_f4bce728->currentTask->delay = 0;
-    x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-    x_f4bce728->currentTask->callback = cam_intro_start;
-    x_f4bce728->currentTask->stackPtr = 0;
+    gCamTargetObj->currentTask->delay = 0;
+    gCamTargetObj->currentTask->flags = TASK_RUNNABLE;
+    gCamTargetObj->currentTask->callback = cam_intro_start;
+    gCamTargetObj->currentTask->stackPtr = 0;
 
     tr_scene_loop();
 }

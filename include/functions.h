@@ -103,7 +103,7 @@ u8 player_exec_state(Player *, u8, u16);
 void model_visibility_set(Object *obj, u8 *x_84ff873b);
 void model_parts_disable_all(Object *obj);
 // void camera_save_state(void);
-void x_434424a1(Object *obj, x_88f11482 *x_84ff873b, s32 x_2092f891, x_a05f18ad *x_ee71e5cb);
+void cam_init_pos(Object *obj, x_88f11482 *x_84ff873b, s32 x_2092f891, x_a05f18ad *x_ee71e5cb);
 void cam_cinematic_update(Object *obj);
 u8 ai_advance_action(Player *);
 void ai_state_reset(Player *);

@@ -54,7 +54,7 @@
     "cam_intro_start": "Starts intro camera animation from opencamX.oc save file with cam_intro_wait_input callback",
     "cam_intro_start_inverse": "Starts intro camera from save file with cam_intro_skip_check callback (skipable variant)",
     "cam_distance_update": "NON_EQUIVALENT (asm). Core distance management: adjusts camera distance based on player separation, ground collision, special move flags. Uses midpoint push-apart when angle diff > 0x200",
-    "cam_project_point": "Projects 3D point to screen coordinates using view matrix (x_7eefcd11). Returns normalized screen-space position and depth (w-divide safety check)",
+    "cam_project_point": "Projects 3D point to screen coordinates using view matrix (sCamViewProjMtx). Returns normalized screen-space position and depth (w-divide safety check)",
     "cam_ko_orbit": "KO/victory camera animation: orbits winning player with oscillating height and radial bobbing",
     "cam_ko_init": "Initializes KO camera animation with random parameters: orbit speed, height bob direction, radial direction",
     "cam_battle_update": "Main battle camera loop: orchestrates distance adjustment, angle following, player facing, zoom smoothing, screen-edge push, world boundary wrapping, and lookAt calculation. Core gameplay camera"

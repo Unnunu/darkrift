@@ -3,38 +3,38 @@
 
 // void model_update_animated_params(Object *);
 
-x_a05f18ad *D_80053030[] = { NULL };
+x_a05f18ad *sNullAnimTable[] = { NULL };
 
-Object *x_f4bce728;
+Object *gCamTargetObj;
 s32 D_8013C564; // unused
-x_88f11482 x_435c561d;
-f32 x_9972afd1;
+x_88f11482 sCamLookAt;
+f32 sCamFov;
 s32 D_8013C57C; // unused
-s32 x_37b927c9;
-s32 x_45c764a7;
-s32 D_8013C588;
-s32 x_4c17a2ba;
-s32 x_f81735c3;
-f32 D_8013C594;
-f32 x_bc5e8843;
-f32 D_8013C59C;
-f32 D_8013C5A0;
-x_f9704fd6 x_b082fd90;
-x_f9704fd6 x_e1751f31;
-x_f9704fd6 x_7eefcd11;
-x_acccb624 D_8013C668;
-x_f9704fd6 D_8013C670;
-x_f9704fd6 D_8013C6B0;
-Transform D_8013C6F0;
-x_43bd08ed D_8013C808;
-x_88f11482 D_8013C818;
-s32 D_8013C828;
-s32 D_8013C82C;
-s32 x_cf60a652;
-u8 x_6f8aa7af;
-s32 D_8013C838;
+s32 sCamNearClip;
+s32 sCamFarClip;
+s32 sCamUnkParam;
+s32 sCamAngleToTarget;
+s32 sCamPrevAngle;
+f32 sCamVertRatio;
+f32 sCamScale;
+f32 sCamAnglePrev;
+f32 sCamAngleCurr;
+x_f9704fd6 sCamLookAtMtx;
+x_f9704fd6 sCamProjMtx;
+x_f9704fd6 sCamViewProjMtx;
+x_acccb624 sCamEulerAngles;
+x_f9704fd6 sCamDefLookAtMtx;
+x_f9704fd6 sCamDefViewProjMtx;
+Transform sCamTransform;
+x_43bd08ed sCamUnkStruct;
+x_88f11482 sCamBasePos;
+s32 sCamYaw;
+s32 sCamVertOffs;
+s32 sCamHeightOffs;
+u8 sCamFlag;
+s32 sCamPrevYaw;
 
-void x_7bb27e6e(Object *obj, x_a05f18ad *x_ec23cef0) {
+void cam_init(Object *obj, x_a05f18ad *x_ec23cef0) {
     x_6fcfcf46 *x_20d20338 = obj->x_20d20338;
 
     x_20d20338->x_ee205ef9 = 0;
@@ -43,8 +43,8 @@ void x_7bb27e6e(Object *obj, x_a05f18ad *x_ec23cef0) {
 
     x_20d20338->x_50771dcd[0] = x_ec23cef0;
 
-    x_435c561d.x = x_435c561d.z = 0;
-    x_435c561d.y = -480;
+    sCamLookAt.x = sCamLookAt.z = 0;
+    sCamLookAt.y = -480;
 
     obj->pos.y = 0;
     obj->pos.z = 0;
@@ -56,13 +56,13 @@ void x_7bb27e6e(Object *obj, x_a05f18ad *x_ec23cef0) {
     x_20d20338->x_5d0e77f6[1].y = 0;
     x_20d20338->x_5d0e77f6[1].z = 0;
 
-    D_8013C818.x = D_8013C818.y = D_8013C818.z = 0;
+    sCamBasePos.x = sCamBasePos.y = sCamBasePos.z = 0;
 
     obj->x_20d20338->x_8e601526 = 0x7FFF;
-    x_45c764a7 = 11000;
+    sCamFarClip = 11000;
 }
 
-void x_434424a1(Object *obj, x_88f11482 *x_84ff873b, s32 x_2092f891, x_a05f18ad *x_ee71e5cb) {
+void cam_init_pos(Object *obj, x_88f11482 *x_84ff873b, s32 x_2092f891, x_a05f18ad *x_ee71e5cb) {
     x_6fcfcf46 *model = obj->x_20d20338;
 
     model->x_2f4c4ce1 = -1;
@@ -82,49 +82,49 @@ void x_434424a1(Object *obj, x_88f11482 *x_84ff873b, s32 x_2092f891, x_a05f18ad 
     obj->pos.y = x_84ff873b->y;
     obj->pos.z = x_84ff873b->z;
 
-    x_435c561d.x = x_84ff873b->x;
-    x_435c561d.z = x_84ff873b->z;
-    x_435c561d.y = -480;
+    sCamLookAt.x = x_84ff873b->x;
+    sCamLookAt.z = x_84ff873b->z;
+    sCamLookAt.y = -480;
 
-    D_8013C818.x = x_84ff873b->x;
-    D_8013C818.y = x_84ff873b->y;
-    D_8013C818.z = x_84ff873b->z;
+    sCamBasePos.x = x_84ff873b->x;
+    sCamBasePos.y = x_84ff873b->y;
+    sCamBasePos.z = x_84ff873b->z;
 
-    x_45c764a7 = 11000;
+    sCamFarClip = 11000;
 }
 
-void x_3f054879(s32 x_cc1d0de5, s32 x_84ff873b, s32 x_2092f891, s32 x_ee71e5cb) {
+void cam_calc_angle(s32 x_cc1d0de5, s32 x_84ff873b, s32 x_2092f891, s32 x_ee71e5cb) {
     s32 v1;
     f32 fv0;
 
     v1 = x_4a9e7834(x_2092f891, x_ee71e5cb);
-    D_8013C59C = D_8013C5A0;
+    sCamAnglePrev = sCamAngleCurr;
 
     if (v1 != 0) {
-        D_8013C5A0 = (f32) x_ee71e5cb / (f32) v1;
+        sCamAngleCurr = (f32) x_ee71e5cb / (f32) v1;
         if (x_cc1d0de5 <= 0 && x_84ff873b >= 0) {
-            D_8013C5A0 = (1.0f - D_8013C5A0) + 1.0f;
+            sCamAngleCurr = (1.0f - sCamAngleCurr) + 1.0f;
         } else if (x_cc1d0de5 <= 0 && x_84ff873b <= 0) {
-            D_8013C5A0 += 2.0f;
+            sCamAngleCurr += 2.0f;
         } else if (x_cc1d0de5 >= 0 && x_84ff873b <= 0) {
-            D_8013C5A0 = (1.0f - D_8013C5A0) + 3.0f;
+            sCamAngleCurr = (1.0f - sCamAngleCurr) + 3.0f;
         }
 
-        fv0 = D_8013C5A0 - D_8013C59C;
+        fv0 = sCamAngleCurr - sCamAnglePrev;
         if (fv0 > 1.0f) {
             fv0 -= 4.0f;
         } else if (fv0 < -1.0f) {
             fv0 += 4.0f;
         }
 
-        D_8013C838 = D_8013C828;
-        D_8013C828 -= ROUND(fv0 * 700.0f);
-        fv0 = -(D_8013C594 * 420.0f);
-        D_8013C82C = (s32) (fv0 - 10.0f);
+        sCamPrevYaw = sCamYaw;
+        sCamYaw -= ROUND(fv0 * 700.0f);
+        fv0 = -(sCamVertRatio * 420.0f);
+        sCamVertOffs = (s32) (fv0 - 10.0f);
     }
 }
 
-void x_2b791dba(Object *obj) {
+void cam_frame_update(Object *obj) {
     s32 x_2bef91d9, x_86fee161, x_2dffbf44;
     x_6fcfcf46 *model = obj->x_20d20338;
     s32 x_f0d1d935;
@@ -151,56 +151,56 @@ void x_2b791dba(Object *obj) {
                 x_f10a928a.y = model->x_5d0e77f6[0].y;
                 x_f10a928a.z = model->x_5d0e77f6[0].z;
                 vec_rotate_by_euler(&x_f10a928a, &obj->x_224610f1);
-                x_435c561d.x = D_8013C818.x + x_f10a928a.x;
-                x_435c561d.y = D_8013C818.y + x_f10a928a.y;
-                x_435c561d.z = D_8013C818.z + x_f10a928a.z;
+                sCamLookAt.x = sCamBasePos.x + x_f10a928a.x;
+                sCamLookAt.y = sCamBasePos.y + x_f10a928a.y;
+                sCamLookAt.z = sCamBasePos.z + x_f10a928a.z;
             }
         }
 
         obj->pos.y = model->x_6689336b.y;
     }
 
-    guPerspectiveF(&x_e1751f31, &D_80080100->perspNorm, x_9972afd1, 4.0f / 3.0f, x_37b927c9, x_45c764a7, x_bc5e8843);
+    guPerspectiveF(&sCamProjMtx, &D_80080100->perspNorm, sCamFov, 4.0f / 3.0f, sCamNearClip, sCamFarClip, sCamScale);
 
-    if (obj->pos.x != 0 || obj->pos.z != 0 || x_435c561d.x != 0 || x_435c561d.z != 0) {
-        guLookAtF(&x_b082fd90, obj->pos.x, obj->pos.y + (f32) x_cf60a652, obj->pos.z, x_435c561d.x,
-                  x_435c561d.y + (f32) x_cf60a652, x_435c561d.z, 0.0f, -1.0f, 0.0f);
-        mat4_mul_general(&x_b082fd90, &x_e1751f31, &x_7eefcd11);
+    if (obj->pos.x != 0 || obj->pos.z != 0 || sCamLookAt.x != 0 || sCamLookAt.z != 0) {
+        guLookAtF(&sCamLookAtMtx, obj->pos.x, obj->pos.y + (f32) sCamHeightOffs, obj->pos.z, sCamLookAt.x,
+                  sCamLookAt.y + (f32) sCamHeightOffs, sCamLookAt.z, 0.0f, -1.0f, 0.0f);
+        mat4_mul_general(&sCamLookAtMtx, &sCamProjMtx, &sCamViewProjMtx);
     }
 
-    mat4_to_mtx(&D_80080100->x_0f39faa7, &x_7eefcd11);
+    mat4_to_mtx(&D_80080100->x_0f39faa7, &sCamViewProjMtx);
 
-    x_2bef91d9 = x_435c561d.x - x_f4bce728->pos.x;
-    x_86fee161 = x_435c561d.y - x_f4bce728->pos.y;
-    x_2dffbf44 = x_435c561d.z - x_f4bce728->pos.z;
+    x_2bef91d9 = sCamLookAt.x - gCamTargetObj->pos.x;
+    x_86fee161 = sCamLookAt.y - gCamTargetObj->pos.y;
+    x_2dffbf44 = sCamLookAt.z - gCamTargetObj->pos.z;
 
-    x_f81735c3 = x_4c17a2ba;
-    x_4c17a2ba = atan2_lut(x_2dffbf44, x_2bef91d9);
+    sCamPrevAngle = sCamAngleToTarget;
+    sCamAngleToTarget = atan2_lut(x_2dffbf44, x_2bef91d9);
 
     x_f5463fa4 = ABS(x_2bef91d9);
     x_98e2dc09 = ABS(x_2dffbf44);
     x_d16311d7 = x_4a9e7834(x_f5463fa4, x_98e2dc09);
-    D_8013C594 = (f32) x_86fee161 / (f32) x_d16311d7;
-    x_3f054879(x_2bef91d9, x_2dffbf44, x_f5463fa4, x_98e2dc09);
+    sCamVertRatio = (f32) x_86fee161 / (f32) x_d16311d7;
+    cam_calc_angle(x_2bef91d9, x_2dffbf44, x_f5463fa4, x_98e2dc09);
 
-    D_8013C668.y = -0xC00 - x_4c17a2ba;
-    D_8013C668.x = -atan2_lut(x_86fee161, x_d16311d7);
+    sCamEulerAngles.y = -0xC00 - sCamAngleToTarget;
+    sCamEulerAngles.x = -atan2_lut(x_86fee161, x_d16311d7);
 
     if (!(gGfxFlags & GFX_MENU_OVERLAY) || model->x_50771dcd[0]) {
-        D_80081428 = D_8013C828;
-        x_6c647b3a = D_8013C82C - (s32) (x_cf60a652 * 0.2f);
+        D_80081428 = sCamYaw;
+        x_6c647b3a = sCamVertOffs - (s32) (sCamHeightOffs * 0.2f);
     }
 }
 
-void x_80ee4395(void) {
+void cam_reset_mtx(void) {
     s32 perspNorm;
 
-    guPerspectiveF(&x_e1751f31, &perspNorm, x_9972afd1, 4.0f / 3.0f, x_37b927c9, x_45c764a7, x_bc5e8843);
-    guLookAtF(&D_8013C670, 0.0f, 0.0f, -2300.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f);
-    mat4_mul_general(&D_8013C670, &x_e1751f31, &D_8013C6B0);
+    guPerspectiveF(&sCamProjMtx, &perspNorm, sCamFov, 4.0f / 3.0f, sCamNearClip, sCamFarClip, sCamScale);
+    guLookAtF(&sCamDefLookAtMtx, 0.0f, 0.0f, -2300.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f);
+    mat4_mul_general(&sCamDefLookAtMtx, &sCamProjMtx, &sCamDefViewProjMtx);
 }
 
-Object *x_7b6cfabc(void) {
+Object *cam_create(void) {
     Object *obj;
 
     obj = obj_alloc(0x1200);
@@ -220,36 +220,36 @@ Object *x_7b6cfabc(void) {
     obj->currentTask->stackPtr = 0;
     obj->currentTask->next = NULL;
 
-    x_435c561d.x = x_435c561d.z = 0;
-    x_435c561d.y = -563;
+    sCamLookAt.x = sCamLookAt.z = 0;
+    sCamLookAt.y = -563;
 
     obj->pos.x = 0;
     obj->pos.y = -583;
     obj->pos.z = -2200;
 
-    D_8013C588 = 180;
-    x_37b927c9 = 600;
-    x_45c764a7 = 11000;
-    x_bc5e8843 = 1.0f;
-    x_9972afd1 = 30.0f;
+    sCamUnkParam = 180;
+    sCamNearClip = 600;
+    sCamFarClip = 11000;
+    sCamScale = 1.0f;
+    sCamFov = 30.0f;
 
-    mat4_ident(&x_b082fd90);
-    mat4_ident(&x_e1751f31);
+    mat4_ident(&sCamLookAtMtx);
+    mat4_ident(&sCamProjMtx);
 
-    obj->x_0232396f = x_2b791dba;
-    D_8013C668.z = 0;
+    obj->x_0232396f = cam_frame_update;
+    sCamEulerAngles.z = 0;
 
     obj->x_20d20338 = mem_alloc_debug(sizeof(x_6fcfcf46), "camera.c", 247);
     obj->x_20d20338->x_6dcce206 = 1;
-    obj->x_20d20338->transforms = &D_8013C6F0;
-    obj->x_20d20338->x_0094fc88 = &D_8013C808;
+    obj->x_20d20338->transforms = &sCamTransform;
+    obj->x_20d20338->x_0094fc88 = &sCamUnkStruct;
 
     transform_init_node(NULL, &obj->x_20d20338->x_abd7b3c4, -1, -2);
     transform_init_node(&obj->x_20d20338->x_abd7b3c4, obj->x_20d20338->transforms, 0, -1);
 
     obj->x_20d20338->x_9cfd7bb4.x = obj->x_20d20338->x_9cfd7bb4.y = obj->x_20d20338->x_9cfd7bb4.z = 0;
-    obj->x_20d20338->x_50771dcd = D_80053030;
-    D_80053030[0] = NULL;
+    obj->x_20d20338->x_50771dcd = sNullAnimTable;
+    sNullAnimTable[0] = NULL;
     obj->x_20d20338->x_713417ac = obj->x_20d20338->x_3aefae96 = obj->x_20d20338->x_6786034d.z = 0;
 
     obj->flags |= x_03ae0e9e | x_9ee447da;
@@ -257,11 +257,11 @@ Object *x_7b6cfabc(void) {
 
     obj->x_20d20338->x_ee205ef9 = obj->x_20d20338->x_2f4c4ce1 = -3;
 
-    x_80ee4395();
+    cam_reset_mtx();
 
     obj->flags |= x_4271d4b5;
-    D_8013C59C = D_8013C5A0 = 0.0f;
-    x_6f8aa7af = FALSE;
+    sCamAnglePrev = sCamAngleCurr = 0.0f;
+    sCamFlag = FALSE;
 
     return obj;
 }

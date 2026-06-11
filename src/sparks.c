@@ -145,7 +145,7 @@ void spark_submit_occluded(SparkInstance *x_cc1d0de5) {
 
         if (s5) {
             s5 = FALSE;
-            mat4_to_mtx(&x_65cbb149->transform, &x_7eefcd11);
+            mat4_to_mtx(&x_65cbb149->transform, &sCamViewProjMtx);
             x_65cbb149->header.x_70b508ea = 0;
         } else {
             x_65cbb149->header.x_70b508ea = 1;
@@ -254,13 +254,13 @@ void spark_frame_update(Object *obj) {
     x_5d45b0f8.y = 6;
     x_5d45b0f8.z = 0;
 
-    vec_rotate_by_euler(&x_5d45b0f8, &D_8013C668);
+    vec_rotate_by_euler(&x_5d45b0f8, &sCamEulerAngles);
 
     x_ec427b59 = s2->x_b050a210[D_8005BFCE];
     a3 = s2->x_112d334c[D_8005BFCE];
 
-    d1 = x_7eefcd11.x.z * x_70eb54d5->x + x_7eefcd11.y.z * x_70eb54d5->y + x_7eefcd11.z.z * x_70eb54d5->z +
-         x_7eefcd11.w.z;
+    d1 = sCamViewProjMtx.x.z * x_70eb54d5->x + sCamViewProjMtx.y.z * x_70eb54d5->y +
+         sCamViewProjMtx.z.z * x_70eb54d5->z + sCamViewProjMtx.w.z;
 
     s2->x_8921bd8d = 0;
     s2->x_d5f67ba6 = 0;
@@ -273,7 +273,7 @@ void spark_frame_update(Object *obj) {
             y = pos->y >> 16;
             z = pos->z >> 16;
 
-            d2 = x_7eefcd11.x.z * x + x_7eefcd11.y.z * y + x_7eefcd11.z.z * z + x_7eefcd11.w.z;
+            d2 = sCamViewProjMtx.x.z * x + sCamViewProjMtx.y.z * y + sCamViewProjMtx.z.z * z + sCamViewProjMtx.w.z;
 
             if (d1 < d2) {
                 x_ec427b59->v.ob[0] = x - x_5d45b0f8.x;
@@ -335,7 +335,7 @@ void spark_frame_update(Object *obj) {
 
         if (s3) {
             s3 = FALSE;
-            mat4_to_mtx(&x_65cbb149->transform, &x_7eefcd11);
+            mat4_to_mtx(&x_65cbb149->transform, &sCamViewProjMtx);
             x_65cbb149->header.x_70b508ea = 0;
         } else {
             x_65cbb149->header.x_70b508ea = 1;

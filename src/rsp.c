@@ -39,7 +39,7 @@ void wad_load_area_init(s32 x_cc1d0de5, s32 x_84ff873b);
 void matrix_system_init(void);
 void button_state_reset(void);
 void audio_init(void);
-Object *x_7b6cfabc(void);
+Object *cam_create(void);
 void model_light_pool_init(void);
 void button_remap_reset(s32);
 void model_texture_reset(void);
@@ -275,7 +275,7 @@ void rsp_game_init(u16 x_7cedc3fb) {
     sClearColorB = gScreenProfiles[x_7cedc3fb].clearColorB;
     pool_init(&gTaskPool, 50, sizeof(TaskNode));
     pool_init_core();
-    x_f4bce728 = x_7b6cfabc();
+    gCamTargetObj = cam_create();
     sFogMin = gScreenProfiles[x_7cedc3fb].fogMin;
     sFogMax = gScreenProfiles[x_7cedc3fb].fogMax;
     sFogColorR = gScreenProfiles[x_7cedc3fb].fogColorR;
@@ -317,7 +317,7 @@ void rsp_game_reinit(u16 x_7cedc3fb) {
     sClearColorB = gScreenProfiles[x_7cedc3fb].clearColorB;
     pool_init(&gTaskPool, 50, sizeof(TaskNode));
     pool_init_core();
-    x_f4bce728 = x_7b6cfabc();
+    gCamTargetObj = cam_create();
     button_state_reset();
     rsp_task_init();
     sGroundTileDlTable = 0;

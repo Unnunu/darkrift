@@ -2,9 +2,66 @@
   "hash": "a46ab948",
   "name": "camera",
   "path": "src/camera.c",
-  "lines": 358,
+  "lines": 267,
   "evidence": {
     "strings": ["camera.c"]
   },
-  "summary": "Camera math: projection/view matrices, perspective, look-at, transform pipelines."
+  "summary": "Camera core: create, init, per-frame view-proj matrix update, angle calc to target. Writes scroll offsets (sCamYaw/sCamVertOffs) to scroll.c globals each frame for background parallax.",
+  "functions": [
+    "cam_create — Alloc Object from pool, set FOV=30°, near=600, far=11000, init Transform hierarchy, set cam_frame_update as callback, call cam_reset_mtx.",
+    "cam_init — Reset animation state, set position (0,0,0), lookAt (0,-480,0), default clip planes.",
+    "cam_init_pos — Set camera at explicit position (x/y/z) + Y rotation angle. Called by move.c for cinematic camera positions.",
+    "cam_frame_update — Main per-frame update: animate model (model_anim_load/tick), compute perspective (guPerspectiveF) + lookAt (guLookAtF), multiply → view-proj matrix, calc angle to target player (atan2_lut, hypot), write sCamYaw/sCamVertOffs to scroll.c globals for background.",
+    "cam_calc_angle — Compute yaw angle from player positions with quadrant wrap correction (±2PI). Updated sCamAngleCurr with ratio-based interpolation.",
+    "cam_reset_mtx — Reset perspective + lookAt matrices to fixed default (0,0,-2300 looking at origin)."
+  ],
+  "globals": {
+    "gCamTargetObj": "Object* — Camera target (current player). Used by 8 files.",
+    "sCamLookAt": "Vec3s (s16 xyz) — Look-at target position.",
+    "sCamBasePos": "Vec3s (s16 xyz) — Camera base position.",
+    "sCamFov": "f32 — Field of view (default 30.0°).",
+    "sCamNearClip": "s32 — Near clip plane (default 600).",
+    "sCamFarClip": "s32 — Far clip plane (default 11000).",
+    "sCamUnkParam": "s32 — Unknown param, init 180. Maybe render/scene related.",
+    "sCamAngleToTarget": "s32 — Current atan2 yaw angle to target player.",
+    "sCamPrevAngle": "s32 — Previous frame's yaw angle (for delta calc).",
+    "sCamVertRatio": "f32 — Vertical angle ratio (y-dist / hypot distance).",
+    "sCamScale": "f32 — Scale factor (default 1.0).",
+    "sCamAnglePrev": "f32 — Previous angle value (4-quadrant interpolation).",
+    "sCamAngleCurr": "f32 — Current angle value (interpolation).",
+    "sCamLookAtMtx": "MtxF — Look-at matrix.",
+    "sCamProjMtx": "MtxF — Perspective projection matrix.",
+    "sCamViewProjMtx": "MtxF — View-projection (lookAt × perspective).",
+    "sCamEulerAngles": "s16[3] — Camera Euler angles (yaw/pitch/roll).",
+    "sCamDefLookAtMtx": "MtxF — Default look-at (0,0,-2300).",
+    "sCamDefViewProjMtx": "MtxF — Default view-proj matrix.",
+    "sCamTransform": "Transform — Camera Transform struct (hierarchy, matrices).",
+    "sCamUnkStruct": "x_43bd08ed — Unknown transform-related struct.",
+    "sCamYaw": "s32 — Camera yaw angle (fixed-point). Written to D_80081428 each frame.",
+    "sCamVertOffs": "s32 — Camera vertical offset. Written to x_6c647b3a each frame.",
+    "sCamHeightOffs": "s32 — Camera height offset (added to pos/lookAt Y).",
+    "sCamFlag": "u8 — Boolean flag.",
+    "sCamPrevYaw": "s32 — Previous frame yaw.",
+    "sNullAnimTable": "x_a05f18ad*[1] — Empty animation table (NULL entry)."
+  },
+  "key_apis": [
+    "guPerspectiveF",
+    "guLookAtF",
+    "mat4_mul_general",
+    "mat4_to_mtx",
+    "mat4_ident",
+    "atan2_lut",
+    "model_anim_load",
+    "model_anim_tick",
+    "model_transforms_update",
+    "transform_init_node",
+    "obj_alloc",
+    "mem_alloc_debug"
+  ],
+  "open_questions": [
+    "D_8013C564 / D_8013C57C — unused globals, probably padding.",
+    "sCamUnkParam (D_8013C588=180) — exact purpose unclear.",
+    "sCamUnkStruct (D_8013C808, x_43bd08ed) — type needs renaming in common_structs.h.",
+    "sCamFlag (x_6f8aa7af) — when is it set/cleared?"
+  ]
 }

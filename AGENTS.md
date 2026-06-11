@@ -338,8 +338,11 @@ All 62 functions renamed and documented. 11 globals renamed: `sHitDustSpriteDef`
 ### Pregame (pregame.c) — IN PROGRESS (Wave 1)
 28 functions renamed: `char_select_init`, `char_select_cursor`, `char_select_cpu_scroll`, `char_select_countdown`, `char_select_confirm`, `char_select_count_avail` (NON_MATCHING), `char_select_random` (NON_EQUIVALENT), `handicap_init`, `handicap_input`, `handicap_refresh`, `handicap_digit_render`, `handicap_health_to_width`, `pregame_start_seq`, `pregame_model_flash`, `practice_transition`, `practice_input`, `debug_model_edit`, `cheat_update`, `cheat_process`, `cheat_advance`, `cheat_sequence_cmp`, `cheat_set_flags`, `cheat_goto_stage`, `cheat_switch_char`, `cheat_practice_mode`, `cheat_set_difficulty`, `cheat_switch_side`, `cheat_navigate`. 2 structs: `CheatEntry`, `CheatState`. 4 globals: `sSonorkUnlocked`, `sDemitronUnlocked`, `sPlayerCursorObj[2]`, `sLastWinnerIdx` (pending). Main cheat table `sCheatTable[30]` with 30 button sequences. Updated callers in player.c, match.c, fighters.c, menu.c, functions.h.
 
-### Next Up: Camera (camera.c)
-Core camera math: 267 lines, ~22 functions. Coordinate transforms, look-at, perspective projection. Strong cross-references with already-documented cam_follow.c, player.c, match.c.
+### Camera (camera.c) — DONE (Wave 1)
+6 functions renamed: `cam_create`, `cam_init`, `cam_init_pos`, `cam_frame_update`, `cam_calc_angle`, `cam_reset_mtx`. 26 globals renamed: `gCamTargetObj`, `sCamLookAt`, `sCamFov`, `sCamNearClip`, `sCamFarClip`, `sCamUnkParam`, `sCamAngleToTarget`, `sCamPrevAngle`, `sCamVertRatio`, `sCamScale`, `sCamAnglePrev`, `sCamAngleCurr`, `sCamLookAtMtx`, `sCamProjMtx`, `sCamViewProjMtx`, `sCamEulerAngles`, `sCamDefLookAtMtx`, `sCamDefViewProjMtx`, `sCamTransform`, `sCamUnkStruct`, `sCamBasePos`, `sCamYaw`, `sCamVertOffs`, `sCamHeightOffs`, `sCamFlag`, `sCamPrevYaw`, `sNullAnimTable`. Updated camera.h (8 externs + 2 prototypes), functions.h, callers in 10 files (cam_follow.c, player.c, move.c, rsp.c, background.c, match.c, menu.c, present.c, eff_hit.c).
+
+### Next Up: scroll.c
+Background scrolling system: 399 lines, ~15 functions. Camera writes scroll offsets (`sCamYaw`/`sCamVertOffs` into `D_80081428`/`x_6c647b3a` defined in scroll.c) each frame for tiled background parallax. Tight coupling with camera.c (just finished).
 
 ## Thread Model
 | Pri | Thread | Entry | Description |

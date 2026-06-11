@@ -131,13 +131,13 @@ void move_camera_trig(Object *obj) {
         x_32f1d6e2.x = (x_824b9544[x_83106b21].obj->pos.x + x_824b9544[x_6f0b3be3].obj->pos.x) >> 1;
         x_32f1d6e2.z = (x_824b9544[x_83106b21].obj->pos.z + x_824b9544[x_6f0b3be3].obj->pos.z) >> 1;
         x_32f1d6e2.y = 0;
-        x_434424a1(x_f4bce728, &x_32f1d6e2, obj->x_224610f1.y,
-                   obj->x_20d20338->x_50771dcd[player->x_68a6b5cd[player->x_7f68c36b->x_016911c1].x_43d35340]);
+        cam_init_pos(gCamTargetObj, &x_32f1d6e2, obj->x_224610f1.y,
+                     obj->x_20d20338->x_50771dcd[player->x_68a6b5cd[player->x_7f68c36b->x_016911c1].x_43d35340]);
 
-        x_f4bce728->currentTask->callback = cam_cinematic_update;
-        x_f4bce728->currentTask->delay = 0;
-        x_f4bce728->currentTask->flags = TASK_RUNNABLE;
-        x_f4bce728->currentTask->delay = 1;
+        gCamTargetObj->currentTask->callback = cam_cinematic_update;
+        gCamTargetObj->currentTask->delay = 0;
+        gCamTargetObj->currentTask->flags = TASK_RUNNABLE;
+        gCamTargetObj->currentTask->delay = 1;
         TASK_END(obj->currentTask);
     }
 }

@@ -528,9 +528,9 @@ void model_anim_sort(Object *obj, s32 x_84ff873b) {
     transforms = model->transforms;
 
     if (obj->flags & x_a816b63b) {
-        x_bf6199df = &D_8013C6B0;
+        x_bf6199df = &sCamDefViewProjMtx;
     } else {
-        x_bf6199df = &x_7eefcd11;
+        x_bf6199df = &sCamViewProjMtx;
     }
 
     for (i = 0; i < x_8a9089b3; i++) {
@@ -742,7 +742,7 @@ void model_shadow_render(Object *obj) {
 
     for (i = 0; i < x_20d20338->x_6dcce206; i++) {
         mat4_mul3(&x_d753d975, &transforms[i].x_0c1a9bdd, x_3fde9cd9);
-        mat4_mul_general(&x_d753d975, &x_7eefcd11, &gMat4Temp);
+        mat4_mul_general(&x_d753d975, &sCamViewProjMtx, &gMat4Temp);
 
         if (gMat4Temp.w.w != 0.0f) {
             v1 = gMat4Temp.w.x / gMat4Temp.w.w;
@@ -1523,13 +1523,13 @@ void model_frame_render(Object *obj) {
     }
 
     if (!(obj->flags & x_f25de720)) {
-        obj->x_224610f1.x = D_8013C668.x;
-        obj->x_224610f1.y = D_8013C668.y;
+        obj->x_224610f1.x = sCamEulerAngles.x;
+        obj->x_224610f1.y = sCamEulerAngles.y;
     }
 
     mat4_from_euler(&x_19503ea6->x_3fde9cd9, &obj->x_224610f1);
     mat4_set_translation(&x_19503ea6->x_3fde9cd9, &obj->pos);
-    mat4_mul_general(&x_19503ea6->x_3fde9cd9, &x_7eefcd11, &gMat4Temp);
+    mat4_mul_general(&x_19503ea6->x_3fde9cd9, &sCamViewProjMtx, &gMat4Temp);
 
     sub = x_78526b81 + x_a1c9c44b;
     x_b3b1a6c0 = &x_20d20338->x_8b36595a;
@@ -1795,8 +1795,8 @@ void model_render(Object *obj) {
     model_prim_color_check(obj);
 
     if (obj->flags & x_f465a0fc) {
-        obj->x_224610f1.y = D_8013C668.y;
-        obj->x_224610f1.x = D_8013C668.x;
+        obj->x_224610f1.y = sCamEulerAngles.y;
+        obj->x_224610f1.x = sCamEulerAngles.x;
     }
 
     if (x_20d20338->x_50771dcd != NULL) {
@@ -1836,9 +1836,9 @@ void model_render(Object *obj) {
                     s32 s1 = x_23b71842->group[j];
 
                     if (obj->flags & x_a816b63b) {
-                        a1 = &D_8013C6B0;
+                        a1 = &sCamDefViewProjMtx;
                     } else {
-                        a1 = &x_7eefcd11;
+                        a1 = &sCamViewProjMtx;
                     }
 
                     if (x_30a44af1 != NULL) {
@@ -1860,7 +1860,7 @@ void model_render(Object *obj) {
         mat4_from_euler(&x_7642845a->x_3fde9cd9, &obj->x_224610f1);
         mat4_set_translation(&x_7642845a->x_3fde9cd9, &obj->pos);
         transform_calc_world(x_7642845a);
-        mat4_mul_general(&x_7642845a->x_3fde9cd9, &x_7eefcd11, &gMat4Temp);
+        mat4_mul_general(&x_7642845a->x_3fde9cd9, &sCamViewProjMtx, &gMat4Temp);
         mat4_to_mtx(&(s0 + x_dd9604d9)->transform, &gMat4Temp);
         model_part_draw(x_20d20338->model, 0);
         (*s2)->info = s0 + x_dd9604d9;
