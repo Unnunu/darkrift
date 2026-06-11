@@ -317,7 +317,10 @@ All 62 functions renamed and documented. 11 globals renamed: `sHitDustSpriteDef`
 ### Presentation Screens (present.c) — DONE (Wave 1)
 27 functions renamed: `present_set_screen`, `attract_blink_cb`, `attract_menu_input`, `present_single_win`, `present_attract_cycle`, `present_title_task`, `present_attract_loop`, `present_skip_to_attract`, `present_digi_element`, `present_kronos_fade_out`, `present_kronos_fade_in`, `present_kronos_logo`, `present_title_open_anim`, `present_title_sfx`, `present_title_open`, `present_haze_anim`, `present_haze_init`, `present_theend_skip`, `present_theend_anim_end`, `present_theend_init`, `present_transition_screen`, `present_win_fade_out`, `present_win_result_loop`, `present_winner_wait`, `present_result_timer`, `present_intro_presents`, `present_demo_action`, `present_demo_sfx`. 9 globals + 1 type renamed. Updated functions.h (1 decl), menu.c (2 externs), match.c (2 calls), pregame.c (2 calls). Build verified.
 
-Next in queue: `select.c` (selection UI: options, char select grid, stage select, digit render)
+### Selection UI (select.c) — DONE (Wave 1)
+21 functions renamed (12 Options + 3 Char Select + 2 Stage Select + 4 Score): `options_input_handler`, `options_menu_task`, `option_game_mode`, `option_round_count`, `option_rounds_win`, `option_sound_mute`, `option_bgm_volume`, `option_sfx_volume`, `option_controller_setup`, `option_char_config`, `option_stage_select`, `option_back_attract`, `select_char_input`, `select_char_update`, `select_char_task`, `select_stage_task`, `select_stage_screen`, `select_score_confirm`, `select_digit_render`, `select_score_display`, `select_score_init`. 10 globals renamed. Updated functions.h (1 decl), menu.c (15 extern decls + ~30 call sites). Build verified.
+
+Next in queue: `ply_init.c` (player model/render state init wrapper — small file, quick win)
 
 ## Thread Model
 | Pri | Thread | Entry | Description |

@@ -28,7 +28,7 @@ void present_kronos_logo(Object *);
 void tr_scene_loop(void);
 void wad_unload_context(s32 x_cc1d0de5);
 void tr_quad_xlu(s32 x_cc1d0de5, Vtx *x_84ff873b);
-void x_8383794c(Object *);
+void select_stage_screen(Object *);
 Object *obj_create_from_def(x_88f11482 *x_cc1d0de5, x_f0d7e70f *x_84ff873b, s32 x_2092f891);
 u32 wad_entry_find(char *name, u32 context);
 void wad_strcat(char *x_0618013f, char *src);

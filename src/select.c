@@ -4,19 +4,21 @@
 
 #define x_7fe97e23 10
 
-s16 D_80049B20[] = { 4, 7, 6, 5, 1, 3, 0, 2 };
-s16 D_80049B30[] = { x_84d0a51b, x_ffe9ce36, x_b2ae561b, x_37f8540c, x_c7089780, x_af0e0a9f, x_64a28e7d, x_29dbff14 };
+s16 sRemapSlotTbl[] = { 4, 7, 6, 5, 1, 3, 0, 2 };
+s16 sCharButtonTbl[] = {
+    x_84d0a51b, x_ffe9ce36, x_b2ae561b, x_37f8540c, x_c7089780, x_af0e0a9f, x_64a28e7d, x_29dbff14
+};
 
-Object *x_fa7941af;
-char x_ed1bd1d1[4];
-Object *x_f80fc81d[x_7fe97e23];
-s16 x_e7bcb342;
-s32 x_4c13fe65;
-s16 x_dced62f4[x_edb381f3];
-s16 x_587aa870[x_edb381f3];
-x_88f11482 x_6c6f1601;
+Object *sScoreTitleObj;
+char D_80081464[4];
+Object *sDigitObjs[x_7fe97e23];
+s16 sDigitIdx;
+s32 sSelectUnused;
+s16 sCharSortOrder[x_edb381f3];
+s16 sCharScores[x_edb381f3];
+x_88f11482 sScorePos;
 
-void x_08d315fd(Object *obj, s16 buttons, s16 x_30bbe547) {
+void options_input_handler(Object *obj, s16 buttons, s16 x_30bbe547) {
     s16 x_350d585b;
     s16 counter;
     s32 x_e15348ae;
@@ -52,7 +54,7 @@ void x_08d315fd(Object *obj, s16 buttons, s16 x_30bbe547) {
     }
 }
 
-void x_a2a8ba2f(Object *obj) {
+void options_menu_task(Object *obj) {
     s16 buttons;
     s16 x_a6a94456;
 
@@ -60,15 +62,15 @@ void x_a2a8ba2f(Object *obj) {
     x_a6a94456 = x_59ce598c[x_6f0b3be3].buttons;
 
     if (buttons != 0) {
-        x_08d315fd(obj, buttons, x_83106b21);
+        options_input_handler(obj, buttons, x_83106b21);
     } else if (x_a6a94456 != 0) {
-        x_08d315fd(obj, x_a6a94456, x_6f0b3be3);
+        options_input_handler(obj, x_a6a94456, x_6f0b3be3);
     } else {
         obj->x_0f4167b4[x_20586666] = 0;
     }
 }
 
-void x_bc5bf713(Object *obj) {
+void option_game_mode(Object *obj) {
     Object *controller;
     s16 x_68fff389;
 
@@ -91,7 +93,7 @@ void x_bc5bf713(Object *obj) {
     }
 }
 
-void x_0e243657(Object *obj) {
+void option_round_count(Object *obj) {
     Object *controller;
     s16 x_68fff389;
 
@@ -114,7 +116,7 @@ void x_0e243657(Object *obj) {
     }
 }
 
-void x_4d34121d(Object *obj) {
+void option_rounds_win(Object *obj) {
     Object *controller;
     s16 x_68fff389;
 
@@ -137,7 +139,7 @@ void x_4d34121d(Object *obj) {
     }
 }
 
-void x_c1c0a10d(Object *obj) {
+void option_sound_mute(Object *obj) {
     Object *controller;
     s16 x_68fff389;
 
@@ -160,7 +162,7 @@ void x_c1c0a10d(Object *obj) {
     }
 }
 
-void x_ff609efb(Object *obj) {
+void option_bgm_volume(Object *obj) {
     Object *controller;
     s16 x_68fff389;
     s32 volume;
@@ -196,7 +198,7 @@ void x_ff609efb(Object *obj) {
     }
 }
 
-void x_28ceb562(Object *obj) {
+void option_sfx_volume(Object *obj) {
     Object *controller;
     s16 x_68fff389;
     s32 volume;
@@ -232,7 +234,7 @@ void x_28ceb562(Object *obj) {
     }
 }
 
-void x_12081995(Object *obj) {
+void option_controller_setup(Object *obj) {
     Object *controller;
 
     controller = obj->x_e2f64c57[x_0371940a];
@@ -249,7 +251,7 @@ void x_12081995(Object *obj) {
     }
 }
 
-void x_53598eda(Object *obj) {
+void option_char_config(Object *obj) {
     Object *controller;
 
     controller = obj->x_e2f64c57[x_0371940a];
@@ -266,7 +268,7 @@ void x_53598eda(Object *obj) {
     }
 }
 
-void x_b5c125fc(Object *obj) {
+void option_stage_select(Object *obj) {
     Object *controller;
 
     controller = obj->x_e2f64c57[x_0371940a];
@@ -283,7 +285,7 @@ void x_b5c125fc(Object *obj) {
     }
 }
 
-void x_dd25b026(Object *obj) {
+void option_back_attract(Object *obj) {
     Object *controller;
 
     controller = obj->x_e2f64c57[x_0371940a];
@@ -300,7 +302,7 @@ void x_dd25b026(Object *obj) {
     }
 }
 
-void x_d1cd74f9(Object *obj, s16 buttons, s16 x_30bbe547) {
+void select_char_input(Object *obj, s16 buttons, s16 x_30bbe547) {
     s16 x_350d585b;
     s16 counter;
     s32 x_e15348ae;
@@ -352,7 +354,7 @@ void x_d1cd74f9(Object *obj, s16 buttons, s16 x_30bbe547) {
     }
 }
 
-void x_d4ae14dc(Object *obj) {
+void select_char_update(Object *obj) {
     Object *controller;
     s16 x_4c652bcb;
     s16 x_30bbe547;
@@ -373,8 +375,8 @@ void x_d4ae14dc(Object *obj) {
             controller->x_0f4167b4[x_399d646a] = 0;
 
             x_30bbe547 = controller->x_0f4167b4[x_283009b1];
-            w = D_80049B30[obj->x_0f4167b4[x_13266785]];
-            q = D_80049B20[controller->x_0f4167b4[x_4ba680cf] - x_810a8a6e];
+            w = sCharButtonTbl[obj->x_0f4167b4[x_13266785]];
+            q = sRemapSlotTbl[controller->x_0f4167b4[x_4ba680cf] - x_810a8a6e];
 
             gRemapTable[x_30bbe547][q] = w;
             for (i = 0; i < 8; i++) {}
@@ -388,15 +390,15 @@ void x_d4ae14dc(Object *obj) {
             obj->frameCounter = controller->x_0f4167b4[x_d1a83f73];
 
             x_30bbe547 = controller->x_0f4167b4[x_283009b1];
-            w = D_80049B30[obj->x_0f4167b4[x_13266785]];
-            q = D_80049B20[controller->x_0f4167b4[x_d1a83f73] - x_7eb4b3f4];
+            w = sCharButtonTbl[obj->x_0f4167b4[x_13266785]];
+            q = sRemapSlotTbl[controller->x_0f4167b4[x_d1a83f73] - x_7eb4b3f4];
             gRemapTable[x_30bbe547][q] = w;
             for (i = 0; i < 8; i++) {}
         }
     }
 }
 
-void x_a9342b2f(Object *obj) {
+void select_char_task(Object *obj) {
     s16 x_d8bc4e5e;
     s16 x_30bbe547;
 
@@ -404,15 +406,15 @@ void x_a9342b2f(Object *obj) {
     x_d8bc4e5e = x_59ce598c[x_30bbe547].x_f3756179;
 
     if (x_d8bc4e5e != 0) {
-        x_d1cd74f9(obj, x_d8bc4e5e, x_30bbe547);
+        select_char_input(obj, x_d8bc4e5e, x_30bbe547);
     } else {
         obj->x_0f4167b4[x_20586666] = 0;
     }
 
-    x_d4ae14dc(obj);
+    select_char_update(obj);
 }
 
-void x_2cae892b(Object *obj) {
+void select_stage_task(Object *obj) {
     u8 v1;
     Object *x_7e485fc0;
     Object *x_71d00f40;
@@ -447,7 +449,7 @@ void x_2cae892b(Object *obj) {
     }
 }
 
-void x_8383794c(Object *obj) {
+void select_stage_screen(Object *obj) {
     s16 x_350d585b;
     s16 buttons;
     char x_c309f013[20];
@@ -497,7 +499,7 @@ void x_8383794c(Object *obj) {
     }
 }
 
-void x_a9b3a737(Object *obj) {
+void select_score_confirm(Object *obj) {
     s16 buttons;
 
     buttons = x_59ce598c[x_83106b21].buttons | x_59ce598c[x_6f0b3be3].buttons;
@@ -509,7 +511,7 @@ void x_a9b3a737(Object *obj) {
     }
 }
 
-void x_aad8fe8c(s16 number, s16 x_051b562d, s16 x_64a8566c) {
+void select_digit_render(s16 number, s16 x_051b562d, s16 x_64a8566c) {
     x_f0d7e70f x_0aeac7e8 = { 0, NULL, 0, x_9d442987, "options2.sp2" };
     s16 x_a8677df7;
     s16 x_523c079f;
@@ -526,7 +528,7 @@ void x_aad8fe8c(s16 number, s16 x_051b562d, s16 x_64a8566c) {
     x_d413f652 = number - x_523c079f * 10;
 
     if (x_a8677df7 != 0) {
-        v1 = x_f80fc81d[x_e7bcb342++];
+        v1 = sDigitObjs[sDigitIdx++];
         v1->pos.x = x_051b562d;
         v1->pos.y = x_64a8566c;
         v1->frameCounter = 21 + x_a8677df7;
@@ -536,7 +538,7 @@ void x_aad8fe8c(s16 number, s16 x_051b562d, s16 x_64a8566c) {
     x_051b562d += 7;
 
     if (x_a8677df7 != 0 || x_a8677df7 == 0 && x_523c079f != 0) {
-        v1 = x_f80fc81d[x_e7bcb342++];
+        v1 = sDigitObjs[sDigitIdx++];
         v1->pos.x = x_051b562d;
         v1->pos.y = x_64a8566c;
         v1->frameCounter = 21 + x_523c079f;
@@ -545,14 +547,14 @@ void x_aad8fe8c(s16 number, s16 x_051b562d, s16 x_64a8566c) {
 
     x_051b562d += 7;
 
-    v1 = x_f80fc81d[x_e7bcb342++];
+    v1 = sDigitObjs[sDigitIdx++];
     v1->pos.x = x_051b562d;
     v1->pos.y = x_64a8566c;
     v1->frameCounter = 21 + x_d413f652;
     v1->flags &= ~x_c537cafa;
 }
 
-void x_0073afdd(Object *obj) {
+void select_score_display(Object *obj) {
     s16 i;
     s16 x_634768da;
     s16 x_05e00b01;
@@ -568,54 +570,54 @@ void x_0073afdd(Object *obj) {
     }
 
     for (i = 0; i < x_7fe97e23; i++) {
-        x_f80fc81d[i]->flags |= x_c537cafa;
+        sDigitObjs[i]->flags |= x_c537cafa;
     }
 
     if (x_634768da > 10) {
-        obj->currentTask->callback = x_a9b3a737;
-        x_fa7941af->flags |= x_c537cafa;
+        obj->currentTask->callback = select_score_confirm;
+        sScoreTitleObj->flags |= x_c537cafa;
         return;
     }
 
-    x_05e00b01 = x_dced62f4[x_634768da];
+    x_05e00b01 = sCharSortOrder[x_634768da];
     if (x_05e00b01 == x_e235676f || x_05e00b01 == x_968cc9a2 && !x_5c207a56 ||
         x_05e00b01 == x_ff5073d4 && !x_aee302fc) {
         return;
     }
 
     audio_sfx_play(2, 0);
-    x_e7bcb342 = 0;
+    sDigitIdx = 0;
 
-    x_c309f013 = x_f80fc81d[x_e7bcb342++];
-    x_c309f013->pos.x = x_6c6f1601.x;
-    x_c309f013->pos.y = x_6c6f1601.y;
+    x_c309f013 = sDigitObjs[sDigitIdx++];
+    x_c309f013->pos.x = sScorePos.x;
+    x_c309f013->pos.y = sScorePos.y;
     x_c309f013->frameCounter = 188 + (x_05e00b01 - (x_05e00b01 > x_e235676f));
     x_c309f013->flags &= ~x_c537cafa;
 
-    x_aad8fe8c(x_587aa870[x_05e00b01], x_6c6f1601.x + 68, x_6c6f1601.y);
-    x_aad8fe8c(D_800B6368[x_05e00b01].x_a962826d, x_6c6f1601.x + 123, x_6c6f1601.y);
-    x_aad8fe8c(D_800B6368[x_05e00b01].x_3f3ac621, x_6c6f1601.x + 165, x_6c6f1601.y);
-    x_6c6f1601.y += 16;
+    select_digit_render(sCharScores[x_05e00b01], sScorePos.x + 68, sScorePos.y);
+    select_digit_render(D_800B6368[x_05e00b01].x_a962826d, sScorePos.x + 123, sScorePos.y);
+    select_digit_render(D_800B6368[x_05e00b01].x_3f3ac621, sScorePos.x + 165, sScorePos.y);
+    sScorePos.y += 16;
     obj->currentTask->delay = 10;
 }
 
-void x_8da34614(void) {
+void select_score_init(void) {
     x_f0d7e70f x_0aeac7e8 = { 0, NULL, 0, x_9d442987, "options2.sp2" };
     s16 i, j, k;
     s16 x_a962826d;
     s16 x_3f3ac621;
     s16 total;
 
-    x_6c6f1601.x = 75;
-    x_6c6f1601.y = 71;
+    sScorePos.x = 75;
+    sScorePos.y = 71;
 
     for (i = 0; i < x_7fe97e23; i++) {
-        x_f80fc81d[i] = obj_create_from_def(&x_6c6f1601, &x_0aeac7e8, x_35b88489);
-        x_f80fc81d[i]->flags |= x_c537cafa;
+        sDigitObjs[i] = obj_create_from_def(&sScorePos, &x_0aeac7e8, x_35b88489);
+        sDigitObjs[i]->flags |= x_c537cafa;
     }
 
     for (i = 0; i < x_edb381f3; i++) {
-        x_dced62f4[i] = i;
+        sCharSortOrder[i] = i;
     }
 
     for (j = 0; j < x_edb381f3; j++) {
@@ -623,19 +625,19 @@ void x_8da34614(void) {
         x_3f3ac621 = D_800B6368[j].x_3f3ac621;
         total = x_a962826d + x_3f3ac621;
         if (total != 0) {
-            x_587aa870[j] = (x_a962826d * 200 + total) / (2 * total);
+            sCharScores[j] = (x_a962826d * 200 + total) / (2 * total);
         } else {
-            x_587aa870[j] = 0;
+            sCharScores[j] = 0;
         }
     }
 
     for (j = 1; j < x_edb381f3; j++) {
         for (i = 0; i < j; i++) {
-            if (x_587aa870[x_dced62f4[i]] < x_587aa870[j]) {
+            if (sCharScores[sCharSortOrder[i]] < sCharScores[j]) {
                 for (k = j - 1; k >= i; k--) {
-                    x_dced62f4[k + 1] = x_dced62f4[k];
+                    sCharSortOrder[k + 1] = sCharSortOrder[k];
                 }
-                x_dced62f4[i] = j;
+                sCharSortOrder[i] = j;
                 break;
             }
         }

@@ -2,27 +2,141 @@
   "file": "src/select.c",
   "hash": "108260c9",
   "rom_offsets": {
-    "text": "0x18A10",
-    "data": "0x4A740",
-    "rodata": "0x554B0",
-    "bss": "0x80081460"
+    "text": "0x23D70",
+    "data": "0x4A5F0",
+    "bss": "0x80081464"
   },
-  "summary": "Selection UI widgets — options menu (SFX/music volume, stateful browsing), character select (8-char grid, D-pad, lock-in), stage select, numeric sprite rendering.",
+  "summary": "Selection/settings UI: options menu (10 settings), character select grid with button remapping, stage select, high score display with sorted character scores.",
   "functions": [
-    "x_a2a8ba2f", "x_bc5bf713", "x_0e243657", "x_4d34121d", "x_c1c0a10d",
-    "x_ff609efb", "x_28ceb562", "x_12081995", "x_53598eda", "x_b5c125fc",
-    "x_dd25b026", "x_d1cd74f9", "x_d4ae14dc", "x_2cae892b", "x_8383794c",
-    "x_8da34614", "x_0073afdd", "x_aad8fe8c"
+    {
+      "name": "options_input_handler",
+      "line": 19,
+      "summary": "Generic input handler for 10-option grid. D-pad up/down cycles selection (slot), left/right adjusts value. 15-frame debounce."
+    },
+    {
+      "name": "options_menu_task",
+      "line": 55,
+      "summary": "Main options menu task: polls both controllers, routes to options_input_handler."
+    },
+    {
+      "name": "option_game_mode",
+      "line": 71,
+      "summary": "Option slot 0: game mode selection. 3 frames (0-2) → sets x_028e5846."
+    },
+    {
+      "name": "option_round_count",
+      "line": 94,
+      "summary": "Option slot 1: number of rounds. 3 frames (0-2) → sets x_c8356c60."
+    },
+    {
+      "name": "option_rounds_win",
+      "line": 117,
+      "summary": "Option slot 2: rounds needed to win. 5 frames (0-4) → sets x_adcfd05c."
+    },
+    {
+      "name": "option_sound_mute",
+      "line": 140,
+      "summary": "Option slot 3: sound mute toggle. 2 frames (0-1) → sets sAudioMuted."
+    },
+    {
+      "name": "option_bgm_volume",
+      "line": 163,
+      "summary": "Option slot 4: BGM volume. 10 values (0-9) → sets sMusicVolumeSetting, calls audio_bgm_set_vol."
+    },
+    {
+      "name": "option_sfx_volume",
+      "line": 199,
+      "summary": "Option slot 5: SFX volume. 10 values (0-9) → sets gSfxVolumeSetting, calls audio_sfx_set_vol."
+    },
+    {
+      "name": "option_controller_setup",
+      "line": 235,
+      "summary": "Option slot 6: controller config → transition to SCREEN x_b84bd571."
+    },
+    {
+      "name": "option_char_config",
+      "line": 252,
+      "summary": "Option slot 7: character config → transition to SCREEN x_2e33c051."
+    },
+    {
+      "name": "option_stage_select",
+      "line": 269,
+      "summary": "Option slot 8: stage select → transition to SCREEN x_c63c063f."
+    },
+    {
+      "name": "option_back_attract",
+      "line": 286,
+      "summary": "Option slot 9: back to attract mode → SCREEN_ATTRACT."
+    },
+    {
+      "name": "select_char_input",
+      "line": 303,
+      "summary": "Character select grid input: 8 fighter buttons mapped via sCharButtonTbl and sRemapSlotTbl to gRemapTable. D-pad cycles between 9 slots (0-8)."
+    },
+    {
+      "name": "select_char_update",
+      "line": 355,
+      "summary": "Character select display update: animates frameCounter, applies remap when selection changes, handles highlight transition back to previous selection."
+    },
+    {
+      "name": "select_char_task",
+      "line": 399,
+      "summary": "Character select main task: polls controller analogue buttons → select_char_input + select_char_update."
+    },
+    {
+      "name": "select_stage_task",
+      "line": 415,
+      "summary": "Stage select / options entry: waits for either player at slot 8 (options), press start → x_f699a14d."
+    },
+    {
+      "name": "select_stage_screen",
+      "line": 450,
+      "summary": "Stage selection screen: L/R cycles through x_edb381f3 stages, loads background preview via wad, Start → game (x_f699a14d)."
+    },
+    {
+      "name": "select_score_confirm",
+      "line": 500,
+      "summary": "Score display: press Start by either player → transition to game (x_f699a14d)."
+    },
+    {
+      "name": "select_digit_render",
+      "line": 512,
+      "summary": "Render a 3-digit number (0-999) using digit sprite objects from 'options2.sp2'. Handles leading zero suppression."
+    },
+    {
+      "name": "select_score_display",
+      "line": 555,
+      "summary": "Display sorted scores one row per tick: character portrait + score + win/loss stats. 10-tick delay between rows."
+    },
+    {
+      "name": "select_score_init",
+      "line": 602,
+      "summary": "Init score display: creates 10 digit sprite objects, builds character sort order by weighted win/loss average."
+    }
   ],
-  "key_apis": [],
-  "strings": ["\"options2.sp2\""],
+  "globals": [
+    { "name": "sRemapSlotTbl", "line": 7, "summary": "Button index → remap slot mapping: {4,7,6,5,1,3,0,2}" },
+    { "name": "sCharButtonTbl", "line": 8, "summary": "Character ID → button mask mapping (8 entries, also used in menu.c)" },
+    { "name": "sScoreTitleObj", "line": 10, "summary": "Score screen title/header object" },
+    { "name": "D_80081464", "line": 11, "summary": "Unused char[4] buffer" },
+    { "name": "sDigitObjs", "line": 12, "summary": "10 digit sprite objects for score display" },
+    { "name": "sDigitIdx", "line": 13, "summary": "Current digit slot index counter" },
+    { "name": "sSelectUnused", "line": 14, "summary": "Unused BSS variable" },
+    { "name": "sCharSortOrder", "line": 15, "summary": "Character index sort order by weighted score (descending)" },
+    { "name": "sCharScores", "line": 16, "summary": "Character weighted average scores" },
+    { "name": "sScorePos", "line": 17, "summary": "XY position tracker for score row rendering" }
+  ],
+  "macros": [
+    { "name": "x_7fe97e23", "summary": "10 — max digit sprite count" }
+  ],
   "subsystems": [
-    "Options: 6 states (browse, toggle, SFX vol 0-9, music vol 0-9)",
-    "Character select: 8-char grid, D-pad wrapping, sprite ID remap, 2P lock-in",
-    "Stage select: browse by name D_8004B844[i].name + \"st\" suffix",
-    "Number rendering: 3-digit numbers from digit sprite base 21"
+    "Options menu: 10-slot grid with d-pad navigation, 15-frame debounce, per-slot value animation",
+    "Character select: 8-button grid with remap table, animated frame cycling",
+    "Stage select: preview load per wad + start-to-play",
+    "Score display: sorted character ranking with digit rendering"
   ],
   "open_questions": [
-    "D_80049B20 index remap {4,7,6,5,1,3,0,2} — character-to-portrait mapping?"
+    "What are the exact screen IDs (x_f699a14d, x_b84bd571, etc.)?",
+    "The macro x_7fe97e23 should be renamed to something meaningful (e.g., DIGIT_COUNT)"
   ]
 }
