@@ -3,13 +3,13 @@
 
 enum x_1ef8e4ea {
     SCREEN_ATTRACT,
-    x_f699a14d,
+    SCREEN_TITLE,
     x_b84bd571,
     x_2e33c051,
     x_c63c063f,
-    x_802d9c2e,
-    x_a98e3fb7,
-    x_1a4de9e0,
+    SCREEN_WAIT,
+    SCREEN_CHAR_SELECT_OFFSET,
+    SCREEN_PRACTICE,
     x_3b539526,
     x_8774b75f,
     x_04d94c4d,
@@ -31,14 +31,14 @@ enum x_1ef8e4ea {
     x_d6ec384b,
     x_c1198546,
     x_fc3a29e9,
-    x_2a3e474b,
+    SCREEN_OPTIONS,
     x_3509e8f6,
     x_b804ecb4,
-    x_3dba3c6c,
+    SCREEN_CREDITS,
     SCREEN_BOOT,
     x_fa31c524,
-    x_896bb5ec,
-    x_a3a32a2b,
+    SCREEN_ATTRACT_AGAIN,
+    SCREEN_EASY_WIN,
     x_ef3ab4fe
 };
 

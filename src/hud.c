@@ -355,7 +355,7 @@ void hud_health_bar_update(Object *obj) {
 
     x_6913166b = D_8005BFCE;
 
-    if (x_9df63a90) {
+    if (sFightLocked) {
         sHealthBarSlideL = sHealthBarSlideR = sHealthFlashL = sHealthFlashR = 0;
     }
 
@@ -449,7 +449,7 @@ void hud_round_win_anim(void) {
 void hud_timer_cb(Object *obj) {
     Object *v1;
 
-    if (x_9df63a90) {
+    if (sFightLocked) {
         TASK_END(obj->currentTask);
     }
 
@@ -460,7 +460,7 @@ void hud_timer_cb(Object *obj) {
         v1->frameCounter = 9;
         if (--obj->frameCounter < 0) {
             obj->frameCounter = 0;
-            x_9df63a90 = TRUE;
+            sFightLocked = TRUE;
             v1->frameCounter = 0;
             TASK_END(obj->currentTask);
         }

@@ -82,7 +82,7 @@ void replay_record(Player *player) {
 
     v0 = player->obj;
 
-    if (D_80080236 || x_9df63a90) {
+    if (D_80080236 || sFightLocked) {
         return;
     }
     v1 = D_80080238.x_ffd925e9;
@@ -228,7 +228,7 @@ s32 replay_start(void *x_cc1d0de5) {
     x_824b9544[x_83106b21].x_b9252303->flags &= ~TASK_TIME_BASED;
     x_824b9544[x_6f0b3be3].x_b9252303->flags &= ~TASK_TIME_BASED;
 
-    x_09a33777 = 0x800;
+    sMenuState = 0x800;
     cam_battle_init(x_f4bce728);
     x_f4bce728->currentTask->callback = cam_battle_update;
     x_f4bce728->currentTask->delay = 0;
@@ -377,7 +377,7 @@ void player_ai_check(Object *obj) {
         }
     }
 
-    if (gWadCondLoad[x_30bbe547].x_03604d94 && !x_9df63a90 && !(player->flags & x_4d950171)) {
+    if (gWadCondLoad[x_30bbe547].x_03604d94 && !sFightLocked && !(player->flags & x_4d950171)) {
         if (!(player->x_81570fde.x_b2c79d6e & x_c74d666c)) {
             ai_update(player);
         }
@@ -385,7 +385,7 @@ void player_ai_check(Object *obj) {
             !(player->x_b9252303->flags & TASK_TIME_BASED) && !(player->flags & x_d8a402c3)) {
             player_select_move(player, FALSE);
         }
-    } else if (player->x_cadf184a && !x_9df63a90) {
+    } else if (player->x_cadf184a && !sFightLocked) {
         if (player->x_448f0851 != 0 && --player->x_448f0851 == 0) {
             player_select_move(player, TRUE);
         } else if (!(player->flags & (x_030d2322 | x_4d950171)) && x_59ce598c[x_30bbe547].x_c4397934 &&
@@ -398,7 +398,7 @@ void player_ai_check(Object *obj) {
         player->x_381817ae--;
     }
 
-    if (x_9a96200f <= D_80080218 && !(player->x_7f68c36b->flags & x_7b8f7fad) && player->x_381817ae == 0 &&
+    if (gFighterDistance <= D_80080218 && !(player->x_7f68c36b->flags & x_7b8f7fad) && player->x_381817ae == 0 &&
         x_44d73ae1->frameCounter >= x_0efa5bb1->x_c53ac2df && x_44d73ae1->frameCounter <= x_0efa5bb1->x_fedecf5c) {
 
         if (x_0efa5bb1->flags & (x_74a8ee84 | x_3e0e6012)) {
@@ -926,10 +926,10 @@ void player_init(s16 x_30bbe547) {
 
     D_80080214 = D_8004A730[gWadCondLoad[x_83106b21].x_eb1fe45b] + D_8004A730[gWadCondLoad[x_6f0b3be3].x_eb1fe45b];
     D_80080218 = D_8004A748[gWadCondLoad[x_83106b21].x_eb1fe45b] + D_8004A748[gWadCondLoad[x_6f0b3be3].x_eb1fe45b];
-    x_09a33777 = 0x800;
-    x_9a96200f = 1600;
+    sMenuState = 0x800;
+    gFighterDistance = 1600;
 
-    x_3ac11521[x_30bbe547] = obj;
+    sIntroPlayerObjs[x_30bbe547] = obj;
     D_80080238.x_d0d13a9c = D_80080238.x_ffd925e9 = 0;
     D_80080238.x_77f7a44f = gFrameCounter;
 
@@ -1034,12 +1034,12 @@ void player_reinit(s16 x_30bbe547) {
 
     D_80080214 = D_8004A730[gWadCondLoad[x_83106b21].x_eb1fe45b] + D_8004A730[gWadCondLoad[x_6f0b3be3].x_eb1fe45b];
     D_80080218 = D_8004A748[gWadCondLoad[x_83106b21].x_eb1fe45b] + D_8004A748[gWadCondLoad[x_6f0b3be3].x_eb1fe45b];
-    x_09a33777 = 0x800;
+    sMenuState = 0x800;
     D_80080238.x_d0d13a9c = D_80080238.x_ffd925e9 = 0;
     D_80080236 = TRUE;
     D_80080238.x_77f7a44f = gFrameCounter;
     obj->x_224610f1.y = 0xC00 - x_4cec9290[x_30bbe547];
-    x_9a96200f = 1600;
+    gFighterDistance = 1600;
     obj->flags = (obj->flags & x_b6789b80) | x_3434f870;
     D_80080238.x_d0d13a9c = D_80080238.x_ffd925e9 = 0;
     D_80080236 = TRUE;
@@ -1240,7 +1240,7 @@ u8 player_select_move(Player *player, u8 x_84ff873b) {
     x_6e32552b = player->x_b8b27276;
     x_54406eae = gFrameCounter - player->x_965e5473;
 
-    if (x_9df63a90) {
+    if (sFightLocked) {
         buttons = 0;
     } else if (player->flags & x_f6191783) {
         buttons = x_59ce598c[player->x_30bbe547].x_33260da8;

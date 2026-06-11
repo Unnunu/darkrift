@@ -141,7 +141,7 @@ void cam_cinematic_update(Object *obj) {
         obj->frameCounter++;
         if (obj->frameCounter >= obj->x_20d20338->x_8e601526 - 1) {
             obj->x_20d20338->x_50771dcd[0] = NULL;
-            if (!x_9df63a90 || D_80080234 == 0) {
+            if (!sFightLocked || D_80080234 == 0) {
                 obj->currentTask->callback = cam_battle_update;
                 obj->currentTask->delay = 1;
                 gGfxFlags &= ~GFX_SKIP_SCENE;
@@ -304,16 +304,16 @@ void cam_face_players(void) {
     Object *x_c48d15e0;
     s16 x_434431dd;
 
-    x_13d65ace = x_3ac11521[x_83106b21];
-    x_c48d15e0 = x_3ac11521[x_6f0b3be3];
+    x_13d65ace = sIntroPlayerObjs[x_83106b21];
+    x_c48d15e0 = sIntroPlayerObjs[x_6f0b3be3];
     D_8013C33C = (0xC00 - x_13d65ace->x_224610f1.y) & 0xFFF;
     D_8013C33E = (0xC00 - x_c48d15e0->x_224610f1.y) & 0xFFF;
 
-    if (abs(angle_diff(x_09a33777, D_8013C33C)) < 0x400) {
+    if (abs(angle_diff(sMenuState, D_8013C33C)) < 0x400) {
         ((Player *) x_13d65ace->x_e2f64c57[0])->flags |= x_9298c772;
         ((Player *) x_13d65ace->x_e2f64c57[0])->flags &= ~x_67e702ae;
     } else {
-        x_434431dd = angle_diff(x_09a33777 - 0x800, D_8013C33C);
+        x_434431dd = angle_diff(sMenuState - 0x800, D_8013C33C);
         if (abs(x_434431dd) > 140) {
             if (x_434431dd < 0) {
                 x_434431dd = -140;
@@ -334,8 +334,8 @@ void cam_face_players(void) {
         ((Player *) x_13d65ace->x_e2f64c57[0])->flags &= ~x_9298c772;
     }
 
-    if (abs(angle_diff(x_09a33777, D_8013C33E)) < 0x400) {
-        x_434431dd = angle_diff(x_09a33777, D_8013C33E);
+    if (abs(angle_diff(sMenuState, D_8013C33E)) < 0x400) {
+        x_434431dd = angle_diff(sMenuState, D_8013C33E);
         if (abs(x_434431dd) > 140) {
             if (x_434431dd < 0) {
                 x_434431dd = -140;
@@ -498,8 +498,8 @@ void cam_update(Object *obj, u8 x_84ff873b) {
 
     cam_distance_update(FALSE);
 
-    if (x_9a96200f > 800) {
-        x_024f6a8d = ((x_9a96200f - 800) * x_fb93483b) >> 0x10;
+    if (gFighterDistance > 800) {
+        x_024f6a8d = ((gFighterDistance - 800) * x_fb93483b) >> 0x10;
     } else {
         x_024f6a8d = 0;
     }
@@ -510,7 +510,7 @@ void cam_update(Object *obj, u8 x_84ff873b) {
     obj->x_0f4167b4[2] = x_024f6a8d = ((x_024f6a8d - obj->x_0f4167b4[2]) ^ 0) + obj->x_0f4167b4[2]; // @fake ^ 0
     x_5fd741dc = obj->x_0f4167b4[1];
 
-    v02 = angle_diff(x_09a33777, x_5fd741dc);
+    v02 = angle_diff(sMenuState, x_5fd741dc);
     if (v02 < 0) {
         a0 = v02 + x_19369121;
     } else {
@@ -519,21 +519,21 @@ void cam_update(Object *obj, u8 x_84ff873b) {
     obj->x_0f4167b4[1] = temp = x_5fd741dc + a0;
 
     cam_face_players();
-    if (angle_diff(x_09a33777, x_5fd741dc) > 0) {
-        x_3ac11521[x_83106b21]->flags &= ~x_6c2d42ba;
+    if (angle_diff(sMenuState, x_5fd741dc) > 0) {
+        sIntroPlayerObjs[x_83106b21]->flags &= ~x_6c2d42ba;
         x_59ce598c[x_83106b21].x_d93bcabf = FALSE;
-        x_3ac11521[x_6f0b3be3]->flags |= x_6c2d42ba;
+        sIntroPlayerObjs[x_6f0b3be3]->flags |= x_6c2d42ba;
         x_59ce598c[x_6f0b3be3].x_d93bcabf = TRUE;
     } else {
-        x_3ac11521[x_83106b21]->flags |= x_6c2d42ba;
+        sIntroPlayerObjs[x_83106b21]->flags |= x_6c2d42ba;
         x_59ce598c[x_83106b21].x_d93bcabf = TRUE;
-        x_3ac11521[x_6f0b3be3]->flags &= ~x_6c2d42ba;
+        sIntroPlayerObjs[x_6f0b3be3]->flags &= ~x_6c2d42ba;
         x_59ce598c[x_6f0b3be3].x_d93bcabf = FALSE;
     }
 
     x_435c561d.y = ((x_6d4a1d2c * x_024f6a8d) >> 0x10) + x_881ee8c3 - 480;
-    x_d318cea9 = ((x_f8109afd->x + x_159f4e5a->x) >> 1) - x_435c561d.x;
-    x_6e851264 = ((x_f8109afd->z + x_159f4e5a->z) >> 1) - x_435c561d.z;
+    x_d318cea9 = ((sCharSelectSpriteB->x + sCharSelectSpriteA->x) >> 1) - x_435c561d.x;
+    x_6e851264 = ((sCharSelectSpriteB->z + sCharSelectSpriteA->z) >> 1) - x_435c561d.z;
     x_435c561d.x += x_d318cea9;
     x_435c561d.z += x_6e851264;
 
@@ -602,8 +602,8 @@ void cam_battle_init(Object *obj) {
     x_143af627 = (12 << 16) / x_6db70595;
     x_aa9e3546 = 291271;
     x_d85eefcc = -480;
-    x_159f4e5a = &x_824b9544[x_83106b21].obj->pos;
-    x_f8109afd = &x_824b9544[x_6f0b3be3].obj->pos;
+    sCharSelectSpriteA = &x_824b9544[x_83106b21].obj->pos;
+    sCharSelectSpriteB = &x_824b9544[x_6f0b3be3].obj->pos;
 
     obj->x_0f4167b4[1] = 0xC00;
     obj->x_0f4167b4[2] = 0;
@@ -699,9 +699,9 @@ x_3ace60b0:
     D_800801F4 = D_80080200;
     D_800801F8 = D_80080204;
 
-    D_80080200 = x_159f4e5a->x - x_f8109afd->x;
-    D_80080208 = -MIN(x_159f4e5a->y, x_f8109afd->y);
-    D_80080204 = x_159f4e5a->z - x_f8109afd->z;
+    D_80080200 = sCharSelectSpriteA->x - sCharSelectSpriteB->x;
+    D_80080208 = -MIN(sCharSelectSpriteA->y, sCharSelectSpriteB->y);
+    D_80080204 = sCharSelectSpriteA->z - sCharSelectSpriteB->z;
 
     s6 = atan2_lut(D_80080204, D_80080200);
     if (D_80080200 != 0 || D_80080204 != 0) {
@@ -713,9 +713,9 @@ x_3ace60b0:
     if ((x_824b9544[x_83106b21].flags & x_c865be3f) || (x_824b9544[x_6f0b3be3].flags & x_c865be3f) ||
         (x_824b9544[x_83106b21].flags & x_77ec809d) ||
         (x_824b9544[x_6f0b3be3].flags & x_77ec809d) && s1 < 3200) { // @bug?
-        D_8008021C = x_09a33777;
-        x_09a33777 = s6;
-        x_9a96200f = s1;
+        D_8008021C = sMenuState;
+        sMenuState = s6;
+        gFighterDistance = s1;
         return;
     }
 
@@ -733,18 +733,18 @@ x_3ace60b0:
         s0 = TRUE;
     }
 
-    if (!x_cc1d0de5 && s0 && abs(angle_diff(s6, x_09a33777)) > 0x200) {
+    if (!x_cc1d0de5 && s0 && abs(angle_diff(s6, sMenuState)) > 0x200) {
         s4 = (s1 + 280) >> 1;
 
         s3 = (sin_fixed(s6) * s4) >> 12;
         lo = ((-sin_fixed(s6 + 0x400)) * s4) >> 12;
-        x_159f4e5a->x -= s3;
-        x_159f4e5a->z -= lo;
+        sCharSelectSpriteA->x -= s3;
+        sCharSelectSpriteA->z -= lo;
 
         s3 = (sin_fixed(s6) * s4) >> 12;
         lo = ((-sin_fixed(s6 + 0x400)) * s4) >> 12;
-        x_f8109afd->x += s3;
-        x_f8109afd->z += lo;
+        sCharSelectSpriteB->x += s3;
+        sCharSelectSpriteB->z += lo;
 
         x_cc1d0de5 = TRUE;
         goto x_3ace60b0;
@@ -766,18 +766,18 @@ x_3ace60b0:
         }
     }
 
-    D_8008021C = x_09a33777;
-    x_09a33777 = s6;
-    x_9a96200f = s1 + s4;
+    D_8008021C = sMenuState;
+    sMenuState = s6;
+    gFighterDistance = s1 + s4;
 
     if (s4 != 0 && (s0 || s1 > 3200)) {
         s4 >>= 1;
-        s3 = (sin_fixed(x_09a33777) * s4) >> 12;
-        lo = (-sin_fixed(x_09a33777 + 0x400) * s4) >> 12;
-        x_159f4e5a->x += s3;
-        x_159f4e5a->z += lo;
-        x_f8109afd->x -= s3;
-        x_f8109afd->z -= lo;
+        s3 = (sin_fixed(sMenuState) * s4) >> 12;
+        lo = (-sin_fixed(sMenuState + 0x400) * s4) >> 12;
+        sCharSelectSpriteA->x += s3;
+        sCharSelectSpriteA->z += lo;
+        sCharSelectSpriteB->x -= s3;
+        sCharSelectSpriteB->z -= lo;
     }
 }
 #else
@@ -934,8 +934,8 @@ void cam_battle_update(Object *obj) {
 
     cam_distance_update(FALSE);
 
-    if (x_9a96200f > 800) {
-        spEC = ((x_9a96200f - 800) * x_fb93483b) >> 0x10;
+    if (gFighterDistance > 800) {
+        spEC = ((gFighterDistance - 800) * x_fb93483b) >> 0x10;
     } else {
         spEC = 0;
     }
@@ -947,7 +947,7 @@ void cam_battle_update(Object *obj) {
     x_5fd741dc = spEC - x_e5752d05;
     x_f2d104c6 = obj->x_0f4167b4[1];
 
-    v02 = angle_diff(x_09a33777, x_f2d104c6);
+    v02 = angle_diff(sMenuState, x_f2d104c6);
     if (v02 < 0) {
         x_d27706a3 = v02 + x_19369121;
     } else {
@@ -956,15 +956,15 @@ void cam_battle_update(Object *obj) {
 
     cam_face_players();
 
-    if (angle_diff(x_09a33777, x_f2d104c6) > 0) {
-        x_3ac11521[x_83106b21]->flags &= ~x_6c2d42ba;
+    if (angle_diff(sMenuState, x_f2d104c6) > 0) {
+        sIntroPlayerObjs[x_83106b21]->flags &= ~x_6c2d42ba;
         x_59ce598c[x_83106b21].x_d93bcabf = FALSE;
-        x_3ac11521[x_6f0b3be3]->flags |= x_6c2d42ba;
+        sIntroPlayerObjs[x_6f0b3be3]->flags |= x_6c2d42ba;
         x_59ce598c[x_6f0b3be3].x_d93bcabf = TRUE;
     } else {
-        x_3ac11521[x_83106b21]->flags |= x_6c2d42ba;
+        sIntroPlayerObjs[x_83106b21]->flags |= x_6c2d42ba;
         x_59ce598c[x_83106b21].x_d93bcabf = TRUE;
-        x_3ac11521[x_6f0b3be3]->flags &= ~x_6c2d42ba;
+        sIntroPlayerObjs[x_6f0b3be3]->flags &= ~x_6c2d42ba;
         x_59ce598c[x_6f0b3be3].x_d93bcabf = FALSE;
     }
 
@@ -1024,14 +1024,14 @@ void cam_battle_update(Object *obj) {
         spEC = x_e5752d05 + x_5fd741dc;
     }
 
-    x_93463df6.x = x_159f4e5a->x;
+    x_93463df6.x = sCharSelectSpriteA->x;
     x_93463df6.y = x_824b9544[x_83106b21].x_5c5b1d93.x_b7552092->y;
-    x_93463df6.z = x_159f4e5a->z;
+    x_93463df6.z = sCharSelectSpriteA->z;
     cam_project_point(&x_93463df6, &x_331089fa, &x_840385a0, &x_2a89e429);
 
-    x_93463df6.x = x_f8109afd->x;
+    x_93463df6.x = sCharSelectSpriteB->x;
     x_93463df6.y = x_824b9544[x_6f0b3be3].x_5c5b1d93.x_b7552092->y;
-    x_93463df6.z = x_f8109afd->z;
+    x_93463df6.z = sCharSelectSpriteB->z;
     cam_project_point(&x_93463df6, &x_fd09f53e, &x_de61763c, &x_54406eae);
 
     if (x_b64f16b7 < 250 && (x_de61763c > 0.6 || x_840385a0 > 0.6)) {
@@ -1077,14 +1077,14 @@ void cam_battle_update(Object *obj) {
 
     x_435c561d.y = ((x_6d4a1d2c * spEC) >> 16) + x_881ee8c3 - 480;
 
-    x_93463df6.x = (x_f8109afd->x + x_159f4e5a->x) >> 1;
-    x_93463df6.z = (x_f8109afd->z + x_159f4e5a->z) >> 1;
+    x_93463df6.x = (sCharSelectSpriteB->x + sCharSelectSpriteA->x) >> 1;
+    x_93463df6.z = (sCharSelectSpriteB->z + sCharSelectSpriteA->z) >> 1;
     x_93463df6.y = -480;
     cam_project_point(&x_93463df6, &x_f10a928a, &x_fc517ba8, &x_2a89e429);
 
     x_3bbf0098 = x_2a89e429 > 0.2f;
-    x_8b060a59 = ((x_f8109afd->x + x_159f4e5a->x) >> 1) - x_435c561d.x;
-    x_1e9ad2e0 = ((x_f8109afd->z + x_159f4e5a->z) >> 1) - x_435c561d.z;
+    x_8b060a59 = ((sCharSelectSpriteB->x + sCharSelectSpriteA->x) >> 1) - x_435c561d.x;
+    x_1e9ad2e0 = ((sCharSelectSpriteB->z + sCharSelectSpriteA->z) >> 1) - x_435c561d.z;
 
     if (iabs(x_8b060a59) > x_e3ea1dcb || iabs(x_1e9ad2e0) > x_e3ea1dcb || x_04c83de3) {
         if (abs(x_8b060a59) < x_7eb21652 && abs(x_1e9ad2e0) < x_7eb21652) {

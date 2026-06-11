@@ -82,7 +82,7 @@ x_ee01e8c6 *D_80080100;
 void rsp_wait_idle(void);
 // void execute_scheduled_tasks(void);
 void rsp_game_init(u16);
-void x_2d5f067a(void);
+void game_init(void);
 void rsp_game_reinit(u16);
 void obj_scene_update(void);
 void rsp_clear_screen(void);
@@ -572,7 +572,7 @@ void tr_fade_start(Object *obj) {
 void main_game_loop(void) {
     x_e38a6e19 = SCREEN_BOOT;
     rsp_game_init(x_e38a6e19);
-    x_2d5f067a();
+    game_init();
 
     while (TRUE) {
         gCurrentScreenId = x_e38a6e19;

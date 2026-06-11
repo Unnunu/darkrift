@@ -165,7 +165,7 @@ void hit_cam_rotate_to_opponent(Object *obj) {
 
     x_7d3ef158 = (0xC00 - obj->x_224610f1.y) & 0xFFF;
 
-    temp = angle_diff(x_09a33777 - (player->x_30bbe547 != x_83106b21 ? 0 : 0x800), x_7d3ef158);
+    temp = angle_diff(sMenuState - (player->x_30bbe547 != x_83106b21 ? 0 : 0x800), x_7d3ef158);
     if (temp < 0) {
         v1 = temp + 0x800;
     } else {
@@ -287,7 +287,7 @@ void hit_combo_routing(Object *obj) {
     x_388306ba *x_fc517ba8;
     x_88f11482 x_93463df6;
 
-    if (x_9df63a90 && sHudActive == 0) {
+    if (sFightLocked && sHudActive == 0) {
         TASK_END(obj->currentTask);
         return;
     }
@@ -300,7 +300,7 @@ void hit_combo_routing(Object *obj) {
     x_de68d2a6 = 1 - player->x_30bbe547;
     player->x_381817ae = 2;
 
-    if (!(player->flags & x_9298c772) && x_9a96200f < D_8004C178[player->x_eb1fe45b] &&
+    if (!(player->flags & x_9298c772) && gFighterDistance < D_8004C178[player->x_eb1fe45b] &&
         (x_824b9544[x_de68d2a6].x_7f68c36b->flags & x_ff05097f) &&
         !(x_824b9544[x_de68d2a6].x_7f68c36b->flags & x_7b8f7fad)) {
         TASK_END(obj->currentTask);
@@ -523,11 +523,11 @@ u8 hit_check_facing_away(Object *obj) {
     }
 
     if (player->x_30bbe547 != x_83106b21) {
-        if (abs(angle_diff(x_09a33777, t8)) > 0x400) {
+        if (abs(angle_diff(sMenuState, t8)) > 0x400) {
             x_cd986d3c = TRUE;
         }
     } else {
-        if (abs(angle_diff(x_09a33777, t8)) < 0x400) {
+        if (abs(angle_diff(sMenuState, t8)) < 0x400) {
             x_cd986d3c = TRUE;
         }
     }
@@ -549,9 +549,9 @@ u8 hit_check_opp_blockstun(Object *obj) {
     if (((x_98c4e5a5->x_7f68c36b->flags & (x_7507aa4b | x_eac5209f | x_8b64a078 | x_c1df43e1)) &&
          !(x_98c4e5a5->x_7f68c36b->flags & x_7b8f7fad)) > 0) {
         if (player->x_30bbe547 != x_83106b21) {
-            player->obj->x_224610f1.y = 0xC00 - x_09a33777;
+            player->obj->x_224610f1.y = 0xC00 - sMenuState;
         } else {
-            player->obj->x_224610f1.y = 0x1400 - x_09a33777;
+            player->obj->x_224610f1.y = 0x1400 - sMenuState;
         }
         return TRUE;
     } else {
@@ -571,7 +571,7 @@ void dust_speed_cb(Object *obj) {
     Player *x_98c4e5a5 = &x_824b9544[player->x_30bbe547 != x_83106b21 ? x_83106b21 : x_6f0b3be3];
     s16 a1 = x_dba71d7e;
 
-    if ((x_98c4e5a5->flags & (x_030d2322 | x_6de2d515 | x_faf494e7)) && x_9a96200f < 400 &&
+    if ((x_98c4e5a5->flags & (x_030d2322 | x_6de2d515 | x_faf494e7)) && gFighterDistance < 400 &&
         obj->frameCounter >= player->x_7f68c36b->x_c53ac2df) {
         if (x_98c4e5a5->x_7f68c36b->flags & x_7507aa4b) {
             a1 = x_caa30513;
@@ -584,7 +584,7 @@ void dust_speed_cb(Object *obj) {
 void hit_ai_counter_check(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
 
-    if (x_9a96200f < D_8004C1A4[player->x_eb1fe45b] && player->x_cd14c741 != 17) {
+    if (gFighterDistance < D_8004C1A4[player->x_eb1fe45b] && player->x_cd14c741 != 17) {
         player_exec_move_ai(player, x_e5ca67a6, 1);
         TASK_END(obj->currentTask);
     }
@@ -602,7 +602,7 @@ void hit_delay_ai_counter(Object *obj) {
 }
 
 u8 hit_check_late_round(s32 x_cc1d0de5) {
-    return x_9a96200f > 550;
+    return gFighterDistance > 550;
 }
 
 void hit_face_opponent_immediate(Object *obj) {
@@ -612,7 +612,7 @@ void hit_face_opponent_immediate(Object *obj) {
     s16 x_7d3ef158;
 
     x_434431dd = (0xC00 - x_98c4e5a5->obj->x_224610f1.y) & 0xFFF;
-    x_7d3ef158 = angle_diff(x_09a33777, x_434431dd);
+    x_7d3ef158 = angle_diff(sMenuState, x_434431dd);
 
     if (x_7d3ef158 < 0) {
         x_7d3ef158 -= 0x800;
@@ -672,8 +672,8 @@ void hit_clear_flag_delayed(Object *obj) {
 void hit_combo_spin_opponent(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
     Player *x_98c4e5a5 = &x_824b9544[player->x_30bbe547 != x_83106b21 ? x_83106b21 : x_6f0b3be3];
-    Object *x_5bbba600 = x_3ac11521[x_83106b21];
-    Object *x_dd7ffac5 = x_3ac11521[x_6f0b3be3];
+    Object *x_5bbba600 = sIntroPlayerObjs[x_83106b21];
+    Object *x_dd7ffac5 = sIntroPlayerObjs[x_6f0b3be3];
     s16 x_f6289181;
     s16 x_4346f5cb;
     s16 x_7d3ef158;
@@ -686,7 +686,7 @@ void hit_combo_spin_opponent(Object *obj) {
         (player->x_cd14c741 == 39 || player->x_cd14c741 == 84)) {
         if (player->x_30bbe547 != x_83106b21) {
             x_4346f5cb = (0xC00 - x_dd7ffac5->x_224610f1.y) & 0xFFF;
-            x_7d3ef158 = angle_diff(x_09a33777 - 0x800, x_4346f5cb);
+            x_7d3ef158 = angle_diff(sMenuState - 0x800, x_4346f5cb);
 
             if (abs(x_7d3ef158) > 140) {
                 if (x_7d3ef158 < 0) {
@@ -698,7 +698,7 @@ void hit_combo_spin_opponent(Object *obj) {
             x_dd7ffac5->x_224610f1.y = 0xC00 - (x_4346f5cb + x_7d3ef158);
         } else {
             x_f6289181 = (0xC00 - x_5bbba600->x_224610f1.y) & 0xFFF;
-            x_7d3ef158 = angle_diff(x_09a33777, x_f6289181);
+            x_7d3ef158 = angle_diff(sMenuState, x_f6289181);
 
             if (abs(x_7d3ef158) > 140) {
                 if (x_7d3ef158 < 0) {
@@ -714,14 +714,14 @@ void hit_combo_spin_opponent(Object *obj) {
 
 void hit_face_opponent_late(Object *obj) {
     Player *player = (Player *) obj->x_e2f64c57[0];
-    Object *x_13d65ace = x_3ac11521[x_83106b21];
-    Object *x_c48d15e0 = x_3ac11521[x_6f0b3be3];
+    Object *x_13d65ace = sIntroPlayerObjs[x_83106b21];
+    Object *x_c48d15e0 = sIntroPlayerObjs[x_6f0b3be3];
 
     if (!(player->flags & x_9298c772) && obj->frameCounter >= player->x_7f68c36b->x_bab9966d - 1) {
         if (player->x_30bbe547 != x_83106b21) {
-            x_c48d15e0->x_224610f1.y = 0xC00 - x_09a33777;
+            x_c48d15e0->x_224610f1.y = 0xC00 - sMenuState;
         } else {
-            x_13d65ace->x_224610f1.y = 0x1400 - x_09a33777;
+            x_13d65ace->x_224610f1.y = 0x1400 - sMenuState;
         }
     }
 }
@@ -757,15 +757,15 @@ void hit_combo_unblockable_check(Object *obj) {
         v12 = TRUE;
         if (x_98c4e5a5->flags & x_188f9cec) {
             if (x_98c4e5a5->x_30bbe547 != x_83106b21) {
-                x_98c4e5a5->obj->x_224610f1.y = 0x1400 - x_09a33777;
+                x_98c4e5a5->obj->x_224610f1.y = 0x1400 - sMenuState;
             } else {
-                x_98c4e5a5->obj->x_224610f1.y = 0xC00 - x_09a33777;
+                x_98c4e5a5->obj->x_224610f1.y = 0xC00 - sMenuState;
             }
         } else {
             if (x_98c4e5a5->x_30bbe547 != x_83106b21) {
-                x_98c4e5a5->obj->x_224610f1.y = 0xC00 - x_09a33777;
+                x_98c4e5a5->obj->x_224610f1.y = 0xC00 - sMenuState;
             } else {
-                x_98c4e5a5->obj->x_224610f1.y = 0x1400 - x_09a33777;
+                x_98c4e5a5->obj->x_224610f1.y = 0x1400 - sMenuState;
             }
         }
     }
@@ -862,11 +862,11 @@ void hit_effect_angle_anim(Object *x_cc1d0de5) {
     x_fd09f53e.z = 0;
 
     x_ccb8eae3 = x_3be4fcf3->x_a4b33e43;
-    x_7be1f4c5 = x_3ac11521[x_3f615590]->x_20d20338->x_abd7b3c4.x_0c1a9bdd.y.y + 360.0f;
+    x_7be1f4c5 = sIntroPlayerObjs[x_3f615590]->x_20d20338->x_abd7b3c4.x_0c1a9bdd.y.y + 360.0f;
     if (x_ccb8eae3 == 0 || x_ccb8eae3 == 7 || (x_3be4fcf3->x_7f68c36b->flags & x_f79587cb)) {
-        x_331089fa.x = atan2_lut(x_7be1f4c5, x_9a96200f);
+        x_331089fa.x = atan2_lut(x_7be1f4c5, gFighterDistance);
         x_cf297abc =
-            angle_diff((s16) ((0xC00 - x_cc1d0de5->x_224610f1.y) & 0xFFF), (s16) (x_09a33777 - (x_3f615590 << 0xB)));
+            angle_diff((s16) ((0xC00 - x_cc1d0de5->x_224610f1.y) & 0xFFF), (s16) (sMenuState - (x_3f615590 << 0xB)));
 
         if (x_cf297abc > 1700) {
             x_cf297abc = 1700;
@@ -1126,7 +1126,7 @@ void hit_projectile_zenmuron(Object *obj) {
         projectile_frame_update(obj);
         obj->currentTask->callback = projectile_frame_update;
     } else {
-        D_8013C3C8[v1] = x_9a96200f;
+        D_8013C3C8[v1] = gFighterDistance;
         projectile_init(obj);
         obj->currentTask->callback = hit_projectile_pushback;
     }

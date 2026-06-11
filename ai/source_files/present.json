@@ -52,7 +52,7 @@
     {
       "name": "present_digi_element",
       "line": 198,
-      "summary": "Display 'Digital Element' for 180 frames, then transition to menu (x_3dba3c6c)."
+      "summary": "Display 'Digital Element' for 180 frames, then transition to menu (SCREEN_CREDITS)."
     },
     {
       "name": "present_kronos_fade_out",
@@ -97,7 +97,7 @@
     {
       "name": "present_theend_skip",
       "line": 357,
-      "summary": "The End screen: press start on winner side → transition to next screen (x_a3a32a2b)."
+      "summary": "The End screen: press start on winner side → transition to next screen (SCREEN_EASY_WIN)."
     },
     {
       "name": "present_theend_anim_end",
@@ -151,18 +151,57 @@
     }
   ],
   "globals": [
-    { "name": "sCharRotTable", "line": 11, "summary": "Character rotation table for attract mode: [prev_winner][prev_loser] pairs for 8 stages" },
-    { "name": "sAttractCycleIdx", "line": 15, "summary": "Attract mode cycle index, incremented per present_attract_cycle call" },
-    { "name": "sFadeQuadVtx", "line": 210, "summary": "Full-screen black quad vertices for fade transitions (2 framebuffers × 4 verts)" },
-    { "name": "sTitleSfxFrameTbl", "line": 251, "summary": "Frame numbers for title opening SFX triggers (14, 28, 40, ..., 100)" },
-    { "name": "sPresentsSfxTbl", "line": 465, "summary": "SFX timing table for intro 'presents' sequence (231, 281, 297, ..., 0)}" },
-    { "name": "sDemoSfxTbl", "line": 467, "summary": "SFX timing table for match demo (166, 194, 214, ..., 0)" },
-    { "name": "sDemoDustFrameTbl", "line": 469, "summary": "Frame numbers for dust line spawn in match demo (175, 180, ..., 0)" },
-    { "name": "sDemoCharSfxTbl", "line": 470, "summary": "SFX timing table for normal character in match demo" },
-    { "name": "sDemoBossSfxTbl", "line": 471, "summary": "SFX timing table for boss character (x_968cc9a2) in match demo" }
+    {
+      "name": "sCharRotTable",
+      "line": 11,
+      "summary": "Character rotation table for attract mode: [prev_winner][prev_loser] pairs for 8 stages"
+    },
+    {
+      "name": "sAttractCycleIdx",
+      "line": 15,
+      "summary": "Attract mode cycle index, incremented per present_attract_cycle call"
+    },
+    {
+      "name": "sFadeQuadVtx",
+      "line": 210,
+      "summary": "Full-screen black quad vertices for fade transitions (2 framebuffers × 4 verts)"
+    },
+    {
+      "name": "sTitleSfxFrameTbl",
+      "line": 251,
+      "summary": "Frame numbers for title opening SFX triggers (14, 28, 40, ..., 100)"
+    },
+    {
+      "name": "sPresentsSfxTbl",
+      "line": 465,
+      "summary": "SFX timing table for intro 'presents' sequence (231, 281, 297, ..., 0)}"
+    },
+    {
+      "name": "sDemoSfxTbl",
+      "line": 467,
+      "summary": "SFX timing table for match demo (166, 194, 214, ..., 0)"
+    },
+    {
+      "name": "sDemoDustFrameTbl",
+      "line": 469,
+      "summary": "Frame numbers for dust line spawn in match demo (175, 180, ..., 0)"
+    },
+    {
+      "name": "sDemoCharSfxTbl",
+      "line": 470,
+      "summary": "SFX timing table for normal character in match demo"
+    },
+    {
+      "name": "sDemoBossSfxTbl",
+      "line": 471,
+      "summary": "SFX timing table for boss character (x_968cc9a2) in match demo"
+    }
   ],
   "types": [
-    { "name": "PresentSfxEntry", "summary": "{ s16 frame, s16 sfxId } pairs for SFX timing tables, terminated by { 0, 0 }" }
+    {
+      "name": "PresentSfxEntry",
+      "summary": "{ s16 frame, s16 sfxId } pairs for SFX timing tables, terminated by { 0, 0 }"
+    }
   ],
   "subsystems": [
     "Kronos logo: fade-in → 180 frame hold → fade-out → Digital Element → menu",

@@ -63,24 +63,24 @@ void present_demo_action(Object *);
 s32 D_800493F0[] = { 0, -783, -2453, 0 };
 
 /* .bss */
-u8 x_9df63a90;
-u8 D_800801F1;
+u8 sFightLocked;
+u8 sFirstFight;
 s32 D_800801F4;
 s32 D_800801F8;
 s32 D_800801FC;
 s32 D_80080200;
 s32 D_80080204;
 s32 D_80080208;
-s32 x_09a33777;
-s32 x_9a96200f;
+s32 sMenuState;
+s32 gFighterDistance;
 s32 D_80080214;
 s32 D_80080218;
 s32 D_8008021C;
-x_88f11482 *x_159f4e5a;
-x_88f11482 *x_f8109afd;
-Object *x_3ac11521[2];
+x_88f11482 *sCharSelectSpriteA;
+x_88f11482 *sCharSelectSpriteB;
+Object *sIntroPlayerObjs[2];
 
-void x_7bc4ef6e(void) {
+void fight_init(void) {
     sHitModelRegular = sWadEntries[wad_entry_find("comhit.k5", x_2587f84f)].x_4962fc73;
     sHitModelGrab = sWadEntries[wad_entry_find("comblock.k5", x_2587f84f)].x_4962fc73;
 
@@ -91,14 +91,14 @@ void x_7bc4ef6e(void) {
         x_59ce598c[x_83106b21].enabled = x_59ce598c[x_6f0b3be3].enabled = TRUE;
     }
 
-    x_9df63a90 = FALSE;
+    sFightLocked = FALSE;
     x_824b9544[x_83106b21].flags |= x_4d950171;
     x_824b9544[x_6f0b3be3].flags |= x_4d950171;
     sHealthBarSlideL = sHealthBarSlideR = sHealthFlashL = sHealthFlashR = 0;
     sHudActive = 0;
 }
 
-void x_91192da2(void) {
+void fight_reset(void) {
     gWadCondLoad[x_83106b21].x_b2b764b3 = gWadCondLoad[x_6f0b3be3].x_b2b764b3 = 0;
     x_59ce598c[x_83106b21].x_33260da8 = x_59ce598c[x_6f0b3be3].x_33260da8 = 0;
 
@@ -108,14 +108,14 @@ void x_91192da2(void) {
         x_59ce598c[x_83106b21].enabled = x_59ce598c[x_6f0b3be3].enabled = TRUE;
     }
 
-    x_9df63a90 = FALSE;
+    sFightLocked = FALSE;
     x_824b9544[x_83106b21].flags |= x_4d950171;
     x_824b9544[x_6f0b3be3].flags |= x_4d950171;
-    D_800801F1 = FALSE;
+    sFirstFight = FALSE;
     sHealthBarSlideL = sHealthBarSlideR = sHealthFlashL = sHealthFlashR = 0;
 }
 
-void x_2d5f067a(void) {
+void game_init(void) {
     u8 i, j;
 
     D_800AA480 = 0;
@@ -136,7 +136,7 @@ void x_2d5f067a(void) {
     gWadCondLoad[x_83106b21].x_178eafa6 = gWadCondLoad[x_6f0b3be3].x_178eafa6 = 0;
 
     x_1acf99bf = x_5e4e2788 = x_96f25e0a;
-    D_800801F1 = TRUE;
+    sFirstFight = TRUE;
 
     for (i = 0; i < 2; i++) {
         for (j = 0; j < 11; j++) {
@@ -153,7 +153,7 @@ void x_2d5f067a(void) {
     x_08051143 = 0;
 }
 
-void x_d5d8f7a7(Object *obj) {
+void fade_to_black_cb(Object *obj) {
     if (--obj->x_0f4167b4[0] < 0) {
         obj->flags |= x_f51cb721;
         x_e30d50d2 |= x_bee364e0;
@@ -162,7 +162,7 @@ void x_d5d8f7a7(Object *obj) {
     }
 }
 
-void x_005cc66f(void) {
+void load_wait_screen(void) {
     Object *obj;
     x_4a7d6dd4 *x_c9614940;
     u16 x_18643961;
@@ -181,7 +181,7 @@ void x_005cc66f(void) {
     x_e30d50d2 |= x_23ebd6b0 | x_d4c59644;
     gGfxFlags |= GFX_MENU_OVERLAY;
 
-    obj = obj_create_task(&x_d5d8f7a7, 0x1000);
+    obj = obj_create_task(&fade_to_black_cb, 0x1000);
     obj->x_0f4167b4[0] = 6;
     tr_scene_loop();
 
@@ -194,14 +194,14 @@ void x_005cc66f(void) {
     x_25025961(x_c9614940);
 }
 
-void x_10430200(void) {
+void arena_pre_setup(void) {
     sWadUnk1 = gFrameCounter % 5;
     sWadUnk2 = 0;
     D_80081430 = 0;
     gWadCondLoad[x_83106b21].x_178eafa6 = gWadCondLoad[x_6f0b3be3].x_178eafa6 = 0;
 
-    if (sPrevScreenId != x_802d9c2e) {
-        x_005cc66f();
+    if (sPrevScreenId != SCREEN_WAIT) {
+        load_wait_screen();
     }
 
     if (x_5e4e2788 != x_79c2dc5b) {
@@ -213,25 +213,25 @@ void x_10430200(void) {
     player_init(0);
     player_init(1);
 
-    if (D_800801F1) {
-        x_91192da2();
+    if (sFirstFight) {
+        fight_reset();
     } else {
-        x_7bc4ef6e();
+        fight_init();
     }
     osViBlack(1);
 }
 
-void x_eb73d70f(void) {
+void arena_cleanup(void) {
     wad_unload_context(x_2587f84f);
     wad_unload_context(0x5000);
     wad_unload_context(0x5001);
 }
 
-void x_5bf0e9e5(void) {
+void arena_stage_01(void) {
     s32 x_32f1d6e2 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
     x_4a7d6dd4 *x_3f14db6e;
 
-    x_10430200();
+    arena_pre_setup();
     x_3f14db6e = x_a0e73601("bg3", 0, 74, 0x2000, 0x10000, 0, x_32f1d6e2);
     x_3f14db6e->height -= 16;
 
@@ -245,13 +245,13 @@ void x_5bf0e9e5(void) {
     x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
-    x_7bc4ef6e();
+    fight_init();
     tr_scene_loop();
 
-    x_eb73d70f();
+    arena_cleanup();
 }
 
-void x_bf79c7ba(Object *obj) {
+void lighting_input_update(Object *obj) {
     if (x_59ce598c[x_6f0b3be3].x_33260da8 & x_ffe9ce36) {
         obj->x_224610f1.y -= 10;
     } else if (x_59ce598c[x_6f0b3be3].x_33260da8 & x_37f8540c) {
@@ -261,14 +261,14 @@ void x_bf79c7ba(Object *obj) {
 }
 
 // unknown data
-s32 D_80049400[] = { 0x40000, task_remove_current, 0x2800, 0x10000000, 0, "tc", x_bf79c7ba, 0x1000, 0 };
+s32 D_80049400[] = { 0x40000, task_remove_current, 0x2800, 0x10000000, 0, "tc", lighting_input_update, 0x1000, 0 };
 
-void x_6d8e5572(void) {
+void arena_stage_02(void) {
     s32 x_32f1d6e2 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
     x_88f11482 x_4346f5cb = { 0, -500, 0, 0 };
     x_4a7d6dd4 *x_3f14db6e;
 
-    x_10430200();
+    arena_pre_setup();
     x_3f14db6e = x_a0e73601("bg2", 0, 74, 0x2000, 0x10000, 0, x_32f1d6e2);
     x_3f14db6e->height -= 16;
 
@@ -282,16 +282,16 @@ void x_6d8e5572(void) {
     x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
-    x_7bc4ef6e();
+    fight_init();
     tr_scene_loop();
-    x_eb73d70f();
+    arena_cleanup();
 }
 
-void x_79c3a331(void) {
+void arena_stage_03(void) {
     s32 x_32f1d6e2 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
     x_4a7d6dd4 *x_3f14db6e;
 
-    x_10430200();
+    arena_pre_setup();
     x_3f14db6e = x_a0e73601("bg2", 0, -20, 0x2000, 0x10000, 0, x_32f1d6e2);
     x_3f14db6e->height -= 16;
 
@@ -305,16 +305,16 @@ void x_79c3a331(void) {
     x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
-    x_7bc4ef6e();
+    fight_init();
     tr_scene_loop();
-    x_eb73d70f();
+    arena_cleanup();
 }
 
-void x_ac7d3df0(void) {
+void arena_stage_04(void) {
     s32 x_32f1d6e2 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
     x_4a7d6dd4 *x_3f14db6e;
 
-    x_10430200();
+    arena_pre_setup();
     x_3f14db6e = x_a0e73601("bg2", 0, 40, 0x2000, 0x10000, 0, x_32f1d6e2);
     x_3f14db6e->height -= 16;
 
@@ -328,16 +328,16 @@ void x_ac7d3df0(void) {
     x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
-    x_7bc4ef6e();
+    fight_init();
     tr_scene_loop();
-    x_eb73d70f();
+    arena_cleanup();
 }
 
-void x_0f26cf14(void) {
+void arena_stage_05(void) {
     s32 x_32f1d6e2 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
     x_4a7d6dd4 *x_3f14db6e;
 
-    x_10430200();
+    arena_pre_setup();
     x_3f14db6e = x_a0e73601("bg2", 0, 52, 0x2000, 0x10000, 0, x_32f1d6e2);
     x_3f14db6e->height -= 16;
 
@@ -351,16 +351,16 @@ void x_0f26cf14(void) {
     x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
-    x_7bc4ef6e();
+    fight_init();
     tr_scene_loop();
-    x_eb73d70f();
+    arena_cleanup();
 }
 
-void x_370978d4(void) {
+void arena_stage_06(void) {
     s32 x_32f1d6e2 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
     x_4a7d6dd4 *x_3f14db6e;
 
-    x_10430200();
+    arena_pre_setup();
     x_3f14db6e = x_a0e73601("bg2", 0, 96, 0x2000, 0x10000, 0, x_32f1d6e2);
     x_3f14db6e->height -= 16;
     x_a0e73601("bg0", 0, 8, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
@@ -373,15 +373,15 @@ void x_370978d4(void) {
     x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
-    x_7bc4ef6e();
+    fight_init();
     tr_scene_loop();
-    x_eb73d70f();
+    arena_cleanup();
 }
 
-void x_97f45a12(void) {
+void arena_stage_07(void) {
     s32 x_32f1d6e2 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
 
-    x_10430200();
+    arena_pre_setup();
     x_a0e73601("bg2", 0, 94, 0x2000, 0x10000, 0, x_32f1d6e2);
     x_a0e73601("bg0", 0, -8, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
@@ -393,16 +393,16 @@ void x_97f45a12(void) {
     x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
-    x_7bc4ef6e();
+    fight_init();
     tr_scene_loop();
-    x_eb73d70f();
+    arena_cleanup();
 }
 
-void x_855a469e(void) {
+void arena_stage_08(void) {
     s32 x_32f1d6e2 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
     x_4a7d6dd4 *x_3f14db6e;
 
-    x_10430200();
+    arena_pre_setup();
     x_3f14db6e = x_a0e73601("bg2", 0, -7, 0x2000, 0x10000, 0, x_32f1d6e2);
     x_3f14db6e->height -= 16;
 
@@ -416,16 +416,16 @@ void x_855a469e(void) {
     x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
-    x_7bc4ef6e();
+    fight_init();
     tr_scene_loop();
-    x_eb73d70f();
+    arena_cleanup();
 }
 
-void x_8081616c(void) {
+void arena_stage_09(void) {
     s32 x_32f1d6e2 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
     x_4a7d6dd4 *x_3f14db6e;
 
-    x_10430200();
+    arena_pre_setup();
     x_3f14db6e = x_a0e73601("bg2", 0, 20, 0x2000, 0x10000, 0, x_32f1d6e2);
     x_3f14db6e->height -= 16;
 
@@ -439,16 +439,16 @@ void x_8081616c(void) {
     x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
-    x_7bc4ef6e();
+    fight_init();
     tr_scene_loop();
-    x_eb73d70f();
+    arena_cleanup();
 }
 
-void x_5f5796f4(void) {
+void arena_stage_10(void) {
     s32 x_32f1d6e2 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
     x_4a7d6dd4 *x_3f14db6e;
 
-    x_10430200();
+    arena_pre_setup();
     x_3f14db6e = x_a0e73601("bg2", 0, -6, 0x2000, 0x10000, 0, x_32f1d6e2);
     x_3f14db6e->height -= 16;
 
@@ -462,12 +462,12 @@ void x_5f5796f4(void) {
     x_f4bce728->currentTask->callback = cam_intro_start;
     x_f4bce728->currentTask->stackPtr = 0;
 
-    x_7bc4ef6e();
+    fight_init();
     tr_scene_loop();
-    x_eb73d70f();
+    arena_cleanup();
 }
 
-void x_3253cdf0(Object *obj) {
+void char_select_countdown(Object *obj) {
     s16 a3;
 
     a3 = 1 - gWadCondLoad[x_6f0b3be3].x_03604d94; // @bug maybe
@@ -483,9 +483,9 @@ void x_3253cdf0(Object *obj) {
                 if (x_5e4e2788 != x_3658fb97) {
                     gWadCondLoad[x_6db66fc3].x_fb21ca8c = TRUE;
                     gWadCondLoad[1 - x_6db66fc3].x_fb21ca8c = FALSE;
-                    x_e38a6e19 = gWadCondLoad[x_6db66fc3].x_eb1fe45b + x_a98e3fb7;
+                    x_e38a6e19 = gWadCondLoad[x_6db66fc3].x_eb1fe45b + SCREEN_CHAR_SELECT_OFFSET;
                 } else {
-                    x_e38a6e19 = gWadCondLoad[1 - x_6db66fc3].x_eb1fe45b + x_a98e3fb7;
+                    x_e38a6e19 = gWadCondLoad[1 - x_6db66fc3].x_eb1fe45b + SCREEN_CHAR_SELECT_OFFSET;
                     gWadCondLoad[x_83106b21].x_03604d94 = TRUE;
                 }
                 x_e30d50d2 |= x_ecbcd14e | x_bee364e0;
@@ -498,7 +498,7 @@ void x_3253cdf0(Object *obj) {
             x_5e4e2788 == x_3658fb97 && (x_59ce598c[1 - a3].buttons & x_9cefe76c)) {
             x_25025961(D_80081254);
             if (x_5e4e2788 != x_3658fb97) {
-                x_e38a6e19 = gWadCondLoad[x_6db66fc3].x_eb1fe45b + x_a98e3fb7;
+                x_e38a6e19 = gWadCondLoad[x_6db66fc3].x_eb1fe45b + SCREEN_CHAR_SELECT_OFFSET;
                 gWadCondLoad[x_6db66fc3].x_fb21ca8c = TRUE;
                 gWadCondLoad[1 - x_6db66fc3].x_fb21ca8c = FALSE;
             } else {
@@ -513,7 +513,7 @@ void x_3253cdf0(Object *obj) {
 
 u16 D_80049434[] = { 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 298, 314, 330, 315, 316, 298, 331, 0 };
 
-void x_c9523e04(Player *x_cc1d0de5, Object *x_84ff873b, s32 x_2092f891) {
+void intro_movies_load(Player *x_cc1d0de5, Object *x_84ff873b, s32 x_2092f891) {
     s16 i;
     s16 a1;
     s16 v0;
@@ -535,7 +535,7 @@ void x_c9523e04(Player *x_cc1d0de5, Object *x_84ff873b, s32 x_2092f891) {
     }
 }
 
-void x_af961405(u8 x_cc1d0de5, s16 x_84ff873b, s32 x_2092f891) {
+void fight_intro_setup(u8 x_cc1d0de5, s16 x_84ff873b, s32 x_2092f891) {
     s32 s0;
     Object *obj;
     Object *a1;
@@ -546,12 +546,12 @@ void x_af961405(u8 x_cc1d0de5, s16 x_84ff873b, s32 x_2092f891) {
     gWadCondLoad[s0].x_178eafa6 = 1;
     gWadCondLoad[1 - s0].x_178eafa6 = 0;
 
-    if (sPrevScreenId != x_802d9c2e && gCurrentScreenId != x_2a3e474b) {
-        x_005cc66f();
+    if (sPrevScreenId != SCREEN_WAIT && gCurrentScreenId != SCREEN_OPTIONS) {
+        load_wait_screen();
     }
 
     if (x_cc1d0de5) {
-        obj = obj_create_task(x_3253cdf0, 0x1000);
+        obj = obj_create_task(char_select_countdown, 0x1000);
         obj->x_0f4167b4[0] = 480;
     }
 
@@ -560,14 +560,14 @@ void x_af961405(u8 x_cc1d0de5, s16 x_84ff873b, s32 x_2092f891) {
 
     gWadCondLoad[x_83106b21].x_8a8d66c9 = gWadCondLoad[x_6f0b3be3].x_8a8d66c9 = TRUE;
 
-    a1 = x_3ac11521[1 - s0];
+    a1 = sIntroPlayerObjs[1 - s0];
     a1->pos.x = 0;
     a1->pos.z = 0;
     a1->x_224610f1.y = 0x400;
 
-    x_3ac11521[s0]->pos.x = -5000;
-    x_3ac11521[s0]->pos.z = -5000;
-    x_3ac11521[s0]->flags |= x_c537cafa;
+    sIntroPlayerObjs[s0]->pos.x = -5000;
+    sIntroPlayerObjs[s0]->pos.z = -5000;
+    sIntroPlayerObjs[s0]->flags |= x_c537cafa;
 
     x_824b9544[x_83106b21].flags |= x_c865be3f;
     x_824b9544[x_6f0b3be3].flags |= x_c865be3f;
@@ -581,7 +581,7 @@ void x_af961405(u8 x_cc1d0de5, s16 x_84ff873b, s32 x_2092f891) {
     x_59ce598c[x_83106b21].x_33260da8 = x_59ce598c[x_6f0b3be3].x_33260da8 = 0;
     x_59ce598c[x_83106b21].enabled = x_59ce598c[x_6f0b3be3].enabled = TRUE;
 
-    x_9df63a90 = FALSE;
+    sFightLocked = FALSE;
 
     x_824b9544[x_83106b21].flags |= x_4d950171;
     x_824b9544[x_6f0b3be3].flags |= x_4d950171;
@@ -589,17 +589,17 @@ void x_af961405(u8 x_cc1d0de5, s16 x_84ff873b, s32 x_2092f891) {
     TASK_END(x_824b9544[x_83106b21].x_08b62e4f);
     TASK_END(x_824b9544[x_6f0b3be3].x_08b62e4f);
 
-    x_c9523e04(x_824b9544 + 1 - s0, a1, x_2092f891);
+    intro_movies_load(x_824b9544 + 1 - s0, a1, x_2092f891);
     cam_battle_init(x_f4bce728);
     player_exec_move(x_824b9544 + 1 - s0, x_84ff873b, 1);
     gGfxFlags |= GFX_FLAG_4;
 }
 
-void x_de15f6f9(void) {
+void intro_gore(void) {
     s32 x_a7710cd7 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
 
     wad_load_path("/gore/goreint", x_46bec5bf);
-    x_af961405(TRUE, 0x70, 0x3000);
+    fight_intro_setup(TRUE, 0x70, 0x3000);
     D_80081254 = x_a0e73601("goreint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
     D_80081250 = D_80081254->height;
     x_a0e73601("bg3", 0, 74, 0x2000, 0x10000, 0, x_a7710cd7);
@@ -608,17 +608,17 @@ void x_de15f6f9(void) {
     tr_scene_loop();
 
     wad_unload_context(0x3000);
-    x_eb73d70f();
+    arena_cleanup();
     if (x_5e4e2788 != x_3658fb97) {
         wad_unload_context(x_a7710cd7);
     }
 }
 
-void x_7dc0432e(void) {
+void intro_aaro(void) {
     s32 x_a7710cd7 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
 
     wad_load_path("/aaro/aaroint", x_46bec5bf);
-    x_af961405(TRUE, 0x70, 0x3000);
+    fight_intro_setup(TRUE, 0x70, 0x3000);
     D_80081254 = x_a0e73601("aaroint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
     D_80081250 = D_80081254->height;
     x_a0e73601("bg2", 0, 74, 0x10000, 0x10000, 0, x_a7710cd7);
@@ -627,17 +627,17 @@ void x_7dc0432e(void) {
     tr_scene_loop();
 
     wad_unload_context(0x3000);
-    x_eb73d70f();
+    arena_cleanup();
     if (x_5e4e2788 != x_3658fb97) {
         wad_unload_context(x_a7710cd7);
     }
 }
 
-void x_075dfbb4(void) {
+void intro_demi(void) {
     s32 x_a7710cd7 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
 
     wad_load_path("/demi/demiint", x_46bec5bf);
-    x_af961405(TRUE, 0x70, 0x3000);
+    fight_intro_setup(TRUE, 0x70, 0x3000);
     D_80081254 = x_a0e73601("demiint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
     D_80081250 = D_80081254->height;
     x_a0e73601("bg2", 0, -8, 0x2000, 0x10000, 0, x_a7710cd7);
@@ -645,17 +645,17 @@ void x_075dfbb4(void) {
     x_7a8b20f2("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
-    x_eb73d70f();
+    arena_cleanup();
     if (x_5e4e2788 != x_3658fb97) {
         wad_unload_context(x_a7710cd7);
     }
 }
 
-void x_fff9464d(void) {
+void intro_demo(void) {
     s32 x_a7710cd7 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
 
     wad_load_path("/demo/demoint", x_46bec5bf);
-    x_af961405(TRUE, 0x70, 0x3000);
+    fight_intro_setup(TRUE, 0x70, 0x3000);
     D_80081254 = x_a0e73601("demoint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
     D_80081250 = D_80081254->height;
     x_a0e73601("bg2", 0, 32, 0x2000, 0x10000, 0, x_a7710cd7);
@@ -663,17 +663,17 @@ void x_fff9464d(void) {
     x_7a8b20f2("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
-    x_eb73d70f();
+    arena_cleanup();
     if (x_5e4e2788 != x_3658fb97) {
         wad_unload_context(x_a7710cd7);
     }
 }
 
-void x_bdd3194d(void) {
+void intro_eve(void) {
     s32 x_a7710cd7 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
 
     wad_load_path("/eve/eveint", x_46bec5bf);
-    x_af961405(TRUE, 0x70, 0x3000);
+    fight_intro_setup(TRUE, 0x70, 0x3000);
     D_80081254 = x_a0e73601("eveint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
     D_80081250 = D_80081254->height;
     x_a0e73601("bg2", 0, 52, 0x2000, 0x10000, 0, x_a7710cd7);
@@ -681,17 +681,17 @@ void x_bdd3194d(void) {
     x_7a8b20f2("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
-    x_eb73d70f();
+    arena_cleanup();
     if (x_5e4e2788 != x_3658fb97) {
         wad_unload_context(x_a7710cd7);
     }
 }
 
-void x_7e48e02a(void) {
+void intro_morp(void) {
     s32 x_a7710cd7 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
 
     wad_load_path("/morp/morpint", x_46bec5bf);
-    x_af961405(TRUE, 0x70, 0x3000);
+    fight_intro_setup(TRUE, 0x70, 0x3000);
     D_80081254 = x_a0e73601("morpint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
     D_80081250 = D_80081254->height;
     x_a0e73601("bg2", 0, 96, 0x2000, 0x10000, 0, x_a7710cd7);
@@ -699,17 +699,17 @@ void x_7e48e02a(void) {
     x_7a8b20f2("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
-    x_eb73d70f();
+    arena_cleanup();
     if (x_5e4e2788 != x_3658fb97) {
         wad_unload_context(x_a7710cd7);
     }
 }
 
-void x_2c237ab0(void) {
+void intro_niik(void) {
     s32 x_a7710cd7 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
 
     wad_load_path("/niik/niikint", x_46bec5bf);
-    x_af961405(TRUE, 0x70, 0x3000);
+    fight_intro_setup(TRUE, 0x70, 0x3000);
     D_80081254 = x_a0e73601("niikint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
     D_80081250 = D_80081254->height;
     x_a0e73601("bg2", 0, 94, 0x2000, 0x10000, 0, x_a7710cd7);
@@ -717,17 +717,17 @@ void x_2c237ab0(void) {
     x_7a8b20f2("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
-    x_eb73d70f();
+    arena_cleanup();
     if (x_5e4e2788 != x_3658fb97) {
         wad_unload_context(x_a7710cd7);
     }
 }
 
-void x_10209bac(void) {
+void intro_scar(void) {
     s32 x_a7710cd7 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
 
     wad_load_path("/scar/scarint", x_46bec5bf);
-    x_af961405(TRUE, 0x70, 0x3000);
+    fight_intro_setup(TRUE, 0x70, 0x3000);
     D_80081254 = x_a0e73601("scarint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
     D_80081250 = D_80081254->height;
     x_a0e73601("bg2", 0, 0, 0x2000, 0x10000, 0, x_a7710cd7);
@@ -735,17 +735,17 @@ void x_10209bac(void) {
     x_7a8b20f2("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
-    x_eb73d70f();
+    arena_cleanup();
     if (x_5e4e2788 != x_3658fb97) {
         wad_unload_context(x_a7710cd7);
     }
 }
 
-void x_67466a36(void) {
+void intro_sono(void) {
     s32 x_a7710cd7 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
 
     wad_load_path("/sono/sonoint", x_46bec5bf);
-    x_af961405(TRUE, 0x70, 0x3000);
+    fight_intro_setup(TRUE, 0x70, 0x3000);
     D_80081254 = x_a0e73601("sonoint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
     D_80081250 = D_80081254->height;
     x_a0e73601("bg2", 0, 26, 0x2000, 0x10000, 0, x_a7710cd7);
@@ -753,17 +753,17 @@ void x_67466a36(void) {
     x_7a8b20f2("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
-    x_eb73d70f();
+    arena_cleanup();
     if (x_5e4e2788 != x_3658fb97) {
         wad_unload_context(x_a7710cd7);
     }
 }
 
-void x_1b39c152(void) {
+void intro_zenm(void) {
     s32 x_a7710cd7 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
 
     wad_load_path("/zenm/zenmint", x_46bec5bf);
-    x_af961405(TRUE, 0x70, 0x3000);
+    fight_intro_setup(TRUE, 0x70, 0x3000);
     D_80081254 = x_a0e73601("zenmint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
     D_80081250 = D_80081254->height;
     x_a0e73601("bg2", 0, -6, 0x2000, 0x10000, 0, x_a7710cd7);
@@ -771,13 +771,13 @@ void x_1b39c152(void) {
     x_7a8b20f2("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
-    x_eb73d70f();
+    arena_cleanup();
     if (x_5e4e2788 != x_3658fb97) {
         wad_unload_context(x_a7710cd7);
     }
 }
 
-void x_317f92d9(Object *obj) {
+void boss_sono_end_check(Object *obj) {
     if (x_824b9544[x_83106b21].x_7f68c36b->x_bab9966d - 2 == x_824b9544[x_83106b21].obj->frameCounter) {
         x_e30d50d2 |= x_bee364e0;
         obj->flags |= x_f51cb721;
@@ -785,14 +785,14 @@ void x_317f92d9(Object *obj) {
     }
 }
 
-void x_cb578282(Object *obj) {
+void anim_loop(Object *obj) {
     obj->frameCounter++;
     if (obj->frameCounter >= obj->x_20d20338->x_8e601526 - 1) {
         obj->frameCounter = 0;
     }
 }
 
-void x_d7f2443f(void) {
+void boss_sono(void) {
     Object *obj;
     Object *x_942c59c7;
     void *a3;
@@ -811,22 +811,22 @@ void x_d7f2443f(void) {
 
     wad_load_path("/sono/prize", x_46bec5bf);
     x_3f14db6e = x_a0e73601("prize", 0, 100, 0, 0, x_8ce7ef70, 0x3000);
-    obj = obj_create_task(x_d5d8f7a7, 0x1000);
+    obj = obj_create_task(fade_to_black_cb, 0x1000);
     obj->x_0f4167b4[0] = 6;
     tr_scene_loop();
 
     x_e30d50d2 &= ~(x_d4c59644 | x_bee364e0);
     gGfxFlags &= ~GFX_MENU_OVERLAY;
     wad_load_path("/sono/sonoboss", x_46bec5bf);
-    x_af961405(FALSE, 346, 0x3000);
+    fight_intro_setup(FALSE, 346, 0x3000);
     x_a0e73601("bg2", 0, 26, 0x2000, 0x10000, 0, 0);
     x_a0e73601("bg0", 0, -24, 0x1000, 0x10000, x_96186256, 0);
     x_7a8b20f2("arena", 0);
     a3 = sWadEntries[wad_entry_find("relic.k2", 0x3000)].x_4962fc73;
-    x_942c59c7 = obj_create_with_model_ptr(&x_93463df6, 0x1000, x_cb578282, a3);
+    x_942c59c7 = obj_create_with_model_ptr(&x_93463df6, 0x1000, anim_loop, a3);
     x_942c59c7->x_224610f1.y = 0x400;
     x_942c59c7->color.a = 80;
-    obj_create_task(x_317f92d9, 0x1000);
+    obj_create_task(boss_sono_end_check, 0x1000);
     x_25025961(x_3f14db6e);
     tr_scene_loop();
 
@@ -834,11 +834,11 @@ void x_d7f2443f(void) {
     wad_unload_context(0);
     wad_unload_context(1);
     if (sRoundWinCount == 0) {
-        x_e38a6e19 = x_3dba3c6c;
+        x_e38a6e19 = SCREEN_CREDITS;
     }
 }
 
-void x_526ab60f(void) {
+void boss_demi(void) {
     Object *obj;
     x_88f11482 x_54406eae = { -800, -100, 0, 0 };
     Object *a1;
@@ -859,9 +859,9 @@ void x_526ab60f(void) {
     a1->pos.x = a1->pos.z = 0;
     a1->x_224610f1.y = 0x400;
 
-    x_3ac11521[1 - x_ea78ab9e]->pos.x = -5000;
-    x_3ac11521[1 - x_ea78ab9e]->pos.z = -5000;
-    x_3ac11521[1 - x_ea78ab9e]->flags |= x_c537cafa;
+    sIntroPlayerObjs[1 - x_ea78ab9e]->pos.x = -5000;
+    sIntroPlayerObjs[1 - x_ea78ab9e]->pos.z = -5000;
+    sIntroPlayerObjs[1 - x_ea78ab9e]->flags |= x_c537cafa;
 
     x_824b9544[x_83106b21].flags |= x_c865be3f;
     x_824b9544[x_6f0b3be3].flags |= x_c865be3f;
@@ -872,35 +872,35 @@ void x_526ab60f(void) {
     x_59ce598c[x_83106b21].x_33260da8 = x_59ce598c[x_6f0b3be3].x_33260da8 = 0;
     x_59ce598c[x_83106b21].enabled = x_59ce598c[x_6f0b3be3].enabled = TRUE;
 
-    x_9df63a90 = FALSE;
+    sFightLocked = FALSE;
 
     x_824b9544[x_83106b21].flags |= x_4d950171;
     x_824b9544[x_6f0b3be3].flags |= x_4d950171;
     TASK_END(x_824b9544[x_83106b21].x_08b62e4f);
     TASK_END(x_824b9544[x_6f0b3be3].x_08b62e4f);
 
-    x_c9523e04(&x_824b9544[x_ea78ab9e], a1, 0x3000);
+    intro_movies_load(&x_824b9544[x_ea78ab9e], a1, 0x3000);
     cam_battle_init(x_f4bce728);
     player_exec_move(&x_824b9544[x_ea78ab9e], x_467d52ce, 1);
     gGfxFlags |= GFX_FLAG_4;
     obj_create_task(present_intro_presents, 0x1000);
-    x_7bc4ef6e();
+    fight_init();
 
     a3 = sWadEntries[wad_entry_find("relic.k5", 0x3000)].x_4962fc73;
-    obj = obj_create_with_model_ptr(&x_54406eae, 0x1000, x_cb578282, a3);
+    obj = obj_create_with_model_ptr(&x_54406eae, 0x1000, anim_loop, a3);
     obj->x_224610f1.y = 0x400;
     obj->color.a = 80;
 
     x_a0e73601("bg2", 0, -32, 0x2000, 0x10000, 0, x_fc517ba8);
     x_a0e73601("bg0", 0, 8, 0x1000, 0x10000, x_96186256, x_fc517ba8);
     x_7a8b20f2("arena", x_fc517ba8);
-    x_9df63a90 = TRUE;
+    sFightLocked = TRUE;
     tr_scene_loop();
     wad_unload_context(0x3000);
-    x_e38a6e19 = x_1a4de9e0;
+    x_e38a6e19 = SCREEN_PRACTICE;
 }
 
-void x_97d4c18e(void) {
+void ending_char(void) {
     u16 x_4c3c4684;
     u16 x_de61763c;
     Object *obj;
@@ -933,7 +933,7 @@ void x_97d4c18e(void) {
     wad_unload_context(0x4000);
 }
 
-void x_0f62bcb4(void) {
+void credits_screen(void) {
     Object *x_87eba76e;
 
     wad_unload_all();
@@ -950,27 +950,27 @@ void x_0f62bcb4(void) {
     wad_unload_context(0x4000);
 }
 
-void x_e8d61695(Object *obj) {
+void ending_easywin_input(Object *obj) {
     if (x_59ce598c[sWinnerIdx].buttons & x_9cefe76c) {
         x_e30d50d2 |= x_bee364e0;
         obj->flags |= x_f51cb721;
     }
 }
 
-void x_39ec2f37(void) {
+void ending_easywin(void) {
     wad_unload_all();
     wad_load_path("/title/easywin", x_f238a878);
     x_a0e73601("easyimg", 0, 0, 0, 0, x_96186256, 0x4000);
-    obj_create_task(x_e8d61695, 0x1000);
+    obj_create_task(ending_easywin_input, 0x1000);
     sClearZbuffer = TRUE;
     x_e30d50d2 |= x_86c5bc33;
     gGfxFlags |= GFX_MENU_OVERLAY;
     tr_scene_loop();
     wad_unload_context(0x4000);
-    x_e38a6e19 = x_a3a32a2b;
+    x_e38a6e19 = SCREEN_EASY_WIN;
 }
 
-void x_a7b2701f(s32 x_cc1d0de5) {
+void screen_profile_apply(s32 x_cc1d0de5) {
     sFogMin = gScreenProfiles[x_cc1d0de5].fogMin;
     sFogMax = gScreenProfiles[x_cc1d0de5].fogMax;
     sFogColorR = gScreenProfiles[x_cc1d0de5].fogColorR;
@@ -981,7 +981,7 @@ void x_a7b2701f(s32 x_cc1d0de5) {
     sClearColorB = gScreenProfiles[x_cc1d0de5].clearColorB;
 }
 
-void x_84948d12(u8 x_cc1d0de5) {
+void demo_fight_setup(u8 x_cc1d0de5) {
     x_88f11482 x_fd09f53e[] = { { -1152, 0, 0, 0 }, { 0, 0, 0, 0 } };
     u32 x_b3c51f8a;
     s32 s1;
@@ -1035,7 +1035,7 @@ void x_84948d12(u8 x_cc1d0de5) {
     x_e30d50d2 |= x_86c5bc33;
     x_59ce598c[x_83106b21].x_33260da8 = x_59ce598c[x_6f0b3be3].x_33260da8 = 0;
     x_59ce598c[x_83106b21].enabled = x_59ce598c[x_6f0b3be3].enabled = TRUE;
-    x_9df63a90 = FALSE;
+    sFightLocked = FALSE;
 
     x_824b9544[x_83106b21].flags |= x_4d950171;
     x_824b9544[x_6f0b3be3].flags |= x_4d950171;
@@ -1043,17 +1043,17 @@ void x_84948d12(u8 x_cc1d0de5) {
     TASK_END(x_824b9544[x_6f0b3be3].x_08b62e4f);
 
     cam_battle_init(x_f4bce728);
-    x_c9523e04(&x_824b9544[x_b3c51f8a], a3, 0x4000);
-    x_c9523e04(&x_824b9544[t9], s0, 0x4000);
+    intro_movies_load(&x_824b9544[x_b3c51f8a], a3, 0x4000);
+    intro_movies_load(&x_824b9544[t9], s0, 0x4000);
     gGfxFlags |= GFX_FLAG_4;
     x_a0e73601("bg2", 0, -27, 0x2000, 0x10000, 0, x_b3c51f8a);
     x_a0e73601("bg0", x_b3c51f8a * 0, 8, 0x1000, 0x10000, x_96186256, x_b3c51f8a);
-    x_a7b2701f(x_1a4de9e0);
+    screen_profile_apply(SCREEN_PRACTICE);
     x_7a8b20f2("arena", x_b3c51f8a);
-    x_9df63a90 = TRUE;
+    sFightLocked = TRUE;
 }
 
-void x_5f08f251(void) {
+void ending_generic(void) {
     u16 x_21e2fc34;
     u16 x_5bbba600;
     char x_32f1d6e2[80];
@@ -1061,7 +1061,7 @@ void x_5f08f251(void) {
     x_21e2fc34 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
     x_5bbba600 = 1 - x_21e2fc34;
     gWadCondLoad[x_83106b21].x_178eafa6 = gWadCondLoad[x_6f0b3be3].x_178eafa6 = 0;
-    x_9df63a90 = TRUE;
+    sFightLocked = TRUE;
     D_80080234 = 1;
 
     switch (gWadCondLoad[x_5bbba600].x_eb1fe45b) {
@@ -1115,7 +1115,7 @@ void x_5f08f251(void) {
             break;
     }
 
-    x_84948d12(FALSE);
+    demo_fight_setup(FALSE);
     wad_load_path("/demi/demidust", x_2587f84f);
     player_exec_move(&x_824b9544[x_21e2fc34], x_9b1bc46c, 1);
     player_exec_move(&x_824b9544[x_5bbba600], x_41323a8a, 1);
@@ -1123,10 +1123,10 @@ void x_5f08f251(void) {
     tr_scene_loop();
     wad_unload_context(0x4000);
     wad_unload_context(x_2587f84f);
-    x_e38a6e19 = x_896bb5ec;
+    x_e38a6e19 = SCREEN_ATTRACT_AGAIN;
 }
 
-void x_2d92be0a(void) {
+void ending_open(void) {
     u16 x_1a071863;
     u16 x_de61763c;
     char x_f10a928a[12];
@@ -1160,7 +1160,7 @@ void x_2d92be0a(void) {
     cam_ko_init(x_f4bce728, x_1a071863);
 }
 
-void x_6da0c319(void) {
+void closing_cutscene(void) {
     Object *obj;
     Model *a3;
     x_88f11482 x_048c1e73 = { -600, 0, -30, 0 };
@@ -1178,7 +1178,7 @@ void x_6da0c319(void) {
     x_c48d15e0 = &x_824b9544[x_5bbba600];
     x_13d65ace = &x_824b9544[x_21e2fc34];
 
-    x_9df63a90 = TRUE;
+    sFightLocked = TRUE;
     D_80080234 = 1;
     gWadCondLoad[x_21e2fc34].x_178eafa6 = gWadCondLoad[x_5bbba600].x_178eafa6 = 0;
 
@@ -1223,15 +1223,15 @@ void x_6da0c319(void) {
     }
     wad_load_path(x_32f1d6e2, x_f238a878);
 
-    x_84948d12(TRUE);
+    demo_fight_setup(TRUE);
     player_exec_move(x_13d65ace, x_dd751953, 1);
     player_exec_move(x_c48d15e0, x_c8c943ae, 1);
     x_13d65ace->obj->flags |= x_c537cafa;
-    x_2d92be0a();
+    ending_open();
 
     wad_load_path("/demi/relic", x_f238a878);
     a3 = sWadEntries[wad_entry_find("relic.k5", 0x4000)].x_4962fc73;
-    obj = obj_create_with_model_ptr(&x_dcccc364, 0x1000, x_cb578282, a3);
+    obj = obj_create_with_model_ptr(&x_dcccc364, 0x1000, anim_loop, a3);
     obj->color.a = 80;
 
     if (gWadCondLoad[x_5bbba600].x_eb1fe45b == x_968cc9a2 || gWadCondLoad[x_5bbba600].x_eb1fe45b == x_73cf9ceb) {
@@ -1250,10 +1250,10 @@ void x_6da0c319(void) {
     wad_unload_all();
 }
 
-void x_c9505e23(void) {
+void title_pre_init(void) {
     s32 i;
 
-    D_800801F1 = TRUE;
+    sFirstFight = TRUE;
     gWadCondLoad[x_83106b21].x_7d8e7a6f = gWadCondLoad[x_6f0b3be3].x_7d8e7a6f = 0;
 
     for (i = 0; i < 11; i++) {
@@ -1267,7 +1267,7 @@ void x_c9505e23(void) {
     gWadCondLoad[x_83106b21].x_cc57155e = gWadCondLoad[x_6f0b3be3].x_cc57155e = 0;
 }
 
-void x_da1161b7(void) {
+void title_screen(void) {
     Object *x_a7ef4a30;
     x_f0d7e70f x_081c4eef = { x_35414b8d, present_attract_loop, 0, 0x1000, "options2.sp2" };
     x_88f11482 x_c9614940 = { 164, 155, 0, 0 };
@@ -1279,7 +1279,7 @@ void x_da1161b7(void) {
     gGfxFlags |= GFX_MENU_OVERLAY;
     x_e30d50d2 |= x_86c5bc33;
 
-    if (sPrevScreenId == x_f699a14d) {
+    if (sPrevScreenId == SCREEN_TITLE) {
         Model *x_2ac4abbe = sWadEntries[wad_entry_find("title.k2", x_35b88489)].x_4962fc73;
         x_a7ef4a30 = obj_create_with_model_ptr(&sZeroPosition, 0x1000, present_title_task, x_2ac4abbe);
         x_a7ef4a30->flags |= x_a816b63b;
@@ -1290,16 +1290,16 @@ void x_da1161b7(void) {
     x_a7ef4a30->currentTask->delay = 30;
 
     obj_create_task(x_8daf2444, 0x1000);
-    x_c9505e23();
+    title_pre_init();
     tr_scene_loop();
 
     wad_unload_context(0x2000);
-    if (x_e38a6e19 != x_802d9c2e) {
+    if (x_e38a6e19 != SCREEN_WAIT) {
         wad_unload_context(x_24b231d4);
     }
 }
 
-void x_cb95930b(Object *obj) {
+void fade_out_cb(Object *obj) {
     tr_quad_xlu(sFadeAlpha, 0);
 
     if (sFadeAlpha - 2 > 0) {
@@ -1311,7 +1311,7 @@ void x_cb95930b(Object *obj) {
     sOverlayBrightness = 0;
 }
 
-void x_200fa268(Object *obj) {
+void fade_in_cb(Object *obj) {
     x_f0d7e70f x_fc517ba8 = { 83, present_attract_loop, 0, 0x1000, "options2.sp2" };
     x_88f11482 x_93463df6 = { 160, 155, 0, 0 };
     Object *v0;
@@ -1325,7 +1325,7 @@ void x_200fa268(Object *obj) {
     }
 
     audio_sfx_stop(0x2000, 8);
-    obj->x_0232396f = x_cb95930b;
+    obj->x_0232396f = fade_out_cb;
     x_a0e73601("dr_title", 0, 0, 0, 0, x_96186256, x_35b88489);
     v0 = obj_create_from_def(&x_93463df6, &x_fc517ba8, 0x2000);
     v0->currentTask->delay = 60;
@@ -1333,7 +1333,7 @@ void x_200fa268(Object *obj) {
     obj_create_task(x_8daf2444, 0x1000);
 }
 
-void x_2c292a7b(void) {
+void title_intro(void) {
     s32 unused;
     Object *v0;
     x_f0d7e70f x_d16311d7 = { 83, present_attract_loop, 0, 0x1000, "options2.sp2" };
@@ -1351,27 +1351,27 @@ void x_2c292a7b(void) {
     D_80081254 = x_a0e73601("oplog", 0, 250, 0, 0x10000, x_8ce7ef70, x_35b88489);
     D_80081250 = D_80081254->height;
 
-    x_c9505e23();
+    title_pre_init();
     tr_scene_loop();
     wad_unload_context(0x2000);
-    if (x_e38a6e19 != x_802d9c2e) {
+    if (x_e38a6e19 != SCREEN_WAIT) {
         wad_unload_context(x_24b231d4);
     }
 }
 
-void x_1c76abdb(void) {
+void title_error(void) {
     wad_load_path("/title/error", x_35b88489);
     x_a0e73601("messpg", 0, 90, 0, 180, x_96186256, x_35b88489);
     tr_scene_loop();
 }
 
-void x_cbafccd1(void) {
+void title_logo(void) {
     wad_unload_all();
     x_e30d50d2 |= x_86c5bc33;
     gGfxFlags |= GFX_MENU_OVERLAY;
     gGfxFlags |= GFX_BORDER_AROUND;
     if (!x_59ce598c[x_83106b21].x_12a7bd86 && !x_59ce598c[x_6f0b3be3].x_12a7bd86) {
-        x_1c76abdb();
+        title_error();
     }
 
     wad_load_path("/title/logo", x_35b88489);
@@ -1382,7 +1382,7 @@ void x_cbafccd1(void) {
     wad_unload_context(0x2000);
 }
 
-void x_3ecc4edc(void) {
+void options_menu(void) {
     Object *controller;
     Object *obj;
     x_f0d7e70f x_910f3493 = { x_e7beedae, options_menu_task, 0, x_9d442987, "options2.sp2" };
@@ -1456,7 +1456,7 @@ void x_3ecc4edc(void) {
     wad_unload_context(x_35b88489);
 }
 
-void x_038a90c5(Object *obj, s16 x_30bbe547) {
+void button_icon_update(Object *obj, s16 x_30bbe547) {
     s16 i;
     s16 button;
 
@@ -1495,7 +1495,7 @@ void x_038a90c5(Object *obj, s16 x_30bbe547) {
     }
 }
 
-void x_35ffeb22(void) {
+void options_controller(void) {
     Object *x_6dc41566;
     Object *x_abfe8d41;
     Object *obj;
@@ -1539,83 +1539,83 @@ void x_35ffeb22(void) {
     x_6dc41566 = obj_create_from_def(&x_bf23db74, &x_43f9ca3f, x_35b88489);
     x_6dc41566->x_0f4167b4[x_0371940a] = x_6dc41566;
     x_6dc41566->x_0f4167b4[x_13266785] = 0;
-    x_038a90c5(x_6dc41566, 0);
+    button_icon_update(x_6dc41566, 0);
 
     obj = obj_create_from_def(&x_e725bb19, &x_fa93fe6a, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_6dc41566;
     obj->x_0f4167b4[x_13266785] = 1;
-    x_038a90c5(obj, 0);
+    button_icon_update(obj, 0);
 
     obj = obj_create_from_def(&x_77027484, &x_c592c457, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_6dc41566;
     obj->x_0f4167b4[x_13266785] = 2;
-    x_038a90c5(obj, 0);
+    button_icon_update(obj, 0);
 
     obj = obj_create_from_def(&x_ebe59286, &x_f13e2bec, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_6dc41566;
     obj->x_0f4167b4[x_13266785] = 3;
-    x_038a90c5(obj, 0);
+    button_icon_update(obj, 0);
 
     obj = obj_create_from_def(&x_c9b06339, &x_1ccec23b, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_6dc41566;
     obj->x_0f4167b4[x_13266785] = 4;
-    x_038a90c5(obj, 0);
+    button_icon_update(obj, 0);
 
     obj = obj_create_from_def(&x_887b975c, &x_23c4e7d3, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_6dc41566;
     obj->x_0f4167b4[x_13266785] = 5;
-    x_038a90c5(obj, 0);
+    button_icon_update(obj, 0);
 
     obj = obj_create_from_def(&x_aa4f74c9, &x_c1e64f43, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_6dc41566;
     obj->x_0f4167b4[x_13266785] = 6;
-    x_038a90c5(obj, 0);
+    button_icon_update(obj, 0);
 
     obj = obj_create_from_def(&x_fde88f40, &x_1c7346b1, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_6dc41566;
     obj->x_0f4167b4[x_13266785] = 7;
-    x_038a90c5(obj, 0);
+    button_icon_update(obj, 0);
 
     x_abfe8d41 = obj_create_from_def(&x_7e4f6c9d, &x_43f9ca3f, x_35b88489);
     x_abfe8d41->x_0f4167b4[x_0371940a] = x_abfe8d41;
     x_abfe8d41->x_0f4167b4[x_13266785] = 0;
     x_abfe8d41->x_0f4167b4[x_283009b1] = x_6f0b3be3;
-    x_038a90c5(x_abfe8d41, 1);
+    button_icon_update(x_abfe8d41, 1);
 
     obj = obj_create_from_def(&x_fef76a74, &x_fa93fe6a, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_abfe8d41;
     obj->x_0f4167b4[x_13266785] = 1;
-    x_038a90c5(obj, 1);
+    button_icon_update(obj, 1);
 
     obj = obj_create_from_def(&x_e0e052f7, &x_c592c457, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_abfe8d41;
     obj->x_0f4167b4[x_13266785] = 2;
-    x_038a90c5(obj, 1);
+    button_icon_update(obj, 1);
 
     obj = obj_create_from_def(&x_b42630db, &x_f13e2bec, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_abfe8d41;
     obj->x_0f4167b4[x_13266785] = 3;
-    x_038a90c5(obj, 1);
+    button_icon_update(obj, 1);
 
     obj = obj_create_from_def(&x_2a8bc04d, &x_1ccec23b, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_abfe8d41;
     obj->x_0f4167b4[x_13266785] = 4;
-    x_038a90c5(obj, 1);
+    button_icon_update(obj, 1);
 
     obj = obj_create_from_def(&x_03f0364f, &x_23c4e7d3, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_abfe8d41;
     obj->x_0f4167b4[x_13266785] = 5;
-    x_038a90c5(obj, 1);
+    button_icon_update(obj, 1);
 
     obj = obj_create_from_def(&x_48fb41dd, &x_c1e64f43, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_abfe8d41;
     obj->x_0f4167b4[x_13266785] = 6;
-    x_038a90c5(obj, 1);
+    button_icon_update(obj, 1);
 
     obj = obj_create_from_def(&x_09ae4a39, &x_1c7346b1, x_35b88489);
     obj->x_0f4167b4[x_0371940a] = x_abfe8d41;
     obj->x_0f4167b4[x_13266785] = 7;
-    x_038a90c5(obj, 1);
+    button_icon_update(obj, 1);
 
     obj = obj_create_from_def(&x_20652c2f, &x_cc88bd06, x_35b88489);
     obj->x_0f4167b4[x_f2901470] = x_6dc41566;
@@ -1625,7 +1625,7 @@ void x_35ffeb22(void) {
     wad_unload_context(x_35b88489);
 }
 
-void x_9450f821(void) {
+void options_score(void) {
     x_f0d7e70f x_b97c1d15 = { x_87664290, select_score_display, 0, x_9d442987, "options2.sp2" };
     x_88f11482 x_b0e0e2fc = { 133, 126, 0, 0 };
 
@@ -1640,7 +1640,7 @@ void x_9450f821(void) {
     wad_unload_context(x_35b88489);
 }
 
-void x_2288fd1a(void) {
+void options_stage(void) {
     wad_unload_context(0);
     wad_unload_context(1);
     wad_unload_context(x_2587f84f);
@@ -1655,10 +1655,10 @@ void x_2288fd1a(void) {
     wad_unload_context(x_35b88489);
 }
 
-static void x_4700bff9(void) {
+static void null_func(void) {
 }
 
-void x_64d3e54a(void) {
+void arena_stage_default(void) {
     s32 unused;
     x_2758cdab x_8a9089b3 = { 0, -400, 0, 0 };
     x_88f11482 x_7d0aaee0 = { -400, 0, 0, 0 };

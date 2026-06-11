@@ -291,7 +291,7 @@ void apply_hit(Player *x_7246d2b2, Player *x_e64ba38a, x_2758cdab *x_c9d501a3) {
 
     x_ed035b81 = x_e64ba38a->x_7f68c36b;
 
-    if (!x_9df63a90 || sHudActive) {
+    if (!sFightLocked || sHudActive) {
         x_0f12118c = hit_outcome(x_7246d2b2, x_e64ba38a, x_ed035b81);
         x_2a9ef16e = x_0f12118c == 270 || x_0f12118c == 271;
         if (x_0f12118c != 0) {

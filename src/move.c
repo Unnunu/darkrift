@@ -11,7 +11,7 @@ void move_exec_current(Object *obj) {
     u16 x_30bbe547 = player->x_30bbe547;
     s32 x_76041836;
 
-    if (gWadCondLoad[x_30bbe547].x_03604d94 && !x_9df63a90) {
+    if (gWadCondLoad[x_30bbe547].x_03604d94 && !sFightLocked) {
         if (ai_advance_action(player) || ai_select_action_full(player, TRUE)) {
             return;
         }

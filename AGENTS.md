@@ -326,8 +326,11 @@ All 62 functions renamed and documented. 11 globals renamed: `sHitDustSpriteDef`
 ### AI Brain (aibrain.c) — DONE (Wave 1)
 37 functions renamed (15 core AI engine + 16 tactic table + 6 extra callbacks). 9 globals renamed (sAiDelayTable, sAiRandDelayTable, sAiAttemptCapTable, sAiTimerBaseTable, sAiInterruptBaseTable, sAiInterruptRandTable, sAiOpenWindowTable, sAiCloseWindowTable, sAiTacticTable). 1 enum (AiReactionFlag) + 1 struct (AiCandidate) renamed. Updated functions.h (5 decls), player.c (7 call sites), eff_hit.c (2 decls + 2 refs), symbol_addrs.txt (3 entries), nonmatching .s file renamed. Build verified.
 
-### Menu (menu.c) — NEXT (Wave 1)
-Screen/menu flow: logos → title → char select → options → endings.
+### Menu (menu.c) — DONE (Wave 1)
+48 functions renamed (11 arena stages, 10 char intros, 9 boss/ending, 5 title/logo, 4 options, 5 transitions, 4 fight init, 6 misc callbacks). 16 BSS globals renamed (sFightLocked, sFirstFight, sMenuState, gFighterDistance, sIntroPlayerObjs[2]). Updated functions.h (3 decls), present.c (2 call sites). Build verified.
+
+### Match (match.c) — NEXT (Wave 1)
+Match flow: char select → round mgmt → HUD → post-battle.
 
 ## Thread Model
 | Pri | Thread | Entry | Description |

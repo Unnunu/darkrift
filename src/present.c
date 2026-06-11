@@ -46,10 +46,10 @@ void attract_menu_input(Object *obj, s16 buttons, s16 x_30bbe547) {
         if (buttons & x_9cefe76c) {
             switch (obj->x_0f4167b4[6]) {
                 case 0:
-                    x_e38a6e19 = x_802d9c2e;
+                    x_e38a6e19 = SCREEN_WAIT;
                     gWadCondLoad[x_30bbe547].x_03604d94 = FALSE;
                     gWadCondLoad[1 - x_30bbe547].x_03604d94 = TRUE;
-                    D_800801F1 = TRUE;
+                    sFirstFight = TRUE;
                     x_6db66fc3 = 1 - x_30bbe547;
                     present_set_screen(x_e483bf48 + x_30bbe547);
                     gWadCondLoad[x_83106b21].x_b2b764b3 = gWadCondLoad[x_6f0b3be3].x_b2b764b3 = FALSE;
@@ -58,19 +58,19 @@ void attract_menu_input(Object *obj, s16 buttons, s16 x_30bbe547) {
                     }
                     break;
                 case 1:
-                    x_e38a6e19 = x_802d9c2e;
+                    x_e38a6e19 = SCREEN_WAIT;
                     gWadCondLoad[x_83106b21].x_03604d94 = gWadCondLoad[x_6f0b3be3].x_03604d94 = FALSE;
-                    D_800801F1 = TRUE;
+                    sFirstFight = TRUE;
                     present_set_screen(x_96f25e0a);
                     break;
                 case 2:
-                    x_e38a6e19 = x_f699a14d;
+                    x_e38a6e19 = SCREEN_TITLE;
                     break;
                 case 3:
                     gWadCondLoad[x_30bbe547].x_03604d94 = FALSE;
                     gWadCondLoad[1 - x_30bbe547].x_03604d94 = FALSE;
-                    x_e38a6e19 = x_802d9c2e;
-                    D_800801F1 = TRUE;
+                    x_e38a6e19 = SCREEN_WAIT;
+                    sFirstFight = TRUE;
                     present_set_screen(x_79c2dc5b);
                     x_08051143 = x_30bbe547;
                     break;
@@ -113,7 +113,7 @@ void present_single_win(void) {
     gWadCondLoad[x_83106b21].x_03604d94 = FALSE;
     gWadCondLoad[x_6f0b3be3].x_03604d94 = TRUE;
 
-    x_e38a6e19 = x_2a3e474b;
+    x_e38a6e19 = SCREEN_OPTIONS;
     sRoundWinCount++;
 }
 
@@ -200,7 +200,7 @@ void present_digi_element(Object *obj) {
     if (obj->x_0f4167b4[0] > 180) {
         sFadeAlpha = 0;
         x_e30d50d2 |= x_bee364e0;
-        x_e38a6e19 = x_3dba3c6c;
+        x_e38a6e19 = SCREEN_CREDITS;
         obj->flags |= x_f51cb721;
         TASK_END(obj->currentTask);
     }
@@ -261,7 +261,7 @@ void present_title_open_anim(Object *obj) {
 
     if (++obj->frameCounter >= obj->x_20d20338->x_8e601526 - 4) {
         obj->flags |= x_f51cb721;
-        obj_create_task(x_200fa268, 0x1000);
+        obj_create_task(fade_in_cb, 0x1000);
         sFadeAlpha = 0;
         audio_sfx_play(0x2000, 3);
     }
@@ -279,7 +279,7 @@ void present_title_open(Object *obj) {
     if (D_80081250 + x_6c647b3a + x_84e8ddf2 >= 0 &&
         ((x_59ce598c[x_83106b21].buttons & x_9cefe76c) || (x_59ce598c[x_6f0b3be3].buttons & x_9cefe76c))) {
         D_80081254->flags |= x_607c80f4;
-        obj->x_0232396f = x_200fa268;
+        obj->x_0232396f = fade_in_cb;
 
         v1 = obj->x_e2f64c57[0];
         v1->flags |= x_f51cb721;
@@ -357,7 +357,7 @@ void present_haze_init(Object *obj, s16 x_84ff873b) {
 void present_theend_skip(Object *obj) {
     if (x_59ce598c[sWinnerIdx].buttons & x_9cefe76c) {
         x_e30d50d2 |= x_bee364e0;
-        x_e38a6e19 = x_a3a32a2b;
+        x_e38a6e19 = SCREEN_EASY_WIN;
         obj->flags |= x_f51cb721;
     }
 }
@@ -387,18 +387,18 @@ void present_transition_screen(Object *obj) {
     x_e30d50d2 |= x_bee364e0;
 
     switch (gCurrentScreenId) {
-        case x_a3a32a2b:
+        case SCREEN_EASY_WIN:
             x_e38a6e19 = SCREEN_BOOT;
             break;
-        case x_1a4de9e0:
-            x_e38a6e19 = x_a3a32a2b;
+        case SCREEN_PRACTICE:
+            x_e38a6e19 = SCREEN_EASY_WIN;
             break;
-        case x_896bb5ec:
+        case SCREEN_ATTRACT_AGAIN:
             x_e38a6e19 = x_b804ecb4;
             break;
         default:
             if (1) {}
-            x_e38a6e19 = x_a3a32a2b;
+            x_e38a6e19 = SCREEN_EASY_WIN;
             break;
     }
 
@@ -430,7 +430,7 @@ void present_win_result_loop(Object *obj) {
     }
 
     if (!(D_80081250 + D_80081254->x_64a8566c + 40)) {
-        if (gCurrentScreenId != x_a3a32a2b) {
+        if (gCurrentScreenId != SCREEN_EASY_WIN) {
             present_transition_screen(obj);
         } else {
             obj->x_0232396f = present_win_fade_out;
@@ -478,7 +478,7 @@ void present_intro_presents(Object *obj) {
     if (s2->obj->frameCounter == s2->x_7f68c36b->x_bab9966d - 2) {
         x_e30d50d2 |= x_bee364e0;
         obj->flags |= x_f51cb721;
-        x_e38a6e19 = x_1a4de9e0;
+        x_e38a6e19 = SCREEN_PRACTICE;
         x_25025961(D_80081254);
     }
 

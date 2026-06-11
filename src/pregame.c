@@ -657,7 +657,7 @@ void x_6fa3f96e(Object *obj) {
     x_e30d50d2 |= x_bee364e0;
 
     if (x_5e4e2788 == x_e483bf48 || x_5e4e2788 == x_557d3dd6) {
-        x_e38a6e19 = gWadCondLoad[x_6db66fc3].x_eb1fe45b + x_a98e3fb7;
+        x_e38a6e19 = gWadCondLoad[x_6db66fc3].x_eb1fe45b + SCREEN_CHAR_SELECT_OFFSET;
         if (gWadCondLoad[x_83106b21].x_7d8e7a6f + gWadCondLoad[x_6f0b3be3].x_7d8e7a6f == 0) {
             x_e38a6e19 = gWadCondLoad[1 - x_6db66fc3].x_eb1fe45b + x_d61e86e9;
             gWadCondLoad[1 - x_6db66fc3].x_fb21ca8c = 1;
@@ -668,7 +668,7 @@ void x_6fa3f96e(Object *obj) {
             x_e38a6e19 = x_3509e8f6;
         }
     } else {
-        x_e38a6e19 = gWadCondLoad[obj->x_0f4167b4[11]].x_eb1fe45b + x_a98e3fb7;
+        x_e38a6e19 = gWadCondLoad[obj->x_0f4167b4[11]].x_eb1fe45b + SCREEN_CHAR_SELECT_OFFSET;
         gWadCondLoad[obj->x_0f4167b4[11]].x_fb21ca8c++;
     }
 
@@ -918,7 +918,7 @@ void x_7caf7d71(s16 x_30bbe547, u16 x_84ff873b, u16 x_2092f891) {
     gWadCondLoad[x_30bbe547].x_fb21ca8c = 0;
     gWadCondLoad[x_30bbe547].x_03604d94 = FALSE;
     gWadCondLoad[1 - x_30bbe547].x_03604d94 = TRUE;
-    D_800801F1 = TRUE;
+    sFirstFight = TRUE;
 
     for (i = 0; i < 11; i++) {
         D_800B6350[0][i] = D_800B6350[1][i] = 0;
@@ -1013,8 +1013,8 @@ x_64b038aa x_e521e2f2[] = { { D_8004A114, x_5b38dd2f, 0, 0 },
                             { D_8004A18C, x_2cd57f74, 5, 0 },
                             { D_8004A19C, x_2cd57f74, 6, 0 },
                             { D_8004A1AC, x_2cd57f74, 7, 0 },
-                            { D_8004A1BC, x_d8d91897, x_c4ddde6d, x_a98e3fb7 },
-                            { D_8004A1CC, x_d8d91897, x_ff5073d4, x_1a4de9e0 },
+                            { D_8004A1BC, x_d8d91897, x_c4ddde6d, SCREEN_CHAR_SELECT_OFFSET },
+                            { D_8004A1CC, x_d8d91897, x_ff5073d4, SCREEN_PRACTICE },
                             { D_8004A1E0, x_d8d91897, x_73cf9ceb, x_3b539526 },
                             { D_8004A1F4, x_d8d91897, x_6a049984, x_8774b75f },
                             { D_8004A208, x_d8d91897, x_537ef8a7, x_04d94c4d },

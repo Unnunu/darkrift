@@ -86,17 +86,17 @@
     {
       "name": "select_stage_task",
       "line": 415,
-      "summary": "Stage select / options entry: waits for either player at slot 8 (options), press start → x_f699a14d."
+      "summary": "Stage select / options entry: waits for either player at slot 8 (options), press start → SCREEN_TITLE."
     },
     {
       "name": "select_stage_screen",
       "line": 450,
-      "summary": "Stage selection screen: L/R cycles through x_edb381f3 stages, loads background preview via wad, Start → game (x_f699a14d)."
+      "summary": "Stage selection screen: L/R cycles through x_edb381f3 stages, loads background preview via wad, Start → game (SCREEN_TITLE)."
     },
     {
       "name": "select_score_confirm",
       "line": 500,
-      "summary": "Score display: press Start by either player → transition to game (x_f699a14d)."
+      "summary": "Score display: press Start by either player → transition to game (SCREEN_TITLE)."
     },
     {
       "name": "select_digit_render",
@@ -115,19 +115,62 @@
     }
   ],
   "globals": [
-    { "name": "sRemapSlotTbl", "line": 7, "summary": "Button index → remap slot mapping: {4,7,6,5,1,3,0,2}" },
-    { "name": "sCharButtonTbl", "line": 8, "summary": "Character ID → button mask mapping (8 entries, also used in menu.c)" },
-    { "name": "sScoreTitleObj", "line": 10, "summary": "Score screen title/header object" },
-    { "name": "D_80081464", "line": 11, "summary": "Unused char[4] buffer" },
-    { "name": "sDigitObjs", "line": 12, "summary": "10 digit sprite objects for score display" },
-    { "name": "sDigitIdx", "line": 13, "summary": "Current digit slot index counter" },
-    { "name": "sSelectUnused", "line": 14, "summary": "Unused BSS variable" },
-    { "name": "sCharSortOrder", "line": 15, "summary": "Character index sort order by weighted score (descending)" },
-    { "name": "sCharScores", "line": 16, "summary": "Character weighted average scores" },
-    { "name": "sScorePos", "line": 17, "summary": "XY position tracker for score row rendering" }
+    {
+      "name": "sRemapSlotTbl",
+      "line": 7,
+      "summary": "Button index → remap slot mapping: {4,7,6,5,1,3,0,2}"
+    },
+    {
+      "name": "sCharButtonTbl",
+      "line": 8,
+      "summary": "Character ID → button mask mapping (8 entries, also used in menu.c)"
+    },
+    {
+      "name": "sScoreTitleObj",
+      "line": 10,
+      "summary": "Score screen title/header object"
+    },
+    {
+      "name": "D_80081464",
+      "line": 11,
+      "summary": "Unused char[4] buffer"
+    },
+    {
+      "name": "sDigitObjs",
+      "line": 12,
+      "summary": "10 digit sprite objects for score display"
+    },
+    {
+      "name": "sDigitIdx",
+      "line": 13,
+      "summary": "Current digit slot index counter"
+    },
+    {
+      "name": "sSelectUnused",
+      "line": 14,
+      "summary": "Unused BSS variable"
+    },
+    {
+      "name": "sCharSortOrder",
+      "line": 15,
+      "summary": "Character index sort order by weighted score (descending)"
+    },
+    {
+      "name": "sCharScores",
+      "line": 16,
+      "summary": "Character weighted average scores"
+    },
+    {
+      "name": "sScorePos",
+      "line": 17,
+      "summary": "XY position tracker for score row rendering"
+    }
   ],
   "macros": [
-    { "name": "x_7fe97e23", "summary": "10 — max digit sprite count" }
+    {
+      "name": "x_7fe97e23",
+      "summary": "10 — max digit sprite count"
+    }
   ],
   "subsystems": [
     "Options menu: 10-slot grid with d-pad navigation, 15-frame debounce, per-slot value animation",
@@ -136,7 +179,7 @@
     "Score display: sorted character ranking with digit rendering"
   ],
   "open_questions": [
-    "What are the exact screen IDs (x_f699a14d, x_b84bd571, etc.)?",
+    "What are the exact screen IDs (SCREEN_TITLE, x_b84bd571, etc.)?",
     "The macro x_7fe97e23 should be renamed to something meaningful (e.g., DIGIT_COUNT)"
   ]
 }

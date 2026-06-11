@@ -428,7 +428,7 @@ void select_stage_task(Object *obj) {
     if (x_7e485fc0->x_0f4167b4[x_f6733052] == 8) {
         obj->flags &= ~x_c537cafa;
         if (x_59ce598c[x_83106b21].buttons == x_9cefe76c) {
-            x_e38a6e19 = x_f699a14d;
+            x_e38a6e19 = SCREEN_TITLE;
             x_e30d50d2 |= x_bee364e0;
             TASK_END(obj->currentTask);
             v1++;
@@ -437,7 +437,7 @@ void select_stage_task(Object *obj) {
     if (x_71d00f40->x_0f4167b4[x_f6733052] == 8) {
         obj->flags &= ~x_c537cafa;
         if (x_59ce598c[x_6f0b3be3].buttons == x_9cefe76c) {
-            x_e38a6e19 = x_f699a14d;
+            x_e38a6e19 = SCREEN_TITLE;
             x_e30d50d2 |= x_bee364e0;
             TASK_END(obj->currentTask);
             v1++;
@@ -492,7 +492,7 @@ void select_stage_screen(Object *obj) {
         x_a0e73601(x_c309f013, 0, 13, 0, 0, x_96186256, x_35b88489);
         audio_sfx_play(2, 1);
     } else if (buttons & x_9cefe76c) {
-        x_e38a6e19 = x_f699a14d;
+        x_e38a6e19 = SCREEN_TITLE;
         x_e30d50d2 |= x_bee364e0;
         TASK_END(obj->currentTask);
         audio_sfx_play(2, 0);
@@ -504,7 +504,7 @@ void select_score_confirm(Object *obj) {
 
     buttons = x_59ce598c[x_83106b21].buttons | x_59ce598c[x_6f0b3be3].buttons;
     if (buttons & x_9cefe76c) {
-        x_e38a6e19 = x_f699a14d;
+        x_e38a6e19 = SCREEN_TITLE;
         x_e30d50d2 |= x_bee364e0;
         TASK_END(obj->currentTask);
         audio_sfx_play(2, 0);

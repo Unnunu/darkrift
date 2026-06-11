@@ -326,7 +326,7 @@ void x_5430cd84(Object *obj) {
             case 117:
                 x_e30d50d2 |= x_700de048 | x_bee364e0;
                 obj->flags |= x_f51cb721;
-                x_e38a6e19 = x_802d9c2e;
+                x_e38a6e19 = SCREEN_WAIT;
                 return;
         }
 

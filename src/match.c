@@ -25,7 +25,7 @@ void x_3da93607(Object *);
 
 void x_97edc3db(Object *obj) {
     x_e30d50d2 |= x_ecbcd14e | x_700de048 | x_bee364e0;
-    x_e38a6e19 = x_802d9c2e;
+    x_e38a6e19 = SCREEN_WAIT;
     present_set_screen(x_a5f164ca);
     if (gWadCondLoad[x_83106b21].x_03604d94) {
         D_80049390 = gWadCondLoad[x_83106b21].x_eb1fe45b;
@@ -242,7 +242,7 @@ void x_1240eb8e(Object *obj) {
     sWadUnk2 = 0;
 
     x_943bfef8();
-    x_7bc4ef6e();
+    fight_init();
     audio_unmute();
 
     v0 = obj->x_e2f64c57[4];
@@ -320,7 +320,7 @@ void x_1240eb8e(Object *obj) {
     x_824b9544[x_83106b21].x_b9252303->flags &= ~TASK_TIME_BASED;
     x_824b9544[x_6f0b3be3].x_b9252303->flags &= ~TASK_TIME_BASED;
 
-    x_09a33777 = 0x800;
+    sMenuState = 0x800;
     hud_score_create();
 }
 
@@ -395,7 +395,7 @@ void x_ae7ca939(Object *obj) {
         gWadCondLoad[x_83106b21].x_7d8e7a6f = gWadCondLoad[x_6f0b3be3].x_7d8e7a6f = 0;
     } else {
         a2 = x_68289eaa(x_692a98c7);
-        x_e38a6e19 = x_802d9c2e;
+        x_e38a6e19 = SCREEN_WAIT;
 
         if (x_5e4e2788 == x_a5f164ca) {
             a3 = x_adcfd05c == gWadCondLoad[x_6f0b3be3].x_b2b764b3;
@@ -425,7 +425,7 @@ void x_8afd5019(Object *obj) {
     Object *v0;
 
     if (x_59ce598c[1 - sWinnerIdx].buttons & x_9cefe76c) {
-        x_91192da2();
+        fight_reset();
 
         if (x_5e4e2788 == x_e483bf48) {
             D_800B6350[x_6f0b3be3][x_824b9544[x_6f0b3be3].x_eb1fe45b] = FALSE;
@@ -481,7 +481,7 @@ x_09d6a3c8 x_9503a93c(u32 x_30bbe547, u8 x_84ff873b) {
 
         D_800B6368[gWadCondLoad[x_30bbe547].x_eb1fe45b].x_a962826d++;
         D_800B6368[gWadCondLoad[1 - x_30bbe547].x_eb1fe45b].x_3f3ac621++;
-        D_800801F1 = TRUE;
+        sFirstFight = TRUE;
 
         switch (x_5e4e2788) {
             case x_e483bf48:
@@ -492,7 +492,7 @@ x_09d6a3c8 x_9503a93c(u32 x_30bbe547, u8 x_84ff873b) {
                     if (x_7dc12b61(1 - x_30bbe547) == -1) {
                         a3 = x_0907749d;
                     } else {
-                        x_e38a6e19 = x_802d9c2e;
+                        x_e38a6e19 = SCREEN_WAIT;
                         a3 = x_3aac9858;
                     }
                 } else {
@@ -733,9 +733,9 @@ void x_3da93607(Object *obj) {
 void x_76daaaf5(Object *obj) {
     Object *x_1b70419e;
 
-    if (x_9df63a90 || x_824b9544[x_83106b21].obj->x_9200c538 <= 0 || x_824b9544[x_6f0b3be3].obj->x_9200c538 <= 0) {
+    if (sFightLocked || x_824b9544[x_83106b21].obj->x_9200c538 <= 0 || x_824b9544[x_6f0b3be3].obj->x_9200c538 <= 0) {
         hud_score_cleanup();
-        x_9df63a90 = TRUE;
+        sFightLocked = TRUE;
         if (!(x_e30d50d2 & x_86c5bc33)) {
             x_e30d50d2 |= x_86c5bc33;
             return;
@@ -750,7 +750,8 @@ void x_76daaaf5(Object *obj) {
 
         sIsDraw = (x_824b9544[x_83106b21].obj->x_9200c538 == x_824b9544[x_6f0b3be3].obj->x_9200c538);
 
-        if (x_9df63a90 && x_824b9544[x_83106b21].obj->x_9200c538 != 0 && x_824b9544[x_6f0b3be3].obj->x_9200c538 != 0) {
+        if (sFightLocked && x_824b9544[x_83106b21].obj->x_9200c538 != 0 &&
+            x_824b9544[x_6f0b3be3].obj->x_9200c538 != 0) {
             x_1b70419e = x_68289eaa(x_7dab12f3);
             D_80081454 = x_1b70419e;
             obj->x_e2f64c57[4] = x_1b70419e;
@@ -769,7 +770,7 @@ void x_8f307638(Object *obj) {
     x_59ce598c[x_83106b21].enabled = x_59ce598c[x_6f0b3be3].enabled = TRUE;
 
     if (++obj->x_0f4167b4[0] > 900) {
-        x_e38a6e19 = x_2a3e474b;
+        x_e38a6e19 = SCREEN_OPTIONS;
         x_e30d50d2 |= x_bee364e0;
         obj->flags |= x_f51cb721;
     } else if ((x_59ce598c[x_83106b21].buttons & x_9cefe76c) || (x_59ce598c[x_6f0b3be3].buttons & x_9cefe76c)) {
@@ -816,7 +817,7 @@ void x_a21936ef(Object *obj) {
 
 void x_b372f4dd(void) {
     sHudRootObj = obj_create_task(x_a21936ef, 1);
-    x_9df63a90 = FALSE;
+    sFightLocked = FALSE;
     x_6f8aa7af = 0;
 
     x_59ce598c[x_83106b21].enabled = x_59ce598c[x_6f0b3be3].enabled = FALSE;

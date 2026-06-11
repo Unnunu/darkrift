@@ -454,7 +454,7 @@ u8 ai_select_action_full(Player *player, u8 x_84ff873b) {
             x_1fd4d41c = &player->x_ad9d3e42[*x_cf2c3c6e & 0xFF];
             x_cf2c3c6e++;
 
-            if (x_1fd4d41c->x_1350cb4d <= x_9a96200f + 200 && x_1fd4d41c->x_62addb22 >= x_9a96200f - 200) {
+            if (x_1fd4d41c->x_1350cb4d <= gFighterDistance + 200 && x_1fd4d41c->x_62addb22 >= gFighterDistance - 200) {
                 x_81570fde = &player->x_81570fde;
                 if (x_1fd4d41c->x_1e623531 & x_1e623531) {
                     if (x_1fd4d41c != x_81570fde->x_14906c66[1] && x_1fd4d41c != x_81570fde->x_14906c66[2] ||
@@ -481,7 +481,7 @@ u8 ai_select_action_full(Player *player, u8 x_84ff873b) {
 
                 player->x_81570fde.x_14906c66[0] = NULL;
 
-                if (x_9a96200f > 800 && !(player->x_81570fde.x_b2c79d6e & x_c98846bd)) {
+                if (gFighterDistance > 800 && !(player->x_81570fde.x_b2c79d6e & x_c98846bd)) {
                     if (gWadCondLoad[player->x_30bbe547].x_cc57155e <= 3) {
                         player_exec_move(player, x_4a0f5c6c, TRUE);
                         wad_strcpy(x_824b9544[x_6f0b3be3].x_81570fde.x_599a5202, "Default ss fwd");
@@ -493,7 +493,7 @@ u8 ai_select_action_full(Player *player, u8 x_84ff873b) {
 
                     player->x_81570fde.x_b2c79d6e &= ~(x_dc8d9492 | x_83011c23);
                     player->x_81570fde.x_b2c79d6e |= x_c98846bd;
-                } else if (x_9a96200f < 800 && !(player->x_81570fde.x_b2c79d6e << 19)) { // ???
+                } else if (gFighterDistance < 800 && !(player->x_81570fde.x_b2c79d6e << 19)) { // ???
                     if (gWadCondLoad[player->x_30bbe547].x_cc57155e <= 3) {
                         player_exec_move(player, x_96d30734, TRUE);
                         wad_strcpy(x_824b9544[x_6f0b3be3].x_81570fde.x_599a5202, "Default ss bak");
@@ -559,7 +559,7 @@ s16 ai_tactic_guard_far(Player *player) {
     }
 
     x_4b1172f5 = ai_enemy_action_check(player, &x_73dff70e);
-    return (x_9a96200f > player->x_81570fde.x_5a6554ba) && !(player->flags & x_9298c772) &&
+    return (gFighterDistance > player->x_81570fde.x_5a6554ba) && !(player->flags & x_9298c772) &&
            (!x_4b1172f5 || (x_73dff70e->flags & AI_REACT_CHAIN_ONLY));
 }
 
@@ -568,7 +568,7 @@ s16 ai_tactic_guard(Player *player) {
     u8 x_4b1172f5;
 
     x_4b1172f5 = ai_enemy_action_check(player, &x_73dff70e);
-    return (x_9a96200f > player->x_81570fde.x_5a6554ba) && !(player->flags & x_9298c772) &&
+    return (gFighterDistance > player->x_81570fde.x_5a6554ba) && !(player->flags & x_9298c772) &&
            (!x_4b1172f5 || (x_73dff70e->flags & AI_REACT_CHAIN_ONLY));
 }
 
@@ -582,7 +582,7 @@ s16 ai_tactic_approach(Player *player) {
         return TRUE;
     }
 
-    return (x_9a96200f < player->x_81570fde.x_5a6554ba) && !(player->flags & x_9298c772) &&
+    return (gFighterDistance < player->x_81570fde.x_5a6554ba) && !(player->flags & x_9298c772) &&
            (!x_4b1172f5 || (x_73dff70e->flags & AI_REACT_CHAIN_ONLY));
 }
 

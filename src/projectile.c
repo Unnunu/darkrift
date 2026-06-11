@@ -422,7 +422,7 @@ u8 guard_prediction_check(Player *x_cc1d0de5, Player *x_84ff873b, Object *x_2092
 
     a2 = (x_388306ba *) x_2092f891->x_0f4167b4[6];
 
-    if (x_9df63a90 && !sHudActive) {
+    if (sFightLocked && !sHudActive) {
         return FALSE;
     }
 

@@ -87,7 +87,7 @@
     {
       "name": "hud_timer_cb",
       "line": 449,
-      "summary": "Match countdown: 60-frame delay, decrements timer object's frameCounter 0→9 cyclically. When done, set x_9df63a90 = TRUE (time over)."
+      "summary": "Match countdown: 60-frame delay, decrements timer object's frameCounter 0→9 cyclically. When done, set sFightLocked = TRUE (time over)."
     },
     {
       "name": "hud_timer_start",
@@ -171,36 +171,128 @@
     }
   ],
   "globals": [
-    { "name": "sDustHitObjDef", "line": 13, "summary": "Object prototype for dust hit sprite (dusthit.sp3)" },
-    { "name": "sRoundWinCount", "line": 14, "summary": "Round win counter, inc from present.c on victory" },
-    { "name": "sHealthBarSlideL", "line": 15, "summary": "Left health bar slide offset (shrink animation)" },
-    { "name": "sHealthBarSlideR", "line": 16, "summary": "Right health bar slide offset (shrink animation)" },
-    { "name": "sHealthBarVtxL", "line": 17, "summary": "Left health bar vertex template (2 framebuffers × 4 verts)" },
-    { "name": "sHealthBarVtxR", "line": 25, "summary": "Right health bar vertex template (2 framebuffers × 4 verts)" },
-    { "name": "sDigitPos", "line": 33, "summary": "Score digit screen positions (6 entries: P1 units/tens/hundreds, P2 hundreds/tens/units)" },
-    { "name": "sDigitPosPtr", "line": 39, "summary": "Pointer array to sDigitPos entries" },
-    { "name": "sCachedHealthL", "line": 41, "summary": "Cached P1 health bar width (for delta detection)" },
-    { "name": "sCachedHealthR", "line": 42, "summary": "Cached P2 health bar width" },
-    { "name": "sHealthPartL", "line": 43, "summary": "P1 health bar model part pointer" },
-    { "name": "sHealthPartR", "line": 44, "summary": "P2 health bar model part pointer" },
-    { "name": "sHudRootObj", "line": 45, "summary": "Root HUD task object (created in match.c as x_a21936ef task)" },
-    { "name": "sTimerObj", "line": 46, "summary": "Timer display object" },
-    { "name": "sHealthBarTask", "line": 47, "summary": "Health bar update task object" },
-    { "name": "sScoreObj", "line": 48, "summary": "Score digit container object" },
-    { "name": "sWinnerIdx", "line": 49, "summary": "Current round winner player index" },
-    { "name": "sIsDraw", "line": 50, "summary": "Draw/tie flag" },
-    { "name": "sHudActive", "line": 51, "summary": "HUD active flag — checked by combat/projectile/eff_hit to skip hit effects during HUD fades" },
-    { "name": "sHudUnused", "line": 52, "summary": "Unused BSS variable" },
-    { "name": "sRoundIndicators", "line": 53, "summary": "Round indicator stock icons (2 players × 10 max)" },
-    { "name": "sHealthFlashL", "line": 54, "summary": "Left health bar flash timer (30-frame animation)" },
-    { "name": "sHealthFlashR", "line": 55, "summary": "Right health bar flash timer" }
+    {
+      "name": "sDustHitObjDef",
+      "line": 13,
+      "summary": "Object prototype for dust hit sprite (dusthit.sp3)"
+    },
+    {
+      "name": "sRoundWinCount",
+      "line": 14,
+      "summary": "Round win counter, inc from present.c on victory"
+    },
+    {
+      "name": "sHealthBarSlideL",
+      "line": 15,
+      "summary": "Left health bar slide offset (shrink animation)"
+    },
+    {
+      "name": "sHealthBarSlideR",
+      "line": 16,
+      "summary": "Right health bar slide offset (shrink animation)"
+    },
+    {
+      "name": "sHealthBarVtxL",
+      "line": 17,
+      "summary": "Left health bar vertex template (2 framebuffers × 4 verts)"
+    },
+    {
+      "name": "sHealthBarVtxR",
+      "line": 25,
+      "summary": "Right health bar vertex template (2 framebuffers × 4 verts)"
+    },
+    {
+      "name": "sDigitPos",
+      "line": 33,
+      "summary": "Score digit screen positions (6 entries: P1 units/tens/hundreds, P2 hundreds/tens/units)"
+    },
+    {
+      "name": "sDigitPosPtr",
+      "line": 39,
+      "summary": "Pointer array to sDigitPos entries"
+    },
+    {
+      "name": "sCachedHealthL",
+      "line": 41,
+      "summary": "Cached P1 health bar width (for delta detection)"
+    },
+    {
+      "name": "sCachedHealthR",
+      "line": 42,
+      "summary": "Cached P2 health bar width"
+    },
+    {
+      "name": "sHealthPartL",
+      "line": 43,
+      "summary": "P1 health bar model part pointer"
+    },
+    {
+      "name": "sHealthPartR",
+      "line": 44,
+      "summary": "P2 health bar model part pointer"
+    },
+    {
+      "name": "sHudRootObj",
+      "line": 45,
+      "summary": "Root HUD task object (created in match.c as x_a21936ef task)"
+    },
+    {
+      "name": "sTimerObj",
+      "line": 46,
+      "summary": "Timer display object"
+    },
+    {
+      "name": "sHealthBarTask",
+      "line": 47,
+      "summary": "Health bar update task object"
+    },
+    {
+      "name": "sScoreObj",
+      "line": 48,
+      "summary": "Score digit container object"
+    },
+    {
+      "name": "sWinnerIdx",
+      "line": 49,
+      "summary": "Current round winner player index"
+    },
+    {
+      "name": "sIsDraw",
+      "line": 50,
+      "summary": "Draw/tie flag"
+    },
+    {
+      "name": "sHudActive",
+      "line": 51,
+      "summary": "HUD active flag — checked by combat/projectile/eff_hit to skip hit effects during HUD fades"
+    },
+    {
+      "name": "sHudUnused",
+      "line": 52,
+      "summary": "Unused BSS variable"
+    },
+    {
+      "name": "sRoundIndicators",
+      "line": 53,
+      "summary": "Round indicator stock icons (2 players × 10 max)"
+    },
+    {
+      "name": "sHealthFlashL",
+      "line": 54,
+      "summary": "Left health bar flash timer (30-frame animation)"
+    },
+    {
+      "name": "sHealthFlashR",
+      "line": 55,
+      "summary": "Right health bar flash timer"
+    }
   ],
   "subsystems": [
     "Health bar tween: delta-driven slide with flash animation (30 frames), GT ucode XLU quad",
     "Score digit rendering: hundreds/tens/ones from bars.sp2 sprite sheet",
     "Result screen FSM: fade-in → controls-hint → skip → pause/continue → attract",
     "Dust hit particles: ring (5) and line (13) spawns triggered from eff_hit.c on impact",
-    "Timer: 60 fps countdown, triggers time-over flag x_9df63a90"
+    "Timer: 60 fps countdown, triggers time-over flag sFightLocked"
   ],
   "open_questions": [
     "D_80081434/D_80081438 referenced in hud_score_cleanup — where defined? Are they debug alloc counters?"
