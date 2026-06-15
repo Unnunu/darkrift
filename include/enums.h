@@ -146,7 +146,7 @@ enum GfxFlags {
     GFX_FLAG_CUTSCENE = 0x1,
     GFX_FLAG_OVERLAY = 0x2,
     GFX_FLAG_4 = 0x4,
-    GFX_FLAG_ZBUFFER = 0x8,
+    GFX_FLAG_NO_ZBUFFER = 0x8,
     GFX_FLAG_10 = 0x10,
     GFX_FLAG_20 = 0x20,
     GFX_FLAG_NO_FILL_BAR = 0x40
@@ -242,6 +242,18 @@ enum MessageIds {
 enum ObjectPriorites {
     OBJ_PRIO_DEFAULT = 0x1000,
     OBJ_PRIO_HIGHER = 0x1100,
+};
+
+enum RspState {
+    RSP_IDLE = 0,
+    RSP_BUSY = 1,
+    RDP_BUSY = 2,
+};
+
+enum SyncState {
+    SYNC_START = 0,
+    SYNC_WAITING = 7,
+    SYNC_DONE = 1,
 };
 
 enum VarOptionControls {

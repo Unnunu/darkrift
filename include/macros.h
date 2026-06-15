@@ -9,6 +9,8 @@
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
 
+#define TASK_POOL_SIZE 50
+
 #define ROUND(x) (s32)((x) >= 0.0 ? (x) + 0.5 : (x) - 0.5)
 
 #define GET_ITEM(array)             \

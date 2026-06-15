@@ -102,8 +102,17 @@ sQuadTexDl = 0x8005BF58;
 sFullscreenQuadVtx = 0x800492B0;
 sQuadTriangles = 0x80049330;
 
+gFillColorR = 0x80080110;
+gFillColorG = 0x80080112;
+gFillColorB = 0x80080114;
 gFogColorR = 0x80080130;
 gFogColorG = 0x80080132;
 gFogColorB = 0x80080134;
 gFogNear = 0x80080136;
 gFogFar = 0x80080138;
+gZBuffer = 0x80080120;
+sScrollFillEnabled = 0x80080129;
+init_rsp_task_ucodes = 0x80002C54;
+sF3dTask = 0x8004CBC8;
+sOverlayTask = 0x801389B8;
+sWadMemBase = 0x80080124;

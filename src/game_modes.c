@@ -12,7 +12,7 @@ extern s16 D_80049B30[];
 extern u8 gAudioMono;
 extern s32 gMusicVolume;
 extern s32 gSoundVolume;
-extern u8 D_80080129;
+extern u8 sScrollFillEnabled;
 extern s16 D_80081250;
 extern BackgroundLayer *D_80081254;
 extern s16 sQuadColor;
@@ -169,11 +169,11 @@ void wait_screen(void) {
     u16 sp2C;
     u16 sp2A;
 
-    sp2E = D_80080110;
-    sp2A = D_80080114;
-    sp2C = D_80080112;
+    sp2E = gFillColorR;
+    sp2A = gFillColorB;
+    sp2C = gFillColorG;
 
-    D_80080110 = D_80080112 = D_80080114 = 0;
+    gFillColorR = gFillColorG = gFillColorB = 0;
     gBgScrollY = 0;
 
     asset_open_folder("/title/wait", CONTEXT_6000);
@@ -185,9 +185,9 @@ void wait_screen(void) {
     obj->vars[0] = 6;
     game_main_loop();
 
-    D_80080110 = sp2E;
-    D_80080112 = sp2C;
-    D_80080114 = sp2A;
+    gFillColorR = sp2E;
+    gFillColorG = sp2C;
+    gFillColorB = sp2A;
     gGlobalFlags &= ~(GAME_FLAG_NO_TRANSITION | GAME_FLAG_SKIP_EXIT_FADE | GAME_FLAG_MODE_DONE);
     gGfxFlags &= ~GFX_FLAG_20;
     func_8002630C(0x6000);
@@ -943,7 +943,7 @@ void run_36_mode(void) {
     worker = create_worker(func_8001A4FC, 0x1000);
     worker->vars[2] = 4;
     func_8001A158(worker, 0x4000);
-    D_80080129 = FALSE;
+    sScrollFillEnabled = FALSE;
     gGlobalFlags |= GAME_FLAG_TRANSITION;
     gGfxFlags |= GFX_FLAG_20;
     game_main_loop();
@@ -962,7 +962,7 @@ void run_37_mode(void) {
     asset_open_folder("/title/easywin", CONTEXT_4000);
     bg_layer_create("easyimg", 0, 0, 0, 0, TEX_FLAG_1, 0x4000);
     create_worker(func_80009554, 0x1000);
-    D_80080129 = TRUE;
+    sScrollFillEnabled = TRUE;
     gGlobalFlags |= GAME_FLAG_TRANSITION;
     gGfxFlags |= GFX_FLAG_20;
     game_main_loop();
@@ -976,9 +976,9 @@ void func_8000965C(s32 arg0) {
     gFogColorR = gGameModes[arg0].unk_10;
     gFogColorG = gGameModes[arg0].unk_11;
     gFogColorB = gGameModes[arg0].unk_12;
-    D_80080110 = gGameModes[arg0].unk_0C;
-    D_80080112 = gGameModes[arg0].unk_0D;
-    D_80080114 = gGameModes[arg0].unk_0E;
+    gFillColorR = gGameModes[arg0].unk_0C;
+    gFillColorG = gGameModes[arg0].unk_0D;
+    gFillColorB = gGameModes[arg0].unk_0E;
 }
 
 void func_800096D0(u8 arg0) {
@@ -1155,7 +1155,7 @@ void func_80009CE0(void) {
     obj->vars[1] = 0;
     obj->vars[0] = 0;
 
-    D_80080129 = FALSE;
+    sScrollFillEnabled = FALSE;
     gGlobalFlags |= GAME_FLAG_TRANSITION;
     camera_cutscene_shake_start(gCamera, sp56);
 }
@@ -1339,7 +1339,7 @@ void run_intro_mode(void) {
     UIElement sp3C = { 83, func_80019A9C, 0, 0x1000, "options2.sp2" };
     Vec4i sp2C = { 160, 155, 0, 0 };
 
-    D_80080129 = FALSE;
+    sScrollFillEnabled = FALSE;
     gGfxFlags |= GFX_FLAG_20;
     gGlobalFlags |= GAME_FLAG_TRANSITION;
     asset_open_folder("/title/tit_int", CONTEXT_2000);

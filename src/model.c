@@ -236,7 +236,7 @@ s32 func_80034860(Object *obj) {
     for (i = 0; i < count; batches1++, batches2++, i++) {
         s32 isOpaque = nodeOpaque[i];
 
-        if (isOpaque && !D_800801E2) {
+        if (isOpaque && !sZBufferMode) {
             batch_set_zb_on(batches1, transparent);
             batch_set_zb_on(batches2, transparent);
         } else {
@@ -246,7 +246,7 @@ s32 func_80034860(Object *obj) {
 
         batchInfo = model->batchInfos[i];
         for (j = 1; j < model->batchCounts[i]; j++) {
-            if (isOpaque && !D_800801E2) {
+            if (isOpaque && !sZBufferMode) {
                 batch_set_zb_on(&batchInfo[j], transparent);
             } else {
                 batch_set_zb_off(&batchInfo[j], noAA, transparent);
@@ -295,14 +295,14 @@ void func_80034AB8(Object *obj) {
             func_80034A58(obj);
             set_post_render_hook(func_80034860, obj);
             obj->flags |= OBJ_FLAG_40000000;
-            gGfxFlags |= GFX_FLAG_ZBUFFER;
+            gGfxFlags |= GFX_FLAG_NO_ZBUFFER;
         }
         return;
     }
 
     if (!(gGfxFlags & GFX_FLAG_10) && (obj->flags & OBJ_FLAG_40000000)) {
-        if (D_800801E2) {
-            gGfxFlags &= ~GFX_FLAG_ZBUFFER;
+        if (sZBufferMode) {
+            gGfxFlags &= ~GFX_FLAG_NO_ZBUFFER;
         } else {
             memcpy(ptr2, ptr1, numNodes);
             set_post_render_hook(func_80034860, obj);

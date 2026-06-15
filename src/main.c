@@ -107,7 +107,7 @@ DisplayData gDisplayData[2];
 DisplayData *gActiveDisplayData;
 
 void sync_scheduler_tasks(void);
-// void execute_scheduled_tasks(void);
+// void submit_scheduled_tasks(void);
 void initialize_game_mode(u16);
 void initialize_battle_globals(void);
 void reset_game_mode_systems(u16);
@@ -142,7 +142,7 @@ void gfx_init_frame(void) {
     gSPTriBatch(gMainBatchPos, NULL, NULL, NULL, NULL);
     sync_scheduler_tasks();
     sched_wait_vretrace(TRUE);
-    execute_scheduled_tasks();
+    submit_scheduled_tasks();
 
     gActiveDisplayData = &gDisplayData[gFramebufferIndex];
 }
@@ -224,7 +224,7 @@ void render_frame(void) {
     }
 
     sched_wait_vretrace(TRUE);
-    execute_scheduled_tasks();
+    submit_scheduled_tasks();
 
     if (++sFrameProfilingCounter >= 0x100) {
         sFrameProfilingCounter = 0;

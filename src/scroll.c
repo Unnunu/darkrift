@@ -3,7 +3,7 @@
 
 extern s32 gGfxFlags;
 extern s32 gBgScrollY;
-extern u8 D_80080129;
+extern u8 sScrollFillEnabled;
 extern Gfx *gMainGfxPos;
 extern Gfx *gBgGfxPos;
 extern Gfx *gOverlayGfxPos;
@@ -249,7 +249,7 @@ void bg_draw_all(void) {
         bgLayer = bgLayer->next;
     }
 
-    if (maxY > 0 && D_80080129 && !(gGfxFlags & GFX_FLAG_NO_FILL_BAR)) {
+    if (maxY > 0 && sScrollFillEnabled && !(gGfxFlags & GFX_FLAG_NO_FILL_BAR)) {
         s32 t3 = MIN(64, SCREEN_HEIGHT - maxY);
 
         gDPPipeSync(gMainGfxPos++);
