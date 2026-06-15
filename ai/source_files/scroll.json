@@ -2,9 +2,46 @@
   "hash": "4a248257",
   "name": "scroll",
   "path": "src/scroll.c",
-  "lines": 548,
+  "lines": 399,
   "evidence": {
     "strings": ["scroll.c"]
   },
-  "summary": "Scroll/background layer rendering + Object system (linked list management)."
+  "summary": "Scrolling tiled background system: linked list of ScrollLayer entries loaded from .tex WAD files. Render with parallax using camera-written gScreenScrollX/Y. Also renders sprite frames for HUD/menu via sprite_draw.",
+  "functions": [
+    "scroll_add — Create ScrollLayer from .tex WAD entry, prepend to sScrollList. Params: path, flags, scroll speeds (16.16), render list ID.",
+    "scroll_remove — Remove and free a ScrollLayer from sScrollList.",
+    "scroll_tile_render — Render one layer's texture strip to screen via gDPLoadTextureTile + gSPTextureRectangle. Handles wrapping for repeating backgrounds (two branches: narrow vs wide texture).",
+    "scroll_render — Main frame render: iterate sScrollList, compute screen Y position from scroll offsets, clip, call scroll_tile_render per visible layer. Fill fog color below lowest layer.",
+    "scroll_debug_iter — Empty stub iterating SpriteDef entries. Does nothing (dead code?).",
+    "sprite_draw — Render a single animated sprite frame from Object's SpriteDef. Used for HUD/countdown elements. NON_MATCHING."
+  ],
+  "structs": {
+    "ScrollLayer": "Texture layer: width, height, hasPalette, flags, imageData, palette, xOffs, yOffs, speedX (16.16), speedY (16.16), next pointer."
+  },
+  "globals": {
+    "sScrollList": "ScrollLayer* — Head of linked list.",
+    "sScrollAccumX": "s32 — Horizontal scroll accumulator (16.16 fixed-point).",
+    "gScreenScrollY": "s32 — Vertical screen offset. Defined here, written by camera.c each frame.",
+    "gScreenScrollX": "s32 — Horizontal screen offset. Defined here, written by camera.c each frame.",
+    "sScrollPad0-5": "s32[6] — .bss padding, potentially unused."
+  },
+  "key_apis": [
+    "gDPLoadTLUT_pal256",
+    "gDPLoadTextureTile",
+    "gSPTextureRectangle",
+    "gDPFillRectangle",
+    "gDPPipeSync",
+    "gDPSetCycleType",
+    "gDPSetFillColor",
+    "wad_entry_find",
+    "wad_strcpy",
+    "wad_strcat",
+    "mem_alloc_debug",
+    "mem_free"
+  ],
+  "open_questions": [
+    "scroll_debug_iter — dead code? Not exported, only iterates SpriteDef with empty inner loop.",
+    "D_80081420-D_80081438 (.bss) — 6 slots of padding, verify they're truly unused before renaming.",
+    "SpriteFrame/SpriteDef types (x_7cc7ad58/x_8ab35fe5) — Wave 2 struct rename candidates."
+  ]
 }

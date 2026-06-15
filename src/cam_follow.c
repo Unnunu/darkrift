@@ -91,8 +91,8 @@ void cam_save_state(void) {
     D_8013C310.y = gCamTargetObj->pos.y;
     D_8013C310.z = gCamTargetObj->pos.z;
 
-    D_8013C332 = x_e74df613;
-    D_8013C334 = x_6c647b3a;
+    D_8013C332 = sScrollAccumX;
+    D_8013C334 = gScreenScrollY;
     D_8013C336 = sCamYaw;
     D_8013C338 = sCamAngleCurr;
 
@@ -102,7 +102,7 @@ void cam_save_state(void) {
 }
 
 void cam_save_state_alt(void) {
-    D_8013C302 = x_e74df613;
+    D_8013C302 = sScrollAccumX;
 
     x_84e6adae.x = sCamLookAt.x;
     x_84e6adae.y = sCamLookAt.y;
@@ -112,7 +112,7 @@ void cam_save_state_alt(void) {
     x_f8a5b34e.y = gCamTargetObj->pos.y;
     x_f8a5b34e.z = gCamTargetObj->pos.z;
 
-    D_8013C300 = x_6c647b3a;
+    D_8013C300 = gScreenScrollY;
     D_8013C304 = sCamYaw;
     D_8013C308 = sCamAngleCurr;
 }
@@ -129,8 +129,8 @@ void cam_cinematic_update(Object *obj) {
     sCamLookAt.y = D_8013C320.y;
     sCamLookAt.z = D_8013C320.z;
 
-    x_e74df613 = D_8013C332;
-    x_6c647b3a = D_8013C334;
+    sScrollAccumX = D_8013C332;
+    gScreenScrollY = D_8013C334;
     sCamYaw = D_8013C336;
     sCamAngleCurr = D_8013C338;
 
@@ -163,8 +163,8 @@ void cam_cinematic_update(Object *obj) {
     sCamLookAt.y = x_84e6adae.y;
     sCamLookAt.z = x_84e6adae.z;
 
-    x_6c647b3a = D_8013C300 - (s32) (sCamHeightOffs * 0.2f);
-    x_e74df613 = 0;
+    gScreenScrollY = D_8013C300 - (s32) (sCamHeightOffs * 0.2f);
+    sScrollAccumX = 0;
     sCamYaw = D_8013C304;
     sCamAngleCurr = D_8013C308;
 }
@@ -183,7 +183,7 @@ void cam_intro_skip_check(Object *obj) {
             x_e30d50d2 &= ~x_86c5bc33;
         }
 
-        x_e74df613 = 0;
+        sScrollAccumX = 0;
         sCamYaw = D_8013C304;
         sCamAngleCurr = D_8013C308;
 
@@ -559,7 +559,7 @@ void cam_update(Object *obj, u8 x_84ff873b) {
         } else if (x_20b9213f.x < 0) {
             x_dcab8ab0 = -((u32) (sqrtf(x_84ce1cfb(x_d318cea9) + x_84ce1cfb(x_6e851264)) + 0.5) >> 1);
         }
-        x_e74df613 += x_dcab8ab0;
+        sScrollAccumX += x_dcab8ab0;
     }
 
     x_720f6ac9 = sCamLookAt.x - gCamTargetObj->pos.x;
@@ -572,12 +572,12 @@ void cam_update(Object *obj, u8 x_84ff873b) {
 
     cam_calc_angle(x_720f6ac9, dz, x_5d21c78b, x_b7cc9533);
 
-    x_6c647b3a = sCamVertOffs;
+    gScreenScrollY = sCamVertOffs;
     if (x_024f6a8d > 1500) {
-        x_6c647b3a += (x_143af627 * (x_024f6a8d - 1500)) >> 0x10;
+        gScreenScrollY += (x_143af627 * (x_024f6a8d - 1500)) >> 0x10;
         if (obj->x_0f4167b4 || obj->x_0f4167b4) {} // @fake
     }
-    D_80081428 = sCamYaw;
+    gScreenScrollX = sCamYaw;
 
     if (x_84ff873b) {
         cam_boundary_check(obj);
@@ -619,8 +619,8 @@ void cam_battle_init(Object *obj) {
 }
 
 void cam_intro_wait_input(Object *obj) {
-    x_6c647b3a = sCamVertOffs;
-    D_80081428 = sCamYaw;
+    gScreenScrollY = sCamVertOffs;
+    gScreenScrollX = sCamYaw;
 
     if ((x_59ce598c[x_83106b21].buttons & x_9cefe76c) || (x_59ce598c[x_6f0b3be3].buttons & x_9cefe76c)) {
         if (x_5e4e2788 != x_79c2dc5b) {
@@ -631,7 +631,7 @@ void cam_intro_wait_input(Object *obj) {
             x_e30d50d2 &= ~x_86c5bc33;
         }
 
-        x_e74df613 = 0;
+        sScrollAccumX = 0;
         sCamYaw = D_8013C304;
         sCamAngleCurr = D_8013C308;
 
@@ -1071,9 +1071,9 @@ void cam_battle_update(Object *obj) {
     }
     obj->x_0f4167b4[2] = spEC;
 
-    x_6c647b3a = sCamVertOffs + x_1e5afea8 - (s32) (sCamHeightOffs * 0.2f);
-    if (spEC > 1500 && x_6c647b3a < -24) {
-        x_6c647b3a = -24;
+    gScreenScrollY = sCamVertOffs + x_1e5afea8 - (s32) (sCamHeightOffs * 0.2f);
+    if (spEC > 1500 && gScreenScrollY < -24) {
+        gScreenScrollY = -24;
     }
 
     sCamLookAt.y = ((x_6d4a1d2c * spEC) >> 16) + x_881ee8c3 - 480;
@@ -1141,7 +1141,7 @@ void cam_battle_update(Object *obj) {
             if (x_d753d975 < -2) {
                 x_d753d975 = -2;
             }
-            x_e74df613 += x_d753d975;
+            sScrollAccumX += x_d753d975;
         }
     }
 
@@ -1155,7 +1155,7 @@ void cam_battle_update(Object *obj) {
     obj->pos.z = ((spEC * x_6b913371) >> 12) + x_cadba9e3;
     obj->pos.y = x_d85eefcc + x_b64f16b7 - x_8c5f8c03;
 
-    D_80081428 = sCamYaw;
+    gScreenScrollX = sCamYaw;
 
     if (*gCamTargetObj->x_20d20338->x_50771dcd == NULL && !(x_824b9544[x_83106b21].flags & x_c865be3f) &&
             !(x_824b9544[x_6f0b3be3].flags & x_c865be3f) ||

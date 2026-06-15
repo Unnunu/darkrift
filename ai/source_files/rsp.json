@@ -39,7 +39,7 @@
     {
       "name": "rsp_clear_screen",
       "hash": "x_bdf191dd",
-      "summary": "Sets up display list to clear framebuffer and zbuffer. Uses G_CYC_FILL for zbuffer (writes G_MAXFBZ), then G_CYC_COPY for color fill with clear color (sClearColorR/G/B). Checks gGfxFlags & GFX_NO_ZCLEAR to skip zbuffer fill. If sClearZbuffer is TRUE, optionally clears only partial height (x_6c647b3a + 20 lines)."
+      "summary": "Sets up display list to clear framebuffer and zbuffer. Uses G_CYC_FILL for zbuffer (writes G_MAXFBZ), then G_CYC_COPY for color fill with clear color (sClearColorR/G/B). Checks gGfxFlags & GFX_NO_ZCLEAR to skip zbuffer fill. If sClearZbuffer is TRUE, optionally clears only partial height (gScreenScrollY + 20 lines)."
     },
     {
       "name": "rsp_task_init",

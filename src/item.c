@@ -429,7 +429,7 @@ Object *obj_create_from_def(x_88f11482 *pos, x_f0d7e70f *def, s32 context) {
 
     obj = obj_alloc(def->x_95ee18a8);
     obj_init(obj, pos, &sZeroVelocity, NULL, def->callback);
-    obj->x_0232396f = x_23e3afdf;
+    obj->x_0232396f = sprite_draw;
     obj->flags = def->flags;
     obj->flags |= x_3d723236;
     obj->frameCounter = def->x_f85f1359;

@@ -16,7 +16,7 @@ s16 sAttractCycleIdx = 0;
 
 /* .bss */
 s16 D_80081250;
-x_4a7d6dd4 *D_80081254;
+ScrollLayer *D_80081254;
 
 void present_set_screen(u16 x_cc1d0de5) {
     x_1acf99bf = x_5e4e2788;
@@ -230,9 +230,9 @@ void present_kronos_fade_in(Object *obj) {
     if (sFadeAlpha + 8 < 255) {
         sFadeAlpha += 8;
     } else {
-        mem_free(x_3b49183f);
-        x_3b49183f = NULL;
-        x_a0e73601("kronos", 0, 60, 0, 180, x_96186256, x_35b88489);
+        mem_free(sScrollList);
+        sScrollList = NULL;
+        scroll_add("kronos", 0, 60, 0, 180, x_96186256, x_35b88489);
         obj->x_0232396f = present_kronos_fade_out;
     }
 
@@ -276,7 +276,7 @@ void present_title_open(Object *obj) {
     Object *v1;
     Model *m;
 
-    if (D_80081250 + x_6c647b3a + x_84e8ddf2 >= 0 &&
+    if (D_80081250 + gScreenScrollY + x_84e8ddf2 >= 0 &&
         ((x_59ce598c[x_83106b21].buttons & x_9cefe76c) || (x_59ce598c[x_6f0b3be3].buttons & x_9cefe76c))) {
         D_80081254->flags |= x_607c80f4;
         obj->x_0232396f = fade_in_cb;
@@ -293,8 +293,8 @@ void present_title_open(Object *obj) {
 
     if (++obj->x_0f4167b4[2] == 4) {
         obj->x_0f4167b4[2] = 0;
-        if (D_80081250 + x_6c647b3a + x_84e8ddf2 >= 0) {
-            x_6c647b3a--;
+        if (D_80081250 + gScreenScrollY + x_84e8ddf2 >= 0) {
+            gScreenScrollY--;
             return;
         }
 
@@ -403,7 +403,7 @@ void present_transition_screen(Object *obj) {
     }
 
     obj->flags |= x_f51cb721;
-    x_25025961(D_80081254);
+    scroll_remove(D_80081254);
 }
 
 void present_win_fade_out(Object *obj) {
@@ -424,12 +424,12 @@ void present_win_fade_out(Object *obj) {
 void present_win_result_loop(Object *obj) {
     if (++obj->x_0f4167b4[3] == obj->x_0f4167b4[2]) {
         obj->x_0f4167b4[3] = 0;
-        if (D_80081250 + D_80081254->x_64a8566c + 40) {
-            D_80081254->x_64a8566c--;
+        if (D_80081250 + D_80081254->yOffs + 40) {
+            D_80081254->yOffs--;
         }
     }
 
-    if (!(D_80081250 + D_80081254->x_64a8566c + 40)) {
+    if (!(D_80081250 + D_80081254->yOffs + 40)) {
         if (gCurrentScreenId != SCREEN_EASY_WIN) {
             present_transition_screen(obj);
         } else {
@@ -479,11 +479,11 @@ void present_intro_presents(Object *obj) {
         x_e30d50d2 |= x_bee364e0;
         obj->flags |= x_f51cb721;
         x_e38a6e19 = SCREEN_PRACTICE;
-        x_25025961(D_80081254);
+        scroll_remove(D_80081254);
     }
 
     if (s2->obj->frameCounter == 260) {
-        D_80081254 = x_a0e73601("demispk", 0, 160, 0, 0, x_8ce7ef70, 0x3000);
+        D_80081254 = scroll_add("demispk", 0, 160, 0, 0, x_8ce7ef70, 0x3000);
     }
 
     while (sPresentsSfxTbl[i].x_af0aa1f8 != 0) {

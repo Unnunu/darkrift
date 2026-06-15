@@ -339,7 +339,7 @@ void x_8188d175(Object *obj) {
     if (x_e30d50d2 & x_700de048) {
         obj->flags |= x_f51cb721;
     }
-    x_23e3afdf(obj);
+    sprite_draw(obj);
 }
 
 void x_5f59e443(Object *obj) {
@@ -799,7 +799,7 @@ void x_8a4def91(Object *obj) {
 void x_f291cff5(Object *obj) {
     s32 q;
     if (D_8013C430 != 18 || (obj->flags & x_c537cafa)) {
-        x_23e3afdf(obj);
+        sprite_draw(obj);
         return;
     }
 
@@ -815,5 +815,5 @@ void x_f291cff5(Object *obj) {
         obj->frameCounter = (q = (obj->frameCounter & 1) == 0) + obj->x_0f4167b4[2];
     }
 
-    x_23e3afdf(obj);
+    sprite_draw(obj);
 }

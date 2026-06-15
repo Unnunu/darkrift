@@ -14,10 +14,10 @@ s32 sModelUnused;
 x_f752bb53 *sSortListHead;
 x_a8b4b5ce *sLightListHead;
 x_b57dc591 sLightFreeList;
-x_3b6b80ec *sFurTextures[16];
+WadTextureHeader *sFurTextures[16];
 u32 sFurTextureCount;
 
-void model_texture_register(x_3b6b80ec *texture) {
+void model_texture_register(WadTextureHeader *texture) {
     u32 i;
 
     for (i = 0; i < sFurTextureCount; i++) {
@@ -31,7 +31,7 @@ void model_texture_register(x_3b6b80ec *texture) {
 
 s32 texture_shift_full(void *unused) {
     u32 i, j;
-    x_3b6b80ec *texture;
+    WadTextureHeader *texture;
     u32 x_70b0b43c;
     u32 x_b16b10e1;
     u32 *x_eb7790f7;
@@ -60,7 +60,7 @@ s32 texture_shift_full(void *unused) {
 
 s32 texture_shift_line(void *unused) {
     u32 i, j, k;
-    x_3b6b80ec *v1;
+    WadTextureHeader *v1;
     u32 x_92cb1df0;
     u32 x_021bc5e0;
     u32 *x_eb7790f7;

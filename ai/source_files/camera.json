@@ -4,7 +4,9 @@
   "path": "src/camera.c",
   "lines": 267,
   "evidence": {
-    "strings": ["camera.c"]
+    "strings": [
+      "camera.c"
+    ]
   },
   "summary": "Camera core: create, init, per-frame view-proj matrix update, angle calc to target. Writes scroll offsets (sCamYaw/sCamVertOffs) to scroll.c globals each frame for background parallax.",
   "functions": [
@@ -37,8 +39,8 @@
     "sCamDefViewProjMtx": "MtxF — Default view-proj matrix.",
     "sCamTransform": "Transform — Camera Transform struct (hierarchy, matrices).",
     "sCamUnkStruct": "x_43bd08ed — Unknown transform-related struct.",
-    "sCamYaw": "s32 — Camera yaw angle (fixed-point). Written to D_80081428 each frame.",
-    "sCamVertOffs": "s32 — Camera vertical offset. Written to x_6c647b3a each frame.",
+    "sCamYaw": "s32 — Camera yaw angle (fixed-point). Written to gScreenScrollX each frame.",
+    "sCamVertOffs": "s32 — Camera vertical offset. Written to gScreenScrollY each frame.",
     "sCamHeightOffs": "s32 — Camera height offset (added to pos/lookAt Y).",
     "sCamFlag": "u8 — Boolean flag.",
     "sCamPrevYaw": "s32 — Previous frame yaw.",

@@ -2,7 +2,7 @@
 #include "task.h"
 
 extern s32 gGfxFlags;
-extern s32 x_6c647b3a;
+extern s32 gScreenScrollY;
 extern u8 sClearZbuffer;
 extern Gfx *gF3dDisplayListPtr;
 extern Gfx *gOverlayDlPtr;
@@ -11,56 +11,56 @@ extern s16 sFogColorR;
 extern s16 sFogColorG;
 extern s16 sFogColorB;
 
-x_4a7d6dd4 *x_3b49183f = NULL;
-s32 x_e74df613 = 0;
-s32 x_6c647b3a = 0;
+ScrollLayer *sScrollList = NULL;
+s32 sScrollAccumX = 0;
+s32 gScreenScrollY = 0;
 
 /* .bss */
 s32 D_80081420;
 s32 D_80081424;
-s32 D_80081428;
+s32 gScreenScrollX;
 s32 D_8008142C;
 s32 D_80081430;
 s32 D_80081434;
 s32 D_80081438;
 
-x_4a7d6dd4 *x_a0e73601(char *x_2b0c3984, s32 x_84ff873b, s32 x_64a8566c, s32 x_afebb108, s32 x_86f38745, s32 flags,
-                       s32 x_fb21ca8c) {
-    x_4a7d6dd4 *head;
+ScrollLayer *scroll_add(char *x_2b0c3984, s32 x_84ff873b, s32 x_64a8566c, s32 x_afebb108, s32 x_86f38745, s32 flags,
+                        s32 x_fb21ca8c) {
+    ScrollLayer *head;
     s32 pad;
-    x_3b6b80ec *x_d59386e0;
-    x_4a7d6dd4 *x_8dddde0e;
+    WadTextureHeader *x_d59386e0;
+    ScrollLayer *x_8dddde0e;
     char x_7244b466[20];
 
-    x_8dddde0e = mem_alloc_debug(sizeof(x_4a7d6dd4), "scroll.c", 21);
+    x_8dddde0e = mem_alloc_debug(sizeof(ScrollLayer), "scroll.c", 21);
 
     wad_strcpy(x_7244b466, x_2b0c3984);
     wad_strcat(x_7244b466, ".tex");
 
-    x_d59386e0 = (x_3b6b80ec *) sWadEntries[wad_entry_find(x_7244b466, x_fb21ca8c)].data;
+    x_d59386e0 = (WadTextureHeader *) sWadEntries[wad_entry_find(x_7244b466, x_fb21ca8c)].data;
 
     x_8dddde0e->width = x_d59386e0->width;
     x_8dddde0e->height = x_d59386e0->height;
-    x_8dddde0e->x_519855f8 = x_d59386e0->format;
+    x_8dddde0e->hasPalette = x_d59386e0->format;
     x_8dddde0e->flags = flags;
-    x_8dddde0e->x_afebb108 = x_afebb108;
-    x_8dddde0e->x_86f38745 = x_86f38745;
-    x_8dddde0e->x_08b62e4f = x_84ff873b;
-    x_8dddde0e->x_64a8566c = x_64a8566c;
-    x_8dddde0e->x_925c481a = x_d59386e0->data;
+    x_8dddde0e->speedX = x_afebb108;
+    x_8dddde0e->speedY = x_86f38745;
+    x_8dddde0e->xOffs = x_84ff873b;
+    x_8dddde0e->yOffs = x_64a8566c;
+    x_8dddde0e->imageData = x_d59386e0->data;
 
-    if (x_8dddde0e->x_519855f8 == TRUE) {
+    if (x_8dddde0e->hasPalette == TRUE) {
         x_8dddde0e->palette = x_d59386e0->data + x_8dddde0e->width * x_8dddde0e->height;
     } else {
         x_8dddde0e->palette = NULL;
     }
 
-    head = x_3b49183f;
-    x_3b49183f = x_8dddde0e;
+    head = sScrollList;
+    sScrollList = x_8dddde0e;
     x_8dddde0e->next = head;
 
     if (!(flags & x_96186256)) {
-        s16 temp = x_8dddde0e->x_925c481a[0] * 2;
+        s16 temp = x_8dddde0e->imageData[0] * 2;
         x_8dddde0e->palette[temp] = 0;
         x_8dddde0e->palette[temp + 1] = 0;
     }
@@ -71,14 +71,14 @@ x_4a7d6dd4 *x_a0e73601(char *x_2b0c3984, s32 x_84ff873b, s32 x_64a8566c, s32 x_a
     return x_8dddde0e;
 }
 
-void x_25025961(x_4a7d6dd4 *x_a0b04eac) {
-    x_4a7d6dd4 *it;
-    x_4a7d6dd4 *prev;
+void scroll_remove(ScrollLayer *x_a0b04eac) {
+    ScrollLayer *it;
+    ScrollLayer *prev;
 
-    it = x_3b49183f;
+    it = sScrollList;
 
     if (x_a0b04eac == it) {
-        x_3b49183f = x_3b49183f->next;
+        sScrollList = sScrollList->next;
         mem_free(x_a0b04eac);
         return;
     }
@@ -94,7 +94,7 @@ void x_25025961(x_4a7d6dd4 *x_a0b04eac) {
     }
 }
 
-void x_fde7a84d(x_4a7d6dd4 *x_8dddde0e, s32 x_ace80dba, s32 x_64a8566c, u32 height, u32 x_c2580ba5, u32 texT) {
+void scroll_tile_render(ScrollLayer *x_8dddde0e, s32 x_ace80dba, s32 x_64a8566c, u32 height, u32 x_c2580ba5, u32 texT) {
     Gfx **x_bde24317;
     s32 x_9dc253a1;
     u8 *image;
@@ -102,7 +102,7 @@ void x_fde7a84d(x_4a7d6dd4 *x_8dddde0e, s32 x_ace80dba, s32 x_64a8566c, u32 heig
     s32 x_54670c5d;
     s32 padding[6];
 
-    image = x_8dddde0e->x_925c481a;
+    image = x_8dddde0e->imageData;
     image += x_ace80dba * x_8dddde0e->width;
     x_9dc253a1 = x_8dddde0e->width;
     x_bde24317 = (x_8dddde0e->flags & x_8ce7ef70) ? &gF3dExtraListPtr : &gF3dDisplayListPtr;
@@ -198,8 +198,8 @@ void x_fde7a84d(x_4a7d6dd4 *x_8dddde0e, s32 x_ace80dba, s32 x_64a8566c, u32 heig
     }
 }
 
-void x_77751af8(void) {
-    x_4a7d6dd4 *x_8dddde0e;
+void scroll_render(void) {
+    ScrollLayer *x_8dddde0e;
     s32 x_c9084644;
     s32 x_16201079;
     s32 x_64a8566c;
@@ -210,16 +210,16 @@ void x_77751af8(void) {
 
     x_16201079 = 0;
 
-    for (x_8dddde0e = x_3b49183f; x_8dddde0e != NULL;) {
+    for (x_8dddde0e = sScrollList; x_8dddde0e != NULL;) {
         if (!(x_8dddde0e->flags & x_607c80f4)) {
             if (!(x_8dddde0e->flags & x_8ce7ef70)) {
-                x_c9084644 = ((x_8dddde0e->x_afebb108 * x_e74df613) >> 16) + D_80081428;
+                x_c9084644 = ((x_8dddde0e->speedX * sScrollAccumX) >> 16) + gScreenScrollX;
             } else {
                 x_c9084644 = 0;
             }
 
-            x_e97c45db = (x_8dddde0e->x_86f38745 * x_6c647b3a) >> 16;
-            x_e97c45db += x_8dddde0e->x_64a8566c;
+            x_e97c45db = (x_8dddde0e->speedY * gScreenScrollY) >> 16;
+            x_e97c45db += x_8dddde0e->yOffs;
 
             if (x_e97c45db >= x_84e8ddf2) {
                 x_8dddde0e = x_8dddde0e->next;
@@ -239,8 +239,8 @@ void x_77751af8(void) {
             }
 
             height = MIN(x_84e8ddf2 - x_64a8566c, x_8dddde0e->height - x_ace80dba);
-            x_c2580ba5 = (x_8dddde0e->x_08b62e4f + x_c9084644) % x_8dddde0e->width;
-            x_fde7a84d(x_8dddde0e, x_ace80dba, x_64a8566c, height, x_c2580ba5, 0);
+            x_c2580ba5 = (x_8dddde0e->xOffs + x_c9084644) % x_8dddde0e->width;
+            scroll_tile_render(x_8dddde0e, x_ace80dba, x_64a8566c, height, x_c2580ba5, 0);
 
             if (!(x_8dddde0e->flags & x_8ce7ef70) && x_16201079 < x_64a8566c + height &&
                 x_64a8566c + height < x_84e8ddf2) {
@@ -263,16 +263,16 @@ void x_77751af8(void) {
     }
 }
 
-void x_08216b8b(x_8ab35fe5 *x_cc1d0de5) {
+void scroll_debug_iter(SpriteDef *x_cc1d0de5) {
     u32 i, j;
     s32 pad[2];
     u32 x_4346f5cb;
-    x_7cc7ad58 *sprite;
+    SpriteFrame *sprite;
     s32 x_5b30c492;
 
     wad_debug_loop();
-    sprite = x_cc1d0de5->x_a34b89cc;
-    x_5b30c492 = x_cc1d0de5->x_5b30c492;
+    sprite = x_cc1d0de5->sprites;
+    x_5b30c492 = x_cc1d0de5->count;
     for (i = 0; i < x_5b30c492; i++, sprite++) {
         for (j = 0; j < x_4346f5cb; j++) {}
     }
@@ -280,11 +280,11 @@ void x_08216b8b(x_8ab35fe5 *x_cc1d0de5) {
 }
 
 #ifdef NON_MATCHING
-void x_23e3afdf(Object *obj) {
-    x_7cc7ad58 *v1;
+void sprite_draw(Object *obj) {
+    SpriteFrame *v1;
     u8 *pad;
     s32 width;
-    x_425d6ed3 *part;
+    x_23e34e3e *part;
     u32 i;
     s32 x_fa21689f;
     s32 pad2;
@@ -300,15 +300,15 @@ void x_23e3afdf(Object *obj) {
     u8 *x_925c481a;
     u16 *palette;
     u32 x_0dbe0778;
-    x_8ab35fe5 *x_904eaf67;
+    SpriteDef *x_904eaf67;
     Gfx **x_bde24317;
 
     x_904eaf67 = obj->x_904eaf67;
-    v1 = &x_904eaf67->x_a34b89cc[obj->frameCounter];
+    v1 = &x_904eaf67->sprites[obj->frameCounter];
 
     x_925c481a = v1->texture->data;
     part = v1->parts;
-    x_fa21689f = v1->x_fa21689f;
+    x_fa21689f = v1->partCount;
     width = v1->texture->width;
     palette = (u16 *) (v1->texture->data + width * v1->texture->height);
 
@@ -394,6 +394,6 @@ void x_23e3afdf(Object *obj) {
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/scroll/x_23e3afdf.s")
-void x_23e3afdf(Object *);
+#pragma GLOBAL_ASM("asm/nonmatchings/scroll/sprite_draw.s")
+void sprite_draw(Object *);
 #endif

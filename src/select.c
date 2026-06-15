@@ -472,11 +472,11 @@ void select_stage_screen(Object *obj) {
             obj->x_0f4167b4[0]--;
         }
 
-        mem_free(x_3b49183f);
-        x_3b49183f = NULL;
+        mem_free(sScrollList);
+        sScrollList = NULL;
         wad_strcpy(x_c309f013, D_8004B844[obj->x_0f4167b4[0]].x_1256da71->name);
         wad_strcat(x_c309f013, "st");
-        x_a0e73601(x_c309f013, 0, 13, 0, 0, x_96186256, x_35b88489);
+        scroll_add(x_c309f013, 0, 13, 0, 0, x_96186256, x_35b88489);
         audio_sfx_play(2, 1);
     } else if (buttons & x_fc4a9735) {
         x_eb1fe45b = obj->x_0f4167b4[0] = (obj->x_0f4167b4[0] + 1) % x_edb381f3;
@@ -485,11 +485,11 @@ void select_stage_screen(Object *obj) {
             obj->x_0f4167b4[0]++;
         }
 
-        mem_free(x_3b49183f);
-        x_3b49183f = NULL;
+        mem_free(sScrollList);
+        sScrollList = NULL;
         wad_strcpy(x_c309f013, D_8004B844[obj->x_0f4167b4[0]].x_1256da71->name);
         wad_strcat(x_c309f013, "st");
-        x_a0e73601(x_c309f013, 0, 13, 0, 0, x_96186256, x_35b88489);
+        scroll_add(x_c309f013, 0, 13, 0, 0, x_96186256, x_35b88489);
         audio_sfx_play(2, 1);
     } else if (buttons & x_9cefe76c) {
         x_e38a6e19 = SCREEN_TITLE;
@@ -566,7 +566,7 @@ void select_score_display(Object *obj) {
     }
     x_634768da = obj->x_0f4167b4[0]++;
     if (x_634768da == 0) {
-        x_25025961(x_3b49183f);
+        scroll_remove(sScrollList);
     }
 
     for (i = 0; i < x_7fe97e23; i++) {

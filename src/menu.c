@@ -14,7 +14,7 @@ extern s32 sMusicVolumeSetting;
 extern s32 gSfxVolumeSetting;
 extern u8 sClearZbuffer;
 extern s16 D_80081250;
-extern x_4a7d6dd4 *D_80081254;
+extern ScrollLayer *D_80081254;
 extern s16 sOverlayBrightness;
 extern s16 sPrevScreenId;
 extern s16 sWadUnk1;
@@ -164,7 +164,7 @@ void fade_to_black_cb(Object *obj) {
 
 void load_wait_screen(void) {
     Object *obj;
-    x_4a7d6dd4 *x_c9614940;
+    ScrollLayer *x_c9614940;
     u16 x_18643961;
     u16 x_32f1d6e2;
     u16 x_1c32c793;
@@ -174,10 +174,10 @@ void load_wait_screen(void) {
     x_32f1d6e2 = sClearColorG;
 
     sClearColorR = sClearColorG = sClearColorB = 0;
-    x_6c647b3a = 0;
+    gScreenScrollY = 0;
 
     wad_load_path("/title/wait", x_30af3448);
-    x_c9614940 = x_a0e73601("wait", 0, 0, 0, 0, x_96186256, 0x6000);
+    x_c9614940 = scroll_add("wait", 0, 0, 0, 0, x_96186256, 0x6000);
     x_e30d50d2 |= x_23ebd6b0 | x_d4c59644;
     gGfxFlags |= GFX_MENU_OVERLAY;
 
@@ -191,7 +191,7 @@ void load_wait_screen(void) {
     x_e30d50d2 &= ~(x_23ebd6b0 | x_d4c59644 | x_bee364e0);
     gGfxFlags &= ~GFX_MENU_OVERLAY;
     wad_unload_context(0x6000);
-    x_25025961(x_c9614940);
+    scroll_remove(x_c9614940);
 }
 
 void arena_pre_setup(void) {
@@ -229,13 +229,13 @@ void arena_cleanup(void) {
 
 void arena_stage_01(void) {
     s32 x_32f1d6e2 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
-    x_4a7d6dd4 *x_3f14db6e;
+    ScrollLayer *x_3f14db6e;
 
     arena_pre_setup();
-    x_3f14db6e = x_a0e73601("bg3", 0, 74, 0x2000, 0x10000, 0, x_32f1d6e2);
+    x_3f14db6e = scroll_add("bg3", 0, 74, 0x2000, 0x10000, 0, x_32f1d6e2);
     x_3f14db6e->height -= 16;
 
-    x_a0e73601("bg0", 0, 15, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
+    scroll_add("bg0", 0, 15, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
     ground_load("arena", x_32f1d6e2);
     hud_setup();
@@ -266,13 +266,13 @@ s32 D_80049400[] = { 0x40000, task_remove_current, 0x2800, 0x10000000, 0, "tc", 
 void arena_stage_02(void) {
     s32 x_32f1d6e2 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
     x_88f11482 x_4346f5cb = { 0, -500, 0, 0 };
-    x_4a7d6dd4 *x_3f14db6e;
+    ScrollLayer *x_3f14db6e;
 
     arena_pre_setup();
-    x_3f14db6e = x_a0e73601("bg2", 0, 74, 0x2000, 0x10000, 0, x_32f1d6e2);
+    x_3f14db6e = scroll_add("bg2", 0, 74, 0x2000, 0x10000, 0, x_32f1d6e2);
     x_3f14db6e->height -= 16;
 
-    x_a0e73601("bg0", 0, 15, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
+    scroll_add("bg0", 0, 15, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
     ground_load("arena", x_32f1d6e2);
     hud_setup();
@@ -289,13 +289,13 @@ void arena_stage_02(void) {
 
 void arena_stage_03(void) {
     s32 x_32f1d6e2 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
-    x_4a7d6dd4 *x_3f14db6e;
+    ScrollLayer *x_3f14db6e;
 
     arena_pre_setup();
-    x_3f14db6e = x_a0e73601("bg2", 0, -20, 0x2000, 0x10000, 0, x_32f1d6e2);
+    x_3f14db6e = scroll_add("bg2", 0, -20, 0x2000, 0x10000, 0, x_32f1d6e2);
     x_3f14db6e->height -= 16;
 
-    x_a0e73601("bg0", 0, 8, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
+    scroll_add("bg0", 0, 8, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
     ground_load("arena", x_32f1d6e2);
     hud_setup();
@@ -312,13 +312,13 @@ void arena_stage_03(void) {
 
 void arena_stage_04(void) {
     s32 x_32f1d6e2 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
-    x_4a7d6dd4 *x_3f14db6e;
+    ScrollLayer *x_3f14db6e;
 
     arena_pre_setup();
-    x_3f14db6e = x_a0e73601("bg2", 0, 40, 0x2000, 0x10000, 0, x_32f1d6e2);
+    x_3f14db6e = scroll_add("bg2", 0, 40, 0x2000, 0x10000, 0, x_32f1d6e2);
     x_3f14db6e->height -= 16;
 
-    x_a0e73601("bg0", 0, -24, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
+    scroll_add("bg0", 0, -24, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
     ground_load("arena", x_32f1d6e2);
     hud_setup();
@@ -335,13 +335,13 @@ void arena_stage_04(void) {
 
 void arena_stage_05(void) {
     s32 x_32f1d6e2 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
-    x_4a7d6dd4 *x_3f14db6e;
+    ScrollLayer *x_3f14db6e;
 
     arena_pre_setup();
-    x_3f14db6e = x_a0e73601("bg2", 0, 52, 0x2000, 0x10000, 0, x_32f1d6e2);
+    x_3f14db6e = scroll_add("bg2", 0, 52, 0x2000, 0x10000, 0, x_32f1d6e2);
     x_3f14db6e->height -= 16;
 
-    x_a0e73601("bg0", 0, 0, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
+    scroll_add("bg0", 0, 0, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
     ground_load("arena", x_32f1d6e2);
     hud_setup();
@@ -358,12 +358,12 @@ void arena_stage_05(void) {
 
 void arena_stage_06(void) {
     s32 x_32f1d6e2 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
-    x_4a7d6dd4 *x_3f14db6e;
+    ScrollLayer *x_3f14db6e;
 
     arena_pre_setup();
-    x_3f14db6e = x_a0e73601("bg2", 0, 96, 0x2000, 0x10000, 0, x_32f1d6e2);
+    x_3f14db6e = scroll_add("bg2", 0, 96, 0x2000, 0x10000, 0, x_32f1d6e2);
     x_3f14db6e->height -= 16;
-    x_a0e73601("bg0", 0, 8, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
+    scroll_add("bg0", 0, 8, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
     ground_load("arena", x_32f1d6e2);
     hud_setup();
@@ -382,8 +382,8 @@ void arena_stage_07(void) {
     s32 x_32f1d6e2 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
 
     arena_pre_setup();
-    x_a0e73601("bg2", 0, 94, 0x2000, 0x10000, 0, x_32f1d6e2);
-    x_a0e73601("bg0", 0, -8, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
+    scroll_add("bg2", 0, 94, 0x2000, 0x10000, 0, x_32f1d6e2);
+    scroll_add("bg0", 0, -8, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
     ground_load("arena", x_32f1d6e2);
     hud_setup();
@@ -400,13 +400,13 @@ void arena_stage_07(void) {
 
 void arena_stage_08(void) {
     s32 x_32f1d6e2 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
-    x_4a7d6dd4 *x_3f14db6e;
+    ScrollLayer *x_3f14db6e;
 
     arena_pre_setup();
-    x_3f14db6e = x_a0e73601("bg2", 0, -7, 0x2000, 0x10000, 0, x_32f1d6e2);
+    x_3f14db6e = scroll_add("bg2", 0, -7, 0x2000, 0x10000, 0, x_32f1d6e2);
     x_3f14db6e->height -= 16;
 
-    x_a0e73601("bg0", 0, -64, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
+    scroll_add("bg0", 0, -64, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
     ground_load("arena", x_32f1d6e2);
     hud_setup();
@@ -423,13 +423,13 @@ void arena_stage_08(void) {
 
 void arena_stage_09(void) {
     s32 x_32f1d6e2 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
-    x_4a7d6dd4 *x_3f14db6e;
+    ScrollLayer *x_3f14db6e;
 
     arena_pre_setup();
-    x_3f14db6e = x_a0e73601("bg2", 0, 20, 0x2000, 0x10000, 0, x_32f1d6e2);
+    x_3f14db6e = scroll_add("bg2", 0, 20, 0x2000, 0x10000, 0, x_32f1d6e2);
     x_3f14db6e->height -= 16;
 
-    x_a0e73601("bg0", 0, -24, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
+    scroll_add("bg0", 0, -24, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
     ground_load("arena", x_32f1d6e2);
     hud_setup();
@@ -446,13 +446,13 @@ void arena_stage_09(void) {
 
 void arena_stage_10(void) {
     s32 x_32f1d6e2 = gWadCondLoad[x_6f0b3be3].x_fb21ca8c;
-    x_4a7d6dd4 *x_3f14db6e;
+    ScrollLayer *x_3f14db6e;
 
     arena_pre_setup();
-    x_3f14db6e = x_a0e73601("bg2", 0, -6, 0x2000, 0x10000, 0, x_32f1d6e2);
+    x_3f14db6e = scroll_add("bg2", 0, -6, 0x2000, 0x10000, 0, x_32f1d6e2);
     x_3f14db6e->height -= 16;
 
-    x_a0e73601("bg0", 0, 4, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
+    scroll_add("bg0", 0, 4, 0x1000, 0x10000, x_96186256, x_32f1d6e2);
 
     ground_load("arena", x_32f1d6e2);
     hud_setup();
@@ -477,8 +477,8 @@ void char_select_countdown(Object *obj) {
         obj->x_0f4167b4[1]++;
         if (obj->x_0f4167b4[1] == 4) {
             obj->x_0f4167b4[1] = 0;
-            if (D_80081250 + D_80081254->x_64a8566c + 40) {
-                D_80081254->x_64a8566c--;
+            if (D_80081250 + D_80081254->yOffs + 40) {
+                D_80081254->yOffs--;
             } else {
                 if (x_5e4e2788 != x_3658fb97) {
                     gWadCondLoad[sLastWinnerIdx].x_fb21ca8c = TRUE;
@@ -496,7 +496,7 @@ void char_select_countdown(Object *obj) {
         x_59ce598c[a3].x_c4397934 = TRUE;
         if ((x_59ce598c[a3].buttons & x_9cefe76c) ||
             x_5e4e2788 == x_3658fb97 && (x_59ce598c[1 - a3].buttons & x_9cefe76c)) {
-            x_25025961(D_80081254);
+            scroll_remove(D_80081254);
             if (x_5e4e2788 != x_3658fb97) {
                 x_e38a6e19 = gWadCondLoad[sLastWinnerIdx].x_eb1fe45b + SCREEN_CHAR_SELECT_OFFSET;
                 gWadCondLoad[sLastWinnerIdx].x_fb21ca8c = TRUE;
@@ -600,10 +600,10 @@ void intro_gore(void) {
 
     wad_load_path("/gore/goreint", x_46bec5bf);
     fight_intro_setup(TRUE, 0x70, 0x3000);
-    D_80081254 = x_a0e73601("goreint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
+    D_80081254 = scroll_add("goreint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
     D_80081250 = D_80081254->height;
-    x_a0e73601("bg3", 0, 74, 0x2000, 0x10000, 0, x_a7710cd7);
-    x_a0e73601("bg0", 0, 15, 0x1000, 0x10000, x_96186256, x_a7710cd7);
+    scroll_add("bg3", 0, 74, 0x2000, 0x10000, 0, x_a7710cd7);
+    scroll_add("bg0", 0, 15, 0x1000, 0x10000, x_96186256, x_a7710cd7);
     ground_load("arena", x_a7710cd7);
     tr_scene_loop();
 
@@ -619,10 +619,10 @@ void intro_aaro(void) {
 
     wad_load_path("/aaro/aaroint", x_46bec5bf);
     fight_intro_setup(TRUE, 0x70, 0x3000);
-    D_80081254 = x_a0e73601("aaroint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
+    D_80081254 = scroll_add("aaroint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
     D_80081250 = D_80081254->height;
-    x_a0e73601("bg2", 0, 74, 0x10000, 0x10000, 0, x_a7710cd7);
-    x_a0e73601("bg0", 0, 15, 0x8000, 0x10000, x_96186256, x_a7710cd7);
+    scroll_add("bg2", 0, 74, 0x10000, 0x10000, 0, x_a7710cd7);
+    scroll_add("bg0", 0, 15, 0x8000, 0x10000, x_96186256, x_a7710cd7);
     ground_load("arena", x_a7710cd7);
     tr_scene_loop();
 
@@ -638,10 +638,10 @@ void intro_demi(void) {
 
     wad_load_path("/demi/demiint", x_46bec5bf);
     fight_intro_setup(TRUE, 0x70, 0x3000);
-    D_80081254 = x_a0e73601("demiint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
+    D_80081254 = scroll_add("demiint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
     D_80081250 = D_80081254->height;
-    x_a0e73601("bg2", 0, -8, 0x2000, 0x10000, 0, x_a7710cd7);
-    x_a0e73601("bg0", 0, 8, 0x1000, 0x10000, x_96186256, x_a7710cd7);
+    scroll_add("bg2", 0, -8, 0x2000, 0x10000, 0, x_a7710cd7);
+    scroll_add("bg0", 0, 8, 0x1000, 0x10000, x_96186256, x_a7710cd7);
     ground_load("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
@@ -656,10 +656,10 @@ void intro_demo(void) {
 
     wad_load_path("/demo/demoint", x_46bec5bf);
     fight_intro_setup(TRUE, 0x70, 0x3000);
-    D_80081254 = x_a0e73601("demoint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
+    D_80081254 = scroll_add("demoint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
     D_80081250 = D_80081254->height;
-    x_a0e73601("bg2", 0, 32, 0x2000, 0x10000, 0, x_a7710cd7);
-    x_a0e73601("bg0", 0, -24, 0x1000, 0x10000, x_96186256, x_a7710cd7);
+    scroll_add("bg2", 0, 32, 0x2000, 0x10000, 0, x_a7710cd7);
+    scroll_add("bg0", 0, -24, 0x1000, 0x10000, x_96186256, x_a7710cd7);
     ground_load("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
@@ -674,10 +674,10 @@ void intro_eve(void) {
 
     wad_load_path("/eve/eveint", x_46bec5bf);
     fight_intro_setup(TRUE, 0x70, 0x3000);
-    D_80081254 = x_a0e73601("eveint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
+    D_80081254 = scroll_add("eveint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
     D_80081250 = D_80081254->height;
-    x_a0e73601("bg2", 0, 52, 0x2000, 0x10000, 0, x_a7710cd7);
-    x_a0e73601("bg0", 0, 0, 0x1000, 0x10000, x_96186256, x_a7710cd7);
+    scroll_add("bg2", 0, 52, 0x2000, 0x10000, 0, x_a7710cd7);
+    scroll_add("bg0", 0, 0, 0x1000, 0x10000, x_96186256, x_a7710cd7);
     ground_load("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
@@ -692,10 +692,10 @@ void intro_morp(void) {
 
     wad_load_path("/morp/morpint", x_46bec5bf);
     fight_intro_setup(TRUE, 0x70, 0x3000);
-    D_80081254 = x_a0e73601("morpint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
+    D_80081254 = scroll_add("morpint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
     D_80081250 = D_80081254->height;
-    x_a0e73601("bg2", 0, 96, 0x2000, 0x10000, 0, x_a7710cd7);
-    x_a0e73601("bg0", 0, 8, 0x1000, 0x10000, x_96186256, x_a7710cd7);
+    scroll_add("bg2", 0, 96, 0x2000, 0x10000, 0, x_a7710cd7);
+    scroll_add("bg0", 0, 8, 0x1000, 0x10000, x_96186256, x_a7710cd7);
     ground_load("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
@@ -710,10 +710,10 @@ void intro_niik(void) {
 
     wad_load_path("/niik/niikint", x_46bec5bf);
     fight_intro_setup(TRUE, 0x70, 0x3000);
-    D_80081254 = x_a0e73601("niikint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
+    D_80081254 = scroll_add("niikint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
     D_80081250 = D_80081254->height;
-    x_a0e73601("bg2", 0, 94, 0x2000, 0x10000, 0, x_a7710cd7);
-    x_a0e73601("bg0", 0, -8, 0x1000, 0x10000, x_96186256, x_a7710cd7);
+    scroll_add("bg2", 0, 94, 0x2000, 0x10000, 0, x_a7710cd7);
+    scroll_add("bg0", 0, -8, 0x1000, 0x10000, x_96186256, x_a7710cd7);
     ground_load("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
@@ -728,10 +728,10 @@ void intro_scar(void) {
 
     wad_load_path("/scar/scarint", x_46bec5bf);
     fight_intro_setup(TRUE, 0x70, 0x3000);
-    D_80081254 = x_a0e73601("scarint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
+    D_80081254 = scroll_add("scarint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
     D_80081250 = D_80081254->height;
-    x_a0e73601("bg2", 0, 0, 0x2000, 0x10000, 0, x_a7710cd7);
-    x_a0e73601("bg0", 0, -64, 0x1000, 0x10000, x_96186256, x_a7710cd7);
+    scroll_add("bg2", 0, 0, 0x2000, 0x10000, 0, x_a7710cd7);
+    scroll_add("bg0", 0, -64, 0x1000, 0x10000, x_96186256, x_a7710cd7);
     ground_load("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
@@ -746,10 +746,10 @@ void intro_sono(void) {
 
     wad_load_path("/sono/sonoint", x_46bec5bf);
     fight_intro_setup(TRUE, 0x70, 0x3000);
-    D_80081254 = x_a0e73601("sonoint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
+    D_80081254 = scroll_add("sonoint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
     D_80081250 = D_80081254->height;
-    x_a0e73601("bg2", 0, 26, 0x2000, 0x10000, 0, x_a7710cd7);
-    x_a0e73601("bg0", 0, -24, 0x1000, 0x10000, x_96186256, x_a7710cd7);
+    scroll_add("bg2", 0, 26, 0x2000, 0x10000, 0, x_a7710cd7);
+    scroll_add("bg0", 0, -24, 0x1000, 0x10000, x_96186256, x_a7710cd7);
     ground_load("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
@@ -764,10 +764,10 @@ void intro_zenm(void) {
 
     wad_load_path("/zenm/zenmint", x_46bec5bf);
     fight_intro_setup(TRUE, 0x70, 0x3000);
-    D_80081254 = x_a0e73601("zenmint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
+    D_80081254 = scroll_add("zenmint", 0, 250, 0, 0, x_8ce7ef70, 0x3000);
     D_80081250 = D_80081254->height;
-    x_a0e73601("bg2", 0, -6, 0x2000, 0x10000, 0, x_a7710cd7);
-    x_a0e73601("bg0", 0, 4, 0x1000, 0x10000, x_96186256, x_a7710cd7);
+    scroll_add("bg2", 0, -6, 0x2000, 0x10000, 0, x_a7710cd7);
+    scroll_add("bg0", 0, 4, 0x1000, 0x10000, x_96186256, x_a7710cd7);
     ground_load("arena", x_a7710cd7);
     tr_scene_loop();
     wad_unload_context(0x3000);
@@ -797,7 +797,7 @@ void boss_sono(void) {
     Object *x_942c59c7;
     void *a3;
     x_88f11482 x_93463df6 = { -200, 0, 0, 0 };
-    x_4a7d6dd4 *x_3f14db6e;
+    ScrollLayer *x_3f14db6e;
 
     gWadCondLoad[x_83106b21].x_eb1fe45b = x_968cc9a2;
     gWadCondLoad[x_83106b21].x_fb21ca8c = TRUE;
@@ -810,7 +810,7 @@ void boss_sono(void) {
     gGfxFlags |= GFX_MENU_OVERLAY;
 
     wad_load_path("/sono/prize", x_46bec5bf);
-    x_3f14db6e = x_a0e73601("prize", 0, 100, 0, 0, x_8ce7ef70, 0x3000);
+    x_3f14db6e = scroll_add("prize", 0, 100, 0, 0, x_8ce7ef70, 0x3000);
     obj = obj_create_task(fade_to_black_cb, 0x1000);
     obj->x_0f4167b4[0] = 6;
     tr_scene_loop();
@@ -819,15 +819,15 @@ void boss_sono(void) {
     gGfxFlags &= ~GFX_MENU_OVERLAY;
     wad_load_path("/sono/sonoboss", x_46bec5bf);
     fight_intro_setup(FALSE, 346, 0x3000);
-    x_a0e73601("bg2", 0, 26, 0x2000, 0x10000, 0, 0);
-    x_a0e73601("bg0", 0, -24, 0x1000, 0x10000, x_96186256, 0);
+    scroll_add("bg2", 0, 26, 0x2000, 0x10000, 0, 0);
+    scroll_add("bg0", 0, -24, 0x1000, 0x10000, x_96186256, 0);
     ground_load("arena", 0);
     a3 = sWadEntries[wad_entry_find("relic.k2", 0x3000)].x_4962fc73;
     x_942c59c7 = obj_create_with_model_ptr(&x_93463df6, 0x1000, anim_loop, a3);
     x_942c59c7->x_224610f1.y = 0x400;
     x_942c59c7->color.a = 80;
     obj_create_task(boss_sono_end_check, 0x1000);
-    x_25025961(x_3f14db6e);
+    scroll_remove(x_3f14db6e);
     tr_scene_loop();
 
     wad_unload_context(0x3000);
@@ -891,8 +891,8 @@ void boss_demi(void) {
     obj->x_224610f1.y = 0x400;
     obj->color.a = 80;
 
-    x_a0e73601("bg2", 0, -32, 0x2000, 0x10000, 0, x_fc517ba8);
-    x_a0e73601("bg0", 0, 8, 0x1000, 0x10000, x_96186256, x_fc517ba8);
+    scroll_add("bg2", 0, -32, 0x2000, 0x10000, 0, x_fc517ba8);
+    scroll_add("bg0", 0, 8, 0x1000, 0x10000, x_96186256, x_fc517ba8);
     ground_load("arena", x_fc517ba8);
     sFightLocked = TRUE;
     tr_scene_loop();
@@ -925,8 +925,8 @@ void ending_char(void) {
     wad_strcpy(x_49781937, D_8004B844[x_de61763c].x_1256da71->name);
     wad_strcat(x_49781937, "end1");
 
-    D_80081254 = x_a0e73601(x_49781937, 0, 40, 0, 0, x_96186256, 0x4000);
-    D_80081254 = x_a0e73601("passwd", 0, 205, 0, 0, x_96186256, 0x4000);
+    D_80081254 = scroll_add(x_49781937, 0, 40, 0, 0, x_96186256, 0x4000);
+    D_80081254 = scroll_add("passwd", 0, 205, 0, 0, x_96186256, 0x4000);
     x_e30d50d2 |= x_86c5bc33;
     gGfxFlags |= GFX_MENU_OVERLAY;
     tr_scene_loop();
@@ -938,7 +938,7 @@ void credits_screen(void) {
 
     wad_unload_all();
     wad_load_path("/title/credit", x_f238a878);
-    D_80081254 = x_a0e73601("credit", 0, 250, 0, 0, x_8ce7ef70, 0x4000);
+    D_80081254 = scroll_add("credit", 0, 250, 0, 0, x_8ce7ef70, 0x4000);
     D_80081250 = D_80081254->height;
     x_87eba76e = obj_create_task(present_win_result_loop, 0x1000);
     x_87eba76e->x_0f4167b4[2] = 4;
@@ -960,7 +960,7 @@ void ending_easywin_input(Object *obj) {
 void ending_easywin(void) {
     wad_unload_all();
     wad_load_path("/title/easywin", x_f238a878);
-    x_a0e73601("easyimg", 0, 0, 0, 0, x_96186256, 0x4000);
+    scroll_add("easyimg", 0, 0, 0, 0, x_96186256, 0x4000);
     obj_create_task(ending_easywin_input, 0x1000);
     sClearZbuffer = TRUE;
     x_e30d50d2 |= x_86c5bc33;
@@ -1046,8 +1046,8 @@ void demo_fight_setup(u8 x_cc1d0de5) {
     intro_movies_load(&x_824b9544[x_b3c51f8a], a3, 0x4000);
     intro_movies_load(&x_824b9544[t9], s0, 0x4000);
     gGfxFlags |= GFX_FLAG_4;
-    x_a0e73601("bg2", 0, -27, 0x2000, 0x10000, 0, x_b3c51f8a);
-    x_a0e73601("bg0", x_b3c51f8a * 0, 8, 0x1000, 0x10000, x_96186256, x_b3c51f8a);
+    scroll_add("bg2", 0, -27, 0x2000, 0x10000, 0, x_b3c51f8a);
+    scroll_add("bg0", x_b3c51f8a * 0, 8, 0x1000, 0x10000, x_96186256, x_b3c51f8a);
     screen_profile_apply(SCREEN_PRACTICE);
     ground_load("arena", x_b3c51f8a);
     sFightLocked = TRUE;
@@ -1147,7 +1147,7 @@ void ending_open(void) {
 
     wad_strcpy(x_d16311d7, D_8004B844[x_de61763c].x_1256da71->name);
     wad_strcat(x_d16311d7, "end");
-    D_80081254 = x_a0e73601(x_d16311d7, 0, 250, 0, 0, x_8ce7ef70, 0x4000);
+    D_80081254 = scroll_add(x_d16311d7, 0, 250, 0, 0, x_8ce7ef70, 0x4000);
     D_80081250 = D_80081254->height;
 
     obj = obj_create_task(present_win_result_loop, 0x1000);
@@ -1275,7 +1275,7 @@ void title_screen(void) {
     wad_unload_all();
     x_59ce598c[x_83106b21].x_40ccbb76 = x_59ce598c[x_6f0b3be3].x_40ccbb76 = TRUE;
     wad_load_path("/title", x_35b88489);
-    x_a0e73601("dr_title", 0, 0, 0, 0, x_96186256, x_35b88489);
+    scroll_add("dr_title", 0, 0, 0, 0, x_96186256, x_35b88489);
     gGfxFlags |= GFX_MENU_OVERLAY;
     x_e30d50d2 |= x_86c5bc33;
 
@@ -1326,7 +1326,7 @@ void fade_in_cb(Object *obj) {
 
     audio_sfx_stop(0x2000, 8);
     obj->x_0232396f = fade_out_cb;
-    x_a0e73601("dr_title", 0, 0, 0, 0, x_96186256, x_35b88489);
+    scroll_add("dr_title", 0, 0, 0, 0, x_96186256, x_35b88489);
     v0 = obj_create_from_def(&x_93463df6, &x_fc517ba8, 0x2000);
     v0->currentTask->delay = 60;
     gCamTargetObj->pos.z = -2200;
@@ -1348,7 +1348,7 @@ void title_intro(void) {
     x_59ce598c[x_83106b21].x_40ccbb76 = x_59ce598c[x_6f0b3be3].x_40ccbb76 = TRUE;
     present_haze_init(v0, 0x2000);
 
-    D_80081254 = x_a0e73601("oplog", 0, 250, 0, 0x10000, x_8ce7ef70, x_35b88489);
+    D_80081254 = scroll_add("oplog", 0, 250, 0, 0x10000, x_8ce7ef70, x_35b88489);
     D_80081250 = D_80081254->height;
 
     title_pre_init();
@@ -1361,7 +1361,7 @@ void title_intro(void) {
 
 void title_error(void) {
     wad_load_path("/title/error", x_35b88489);
-    x_a0e73601("messpg", 0, 90, 0, 180, x_96186256, x_35b88489);
+    scroll_add("messpg", 0, 90, 0, 180, x_96186256, x_35b88489);
     tr_scene_loop();
 }
 
@@ -1375,8 +1375,8 @@ void title_logo(void) {
     }
 
     wad_load_path("/title/logo", x_35b88489);
-    x_a0e73601("vic", 0, 30, 0, 180, x_96186256, x_35b88489);
-    x_a0e73601("n64lic", 0, 190, 0, 240, x_96186256, x_35b88489);
+    scroll_add("vic", 0, 30, 0, 180, x_96186256, x_35b88489);
+    scroll_add("n64lic", 0, 190, 0, 240, x_96186256, x_35b88489);
     obj_create_task(present_kronos_logo, 0x1000);
     tr_scene_loop();
     wad_unload_context(0x2000);
@@ -1410,7 +1410,7 @@ void options_menu(void) {
 
     x_59ce598c[x_83106b21].x_40ccbb76 = x_59ce598c[x_6f0b3be3].x_40ccbb76 = TRUE;
     wad_load_path("/title/option", x_35b88489);
-    x_a0e73601("bgopt", 0, 0, 0, 0, x_96186256, x_35b88489);
+    scroll_add("bgopt", 0, 0, 0, 0, x_96186256, x_35b88489);
     gGfxFlags |= GFX_MENU_OVERLAY;
     x_e30d50d2 |= x_86c5bc33;
 
@@ -1530,7 +1530,7 @@ void options_controller(void) {
 
     x_59ce598c[x_83106b21].x_40ccbb76 = x_59ce598c[x_6f0b3be3].x_40ccbb76 = TRUE;
     wad_load_path("/title/control", x_35b88489);
-    x_a0e73601("bgcont", 0, 0, 0, 0, x_96186256, x_35b88489);
+    scroll_add("bgcont", 0, 0, 0, 0, x_96186256, x_35b88489);
     gGfxFlags |= GFX_MENU_OVERLAY;
     x_e30d50d2 |= x_86c5bc33;
 
@@ -1631,7 +1631,7 @@ void options_score(void) {
 
     x_59ce598c[x_83106b21].x_40ccbb76 = x_59ce598c[x_6f0b3be3].x_40ccbb76 = TRUE;
     wad_load_path("/title/rank", x_35b88489);
-    x_a0e73601("bgrank", 0, 4, 0, 0, x_96186256, x_35b88489);
+    scroll_add("bgrank", 0, 4, 0, 0, x_96186256, x_35b88489);
     sScoreTitleObj = obj_create_from_def(&x_b0e0e2fc, &x_b97c1d15, x_35b88489);
     select_score_init();
     gGfxFlags |= GFX_MENU_OVERLAY;
@@ -1647,7 +1647,7 @@ void options_stage(void) {
 
     x_59ce598c[x_83106b21].x_40ccbb76 = x_59ce598c[x_6f0b3be3].x_40ccbb76 = TRUE;
     wad_load_path("/title/stats", x_35b88489);
-    x_a0e73601("aarost", 0, 13, 0, 0, x_96186256, x_35b88489);
+    scroll_add("aarost", 0, 13, 0, 0, x_96186256, x_35b88489);
     gGfxFlags |= GFX_MENU_OVERLAY;
     x_e30d50d2 |= x_86c5bc33;
     obj_create_task(select_stage_screen, x_9d442987);
@@ -1671,8 +1671,8 @@ void arena_stage_default(void) {
     wad_load_path("/bars", x_2587f84f);
     player_init(0);
     player_init(1);
-    x_a0e73601("bg2", 0, 74, 0x2000, 0x10000, 0, x_54406eae);
-    x_a0e73601("bg0", 0, 15, 0x1000, 0x10000, x_96186256, x_54406eae);
+    scroll_add("bg2", 0, 74, 0x2000, 0x10000, 0, x_54406eae);
+    scroll_add("bg0", 0, 15, 0x1000, 0x10000, x_96186256, x_54406eae);
     ground_load("arena", x_54406eae);
     hud_setup();
 

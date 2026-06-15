@@ -46,9 +46,9 @@ void model_texture_reset(void);
 void spark_init_all(void);
 extern s16 D_800800FA;
 
-extern s32 x_e74df613;
-extern s32 x_6c647b3a;
-extern s32 D_80081428;
+extern s32 sScrollAccumX;
+extern s32 gScreenScrollY;
+extern s32 gScreenScrollX;
 extern s32 sGroundTileDlTable;
 
 void mem_defrag(void);
@@ -121,10 +121,10 @@ void rsp_clear_screen(void) {
     gDPSetColorImage(gF3dDisplayListPtr++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, 0x01000000);
 
     if (sClearZbuffer) {
-        if (x_6c647b3a > 0) {
+        if (gScreenScrollY > 0) {
             gDPSetFillColor(gF3dDisplayListPtr++, (GPACK_RGBA5551(sClearColorR, sClearColorG, sClearColorB, 1) << 16) |
                                                       GPACK_RGBA5551(sClearColorR, sClearColorG, sClearColorB, 1));
-            gDPFillRectangle(gF3dDisplayListPtr++, 0, 0, x_c84980f9 - 1, x_6c647b3a + 20);
+            gDPFillRectangle(gF3dDisplayListPtr++, 0, 0, x_c84980f9 - 1, gScreenScrollY + 20);
         }
     } else {
         gDPSetFillColor(gF3dDisplayListPtr++, (GPACK_RGBA5551(sClearColorR, sClearColorG, sClearColorB, 1) << 16) |
@@ -305,10 +305,10 @@ void rsp_game_init(u16 x_7cedc3fb);
 #endif
 
 void rsp_game_reinit(u16 x_7cedc3fb) {
-    x_3b49183f = NULL;
-    x_e74df613 = 0;
-    x_6c647b3a = 0;
-    D_80081428 = 0;
+    sScrollList = NULL;
+    sScrollAccumX = 0;
+    gScreenScrollY = 0;
+    gScreenScrollX = 0;
     mem_defrag();
     wad_sync_dma_slots();
     audio_reinit();

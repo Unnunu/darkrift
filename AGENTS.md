@@ -341,8 +341,11 @@ All 62 functions renamed and documented. 11 globals renamed: `sHitDustSpriteDef`
 ### Camera (camera.c) — DONE (Wave 1)
 6 functions renamed: `cam_create`, `cam_init`, `cam_init_pos`, `cam_frame_update`, `cam_calc_angle`, `cam_reset_mtx`. 26 globals renamed: `gCamTargetObj`, `sCamLookAt`, `sCamFov`, `sCamNearClip`, `sCamFarClip`, `sCamUnkParam`, `sCamAngleToTarget`, `sCamPrevAngle`, `sCamVertRatio`, `sCamScale`, `sCamAnglePrev`, `sCamAngleCurr`, `sCamLookAtMtx`, `sCamProjMtx`, `sCamViewProjMtx`, `sCamEulerAngles`, `sCamDefLookAtMtx`, `sCamDefViewProjMtx`, `sCamTransform`, `sCamUnkStruct`, `sCamBasePos`, `sCamYaw`, `sCamVertOffs`, `sCamHeightOffs`, `sCamFlag`, `sCamPrevYaw`, `sNullAnimTable`. Updated camera.h (8 externs + 2 prototypes), functions.h, callers in 10 files (cam_follow.c, player.c, move.c, rsp.c, background.c, match.c, menu.c, present.c, eff_hit.c).
 
-### Next Up: scroll.c
-Background scrolling system: 399 lines, ~15 functions. Camera writes scroll offsets (`sCamYaw`/`sCamVertOffs` into `D_80081428`/`x_6c647b3a` defined in scroll.c) each frame for tiled background parallax. Tight coupling with camera.c (just finished).
+### Scroll (scroll.c) — DONE (Wave 1)
+6 functions renamed: `scroll_add`, `scroll_remove`, `scroll_tile_render`, `scroll_render`, `scroll_debug_iter`, `sprite_draw` (NON_MATCHING). 1 struct renamed: `ScrollLayer` (was `x_4a7d6dd4`). 7 globals: `sScrollList`, `sScrollAccumX`, `gScreenScrollX`, `gScreenScrollY`, `sScrollPad0-5`. Updated functions.h, callers in main.c, menu.c, present.c, select.c, pregame.c, item.c, practice.c. Nonmatching asm renamed to sprite_draw.s.
+
+### Next Up: kmd.c
+KMD/TMD model parser: 860 lines, ~22 functions. Reads 3D model hierarchy — vertices, normals, textures, batches, bone structure. Directly related to model.c, wad.c, transform.c (all already documented).
 
 ## Thread Model
 | Pri | Thread | Entry | Description |

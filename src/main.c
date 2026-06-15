@@ -86,7 +86,7 @@ void game_init(void);
 void rsp_game_reinit(u16);
 void obj_scene_update(void);
 void rsp_clear_screen(void);
-void x_77751af8(void);
+void scroll_render(void);
 void ground_render(void);
 void audio_frame_update(void);
 void tr_fade_start(Object *obj);
@@ -143,7 +143,7 @@ void gfx_render_frame(void) {
     obj_scene_update();
     gSPDisplayList(gF3dDisplayListPtr++, D_8004CA68);
     rsp_clear_screen();
-    x_77751af8();
+    scroll_render();
 
     if (!(gGfxFlags & GFX_SKIP_SCENE)) {
         gSPDisplayList(gF3dDisplayListPtr++, D_80080100->x_5b2cc439);

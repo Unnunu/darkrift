@@ -23,8 +23,8 @@ typedef struct CheatState {
 
 extern s16 x_5e4e2788;
 extern s16 D_80049390;
-extern x_425d6ed3 *sHealthPartL;
-extern x_425d6ed3 *sHealthPartR;
+extern x_23e34e3e *sHealthPartL;
+extern x_23e34e3e *sHealthPartR;
 
 u8 sSonorkUnlocked = FALSE;
 u8 sDemitronUnlocked = FALSE;
@@ -107,9 +107,9 @@ void debug_model_edit(Object *obj) {
     }
 
     if (v0 < 0) {
-        v0 = obj->x_904eaf67->x_5b30c492 - 1;
+        v0 = obj->x_904eaf67->count - 1;
     }
-    if (v0 > obj->x_904eaf67->x_5b30c492 - 1) {
+    if (v0 > obj->x_904eaf67->count - 1) {
         v0 = 0;
     }
     obj->frameCounter = v0;
@@ -424,14 +424,14 @@ void handicap_init(Object *obj) {
 
     x_464d68e5 = handicap_health_to_width(s1);
     if (s1 == 0) {
-        sHealthPartL = s3->x_904eaf67->x_a34b89cc[15].parts;
+        sHealthPartL = s3->x_904eaf67->sprites[15].parts;
         sHealthPartL->x_e7f1952a =
             sHealthPartL->x_e7f1952a - sHealthPartL->x_b88b3756 + sHealthPartL->rightS - x_464d68e5 - 8;
         sHealthPartL->x_b88b3756 = sHealthPartL->rightS - x_464d68e5 - 8;
         v0->x_0f4167b4[1] = 119;
         v0->pos.x = 119 - x_464d68e5;
     } else {
-        sHealthPartR = s3->x_904eaf67->x_a34b89cc[14].parts;
+        sHealthPartR = s3->x_904eaf67->sprites[14].parts;
         sHealthPartR->rightS = sHealthPartR->x_b88b3756 + x_464d68e5;
         v0->x_0f4167b4[1] = 0xD1;
         v0->pos.x = 0xD1 + x_464d68e5;
@@ -807,7 +807,7 @@ void char_select_init(void) {
             break;
     }
 
-    x_a0e73601("select", 0, 8, 0, 0, x_96186256, x_24b231d4);
+    scroll_add("select", 0, 8, 0, 0, x_96186256, x_24b231d4);
 
     sPlayerCursorObj[0] = obj_create_from_def(&x_5c2a3a42, &x_c3be5f96, x_24b231d4);
     sPlayerCursorObj[0]->x_0f4167b4[0] = x_83106b21;

@@ -286,7 +286,7 @@ void x_4126a1e6(Model *model, s32 x_7b79be4b, u8 x_6363ad21, x_d8e0705d *x_028ab
     s32 x_90fe6b5a;
     u32 i;
     x_36123519 *x_c2df68e4;
-    x_3b6b80ec *x_a0b04eac;
+    WadTextureHeader *x_a0b04eac;
     s32 x_35a8bfd5[100];
     x_320b5d80 *x_2e8898dd;
     s32 x_b8a119a1[2];
@@ -429,7 +429,7 @@ void x_4126a1e6(Model *model, s32 x_7b79be4b, u8 x_6363ad21, x_d8e0705d *x_028ab
             x_a0b04eac = x_c2df68e4->texture;
             if (x_a0b04eac->format == 4) {
                 if (!x_6363ad21) {
-                    x_400cba8a = model->x_3bfb7219->x_1dbd7f4a + x_a0b04eac->x_3f981ea3 * 0x20;
+                    x_400cba8a = model->x_3bfb7219->x_1dbd7f4a + x_a0b04eac->pad * 0x20;
                     x_400cba8a[1] &= ~1;
                     gDPLoadTLUT_pal16(gfx++, 0, x_c485761a(x_400cba8a));
                 }
@@ -438,7 +438,7 @@ void x_4126a1e6(Model *model, s32 x_7b79be4b, u8 x_6363ad21, x_d8e0705d *x_028ab
                                        G_TX_NOLOD, G_TX_NOLOD);
             } else {
                 if (!x_6363ad21) {
-                    x_568d4efe = model->x_3bfb7219->x_d38574ae + x_a0b04eac->x_3f981ea3 * 0x200;
+                    x_568d4efe = model->x_3bfb7219->x_d38574ae + x_a0b04eac->pad * 0x200;
                     x_568d4efe[1] &= ~1;
                     gDPLoadTLUT_pal256(gfx++, x_c485761a(x_568d4efe));
                 }
@@ -468,7 +468,7 @@ void x_2ff3b46b(x_82e80914 *x_cc1d0de5, s32 x_84ff873b, u8 x_2092f891) {
     s32 s6;
     x_61d6ae0d *x_4fc490a9;
     s32 t3;
-    x_3b6b80ec *a2;
+    WadTextureHeader *a2;
     u8 *x_400cba8a;
     u8 *x_568d4efe;
     s32 padding[3];
@@ -514,7 +514,7 @@ void x_2ff3b46b(x_82e80914 *x_cc1d0de5, s32 x_84ff873b, u8 x_2092f891) {
             a2 = a1->texture;
             if (a2->format == 4) {
                 if (!x_2092f891) {
-                    x_400cba8a = x_cc1d0de5->model.x_3bfb7219->x_1dbd7f4a + a2->x_3f981ea3 * 0x20;
+                    x_400cba8a = x_cc1d0de5->model.x_3bfb7219->x_1dbd7f4a + a2->pad * 0x20;
                     gDPLoadTLUT_pal16(s3++, 0, x_c485761a(x_400cba8a));
                 }
                 gDPLoadTextureBlock_4b(s3++, a2->data, G_IM_FMT_CI, a2->width, a2->height, 0,
@@ -522,7 +522,7 @@ void x_2ff3b46b(x_82e80914 *x_cc1d0de5, s32 x_84ff873b, u8 x_2092f891) {
                                        G_TX_NOLOD, G_TX_NOLOD);
             } else {
                 if (!x_2092f891) {
-                    x_568d4efe = x_cc1d0de5->model.x_3bfb7219->x_d38574ae + a2->x_3f981ea3 * 0x200;
+                    x_568d4efe = x_cc1d0de5->model.x_3bfb7219->x_d38574ae + a2->pad * 0x200;
                     gDPLoadTLUT_pal256(s3++, x_c485761a(x_568d4efe));
                 }
                 gDPLoadTextureBlock(s3++, a2->data, G_IM_FMT_CI, G_IM_SIZ_8b, a2->width, a2->height, 0,

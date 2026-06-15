@@ -40,8 +40,8 @@ x_88f11482 *sDigitPosPtr[] = { &sDigitPos1, &sDigitPos2, &sDigitPos3, &sDigitPos
 
 s16 sCachedHealthL;
 s16 sCachedHealthR;
-x_425d6ed3 *sHealthPartL;
-x_425d6ed3 *sHealthPartR;
+x_23e34e3e *sHealthPartL;
+x_23e34e3e *sHealthPartR;
 Object *sHudRootObj;
 Object *sTimerObj;
 Object *sHealthBarTask;
@@ -697,13 +697,13 @@ void hud_setup(void) {
 
     v0 = obj_create_from_def(&x_840385a0, &x_4fc490a9, x_2587f84f);
     v0->frameCounter = 15;
-    sHealthPartL = v0->x_904eaf67->x_a34b89cc[15].parts;
+    sHealthPartL = v0->x_904eaf67->sprites[15].parts;
     sHealthPartL->x_e7f1952a = sHealthPartL->x_e7f1952a - sHealthPartL->x_b88b3756 + sHealthPartL->rightS - 88;
     sHealthPartL->x_b88b3756 = sHealthPartL->rightS - 88;
 
     v0 = obj_create_from_def(&x_54406eae, &x_4fc490a9, x_2587f84f);
     v0->frameCounter = 14;
-    sHealthPartR = v0->x_904eaf67->x_a34b89cc[14].parts;
+    sHealthPartR = v0->x_904eaf67->sprites[14].parts;
     sHealthPartR->rightS = sHealthPartR->x_b88b3756 + 80;
 
     v0 = obj_create_from_def(&D_8004A5D0[gWadCondLoad[x_83106b21].x_eb1fe45b], &x_4fc490a9, x_2587f84f);

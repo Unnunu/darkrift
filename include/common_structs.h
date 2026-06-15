@@ -150,13 +150,13 @@ typedef struct x_704d55d4 {
     /* 0x14 */ char padding[0x4];
 } x_704d55d4; // size = 0x18
 
-typedef struct x_3b6b80ec {
+typedef struct WadTextureHeader {
     /* 0x00 */ u32 width;
     /* 0x04 */ u32 height;
     /* 0x08 */ s32 format;
-    /* 0x0C */ s32 x_3f981ea3;
+    /* 0x0C */ s32 pad;
     /* 0x10 */ u8 data[1];
-} x_3b6b80ec;
+} WadTextureHeader;
 
 typedef struct x_80d298c9 {
     /* 0x00 */ void *data;
@@ -197,7 +197,7 @@ typedef struct x_36123519 {
     /* 0x06 */ u16 x_146f3cd6;
     /* 0x08 */ u16 x_9d9b2b65;
     /* 0x0A */ u16 x_8a54e96a;
-    /* 0x0C */ x_3b6b80ec *texture;
+    /* 0x0C */ WadTextureHeader *texture;
 } x_36123519; // size = 0x10
 
 typedef struct x_c3c252eb {
@@ -374,28 +374,28 @@ typedef struct x_6fcfcf46 {
     /* 0x1F8C */ char x_609cda18[4];
 } x_6fcfcf46; // size = 0x1F90
 
-typedef struct x_425d6ed3 {
+typedef struct x_23e34e3e {
     /* 0x00 */ s32 x_a2264414;
     /* 0x04 */ u32 x_b88b3756;
     /* 0x08 */ u32 rightS;
     /* 0x0C */ s32 x_f2864eba;
     /* 0x10 */ s32 x_e7f1952a;
     /* 0x14 */ s32 x_67347149;
-} x_425d6ed3; // size ?
+} x_23e34e3e; // size ?
 
-typedef struct x_7cc7ad58 {
-    /* 0x00 */ s32 x_fa21689f;
-    /* 0x04 */ x_425d6ed3 *parts;
-    /* 0x08 */ s32 x_51d6cf57;
-    /* 0x0C */ x_3b6b80ec *texture;
-} x_7cc7ad58; // size = 0x10
+typedef struct SpriteFrame {
+    /* 0x00 */ s32 partCount;
+    /* 0x04 */ x_23e34e3e *parts;
+    /* 0x08 */ s32 pad;
+    /* 0x0C */ WadTextureHeader *texture;
+} SpriteFrame; // size = 0x10
 
-typedef struct x_8ab35fe5 {
+typedef struct SpriteDef {
     /* 0x00 */ s32 size;
-    /* 0x04 */ u32 x_5b30c492;
-    /* 0x08 */ char x_6fb24ac9[4][16];
-    /* 0x48 */ x_7cc7ad58 *x_a34b89cc;
-} x_8ab35fe5;
+    /* 0x04 */ u32 count;
+    /* 0x08 */ char names[4][16];
+    /* 0x48 */ SpriteFrame *sprites;
+} SpriteDef;
 
 typedef struct Object {
     /* 0x000 */ x_88f11482 x_8da078cc;
@@ -426,7 +426,7 @@ typedef struct Object {
         s32 x_0f4167b4[13];
         struct Object *x_e2f64c57[13];
     };
-    /* 0x0C4 */ x_8ab35fe5 *x_904eaf67;
+    /* 0x0C4 */ SpriteDef *x_904eaf67;
     /* 0x0C8 */ x_6fcfcf46 *x_20d20338;
     /* 0x0CC */ char x_34dbb1c7[4];
     /* 0x0D0 */ Transform transform;
@@ -486,19 +486,19 @@ typedef struct x_f0d7e70f {
     /* 0x10 */ char *x_6870fa4a;
 } x_f0d7e70f;
 
-typedef struct x_4a7d6dd4 {
+typedef struct ScrollLayer {
     /* 0x00 */ u32 width;
     /* 0x04 */ u32 height;
-    /* 0x08 */ s32 x_519855f8;
+    /* 0x08 */ s32 hasPalette;
     /* 0x0C */ s32 flags;
-    /* 0x10 */ u8 *x_925c481a;
+    /* 0x10 */ u8 *imageData;
     /* 0x14 */ u8 *palette;
-    /* 0x18 */ s32 x_08b62e4f;
-    /* 0x1C */ s32 x_64a8566c;
-    /* 0x20 */ s32 x_afebb108;
-    /* 0x24 */ s32 x_86f38745;
-    /* 0x28 */ struct x_4a7d6dd4 *next;
-} x_4a7d6dd4; // size = 0x2C
+    /* 0x18 */ s32 xOffs;
+    /* 0x1C */ s32 yOffs;
+    /* 0x20 */ s32 speedX;
+    /* 0x24 */ s32 speedY;
+    /* 0x28 */ struct ScrollLayer *next;
+} ScrollLayer; // size = 0x2C
 
 typedef struct x_388306ba {
     /* 0x00 */ s16 x_887b6be9;

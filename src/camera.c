@@ -187,8 +187,8 @@ void cam_frame_update(Object *obj) {
     sCamEulerAngles.x = -atan2_lut(x_86fee161, x_d16311d7);
 
     if (!(gGfxFlags & GFX_MENU_OVERLAY) || model->x_50771dcd[0]) {
-        D_80081428 = sCamYaw;
-        x_6c647b3a = sCamVertOffs - (s32) (sCamHeightOffs * 0.2f);
+        gScreenScrollX = sCamYaw;
+        gScreenScrollY = sCamVertOffs - (s32) (sCamHeightOffs * 0.2f);
     }
 }
 

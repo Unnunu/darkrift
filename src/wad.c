@@ -608,64 +608,64 @@ void wad_load_tex(x_80d298c9 *x_d59386e0) {
 }
 
 void wad_resolve_sp2(x_80d298c9 *x_d59386e0) {
-    x_8ab35fe5 *header;
+    SpriteDef *header;
     s32 i;
-    x_7cc7ad58 *entry;
-    x_3b6b80ec *textures[4];
+    SpriteFrame *entry;
+    WadTextureHeader *textures[4];
 
     header = x_d59386e0->data;
-    entry = header->x_a34b89cc;
-    for (i = 0; i < 4 && (header->x_6fb24ac9[i][0]) != '\0'; i++) {
-        textures[i] = sWadEntries[wad_entry_find(header->x_6fb24ac9[i], x_d59386e0->context)].data;
+    entry = header->sprites;
+    for (i = 0; i < 4 && (header->names[i][0]) != '\0'; i++) {
+        textures[i] = sWadEntries[wad_entry_find(header->names[i], x_d59386e0->context)].data;
     }
 
-    for (i = 0; i < header->x_5b30c492; i++, entry++) {
-        entry->texture = textures[entry->x_51d6cf57];
+    for (i = 0; i < header->count; i++, entry++) {
+        entry->texture = textures[entry->pad];
     }
 }
 
 void wad_relocate_sp2(void *x_cc1d0de5, void *x_84ff873b, s32 x_2092f891) {
     s32 x_02efc187;
     s32 i;
-    x_7cc7ad58 *a2;
-    x_8ab35fe5 *v2;
+    SpriteFrame *a2;
+    SpriteDef *v2;
 
     x_02efc187 = ((u32) x_cc1d0de5 - (u32) x_84ff873b);
 
     v2 = x_cc1d0de5;
-    v2->x_a34b89cc = (x_7cc7ad58 *) ((u32) v2->x_a34b89cc + x_02efc187);
+    v2->sprites = (SpriteFrame *) ((u32) v2->sprites + x_02efc187);
 
-    for (a2 = v2->x_a34b89cc, i = 0; i < v2->x_5b30c492; i++, a2++) {
-        a2->parts = (x_425d6ed3 *) ((u32) a2->parts + x_02efc187);
+    for (a2 = v2->sprites, i = 0; i < v2->count; i++, a2++) {
+        a2->parts = (x_23e34e3e *) ((u32) a2->parts + x_02efc187);
     }
 }
 
 void wad_load_sp2(x_80d298c9 *x_d59386e0) {
-    x_8ab35fe5 *header;
+    SpriteDef *header;
     s32 i;
-    x_7cc7ad58 *entry;
+    SpriteFrame *entry;
     u8 *x_925c481a;
     u16 *palette;
-    x_3b6b80ec *textures[4];
-    x_3b6b80ec **x_23b71842;
+    WadTextureHeader *textures[4];
+    WadTextureHeader **x_23b71842;
     s32 unused[2];
 
     wad_entry_load_data(x_d59386e0);
     x_23b71842 = textures; // required to match
     header = x_d59386e0->data;
-    entry = header->x_a34b89cc = (x_7cc7ad58 *) ((u32) header->x_a34b89cc + (u32) header);
+    entry = header->sprites = (SpriteFrame *) ((u32) header->sprites + (u32) header);
     if ((x_d59386e0->data && x_d59386e0->data) != 0) {} // required to match
-    for (i = 0; i < 4 && (header->x_6fb24ac9[i][0]) != '\0'; i++) {
-        textures[i] = sWadEntries[wad_entry_find(header->x_6fb24ac9[i], x_d59386e0->context)].data;
+    for (i = 0; i < 4 && (header->names[i][0]) != '\0'; i++) {
+        textures[i] = sWadEntries[wad_entry_find(header->names[i], x_d59386e0->context)].data;
 
         palette = (u16 *) &textures[i]->data[x_23b71842[i]->height * x_23b71842[i]->width];
         x_925c481a = textures[i]->data;
         palette[x_925c481a[0]] = 0;
     }
 
-    for (i = 0; i < header->x_5b30c492; i++, entry++) {
-        entry->parts = (x_425d6ed3 *) ((s32) entry->parts + (s32) header);
-        entry->texture = x_23b71842[entry->x_51d6cf57];
+    for (i = 0; i < header->count; i++, entry++) {
+        entry->parts = (x_23e34e3e *) ((s32) entry->parts + (s32) header);
+        entry->texture = x_23b71842[entry->pad];
     }
 
     mem_dma_set_callback(x_d59386e0->x_d5b87ce9, wad_relocate_sp2, 0);

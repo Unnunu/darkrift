@@ -205,7 +205,7 @@ void ground_load(char *name, s32 x_84ff873b) {
     char x_f10a928a[20];
     x_acccb624 x_081c4eef;
     s32 unused;
-    x_3b6b80ec *a3;
+    WadTextureHeader *a3;
     x_36123519 *x_9a110419;
     x_88f11482 x_5bbba600 = { 0, 0, 6000, 0 };
 
@@ -222,9 +222,9 @@ void ground_load(char *name, s32 x_84ff873b) {
     x_9a110419 = x_94b671c9->x_063bc6a1;
     a3 = x_9a110419->texture;
     if (a3->format == 4) {
-        sGroundPalette = sGroundModel->model.x_3bfb7219->x_1dbd7f4a + a3->x_3f981ea3 * 0x20; // TODO: type
+        sGroundPalette = sGroundModel->model.x_3bfb7219->x_1dbd7f4a + a3->pad * 0x20; // TODO: type
     } else {
-        sGroundPalette = sGroundModel->model.x_3bfb7219->x_d38574ae + a3->x_3f981ea3 * 0x200; // TODO: type
+        sGroundPalette = sGroundModel->model.x_3bfb7219->x_d38574ae + a3->pad * 0x200; // TODO: type
     }
 
     sGroundTileCountX = x_8a9089b3->tileCountX;
