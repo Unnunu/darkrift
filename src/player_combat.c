@@ -13,7 +13,7 @@ Model *gBlockSparkModel;
 
 void hit_spark_update(Object *obj) {
     if (obj->frameIndex < obj->modInst->numAnimFrames) {
-        D_8008012C |= GFX_FLAG_10;
+        gGfxFlags |= GFX_FLAG_10;
         obj->frameIndex++;
         if (obj->frameIndex > 12) {
             if (obj->color.a > obj->vars[0]) {
@@ -24,14 +24,14 @@ void hit_spark_update(Object *obj) {
         }
     } else {
         obj->flags |= OBJ_FLAG_DELETE;
-        D_8008012C &= ~GFX_FLAG_10;
+        gGfxFlags &= ~GFX_FLAG_10;
         TASK_END(obj->currentTask);
     }
 }
 
 void block_spark_update(Object *obj) {
     if (obj->frameIndex < obj->modInst->numAnimFrames) {
-        D_8008012C |= GFX_FLAG_10;
+        gGfxFlags |= GFX_FLAG_10;
         obj->frameIndex++;
         if (obj->frameIndex > 2) {
             if (obj->color.a > obj->vars[0]) {
@@ -41,7 +41,7 @@ void block_spark_update(Object *obj) {
             }
         }
     } else {
-        D_8008012C &= ~GFX_FLAG_10;
+        gGfxFlags &= ~GFX_FLAG_10;
         obj->flags |= OBJ_FLAG_DELETE;
         TASK_END(obj->currentTask);
     }

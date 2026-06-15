@@ -24,7 +24,7 @@ void func_80016A00(Object *);
 void func_800177C0(Object *);
 
 void func_80015BC0(Object *obj) {
-    gGlobalFlags |= GAME_FLAG_80 | GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
+    gGlobalFlags |= GAME_FLAG_PRESERVE_FADE_ALPHA | GAME_FLAG_UNPAUSE | GAME_FLAG_MODE_DONE;
     gNextGameMode = GAME_MODE_PLAYER_SELECTION;
     func_800194E0(PLAY_MODE_50);
     if (gBattleSettings[PLAYER_1].isCpu) {
@@ -447,7 +447,7 @@ void func_80016B6C(Object *obj) {
 void func_80016C34(Object *obj) {
     Object *a1;
 
-    gGlobalFlags |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_TRANSITION;
 
     if (--obj->vars[2] == 0 || (--obj->vars[1] < 0 && func_800167D4())) {
         if (gBattleSettings[PLAYER_1].isCpu || gBattleSettings[PLAYER_2].isCpu) {
@@ -737,8 +737,8 @@ void func_8001792C(Object *obj) {
     if (gRoundOver || gPlayers[PLAYER_1].obj->playerHp <= 0 || gPlayers[PLAYER_2].obj->playerHp <= 0) {
         func_80029044();
         gRoundOver = TRUE;
-        if (!(gGlobalFlags & GAME_FLAG_4)) {
-            gGlobalFlags |= GAME_FLAG_4;
+        if (!(gGlobalFlags & GAME_FLAG_TRANSITION)) {
+            gGlobalFlags |= GAME_FLAG_TRANSITION;
             return;
         }
 
@@ -766,7 +766,7 @@ void func_8001792C(Object *obj) {
 }
 
 void func_80017A90(Object *obj) {
-    gGlobalFlags |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_TRANSITION;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
 
     if (++obj->vars[0] > 900) {
@@ -784,10 +784,10 @@ void func_80017B3C(Object *obj) {
     if (gPlayMode == PLAY_MODE_30) {
         obj->currentTask->func = func_80017A90;
         obj->vars[0] = 0;
-        gGlobalFlags |= GAME_FLAG_4;
+        gGlobalFlags |= GAME_FLAG_TRANSITION;
     } else {
         obj->currentTask->func = func_8001792C;
-        gGlobalFlags &= ~GAME_FLAG_4;
+        gGlobalFlags &= ~GAME_FLAG_TRANSITION;
     }
 
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;

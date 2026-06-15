@@ -459,7 +459,7 @@ void plyrsel_portrait_update_2(Object *obj) {
     s16 v1;
     s16 playerId;
 
-    if (!(gGlobalFlags & GAME_FLAG_1000)) {
+    if (!(gGlobalFlags & GAME_FLAG_ENTER_DONE)) {
         return;
     }
 
@@ -759,13 +759,13 @@ void run_player_selection_mode(void) {
     }
 
     gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = TRUE;
-    D_8008012C |= GFX_FLAG_20;
-    gGlobalFlags |= GAME_FLAG_4;
+    gGfxFlags |= GFX_FLAG_20;
+    gGlobalFlags |= GAME_FLAG_TRANSITION;
 
     asset_open_folder("/plyrsel/plyrsel", CONTEXT_EEFF);
     asset_open_folder("/plyrsel/music", CONTEXT_EEFF);
 
-    gGlobalFlags |= GAME_FLAG_800;
+    gGlobalFlags |= GAME_FLAG_NO_VI_BLACK;
 
     switch (gPlayMode) {
         case PLAY_MODE_TOURNAMENT_P1:

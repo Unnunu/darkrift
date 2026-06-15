@@ -97,7 +97,7 @@ void camera_save_state(void) {
     D_8013C338 = D_8013C5A0;
 
     if (gCurrentGameMode <= GAME_MODE_17) {
-        D_8008012C |= GFX_FLAG_1;
+        gGfxFlags |= GFX_FLAG_CUTSCENE;
     }
 }
 
@@ -144,7 +144,7 @@ void camera_cutscene_playback(Object *obj) {
             if (!gRoundOver || D_80080234 == 0) {
                 obj->currentTask->func = camera_battle_update;
                 obj->currentTask->start_delay = 1;
-                D_8008012C &= ~GFX_FLAG_1;
+                gGfxFlags &= ~GFX_FLAG_CUTSCENE;
                 gPlayers[PLAYER_1].obj->flags &= ~OBJ_FLAG_200000;
                 gPlayers[PLAYER_2].obj->flags &= ~OBJ_FLAG_200000;
                 return;
@@ -153,7 +153,7 @@ void camera_cutscene_playback(Object *obj) {
         }
     }
 
-    D_8008012C &= ~GFX_FLAG_20;
+    gGfxFlags &= ~GFX_FLAG_20;
 
     obj->pos.x = sSavedCamPos.x;
     obj->pos.y = sSavedCamPos.y;
@@ -180,7 +180,7 @@ void camera_outro_playback(Object *obj) {
         } else {
             gPlayers[PLAYER_1].flags &= ~PLAYER_FLAG_100000;
             gPlayers[PLAYER_2].flags &= ~PLAYER_FLAG_100000;
-            gGlobalFlags &= ~GAME_FLAG_4;
+            gGlobalFlags &= ~GAME_FLAG_TRANSITION;
         }
 
         gBgScrollX = 0;
@@ -192,7 +192,7 @@ void camera_outro_playback(Object *obj) {
         obj->currentTask->func = camera_battle_update;
         obj->modInst->animations[0] = NULL;
         gPlayerInput[PLAYER_1].pendingInput = gPlayerInput[PLAYER_2].pendingInput = FALSE;
-        D_8008012C &= ~(GFX_FLAG_1 | GFX_FLAG_10);
+        gGfxFlags &= ~(GFX_FLAG_CUTSCENE | GFX_FLAG_10);
     }
 
     gPlayers[PLAYER_1].obj->flags |= OBJ_FLAG_200000;
@@ -491,9 +491,9 @@ void camera_orbit_update(Object *obj, u8 arg1) {
     s32 temp;
 
     if (gReplayActive == 0) {
-        D_8008012C |= GFX_FLAG_20;
+        gGfxFlags |= GFX_FLAG_20;
     } else {
-        D_8008012C &= ~GFX_FLAG_20;
+        gGfxFlags &= ~GFX_FLAG_20;
     }
 
     camera_push_players_apart(FALSE);
@@ -627,7 +627,7 @@ void camera_intro_playback(Object *obj) {
         } else {
             gPlayers[PLAYER_1].flags &= ~PLAYER_FLAG_100000;
             gPlayers[PLAYER_2].flags &= ~PLAYER_FLAG_100000;
-            gGlobalFlags &= ~GAME_FLAG_4;
+            gGlobalFlags &= ~GAME_FLAG_TRANSITION;
         }
 
         gBgScrollX = 0;
@@ -639,7 +639,7 @@ void camera_intro_playback(Object *obj) {
         obj->currentTask->func = camera_battle_update;
         obj->modInst->animations[0] = NULL;
         gPlayerInput[PLAYER_1].pendingInput = gPlayerInput[PLAYER_2].pendingInput = FALSE;
-        D_8008012C &= ~(GFX_FLAG_1 | GFX_FLAG_10);
+        gGfxFlags &= ~(GFX_FLAG_CUTSCENE | GFX_FLAG_10);
     } else {
         if (--obj->vars[10] <= 0) {
             obj->currentTask->func = camera_outro_playback;
@@ -929,9 +929,9 @@ void camera_battle_update(Object *obj) {
 
     sp6A = FALSE;
     if (gReplayActive == 0) {
-        D_8008012C |= GFX_FLAG_20;
+        gGfxFlags |= GFX_FLAG_20;
     } else {
-        D_8008012C &= ~GFX_FLAG_20;
+        gGfxFlags &= ~GFX_FLAG_20;
     }
 
     camera_push_players_apart(FALSE);

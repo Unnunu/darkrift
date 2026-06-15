@@ -329,7 +329,7 @@ void player_trans_func_8(Object *obj) {
         (gPlayers + oppId)->obj->pos.z = obj->pos.z + sp34.z;
         (gPlayers + oppId)->obj->rotation.y = 0x400 - ((0xC00 - obj->rotation.y) & 0xFFF);
 
-        D_8008012C &= ~GFX_FLAG_10;
+        gGfxFlags &= ~GFX_FLAG_10;
         func_80016264();
 
         switch (characterId) {

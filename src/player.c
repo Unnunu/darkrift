@@ -228,7 +228,7 @@ s32 func_80003974_unused(void *arg0) {
     v0->currentTask->start_delay = 0;
     v0->currentTask->flags = TASK_FLAG_ENABLED;
 
-    D_8008012C |= GFX_FLAG_1;
+    gGfxFlags |= GFX_FLAG_CUTSCENE;
     gGlobalFlags &= ~GAME_FLAG_BATTLE_FINISHED;
 
     if (s3 > 960) {

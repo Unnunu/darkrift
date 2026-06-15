@@ -530,7 +530,7 @@ void hitbox_render_update(MotionTrail *arg0, u8 arg1) {
         if (!gIsPaused) {
             sub2->lifetime--;
         }
-        if (D_8008012C & GFX_FLAG_10) {
+        if (gGfxFlags & GFX_FLAG_10) {
             sub2->lifetime -= 2;
         }
 
@@ -538,7 +538,7 @@ void hitbox_render_update(MotionTrail *arg0, u8 arg1) {
             gMainBatchPos->context = NULL;
 
             if (!spF3) {
-                s03 = arg0->unk_12D8 + D_8005BFCE;
+                s03 = arg0->unk_12D8 + gFramebufferIndex;
                 math_mtxf2mtx(&s03->transform, &gCameraProjectionMatrix);
                 spF3 = TRUE;
                 spF2 = FALSE;
@@ -561,7 +561,7 @@ void hitbox_render_update(MotionTrail *arg0, u8 arg1) {
         if (!gIsPaused) {
             sub2->lifetime--;
         }
-        if (D_8008012C & GFX_FLAG_10) {
+        if (gGfxFlags & GFX_FLAG_10) {
             sub2->lifetime -= 2;
         }
 
@@ -569,7 +569,7 @@ void hitbox_render_update(MotionTrail *arg0, u8 arg1) {
             gOverlayBatchPos->context = NULL;
 
             if (!spF3) {
-                s03 = arg0->unk_12D8 + 2 + D_8005BFCE;
+                s03 = arg0->unk_12D8 + 2 + gFramebufferIndex;
                 math_mtxf2mtx(&s03->transform, &gCameraProjectionMatrix);
                 spF3 = TRUE;
                 spF2 = FALSE;

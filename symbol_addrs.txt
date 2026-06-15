@@ -92,3 +92,18 @@ aspMainDataStart = 0x80056C20; // name_end:aspMainDataEnd
 
 D_80052F10 = 0x80052F10; // size:0x10
 sHeapDirty = 0x80049288;
+gFramebufferIndex = 0x8005BFCE;
+gBgGfxPos = 0x8005BFDC;
+sQuadColor = 0x80080116;
+sFadeThreshold = 0x80080118;
+gGfxFlags = 0x8008012C;
+sQuadBatchInfo = 0x8005BF00;
+sQuadTexDl = 0x8005BF58;
+sFullscreenQuadVtx = 0x800492B0;
+sQuadTriangles = 0x80049330;
+
+gFogColorR = 0x80080130;
+gFogColorG = 0x80080132;
+gFogColorB = 0x80080134;
+gFogNear = 0x80080136;
+gFogFar = 0x80080138;

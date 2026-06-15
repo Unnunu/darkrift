@@ -243,7 +243,7 @@ void update_all_game_objects(void) {
                 }
             }
         } else {
-            s32 temp = D_8005BFCE * s1;
+            s32 temp = gFramebufferIndex * s1;
             for (i = 0; i < s1; i++) {
                 gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(renderInfo->cluster->transforms[i + temp]),
                           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);

@@ -289,20 +289,20 @@ void func_80034AB8(Object *obj) {
     ptr2 = model->nodeOpaque;
     ptr1 = model->nodeOpaquePrev;
 
-    if (D_8008012C & GFX_FLAG_10) {
+    if (gGfxFlags & GFX_FLAG_10) {
         if (!(obj->flags & OBJ_FLAG_40000000)) {
             memcpy(ptr1, ptr2, numNodes);
             func_80034A58(obj);
             set_post_render_hook(func_80034860, obj);
             obj->flags |= OBJ_FLAG_40000000;
-            D_8008012C |= GFX_FLAG_ZBUFFER;
+            gGfxFlags |= GFX_FLAG_ZBUFFER;
         }
         return;
     }
 
-    if (!(D_8008012C & GFX_FLAG_10) && (obj->flags & OBJ_FLAG_40000000)) {
+    if (!(gGfxFlags & GFX_FLAG_10) && (obj->flags & OBJ_FLAG_40000000)) {
         if (D_800801E2) {
-            D_8008012C &= ~GFX_FLAG_ZBUFFER;
+            gGfxFlags &= ~GFX_FLAG_ZBUFFER;
         } else {
             memcpy(ptr2, ptr1, numNodes);
             set_post_render_hook(func_80034860, obj);
@@ -327,7 +327,7 @@ void func_80034C18(Object *obj, u8 *arg1) {
     u8 *ptr1 = model->nodeOpaquePrev;
     u8 *ptr2 = model->nodeOpaque;
 
-    if (D_8008012C & GFX_FLAG_10) {
+    if (gGfxFlags & GFX_FLAG_10) {
         for (i = 0; i < count; i++) {
             ptr1[i] = ptr2[i] = arg1[i];
         }
@@ -737,7 +737,7 @@ void shadow_update(Object *obj) {
 
     D_8013C4E0 = modInst->kmodel->model.dlist;
     func_80012AA8(&sp98);
-    s6 = D_8005BFCE * 30;
+    s6 = gFramebufferIndex * 30;
 
     for (i = 0; i < modInst->numNodes; i++) {
         math_mtxf_apply_parent(&sp98, &transforms[i].world_matrix, local_matrix);
@@ -787,7 +787,7 @@ void func_80036228(Transform *arg0, Transform *arg1) {
     Mtx *s0;
     Transform *iter;
 
-    s0 = &arg1->mtx[D_8005BFCE];
+    s0 = &arg1->mtx[gFramebufferIndex];
     math_mtxf2mtx(s0, &arg1->world_matrix);
     arg1->unk_94 = &s0->m[1][2];
 
@@ -1467,20 +1467,20 @@ void model_update_kmd(Object *obj) {
             func_8003561C(obj, 0);
 
             for (i = 0; i < sp6C; i++) {
-                math_mtxf2mtx(&s5[i].mtx[D_8005BFCE], &s5[i].world_matrix);
+                math_mtxf2mtx(&s5[i].mtx[gFramebufferIndex], &s5[i].world_matrix);
             }
 
             func_80037788(modInst->unk_608, modInst->unk_9C8);
         } else {
             for (i = 0; i < sp6C; i++) {
-                s6 = &s5[i].mtx[D_8005BFCE];
+                s6 = &s5[i].mtx[gFramebufferIndex];
                 math_mtxf2mtx(s6, &s5[i].world_matrix);
                 gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(s6), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
                 gSPDisplayList(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(D_8013C4E0[i]));
             }
         }
     } else {
-        s6 = &s1->mtx[D_8005BFCE];
+        s6 = &s1->mtx[gFramebufferIndex];
         math_mtxf2mtx(s6, &s1->world_matrix);
         gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(s6), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         for (i = 0; i < sp6C; i++) {
@@ -1509,7 +1509,7 @@ void sprite3d_update(Object *obj) {
     modInst = obj->modInst;
     sub2 = modInst->model;
     newvar = sub2->batches[index];
-    batchIndex = D_8005BFCE * 30 + index;
+    batchIndex = gFramebufferIndex * 30 + index;
 
     task_execute(obj);
 
@@ -1773,7 +1773,7 @@ void model_update(Object *obj) {
     modInst = obj->modInst;
     spAC = modInst->transforms;
     s2 = modInst->model->batches;
-    sp94 = 30 * D_8005BFCE;
+    sp94 = 30 * gFramebufferIndex;
 
     task_execute(obj);
 

@@ -318,32 +318,32 @@ s16 func_80028928(s16 playerId) {
 }
 
 void func_80028990(Vtx *vtx) {
-    Gfx *gfx = D_8005BF58;
+    Gfx *gfx = sQuadTexDl;
 
-    if (D_8008012C & GFX_FLAG_1) {
+    if (gGfxFlags & GFX_FLAG_CUTSCENE) {
         return;
     }
 
-    D_8005BF00.header.triMask = 0;
-    D_8005BF00.header.unk_04 = 0;
-    D_8005BF00.header.vtxNum = 4;
-    D_8005BF00.header.vtxOffset = 0;
-    D_8005BF00.header.numTriangles = 2;
-    D_8005BF00.header.unk_0B = 2;
-    D_8005BF00.header.texGfx = D_8005BF58;
+    sQuadBatchInfo.header.triMask = 0;
+    sQuadBatchInfo.header.unk_04 = 0;
+    sQuadBatchInfo.header.vtxNum = 4;
+    sQuadBatchInfo.header.vtxOffset = 0;
+    sQuadBatchInfo.header.numTriangles = 2;
+    sQuadBatchInfo.header.unk_0B = 2;
+    sQuadBatchInfo.header.texGfx = sQuadTexDl;
 
     gDPPipeSync(gfx++);
     gDPSetCombineMode(gfx++, G_CC_SHADE, G_CC_SHADE);
 
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_RENDERMODE, G_RM_XLU_SURF | G_RM_XLU_SURF2);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_CYCLETYPE, G_CYC_1CYCLE);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTFILT, G_TF_BILERP);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTCONV, G_TC_FILT);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTPERSP, G_TP_PERSP);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTLUT, G_TT_RGBA16);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_RENDERMODE, G_RM_XLU_SURF | G_RM_XLU_SURF2);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_CYCLETYPE, G_CYC_1CYCLE);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_TEXTFILT, G_TF_BILERP);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_TEXTCONV, G_TC_FILT);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_TEXTPERSP, G_TP_PERSP);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_TEXTLUT, G_TT_RGBA16);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
 
-    gSPTriBatch(gOverlayBatchPos, NULL, &D_8005BF00, vtx, D_80049330);
+    gSPTriBatch(gOverlayBatchPos, NULL, &sQuadBatchInfo, vtx, sQuadTriangles);
 }
 
 void func_80028AE4(Object *obj) {
@@ -353,7 +353,7 @@ void func_80028AE4(Object *obj) {
     s16 sp1E;
     s16 sp1C;
 
-    sp22 = D_8005BFCE;
+    sp22 = gFramebufferIndex;
 
     if (gRoundOver) {
         D_80051F6C = D_80051F70 = D_8013C2A8 = D_8013C2AA = 0;
@@ -731,30 +731,30 @@ void func_80029630(void) {
 
 void func_80029D04(Object *obj) {
     if (--obj->frameIndex < 2) {
-        gGlobalFlags |= GAME_FLAG_40;
+        gGlobalFlags |= GAME_FLAG_UNPAUSE;
         obj->flags |= OBJ_FLAG_DELETE;
     }
 
-    D_8005BEFC -= 2;
-    draw_translucent_quad(D_8005BEFC, NULL);
+    gFadeAlpha -= 2;
+    draw_translucent_quad(gFadeAlpha, NULL);
     model_update(obj);
 }
 
 void func_80029D84(Object *obj) {
-    draw_translucent_quad(D_8005BEFC, NULL);
+    draw_translucent_quad(gFadeAlpha, NULL);
     obj->flags |= OBJ_FLAG_DELETE;
 }
 
 void func_80029DC0(Object *obj) {
     if (++obj->frameIndex >= 130) {
-        gGlobalFlags |= GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
+        gGlobalFlags |= GAME_FLAG_UNPAUSE | GAME_FLAG_MODE_DONE;
         gNextGameMode = GAME_MODE_MAIN_MENU;
-        gGlobalFlags |= GAME_FLAG_80;
+        gGlobalFlags |= GAME_FLAG_PRESERVE_FADE_ALPHA;
         obj->flags &= ~OBJ_FLAG_2000000;
         obj->fn_render = func_80029D84;
     }
 
-    draw_translucent_quad(D_8005BEFC, NULL);
+    draw_translucent_quad(gFadeAlpha, NULL);
     model_update(obj);
 }
 
@@ -763,7 +763,7 @@ void func_80029E5C(Object *obj) {
         obj->fn_render = func_8002A050;
     }
 
-    draw_translucent_quad(D_8005BEFC, NULL);
+    draw_translucent_quad(gFadeAlpha, NULL);
     model_update(obj);
 }
 
@@ -785,7 +785,7 @@ void func_80029EBC(Object *obj) {
         obj->fn_render = func_80029F58;
     }
 
-    draw_translucent_quad(D_8005BEFC, NULL);
+    draw_translucent_quad(gFadeAlpha, NULL);
     model_update(obj);
 }
 
@@ -807,7 +807,7 @@ void func_80029F58(Object *obj) {
         obj->fn_render = func_80029EBC;
     }
 
-    draw_translucent_quad(D_8005BEFC, NULL);
+    draw_translucent_quad(gFadeAlpha, NULL);
     model_update(obj);
 }
 
@@ -818,7 +818,7 @@ void func_80029FF4(Object *obj) {
         obj->frameIndex++;
     }
 
-    draw_translucent_quad(D_8005BEFC, NULL);
+    draw_translucent_quad(gFadeAlpha, NULL);
     model_update(obj);
 }
 
@@ -840,7 +840,7 @@ void func_8002A050(Object *obj) {
         obj->frameIndex = 58;
     }
 
-    draw_translucent_quad(D_8005BEFC, NULL);
+    draw_translucent_quad(gFadeAlpha, NULL);
     model_update(obj);
 }
 
@@ -862,7 +862,7 @@ void func_8002A0EC(Object *obj) {
         obj->frameIndex = 60;
     }
 
-    draw_translucent_quad(D_8005BEFC, NULL);
+    draw_translucent_quad(gFadeAlpha, NULL);
     model_update(obj);
 }
 
@@ -872,8 +872,8 @@ void func_8002A188(Object *obj) {
     } else {
         obj->frameIndex++;
     }
-    D_8005BEFC += 2;
-    draw_translucent_quad(D_8005BEFC, NULL);
+    gFadeAlpha += 2;
+    draw_translucent_quad(gFadeAlpha, NULL);
     model_update(obj);
 }
 
@@ -884,7 +884,7 @@ void func_8002A1F0(Object *obj) {
     obj->currentTask->func = task_default_func;
     gIsPaused = TRUE;
     obj->flags |= OBJ_FLAG_2000000;
-    D_8005BEFC = 0;
+    gFadeAlpha = 0;
 }
 
 void func_8002A250(Object *obj) {

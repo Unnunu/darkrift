@@ -198,7 +198,7 @@ void func_80019BD0(Object *obj) {
 void func_80019C48(Object *obj) {
     obj->vars[0]++;
     if (obj->vars[0] > 180) {
-        D_8005BEFC = 0;
+        gFadeAlpha = 0;
         gGlobalFlags |= GAME_FLAG_MODE_DONE;
         gNextGameMode = GAME_MODE_32;
         obj->flags |= OBJ_FLAG_DELETE;
@@ -217,18 +217,18 @@ Vtx D_80049BA8[2][4] = { { { { { 0, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
                            { { { SCREEN_WIDTH << 2, 180 << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } } } };
 
 void func_80019CC0(Object *obj) {
-    if (D_8005BEFC - 8 < D_80080118) {
+    if (gFadeAlpha - 8 < sFadeThreshold) {
         obj->fn_render = func_80019C48;
     } else {
-        D_8005BEFC -= 8;
+        gFadeAlpha -= 8;
     }
 
-    draw_translucent_quad(D_8005BEFC, D_80049BA8[D_8005BFCE]);
+    draw_translucent_quad(gFadeAlpha, D_80049BA8[gFramebufferIndex]);
 }
 
 void func_80019D2C(Object *obj) {
-    if (D_8005BEFC + 8 < 255) {
-        D_8005BEFC += 8;
+    if (gFadeAlpha + 8 < 255) {
+        gFadeAlpha += 8;
     } else {
         mem_free(gBgLayerList);
         gBgLayerList = NULL;
@@ -236,7 +236,7 @@ void func_80019D2C(Object *obj) {
         obj->fn_render = func_80019CC0;
     }
 
-    draw_translucent_quad(D_8005BEFC, D_80049BA8[D_8005BFCE]);
+    draw_translucent_quad(gFadeAlpha, D_80049BA8[gFramebufferIndex]);
 }
 
 void func_80019DE4(Object *obj) {
@@ -262,7 +262,7 @@ void func_80019E28(Object *obj) {
     if (++obj->frameIndex >= obj->modInst->numAnimFrames - 4) {
         obj->flags |= OBJ_FLAG_DELETE;
         create_worker(func_8000A578, 0x1000);
-        D_8005BEFC = 0;
+        gFadeAlpha = 0;
         sound_play(0x2000, 3);
     }
 }

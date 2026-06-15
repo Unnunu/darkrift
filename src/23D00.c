@@ -125,7 +125,7 @@ void func_800234E4(UnkTheta *arg0) {
 
     s2 = arg0->unk_1324;
     s5 = TRUE;
-    s4 = arg0->unk_1334[D_8005BFCE];
+    s4 = arg0->unk_1334[gFramebufferIndex];
 
     while (s2 > 0) {
         s2 -= 5;
@@ -179,7 +179,7 @@ void func_80023628(Object *obj) {
     Vec4i *pos;
     Vec4i *vel;
 
-    if (gGlobalFlags & GAME_FLAG_2000) {
+    if (gGlobalFlags & GAME_FLAG_MODE_EXITING) {
         D_800AA3B0[s2->unk_1680] = FALSE;
         obj->flags |= OBJ_FLAG_DELETE;
         return;
@@ -187,7 +187,7 @@ void func_80023628(Object *obj) {
 
     spB4 = &s2->unk_1684->pos;
     s2->unk_1324 = 0;
-    s2->unk_1328 = D_8005BFCE * 5;
+    s2->unk_1328 = gFramebufferIndex * 5;
     color = (ColorRGBA *) obj->varObj[1];
 
     t0 = TRUE;
@@ -256,8 +256,8 @@ void func_80023628(Object *obj) {
 
     math_rotate_vector(&spA4, &D_8013C668);
 
-    t02 = s2->unk_132C[D_8005BFCE];
-    a3 = s2->unk_1334[D_8005BFCE];
+    t02 = s2->unk_132C[gFramebufferIndex];
+    a3 = s2->unk_1334[gFramebufferIndex];
 
     d1 = gCameraProjectionMatrix.x.z * spB4->x + gCameraProjectionMatrix.y.z * spB4->y +
          gCameraProjectionMatrix.z.z * spB4->z + gCameraProjectionMatrix.w.z;
@@ -316,7 +316,7 @@ void func_80023628(Object *obj) {
     }
 
     v1 = s2->unk_1320;
-    t02 = s2->unk_132C[D_8005BFCE];
+    t02 = s2->unk_132C[gFramebufferIndex];
     while (v1 > 0) {
         v1 -= 5;
         s00 = &s2->unk_00[s2->unk_1328];

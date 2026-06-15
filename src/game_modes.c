@@ -5,7 +5,7 @@
 
 extern s16 D_80051F68;
 
-extern s32 D_8008012C;
+extern s32 gGfxFlags;
 extern Object *gRankTable;
 extern s16 D_80049B30[];
 
@@ -15,7 +15,7 @@ extern s32 gSoundVolume;
 extern u8 D_80080129;
 extern s16 D_80081250;
 extern BackgroundLayer *D_80081254;
-extern s16 D_80080116;
+extern s16 sQuadColor;
 extern s16 gPreviousGameMode;
 extern s16 sCutsceneVariant;
 extern s16 D_8013C226;
@@ -178,8 +178,8 @@ void wait_screen(void) {
 
     asset_open_folder("/title/wait", CONTEXT_6000);
     sp30 = bg_layer_create("wait", 0, 0, 0, 0, TEX_FLAG_1, 0x6000);
-    gGlobalFlags |= GAME_FLAG_400 | GAME_FLAG_10;
-    D_8008012C |= GFX_FLAG_20;
+    gGlobalFlags |= GAME_FLAG_NO_TRANSITION | GAME_FLAG_SKIP_EXIT_FADE;
+    gGfxFlags |= GFX_FLAG_20;
 
     obj = create_worker(&wait_screen_update, 0x1000);
     obj->vars[0] = 6;
@@ -188,8 +188,8 @@ void wait_screen(void) {
     D_80080110 = sp2E;
     D_80080112 = sp2C;
     D_80080114 = sp2A;
-    gGlobalFlags &= ~(GAME_FLAG_400 | GAME_FLAG_10 | GAME_FLAG_MODE_DONE);
-    D_8008012C &= ~GFX_FLAG_20;
+    gGlobalFlags &= ~(GAME_FLAG_NO_TRANSITION | GAME_FLAG_SKIP_EXIT_FADE | GAME_FLAG_MODE_DONE);
+    gGfxFlags &= ~GFX_FLAG_20;
     func_8002630C(0x6000);
     bg_layer_delete(sp30);
 }
@@ -471,9 +471,9 @@ void func_80007B68(Object *obj) {
     s16 a3;
 
     a3 = 1 - gBattleSettings[PLAYER_2].isCpu; // @bug maybe
-    D_80080118 = 100;
+    sFadeThreshold = 100;
 
-    if (gGlobalFlags & GAME_FLAG_100) {
+    if (gGlobalFlags & GAME_FLAG_FADE_IN_DONE) {
         obj->vars[1]++;
         if (obj->vars[1] == 4) {
             obj->vars[1] = 0;
@@ -488,7 +488,7 @@ void func_80007B68(Object *obj) {
                     gNextGameMode = gBattleSettings[1 - gTournamentOpponentId].characterId + GAME_MODE_BATTLE_AARON;
                     gBattleSettings[PLAYER_1].isCpu = TRUE;
                 }
-                gGlobalFlags |= GAME_FLAG_80 | GAME_FLAG_MODE_DONE;
+                gGlobalFlags |= GAME_FLAG_PRESERVE_FADE_ALPHA | GAME_FLAG_MODE_DONE;
                 obj->flags |= OBJ_FLAG_DELETE;
             }
         }
@@ -504,7 +504,7 @@ void func_80007B68(Object *obj) {
             } else {
                 gNextGameMode = GAME_MODE_MAIN_MENU;
             }
-            gGlobalFlags |= GAME_FLAG_80 | GAME_FLAG_MODE_DONE;
+            gGlobalFlags |= GAME_FLAG_PRESERVE_FADE_ALPHA | GAME_FLAG_MODE_DONE;
             obj->flags |= OBJ_FLAG_DELETE;
             D_80081254->flags &= ~BG_FLAG_OVERLAY;
         }
@@ -576,7 +576,7 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
         a1->flags |= OBJ_FLAG_10000000;
     }
 
-    gGlobalFlags |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_TRANSITION;
 
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
@@ -592,7 +592,7 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
     func_80007DB0(gPlayers + 1 - s0, a1, arg2);
     camera_orbit_init(gCamera);
     player_apply_move(gPlayers + 1 - s0, arg1, 1);
-    D_8008012C |= GFX_FLAG_4;
+    gGfxFlags |= GFX_FLAG_4;
 }
 
 void run_intro_gore_mode(void) {
@@ -806,8 +806,8 @@ void run_29_mode(void) {
     gBattleSettings[PLAYER_2].isCpu = TRUE;
 
     func_8002630C(0);
-    gGlobalFlags |= GAME_FLAG_400 | GAME_FLAG_10;
-    D_8008012C |= GFX_FLAG_20;
+    gGlobalFlags |= GAME_FLAG_NO_TRANSITION | GAME_FLAG_SKIP_EXIT_FADE;
+    gGfxFlags |= GFX_FLAG_20;
 
     asset_open_folder("/sono/prize", CONTEXT_3000);
     bg = bg_layer_create("prize", 0, 100, 0, 0, BG_FLAG_OVERLAY, 0x3000);
@@ -815,8 +815,8 @@ void run_29_mode(void) {
     obj->vars[0] = 6;
     game_main_loop();
 
-    gGlobalFlags &= ~(GAME_FLAG_10 | GAME_FLAG_MODE_DONE);
-    D_8008012C &= ~GFX_FLAG_20;
+    gGlobalFlags &= ~(GAME_FLAG_SKIP_EXIT_FADE | GAME_FLAG_MODE_DONE);
+    gGfxFlags &= ~GFX_FLAG_20;
     asset_open_folder("/sono/sonoboss", CONTEXT_3000);
     func_80007F4C(FALSE, 346, 0x3000);
     bg_layer_create("bg2", 0, 26, 0x2000, 0x10000, 0, 0);
@@ -867,7 +867,7 @@ void run_30_mode(void) {
     gPlayers[PLAYER_2].flags |= PLAYER_FLAG_400000;
 
     a1->flags |= OBJ_FLAG_10000000;
-    gGlobalFlags |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_TRANSITION;
 
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
@@ -882,7 +882,7 @@ void run_30_mode(void) {
     func_80007DB0(&gPlayers[sp42], a1, 0x3000);
     camera_orbit_init(gCamera);
     player_apply_move(&gPlayers[sp42], MOVE_ID_AI_INTRO_BOSS, 1);
-    D_8008012C |= GFX_FLAG_4;
+    gGfxFlags |= GFX_FLAG_4;
     create_worker(func_8001A674, 0x1000);
     battle_round_init();
 
@@ -927,8 +927,8 @@ void run_31_mode(void) {
 
     D_80081254 = bg_layer_create(sp38, 0, 40, 0, 0, TEX_FLAG_1, 0x4000);
     D_80081254 = bg_layer_create("passwd", 0, 205, 0, 0, TEX_FLAG_1, 0x4000);
-    gGlobalFlags |= GAME_FLAG_4;
-    D_8008012C |= GFX_FLAG_20;
+    gGlobalFlags |= GAME_FLAG_TRANSITION;
+    gGfxFlags |= GFX_FLAG_20;
     game_main_loop();
     func_8002630C(0x4000);
 }
@@ -944,8 +944,8 @@ void run_36_mode(void) {
     worker->vars[2] = 4;
     func_8001A158(worker, 0x4000);
     D_80080129 = FALSE;
-    gGlobalFlags |= GAME_FLAG_4;
-    D_8008012C |= GFX_FLAG_20;
+    gGlobalFlags |= GAME_FLAG_TRANSITION;
+    gGfxFlags |= GFX_FLAG_20;
     game_main_loop();
     func_8002630C(0x4000);
 }
@@ -963,19 +963,19 @@ void run_37_mode(void) {
     bg_layer_create("easyimg", 0, 0, 0, 0, TEX_FLAG_1, 0x4000);
     create_worker(func_80009554, 0x1000);
     D_80080129 = TRUE;
-    gGlobalFlags |= GAME_FLAG_4;
-    D_8008012C |= GFX_FLAG_20;
+    gGlobalFlags |= GAME_FLAG_TRANSITION;
+    gGfxFlags |= GFX_FLAG_20;
     game_main_loop();
     func_8002630C(0x4000);
     gNextGameMode = GAME_MODE_36;
 }
 
 void func_8000965C(s32 arg0) {
-    D_80080136 = gGameModes[arg0].unk_14;
-    D_80080138 = gGameModes[arg0].unk_16;
-    D_80080130 = gGameModes[arg0].unk_10;
-    D_80080132 = gGameModes[arg0].unk_11;
-    D_80080134 = gGameModes[arg0].unk_12;
+    gFogNear = gGameModes[arg0].unk_14;
+    gFogFar = gGameModes[arg0].unk_16;
+    gFogColorR = gGameModes[arg0].unk_10;
+    gFogColorG = gGameModes[arg0].unk_11;
+    gFogColorB = gGameModes[arg0].unk_12;
     D_80080110 = gGameModes[arg0].unk_0C;
     D_80080112 = gGameModes[arg0].unk_0D;
     D_80080114 = gGameModes[arg0].unk_0E;
@@ -1032,7 +1032,7 @@ void func_800096D0(u8 arg0) {
     }
     a3->flags |= OBJ_FLAG_10000000;
 
-    gGlobalFlags |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_TRANSITION;
     gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
     gRoundOver = FALSE;
@@ -1045,7 +1045,7 @@ void func_800096D0(u8 arg0) {
     camera_orbit_init(gCamera);
     func_80007DB0(&gPlayers[nv], a3, 0x4000);
     func_80007DB0(&gPlayers[t9], s0, 0x4000);
-    D_8008012C |= GFX_FLAG_4;
+    gGfxFlags |= GFX_FLAG_4;
     bg_layer_create("bg2", 0, -27, 0x2000, 0x10000, 0, nv);
     bg_layer_create("bg0", nv * 0, 8, 0x1000, 0x10000, TEX_FLAG_1, nv);
     func_8000965C(GAME_MODE_BATTLE_DEMITRON);
@@ -1156,7 +1156,7 @@ void func_80009CE0(void) {
     obj->vars[0] = 0;
 
     D_80080129 = FALSE;
-    gGlobalFlags |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_TRANSITION;
     camera_cutscene_shake_start(gCamera, sp56);
 }
 
@@ -1276,8 +1276,8 @@ void run_main_menu_mode(void) {
     gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = TRUE;
     asset_open_folder("/title", CONTEXT_2000);
     bg_layer_create("dr_title", 0, 0, 0, 0, TEX_FLAG_1, CONTEXT_2000);
-    D_8008012C |= GFX_FLAG_20;
-    gGlobalFlags |= GAME_FLAG_4;
+    gGfxFlags |= GFX_FLAG_20;
+    gGlobalFlags |= GAME_FLAG_TRANSITION;
 
     if (gPreviousGameMode == GAME_MODE_MENU_OPTIONS) {
         Model *menuEntrySelectorModel = gAssets[asset_find("title.k2", CONTEXT_2000)].aux_data;
@@ -1300,15 +1300,15 @@ void run_main_menu_mode(void) {
 }
 
 void func_8000A514(Object *obj) {
-    draw_translucent_quad(D_8005BEFC, 0);
+    draw_translucent_quad(gFadeAlpha, 0);
 
-    if (D_8005BEFC - 2 > 0) {
-        D_8005BEFC -= 2;
+    if (gFadeAlpha - 2 > 0) {
+        gFadeAlpha -= 2;
         return;
     }
 
     obj->flags |= OBJ_FLAG_DELETE;
-    D_80080116 = 0;
+    sQuadColor = 0;
 }
 
 void func_8000A578(Object *obj) {
@@ -1316,11 +1316,11 @@ void func_8000A578(Object *obj) {
     Vec4i sp34 = { 160, 155, 0, 0 };
     Object *v0;
 
-    D_80080116 = 200;
-    draw_translucent_quad(D_8005BEFC, NULL);
+    sQuadColor = 200;
+    draw_translucent_quad(gFadeAlpha, NULL);
 
-    if (D_8005BEFC + 32 < 255) {
-        D_8005BEFC += 32;
+    if (gFadeAlpha + 32 < 255) {
+        gFadeAlpha += 32;
         return;
     }
 
@@ -1340,8 +1340,8 @@ void run_intro_mode(void) {
     Vec4i sp2C = { 160, 155, 0, 0 };
 
     D_80080129 = FALSE;
-    D_8008012C |= GFX_FLAG_20;
-    gGlobalFlags |= GAME_FLAG_4;
+    gGfxFlags |= GFX_FLAG_20;
+    gGlobalFlags |= GAME_FLAG_TRANSITION;
     asset_open_folder("/title/tit_int", CONTEXT_2000);
     asset_open_folder("/plyrsel/plyrsel", CONTEXT_EEFF);
     v0 = create_worker(func_80019F40, 0x1000);
@@ -1367,9 +1367,9 @@ void func_8000A828(void) {
 
 void run_logo_mode(void) {
     func_800263A8();
-    gGlobalFlags |= GAME_FLAG_4;
-    D_8008012C |= GFX_FLAG_20;
-    D_8008012C |= GFX_FLAG_40;
+    gGlobalFlags |= GAME_FLAG_TRANSITION;
+    gGfxFlags |= GFX_FLAG_20;
+    gGfxFlags |= GFX_FLAG_NO_FILL_BAR;
     if (!gPlayerInput[PLAYER_1].connected && !gPlayerInput[PLAYER_2].connected) {
         func_8000A828();
     }
@@ -1411,8 +1411,8 @@ void run_options_mode(void) {
     gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = TRUE;
     asset_open_folder("/title/option", CONTEXT_2000);
     bg_layer_create("bgopt", 0, 0, 0, 0, TEX_FLAG_1, CONTEXT_2000);
-    D_8008012C |= GFX_FLAG_20;
-    gGlobalFlags |= GAME_FLAG_4;
+    gGfxFlags |= GFX_FLAG_20;
+    gGlobalFlags |= GAME_FLAG_TRANSITION;
 
     controller = create_ui_element(&ui_labels_pos, &ui_labels, CONTEXT_2000);
 
@@ -1531,8 +1531,8 @@ void run_menu_control_mode(void) {
     gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = TRUE;
     asset_open_folder("/title/control", CONTEXT_2000);
     bg_layer_create("bgcont", 0, 0, 0, 0, TEX_FLAG_1, CONTEXT_2000);
-    D_8008012C |= GFX_FLAG_20;
-    gGlobalFlags |= GAME_FLAG_4;
+    gGfxFlags |= GFX_FLAG_20;
+    gGlobalFlags |= GAME_FLAG_TRANSITION;
 
     create_ui_element(&labels_pos, &labels, CONTEXT_2000);
 
@@ -1634,8 +1634,8 @@ void run_menu_rank_mode(void) {
     bg_layer_create("bgrank", 0, 4, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     gRankTable = create_ui_element(&rankTablePos, &rankTable, CONTEXT_2000);
     menu_rank_init();
-    D_8008012C |= GFX_FLAG_20;
-    gGlobalFlags |= GAME_FLAG_4;
+    gGfxFlags |= GFX_FLAG_20;
+    gGlobalFlags |= GAME_FLAG_TRANSITION;
     game_main_loop();
     func_8002630C(CONTEXT_2000);
 }
@@ -1648,8 +1648,8 @@ void run_menu_stats_mode(void) {
     gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = TRUE;
     asset_open_folder("/title/stats", CONTEXT_2000);
     bg_layer_create("aarost", 0, 13, 0, 0, TEX_FLAG_1, CONTEXT_2000);
-    D_8008012C |= GFX_FLAG_20;
-    gGlobalFlags |= GAME_FLAG_4;
+    gGfxFlags |= GFX_FLAG_20;
+    gGlobalFlags |= GAME_FLAG_TRANSITION;
     create_worker(stats_update, OBJ_PRIO_DEFAULT);
     game_main_loop();
     func_8002630C(CONTEXT_2000);

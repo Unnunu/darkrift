@@ -69,17 +69,17 @@ void projectile_cleanup(Object *obj, ProjectileDef *effect) {
             } else {
                 TASK_END(obj->currentTask);
                 obj->flags |= OBJ_FLAG_DELETE;
-                D_8008012C &= ~GFX_FLAG_10;
+                gGfxFlags &= ~GFX_FLAG_10;
             }
             return;
         case GORE:
             TASK_END(obj->currentTask);
             obj->flags |= OBJ_FLAG_DELETE;
-            D_8008012C &= ~GFX_FLAG_10;
+            gGfxFlags &= ~GFX_FLAG_10;
             return;
     }
 
-    D_8008012C &= ~GFX_FLAG_10;
+    gGfxFlags &= ~GFX_FLAG_10;
     TASK_END(obj->currentTask);
     obj->flags |= OBJ_FLAG_DELETE;
 }
@@ -166,7 +166,7 @@ void projectile_update_model(Object *obj) {
     player = (Player *) obj->vars[0];
     playerObj = player->obj;
 
-    D_8008012C |= GFX_FLAG_10;
+    gGfxFlags |= GFX_FLAG_10;
 
     if ((effect->flags & 2) && effect->boneId >= 0) {
         func_80028120(playerObj, effect, &sp2C);

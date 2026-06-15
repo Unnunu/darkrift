@@ -30,12 +30,12 @@ ChunkHeader *sAllocatedChunksList = NULL;
 u8 sHeapDirty = FALSE; // set by mem_free, reset by heap_merge_chunks
 
 OSIoMesg sDmaIoMesg;
-char heap_padding[0x8]; // unused
+char heapPadding[0x8]; // unused
 s32 sAllocatedSize;
 s32 sFreeSize;
 MemSlot gMemSlots[NUM_SLOTS];
 s32 sNextSlotIndex;
-char heap_padding2[0x4]; // unused
+char heapPadding2[0x4]; // unused
 void *gHeapBase;
 
 /**

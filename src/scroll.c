@@ -1,15 +1,15 @@
 #include "common.h"
 #include "task.h"
 
-extern s32 D_8008012C;
+extern s32 gGfxFlags;
 extern s32 gBgScrollY;
 extern u8 D_80080129;
 extern Gfx *gMainGfxPos;
-extern Gfx *D_8005BFDC;
+extern Gfx *gBgGfxPos;
 extern Gfx *gOverlayGfxPos;
-extern s16 D_80080130;
-extern s16 D_80080132;
-extern s16 D_80080134;
+extern s16 gFogColorR;
+extern s16 gFogColorG;
+extern s16 gFogColorB;
 
 BackgroundLayer *gBgLayerList = NULL;
 s32 gBgScrollX = 0;
@@ -65,7 +65,7 @@ BackgroundLayer *bg_layer_create(char *assetName, s32 arg1, s32 posY, s32 parall
         bgLayer->palette[temp + 1] = 0;
     }
     if (flags & BG_FLAG_OVERLAY) {
-        D_8008012C |= GFX_FLAG_OVERLAY;
+        gGfxFlags |= GFX_FLAG_OVERLAY;
     }
 
     return bgLayer;
@@ -249,13 +249,13 @@ void bg_draw_all(void) {
         bgLayer = bgLayer->next;
     }
 
-    if (maxY > 0 && D_80080129 && !(D_8008012C & GFX_FLAG_40)) {
+    if (maxY > 0 && D_80080129 && !(gGfxFlags & GFX_FLAG_NO_FILL_BAR)) {
         s32 t3 = MIN(64, SCREEN_HEIGHT - maxY);
 
         gDPPipeSync(gMainGfxPos++);
         gDPSetCycleType(gMainGfxPos++, G_CYC_FILL);
-        gDPSetFillColor(gMainGfxPos++, (GPACK_RGBA5551(D_80080130, D_80080132, D_80080134, 1) << 16) |
-                                           GPACK_RGBA5551(D_80080130, D_80080132, D_80080134, 1));
+        gDPSetFillColor(gMainGfxPos++, (GPACK_RGBA5551(gFogColorR, gFogColorG, gFogColorB, 1) << 16) |
+                                           GPACK_RGBA5551(gFogColorR, gFogColorG, gFogColorB, 1));
         gDPFillRectangle(gMainGfxPos++, 0, maxY, gScreenWidth - 1, maxY + t3 - 1);
         gDPPipeSync(gMainGfxPos++);
         gDPSetCycleType(gMainGfxPos++, G_CYC_COPY);
@@ -313,9 +313,9 @@ void func_80015724(Object *obj) {
 
     if (obj->flags & OBJ_FLAG_4000000) {
         dlist = &gOverlayGfxPos;
-        D_8008012C |= GFX_FLAG_OVERLAY;
+        gGfxFlags |= GFX_FLAG_OVERLAY;
     } else {
-        dlist = &D_8005BFDC;
+        dlist = &gBgGfxPos;
     }
     gDPLoadTLUT_pal256((*dlist)++, VIRTUAL_TO_PHYSICAL(palette));
 

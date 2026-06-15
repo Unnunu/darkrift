@@ -497,7 +497,7 @@ void func_80012490(void) {
     func_80012AA8(&D_80081320);
     func_80012AA8(&D_80081360);
     func_80012470(&D_800812A0);
-    func_80012B34(&D_8005BF80);
+    func_80012B34(&unusedMainMatrix);
     guMtxIdent(&D_8013C4A0);
     osWritebackDCache(&D_8013C4A0, sizeof(Mtx));
 }

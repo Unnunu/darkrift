@@ -8,7 +8,7 @@ typedef struct PclAsset {
     /* 0x0C */ s32 unk_0C;
 } PclAsset;
 
-Gfx **D_80049CF0 = NULL;
+Gfx **gBgDlists = NULL;
 
 Vec4i D_800814E0[8];
 Vec4i D_80081560[8];
@@ -193,7 +193,7 @@ void update_pcl_and_render_backgrounds(void) {
                 }
             }
 
-            gSPDisplayList(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(D_80049CF0[v0 * D_800815E8 + a0]));
+            gSPDisplayList(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(gBgDlists[v0 * D_800815E8 + a0]));
         }
     }
 }
@@ -216,7 +216,7 @@ void func_8001B5B0(char *name, s32 arg1) {
     str_copy(sp48, name);
     str_concat(sp48, ".GMD");
     D_8008160C = gAssets[asset_find(sp48, arg1)].aux_data;
-    D_80049CF0 = &D_8008160C->model.dlist;
+    gBgDlists = &D_8008160C->model.dlist;
 
     sub2 = D_8008160C->model.modelAsset->nodes;
     sub1 = sub2->batchAssets;

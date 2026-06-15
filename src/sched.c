@@ -16,21 +16,21 @@ extern OSMesgQueue gSchedSPQueue;
 extern OSMesgQueue gSchedDPQueue;
 extern OSMesgQueue gSchedVRetraceQueue;
 
-extern OSTime D_8005BEE8;
-extern OSTime D_8005BEF0;
+extern OSTime sFrameProfilingMin;
+extern OSTime sFrameProfilingMax;
 
 extern OSTask D_8004CBC8;
 extern OSTask D_8004CC88;
 extern OSTask D_801389B8;
-extern DisplayData *D_80080100;
+extern DisplayData *gActiveDisplayData;
 extern Gfx *gMainGfxPos;
 extern Gfx *gOverlayGfxPos;
 extern Batch *gMainBatchPos;
 extern u8 *gFramebuffers[];
-extern u16 D_8005BFCE;
+extern u16 gFramebufferIndex;
 extern u16 gScreenHeight;
 extern s32 D_8013F0B0;
-extern DisplayData D_8005BFF0[2];
+extern DisplayData gDisplayData[2];
 
 extern UnkStruct800031FC D_8004937C;
 extern UnkStruct800031FC D_80049384;
@@ -49,7 +49,7 @@ extern s16 D_800800FA;
 extern s32 gBgScrollX;
 extern s32 gBgScrollY;
 extern s32 D_80081428;
-extern s32 D_80049CF0;
+extern s32 gBgDlists;
 
 void reset_and_compact_heap(void);
 void func_80026250(void);
@@ -62,19 +62,19 @@ s32 func_80021338(void);
 s16 D_80080110;
 s16 D_80080112;
 s16 D_80080114;
-s16 D_80080116;
-s16 D_80080118;
+s16 sQuadColor;
+s16 sFadeThreshold;
 s32 D_8008011C;
 u16 *D_80080120;
 u16 *D_80080124;
 u8 D_80080128;
 u8 D_80080129;
-s32 D_8008012C;
-s16 D_80080130;
-s16 D_80080132;
-s16 D_80080134;
-s16 D_80080136;
-s16 D_80080138;
+s32 gGfxFlags;
+s16 gFogColorR;
+s16 gFogColorG;
+s16 gFogColorB;
+s16 gFogNear;
+s16 gFogFar;
 DISPCB gPostRenderCallbacks[20];
 s32 gPostRenderArgs[20];
 s16 D_800801E0;
@@ -108,7 +108,7 @@ void setup_zbuffer_and_clear(void) {
     gDPPipeSync(gMainGfxPos++);
     gDPSetCycleType(gMainGfxPos++, G_CYC_FILL);
 
-    if (!(D_8008012C & GFX_FLAG_ZBUFFER)) {
+    if (!(gGfxFlags & GFX_FLAG_ZBUFFER)) {
         gDPSetDepthImage(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(D_80080120));
         gDPSetColorImage(gMainGfxPos++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 320, VIRTUAL_TO_PHYSICAL(D_80080120));
         gDPSetFillColor(gMainGfxPos++, GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0));
@@ -181,7 +181,7 @@ void sched_run(void *arg0) {
         D_800801E4 = 1;
         osRecvMesg(&gSchedSPQueue, NULL, OS_MESG_BLOCK);
 
-        D_8005BEE8 += osGetTime() - task_start;
+        sFrameProfilingMin += osGetTime() - task_start;
 
         // wait for RDP sync
         if (D_800801E8 != M_AUDTASK) {
@@ -189,7 +189,7 @@ void sched_run(void *arg0) {
             osRecvMesg(&gSchedDPQueue, NULL, OS_MESG_BLOCK);
         }
 
-        D_8005BEF0 += osGetTime() - task_start;
+        sFrameProfilingMax += osGetTime() - task_start;
     }
 }
 
@@ -200,20 +200,20 @@ void execute_scheduled_tasks(void) {
     D_8008011C = func_80021338();
     if (D_80080128 == 0) {
         // prepare two graphics task, one for f3d ucode, and the other for dr ucode
-        D_8004CBC8.t.data_ptr = D_80080100->gfxMain;
-        D_8004CBC8.t.data_size = (gMainGfxPos - D_80080100->gfxMain) * sizeof(Gfx);
+        D_8004CBC8.t.data_ptr = gActiveDisplayData->gfxMain;
+        D_8004CBC8.t.data_size = (gMainGfxPos - gActiveDisplayData->gfxMain) * sizeof(Gfx);
 
-        D_8004CC88.t.data_ptr = D_80080100->batchMain;
-        D_8004CC88.t.data_size = (gMainBatchPos - D_80080100->batchMain) * sizeof(Batch);
+        D_8004CC88.t.data_ptr = gActiveDisplayData->batchMain;
+        D_8004CC88.t.data_size = (gMainBatchPos - gActiveDisplayData->batchMain) * sizeof(Batch);
 
         osSendMesg(&gSchedSPTaskQueue, (OSMesg) &D_8004CBC8, OS_MESG_BLOCK);
         osSendMesg(&gSchedSPTaskQueue, (OSMesg) &D_8004CC88, OS_MESG_BLOCK);
 
         D_8008011C += 2;
 
-        if (D_8008012C & GFX_FLAG_OVERLAY) {
-            D_801389B8.t.data_ptr = D_80080100->gfxOverlay;
-            D_801389B8.t.data_size = (gOverlayGfxPos - D_80080100->gfxOverlay) * sizeof(Gfx);
+        if (gGfxFlags & GFX_FLAG_OVERLAY) {
+            D_801389B8.t.data_ptr = gActiveDisplayData->gfxOverlay;
+            D_801389B8.t.data_size = (gOverlayGfxPos - gActiveDisplayData->gfxOverlay) * sizeof(Gfx);
             osSendMesg(&gSchedSPTaskQueue, (OSMesg) &D_801389B8, OS_MESG_BLOCK);
             D_8008011C++;
         }
@@ -239,8 +239,8 @@ void sched_wait_vretrace(u8 arg0) {
         D_80080128 = 0;
         osRecvMesg(&gSchedVRetraceQueue, NULL, OS_MESG_BLOCK);
         if (arg0) {
-            osViSwapBuffer(gFramebuffers[D_8005BFCE]);
-            D_8005BFCE = 1 - D_8005BFCE;
+            osViSwapBuffer(gFramebuffers[gFramebufferIndex]);
+            gFramebufferIndex = 1 - gFramebufferIndex;
         }
     }
 }
@@ -276,26 +276,26 @@ void initialize_game_mode(u16 gameMode) {
     func_8002A8C0(&gTaskPool, 50, sizeof(ObjectTask));
     func_8002AC10();
     gCamera = camera_create();
-    D_80080136 = gGameModes[gameMode].unk_14;
-    D_80080138 = gGameModes[gameMode].unk_16;
-    D_80080130 = gGameModes[gameMode].unk_10;
-    D_80080132 = gGameModes[gameMode].unk_11;
-    D_80080134 = gGameModes[gameMode].unk_12;
-    D_8008012C = GFX_FLAG_NONE;
+    gFogNear = gGameModes[gameMode].unk_14;
+    gFogFar = gGameModes[gameMode].unk_16;
+    gFogColorR = gGameModes[gameMode].unk_10;
+    gFogColorG = gGameModes[gameMode].unk_11;
+    gFogColorB = gGameModes[gameMode].unk_12;
+    gGfxFlags = GFX_FLAG_NONE;
     if (!tmp) {}
     memcpy(&D_801389B8, &D_8004CBC8, sizeof(OSTask));
 
     D_8013C228 = NULL;
-    D_80080116 = D_80080118 = 0;
+    sQuadColor = sFadeThreshold = 0;
     D_80080129 = TRUE;
     reset_post_render_hooks();
     reset_lights();
-    gGlobalFlags = GAME_FLAG_4;
+    gGlobalFlags = GAME_FLAG_TRANSITION;
     func_80024A38(0);
     func_80024A38(1);
-    D_8005BFF0[0].perspNorm = 0;
-    D_8005BFF0[1].perspNorm = 1;
-    D_8005BFCE = 0;
+    gDisplayData[0].perspNorm = 0;
+    gDisplayData[1].perspNorm = 1;
+    gFramebufferIndex = 0;
     reset_scrollable_textures();
     func_80023200();
 }
@@ -320,19 +320,19 @@ void reset_game_mode_systems(u16 gameMode) {
     gCamera = camera_create();
     func_80024D2C();
     func_80002C54();
-    D_80049CF0 = 0;
-    D_80080136 = gGameModes[gameMode].unk_14;
-    D_80080138 = gGameModes[gameMode].unk_16;
-    D_80080130 = gGameModes[gameMode].unk_10;
-    D_80080132 = gGameModes[gameMode].unk_11;
-    D_80080134 = gGameModes[gameMode].unk_12;
-    D_8008012C = GFX_FLAG_NONE;
+    gBgDlists = NULL;
+    gFogNear = gGameModes[gameMode].unk_14;
+    gFogFar = gGameModes[gameMode].unk_16;
+    gFogColorR = gGameModes[gameMode].unk_10;
+    gFogColorG = gGameModes[gameMode].unk_11;
+    gFogColorB = gGameModes[gameMode].unk_12;
+    gGfxFlags = GFX_FLAG_NONE;
     D_8013C228 = NULL;
-    D_80080118 = 0;
+    sFadeThreshold = 0;
     D_80080129 = TRUE;
     reset_post_render_hooks();
     reset_lights();
-    gGlobalFlags = GAME_FLAG_4;
+    gGlobalFlags = GAME_FLAG_TRANSITION;
     D_80080128 = 1;
     reset_scrollable_textures();
     func_80023200();

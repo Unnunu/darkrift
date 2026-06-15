@@ -335,12 +335,12 @@ void func_800327D8(Object *obj) {
     if (buttons & INP_START) {
         switch (gPracticePauseMenuSelection) {
             case 118:
-                gGlobalFlags |= GAME_FLAG_80 | GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
+                gGlobalFlags |= GAME_FLAG_PRESERVE_FADE_ALPHA | GAME_FLAG_UNPAUSE | GAME_FLAG_MODE_DONE;
                 gNextGameMode = GAME_MODE_MAIN_MENU;
                 obj->flags |= OBJ_FLAG_DELETE;
                 return;
             case 112:
-                gGlobalFlags |= GAME_FLAG_40;
+                gGlobalFlags |= GAME_FLAG_UNPAUSE;
                 obj->flags |= OBJ_FLAG_DELETE;
                 gPracticePauseMenuSelection = D_8013C450;
                 D_8013C430 = D_8013C448;
@@ -349,19 +349,19 @@ void func_800327D8(Object *obj) {
                 D_8013C440 = D_8013C458;
                 return;
             case 117:
-                gGlobalFlags |= GAME_FLAG_40 | GAME_FLAG_MODE_DONE;
+                gGlobalFlags |= GAME_FLAG_UNPAUSE | GAME_FLAG_MODE_DONE;
                 obj->flags |= OBJ_FLAG_DELETE;
                 gNextGameMode = GAME_MODE_PLAYER_SELECTION;
                 return;
         }
 
-        gGlobalFlags |= GAME_FLAG_40;
+        gGlobalFlags |= GAME_FLAG_UNPAUSE;
         obj->flags |= OBJ_FLAG_DELETE;
     }
 }
 
 void func_80032CEC(Object *obj) {
-    if (gGlobalFlags & GAME_FLAG_40) {
+    if (gGlobalFlags & GAME_FLAG_UNPAUSE) {
         obj->flags |= OBJ_FLAG_DELETE;
     }
     func_80015724(obj);
@@ -763,7 +763,7 @@ void func_80033C38(void) {
         } else {
             D_8013C444 = FALSE;
             gPlayerInput[gPracticingPlayer].enabled = TRUE;
-            gGlobalFlags &= ~GAME_FLAG_4;
+            gGlobalFlags &= ~GAME_FLAG_TRANSITION;
         }
     }
 }
@@ -812,7 +812,7 @@ void func_80033E94(Object *obj) {
     if (gPlayerInput[gPracticingPlayer].buttons == INP_A) {
         D_8013C444 = 1;
         D_8013C42C = 0;
-        gGlobalFlags |= GAME_FLAG_4;
+        gGlobalFlags |= GAME_FLAG_TRANSITION;
         if (D_8013C430 == 18) {
             gPlayerInput[gPracticingPlayer].enabled = FALSE;
         } else {

@@ -1,7 +1,32 @@
+/**
+ * @file main.c
+ * @brief Main game loop, frame rendering, and fade transition system
+ *
+ * Houses the top-level game mode manager, the per-frame render pipeline
+ * (setup → objects → backgrounds → overlay → post-render callbacks),
+ * and a two-sequence fade system:
+ *
+ *   EXIT  (visible→black):  start_exit_fade
+ *                            → exit_fade_active (audio fade + alpha 0→255)
+ *                            → exit_fade_active_no_audio
+ *                            → exit_fade_wait (solid black 5 frames)
+ *
+ *   ENTER (black→visible):  enter_black_screen
+ *                           → enter_black_countdown (7 frames black)
+ *                           → enter_fade_in (alpha 255→0 until threshold)
+ *
+ * The two sequences are independent (no shared state machine).
+ */
+
 #include "common.h"
 #include "PR/gt.h"
 #include "task.h"
 
+// volume level used as: music_set_volume target before stopping,
+// and as fade-start value during reset_to_main_menu
+#define AUDIO_VOLUME_1800 1800
+
+// custom RSP command: set perspective normalization factor
 #define gSPPerspNorm(pkt, dl)                       \
     {                                               \
         Gfx *_g = (Gfx *) (pkt);                    \
@@ -9,75 +34,77 @@
         _g->words.w1 = (dl);                        \
     }
 
-extern s32 D_80049CF0;
+extern s32 gBgDlists;
 extern GameMode gGameModes[];
-extern Gfx D_8004CA68[];
-extern Gfx D_8004CB00[];
+extern Gfx sCopyCycleDl[];
+extern Gfx sModelRenderSetupDl[];
 
 extern s32 gMusicVolumeFading;
 extern s32 gSoundVolumeFading;
 
-extern RenderContext D_8004CC20;
-extern BatchInfo D_8004CCC8;
-extern BatchInfo D_8004CD30;
+extern RenderContext sRenderContext;
+extern BatchInfo sBatchInfoIdentity;
+extern BatchInfo sBatchInfoEndOfFrame;
 
 extern u16 gGlobalFlags;
 extern u16 gNextGameMode;
-extern u16 D_8005BFCE;
+extern u16 gFramebufferIndex;
 
-extern Gfx *D_8005BFDC;
-extern s16 D_80080116;
-extern s32 D_8008012C;
+extern Gfx *gBgGfxPos;
+extern s16 sQuadColor;
+extern s32 gGfxFlags;
 extern DISPCB gPostRenderCallbacks[20];
 extern s32 gPostRenderArgs[20];
 
 /* .data */
 
-s16 D_80049290[] = { 0, 0, 0, 0, 0, 0, 0, 1000, 0, 0, 0, 0, 1000, 0 };
+s16 mainUnused1[] = { 0, 0, 0, 0, 0, 0, 0, 1000, 0, 0, 0, 0, 1000, 0 };
 s32 gFrameCounter = 0;
-Vtx D_800492B0[2][4] = { { { { { 0, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
-                           { { { SCREEN_WIDTH << 2, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
-                           { { { 0, SCREEN_HEIGHT << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
-                           { { { SCREEN_WIDTH << 2, SCREEN_HEIGHT << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } } },
-                         { { { { 0, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
-                           { { { SCREEN_WIDTH << 2, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
-                           { { { 0, SCREEN_HEIGHT << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
-                           { { { SCREEN_WIDTH << 2, SCREEN_HEIGHT << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } } } };
-BatchTriangle D_80049330[] = { { 0, 1, 2, 0 }, { 2, 1, 3, 0 } };
-s32 D_80049338[] = { 0, 0, 0 };
+Vtx sFullscreenQuadVtx[2][4] = {
+    { { { { 0, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
+      { { { SCREEN_WIDTH << 2, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
+      { { { 0, SCREEN_HEIGHT << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
+      { { { SCREEN_WIDTH << 2, SCREEN_HEIGHT << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } } },
+    { { { { 0, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
+      { { { SCREEN_WIDTH << 2, 0, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
+      { { { 0, SCREEN_HEIGHT << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } },
+      { { { SCREEN_WIDTH << 2, SCREEN_HEIGHT << 2, 0 }, 0, { 0, 0 }, { 0, 0, 0, 255 } } } }
+};
+BatchTriangle sQuadTriangles[] = { { 0, 1, 2, 0 }, { 2, 1, 3, 0 } };
+s32 mainUnused2[] = { 0, 0, 0 };
 Vec3s gZeroRotation = { 0, 0, 0 };
 Vec4i gZeroPosition = { 0, 0, 0, 0 };
-GlobalLighting D_8004935C = { { { { 255, 255, 255, 255 }, 0, 0, -127 }, { { 0, 0, 0, 255 }, 73, -73, -73 } } };
+GlobalLighting gDefaultLighting = { { { { 255, 255, 255, 255 }, 0, 0, -127 }, { { 0, 0, 0, 255 }, 73, -73, -73 } } };
 UnkStruct800031FC D_8004937C = { 0, 90, 0, 0 };
 UnkStruct800031FC D_80049384 = { 0, 233, 500, 0 };
 
 /* .bss */
 s16 gCurrentGameMode;
 s16 gPreviousGameMode;
-OSTime unused;
-OSTime D_8005BEE0;
-OSTime D_8005BEE8;
-OSTime D_8005BEF0;
-s32 D_8005BEF8;
-s32 D_8005BEFC;
-BatchInfo D_8005BF00;
-Gfx D_8005BF58[5];
-Mtx D_8005BF80;
+OSTime unusedTimer;
+OSTime sFrameProfilingAccum;
+OSTime sFrameProfilingMin;
+OSTime sFrameProfilingMax;
+s32 sFrameProfilingCounter;
+s32 gFadeAlpha;
+BatchInfo sQuadBatchInfo;
+Gfx sQuadTexDl[5];
+Mtx unusedMainMatrix;
 u16 gGlobalFlags;
 u16 gNextGameMode;
-s32 D_8005BFC4;
+s32 mainUnused3;
 u16 gScreenWidth;
 u16 gScreenHeight;
-u16 D_8005BFCC;
-u16 D_8005BFCE;
+u16 mainUnused4;
+u16 gFramebufferIndex;
 void *gFramebuffers[2];
 Gfx *gMainGfxPos;
-Gfx *D_8005BFDC;
+Gfx *gBgGfxPos;
 Gfx *gOverlayGfxPos;
 Batch *gMainBatchPos;
 Batch *gOverlayBatchPos;
-DisplayData D_8005BFF0[2];
-DisplayData *D_80080100;
+DisplayData gDisplayData[2];
+DisplayData *gActiveDisplayData;
 
 void sync_scheduler_tasks(void);
 // void execute_scheduled_tasks(void);
@@ -89,31 +116,44 @@ void setup_zbuffer_and_clear(void);
 void bg_draw_all(void);
 void update_pcl_and_render_backgrounds(void);
 void process_audio_completion(void);
-void init_fade_out_effect(Object *obj);
+void start_exit_fade(Object *obj);
 
+/**
+ * @brief Initialise the display data and batch/display-list pointers for a
+ *        new frame. Sets segment 1 to the current framebuffer, renders start-
+ *        of-frame batch markers, syncs the scheduler, waits for vblank, and
+ *        executes any pending scheduled tasks.
+ */
 void gfx_init_frame(void) {
-    D_80080100 = &D_8005BFF0[D_8005BFCE];
-    gMainGfxPos = D_80080100->gfxMain;
-    gMainBatchPos = D_80080100->batchMain;
+    gActiveDisplayData = &gDisplayData[gFramebufferIndex];
+    gMainGfxPos = gActiveDisplayData->gfxMain;
+    gMainBatchPos = gActiveDisplayData->batchMain;
 
-    gSPSegment(gMainGfxPos++, 0x01, gFramebuffers[D_8005BFCE]);
+    gSPSegment(gMainGfxPos++, 0x01, gFramebuffers[gFramebufferIndex]);
     gSPSegment(gMainGfxPos++, 0x00, 0x00000000);
 
-    D_8004CC20.segmentTable[0] = 0;
-    D_8004CC20.segmentTable[1] = PHYSICAL_TO_VIRTUAL(gFramebuffers[D_8005BFCE]);
+    sRenderContext.segmentTable[0] = 0;
+    sRenderContext.segmentTable[1] = PHYSICAL_TO_VIRTUAL(gFramebuffers[gFramebufferIndex]);
 
-    gSPTriBatch(gMainBatchPos, (RenderContext *) osVirtualToPhysical(&D_8004CC20), &D_8004CCC8, NULL, NULL);
+    gSPTriBatch(gMainBatchPos, (RenderContext *) osVirtualToPhysical(&sRenderContext), &sBatchInfoIdentity, NULL, NULL);
     gDPFullSync(gMainGfxPos++);
     gSPEndDisplayList(gMainGfxPos++);
-    gSPTriBatch(gMainBatchPos, NULL, &D_8004CD30, NULL, NULL);
+    gSPTriBatch(gMainBatchPos, NULL, &sBatchInfoEndOfFrame, NULL, NULL);
     gSPTriBatch(gMainBatchPos, NULL, NULL, NULL, NULL);
     sync_scheduler_tasks();
     sched_wait_vretrace(TRUE);
     execute_scheduled_tasks();
 
-    D_80080100 = &D_8005BFF0[D_8005BFCE];
+    gActiveDisplayData = &gDisplayData[gFramebufferIndex];
 }
 
+/**
+ * @brief Render one complete frame.
+ *
+ * Pipeline: input → display-list setup → game-object update → Z-buffer clear
+ * → background draw → projection/fog setup → audio → overlay batches →
+ * post-render callbacks → scheduler sync → vblank wait → task execution.
+ */
 void render_frame(void) {
     OSTime frameStartTime;
     Batch *ptr;
@@ -122,59 +162,59 @@ void render_frame(void) {
     frameStartTime = osGetTime();
     input_update();
 
-    D_80080100 = &D_8005BFF0[D_8005BFCE];
-    gMainGfxPos = D_80080100->gfxMain;
-    D_8005BFDC = D_80080100->unk_4080;
-    gOverlayGfxPos = D_80080100->gfxOverlay;
-    gMainBatchPos = D_80080100->batchMain;
-    gOverlayBatchPos = D_80080100->batchOverlay;
+    gActiveDisplayData = &gDisplayData[gFramebufferIndex];
+    gMainGfxPos = gActiveDisplayData->gfxMain;
+    gBgGfxPos = gActiveDisplayData->gfxBg;
+    gOverlayGfxPos = gActiveDisplayData->gfxOverlay;
+    gMainBatchPos = gActiveDisplayData->batchMain;
+    gOverlayBatchPos = gActiveDisplayData->batchOverlay;
 
-    gSPSegment(gMainGfxPos++, 0x01, gFramebuffers[D_8005BFCE]);
+    gSPSegment(gMainGfxPos++, 0x01, gFramebuffers[gFramebufferIndex]);
     gSPSegment(gMainGfxPos++, 0x00, 0x00000000);
 
-    D_8004CC20.segmentTable[0] = 0;
-    D_8004CC20.segmentTable[1] = VIRTUAL_TO_PHYSICAL(gFramebuffers[D_8005BFCE]);
+    sRenderContext.segmentTable[0] = 0;
+    sRenderContext.segmentTable[1] = VIRTUAL_TO_PHYSICAL(gFramebuffers[gFramebufferIndex]);
 
-    if (D_8008012C & GFX_FLAG_OVERLAY) {
-        gSPDisplayList(gOverlayGfxPos++, D_8004CA68);
+    if (gGfxFlags & GFX_FLAG_OVERLAY) {
+        gSPDisplayList(gOverlayGfxPos++, sCopyCycleDl);
     }
 
-    gSPTriBatch(gMainBatchPos, (RenderContext *) osVirtualToPhysical(&D_8004CC20), &D_8004CCC8, NULL, NULL);
+    gSPTriBatch(gMainBatchPos, (RenderContext *) osVirtualToPhysical(&sRenderContext), &sBatchInfoIdentity, NULL, NULL);
     update_all_game_objects();
-    gSPDisplayList(gMainGfxPos++, D_8004CA68);
+    gSPDisplayList(gMainGfxPos++, sCopyCycleDl);
     setup_zbuffer_and_clear();
     bg_draw_all();
 
-    if (!(D_8008012C & GFX_FLAG_1)) {
-        gSPDisplayList(gMainGfxPos++, D_80080100->unk_4080);
+    if (!(gGfxFlags & GFX_FLAG_CUTSCENE)) {
+        gSPDisplayList(gMainGfxPos++, gActiveDisplayData->gfxBg);
     }
-    gSPDisplayList(gMainGfxPos++, D_8004CB00);
-    gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(&D_80080100->mtxViewProj),
+    gSPDisplayList(gMainGfxPos++, sModelRenderSetupDl);
+    gSPMatrix(gMainGfxPos++, VIRTUAL_TO_PHYSICAL(&gActiveDisplayData->mtxViewProj),
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    gSPPerspNorm(gMainGfxPos++, D_80080100->perspNorm);
-    D_8004CC20.perspNorm = D_80080100->perspNorm;
-    gDPSetFogColor(gMainGfxPos++, D_80080130, D_80080132, D_80080134, 255);
-    gSPFogPosition(gMainGfxPos++, D_80080136, D_80080138);
-    if (D_80049CF0 != 0) {
+    gSPPerspNorm(gMainGfxPos++, gActiveDisplayData->perspNorm);
+    sRenderContext.perspNorm = gActiveDisplayData->perspNorm;
+    gDPSetFogColor(gMainGfxPos++, gFogColorR, gFogColorG, gFogColorB, 255);
+    gSPFogPosition(gMainGfxPos++, gFogNear, gFogFar);
+    if (gBgDlists != NULL) {
         update_pcl_and_render_backgrounds();
     }
     process_audio_completion();
 
-    for (ptr = D_80080100->batchOverlay; ptr != gOverlayBatchPos; ptr++) {
+    for (ptr = gActiveDisplayData->batchOverlay; ptr != gOverlayBatchPos; ptr++) {
         gSPTriBatch(gMainBatchPos, ptr->context, ptr->info, ptr->vertices, ptr->triangles);
     }
     gDPFullSync(gMainGfxPos++);
     gSPEndDisplayList(gMainGfxPos++);
 
-    gSPEndDisplayList(D_8005BFDC++);
+    gSPEndDisplayList(gBgGfxPos++);
 
     gDPFullSync(gOverlayGfxPos++);
     gSPEndDisplayList(gOverlayGfxPos++);
 
-    gSPTriBatch(gMainBatchPos, NULL, &D_8004CD30, NULL, NULL);
+    gSPTriBatch(gMainBatchPos, NULL, &sBatchInfoEndOfFrame, NULL, NULL);
     gSPTriBatch(gMainBatchPos, NULL, NULL, NULL, NULL);
 
-    D_8005BEE0 += osGetTime() - frameStartTime;
+    sFrameProfilingAccum += osGetTime() - frameStartTime;
     sync_scheduler_tasks();
 
     for (i = 0; i < ARRAY_COUNT(gPostRenderCallbacks); i++) {
@@ -186,13 +226,20 @@ void render_frame(void) {
     sched_wait_vretrace(TRUE);
     execute_scheduled_tasks();
 
-    if (++D_8005BEF8 >= 0x100) {
-        D_8005BEF8 = 0;
-        D_8005BEF0 = D_8005BEE8 = D_8005BEE0 = 0;
+    if (++sFrameProfilingCounter >= 0x100) {
+        sFrameProfilingCounter = 0;
+        sFrameProfilingMax = sFrameProfilingMin = sFrameProfilingAccum = 0;
     }
 }
 
-Object *func_8000194C(void) {
+/**
+ * @brief Create a challenge-pause overlay (MESSAGE_ID_CHAL).
+ *        In tournament mode (P1 vs CPU), a second human player on controller 2
+ *        can press START — since gBattleSettings[PLAYER_2].isCpu is TRUE,
+ *        this function fires instead of a normal pause.
+ *        (CPU input is disabled by the caller after this returns.)
+ */
+Object *create_challenge_pause(void) {
     Object *obj;
 
     obj = func_80015FB4(MESSAGE_ID_CHAL);
@@ -203,25 +250,37 @@ Object *func_8000194C(void) {
     obj->fn_render = func_80015C58;
     sound_play(2, obj->vars[2]);
     gIsPaused = TRUE;
-    D_8005BEFC = 0;
+    gFadeAlpha = 0;
     return obj;
 }
 
+/**
+ * @brief Handle the START button during gameplay.
+ *
+ * Behaviour depends on play mode:
+ *   - PRACTICE → practice_enter_pause()
+ *   - TOURNAMENT with CPU → create a challenge pause (only for CPU side)
+ *   - otherwise → create a standard pause HUD message
+ *
+ * Pauses music, enters a render loop waiting for GAME_FLAG_UNPAUSE to be set
+ * (indicating unpause), then restores audio and resumes.
+ */
 void handle_start_button_press(s16 whoPressed) {
-    Object *v0;
-    Object *v1;
+    Object *chalObj;
+    Object *pauseMsg;
     s16 pad;
-    u8 sp35;
-    u8 sp34;
-    u8 sp33;
+    u8 savedP2Mirrored;
+    u8 savedP1Mirrored;
+    u8 failed;
     s32 counter;
-    s32 sp28;
+    s32 savedFlag;
 
     counter = 6;
 
-    sp33 = FALSE;
+    failed = FALSE;
     gPlayerInput[whoPressed].pendingInput = FALSE;
 
+    // wait for object pools to have capacity for a pause overlay
     while (gTaskPool.count < 10 || gModelInstancePool.count <= 0) {
         render_frame();
     }
@@ -233,9 +292,9 @@ void handle_start_button_press(s16 whoPressed) {
         case PLAY_MODE_TOURNAMENT_P1:
         case PLAY_MODE_TOURNAMENT_P2:
             if (gBattleSettings[whoPressed].isCpu) {
-                v0 = func_8000194C();
-                if (v0 == NULL) {
-                    sp33 = TRUE;
+                chalObj = create_challenge_pause();
+                if (chalObj == NULL) {
+                    failed = TRUE;
                 } else {
                     gPlayerInput[whoPressed].enabled = FALSE;
                 }
@@ -243,68 +302,75 @@ void handle_start_button_press(s16 whoPressed) {
             }
         /* fallthrough */
         default:
-            v1 = create_hud_message(&gGeneralMessages[MESSAGE_ID_PAUSE], CONTEXT_ABAB);
-            if (v1 != NULL) {
-                v1->vars[0] = whoPressed;
+            pauseMsg = create_hud_message(&gGeneralMessages[MESSAGE_ID_PAUSE], CONTEXT_ABAB);
+            if (pauseMsg != NULL) {
+                pauseMsg->vars[0] = whoPressed;
             } else {
-                sp33 = TRUE;
+                failed = TRUE;
             }
             break;
     }
 
-    if (!sp33) {
+    if (!failed) {
         sound_set_volume(0, 0);
         sound_set_volume(1, 0);
-        music_set_volume(1800);
+        music_set_volume(AUDIO_VOLUME_1800);
+        // one frame between volume change and seq stop — timing quirk
         render_frame();
 
         alSeqpStop(gMusicPlayer);
 
-        sp34 = gPlayerInput[PLAYER_1].mirrored;
-        sp35 = gPlayerInput[PLAYER_2].mirrored;
-        sp28 = D_8008012C & GFX_FLAG_10;
-        D_8008012C |= GFX_FLAG_10;
+        savedP1Mirrored = gPlayerInput[PLAYER_1].mirrored;
+        savedP2Mirrored = gPlayerInput[PLAYER_2].mirrored;
+        savedFlag = gGfxFlags & GFX_FLAG_10;
+        gGfxFlags |= GFX_FLAG_10;
 
-        while (!(gGlobalFlags & GAME_FLAG_40)) {
+        while (!(gGlobalFlags & GAME_FLAG_UNPAUSE)) {
             if (gPlayMode != PLAY_MODE_PRACTICE) {
                 gPlayerInput[PLAYER_1].mirrored = gPlayerInput[PLAYER_2].mirrored = FALSE;
             }
             render_frame();
         }
 
-        if (!sp28) {
-            D_8008012C &= ~GFX_FLAG_10;
+        if (!savedFlag) {
+            gGfxFlags &= ~GFX_FLAG_10;
         }
-        gPlayerInput[PLAYER_1].mirrored = sp34;
-        gPlayerInput[PLAYER_2].mirrored = sp35;
+        gPlayerInput[PLAYER_1].mirrored = savedP1Mirrored;
+        gPlayerInput[PLAYER_2].mirrored = savedP2Mirrored;
 
         gPlayerInput[whoPressed].pendingInput = FALSE;
         gIsPaused = FALSE;
-        gGlobalFlags &= ~GAME_FLAG_40;
+        gGlobalFlags &= ~GAME_FLAG_UNPAUSE;
         alSeqSetLoc(gMusicSequence, &gMusicMarkerStart);
         alSeqpPlay(gMusicPlayer);
         music_set_volume(gMusicVolume);
         sound_set_volume(0, gSoundVolume);
         sound_set_volume(1, gSoundVolume);
     } else {
-
+        // overlay creation failed — brief cooldown, return without pausing
         while (--counter > 0) {
             render_frame();
         }
     }
 }
 
+/**
+ * @brief Reset global state and transition to the main menu.
+ *        Plays a fade-out effect, waits for START+Z to be released,
+ *        sets gNextGameMode to GAME_MODE_MAIN_MENU, and syncs the scheduler.
+ */
 void reset_to_main_menu(void) {
     gGlobalFlags = 0;
     gIsPaused = TRUE;
-    gSoundVolumeFading = gMusicVolumeFading = 1800;
+    gSoundVolumeFading = gMusicVolumeFading = AUDIO_VOLUME_1800;
 
-    create_worker(init_fade_out_effect, 0x1000);
+    create_worker(start_exit_fade, OBJ_PRIO_DEFAULT);
     while (!(gGlobalFlags & GAME_FLAG_MODE_DONE)) {
         render_frame();
     }
     gIsPaused = FALSE;
 
+    // ensure START+Z released before and after setting next mode
     while (gPlayerInput[PLAYER_1].buttons == (INP_START | INP_ZTRIG) ||
            gPlayerInput[PLAYER_2].buttons == (INP_START | INP_ZTRIG)) {
         render_frame();
@@ -321,20 +387,29 @@ void reset_to_main_menu(void) {
     sched_wait_vretrace(FALSE);
 }
 
+/**
+ * @brief Main game loop. Runs the active game mode until it signals exit.
+ *
+ * Monitors START button (pause/challenge), toggles pause when a battle
+ * finishes, plays a fade-out transition when the mode exits, ensures the
+ * display pipeline is in a clean state for the next mode.
+ */
 void game_main_loop(void) {
-    D_8005BFCE = D_8005BEF8 = D_8005BEF0 = D_8005BEE8 = D_8005BEE0 = 0;
+    gFramebufferIndex = sFrameProfilingCounter = sFrameProfilingMax = sFrameProfilingMin = sFrameProfilingAccum = 0;
 
-    while (!(gGlobalFlags & GAME_FLAG_MODE_DONE) || !(gGlobalFlags & GAME_FLAG_1000)) {
-        if (!(gGlobalFlags & GAME_FLAG_BATTLE_FINISHED) && !(gGlobalFlags & GAME_FLAG_4) &&
+    // loop until BOTH mode-done AND enter-done are set
+    while (!(gGlobalFlags & GAME_FLAG_MODE_DONE) || !(gGlobalFlags & GAME_FLAG_ENTER_DONE)) {
+        if (!(gGlobalFlags & GAME_FLAG_BATTLE_FINISHED) && !(gGlobalFlags & GAME_FLAG_TRANSITION) &&
             gPlayerInput[PLAYER_1].buttons == INP_START && gPlayerInput[PLAYER_1].enabled &&
             gPlayerInput[PLAYER_1].pendingInput) {
             handle_start_button_press(PLAYER_1);
-        } else if (!(gGlobalFlags & GAME_FLAG_BATTLE_FINISHED) && !(gGlobalFlags & GAME_FLAG_4) &&
+        } else if (!(gGlobalFlags & GAME_FLAG_BATTLE_FINISHED) && !(gGlobalFlags & GAME_FLAG_TRANSITION) &&
                    gPlayerInput[PLAYER_2].buttons == INP_START && gPlayerInput[PLAYER_2].enabled &&
                    gPlayerInput[PLAYER_2].pendingInput) {
             handle_start_button_press(PLAYER_2);
         }
 
+        // unclear why gIsPaused toggles every frame during BATTLE_FINISHED
         if (gGlobalFlags & GAME_FLAG_BATTLE_FINISHED) {
             gIsPaused = 1 - gIsPaused;
         }
@@ -342,24 +417,26 @@ void game_main_loop(void) {
     }
 
     gGlobalFlags &= ~(GAME_FLAG_BATTLE_FINISHED | GAME_FLAG_MODE_DONE);
-    gGlobalFlags |= GAME_FLAG_2000;
+    gGlobalFlags |= GAME_FLAG_MODE_EXITING;
 
-    if (!(gGlobalFlags & GAME_FLAG_10)) {
+    if (!(gGlobalFlags & GAME_FLAG_SKIP_EXIT_FADE)) {
         if (!(gGlobalFlags & GAME_FLAG_20)) {
             gIsPaused = TRUE;
         }
-        create_worker(init_fade_out_effect, 0x1000);
+        create_worker(start_exit_fade, OBJ_PRIO_DEFAULT);
         while (!(gGlobalFlags & GAME_FLAG_MODE_DONE)) {
             render_frame();
         }
         gIsPaused = FALSE;
     }
 
-    gGlobalFlags &= ~GAME_FLAG_2000;
+    gGlobalFlags &= ~GAME_FLAG_MODE_EXITING;
 
+    // first call drains pending vblank/tasks, second sets clean frame state
     gfx_init_frame();
     gfx_init_frame();
 
+    // drain scheduler and RDP twice to guarantee clean state before next mode
     sync_scheduler_tasks();
     sched_wait_vretrace(FALSE);
 
@@ -368,140 +445,170 @@ void game_main_loop(void) {
 }
 
 #ifdef NON_MATCHING
-void draw_solid_quad(s32 arg0, Vtx *arg1) {
-    if (arg1 == NULL) {
-        arg1 = &D_800492B0[D_8005BFCE];
+/**
+ * @brief Draw an opaque fullscreen quad using the overlay batch.
+ *        Sets up triangle-batch state with opaque render mode and solid
+ *        shade combine, then submits the quad triangles.
+ */
+void draw_solid_quad(s32 alpha, Vtx *vertices) {
+    if (vertices == NULL) {
+        vertices = &sFullscreenQuadVtx[gFramebufferIndex];
     }
 
-    D_8005BF00.header.triMask = 0;
-    D_8005BF00.header.unk_04 = 0;
-    D_8005BF00.header.vtxNum = 4;
-    D_8005BF00.header.vtxOffset = 0;
-    D_8005BF00.header.numTriangles = 2;
-    D_8005BF00.header.unk_0B = 2;
-    D_8005BF00.header.texGfx = D_8005BF58;
+    sQuadBatchInfo.header.triMask = 0;
+    sQuadBatchInfo.header.unk_04 = 0;
+    sQuadBatchInfo.header.vtxNum = 4;
+    sQuadBatchInfo.header.vtxOffset = 0;
+    sQuadBatchInfo.header.numTriangles = 2;
+    sQuadBatchInfo.header.unk_0B = 2;
+    sQuadBatchInfo.header.texGfx = sQuadTexDl;
 
-    gDPPipeSync(&D_8005BF58[0]);
-    gDPSetCombineMode(&D_8005BF58[1], G_CC_SHADE, G_CC_SHADE);
+    gDPPipeSync(&sQuadTexDl[0]);
+    gDPSetCombineMode(&sQuadTexDl[1], G_CC_SHADE, G_CC_SHADE);
 
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_RENDERMODE, G_RM_OPA_SURF | G_RM_OPA_SURF2);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_CYCLETYPE, G_CYC_1CYCLE);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTFILT, G_TF_BILERP);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTCONV, G_TC_FILT);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTPERSP, G_TP_PERSP);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTLUT, G_TT_RGBA16);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_RENDERMODE, G_RM_OPA_SURF | G_RM_OPA_SURF2);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_CYCLETYPE, G_CYC_1CYCLE);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_TEXTFILT, G_TF_BILERP);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_TEXTCONV, G_TC_FILT);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_TEXTPERSP, G_TP_PERSP);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_TEXTLUT, G_TT_RGBA16);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
 
-    arg1[0].v.cn[3] = arg0;
-    arg1[0].v.cn[0] = arg1[0].v.cn[1] = arg1[0].v.cn[2] = D_80080116;
-    arg1[1].v.cn[3] = arg0;
-    arg1[1].v.cn[0] = arg1[1].v.cn[1] = arg1[1].v.cn[2] = D_80080116;
-    arg1[2].v.cn[3] = arg0;
-    arg1[2].v.cn[0] = arg1[2].v.cn[1] = arg1[2].v.cn[2] = D_80080116;
-    arg1[3].v.cn[3] = arg0;
-    arg1[3].v.cn[0] = arg1[3].v.cn[1] = arg1[3].v.cn[2] = D_80080116;
+    vertices[0].v.cn[3] = alpha;
+    vertices[0].v.cn[0] = vertices[0].v.cn[1] = vertices[0].v.cn[2] = sQuadColor;
+    vertices[1].v.cn[3] = alpha;
+    vertices[1].v.cn[0] = vertices[1].v.cn[1] = vertices[1].v.cn[2] = sQuadColor;
+    vertices[2].v.cn[3] = alpha;
+    vertices[2].v.cn[0] = vertices[2].v.cn[1] = vertices[2].v.cn[2] = sQuadColor;
+    vertices[3].v.cn[3] = alpha;
+    vertices[3].v.cn[0] = vertices[3].v.cn[1] = vertices[3].v.cn[2] = sQuadColor;
 
-    gSPTriBatch(gOverlayBatchPos, NULL, &D_8005BF00, arg1, D_80049330);
+    gSPTriBatch(gOverlayBatchPos, NULL, &sQuadBatchInfo, vertices, sQuadTriangles);
 }
 #else
 #pragma GLOBAL_ASM("asm/nonmatchings/main/draw_solid_quad.s")
-void draw_solid_quad(s32 arg0, Vtx *arg1);
+void draw_solid_quad(s32 alpha, Vtx *vertices);
 #endif
 
 #ifdef NON_MATCHING
-void draw_translucent_quad(s32 arg0, Vtx *vertices) {
-    Gfx *gfx = D_8005BF58;
+/**
+ * @brief Draw a translucent fullscreen quad using the overlay batch.
+ *        Same as draw_solid_quad but with G_RM_XLU_SURF render mode.
+ */
+void draw_translucent_quad(s32 alpha, Vtx *vertices) {
+    Gfx *gfx = sQuadTexDl;
 
     if (vertices == NULL) {
-        vertices = D_800492B0[D_8005BFCE];
+        vertices = sFullscreenQuadVtx[gFramebufferIndex];
     }
 
-    D_8005BF00.header.triMask = 0;
-    D_8005BF00.header.unk_04 = 0;
-    D_8005BF00.header.vtxNum = 4;
-    D_8005BF00.header.vtxOffset = 0;
-    D_8005BF00.header.numTriangles = 2;
-    D_8005BF00.header.unk_0B = 2;
-    D_8005BF00.header.texGfx = D_8005BF58;
+    sQuadBatchInfo.header.triMask = 0;
+    sQuadBatchInfo.header.unk_04 = 0;
+    sQuadBatchInfo.header.vtxNum = 4;
+    sQuadBatchInfo.header.vtxOffset = 0;
+    sQuadBatchInfo.header.numTriangles = 2;
+    sQuadBatchInfo.header.unk_0B = 2;
+    sQuadBatchInfo.header.texGfx = sQuadTexDl;
 
     gDPPipeSync(gfx++);
     gDPSetCombineMode(gfx++, G_CC_SHADE, G_CC_SHADE);
 
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_RENDERMODE, G_RM_XLU_SURF | G_RM_XLU_SURF2);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_CYCLETYPE, G_CYC_1CYCLE);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTFILT, G_TF_BILERP);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTCONV, G_TC_FILT);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTPERSP, G_TP_PERSP);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_TEXTLUT, G_TT_RGBA16);
-    gtStateSetOthermode(&D_8005BF00.header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_RENDERMODE, G_RM_XLU_SURF | G_RM_XLU_SURF2);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_CYCLETYPE, G_CYC_1CYCLE);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_TEXTFILT, G_TF_BILERP);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_TEXTCONV, G_TC_FILT);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_TEXTPERSP, G_TP_PERSP);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_TEXTLUT, G_TT_RGBA16);
+    gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
 
-    vertices[0].v.cn[3] = arg0;
-    vertices[0].v.cn[0] = vertices[0].v.cn[1] = vertices[0].v.cn[2] = D_80080116;
-    vertices[1].v.cn[3] = arg0;
-    vertices[1].v.cn[0] = vertices[1].v.cn[1] = vertices[1].v.cn[2] = D_80080116;
-    vertices[2].v.cn[3] = arg0;
-    vertices[2].v.cn[0] = vertices[2].v.cn[1] = vertices[2].v.cn[2] = D_80080116;
-    vertices[3].v.cn[3] = arg0;
-    vertices[3].v.cn[0] = vertices[3].v.cn[1] = vertices[3].v.cn[2] = D_80080116;
+    vertices[0].v.cn[3] = alpha;
+    vertices[0].v.cn[0] = vertices[0].v.cn[1] = vertices[0].v.cn[2] = sQuadColor;
+    vertices[1].v.cn[3] = alpha;
+    vertices[1].v.cn[0] = vertices[1].v.cn[1] = vertices[1].v.cn[2] = sQuadColor;
+    vertices[2].v.cn[3] = alpha;
+    vertices[2].v.cn[0] = vertices[2].v.cn[1] = vertices[2].v.cn[2] = sQuadColor;
+    vertices[3].v.cn[3] = alpha;
+    vertices[3].v.cn[0] = vertices[3].v.cn[1] = vertices[3].v.cn[2] = sQuadColor;
 
-    gSPTriBatch(gOverlayBatchPos, NULL, &D_8005BF00, vertices, D_80049330);
+    gSPTriBatch(gOverlayBatchPos, NULL, &sQuadBatchInfo, vertices, sQuadTriangles);
 }
 #else
 #pragma GLOBAL_ASM("asm/nonmatchings/main/draw_translucent_quad.s")
-void draw_translucent_quad(s32 arg0, Vtx *arg1);
+void draw_translucent_quad(s32 alpha, Vtx *vertices);
 #endif
 
-void handle_fade_out_complete(Object *obj) {
-    if (D_8005BEFC - 8 < D_80080118) {
-        D_8008012C &= ~GFX_FLAG_10;
+/**
+ * @brief Final step of the fade-in effect. Decreases alpha by 8 per frame;
+ *        once below sFadeThreshold, clears the overlay-black flag, marks the
+ *        object for deletion, and signals the game mode entry is done.
+ */
+void enter_fade_in(Object *obj) {
+    if (gFadeAlpha - 8 < sFadeThreshold) {
+        gGfxFlags &= ~GFX_FLAG_10;
         obj->flags |= OBJ_FLAG_DELETE;
-        gGlobalFlags |= GAME_FLAG_100;
+        gGlobalFlags |= GAME_FLAG_FADE_IN_DONE;
 
         if (obj->vars[4] == 0) {
-            gGlobalFlags &= ~GAME_FLAG_4;
+            gGlobalFlags &= ~GAME_FLAG_TRANSITION;
         }
-        gGlobalFlags |= GAME_FLAG_1000;
+        gGlobalFlags |= GAME_FLAG_ENTER_DONE;
     } else {
-        D_8005BEFC -= 8;
-        draw_translucent_quad(D_8005BEFC, NULL);
+        gFadeAlpha -= 8;
+        draw_translucent_quad(gFadeAlpha, NULL);
     }
 }
 
-void init_fade_in_effect(Object *obj) {
+/**
+ * @brief Fade-in initialisation. Runs for 7 frames showing a translucent
+ *        black quad, then blacks the screen and switches to
+ *        enter_fade_in (which will fade back in by decreasing
+ *        alpha).
+ */
+void enter_black_countdown(Object *obj) {
     obj->vars[0]++;
     if (obj->vars[0] >= 7) {
         osViBlack(0);
-        D_8005BEFC = 255;
-        obj->fn_render = handle_fade_out_complete;
+        gFadeAlpha = 255;
+        obj->fn_render = enter_fade_in;
     }
 
     draw_translucent_quad(255, NULL);
 }
 
-void update_game_transition(Object *obj) {
+/**
+ * @brief Game-mode transition handler. Blackens the screen, sets GFX_FLAG_10
+ *        (overlay-black flag), plays the new mode's music, and optionally
+ *        transitions to the fade-in effect if this is a restart (detected by
+ *        OBJ_FLAG_DELETE being set).
+ */
+void enter_black_screen(Object *obj) {
     music_play(obj, 0);
-    if (gGlobalFlags & GAME_FLAG_400) {
-        gGlobalFlags |= GAME_FLAG_1000;
+    if (gGlobalFlags & GAME_FLAG_NO_TRANSITION) {
+        gGlobalFlags |= GAME_FLAG_ENTER_DONE;
         return;
     }
 
-    D_8008012C |= GFX_FLAG_10;
+    gGfxFlags |= GFX_FLAG_10;
     osViBlack(TRUE);
-    gGlobalFlags &= ~GAME_FLAG_1000;
+    gGlobalFlags &= ~GAME_FLAG_ENTER_DONE;
     music_play(obj, 0);
-    if (gGlobalFlags & GAME_FLAG_4) {
+    if (gGlobalFlags & GAME_FLAG_TRANSITION) {
         obj->vars[4] = 1;
     }
-    gGlobalFlags |= GAME_FLAG_4;
+    gGlobalFlags |= GAME_FLAG_TRANSITION;
     if (obj->flags & OBJ_FLAG_DELETE) {
         obj->flags &= ~OBJ_FLAG_DELETE;
-        obj->fn_render = init_fade_in_effect;
+        obj->fn_render = enter_black_countdown;
     }
     draw_translucent_quad(255, NULL);
 }
 
-void complete_fade_in(Object *obj) {
-    draw_solid_quad(D_8005BEFC, NULL);
+/**
+ * @brief Finalise the exit-fade. Draws a solid black quad for 5 frames,
+ *        then signals GAME_FLAG_MODE_DONE and deletes the object.
+ */
+void exit_fade_wait(Object *obj) {
+    draw_solid_quad(gFadeAlpha, NULL);
     obj->vars[0]++;
 
     if (obj->vars[0] >= 5) {
@@ -510,67 +617,92 @@ void complete_fade_in(Object *obj) {
     }
 }
 
-void update_fade_in(Object *obj) {
-    if (D_8005BEFC + 8 < 255) {
-        D_8005BEFC += 8;
-        draw_translucent_quad(D_8005BEFC, NULL);
+/**
+ * @brief Exit-fade step (no audio fade). Increases alpha by 8 per frame
+ *        until near 255, then switches to exit_fade_wait. Draws a
+ *        translucent black quad each frame.
+ */
+void exit_fade_active_no_audio(Object *obj) {
+    if (gFadeAlpha + 8 < 255) {
+        gFadeAlpha += 8;
+        draw_translucent_quad(gFadeAlpha, NULL);
         return;
     }
 
-    if (D_8005BEFC + 1 < 255) {
-        D_8005BEFC++;
-        draw_translucent_quad(D_8005BEFC, NULL);
+    if (gFadeAlpha + 1 < 255) {
+        gFadeAlpha++;
+        draw_translucent_quad(gFadeAlpha, NULL);
         return;
     }
 
-    obj->fn_render = complete_fade_in;
-    if (!(gGlobalFlags & GAME_FLAG_800)) {
+    obj->fn_render = exit_fade_wait;
+    if (!(gGlobalFlags & GAME_FLAG_NO_VI_BLACK)) {
         osViBlack(1);
     }
 
-    draw_solid_quad(D_8005BEFC, NULL);
+    draw_solid_quad(gFadeAlpha, NULL);
     obj->vars[0] = 0;
 }
 
-void start_fade_transition(Object *obj) {
-    D_8008012C |= GFX_FLAG_10;
+/**
+ * @brief Entry point for the fade-out transition. Fades audio out, ramps up
+ *        the overlay-alpha (gFadeAlpha) by 8 per frame, and when full
+ *        (≥ 255) switches to exit_fade_wait (which draws solid black for
+ *        5 frames then exits).
+ */
+void exit_fade_active(Object *obj) {
+    gGfxFlags |= GFX_FLAG_10;
     audio_fade_out_all(obj, 0);
 
-    if (obj->fn_render != start_fade_transition) {
-        obj->fn_render = update_fade_in;
+    if (obj->fn_render != exit_fade_active) {
+        obj->fn_render = exit_fade_active_no_audio;
     }
 
-    if (D_8005BEFC + 8 < 255) {
-        D_8005BEFC += 8;
-        draw_translucent_quad(D_8005BEFC, NULL);
+    if (gFadeAlpha + 8 < 255) {
+        gFadeAlpha += 8;
+        draw_translucent_quad(gFadeAlpha, NULL);
         return;
     }
 
-    if (D_8005BEFC + 1 < 255) {
-        D_8005BEFC++;
-        draw_translucent_quad(D_8005BEFC, NULL);
+    if (gFadeAlpha + 1 < 255) {
+        gFadeAlpha++;
+        draw_translucent_quad(gFadeAlpha, NULL);
         return;
     }
 
-    obj->fn_render = complete_fade_in;
-    if (!(gGlobalFlags & GAME_FLAG_800)) {
+    obj->fn_render = exit_fade_wait;
+    if (!(gGlobalFlags & GAME_FLAG_NO_VI_BLACK)) {
         osViBlack(1);
     }
 
-    draw_solid_quad(D_8005BEFC, NULL);
+    draw_solid_quad(gFadeAlpha, NULL);
     obj->vars[0] = 0;
 }
 
-void init_fade_out_effect(Object *obj) {
-    if (!(gGlobalFlags & GAME_FLAG_80)) {
-        D_8005BEFC = 0;
+/**
+ * @brief Worker entry for the fade-out effect. Initialises alpha to 0 (or
+ *        preserves it if GAME_FLAG_PRESERVE_FADE_ALPHA is set), then delegates to
+ *        exit_fade_active.
+ */
+void start_exit_fade(Object *obj) {
+    if (!(gGlobalFlags & GAME_FLAG_PRESERVE_FADE_ALPHA)) {
+        gFadeAlpha = 0;
     }
 
-    gGlobalFlags &= ~GAME_FLAG_80;
-    obj->fn_render = start_fade_transition;
-    draw_translucent_quad(D_8005BEFC, NULL);
+    gGlobalFlags &= ~GAME_FLAG_PRESERVE_FADE_ALPHA;
+    obj->fn_render = exit_fade_active;
+    draw_translucent_quad(gFadeAlpha, NULL);
 }
 
+/**
+ * @brief Top-level game-mode manager.
+ *
+ * Starts at LOGO, then cycles through game modes forever:
+ *   1. Create an enter_black_screen worker
+ *   2. Run the mode's fn_run
+ *   3. Black the screen, sync the scheduler
+ *   4. Call reset_game_mode_systems() for the next mode
+ */
 void game_mode_manager(void) {
     gNextGameMode = GAME_MODE_LOGO;
     initialize_game_mode(gNextGameMode);
@@ -578,9 +710,9 @@ void game_mode_manager(void) {
 
     while (TRUE) {
         gCurrentGameMode = gNextGameMode;
-        create_worker(update_game_transition, 0x1100);
+        create_worker(enter_black_screen, OBJ_PRIO_HIGHER);
         gGameModes[gNextGameMode].fn_run();
-        if (!(gGlobalFlags & GAME_FLAG_800)) {
+        if (!(gGlobalFlags & GAME_FLAG_NO_VI_BLACK)) {
             osViBlack(1);
         }
         sync_scheduler_tasks();

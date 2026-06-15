@@ -22,7 +22,7 @@ void func_8002A288(Object *obj) {
     if (obj->frameIndex >= obj->modInst->numAnimFrames) {
         TASK_END(obj->currentTask);
         obj->flags |= OBJ_FLAG_DELETE;
-        D_8008012C &= ~GFX_FLAG_10;
+        gGfxFlags &= ~GFX_FLAG_10;
     }
 
     if (obj->color.a >= 4) {

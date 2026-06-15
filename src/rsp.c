@@ -44,7 +44,7 @@ Gfx D_8004C9E8[] = {
     gsSPEndDisplayList(),
 };
 
-Gfx D_8004CA68[] = {
+Gfx sCopyCycleDl[] = {
     gsSPSegment(0x00, 0x00000000),
     gsDPSetCycleType(G_CYC_COPY),
     gsDPPipelineMode(G_PM_NPRIMITIVE),
@@ -66,7 +66,7 @@ Gfx D_8004CA68[] = {
     gsSPEndDisplayList(),
 };
 
-Gfx D_8004CB00[] = {
+Gfx sModelRenderSetupDl[] = {
     gsDPPipeSync(),
     gsSPViewport(&D_8004C9B0),
     gsSPClearGeometryMode(G_ZBUFFER | G_SHADE | G_CULL_BOTH | G_FOG | G_LIGHTING | G_TEXTURE_GEN |
@@ -103,7 +103,7 @@ Gfx D_8004CC08[] = {
     gsSPNoOp(),
 };
 
-RenderContext D_8004CC20 = {
+RenderContext sRenderContext = {
     -1,
     { 0, 0, 0, 0, 0, 0 },
     gsDPSetOtherMode(0, 0),
@@ -126,7 +126,7 @@ OSTask D_8004CC88 = {
     NULL,      0,
 };
 
-BatchInfo D_8004CCC8 = {
+BatchInfo sBatchInfoIdentity = {
     { 0, 0, 0, 0, 0, 0, NULL, gsDPSetOtherMode(0, 0) },
     { {
         { 0x00010000, 0x00000000, 0x00000001, 0x00000000 },
@@ -141,7 +141,7 @@ Gfx D_8004CD20[] = {
     gsSPNoOp(),
 };
 
-BatchInfo D_8004CD30 = {
+BatchInfo sBatchInfoEndOfFrame = {
     { 0, 0, 0, 0, 0, 0, D_8004CD20, gsDPSetOtherMode(0, 0) },
     { {
         { 0x00010000, 0x00000000, 0x00000001, 0x00000000 },

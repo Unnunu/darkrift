@@ -559,7 +559,7 @@ void rank_table_update(Object *obj) {
     Object *charName;
     s32 pad;
 
-    if (!(gGlobalFlags & GAME_FLAG_1000)) {
+    if (!(gGlobalFlags & GAME_FLAG_ENTER_DONE)) {
         return;
     }
     row = obj->vars[0]++;

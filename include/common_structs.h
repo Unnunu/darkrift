@@ -84,7 +84,7 @@ typedef struct DisplayData {
     /* 0x0000 */ Mtx mtxViewProj;
     /* 0x0040 */ char unk_40[0x40];
     /* 0x0080 */ Gfx gfxMain[0x800];
-    /* 0x4080 */ Gfx unk_4080[0x400];
+    /* 0x4080 */ Gfx gfxBg[0x400];
     /* 0x6080 */ Gfx gfxOverlay[0x400];
     /* 0x8080 */ Batch batchMain[0x800];
     /* 0x10080 */ Batch batchOverlay[0x200];

@@ -160,8 +160,8 @@ void camera_update(Object *obj) {
         obj->pos.y = model->currentRootPos.y;
     }
 
-    guPerspectiveF(&gCameraPerspMatrix, &D_80080100->perspNorm, gCameraFieldOfView, 4.0f / 3.0f, gCameraNearClip,
-                   gCameraFarClip, gCameraScale);
+    guPerspectiveF(&gCameraPerspMatrix, &gActiveDisplayData->perspNorm, gCameraFieldOfView, 4.0f / 3.0f,
+                   gCameraNearClip, gCameraFarClip, gCameraScale);
 
     if (obj->pos.x != 0 || obj->pos.z != 0 || gCameraTarget.x != 0 || gCameraTarget.z != 0) {
         guLookAtF(&gCameraViewMatrix, obj->pos.x, obj->pos.y + (f32) sPostCutsceneZoom, obj->pos.z, gCameraTarget.x,
@@ -169,7 +169,7 @@ void camera_update(Object *obj) {
         math_mtxf_mul(&gCameraViewMatrix, &gCameraPerspMatrix, &gCameraProjectionMatrix);
     }
 
-    math_mtxf2mtx(&D_80080100->mtxViewProj, &gCameraProjectionMatrix);
+    math_mtxf2mtx(&gActiveDisplayData->mtxViewProj, &gCameraProjectionMatrix);
 
     deltaX = gCameraTarget.x - gCamera->pos.x;
     deltaY = gCameraTarget.y - gCamera->pos.y;
@@ -187,7 +187,7 @@ void camera_update(Object *obj) {
     D_8013C668.y = -0xC00 - gCameraHeading;
     D_8013C668.x = -func_80012518(deltaY, sp3C);
 
-    if (!(D_8008012C & GFX_FLAG_20) || model->animations[0]) {
+    if (!(gGfxFlags & GFX_FLAG_20) || model->animations[0]) {
         D_80081428 = D_8013C828;
         gBgScrollY = D_8013C82C - (s32) (sPostCutsceneZoom * 0.2f);
     }

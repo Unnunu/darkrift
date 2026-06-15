@@ -128,28 +128,28 @@ enum ObjectFlags {
 
 enum GameFlags {
     GAME_FLAG_MODE_DONE = 0x1,
-    GAME_FLAG_4 = 0x4,
-    GAME_FLAG_10 = 0x10,
+    GAME_FLAG_TRANSITION = 0x4,
+    GAME_FLAG_SKIP_EXIT_FADE = 0x10,
     GAME_FLAG_20 = 0x20,
-    GAME_FLAG_40 = 0x40,
-    GAME_FLAG_80 = 0x80,
-    GAME_FLAG_100 = 0x100,
+    GAME_FLAG_UNPAUSE = 0x40,
+    GAME_FLAG_PRESERVE_FADE_ALPHA = 0x80,
+    GAME_FLAG_FADE_IN_DONE = 0x100,
     GAME_FLAG_BATTLE_FINISHED = 0x200,
-    GAME_FLAG_400 = 0x400,
-    GAME_FLAG_800 = 0x800,
-    GAME_FLAG_1000 = 0x1000,
-    GAME_FLAG_2000 = 0x2000
+    GAME_FLAG_NO_TRANSITION = 0x400,
+    GAME_FLAG_NO_VI_BLACK = 0x800,
+    GAME_FLAG_ENTER_DONE = 0x1000,
+    GAME_FLAG_MODE_EXITING = 0x2000
 };
 
 enum GfxFlags {
     GFX_FLAG_NONE = 0,
-    GFX_FLAG_1 = 0x1,
+    GFX_FLAG_CUTSCENE = 0x1,
     GFX_FLAG_OVERLAY = 0x2,
     GFX_FLAG_4 = 0x4,
     GFX_FLAG_ZBUFFER = 0x8,
     GFX_FLAG_10 = 0x10,
     GFX_FLAG_20 = 0x20,
-    GFX_FLAG_40 = 0x40
+    GFX_FLAG_NO_FILL_BAR = 0x40
 };
 
 enum PlayModes {
@@ -239,7 +239,10 @@ enum MessageIds {
     MESSAGE_ID_PAUSE2 = 11
 };
 
-enum ObjectPriorites { OBJ_PRIO_DEFAULT = 0x1000 };
+enum ObjectPriorites {
+    OBJ_PRIO_DEFAULT = 0x1000,
+    OBJ_PRIO_HIGHER = 0x1100,
+};
 
 enum VarOptionControls {
     VAR_OPT_CTRL_PLAYER_ID = 0,
