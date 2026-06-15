@@ -59,7 +59,6 @@
  *   the task queue.
  */
 
-
 #include "common.h"
 #include "string.h"
 #include "camera.h"
@@ -176,9 +175,9 @@ void set_post_render_hook(s32 (*func)(void *), void *arg) {
 /**
  * @brief Prepare the Z-buffer and fill the background colour.
  *
- * If Z-buffering is disabled, a dedicated Z-buffer (gZBuffer / gZBuffer)
- * is cleared to G_MAXFBZ.  The colour buffer is then filled with the
- * scroll-fill colour (D_80080110–14 / gFillColorR–B).  When scrolling is
+ * If Z-buffering is enabled, the Z-buffer (gZBuffer) is cleared to
+ * G_MAXFBZ.  The colour buffer is then filled with the scroll-fill
+ * colour (gFillColorR/gFillColorG/gFillColorB).  When scrolling is
  * active only the strip uncovered by the scroll is filled, otherwise the
  * whole screen.
  */
@@ -220,9 +219,9 @@ void setup_zbuffer_and_clear(void) {
  * @brief Initialise the three OSTask structures with the correct microcode
  *        pointers (rspboot, gspFast3D, gspDarkRift3D).
  *
- * sF3dTask / sF3dTask       → Fast3D ucode (display-list processing)
- * sDarkRiftTask / sDarkRiftTask  → DarkRift3D ucode (batch processing)
- * sOverlayTask / sOverlayTask   → clone of F3D task for overlay rendering
+ * sF3dTask       → Fast3D ucode (display-list processing)
+ * sDarkRiftTask  → DarkRift3D ucode (batch processing)
+ * sOverlayTask   → clone of F3D task for overlay rendering
  */
 void init_rsp_task_ucodes(void) {
     sF3dTask.t.ucode_boot = rspbootTextStart;
@@ -304,7 +303,7 @@ void sched_run(void *arg0) {
  *   3. Overlay task  – processes the overlay display list (gfxOverlay,
  *                      only when GFX_FLAG_OVERLAY is set)
  *
- * Tasks are skipped when sVBlankBehind / sVBlankBehind is non-zero
+ * Tasks are skipped when sVBlankBehind is non-zero
  * (frame-dropping catch-up).
  */
 void submit_scheduled_tasks(void) {
@@ -439,7 +438,7 @@ void initialize_game_mode(u16 gameMode) {
     func_80024A38(0);
     func_80024A38(1);
     gDisplayData[0].perspNorm = 0;
-    gDisplayData[1].perspNorm = 1;  // likely a dev oversight — should be 0 like slot 0?
+    gDisplayData[1].perspNorm = 1; // likely a dev oversight — should be 0 like slot 0?
     gFramebufferIndex = 0;
     reset_scrollable_textures();
     func_80023200();
