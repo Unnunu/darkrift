@@ -1,6 +1,23 @@
 #include "common.h"
 #include "string.h"
 
+/**
+ * @file heap.c
+ * @brief Heap memory manager
+ *
+ * Implements a simple heap allocator with a free list and an allocated list.
+ * Supports slot-based tracked allocations with move callbacks for
+ * compaction, DMA read helpers, and memory block operations.
+ *
+ * Heap layout:
+ *   [ChunkHeader | user data | ChunkHeader | user data | ...]
+ *   Free chunks are linked via gFreeChunksList.
+ *   Allocated chunks via sAllocatedChunksList.
+ *
+ * The slot system (gMemSlots) tracks up to NUM_SLOTS allocations with
+ * optional move callbacks called during heap compaction.
+ */
+
 #define MEM_GUARD_MAGIC 0xABCD6789
 #define HEAP_SIZE 0x23E806
 #define NUM_SLOTS 256
@@ -8,19 +25,23 @@
 void heap_link(ChunkHeader *arg0, ChunkHeader **arg1);
 void mem_move(u32 *dest, u32 *src, u32 size);
 
-ChunkHeader *sFreeChunksList = NULL;
+ChunkHeader *gFreeChunksList = NULL;
 ChunkHeader *sAllocatedChunksList = NULL;
-u8 D_80049288 = FALSE;
+u8 sHeapDirty = FALSE; // set by mem_free, reset by heap_merge_chunks
 
-OSIoMesg D_8005AE90;
-char heap_padding[0x8];
+OSIoMesg sDmaIoMesg;
+char heap_padding[0x8]; // unused
 s32 sAllocatedSize;
 s32 sFreeSize;
-UnkGamma D_8005AEB8[NUM_SLOTS];
-s32 D_8005BEB8;
-char heap_padding2[0x4];
+MemSlot gMemSlots[NUM_SLOTS];
+s32 sNextSlotIndex;
+char heap_padding2[0x4]; // unused
 void *gHeapBase;
 
+/**
+ * @brief Unused stub function. The loop body has been stripped,
+ *        making the original purpose unknowable.
+ */
 void func_80000710(s32 arg0, s32 arg1) {
     s32 i, j;
 
@@ -31,24 +52,35 @@ void func_80000710(s32 arg0, s32 arg1) {
     }
 }
 
+/**
+ * @brief Initializes the heap from gHeapBase.
+ *        Sets up a single free chunk covering the entire heap area.
+ */
 void initialize_memory_heap(void) {
-    sFreeChunksList = (ChunkHeader *) gHeapBase;
+    gFreeChunksList = (ChunkHeader *) gHeapBase;
 
-    sFreeChunksList->end = ((u32) (gHeapBase) + HEAP_SIZE) & ~7;
-    sFreeChunksList->flags = 1;
-    sFreeChunksList->next = NULL;
-    sFreeChunksList->previous = NULL;
+    gFreeChunksList->end = ((u32) (gHeapBase) + HEAP_SIZE) & ~7;
+    gFreeChunksList->flags = 1;
+    gFreeChunksList->next = NULL;
+    gFreeChunksList->previous = NULL;
     sAllocatedSize = 0;
-    sFreeChunksList->guard = MEM_GUARD_MAGIC;
+    gFreeChunksList->guard = MEM_GUARD_MAGIC;
 
-    sFreeSize = heap_get_free_mem(sFreeChunksList);
+    sFreeSize = heap_get_free_mem(gFreeChunksList);
 }
 
+/**
+ * @brief Compact heap by moving allocated slots towards the top, defragmenting
+ *        free space.
+ *
+ * Finds the highest-addressed allocated slot, moves it to the current end
+ * boundary, then repeats. This compacts all live allocations into the upper
+ * portion of the heap, leaving a single contiguous free block at the bottom.
+ */
 void reset_and_compact_heap(void) {
     s32 end;
     s32 last_slot_index;
     void *last_slot_data;
-    s32 v0;
     s32 i;
     ChunkHeader *slotHeader;
     s32 slot_data_size;
@@ -57,13 +89,13 @@ void reset_and_compact_heap(void) {
 
     sAllocatedSize = 0;
 
-    sFreeChunksList = gHeapBase;
-    sFreeChunksList->flags = 1;
-    sFreeChunksList->previous = NULL;
-    sFreeChunksList->next = NULL;
+    gFreeChunksList = gHeapBase;
+    gFreeChunksList->flags = 1;
+    gFreeChunksList->previous = NULL;
+    gFreeChunksList->next = NULL;
 
     sAllocatedChunksList = NULL;
-    sFreeChunksList->guard = MEM_GUARD_MAGIC;
+    gFreeChunksList->guard = MEM_GUARD_MAGIC;
 
     end = ((u32) (gHeapBase) + HEAP_SIZE) & ~7;
 
@@ -71,26 +103,28 @@ void reset_and_compact_heap(void) {
         last_slot_index = -1;
         last_slot_data = NULL;
 
-        for (i = 0; i < ARRAY_COUNT(D_8005AEB8); i++) {
-            UnkGamma *slot = D_8005AEB8 + i;
-            if (!(slot->unk_00 & 1) && (u32) slot->data < end) {
+        // find the highest-addressed live slot whose data lies below end
+        for (i = 0; i < ARRAY_COUNT(gMemSlots); i++) {
+            MemSlot *slot = gMemSlots + i;
+            if (!(slot->flags & 1) && (u32) slot->data < end) {
                 void *slot_data = slot->data;
                 if (slot_data > last_slot_data) {
                     last_slot_data = slot_data;
                     last_slot_index = i;
                 }
-                if (!sFreeChunksList) {} // required for matching
+                if (!gFreeChunksList) {} // required for matching
             }
         }
 
         if (last_slot_index >= 0) {
-            s32 newvar2 = (u32) D_8005AEB8[last_slot_index].data - sizeof(ChunkHeader);
+            // move the slot's data to just below the end boundary
+            s32 newvar2 = (u32) gMemSlots[last_slot_index].data - sizeof(ChunkHeader);
             slotHeader = (ChunkHeader *) newvar2;
             slot_data_size = slotHeader->end - (u32) slotHeader - sizeof(ChunkHeader);
             new_data = end - slot_data_size;
-            if (new_data != D_8005AEB8[last_slot_index].data) {
+            if (new_data != gMemSlots[last_slot_index].data) {
                 slotHeader = end - slotHeader->end + (s32) slotHeader;
-                mem_move(new_data, D_8005AEB8[last_slot_index].data, slot_data_size);
+                mem_move(new_data, gMemSlots[last_slot_index].data, slot_data_size);
                 slotHeader->end = end;
                 slotHeader->flags = 0;
                 slotHeader->next = slotHeader->previous = NULL;
@@ -102,27 +136,35 @@ void reset_and_compact_heap(void) {
             end = slotHeader;
             sAllocatedSize = sAllocatedSize + slotHeader->end - (u32) (newvar = slotHeader) - sizeof(ChunkHeader);
             heap_link(slotHeader, &sAllocatedChunksList);
-            if (D_8005AEB8[last_slot_index].move_cb != NULL) {
-                D_8005AEB8[last_slot_index].move_cb(new_data, D_8005AEB8[last_slot_index].data,
-                                                    D_8005AEB8[last_slot_index].priv);
+            if (gMemSlots[last_slot_index].move_cb != NULL) {
+                gMemSlots[last_slot_index].move_cb(new_data, gMemSlots[last_slot_index].data,
+                                                   gMemSlots[last_slot_index].priv);
             }
-            D_8005AEB8[last_slot_index].data = new_data;
+            gMemSlots[last_slot_index].data = new_data;
         }
     } while (last_slot_index >= 0);
 
-    sFreeChunksList->end = end;
-    sFreeSize = heap_get_free_mem(sFreeChunksList);
+    gFreeChunksList->end = end;
+    sFreeSize = heap_get_free_mem(gFreeChunksList);
 }
 
-void heap_set(ChunkHeader *list, s32 end) {
+/**
+ * @brief Initialise a new chunk header and link it into the free list.
+ *        Unused — the function body exists but is never called.
+ */
+void heap_add_free_chunk(ChunkHeader *list, s32 end) {
     list->end = end;
     list->flags = 1;
     list->next = NULL;
     list->previous = NULL;
     list->guard = MEM_GUARD_MAGIC;
-    heap_link(list, &sFreeChunksList);
+    heap_link(list, &gFreeChunksList);
 }
 
+/**
+ * @brief Validate all allocated chunks by checking for corrupted guards.
+ *        Returns TRUE if all guards are valid.
+ */
 s32 heap_check(void) {
     ChunkHeader *ptr;
     s32 ret = TRUE;
@@ -140,6 +182,9 @@ s32 heap_check(void) {
     return ret;
 }
 
+/**
+ * @brief Traverse a chunk list and compute total free/available size.
+ */
 s32 heap_get_free_mem(ChunkHeader *chunk) {
     s32 totalSize = 0;
 
@@ -152,6 +197,9 @@ s32 heap_get_free_mem(ChunkHeader *chunk) {
     return totalSize;
 }
 
+/**
+ * @brief Insert a chunk at the head of a linked list.
+ */
 void heap_link(ChunkHeader *chunk, ChunkHeader **listHead) {
     chunk->next = *listHead;
     if (chunk->next != NULL) {
@@ -161,9 +209,12 @@ void heap_link(ChunkHeader *chunk, ChunkHeader **listHead) {
     chunk->previous = NULL;
 }
 
+/**
+ * @brief Remove a chunk from its linked list.
+ */
 void heap_unlink(ChunkHeader *chunk) {
-    if (chunk == sFreeChunksList) {
-        sFreeChunksList = chunk->next;
+    if (chunk == gFreeChunksList) {
+        gFreeChunksList = chunk->next;
     }
     if (chunk == sAllocatedChunksList) {
         sAllocatedChunksList = chunk->next;
@@ -182,16 +233,21 @@ void heap_unlink(ChunkHeader *chunk) {
     chunk->previous = NULL;
 }
 
+/**
+ * @brief Merge adjacent free chunks into larger blocks.
+ *        Iterates the free list looking for chunks that are immediately
+ *        followed by another free chunk (current == ptr->end).
+ */
 void heap_merge_chunks(void) {
     ChunkHeader *current;
     ChunkHeader *ptr;
 
-    sFreeSize = heap_get_free_mem(sFreeChunksList);
-    D_80049288 = FALSE;
+    sFreeSize = heap_get_free_mem(gFreeChunksList);
+    sHeapDirty = FALSE;
 
-    current = sFreeChunksList;
+    current = gFreeChunksList;
     while (current != NULL) {
-        ptr = sFreeChunksList;
+        ptr = gFreeChunksList;
         while (ptr != NULL) {
             if (current == (struct ChunkHeader *) ptr->end) {
                 // merge two chunks
@@ -206,12 +262,17 @@ void heap_merge_chunks(void) {
         if (current != NULL) {
             current = current->next;
         } else {
-            current = sFreeChunksList;
+            current = gFreeChunksList;
         }
     }
 }
 
 #ifdef NON_MATCHING
+/**
+ * @brief Core memory allocator. Best-fit strategy.
+ *        If allocation fails and the heap is dirty (has been freed since
+ *        last merge), merges free chunks and retries once.
+ */
 void *do_mem_alloc(u32 size) {
     ChunkHeader *current;
     u32 curSize;
@@ -221,7 +282,7 @@ void *do_mem_alloc(u32 size) {
 
 restart:
     sAllocatedSize += size;
-    sFreeSize = heap_get_free_mem(sFreeChunksList);
+    sFreeSize = heap_get_free_mem(gFreeChunksList);
 
     if (size == 0) {
         return NULL;
@@ -232,7 +293,8 @@ restart:
     bestChunk = NULL;
     bestSize = 0x7FFFFFFF;
 
-    for (current = sFreeChunksList; current != NULL; current = current->next) {
+    // best-fit: find the smallest chunk that can hold the request
+    for (current = gFreeChunksList; current != NULL; current = current->next) {
         curSize = current->end - ((u32) current) - sizeof(ChunkHeader);
 
         if (curSize == size) {
@@ -250,6 +312,7 @@ restart:
     if (bestChunk != NULL) {
         s1 = bestChunk;
         if (size < bestSize) {
+            // split the chunk: allocate from the end, keep remainder free
             u32 end = bestChunk->end;
             bestChunk->end = bestChunk->end - size - sizeof(ChunkHeader);
             s1 = bestChunk->end;
@@ -257,15 +320,17 @@ restart:
             s1->guard = MEM_GUARD_MAGIC;
             s1->end = end;
         } else {
+            // exact fit: take the whole chunk
             bestChunk->flags &= ~1;
             bestChunk->guard = MEM_GUARD_MAGIC;
             heap_unlink(bestChunk);
         }
     } else {
-        if (sFreeChunksList == NULL || !D_80049288) {
+        if (gFreeChunksList == NULL || !sHeapDirty) {
             return NULL;
         }
 
+        // allocation failed but heap is dirty — merge and retry once
         heap_merge_chunks();
         sAllocatedSize -= size;
         goto restart;
@@ -279,6 +344,10 @@ void *do_mem_alloc(u32 arg0);
 #pragma GLOBAL_ASM("asm/nonmatchings/heap/do_mem_alloc.s")
 #endif
 
+/**
+ * @brief Free an allocated block. The block is linked back into the free
+ *        list and the dirty flag is set so the next alloc can attempt merge.
+ */
 void mem_free(void *ptr) {
     ChunkHeader *chunk;
 
@@ -290,10 +359,13 @@ void mem_free(void *ptr) {
 
     heap_unlink(chunk);
     chunk->flags |= 1;
-    heap_link(chunk, &sFreeChunksList);
-    D_80049288 = TRUE;
+    heap_link(chunk, &gFreeChunksList);
+    sHeapDirty = TRUE;
 }
 
+/**
+ * @brief Fill a buffer with a single byte value.
+ */
 void mem_fill(u8 *arg0, u8 arg1, u32 arg2) {
     s32 i;
 
@@ -302,6 +374,10 @@ void mem_fill(u8 *arg0, u8 arg1, u32 arg2) {
     }
 }
 
+/**
+ * @brief Copy memory, safe for overlapping regions.
+ *        Uses memcpy (forward) when dest < src, otherwise copies backwards.
+ */
 void mem_move(u32 *dest, u32 *src, u32 size) {
     s32 i;
     u32 *temp = src;
@@ -315,21 +391,25 @@ void mem_move(u32 *dest, u32 *src, u32 size) {
     }
 }
 
+/**
+ * @brief Allocate from the slot system. Returns a slot index, or -1 if full.
+ *        Tries the linear next-slot first, then searches for a free slot.
+ */
 s32 mem_alloc_slot(s32 size) {
     s32 i;
 
-    if (D_8005BEB8 < NUM_SLOTS) {
-        D_8005AEB8[D_8005BEB8].data = do_mem_alloc(size);
-        D_8005AEB8[D_8005BEB8].unk_00 = 0;
-        D_8005AEB8[D_8005BEB8].move_cb = 0;
-        return D_8005BEB8++;
+    if (sNextSlotIndex < NUM_SLOTS) {
+        gMemSlots[sNextSlotIndex].data = do_mem_alloc(size);
+        gMemSlots[sNextSlotIndex].flags = 0;
+        gMemSlots[sNextSlotIndex].move_cb = 0;
+        return sNextSlotIndex++;
     }
 
     for (i = 0; i < NUM_SLOTS; i++) {
-        if (D_8005AEB8[i].unk_00 & 1) {
-            D_8005AEB8[i].data = do_mem_alloc(size);
-            D_8005AEB8[i].unk_00 = 0;
-            D_8005AEB8[i].move_cb = 0;
+        if (gMemSlots[i].flags & 1) {
+            gMemSlots[i].data = do_mem_alloc(size);
+            gMemSlots[i].flags = 0;
+            gMemSlots[i].move_cb = 0;
             return i;
         }
     }
@@ -337,31 +417,56 @@ s32 mem_alloc_slot(s32 size) {
     return -1;
 }
 
+/**
+ * @brief Free a slot by index. Marks it as free (bit 0) and clears move_cb.
+ */
 void mem_free_slot(s32 slotIndex) {
-    mem_free(D_8005AEB8[slotIndex].data);
-    D_8005AEB8[slotIndex].unk_00 = 1;
-    D_8005AEB8[slotIndex].move_cb = NULL;
+    mem_free(gMemSlots[slotIndex].data);
+    gMemSlots[slotIndex].flags = 1;
+    gMemSlots[slotIndex].move_cb = NULL;
 }
 
+/**
+ * @brief Blocking DMA read from ROM to RAM.
+ *        Drains any pending DMA completions first, then waits for transfer.
+ *        Invalidates entire data cache after the read (4MB range).
+ */
 void dma_read(s32 romAddr, void *vramAddr, s32 size) {
     osWritebackDCacheAll();
+    // drain any pending DMA completions
     while (osRecvMesg(&gSchedDMAQueue, NULL, OS_MESG_NOBLOCK) != -1) {}
-    osPiStartDma(&D_8005AE90, 0, OS_READ, romAddr, vramAddr, size, &gSchedDMAQueue);
+    osPiStartDma(&sDmaIoMesg, 0, OS_READ, romAddr, vramAddr, size, &gSchedDMAQueue);
     osRecvMesg(&gSchedDMAQueue, NULL, OS_MESG_BLOCK);
     osInvalDCache(0, 0x3FFFFF);
 }
 
+/**
+ * @brief Non-blocking DMA read. Fires and returns without waiting.
+ *
+ * NOTE: osInvalDCache is called immediately after starting the DMA, before
+ * the transfer completes. This means the cache invalidation covers stale data
+ * rather than the freshly-DMA'd data. The caller must ensure coherency,
+ * typically by calling osInvalDCache again once the DMA is known to be done.
+ */
 void dma_read_noblock(s32 romAddr, void *vramAddr, s32 size) {
     osWritebackDCacheAll();
-    osPiStartDma(&D_8005AE90, 0, OS_READ, romAddr, vramAddr, size, &gSchedDMAQueue);
+    osPiStartDma(&sDmaIoMesg, 0, OS_READ, romAddr, vramAddr, size, &gSchedDMAQueue);
     osInvalDCache(0, 0x3FFFFF);
 }
 
+/**
+ * @brief Set the move callback and private data for a slot.
+ *        Called during heap compaction to relocate external pointers.
+ */
 void heap_set_move_callback(s32 slotIndex, void (*move_cb)(void *arg0, s32 arg1, s32 arg2), s32 priv) {
-    D_8005AEB8[slotIndex].move_cb = move_cb;
-    D_8005AEB8[slotIndex].priv = priv;
+    gMemSlots[slotIndex].move_cb = move_cb;
+    gMemSlots[slotIndex].priv = priv;
 }
 
+/**
+ * @brief Allocate memory. The file/line params are unused but kept for
+ *        debugging compatibility with the SDK-style allocator interface.
+ */
 void *mem_alloc(s32 size, const char *file, s32 line) {
     return do_mem_alloc(size);
 }

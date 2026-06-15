@@ -1,4 +1,4 @@
-initialize_os_and_idle_thread = 0x80000450;
+boot_main = 0x80000450;
 initialize_memory_heap = 0x80000744;
 heap_get_free_mem = 0x80000A60;
 heap_link = 0x80000A8C;
@@ -41,7 +41,7 @@ camera_create = 0x800395D4;
 memcpy = 0x8003A6F0;
 gtStateSetOthermode = 0x8003B250;
 sqrtf = 0x8003B910;
-sFreeChunksList = 0x80049280;
+gFreeChunksList = 0x80049280;
 sAllocatedChunksList = 0x80049284;
 gFrameCounter = 0x800492AC;
 gAiStepFunctions = 0x80049D74;
@@ -91,3 +91,4 @@ gspDarkRift3DDataStart = 0x80056060; // name_end:gspDarkRift3DDataEnd
 aspMainDataStart = 0x80056C20; // name_end:aspMainDataEnd
 
 D_80052F10 = 0x80052F10; // size:0x10
+sHeapDirty = 0x80049288;

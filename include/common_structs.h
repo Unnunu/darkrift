@@ -134,12 +134,12 @@ typedef struct PlayerInput {
     /* 0x0D */ u8 disableStick;
 } PlayerInput;
 
-typedef struct UnkGamma {
-    /* 0x00 */ s32 unk_00;
+typedef struct MemSlot {
+    /* 0x00 */ s32 flags;
     /* 0x04 */ void *data;
     /* 0x08 */ s32 priv;
     /* 0x0C */ void (*move_cb)(s32, s32, s32);
-} UnkGamma; // size = 0x10
+} MemSlot; // size = 0x10
 
 typedef struct ChunkHeader {
     /* 0x00 */ s32 flags;

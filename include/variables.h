@@ -2,8 +2,8 @@
 #define VARIABLES_H
 
 extern PlayerInput gPlayerInput[2];
-extern UnkGamma D_8005AEB8[256];
-extern ChunkHeader *sFreeChunksList;
+extern MemSlot gMemSlots[256];
+extern ChunkHeader *gFreeChunksList;
 extern Asset gAssets[256];
 extern u16 gGlobalFlags;
 extern s32 D_8005BEFC;

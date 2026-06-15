@@ -95,7 +95,7 @@ void model_asset_build_from_file(ModelAsset *modelAsset) {
     s32 numBatches;
     u32 j;
 
-    header = (ModelFileHeader *) D_8005AEB8[modelAsset->rawFileMemSlot].data;
+    header = (ModelFileHeader *) gMemSlots[modelAsset->rawFileMemSlot].data;
     modelAsset->nodes =
         (ModelNodeAsset *) ((s32) modelAsset + sizeof(ModelAsset) + modelAsset->numNodes * sizeof(BatchAsset));
     modelAsset->header = header;
@@ -171,7 +171,7 @@ void model_asset_load_from_memory_slot(ModelAsset *modelAsset, s32 rawFileMemSlo
     ModelFileHeader *rawFileHeader;
 
     modelAsset->rawFileMemSlot = rawFileMemSlot;
-    rawFileHeader = D_8005AEB8[rawFileMemSlot].data;
+    rawFileHeader = gMemSlots[rawFileMemSlot].data;
     model_asset_detect_format(modelAsset, rawFileHeader->signature[0]);
 
     if ((u8) (modelAsset->fileFormat == MODEL_FILE_FORMAT_V1)) {
@@ -579,7 +579,7 @@ void func_8000DAB0(KModel *arg0, ModelAsset *arg1, char *name, u8 arg3, s32 arg4
         sp30[3] = '\0';
         str_concat(sp30, "_anm.anm");
         asset = &gAssets[asset_find(sp30, arg4)];
-        arg0->model.animations = D_8005AEB8[asset->memory_slot].data;
+        arg0->model.animations = gMemSlots[asset->memory_slot].data;
         arg0->model.animCount = asset->aux_data;
         heap_set_move_callback(asset->memory_slot, func_8000C18C, arg0->model.animCount);
     } else {
@@ -850,7 +850,7 @@ void model_init_from_asset(Model *model, ModelAsset *model_asset, char *name, u8
     }
 
     if (animation_asset_id >= 0) {
-        model->animations = D_8005AEB8[gAssets[animation_asset_id].memory_slot].data;
+        model->animations = gMemSlots[gAssets[animation_asset_id].memory_slot].data;
         model->animCount = gAssets[animation_asset_id].aux_data;
         heap_set_move_callback(gAssets[animation_asset_id].memory_slot, func_8000C18C, model->animCount);
     } else {

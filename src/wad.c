@@ -294,10 +294,10 @@ void func_80026250(void) {
 
     for (i = 0; i < gNumAssets; i++) {
         if (gAssets[i].memory_slot >= 0) {
-            gAssets[i].data = D_8005AEB8[gAssets[i].memory_slot].data;
+            gAssets[i].data = gMemSlots[gAssets[i].memory_slot].data;
         }
         if (gAssets[i].aux_memory_slot >= 0) {
-            gAssets[i].aux_data = D_8005AEB8[gAssets[i].aux_memory_slot].data;
+            gAssets[i].aux_data = gMemSlots[gAssets[i].aux_memory_slot].data;
         }
     }
 }
@@ -351,7 +351,7 @@ void asset_read_all_files_in_folder(s32 context) {
     WadFileEntry *file;
     s32 v0;
 
-    free_memory = heap_get_free_mem(sFreeChunksList);
+    free_memory = heap_get_free_mem(gFreeChunksList);
     file = (WadFileEntry *) ((u8 *) gWadFile + gWadCurrentFolder->offset);
 
     for (i = 0; i < gWadNumFiles; i++) {
@@ -488,7 +488,7 @@ void func_80026A94(Asset *asset, s32 size) {
     s32 index;
     index = mem_alloc_slot(size);
     asset->memory_slot = index;
-    asset->data = D_8005AEB8[index].data;
+    asset->data = gMemSlots[index].data;
 }
 
 void func_80026AD4(Asset *arg0) {
@@ -505,7 +505,7 @@ void func_80026B34(Asset *arg0, s32 arg1) {
     s32 index;
     index = mem_alloc_slot(arg1);
     arg0->aux_memory_slot = index;
-    arg0->aux_data = D_8005AEB8[index].data;
+    arg0->aux_data = gMemSlots[index].data;
 }
 
 void asset_free(Asset *asset) {

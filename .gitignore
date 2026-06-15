@@ -6,6 +6,7 @@ tools/ido5.3/
 tools/ido7.1/
 __pycache__/
 .vscode/
+/ai/
 
 *.z64
 *.o
@@ -19,3 +20,4 @@ __pycache__/
 build.ninja
 undefined_funcs_auto.txt
 undefined_syms_auto.txt
+AGENTS.md
