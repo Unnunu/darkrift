@@ -299,14 +299,14 @@ void obj_init(Object *arg0, Vec4i *arg1, Vec3s *arg2, Transform *arg3, void (*ta
     arg0->taskList = (ObjectTask *) GET_ITEM(gTaskPool);
     arg0->currentTask = arg0->taskList;
     if (taskFunc != NULL) {
-        arg0->currentTask->start_delay = 0;
+        arg0->currentTask->startDelay = 0;
         arg0->currentTask->flags = TASK_FLAG_ENABLED;
         arg0->currentTask->func = taskFunc;
         arg0->currentTask->stackPos = 0;
     } else {
-        arg0->currentTask->start_delay = 0;
+        arg0->currentTask->startDelay = 0;
         arg0->currentTask->flags = TASK_FLAG_ENABLED;
-        arg0->currentTask->func = task_default_func;
+        arg0->currentTask->func = task_end;
         arg0->currentTask->stackPos = 0;
     }
 
@@ -536,7 +536,7 @@ Object *create_model_instance(Vec4i *pos, s32 objPriority, void (*taskFunc)(Obje
     obj->flags = OBJ_FLAG_MODEL;
 
     if (gModelInstancePool.count == 0) {
-        obj->fn_render = task_default_func;
+        obj->fn_render = task_end;
         obj->flags = OBJ_FLAG_DELETE;
         obj->modInst = NULL;
         return NULL;

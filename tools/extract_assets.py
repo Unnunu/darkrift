@@ -271,12 +271,30 @@ def get_buttons(x):
         return "NO_UP_DOWN"
     if x == 0xBFFF:
         return "NO_DOWN"
-    names = ['L','A','R','B', 'CUP','CRIGHT','CDOWN','CLEFT','ZTRIG','','','START','UP','RIGHT','DOWN','LEFT']
+    names = ['L','A','R','B', 'CUP','CRIGHT','CDOWN','CLEFT','ZTRIG','','','START','UP','BACK','DOWN','FWD']
     return '+'.join(names[i] for i in range(16) if (x & 2**i))
 
 
+TF_NAMES = {
+    0: "now",        # TRANSITION_FLAG_IMMEDIATE = 0x1
+    1: "default",    # TRANSITION_FLAG_DEFAULT   = 0x2
+    2: "later",      # TRANSITION_FLAG_LATER     = 0x4
+    3: "timeout",    # TRANSITION_FLAG_TIMEOUT   = 0x8
+    4: "facing",     # TRANSITION_FLAG_FACING    = 0x10
+    5: "held",       # TRANSITION_FLAG_HELD      = 0x20
+    6: "timed",      # TRANSITION_FLAG_TIMED     = 0x40
+    11: "behind",    # TRANSITION_FLAG_BEHIND    = 0x800
+}
+
 def get_move_flags(x):
-    return ' | '.join(f"TF_{1<<i:x}" for i in range(16) if (x & 2**i))
+    if x == 0:
+        return "—"
+    parts = []
+    for i in range(16):
+        if x & (1 << i):
+            name = TF_NAMES.get(i)
+            parts.append(name if name else f"flag_{i}")
+    return ','.join(parts)
 
 CSF_NAMES = {
     0: "CROUCH",
@@ -630,9 +648,9 @@ def process_db():
                 if k == "player_28":
                     p("### Timing Frame Data (16B × N entries) ###")
                     for i, e in enumerate(v):
-                        p(f"  [{i:3d}] fMin={e['unk00']:4d}  fMax={e['unk02']:4d}"
-                          f"  {e['unk04']:4d}  {e['unk06']:4d}  {e['unk08']:4d}  {e['unk0A']:4d}"
-                          f"  {e['unk0C']:4d}  {e['unk0E']:4d}")
+                        p(f"  [{i:3d}] timeWindow={e['unk06']:4d}  initVelZ={e['unk08']:4d}"
+                          f"  actionDelay={e['unk0C']:4d}  autoDelay={e['unk0E']:4d}"
+                          f"  unused:[{e['unk00']:4d}, {e['unk02']:4d}, {e['unk04']:4d}, {e['unk0A']:4d}]")
                     p()
 
                 # ── Transition Rules ──
@@ -674,19 +692,28 @@ def process_db():
                                 p(f"      state_{m['index']:3d}: transition={m['transitionId']:3d} \"{m['transitionName']}\"  {ns_str}{mid_str}")
                     p()
 
-                # ── Player_30 (transition group indices) ──
+                # ── Frame Trigger Overrides (by source combat state) ──
                 elif k == "player_30":
-                    p("### Player_30 (Transition Group Counts) ###")
-                    for i, e in enumerate(v):
-                        p(f"  [{i:3d}] index={e['index_in_field1C']:4d}  count={e['count']:3d}")
+                    p("### Frame Trigger Overrides ###")
+                    overrides = dbdata.get("player_1C", [])
+                    for state_idx, e in enumerate(v):
+                        count = e['count']
+                        if count == 0:
+                            continue
+                        offset = e['index_in_field1C']
+                        state_name = get_cs_name(state_idx)
+                        p(f"  {state_name}:")
+                        for j in range(count):
+                            if offset + j < len(overrides):
+                                o = overrides[offset + j]
+                                target_name = get_cs_name(o['unk_04'])
+                                override_name = get_cs_name(o['unk_00'])
+                                p(f"      target={target_name:25s}  frame={o['unk_02']:5d}  → {override_name:25s}  actionOverride={o['unk_06']:5d}")
                     p()
 
-                # ── Player_1C ──
                 elif k == "player_1C":
-                    p("### Player_1C (4×s16 per entry, 8B each) ###")
-                    for i, e in enumerate(v):
-                        p(f"  [{i:3d}]  {e['unk_00']:5d}  {e['unk_02']:5d}  {e['unk_04']:5d}  {e['unk_06']:5d}")
-                    p()
+                    # consumed by the player_30 section above
+                    pass
 
                 # ── Combat States ──
                 elif k == "actionStates":

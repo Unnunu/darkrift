@@ -343,7 +343,7 @@ Object *projectile_spawn(Object *obj, s32 projectileId) {
         }
 
         effectObj->flags |= OBJ_FLAG_HIDDEN;
-        effectObj->currentTask->start_delay = effect->unk_1E;
+        effectObj->currentTask->startDelay = effect->unk_1E;
         player->projectileObj = effectObj;
     }
 

@@ -174,7 +174,7 @@ void func_80019A9C(Object *obj) {
         sound_play(2, 0);
         assetData = gAssets[asset_find("title.k2", 0x2000)].aux_data;
         obj1 = create_model_instance(&gZeroPosition, 0x1000, func_800199E0, assetData);
-        obj1->currentTask->start_delay = 30;
+        obj1->currentTask->startDelay = 30;
         obj1->frameIndex = 0;
         obj1->flags |= OBJ_FLAG_1000000;
         obj->flags |= OBJ_FLAG_DELETE;
@@ -364,7 +364,7 @@ void func_8001A294(Object *obj) {
 
 void func_8001A2F4(Object *obj) {
     if (++obj->frameIndex >= obj->modInst->numAnimFrames - 1) {
-        obj->currentTask->func = task_default_func;
+        obj->currentTask->func = task_end;
     }
 }
 

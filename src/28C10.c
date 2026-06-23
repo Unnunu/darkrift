@@ -68,7 +68,7 @@ void func_80028010(Object *obj) {
         } else if (obj->color.a > 3) {
             obj->color.a -= 3;
         }
-        obj->currentTask->start_delay = 2;
+        obj->currentTask->startDelay = 2;
     } else {
         obj->flags |= OBJ_FLAG_HIDDEN | OBJ_FLAG_DELETE;
         TASK_END(obj->currentTask);
@@ -85,7 +85,7 @@ void func_80028090(Object *obj) {
             } else if (obj->color.a > 4) {
                 obj->color.a -= 2;
             }
-            obj->currentTask->start_delay = 2;
+            obj->currentTask->startDelay = 2;
         } else {
             obj->flags |= OBJ_FLAG_HIDDEN | OBJ_FLAG_DELETE;
             TASK_END(obj->currentTask);
@@ -202,7 +202,7 @@ void func_8002856C(Object *obj) {
         return;
     } else {
         v0->unk_058 = v0->unk_05C = v0->unk_060 = 0x64000;
-        v0->currentTask->start_delay = 10;
+        v0->currentTask->startDelay = 10;
         v0->unk_08C = 1;
         v0->vars[0] = s0;
         v0->vars[1] = 0;
@@ -216,7 +216,7 @@ void func_8002856C(Object *obj) {
         return;
     } else {
         v0->unk_058 = v0->unk_05C = v0->unk_060 = 0x64000;
-        v0->currentTask->start_delay = 10;
+        v0->currentTask->startDelay = 10;
         v0->unk_08C = 1;
         v0->vars[0] = s0;
         v0->vars[1] = 3;
@@ -230,7 +230,7 @@ void func_8002856C(Object *obj) {
         return;
     } else {
         v0->unk_058 = v0->unk_05C = v0->unk_060 = 0x64000;
-        v0->currentTask->start_delay = 10;
+        v0->currentTask->startDelay = 10;
         v0->unk_08C = 1;
         v0->vars[0] = s0;
         v0->vars[1] = 5;
@@ -244,7 +244,7 @@ void func_8002856C(Object *obj) {
         return;
     } else {
         v0->unk_058 = v0->unk_05C = v0->unk_060 = 0x64000;
-        v0->currentTask->start_delay = 10;
+        v0->currentTask->startDelay = 10;
         v0->unk_08C = 1;
         v0->vars[0] = s0;
         v0->vars[1] = 7;
@@ -257,7 +257,7 @@ void func_8002856C(Object *obj) {
     if (v0 == NULL) {
         return;
     } else {
-        v0->currentTask->start_delay = 10;
+        v0->currentTask->startDelay = 10;
         v0->unk_058 = v0->unk_05C = v0->unk_060 = 0x64000;
         v0->unk_08C = 1;
         v0->vars[0] = s0;
@@ -300,7 +300,7 @@ void func_80028890(Object *obj) {
     gPlayerInput[PLAYER_2].enabled = FALSE;
 
     if (obj->vars[0] == 0) {
-        if (gPlayers[PLAYER_1].behaviorId == 0 && gPlayers[PLAYER_2].behaviorId == 0) {
+        if (gPlayers[PLAYER_1].behaviorId == BHV_IDLE && gPlayers[PLAYER_2].behaviorId == BHV_IDLE) {
             func_80028E84();
             obj->vars[0] = 240;
         }
@@ -451,7 +451,7 @@ void func_80028F38(Object *obj) {
         TASK_END(obj->currentTask);
     }
 
-    obj->currentTask->start_delay = 60;
+    obj->currentTask->startDelay = 60;
 
     v1 = obj->varObj[0];
     if (--v1->frameIndex < 0) {
@@ -468,9 +468,9 @@ void func_80028F38(Object *obj) {
 void func_80028FCC(void) {
     if (gPlayMode != PLAY_MODE_PRACTICE && gBattleDuration != 0) {
         D_8013C240->currentTask->func = func_80028F38;
-        D_8013C240->currentTask->start_delay = 0;
+        D_8013C240->currentTask->startDelay = 0;
         D_8013C240->currentTask->flags = TASK_FLAG_ENABLED;
-        D_8013C23C->currentTask->start_delay = 120;
+        D_8013C23C->currentTask->startDelay = 120;
     }
 }
 
@@ -881,7 +881,7 @@ void func_8002A1F0(Object *obj) {
     obj->fn_render = func_8002A188;
     obj->flags &= ~OBJ_FLAG_HIDDEN;
     obj->frameIndex++;
-    obj->currentTask->func = task_default_func;
+    obj->currentTask->func = task_end;
     gIsPaused = TRUE;
     obj->flags |= OBJ_FLAG_2000000;
     gFadeAlpha = 0;
@@ -891,5 +891,5 @@ void func_8002A250(Object *obj) {
     if (obj->frameIndex++ > 16) {
         obj->flags |= OBJ_FLAG_DELETE;
     }
-    obj->currentTask->start_delay = 2;
+    obj->currentTask->startDelay = 2;
 }

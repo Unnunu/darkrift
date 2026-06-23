@@ -2,7 +2,7 @@
 #include "camera.h"
 #include "task.h"
 
-extern s16 D_80049390;
+extern s16 gCharacterSelectResult;
 extern HudMessage gWinMessages[];
 extern u8 D_8004A42C;
 extern s16 gMaxRounds;
@@ -28,9 +28,9 @@ void func_80015BC0(Object *obj) {
     gNextGameMode = GAME_MODE_PLAYER_SELECTION;
     func_800194E0(PLAY_MODE_50);
     if (gBattleSettings[PLAYER_1].isCpu) {
-        D_80049390 = gBattleSettings[PLAYER_1].characterId;
+        gCharacterSelectResult = gBattleSettings[PLAYER_1].characterId;
     } else {
-        D_80049390 = gBattleSettings[PLAYER_2].characterId;
+        gCharacterSelectResult = gBattleSettings[PLAYER_2].characterId;
     }
 
     gBattleSettings[PLAYER_1].isCpu = gBattleSettings[PLAYER_2].isCpu = FALSE;
@@ -125,7 +125,7 @@ Object *create_hud_message(HudMessage *msg, s32 context) {
             obj->flags |= OBJ_FLAG_TRANSPARENT;
         }
         obj->vars[2] = msg->soundId;
-        obj->currentTask->start_delay = 2;
+        obj->currentTask->startDelay = 2;
     }
 
     return obj;
@@ -133,9 +133,9 @@ Object *create_hud_message(HudMessage *msg, s32 context) {
 
 void func_80015F60(Object *arg0, Object *arg1) {
     D_8013C23C->currentTask->func = func_80016A00;
-    D_8013C23C->currentTask->start_delay = 0;
+    D_8013C23C->currentTask->startDelay = 0;
     D_8013C23C->currentTask->flags = TASK_FLAG_ENABLED;
-    D_8013C23C->currentTask->start_delay = 30;
+    D_8013C23C->currentTask->startDelay = 30;
 }
 
 Object *func_80015FB4(s16 msgId) {
@@ -157,7 +157,7 @@ Object *draw_win_message(s32 characterId, s32 arg1, u32 playerId) {
     obj = create_hud_message(gWinMessages + characterId, playerId);
 
     if (obj != NULL) {
-        obj->currentTask->start_delay = arg1;
+        obj->currentTask->startDelay = arg1;
         obj->flags |= OBJ_FLAG_HIDDEN;
         if (gBattleSettings[playerId].isCpu) {
             obj->vars[2] = 7;
@@ -231,11 +231,11 @@ void func_800162A4(Object *obj) {
     Object *v1;
     u32 i;
 
-    gPlayers[PLAYER_1].combatStateId = 0;
-    gPlayers[PLAYER_2].combatStateId = 0;
+    gPlayers[PLAYER_1].combatStateId = CS_ID_0;
+    gPlayers[PLAYER_2].combatStateId = CS_ID_0;
 
-    create_player_obj(PLAYER_1);
-    create_player_obj(PLAYER_2);
+    replay_respawn_player(PLAYER_1);
+    replay_respawn_player(PLAYER_2);
 
     obj->flags |= OBJ_FLAG_DELETE;
     sCutsceneVariant = gFrameCounter % 5;
@@ -269,7 +269,7 @@ void func_800162A4(Object *obj) {
     }
 
     gCamera->currentTask->func = camera_outro_start;
-    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->startDelay = 0;
     gCameraTarget.x = gCameraTarget.z = 0;
     gCameraTarget.y = -400;
     sCutsceneAnimDone = FALSE;
@@ -278,7 +278,7 @@ void func_800162A4(Object *obj) {
         D_8013C240->frameIndex = 3 + gBattleDuration * 3;
         v1 = D_8013C240->varObj[0];
         v1->frameIndex = 0;
-        D_8013C240->currentTask->func = task_default_func;
+        D_8013C240->currentTask->func = task_end;
     }
 
     D_8013C234->offsetX = D_8013C234->offsetX - D_8013C234->leftS + D_8013C234->rightS - 88;
@@ -308,10 +308,10 @@ void func_800162A4(Object *obj) {
     model_change_animation(gPlayers[PLAYER_1].obj);
     model_change_animation(gPlayers[PLAYER_2].obj);
 
-    func_80012AF4(&gPlayers[PLAYER_1].unk_750.local_matrix);
-    func_80012AF4(&gPlayers[PLAYER_1].unk_868.local_matrix);
-    func_80012AF4(&gPlayers[PLAYER_2].unk_750.local_matrix);
-    func_80012AF4(&gPlayers[PLAYER_2].unk_868.local_matrix);
+    func_80012AF4(&gPlayers[PLAYER_1].headTrack.local_matrix);
+    func_80012AF4(&gPlayers[PLAYER_1].bodyTurn.local_matrix);
+    func_80012AF4(&gPlayers[PLAYER_2].headTrack.local_matrix);
+    func_80012AF4(&gPlayers[PLAYER_2].bodyTurn.local_matrix);
 
     model_update_animated_params(gPlayers[PLAYER_1].obj);
     model_update_animated_params(gPlayers[PLAYER_2].obj);
@@ -351,7 +351,7 @@ u8 func_800167D4(void) {
 }
 
 void func_80016880(Object *obj) {
-    gPlayers[PLAYER_1].autoTransitionTimer = gPlayers[PLAYER_2].autoTransitionTimer = 0;
+    gPlayers[PLAYER_1].autoTimer = gPlayers[PLAYER_2].autoTimer = 0;
 
     if (--obj->vars[1] < 0 && func_800167D4()) {
         func_800162A4(obj);
@@ -363,7 +363,7 @@ void func_80016880(Object *obj) {
 }
 
 void func_800168F0(Object *obj) {
-    gPlayers[PLAYER_1].autoTransitionTimer = gPlayers[PLAYER_2].autoTransitionTimer = 0;
+    gPlayers[PLAYER_1].autoTimer = gPlayers[PLAYER_2].autoTimer = 0;
 
     if (--obj->vars[1] < 0 && func_800167D4()) {
         gGlobalFlags |= GAME_FLAG_MODE_DONE;
@@ -437,7 +437,7 @@ void func_80016B6C(Object *obj) {
         v0 = obj->varObj[3];
         if (v0 != NULL) {
             v0->flags |= OBJ_FLAG_HIDDEN;
-            v0->currentTask->func = task_default_func;
+            v0->currentTask->func = task_end;
         }
 
         func_800162A4(obj);
@@ -555,7 +555,7 @@ void func_800171EC(Object *obj) {
     a3 = func_80016880;
 
     if (v0 != NULL) {
-        v0->currentTask->start_delay = 5;
+        v0->currentTask->startDelay = 5;
     }
 
     D_80081444 = v0;
@@ -613,41 +613,41 @@ void func_80017304(Object *obj) {
 
 void func_800173DC(Object *obj) {
     if (gPlayers[PLAYER_1].flags & PLAYER_FLAG_80) {
-        if (--gPlayers[PLAYER_1].autoTransitionTimer > 20) {
-            gPlayers[PLAYER_1].autoTransitionTimer = 20;
+        if (--gPlayers[PLAYER_1].autoTimer > 20) {
+            gPlayers[PLAYER_1].autoTimer = 20;
         } else {
             player_select_transition(&gPlayers[PLAYER_1], TRUE);
         }
     } else if (gPlayers[PLAYER_2].flags & PLAYER_FLAG_80) {
-        if (--gPlayers[PLAYER_2].autoTransitionTimer > 20) {
-            gPlayers[PLAYER_2].autoTransitionTimer = 20;
+        if (--gPlayers[PLAYER_2].autoTimer > 20) {
+            gPlayers[PLAYER_2].autoTimer = 20;
         } else {
             player_select_transition(&gPlayers[PLAYER_2], TRUE);
         }
     } else if ((gPlayers[PLAYER_1].flags & PLAYER_FLAG_40000) && (gPlayers[PLAYER_2].flags & PLAYER_FLAG_40000)) {
-        if ((gPlayers[PLAYER_1].combatState->flags & CSF_CROUCH) && gPlayers[PLAYER_1].combatStateId != 4) {
+        if ((gPlayers[PLAYER_1].combatState->flags & CSF_CROUCH) && gPlayers[PLAYER_1].combatStateId != CS_ID_CROUCH) {
             player_apply_move(&gPlayers[PLAYER_1], MOVE_ID_CROUCH_IDLE, FALSE);
-        } else if (gPlayers[PLAYER_1].combatStateId != 17) {
+        } else if (gPlayers[PLAYER_1].combatStateId != CS_ID_IDLE) {
             player_apply_move(&gPlayers[PLAYER_1], MOVE_ID_IDLE_068, FALSE);
         }
 
-        if ((gPlayers[PLAYER_2].combatState->flags & CSF_CROUCH) && gPlayers[PLAYER_2].combatStateId != 4) {
+        if ((gPlayers[PLAYER_2].combatState->flags & CSF_CROUCH) && gPlayers[PLAYER_2].combatStateId != CS_ID_CROUCH) {
             player_apply_move(&gPlayers[PLAYER_2], MOVE_ID_CROUCH_IDLE, FALSE);
-        } else if (gPlayers[PLAYER_2].combatStateId != 17) {
+        } else if (gPlayers[PLAYER_2].combatStateId != CS_ID_IDLE) {
             player_apply_move(&gPlayers[PLAYER_2], MOVE_ID_IDLE_068, FALSE);
         }
 
         gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
 
         obj->currentTask->func = func_80017304;
-        obj->currentTask->start_delay = 10;
+        obj->currentTask->startDelay = 10;
         obj->vars[0] = 80;
-        D_80080234 = TRUE;
+        gReplayOverflow = TRUE;
     }
 }
 
 void func_800175B0(Object *obj) {
-    if (D_80080234) {
+    if (gReplayOverflow) {
         obj->currentTask->func = func_800177C0;
     }
 }
@@ -661,7 +661,7 @@ void func_800175D8(Object *obj) {
 }
 
 void func_80017614(Object *obj) {
-    if (D_80080234) {
+    if (gReplayOverflow) {
         obj->flags |= OBJ_FLAG_DELETE;
     }
     func_800175D8(obj);
@@ -674,10 +674,10 @@ void func_80017650(Object *obj) {
     gPlayerInput[D_8013C24C].enabled = TRUE;
     gGlobalFlags &= ~GAME_FLAG_BATTLE_FINISHED;
     if (TRUE) {
-        D_80080234 = TRUE;
+        gReplayOverflow = TRUE;
     }
     obj->currentTask->func = func_800177C0;
-    obj->currentTask->start_delay = 45;
+    obj->currentTask->startDelay = 45;
     func_80016264();
 }
 
@@ -708,7 +708,7 @@ void func_80017728(Object *obj) {
 void func_800177C0(Object *obj) {
     gGlobalFlags &= ~GAME_FLAG_BATTLE_FINISHED;
 
-    if (!D_80080234) {
+    if (!gReplayOverflow) {
         if (gPlayers[PLAYER_1].obj->playerHp == gBattleSettings[PLAYER_1].initialHp &&
                 gPlayers[PLAYER_2].obj->playerHp == 0 ||
             gPlayers[PLAYER_1].obj->playerHp == 0 &&
@@ -760,8 +760,8 @@ void func_8001792C(Object *obj) {
             obj->currentTask->func = func_800177C0;
         }
 
-        D_80080234 = FALSE;
-        obj->currentTask->start_delay = 45;
+        gReplayOverflow = FALSE;
+        obj->currentTask->startDelay = 45;
     }
 }
 
@@ -791,8 +791,8 @@ void func_80017B3C(Object *obj) {
     }
 
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
-    gPlayers[PLAYER_1].flags &= ~PLAYER_FLAG_100000;
-    gPlayers[PLAYER_2].flags &= ~PLAYER_FLAG_100000;
+    gPlayers[PLAYER_1].flags &= ~PLAYER_FLAG_GAMEPLAY_LOCKED;
+    gPlayers[PLAYER_2].flags &= ~PLAYER_FLAG_GAMEPLAY_LOCKED;
 
     if (gBattleSettings[PLAYER_1].isCpu) {
         gPlayers[PLAYER_1].aiState.aiFlags &= ~AIF_AI_DISABLED;
@@ -808,7 +808,7 @@ void func_80017C3C(Object *obj) {
     Object *v0;
     obj->currentTask->func = func_80017B3C;
     v0 = func_80015FB4(MESSAGE_ID_BATTLE);
-    obj->currentTask->start_delay = v0->modInst->numAnimFrames + 20;
+    obj->currentTask->startDelay = v0->modInst->numAnimFrames + 20;
 }
 
 void func_80017C88(Object *obj) {
@@ -821,10 +821,10 @@ void func_80017CA8(void) {
     sCutsceneAnimDone = 0;
 
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = FALSE;
-    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
-    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
+    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_GAMEPLAY_LOCKED;
+    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_GAMEPLAY_LOCKED;
     gReplayActive = FALSE;
-    D_80080234 = FALSE;
+    gReplayOverflow = FALSE;
 
     if (gBattleSettings[PLAYER_1].isCpu) {
         gPlayers[PLAYER_1].aiState.aiFlags |= AIF_AI_DISABLED;
@@ -834,9 +834,9 @@ void func_80017CA8(void) {
     }
 
     D_8013C23C->currentTask->func = func_80017C3C;
-    D_8013C23C->currentTask->start_delay = 0;
+    D_8013C23C->currentTask->startDelay = 0;
     D_8013C23C->currentTask->flags = TASK_FLAG_ENABLED;
-    D_8013C23C->currentTask->start_delay =
+    D_8013C23C->currentTask->startDelay =
         draw_round_number(gBattleSettings[PLAYER_1].roundsWon + gBattleSettings[PLAYER_2].roundsWon);
     D_80081440 = D_80081448 = D_8008144C = D_80081450 = D_80081454 = D_80081444 = NULL;
 }

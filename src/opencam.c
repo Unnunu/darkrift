@@ -141,9 +141,9 @@ void camera_cutscene_playback(Object *obj) {
         obj->frameIndex++;
         if (obj->frameIndex >= obj->modInst->numAnimFrames - 1) {
             obj->modInst->animations[0] = NULL;
-            if (!gRoundOver || D_80080234 == 0) {
+            if (!gRoundOver || gReplayOverflow == 0) {
                 obj->currentTask->func = camera_battle_update;
-                obj->currentTask->start_delay = 1;
+                obj->currentTask->startDelay = 1;
                 gGfxFlags &= ~GFX_FLAG_CUTSCENE;
                 gPlayers[PLAYER_1].obj->flags &= ~OBJ_FLAG_200000;
                 gPlayers[PLAYER_2].obj->flags &= ~OBJ_FLAG_200000;
@@ -178,8 +178,8 @@ void camera_outro_playback(Object *obj) {
         if (gPlayMode != PLAY_MODE_PRACTICE) {
             func_80017CA8();
         } else {
-            gPlayers[PLAYER_1].flags &= ~PLAYER_FLAG_100000;
-            gPlayers[PLAYER_2].flags &= ~PLAYER_FLAG_100000;
+            gPlayers[PLAYER_1].flags &= ~PLAYER_FLAG_GAMEPLAY_LOCKED;
+            gPlayers[PLAYER_2].flags &= ~PLAYER_FLAG_GAMEPLAY_LOCKED;
             gGlobalFlags &= ~GAME_FLAG_TRANSITION;
         }
 
@@ -204,8 +204,8 @@ void camera_debug_control(Object *obj) {
 
     v0 = gPlayerInput[PLAYER_1].buttons;
 
-    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
-    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
+    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_GAMEPLAY_LOCKED;
+    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_GAMEPLAY_LOCKED;
 
     if (v0 & INP_R) {
         D_8013C588 -= 10;
@@ -240,7 +240,7 @@ void camera_debug_light_control(Object *obj) {
     u32 temp1;
     u32 v1;
     u32 a1;
-    GlobalLighting *v0;
+    CharLighting *v0;
 
     v0 = gGameModes[gCurrentGameMode].unk_18;
     temp1 = gPlayerInput[PLAYER_1].buttons;
@@ -625,8 +625,8 @@ void camera_intro_playback(Object *obj) {
         if (gPlayMode != PLAY_MODE_PRACTICE) {
             func_80017CA8();
         } else {
-            gPlayers[PLAYER_1].flags &= ~PLAYER_FLAG_100000;
-            gPlayers[PLAYER_2].flags &= ~PLAYER_FLAG_100000;
+            gPlayers[PLAYER_1].flags &= ~PLAYER_FLAG_GAMEPLAY_LOCKED;
+            gPlayers[PLAYER_2].flags &= ~PLAYER_FLAG_GAMEPLAY_LOCKED;
             gGlobalFlags &= ~GAME_FLAG_TRANSITION;
         }
 
@@ -659,9 +659,9 @@ void camera_intro_start(Object *obj) {
     assetId = asset_find(sp18, CONTEXT_ABAB);
     camera_set_animation(gCamera, (AnimHeader *) gAssets[assetId].data);
     gCamera->currentTask->func = camera_intro_playback;
-    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->startDelay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
-    gCamera->currentTask->start_delay = 1;
+    gCamera->currentTask->startDelay = 1;
     gCamera->vars[10] = 60;
     gPlayerInput[PLAYER_1].pendingInput = assetId = gPlayerInput[PLAYER_2].pendingInput = FALSE; // required to match
 }
@@ -678,9 +678,9 @@ void camera_outro_start(Object *obj) {
     assetId = asset_find(sp18, CONTEXT_ABAB);
     camera_set_animation(gCamera, (AnimHeader *) gAssets[assetId].data);
     gCamera->currentTask->func = camera_outro_playback;
-    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->startDelay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
-    gCamera->currentTask->start_delay = 1;
+    gCamera->currentTask->startDelay = 1;
     gPlayerInput[PLAYER_1].pendingInput = assetId = gPlayerInput[PLAYER_2].pendingInput = FALSE; // required to match
 }
 
@@ -884,7 +884,7 @@ void camera_cutscene_shake_start(Object *obj, s32 arg1) {
     sShakeHeightDelta = -1;
     sShakeDistDelta = (guRandom() % 2) + 1;
     obj->currentTask->func = camera_cutscene_shake;
-    obj->currentTask->start_delay = 0;
+    obj->currentTask->startDelay = 0;
     obj->vars[3] = arg1;
     obj->vars[1] = func_80012518(sp20, sp24);
     camera_cutscene_shake(obj);

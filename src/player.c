@@ -2,6 +2,10 @@
 #include "task.h"
 #include "camera.h"
 
+/* Player subsystem: character lifecycle, state machine transitions, replay,
+   tracking transforms, and character-specific lighting.  Every function
+   involved in creating, updating, and tearing down a player lives here. */
+
 typedef struct TransitionSnapshot {
     /* 0x00 */ s16 playerHp[2];
     /* 0x04 */ s16 currentLogicState;
@@ -17,30 +21,19 @@ typedef struct TransitionRingBuffer {
     /* 0x1008 */ s32 startFrameCounter;
 } TransitionRingBuffer; // size = 0x100C
 
-extern s16 D_8004A730[];
-extern s16 D_8004A748[];
-extern GlobalLighting D_8004B644;
-extern GlobalLighting D_8004B664;
-extern GlobalLighting D_8004B764;
-extern GlobalLighting D_8004B784;
-extern UnkQwe D_8004B94C[];
-extern Behavior D_8004C1E8[];
+typedef struct AssetDB2 {
+    /* 0x00 */ char unk_00[12];
+} AssetDB2; // size = 0xC
 
-extern s32 D_80080218;
-extern TransitionRingBuffer D_80080238;
+typedef struct AssetDB1 {
+    /* 0x00 */ s32 unk_00;
+    /* 0x04 */ AssetDB2 unk_04[1];
+} AssetDB1;
 
-/* .bss */
-s16 gPlayMode;
-s16 gPreviousPlayMode;
-u16 D_80080234;
-u16 D_80080236;
-TransitionRingBuffer D_80080238;
-
-void motion_trail_init(MotionTrail *arg0, ModelInstance *arg1, Matrix4f *arg2, Matrix4f *arg3, Vec4i *arg4,
-                       ColorRGBA *arg5);
-
-void create_player_obj(s16 playerId);
-void func_80003C04_unused(Object *obj);
+typedef struct AssetDB3 {
+    /* 0x00 */ s32 unk_00;
+    /* 0x04 */ s16 unk_04[1];
+} AssetDB3;
 
 typedef struct CharacterDefinition {
     /* 0x00 */ s32 unk_00;
@@ -62,10 +55,49 @@ typedef struct CharacterDefinition {
     /* 0x40 */ s32 unk_40;
 } CharacterDefinition; // size = 0x44
 
+typedef struct CharSymbols {
+    /* 0x00 */ s32 unk_00;
+    /* 0x04 */ s32 unk_04;
+    /* 0x08 */ s32 unk_08;
+    /* 0x0C */ s32 unk_0C;
+}; // size = 0x10
+
+extern s16 D_8004A730[];
+extern s16 D_8004A748[];
+extern CharLighting gBattleDemitronLighting;
+extern CharLighting gBattleDemonicaLighting;
+extern CharLighting gBattleDemitronAltLighting;
+extern CharLighting gBattleDemonicaAltLighting;
+extern UnkQwe D_8004B94C[];
+extern Behavior gBehaviorTable[];
+
+extern s32 D_80080218;
+extern TransitionRingBuffer gTransitionReplayBuffer;
+
+s16 gCharacterSelectResult = -1;
+s16 sSentinelEmpty = -1;
+
+/* .bss */
+s16 gPlayMode;
+s16 gPreviousPlayMode;
+u16 gReplayOverflow;
+u16 gReplayDisabled;
+TransitionRingBuffer gTransitionReplayBuffer;
+
+void motion_trail_init(MotionTrail *arg0, ModelInstance *arg1, Matrix4f *arg2, Matrix4f *arg3, Vec4i *arg4,
+                       ColorRGBA *arg5);
+void ai_max_difficulty(Player *);
+void ai_increase_difficulty(Player *);
+s32 func_8001DFE4(s32 arg0);
+void replay_respawn_player(s16 playerId);
+void replay_update_player(Object *obj);
+
 extern s16 D_8004B9FC[];
 
+/* Record the player's current state (HP, logic state, player ID) into the
+   transition replay ring buffer so the match can be replayed later. */
 #ifdef NON_MATCHING
-void func_800035D0(Player *player) {
+void log_transition_state(Player *player) {
     TransitionSnapshot *a1;
     u16 t8;
     u16 a2;
@@ -76,11 +108,11 @@ void func_800035D0(Player *player) {
 
     v0 = player->obj;
 
-    if (D_80080236 || gRoundOver) {
+    if (gReplayDisabled || gRoundOver) {
         return;
     }
-    v1 = D_80080238.tailIndex;
-    a1 = D_80080238.unk_00 + v1;
+    v1 = gTransitionReplayBuffer.tailIndex;
+    a1 = gTransitionReplayBuffer.unk_00 + v1;
     a1->currentLogicState = player->currentLogicState;
     a1->playerId = player->playerId;
     a1->delayUntilNext = 255;
@@ -90,37 +122,44 @@ void func_800035D0(Player *player) {
     a1->playerHp[a2] = v0->playerHp;
     a1->playerHp[t8] = gPlayers[t8].obj->playerHp;
 
-    nv = D_80080238.tailIndex;
-    D_80080238.unk_00[((nv - 1) & 0x1FF)].delayUntilNext = gFrameCounter - D_80080238.lastFrameCounter;
+    nv = gTransitionReplayBuffer.tailIndex;
+    gTransitionReplayBuffer.unk_00[((nv - 1) & 0x1FF)].delayUntilNext =
+        gFrameCounter - gTransitionReplayBuffer.lastFrameCounter;
 
     nv = (nv + 1) & 0x1FF;
-    D_80080238.tailIndex = nv;
-    D_80080238.lastFrameCounter = gFrameCounter;
+    gTransitionReplayBuffer.tailIndex = nv;
+    gTransitionReplayBuffer.lastFrameCounter = gFrameCounter;
 
-    if (nv == D_80080238.headIndex) {
-        D_80080234 = 1;
-        D_80080238.headIndex = (D_80080238.headIndex + 1) & 0x1FF;
+    if (nv == gTransitionReplayBuffer.headIndex) {
+        gReplayOverflow = 1;
+        gTransitionReplayBuffer.headIndex = (gTransitionReplayBuffer.headIndex + 1) & 0x1FF;
     }
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/player/func_800035D0.s")
-void func_800035D0(Player *player);
+#pragma GLOBAL_ASM("asm/nonmatchings/player/log_transition_state.s")
+void log_transition_state(Player *player);
 #endif
 
-void func_800036E8(Object *obj) {
+/* Mark the replay object for deletion and signal overflow to stop playback. */
+void end_replay(Object *obj) {
     obj->flags |= OBJ_FLAG_DELETE;
-    D_80080234 = 1;
+    gReplayOverflow = 1;
 }
 
-void func_80003704(Object *obj) {
+/* Wait for the replay to conclude (opponent KO'd or timeout), then schedule
+   the end_replay task. */
+void replay_await_end(Object *obj) {
     if (gPlayers[1 - D_8013C24C].obj->playerHp <= 0 || --obj->vars[0] <= 0) {
-        obj->currentTask->start_delay = 55;
-        obj->currentTask->func = func_800036E8;
+        obj->currentTask->startDelay = 55;
+        obj->currentTask->func = end_replay;
     }
 }
 
+/* Replay: consume snapshots from the ring buffer, applying each saved
+   transition state in sequence.  When delayUntilNext != 255, pause for that
+   many frames before reading the next entry. */
 #ifdef NON_MATCHING
-void func_80003780(Object *obj) {
+void replay_restore_snapshot(Object *obj) {
     s32 s0;
     TransitionSnapshot *s1;
     s32 s3;
@@ -129,8 +168,8 @@ void func_80003780(Object *obj) {
     Player *s2;
 
     while (TRUE) {
-        s0 = D_80080238.headIndex;
-        s1 = D_80080238.unk_00 + s0;
+        s0 = gTransitionReplayBuffer.headIndex;
+        s1 = gTransitionReplayBuffer.unk_00 + s0;
         s3 = s1->playerId;
 
         gPlayers[s3].flags |= PLAYER_FLAG_800000;
@@ -146,63 +185,67 @@ void func_80003780(Object *obj) {
         }
 
         s0++;
-        D_80080238.headIndex = s0 & ~0x200;
+        gTransitionReplayBuffer.headIndex = s0 & ~0x200;
 
         temp = s1->delayUntilNext;
 
         if (obj && obj && obj) {} // @fake
 
         if (temp != 0) {
-            obj->currentTask->start_delay = temp - 1;
+            obj->currentTask->startDelay = temp - 1;
             return;
         }
     }
 
     if (s1) {} // @fake
-    obj->currentTask->func = func_80003704;
+    obj->currentTask->func = replay_await_end;
     obj->vars[0] = 260;
 }
 #else
-#pragma GLOBAL_ASM("asm/nonmatchings/player/func_80003780.s")
-void func_80003780(Object *obj);
+#pragma GLOBAL_ASM("asm/nonmatchings/player/replay_restore_snapshot.s")
+void replay_restore_snapshot(Object *obj);
 #endif
 
-void func_800038C8(Object *obj) {
+/* Replay: execute the current replay task each frame; if START is pressed,
+   abort replay and return to normal gameplay. */
+void replay_poll_skip(Object *obj) {
     task_execute(obj);
 
     if (gPlayerInput[D_8013C24C].buttons & INP_START) {
         obj->flags |= OBJ_FLAG_DELETE;
-        D_80080234 = 1;
-        D_8013C23C->currentTask->start_delay = 0;
+        gReplayOverflow = 1;
+        D_8013C23C->currentTask->startDelay = 0;
         D_8013C23C->currentTask->func = func_800177C0;
         gPlayerInput[D_8013C24C].pendingInput = FALSE;
     }
 }
 
-s32 func_80003974_unused(void *arg0) {
+/* Initialise replay playback: respawn both players at frame 2, reset camera,
+   and create the replay worker chain (poll_skip → restore_snapshot → await_end). */
+s32 replay_setup(void *arg0) {
     s32 s3;
     Object *v0;
     u32 i;
     s32 temp;
 
-    s3 = gFrameCounter - D_80080238.startFrameCounter;
+    s3 = gFrameCounter - gTransitionReplayBuffer.startFrameCounter;
 
-    D_80080238.headIndex = 0;
+    gTransitionReplayBuffer.headIndex = 0;
     gReplayActive = 1;
-    gPlayers[PLAYER_1].combatStateId = 0;
-    gPlayers[PLAYER_2].combatStateId = 0;
+    gPlayers[PLAYER_1].combatStateId = CS_ID_0;
+    gPlayers[PLAYER_2].combatStateId = CS_ID_0;
 
-    create_player_obj(PLAYER_1);
-    create_player_obj(PLAYER_2);
+    replay_respawn_player(PLAYER_1);
+    replay_respawn_player(PLAYER_2);
     gPlayers[PLAYER_1].obj->frameIndex = 2;
     gPlayers[PLAYER_2].obj->frameIndex = 2;
     model_change_animation(gPlayers[PLAYER_1].obj);
     model_change_animation(gPlayers[PLAYER_2].obj);
 
-    func_80012AF4(&gPlayers[PLAYER_1].unk_750.local_matrix);
-    func_80012AF4(&gPlayers[PLAYER_1].unk_868.local_matrix);
-    func_80012AF4(&gPlayers[PLAYER_2].unk_750.local_matrix);
-    func_80012AF4(&gPlayers[PLAYER_2].unk_868.local_matrix);
+    func_80012AF4(&gPlayers[PLAYER_1].headTrack.local_matrix);
+    func_80012AF4(&gPlayers[PLAYER_1].bodyTurn.local_matrix);
+    func_80012AF4(&gPlayers[PLAYER_2].headTrack.local_matrix);
+    func_80012AF4(&gPlayers[PLAYER_2].bodyTurn.local_matrix);
 
     model_update_animated_params(gPlayers[PLAYER_1].obj);
     model_update_animated_params(gPlayers[PLAYER_2].obj);
@@ -214,7 +257,7 @@ s32 func_80003974_unused(void *arg0) {
     gPlayerAngle = 0x800;
     camera_orbit_init(gCamera);
     gCamera->currentTask->func = camera_battle_update;
-    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->startDelay = 0;
     gCameraTarget.x = gCameraTarget.z = 0;
     gCameraTarget.y = -400;
     sCutsceneAnimDone = FALSE;
@@ -223,9 +266,9 @@ s32 func_80003974_unused(void *arg0) {
 
     if (temp) {}
 
-    v0 = create_worker(func_800038C8, -0x7001 + temp * 0);
-    v0->currentTask->func = func_80003780;
-    v0->currentTask->start_delay = 0;
+    v0 = create_worker(replay_poll_skip, OBJ_PRIO_LOWEST + temp * 0);
+    v0->currentTask->func = replay_restore_snapshot;
+    v0->currentTask->startDelay = 0;
     v0->currentTask->flags = TASK_FLAG_ENABLED;
 
     gGfxFlags |= GFX_FLAG_CUTSCENE;
@@ -234,9 +277,9 @@ s32 func_80003974_unused(void *arg0) {
     if (s3 > 960) {
         s3 -= 960;
         for (i = 0; i < s3; i++) {
-            func_80003C04_unused(gPlayers[PLAYER_1].obj);
-            func_80003C04_unused(gPlayers[PLAYER_2].obj);
-            func_800038C8(v0);
+            replay_update_player(gPlayers[PLAYER_1].obj);
+            replay_update_player(gPlayers[PLAYER_2].obj);
+            replay_poll_skip(v0);
         }
 
         camera_orbit_update(gCamera, TRUE);
@@ -245,18 +288,23 @@ s32 func_80003974_unused(void *arg0) {
     return 0;
 }
 
-s32 func_80003BB4_unused(void) {
-    s32 diff = gFrameCounter - D_80080238.startFrameCounter;
+/* Called after the KO screen; if enough frames have passed, schedule replay
+   setup as a post-render hook.  Returns TRUE when replay begins. */
+s32 replay_schedule_start(void) {
+    s32 diff = gFrameCounter - gTransitionReplayBuffer.startFrameCounter;
 
     if (diff < 60) {
         return FALSE;
     } else {
-        set_post_render_hook(func_80003974_unused, NULL);
+        set_post_render_hook(replay_setup, NULL);
         return TRUE;
     }
 }
 
-void func_80003C04_unused(Object *obj) {
+/* Per-frame update for a player during replay playback.  Executes the current
+   task chain, syncs animation, and polls for transitions just like the normal
+   update but without hit detection or AI. */
+void replay_update_player(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
     u16 playerId = player->playerId;
     s32 unused[7];
@@ -288,9 +336,9 @@ void func_80003C04_unused(Object *obj) {
     }
 
     if (player->allowTransition) {
-        if (player->autoTransitionTimer != 0 && --player->autoTransitionTimer == 0) {
+        if (player->autoTimer != 0 && --player->autoTimer == 0) {
             player_select_transition(player, TRUE);
-        } else if (!(player->flags & (PLAYER_FLAG_TRANSITION_LOCKED | PLAYER_FLAG_100000)) &&
+        } else if (!(player->flags & (PLAYER_FLAG_TRANSITION_GUARD | PLAYER_FLAG_GAMEPLAY_LOCKED)) &&
                    gPlayerInput[playerId].pendingInput && player->lookupLogicTable >= 0 &&
                    !(player->animTask->flags & TASK_FLAG_TRIGGER_FRAME)) {
             player_select_transition(player, FALSE);
@@ -300,6 +348,9 @@ void func_80003C04_unused(Object *obj) {
     player->allowTransition = TRUE;
 }
 
+/* Main per-frame player update: run model animation, render hit trails,
+   apply software vertex lighting, poll AI or human input for transitions,
+   and detect hit collisions with the opponent. */
 void player_update(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
     u16 playerId = player->playerId;
@@ -324,7 +375,7 @@ void player_update(Object *obj) {
         player->flags &= ~PLAYER_FLAG_NOT_FACING_OPP;
     }
 
-    model_update(obj);
+    model_update(obj); // also executes tasks
 
     if (player_check_func_2(obj)) {
         player->flags |= PLAYER_FLAG_NOT_FACING_OPP;
@@ -336,7 +387,7 @@ void player_update(Object *obj) {
                 (obj->frameIndex < currentState->trailEnd);
 
     hitbox_render_update(&player->rightHandTrail, (currentState->flags & CSF_ATTACK_RIGHT_HAND) && showTrail);
-    if (player->unk_5F4A) {
+    if (player->hasLeftHandTrail) {
         hitbox_render_update(&player->leftHandTrail, (currentState->flags & CSF_ATTACK_LEFT_HAND) && showTrail);
     }
     hitbox_render_update(&player->leftLegTrail, (currentState->flags & CSF_ATTACK_LEFT_FOOT) && showTrail);
@@ -362,7 +413,7 @@ void player_update(Object *obj) {
         }
     }
 
-    if (gBattleSettings[playerId].isCpu && !gRoundOver && !(player->flags & PLAYER_FLAG_100000)) {
+    if (gBattleSettings[playerId].isCpu && !gRoundOver && !(player->flags & PLAYER_FLAG_GAMEPLAY_LOCKED)) {
         if (!(player->aiState.aiFlags & AIF_AI_DISABLED)) {
             ai_update(player);
         }
@@ -371,9 +422,9 @@ void player_update(Object *obj) {
             player_select_transition(player, FALSE);
         }
     } else if (player->allowTransition && !gRoundOver) {
-        if (player->autoTransitionTimer != 0 && --player->autoTransitionTimer == 0) {
+        if (player->autoTimer != 0 && --player->autoTimer == 0) {
             player_select_transition(player, TRUE);
-        } else if (!(player->flags & (PLAYER_FLAG_TRANSITION_LOCKED | PLAYER_FLAG_100000)) &&
+        } else if (!(player->flags & (PLAYER_FLAG_TRANSITION_GUARD | PLAYER_FLAG_GAMEPLAY_LOCKED)) &&
                    gPlayerInput[playerId].pendingInput && player->lookupLogicTable >= 0 &&
                    !(player->animTask->flags & TASK_FLAG_TRIGGER_FRAME)) {
             player_select_transition(player, FALSE);
@@ -410,33 +461,16 @@ void player_update(Object *obj) {
     player->allowTransition = TRUE;
 }
 
-void func_80004304(char *arg0, char *arg1, char *arg2) {
+/* Concatenate two strings into a destination buffer (str_copy + str_concat). */
+void str_join(char *arg0, char *arg1, char *arg2) {
     str_copy(arg0, arg1);
     str_concat(arg0, arg2);
 }
 
-typedef struct AssetDB2 {
-    /* 0x00 */ char unk_00[12];
-} AssetDB2; // size = 0xC
-
-typedef struct AssetDB1 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ AssetDB2 unk_04[1];
-} AssetDB1;
-
-typedef struct AssetDB3 {
-    /* 0x00 */ s32 unk_00;
-    /* 0x04 */ s16 unk_04[1];
-} AssetDB3;
-
-s16 D_80049390 = -1;
-s16 D_80049394 = -1;
-
-void ai_max_difficulty(Player *);
-void ai_increase_difficulty(Player *);
-s32 func_8001DFE4(s32 arg0);
-
-void func_80004334(CharacterDefinition *arg0, s16 playerId) {
+/* Parse AI tables from the character .db file: action table, candidate
+   table, strategy table, etc.  Then initialise difficulty based on game mode
+   and settings. */
+void load_ai_tables(CharacterDefinition *arg0, s16 playerId) {
     AssetDB1 *v1;
     AssetDB3 *a2;
     s32 s2;
@@ -459,8 +493,8 @@ void func_80004334(CharacterDefinition *arg0, s16 playerId) {
 
     gPlayers[playerId].aiState.aiFlags = AIF_AI_DISABLED;
     gPlayers[playerId].aiState.recentTactics[0] = NULL;
-    gPlayers[playerId].aiState.tacticActionsPtr = &D_80049394;
-    gPlayers[playerId].aiState.moveSequence = &D_80049394;
+    gPlayers[playerId].aiState.tacticActionsPtr = &sSentinelEmpty;
+    gPlayers[playerId].aiState.moveSequence = &sSentinelEmpty;
     gPlayers[playerId].aiState.continueActionFunc = 0;
     gPlayers[playerId].aiState.actionParam = 0;
     gPlayers[playerId].aiState.actionFlags = 0;
@@ -507,15 +541,18 @@ void func_80004334(CharacterDefinition *arg0, s16 playerId) {
     }
 }
 
-void func_800045B4(s16 playerId, s16 characterId) {
+/* Load character data from a .db file: transition tables, combat states,
+   sounds, animations, projectile/barrage tables, and optionally AI tables
+   and debug symbols.  Also patches opponent-specific grab animations (GR1 MOV). */
+void load_character_data(s16 playerId, s16 characterId) {
     char sp94[20];
     char sp80[20];
-    CombatState *s0;
+    CombatState *combatStateTable;
     s32 *pad3;
     s32 *sp74;
     Player *player;
     ModelInstance *modInst;
-    s16 a12;
+    s16 animId;
     Player12 *sp44;
     CharacterDefinition *s3;
     s32 i;
@@ -533,26 +570,28 @@ void func_800045B4(s16 playerId, s16 characterId) {
     if (sp44->isDummy) {
         str_copy(sp80, "dum.db");
     } else {
-        func_80004304(sp80, D_8004B844[characterId].unk_04->name, ".db");
+        str_join(sp80, D_8004B844[characterId].unk_04->name, ".db");
     }
 
     s3 = (CharacterDefinition *) gAssets[asset_find(sp80, playerId)].data;
     player->transitionTimingTable = s3->unk_00 + (u32) s3;
     player->transitionRuleTable = pad = s3->transitionTable + 4 + (u32) s3;
     player->logicStateTable = s3->logicStates + (u32) s3;
-    player->stateOverrideIndices = s3->unk_0C + (u32) s3;
-    player->frameTriggerOverrideTable = s3->unk_10 + (u32) s3;
+    player->frameTriggerGroupTable = s3->unk_0C + (u32) s3;
+    player->frameOverrides = s3->unk_10 + (u32) s3;
 
     sp74 = s3->stateTable + (u32) s3;
     if (sp44->isDummy) {
         *sp74 = 0;
     }
-    player->combatStateTable = s0 = (u32) s3 + s3->stateTable + 4;
+    player->combatStateTable = combatStateTable = (u32) s3 + s3->stateTable + 4;
 
     player->soundTable = pad = s3->soundTable + (u32) s3 + 4;
     pad3 = s3->unk_1C + (u32) s3;
     player->unk_6C = *pad3;
+
     if (((!player->obj) && (!player->obj)) & 0xFFFFFFFFu) {} // @fake
+
     player->moveToLogicStateMap = s3->moveToLogicStateMap + (u32) s3;
     player->unk_44 = s3->unk_24 + (u32) s3;
     player->projectileTable = s3->projectileTable + (u32) s3;
@@ -561,53 +600,53 @@ void func_800045B4(s16 playerId, s16 characterId) {
 
     str_copy(sp94, D_8004B94C[sp50].unk_04);
     str_concat(sp94, ".MOV");
-    if ((v03 = asset_find(sp94, 0x5000 + playerId)) > 0) {
-        q = D_8004B94C[sp50].unk_00;
-        a12 = s0[q].animationId;
-        modInst->animations[a12] = gAssets[v03].data;
-        s0[q].maxFrame = func_80037394(modInst, a12) - 1;
+    if ((v03 = asset_find(sp94, CONTEXT_5000 + playerId)) > 0) {
+        q = D_8004B94C[sp50].combatStateId;
+        animId = combatStateTable[q].animationId;
+        modInst->animations[animId] = gAssets[v03].data;
+        combatStateTable[q].maxFrame = func_80037394(modInst, animId) - 1;
     }
 
     str_copy(sp94, D_8004B94C[11 + sp50].unk_04);
     str_concat(sp94, ".MOV");
-    if ((v03 = asset_find(sp94, 0x5000 + playerId)) > 0) {
-        q = D_8004B94C[11 + sp50].unk_00;
-        a12 = s0[q].animationId;
-        modInst->animations[a12] = gAssets[v03].data;
+    if ((v03 = asset_find(sp94, CONTEXT_5000 + playerId)) > 0) {
+        q = D_8004B94C[11 + sp50].combatStateId;
+        animId = combatStateTable[q].animationId;
+        modInst->animations[animId] = gAssets[v03].data;
         if (sp50 != AARON) {
-            s0[q].maxFrame = func_80037394(modInst, a12) - 1;
+            combatStateTable[q].maxFrame = func_80037394(modInst, animId) - 1;
         }
 
         q = D_8004B9FC[sp50];
-        a12 = s0[q].animationId;
-        modInst->animations[a12] = gAssets[v03].data;
-        s0[q].maxFrame = func_80037394(modInst, a12) - 1;
+        animId = combatStateTable[q].animationId;
+        modInst->animations[animId] = gAssets[v03].data;
+        combatStateTable[q].maxFrame = func_80037394(modInst, animId) - 1;
     }
 
-    player->combatStateId = 0;
+    player->combatStateId = CS_ID_0;
 
-    for (i = 0; i < *sp74; i++, s0++) {
-        if (s0->maxFrame == -1) {
-            s0->maxFrame = func_80037394(modInst, s0->animationId) - 1;
-        } else if (func_80037394(modInst, s0->animationId) < s0->maxFrame) {
-            s0->maxFrame = func_80037394(modInst, s0->animationId) - 1;
+    for (i = 0; i < *sp74; i++, combatStateTable++) {
+        if (combatStateTable->maxFrame == -1) {
+            combatStateTable->maxFrame = func_80037394(modInst, combatStateTable->animationId) - 1;
+        } else if (func_80037394(modInst, combatStateTable->animationId) < combatStateTable->maxFrame) {
+            combatStateTable->maxFrame = func_80037394(modInst, combatStateTable->animationId) - 1;
         }
 
-        if (s0->trailStart == -1 || s0->trailEnd == -1) {
-            s0->trailStart = s0->hitboxActiveStart + 3;
-            s0->trailEnd = s0->hitboxActiveEnd - 1;
+        if (combatStateTable->trailStart == -1 || combatStateTable->trailEnd == -1) {
+            combatStateTable->trailStart = combatStateTable->hitboxActiveStart + 3;
+            combatStateTable->trailEnd = combatStateTable->hitboxActiveEnd - 1;
         }
     }
 
     if (sp44->isCpu) {
-        func_80004334(s3, playerId);
+        load_ai_tables(s3, playerId);
     }
 
     if (sp44->isDebug) {
         if (sp44->isDummy) {
             str_copy(sp80, "dum.sym");
         } else {
-            func_80004304(sp80, D_8004B844[characterId].unk_04->name, ".sym");
+            str_join(sp80, D_8004B844[characterId].unk_04->name, ".sym");
         }
         // TODO wrong structure
         s3 = (CharacterDefinition *) gAssets[asset_find(sp80, playerId)].data;
@@ -618,7 +657,8 @@ void func_800045B4(s16 playerId, s16 characterId) {
     }
 }
 
-void func_80004AE0(Transform *arg0) {
+/* Remove a Transform node from its parent's child list. */
+void transform_unlink(Transform *arg0) {
     Transform *next;
     Transform *prev;
 
@@ -640,23 +680,27 @@ void func_80004AE0(Transform *arg0) {
     arg0->nextSibling = NULL;
 }
 
-void func_80004B30(Object *obj, s16 playerId, s16 arg2) {
+/* Insert two extra transforms into the model hierarchy: headTrack (bone
+   selected by D_8004C1D8[characterId]) and bodyTurn (root bone, index 0).
+   These are used by aimingTask (func_8003184C) to rotate the character's
+   head/body toward a target independently. */
+void init_tracking_transforms(Object *obj, s16 playerId, s16 characterId) {
     Transform *s1;
     Transform *sp38;
     Transform *s0;
     NodeAttachment *nodeHierarchy = obj->modInst->nodeAttachments;
 
-    nodeHierarchy[D_8004C1D8[arg2]].x = 0;
-    nodeHierarchy[D_8004C1D8[arg2]].y = 0;
-    nodeHierarchy[D_8004C1D8[arg2]].z = 0;
+    nodeHierarchy[D_8004C1D8[characterId]].x = 0;
+    nodeHierarchy[D_8004C1D8[characterId]].y = 0;
+    nodeHierarchy[D_8004C1D8[characterId]].z = 0;
 
-    s0 = &obj->modInst->transforms[D_8004C1D8[arg2]];
-    s1 = &gPlayers[playerId].unk_750;
+    s0 = &obj->modInst->transforms[D_8004C1D8[characterId]];
+    s1 = &gPlayers[playerId].headTrack;
     init_transform(s0->parent, s1, -3, -3);
     s1->local_matrix.w.x = s0->local_matrix.w.x;
     s1->local_matrix.w.y = s0->local_matrix.w.y;
     s1->local_matrix.w.z = s0->local_matrix.w.z;
-    func_80004AE0(s0);
+    transform_unlink(s0);
     sp38 = s0->firstChild;
     init_transform(s1, s0, -3, -3);
     s0->firstChild = sp38;
@@ -666,12 +710,12 @@ void func_80004B30(Object *obj, s16 playerId, s16 arg2) {
     nodeHierarchy[0].z = 0;
 
     s0 = &obj->modInst->transforms[0];
-    s1 = &gPlayers[playerId].unk_868;
+    s1 = &gPlayers[playerId].bodyTurn;
     init_transform(s0->parent, s1, -3, -3);
     s1->local_matrix.w.x = s0->local_matrix.w.x;
     s1->local_matrix.w.y = s0->local_matrix.w.y;
     s1->local_matrix.w.z = s0->local_matrix.w.z;
-    func_80004AE0(s0);
+    transform_unlink(s0);
     sp38 = s0->firstChild;
     init_transform(s1, s0, -3, -3);
     s0->firstChild = sp38;
@@ -681,18 +725,21 @@ void func_80004B30(Object *obj, s16 playerId, s16 arg2) {
     D_80052D78[playerId] = 2;
 }
 
-void func_80004D40(Asset *asset) {
-    s16 v1;
+/* Asset callback: when loading a GR1 MOV file (opponent grab animation),
+   redirect to the opponent character's folder so the correct character-
+   specific grab reaction plays. */
+void asset_redirect_opponent_grab(Asset *asset) {
+    s16 characterId;
     s16 v2;
     u8 sp2B;
 
-    v1 = gBattleSettings[1 - asset->context].characterId;
+    characterId = gBattleSettings[1 - asset->context].characterId;
     sp2B = asset->name[6];
     asset->name[6] = '\0';
 
-    if (str_compare(asset->name, D_8004B94C[v1].unk_04) != 0) {
-        v1 += 11;
-        if (str_compare(asset->name, D_8004B94C[v1].unk_04) != 0) {
+    if (str_compare(asset->name, D_8004B94C[characterId].unk_04) != 0) {
+        characterId += 11;
+        if (str_compare(asset->name, D_8004B94C[characterId].unk_04) != 0) {
             asset->name[0] = '\0';
             asset->flags |= 1;
             return;
@@ -703,7 +750,10 @@ void func_80004D40(Asset *asset) {
     asset->context += 0x5000;
 }
 
-void func_80004E14(s16 playerId) {
+/* Open the file-system folder for a player's assets (models, sprites, etc.)
+   and register the opponent-grab redirect callback.  Folder path depends on
+   character, player side (1/2), and costume variant (_v/_h). */
+void open_player_asset_folder(s16 playerId) {
     char sp38[40];
     char sp2C[12];
     u8 characterId = gBattleSettings[playerId].characterId;
@@ -721,7 +771,7 @@ void func_80004E14(s16 playerId) {
         } else {
             str_concat(sp38, "1");
         }
-        if (gBattleSettings[playerId].assetContext) {
+        if (gBattleSettings[playerId].assetContext != CONTEXT_0000) {
             str_concat(sp38, "_h");
         } else {
             str_concat(sp38, "_v");
@@ -732,11 +782,13 @@ void func_80004E14(s16 playerId) {
         func_8002630C(playerId);
         str_copy(gPlayers[playerId].unk_980, sp38);
     }
-    D_8013C228 = func_80004D40;
+    D_8013C228 = asset_redirect_opponent_grab;
     asset_open_folder(sp38, CONTEXT_0000 + playerId);
 }
 
-void func_80004FC0(Object *obj) {
+/* Task callback: flickers a character light's color randomly every 8 frames.
+   Used for Demitron/Demonica alternate costumes. */
+void light_flicker_random_color(Object *obj) {
     ColorRGBA *sp1C = obj->varObj[0];
     ColorRGBA *sp18 = obj->varObj[1];
     u32 v1;
@@ -750,7 +802,8 @@ void func_80004FC0(Object *obj) {
     }
 }
 
-void func_80005060(Object *obj) {
+/* Task callback: attach Eve's point light to bone 5 (sword hand). */
+void eve_light_update(Object *obj) {
     Player *player = obj->varObj[0];
     Matrix4f *m = &player->obj->modInst->transforms[5].world_matrix;
 
@@ -759,7 +812,8 @@ void func_80005060(Object *obj) {
     obj->pos.z = m->w.z;
 }
 
-void func_800050B0(Object *obj) {
+/* Task callback: attach Morphix's point light to the root transform. */
+void morphix_light_update(Object *obj) {
     Player *player = obj->varObj[0];
     Matrix4f *m = &player->obj->modInst->rootTransform.world_matrix;
 
@@ -768,40 +822,46 @@ void func_800050B0(Object *obj) {
     obj->pos.z = m->w.z;
 }
 
-void func_800050FC(u16 arg0, u16 arg1) {
+/* Spawn character-specific point lights (Eve sword, Morphix root) and set up
+   colour flicker for Demitron/Demonica alternate costumes. */
+void create_character_lights(u16 playerId, u16 characterId) {
     ColorRGBA sp38[] = { { 0, 200, 0, 0 }, { 200, 0, 0, 0 } };
     ColorRGBA sp30[] = { { 0, 0, 255, 0 }, { 200, 50, 0, 0 } };
     Object *sp2C;
 
-    switch (arg1) {
+    switch (characterId) {
         case EVE:
-            sp2C = create_worker(func_80005060, 0x1000);
-            create_light(sp2C, &sp38[arg0]);
-            sp2C->varObj[0] = &gPlayers[arg0];
+            sp2C = create_worker(eve_light_update, OBJ_PRIO_DEFAULT);
+            create_light(sp2C, &sp38[playerId]);
+            sp2C->varObj[0] = &gPlayers[playerId];
             break;
         case MORPHIX:
-            sp2C = create_worker(func_800050B0, 0x1000);
-            create_light(sp2C, &sp30[arg0]);
-            sp2C->varObj[0] = &gPlayers[arg0];
+            sp2C = create_worker(morphix_light_update, OBJ_PRIO_DEFAULT);
+            create_light(sp2C, &sp30[playerId]);
+            sp2C->varObj[0] = &gPlayers[playerId];
             break;
         case DEMITRON:
-            if (gBattleSettings[arg0].assetContext) {
-                sp2C = create_worker(func_80004FC0, 0x1000);
-                sp2C->varObj[0] = &D_8004B764.lights[1].color;
-                sp2C->varObj[1] = &D_8004B644.lights[1].color;
+            if (gBattleSettings[playerId].assetContext != CONTEXT_0000) {
+                sp2C = create_worker(light_flicker_random_color, OBJ_PRIO_DEFAULT);
+                sp2C->varObj[0] = &gBattleDemitronAltLighting.lights[1].color;
+                sp2C->varObj[1] = &gBattleDemitronLighting.lights[1].color;
             }
             break;
         case DEMONICA:
-            if (gBattleSettings[arg0].assetContext) {
-                sp2C = create_worker(func_80004FC0, 0x1000);
-                sp2C->varObj[0] = &D_8004B784.lights[1].color;
-                sp2C->varObj[1] = &D_8004B664.lights[1].color;
+            if (gBattleSettings[playerId].assetContext != CONTEXT_0000) {
+                sp2C = create_worker(light_flicker_random_color, OBJ_PRIO_DEFAULT);
+                sp2C->varObj[0] = &gBattleDemonicaAltLighting.lights[1].color;
+                sp2C->varObj[1] = &gBattleDemonicaLighting.lights[1].color;
             }
             break;
     }
 }
 
-void handle_controller_input(s16 playerId) {
+/* Full player creation: open asset folder, load model/shadow/sprites/effects,
+   parse .db tables, create task slots, init hitboxes/trails/tracking, apply
+   the opening move, and create character lights.  Called once per player per
+   battle start. */
+void spawn_player(s16 playerId) {
     Object *obj;
     s16 v00;
     s16 i;
@@ -814,7 +874,7 @@ void handle_controller_input(s16 playerId) {
     char *str2 = "spr0.sp3";
     char sp60[12];
 
-    func_80004E14(playerId);
+    open_player_asset_folder(playerId);
 
     gPlayers[playerId].playerId = playerId;
     gPlayers[playerId].flags = 0;
@@ -826,13 +886,13 @@ void handle_controller_input(s16 playerId) {
     } else {
         str_copy(spA4, D_8004B844[characterId].unk_04->name);
         if (characterId != MORPHIX) {
-            if (playerId != 0) {
+            if (playerId != PLAYER_1) {
                 str_concat(spA4, "2.tmd");
             } else {
                 str_concat(spA4, ".tmd");
             }
         } else {
-            if (playerId != 0) {
+            if (playerId != PLAYER_1) {
                 str_concat(spA4, "2.k3");
             } else {
                 str_concat(spA4, ".k3");
@@ -902,14 +962,14 @@ void handle_controller_input(s16 playerId) {
         sp60[3]++;
     }
 
-    func_800045B4(playerId, characterId);
+    load_character_data(playerId, characterId);
 
     gPlayers[playerId].actionTask = obj->currentTask;
-    gPlayers[playerId].animTask = task_add(obj, task_default_func, TASK_FLAG_ENABLED);
+    gPlayers[playerId].animTask = task_add(obj, task_end, TASK_FLAG_ENABLED);
     gPlayers[playerId].audioTask = task_add(obj, player_play_sounds, TASK_FLAG_ENABLED);
-    gPlayers[playerId].cameraTask = task_add(obj, task_default_func, TASK_FLAG_ENABLED);
-    gPlayers[playerId].unk_18 = task_add(obj, func_8003184C, TASK_FLAG_ENABLED);
-    gPlayers[playerId].behaviorTable = D_8004C1E8;
+    gPlayers[playerId].cameraTask = task_add(obj, task_end, TASK_FLAG_ENABLED);
+    gPlayers[playerId].aimingTask = task_add(obj, func_8003184C, TASK_FLAG_ENABLED);
+    gPlayers[playerId].behaviorTable = gBehaviorTable;
 
     D_80080214 = D_8004A730[gBattleSettings[PLAYER_1].characterId] + D_8004A730[gBattleSettings[PLAYER_2].characterId];
     D_80080218 = D_8004A748[gBattleSettings[PLAYER_1].characterId] + D_8004A748[gBattleSettings[PLAYER_2].characterId];
@@ -917,10 +977,10 @@ void handle_controller_input(s16 playerId) {
     gPlayerDistance = 1600;
 
     gPlayerObjects[playerId] = obj;
-    D_80080238.headIndex = D_80080238.tailIndex = 0;
-    D_80080238.startFrameCounter = gFrameCounter;
+    gTransitionReplayBuffer.headIndex = gTransitionReplayBuffer.tailIndex = 0;
+    gTransitionReplayBuffer.startFrameCounter = gFrameCounter;
 
-    D_80080236 = TRUE;
+    gReplayDisabled = TRUE;
 
     if (gBattleSettings[playerId].isCpu) {
         player_apply_move(gPlayers + playerId, MOVE_ID_AI_OPENING_MOVE, 0);
@@ -929,14 +989,14 @@ void handle_controller_input(s16 playerId) {
     }
 
     if (playerId != 0) {
-        D_80080236 = FALSE;
+        gReplayDisabled = FALSE;
     }
 
     gPlayers[playerId].combatState = gPlayers[playerId].combatStateTable + gPlayers[playerId].combatStateId;
     init_player_hitboxes(&gPlayers[playerId], D_8004B844[characterId].hitZonesSetup);
 
     obj->playerHp = gBattleSettings[playerId].initialHp;
-    func_80004B30(obj, playerId, characterId);
+    init_tracking_transforms(obj, playerId, characterId);
 
     if (playerId == PLAYER_1) {
         gPlayerInput[playerId].mirrored = TRUE;
@@ -952,9 +1012,9 @@ void handle_controller_input(s16 playerId) {
                           &obj->modInst->transforms[D_8004B844[characterId].hitZonesSetup->leftHandId].world_matrix,
                           &gPlayers[playerId].hitZones.leftPunchStrike.world_matrix, &obj->pos,
                           &D_8004B844[characterId].trailColors[playerId]);
-        gPlayers[playerId].unk_5F4A = TRUE;
+        gPlayers[playerId].hasLeftHandTrail = TRUE;
     } else {
-        gPlayers[playerId].unk_5F4A = FALSE;
+        gPlayers[playerId].hasLeftHandTrail = FALSE;
     }
 
     motion_trail_init(&gPlayers[playerId].leftLegTrail, obj->modInst,
@@ -976,10 +1036,13 @@ void handle_controller_input(s16 playerId) {
         }
     }
 
-    func_800050FC(playerId, characterId);
+    create_character_lights(playerId, characterId);
 }
 
-void create_player_obj(s16 playerId) {
+/* Minimal replay-only respawn: repositions the existing object, resets tasks,
+   and applies the opening move.  Skips asset loading, hitbox init, trails,
+   and tracking since those were done at battle start. */
+void replay_respawn_player(s16 playerId) {
     Object *obj = gPlayers[playerId].obj;
     s16 characterId;
     Vec4i spB4[] = { { -400, 0, 0, 0 }, { 400, 0, 0, 0 } };
@@ -998,38 +1061,38 @@ void create_player_obj(s16 playerId) {
     obj->fn_render = player_update;
     obj->varObj[0] = gPlayers + playerId;
 
-    gPlayers[playerId].actionTask->start_delay = 0;
+    gPlayers[playerId].actionTask->startDelay = 0;
     gPlayers[playerId].actionTask->flags = TASK_FLAG_ENABLED;
-    gPlayers[playerId].actionTask->func = task_default_func;
+    gPlayers[playerId].actionTask->func = task_end;
     gPlayers[playerId].actionTask->stackPos = zero; // required to match
-    gPlayers[playerId].animTask->start_delay = 0;
+    gPlayers[playerId].animTask->startDelay = 0;
     gPlayers[playerId].animTask->flags = TASK_FLAG_ENABLED;
-    gPlayers[playerId].animTask->func = task_default_func;
+    gPlayers[playerId].animTask->func = task_end;
     gPlayers[playerId].animTask->stackPos = 0;
-    gPlayers[playerId].audioTask->start_delay = 0;
+    gPlayers[playerId].audioTask->startDelay = 0;
     gPlayers[playerId].audioTask->flags = TASK_FLAG_ENABLED;
     gPlayers[playerId].audioTask->func = player_play_sounds;
     gPlayers[playerId].audioTask->stackPos = 0;
-    gPlayers[playerId].cameraTask->start_delay = 0;
+    gPlayers[playerId].cameraTask->startDelay = 0;
     gPlayers[playerId].cameraTask->flags = TASK_FLAG_ENABLED;
-    gPlayers[playerId].cameraTask->func = task_default_func;
+    gPlayers[playerId].cameraTask->func = task_end;
     gPlayers[playerId].cameraTask->stackPos = 0;
-    gPlayers[playerId].unk_18->start_delay = 0;
-    gPlayers[playerId].unk_18->flags = TASK_FLAG_ENABLED;
-    gPlayers[playerId].unk_18->func = func_8003184C;
-    gPlayers[playerId].unk_18->stackPos = 0;
+    gPlayers[playerId].aimingTask->startDelay = 0;
+    gPlayers[playerId].aimingTask->flags = TASK_FLAG_ENABLED;
+    gPlayers[playerId].aimingTask->func = func_8003184C;
+    gPlayers[playerId].aimingTask->stackPos = 0;
 
     D_80080214 = D_8004A730[gBattleSettings[PLAYER_1].characterId] + D_8004A730[gBattleSettings[PLAYER_2].characterId];
     D_80080218 = D_8004A748[gBattleSettings[PLAYER_1].characterId] + D_8004A748[gBattleSettings[PLAYER_2].characterId];
     gPlayerAngle = 0x800;
-    D_80080238.headIndex = D_80080238.tailIndex = 0;
-    D_80080236 = TRUE;
-    D_80080238.startFrameCounter = gFrameCounter;
+    gTransitionReplayBuffer.headIndex = gTransitionReplayBuffer.tailIndex = 0;
+    gReplayDisabled = TRUE;
+    gTransitionReplayBuffer.startFrameCounter = gFrameCounter;
     obj->rotation.y = 0xC00 - spB0[playerId];
     gPlayerDistance = 1600;
     obj->flags = (obj->flags & OBJ_FLAG_TRANSPARENT) | OBJ_FLAG_MODEL;
-    D_80080238.headIndex = D_80080238.tailIndex = 0;
-    D_80080236 = TRUE;
+    gTransitionReplayBuffer.headIndex = gTransitionReplayBuffer.tailIndex = 0;
+    gReplayDisabled = TRUE;
 
     if (gBattleSettings[playerId].isCpu) {
         player_apply_move(gPlayers + playerId, MOVE_ID_AI_OPENING_MOVE, 0);
@@ -1038,7 +1101,7 @@ void create_player_obj(s16 playerId) {
     }
 
     if (playerId != PLAYER_1) {
-        D_80080236 = FALSE;
+        gReplayDisabled = FALSE;
     }
 
     gPlayers[playerId].combatState = gPlayers[playerId].combatStateTable + gPlayers[playerId].combatStateId;
@@ -1051,20 +1114,24 @@ void create_player_obj(s16 playerId) {
     gPlayers[playerId].allowTransition = FALSE;
 }
 
+/* Core state machine transition: resolve a logicState → transitionRule →
+   behavior → combatStateId, install the appropriate animation/action tasks,
+   apply frame-trigger overrides, handle cutscene camera, update all player
+   bookkeeping, and log the transition for replay. */
 u8 player_make_transition(Player *player, u8 arg1, u16 logicState) {
     u16 behaviorId;
     u16 sp4C;
     ObjectTask *animTask;
-    FrameTriggerOverride *sp44;
-    u16 sp42;
+    FrameTriggerOverride *overrideRule;
+    u16 overrideCount;
     Behavior *behavior;
     s32 pad1;
     s32 *animTaskParams;
-    StateOverrideIndex *pad3;
+    FrameTriggerGroup *curStateGroup;
     CombatState *nextState;
     u16 transitionId;
     TransitionRule *transitionRule;
-    s16 combatStateId;
+    s16 targetStateId;
     u16 i;
 
     transitionId = player->logicStateTable[logicState];
@@ -1072,17 +1139,17 @@ u8 player_make_transition(Player *player, u8 arg1, u16 logicState) {
     sp4C = transitionRule->timingIndex;
     behaviorId = transitionRule->behaviorId;
     // clang-format off
-    combatStateId = transitionRule->targetStateId; \
-    if (combatStateId == player->combatStateId && !arg1) {
-        combatStateId = -1;
+    targetStateId = transitionRule->targetStateId; \
+    if (targetStateId == player->combatStateId && !arg1) {
+        targetStateId = -1;
     }
     // clang-format on
 
     behavior = player->behaviorTable + behaviorId;
-    pad3 = player->stateOverrideIndices + player->combatStateId;
+    curStateGroup = player->frameTriggerGroupTable + player->combatStateId;
 
-    sp44 = pad3->overrideTableOffset + player->frameTriggerOverrideTable;
-    sp42 = pad3->numOverrides;
+    overrideRule = curStateGroup->firstOverride + player->frameOverrides;
+    overrideCount = curStateGroup->overrideCount;
 
     if (behavior->transitionAllowedFunc != NULL && !behavior->transitionAllowedFunc(player->obj)) {
         return FALSE;
@@ -1095,32 +1162,32 @@ u8 player_make_transition(Player *player, u8 arg1, u16 logicState) {
     animTaskParams = &animTask->params;
     animTaskParams[2] = 0;
 
-    for (i = 0; i < sp42; sp44++, i++) {
-        if (sp44->stateId == combatStateId) {
-            if (player->obj->frameIndex < sp44->frameIndex) {
+    for (i = 0; i < overrideCount; overrideRule++, i++) {
+        if (overrideRule->matchTarget == targetStateId) {
+            if (player->obj->frameIndex < overrideRule->triggerFrame) {
                 animTask->flags |= TASK_FLAG_TRIGGER_FRAME;
-                animTask->triggerAt = sp44->frameIndex;
-                animTask->triggerSlot.func = func_80024764;
+                animTask->triggerAt = overrideRule->triggerFrame;
+                animTask->triggerSlot.func = anim_apply_diverted_combat_state;
                 animTask->triggerSlot.flags = TASK_FLAG_ENABLED;
 
-                player->actionTask->func = task_default_func;
-                player->actionTask->start_delay = 0;
+                player->actionTask->func = task_end;
+                player->actionTask->startDelay = 0;
                 player->actionTask->flags = TASK_FLAG_ENABLED;
 
-                animTaskParams[2] = sp44->transitionActionOverride;
-                animTaskParams[3] = sp44->stateIdOverride;
+                animTaskParams[2] = overrideRule->startFrame;
+                animTaskParams[3] = overrideRule->redirectState;
                 animTaskParams[4] = behavior->actionFunc;
             } else {
-                animTask->func = func_80024764;
-                animTask->start_delay = 0;
-                animTask->flags = 1;
+                animTask->func = anim_apply_diverted_combat_state;
+                animTask->startDelay = 0;
+                animTask->flags = TASK_FLAG_ENABLED;
 
-                player->actionTask->func = task_default_func;
-                player->actionTask->start_delay = 0;
+                player->actionTask->func = task_end;
+                player->actionTask->startDelay = 0;
                 player->actionTask->flags = TASK_FLAG_ENABLED;
 
-                animTaskParams[2] = sp44->transitionActionOverride;
-                animTaskParams[3] = sp44->stateIdOverride;
+                animTaskParams[2] = overrideRule->startFrame;
+                animTaskParams[3] = overrideRule->redirectState;
                 animTaskParams[4] = behavior->actionFunc;
 
                 player->aiState.aiFlags |= AIF_AI_DISABLED;
@@ -1130,35 +1197,35 @@ u8 player_make_transition(Player *player, u8 arg1, u16 logicState) {
     }
 
     player->actionTask->func = behavior->actionFunc;
-    player->actionTask->start_delay = 0;
+    player->actionTask->startDelay = 0;
     player->actionTask->flags = TASK_FLAG_ENABLED;
-    if (combatStateId >= 0) {
+    if (targetStateId >= 0) {
         animTask->func = anim_change_combat_state;
-        animTask->start_delay = 0;
+        animTask->startDelay = 0;
         animTask->flags = TASK_FLAG_ENABLED;
     }
 
 label:
 
-    if (combatStateId >= 0) {
-        animTaskParams[1] = combatStateId;
+    if (targetStateId >= 0) {
+        animTaskParams[1] = targetStateId;
         animTaskParams[0] = behavior->animFunc;
         player->previousCombatStateId = player->combatStateId;
-        player->combatStateId = combatStateId;
+        player->combatStateId = targetStateId;
 
-        nextState = player->combatStateTable + combatStateId;
+        nextState = player->combatStateTable + targetStateId;
         if (nextState->cutsceneId >= 0 && nextState->custsceneDelay == -1) {
             camera_save_state();
             camera_set_animation(
                 gCamera, player->obj->modInst->animations[player->combatStateTable[nextState->cutsceneId].animationId]);
             gCamera->currentTask->func = camera_cutscene_playback;
-            gCamera->currentTask->start_delay = 0;
+            gCamera->currentTask->startDelay = 0;
             gCamera->currentTask->flags = TASK_FLAG_ENABLED;
         }
     } else {
         animTask->func = behavior->animFunc;
         animTask->flags = TASK_FLAG_ENABLED;
-        animTask->start_delay = 0;
+        animTask->startDelay = 0;
     }
 
     player->previousBehaviorId = player->behaviorId;
@@ -1171,24 +1238,26 @@ label:
     player->transitionId = transitionId;
     player->currentLogicState = logicState;
 
-    func_800035D0(player);
+    log_transition_state(player);
 
     if (gPlayers[1 - player->playerId].hitCooldown < 3) {
         gPlayers[1 - player->playerId].hitCooldown = 3;
     }
 
     player->transitionTimeStamp = gFrameCounter;
-    if (player->currentTiming->unk_0C != 0) {
-        player->actionTask->start_delay = player->currentTiming->unk_0C;
+    if (player->currentTiming->actionDelay != 0) {
+        player->actionTask->startDelay = player->currentTiming->actionDelay;
     }
-    player->autoTransitionTimer = player->currentTiming->moveTimeout;
-    player->obj->velocity.z = player->currentTiming->unk_08;
+    player->autoTimer = player->currentTiming->autoDelay;
+    player->obj->velocity.z = player->currentTiming->initVelZ;
     player->obj->flags &= ~OBJ_FLAG_800;
     player->lookupLogicTable = player->logicStateTable[logicState + 1];
 
     return TRUE;
 }
 
+/* Look up a moveId in the move-to-logic-state map and execute the transition.
+   Used to initiate moves from code (opening move, cutscenes, etc.). */
 u8 player_apply_move(Player *player, s16 moveId, u8 arg2) {
     s16 logicState;
 
@@ -1197,178 +1266,278 @@ u8 player_apply_move(Player *player, s16 moveId, u8 arg2) {
     return player_make_transition(player, arg2, logicState);
 }
 
+/* Force a move onto the player: if CPU, use the AI override; otherwise
+   delegate to player_apply_move. */
 u8 player_force_move(Player *player, s16 moveId, u8 arg2) {
     if (gBattleSettings[player->playerId].isCpu) {
-        player->autoTransitionTimer = 0;
+        player->autoTimer = 0;
         return ai_force_move(player, moveId);
     } else {
         return player_apply_move(player, moveId, arg2);
     }
 }
 
-u8 player_select_transition(Player *player, u8 arg1) {
+/*
+ * Transition selection for human-controlled players.  Called every frame
+ * when the player is in a state that allows input.
+ *
+ * lookupLogicTable is a flat array of (ruleId, nextLookup) pairs, terminated
+ * by a negative ruleId.  E.g.:
+ *   { MOVE_PUNCH, next_A }, { MOVE_KICK, next_B }, ..., { -1, ignore }
+ *
+ * On a successful transition, player->lookupLogicTable is advanced to the
+ * stored nextLookup so the search resumes from a new sub-table for the next
+ * frame (effectively a state-machine within the state machine).
+ *
+ * Transition flags act along two independent axes:
+ *
+ *   Timing:   NOW (0x1)  — fire immediately
+ *             LATER (0x4) — defer to the end of current animation
+ *
+ *   Hold:     HELD (0x20) — button must be held until the last frame
+ *             (no flag)   — one press is enough, the system remembers
+ *
+ * These combine into three practical modes:
+ *   NOW              — immediate (one-press or held, doesn't matter)
+ *   LATER            — deferred, one press is enough
+ *   LATER | HELD     — deferred, must hold button until the end
+ *
+ * Checks are performed in priority order for each candidate pair:
+ *
+ *   1. FALLBACK (0x2) — No input required; stored as a last-resort move.
+ *      Only used if nothing else matched during the entire walk (handled
+ *      after the loop).  Moves with FACING|BEHIND are excluded from fallback
+ *      if the player is already facing the opponent (they'd be redundant).
+ *
+ *   2. TIMEOUT (0x8) — autoTransitionTimer reached zero; force this
+ *      transition regardless of input.  Still calls player_make_transition()
+ *      which may decline (e.g. permission func blocks it).
+ *
+ *   3. FACING | BEHIND — Turn-around: player is facing away from opponent
+ *      and presses any button; execute the move (which turns them to face).
+ *      The button requirement can be: any button (requiredButtons == 0),
+ *      a specific combo (masked_buttons == requiredButtons), or "not
+ *      neutral" (0xFFFF).  Two sub-modes:
+ *        a) LATER — defer the turn to the last frame via trigger slot.
+ *        b) (no LATER) — turn right now.
+ *
+ *   4. Button match — requiredButtons matched the masked input.  Gate
+ *      condition: must be NOW, or LATER while not inside a diverted
+ *      animation (combatState must equal combatStateTable + combatStateId).
+ *      Sub-checks within this group (applied in order):
+ *        a) HELD — only allowed on boundary frames: the last frame of
+ *           forward animation (maxFrame), or the first frame of a reversed
+ *           animation (minFrame).  This is the "hold to the end" variant.
+ *        b) LATER without HELD — schedule a trigger slot at maxFrame-1.
+ *           One press is enough; it fires automatically.
+ *        c) TIMED — must be within unk_06 frames since last transition.
+ *        d) (no special flags) — make transition now.
+ *
+ *   5. If no candidate matched and allowFallback is set, apply the stored
+ *      FALLBACK transition (only used on timeout-driven calls, not on
+ *      initial pendingInput).
+ *
+ * Manages gReplayDisabled (disabled during TIMEOUT and FALLBACK to prevent
+ * replay desync), and pendingInput to signal whether input is still buffered.
+ *
+ * When PLAYER_FLAG_ACTION is set, the previous frame's buttons are used
+ * instead of the current frame's — prevents input from being consumed
+ * by a just-performed transition.
+ */
+u8 player_select_transition(Player *player, u8 allowFallback) {
     ObjectTask *animTask;
-    void *sp68;
+    void *fallbackMove;
     TransitionRule *possibleMove;
     TransitionRule *transitionRuleTable;
-    s16 sp5E;
-    s16 transitionIndex;
+    s16 fallbackIndex;
+    s16 entryIndex;
     s16 *logicStates;
     s32 pad[2];
-    s32 sp4C;
+    s32 elapsedFrames;
     u16 moveFlags;
     u16 masked_buttons;
     s32 pad2[2];
     u16 buttons;
 
-    transitionIndex = player->lookupLogicTable;
-    sp68 = NULL;
+    entryIndex = player->lookupLogicTable;
+    fallbackMove = NULL;
     transitionRuleTable = player->transitionRuleTable;
     logicStates = player->logicStateTable;
-    sp4C = gFrameCounter - player->transitionTimeStamp;
+    elapsedFrames = gFrameCounter - player->transitionTimeStamp;
 
     if (gRoundOver) {
         buttons = 0;
-    } else if (player->flags & PLAYER_FLAG_1000) {
-        buttons = gPlayerInput[player->playerId].prev_buttons;
+    } else if (player->flags & PLAYER_FLAG_ACTION) {
+        // previous frame's buttons — the current frame's input was
+        // already consumed by a just-performed transition
+        buttons = gPlayerInput[player->playerId].fullState;
     } else {
         buttons = gPlayerInput[player->playerId].buttons;
     }
 
-    while (logicStates[transitionIndex] >= 0) {
-        possibleMove = transitionRuleTable + logicStates[transitionIndex];
+    // walk the (ruleId, nextLookup) pairs until a negative terminator
+    while (logicStates[entryIndex] >= 0) {
+        possibleMove = transitionRuleTable + logicStates[entryIndex];
         moveFlags = possibleMove->flags;
         masked_buttons = buttons & possibleMove->button_mask;
 
-        // make this move only when no condition for other moves
-        if (moveFlags & TRANSITION_FLAG_FALLBACK) {
-            if ((moveFlags & TRANSITION_FLAG_TURN) &&
-                (!(moveFlags & TRANSITION_FLAG_TURN_AWAY) || !(player->flags & PLAYER_FLAG_NOT_FACING_OPP))) {
-                transitionIndex += 2;
+        if (moveFlags & TRANSITION_FLAG_DEFAULT) {
+            // fallback: remember this move as a last resort.  Skip if it
+            // has FACING and the player is already facing the opponent
+            // (the turn-around logic handles it; storing it as fallback
+            // would be redundant).
+            if ((moveFlags & TRANSITION_FLAG_FACING) &&
+                (!(moveFlags & TRANSITION_FLAG_BEHIND) || !(player->flags & PLAYER_FLAG_NOT_FACING_OPP))) {
+                entryIndex += 2;
                 continue;
             } else {
-                sp5E = transitionIndex;
-                sp68 = possibleMove;
-                transitionIndex += 2;
+                fallbackIndex = entryIndex;
+                fallbackMove = possibleMove;
+                entryIndex += 2;
                 continue;
             }
         }
 
-        // triggers only on timeout, no input check
-        if ((moveFlags & TRANSITION_FLAG_TIMEOUT) && player->autoTransitionTimer <= 0) {
+        // timeout: autoTransitionTimer expired — force this transition.
+        // Used for automatic sequences (e.g. wakeup, combo follow-ups
+        // driven by autoDelay).
+        if ((moveFlags & TRANSITION_FLAG_TIMEOUT) && player->autoTimer <= 0) {
             gPlayerInput[player->playerId].pendingInput = FALSE;
-            D_80080236 = TRUE;
-            if (player_make_transition(player, TRUE, transitionIndex)) {
-                D_80080236 = FALSE;
+            gReplayDisabled = TRUE;
+            if (player_make_transition(player, TRUE, entryIndex)) {
+                gReplayDisabled = FALSE;
                 return TRUE;
             }
-
-            D_80080236 = FALSE;
-            transitionIndex += 2;
+            gReplayDisabled = FALSE;
+            entryIndex += 2;
             continue;
         }
 
-        // move to turn around
-        if (buttons && (moveFlags & TRANSITION_FLAG_TURN) && (moveFlags & TRANSITION_FLAG_TURN_AWAY) &&
+        // turn-around: player faces away from opponent and presses a
+        // direction button.  FACING|BEHIND marks moves that can reverse
+        // the character's facing direction.
+        if (buttons && (moveFlags & TRANSITION_FLAG_FACING) && (moveFlags & TRANSITION_FLAG_BEHIND) &&
             (player->flags & PLAYER_FLAG_NOT_FACING_OPP)) {
             if (possibleMove->requiredButtons == 0 ||
                 (possibleMove->requiredButtons != 0 && masked_buttons == possibleMove->requiredButtons) ||
                 (possibleMove->requiredButtons == 0xFFFF && masked_buttons != 0)) {
 
-                if ((moveFlags & TRANSITION_FLAG_HELD) &&
+                if ((moveFlags & TRANSITION_FLAG_LATER) &&
                     player->combatState == player->combatStateTable + player->combatStateId &&
                     player->combatState->maxFrame != player->obj->frameIndex &&
-                    !(player->flags & (PLAYER_FLAG_800 | PLAYER_FLAG_4000))) {
+                    !(player->flags & (PLAYER_FLAG_REVERSE | PLAYER_FLAG_REVERSE_2))) {
+                    // defer turn-around to the last frame of current animation
                     animTask = player->animTask;
-                    animTask->params[0] = transitionIndex;
+                    animTask->params[0] = entryIndex;
                     animTask->params[1] = possibleMove;
                     animTask->flags |= TASK_FLAG_TRIGGER_FRAME;
                     animTask->triggerAt = player->combatState->maxFrame - 1;
-                    animTask->triggerSlot.func = func_800247CC;
+                    animTask->triggerSlot.func = anim_apply_deferred_transition;
                     animTask->triggerSlot.flags = TASK_FLAG_PREEMPT | TASK_FLAG_ENABLED;
-
                     return TRUE;
                 }
 
-                if (player_make_transition(player, TRUE, transitionIndex)) {
+                if (player_make_transition(player, TRUE, entryIndex)) {
                     gPlayerInput[player->playerId].pendingInput = TRUE;
                     return TRUE;
                 }
-
-                transitionIndex += 2;
+                entryIndex += 2;
                 continue;
             }
         }
 
+        // button-match: requiredButtons must match the masked input
+        // Gate condition: NOW fires immediately; LATER only fires when
+        // not inside a diverted animation (combatState must be in-sync
+        // with combatStateId — see anim_apply_diverted_combat_state).
         if (possibleMove->requiredButtons == masked_buttons &&
             ((moveFlags & TRANSITION_FLAG_IMMEDIATE) ||
-             ((moveFlags & TRANSITION_FLAG_HELD) &&
+             ((moveFlags & TRANSITION_FLAG_LATER) &&
               player->combatState == player->combatStateTable + player->combatStateId))) {
 
             gPlayerInput[player->playerId].pendingInput = FALSE;
 
-            if (moveFlags & TRANSITION_FLAG_BUFFER) {
+            // HELD: button must be held to the end — only fire on the
+            // first or last frame of the combat state animation.
+            if (moveFlags & TRANSITION_FLAG_HELD) {
                 if (player->combatState->maxFrame != player->obj->frameIndex &&
-                    (!(player->flags & (PLAYER_FLAG_800 | PLAYER_FLAG_4000)) ||
+                    (!(player->flags & (PLAYER_FLAG_REVERSE | PLAYER_FLAG_REVERSE_2)) ||
                      player->combatState->minFrame != player->obj->frameIndex)) {
-                    transitionIndex += 2;
+                    entryIndex += 2;
                     continue;
-                } else if (player_make_transition(player, TRUE, transitionIndex)) {
+                }
+                if (player_make_transition(player, TRUE, entryIndex)) {
                     return TRUE;
                 } else {
-                    transitionIndex += 2;
+                    entryIndex += 2;
                     continue;
                 }
             }
 
-            if ((moveFlags & TRANSITION_FLAG_HELD) && player->combatState->maxFrame != player->obj->frameIndex &&
-                !(player->flags & (PLAYER_FLAG_800 | PLAYER_FLAG_4000))) {
+            // LATER without HELD: one press is enough — schedule the
+            // transition on the last frame via a trigger slot.  It will
+            // fire even if the player releases the button.
+            if ((moveFlags & TRANSITION_FLAG_LATER) && player->combatState->maxFrame != player->obj->frameIndex &&
+                !(player->flags & (PLAYER_FLAG_REVERSE | PLAYER_FLAG_REVERSE_2))) {
                 animTask = player->animTask;
-                animTask->params[0] = transitionIndex;
+                animTask->params[0] = entryIndex;
                 animTask->params[1] = possibleMove;
                 animTask->flags |= TASK_FLAG_TRIGGER_FRAME;
                 animTask->triggerAt = player->combatState->maxFrame - 1;
-                animTask->triggerSlot.func = func_800247CC;
+                animTask->triggerSlot.func = anim_apply_deferred_transition;
                 animTask->triggerSlot.flags = TASK_FLAG_PREEMPT | TASK_FLAG_ENABLED;
                 return TRUE;
             }
 
+            // timed: transition must occur within a fixed window (elapsed
+            // <= timing->unk_06).  Used for chains with tight timing
+            // windows where the button must be pressed promptly.
             if ((moveFlags & TRANSITION_FLAG_TIMED)) {
-                if (sp4C <= player->transitionTimingTable[possibleMove->timingIndex].unk_06) {
-                    if (player_make_transition(player, TRUE, transitionIndex)) {
+                if (elapsedFrames <= player->transitionTimingTable[possibleMove->timingIndex].timeWindow) {
+                    if (player_make_transition(player, TRUE, entryIndex)) {
                         return TRUE;
                     } else {
-                        transitionIndex += 2;
+                        entryIndex += 2;
                         continue;
                     }
                 } else {
-                    transitionIndex += 2;
+                    entryIndex += 2;
                     continue;
                 }
             }
 
-            if (player_make_transition(player, TRUE, transitionIndex)) {
+            // immediate match with no special flags
+            if (player_make_transition(player, TRUE, entryIndex)) {
                 return TRUE;
             }
         }
 
-        transitionIndex += 2;
+        entryIndex += 2;
     }
 
-    if (sp68 != NULL && arg1) {
+    /* No candidate matched: apply the stored fallback transition.
+       allowFallback distinguishes timeout-driven calls (TRUE, from
+       player_update when autoTransitionTimer hits 0) from the initial
+       pendingInput-driven call (FALSE, right after a button press).
+       Fallback is only used on timeout to give the player a default
+       move (usually idle / crouch idle) when nothing else fits. */
+    if (fallbackMove != NULL && allowFallback) {
         gPlayerInput[player->playerId].pendingInput = FALSE;
-        D_80080236 = TRUE;
-        if (player_make_transition(player, TRUE, sp5E)) {
-            player->lookupLogicTable = logicStates[sp5E + 1];
-            D_80080236 = FALSE;
+        gReplayDisabled = TRUE;
+        if (player_make_transition(player, TRUE, fallbackIndex)) {
+            player->lookupLogicTable = logicStates[fallbackIndex + 1];
+            gReplayDisabled = FALSE;
             return TRUE;
         }
-        D_80080236 = FALSE;
+        gReplayDisabled = FALSE;
     }
 
     return FALSE;
 }
 
+/* Transition selection for AI: simplified version that just picks the first
+   fallback transition from the lookup chain (the AI module has already
+   decided which move group is active). */
 u8 ai_select_transition(Player *player) {
     s16 nextLogicState;
     u16 transitionFlags;
@@ -1386,9 +1555,9 @@ u8 ai_select_transition(Player *player) {
     while (logicStates[nextLogicState] >= 0) {
         possibleTransition = transitionTable + logicStates[nextLogicState];
         transitionFlags = possibleTransition->flags;
-        if (transitionFlags & TRANSITION_FLAG_FALLBACK) {
-            if (((transitionFlags & TRANSITION_FLAG_TURN) &&
-                 (!(transitionFlags & TRANSITION_FLAG_TURN_AWAY) || !(player->flags & PLAYER_FLAG_NOT_FACING_OPP)))) {
+        if (transitionFlags & TRANSITION_FLAG_DEFAULT) {
+            if (((transitionFlags & TRANSITION_FLAG_FACING) &&
+                 (!(transitionFlags & TRANSITION_FLAG_BEHIND) || !(player->flags & PLAYER_FLAG_NOT_FACING_OPP)))) {
                 nextLogicState += 2;
                 continue;
             }
@@ -1400,13 +1569,13 @@ u8 ai_select_transition(Player *player) {
     }
 
     if (t2 != NULL) {
-        D_80080236 = TRUE;
+        gReplayDisabled = TRUE;
         if (player_make_transition(player, TRUE, sp26)) {
             player->lookupLogicTable = logicStates[sp26 + 1];
-            D_80080236 = FALSE;
+            gReplayDisabled = FALSE;
             return TRUE;
         }
-        D_80080236 = FALSE;
+        gReplayDisabled = FALSE;
     }
 
     return FALSE;

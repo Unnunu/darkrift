@@ -99,39 +99,43 @@ typedef struct DirectionalLight {
     /* 0x0C */ s32 dir_z;
 } DirectionalLight; // size = 0x10
 
-typedef struct GlobalLighting {
+typedef struct CharLighting {
     /* 0x00 */ DirectionalLight lights[2];
-} GlobalLighting; // size = 0x20
+} CharLighting; // size = 0x20
 
 typedef struct GameMode {
-    /* 0x00 */ void (*fn_run)(void);
+    /* 0x00 */ void (*fnRun)(void);
     /* 0x04 */ s16 unk_04;
     /* 0x08 */ s32 unk_08;
-    /* 0x0C */ u8 unk_0C;
-    /* 0x0D */ u8 unk_0D;
-    /* 0x0E */ u8 unk_0E;
-    /* 0x0F */ u8 unk_0F;
-    /* 0x10 */ u8 unk_10;
-    /* 0x11 */ u8 unk_11;
-    /* 0x12 */ u8 unk_12;
-    /* 0x13 */ u8 unk_13;
+    /* 0x0C */ ColorRGBA unk_0C;
+    /* 0x10 */ ColorRGBA unk_10;
     /* 0x14 */ u16 unk_14;
     /* 0x16 */ u16 unk_16;
-    /* 0x18 */ GlobalLighting *unk_18;
+    /* 0x18 */ CharLighting *unk_18;
     /* 0x1C */ ColorRGBA ambient_color;
 } GameMode; // size = 0x20
 
 typedef struct PlayerInput {
-    /* 0x00 */ u16 buttons;
-    /* 0x02 */ u16 prev_buttons;
-    /* 0x04 */ u16 held_buttons;
-    /* 0x06 */ u16 raw_buttons;
-    /* 0x08 */ u8 pendingInput;
-    /* 0x09 */ u8 mirrored;
+    /* 0x00 */ u16 buttons;     // Edge-detected press events this frame.
+                                //   Directions + A + CRIGHT: level-triggered.
+                                //   All other buttons:       edge-triggered.
+    /* 0x02 */ u16 fullState;   // Complete unfiltered button state.
+                                //   Read:  "what is held right now" (e.g. action-chaining).
+                                //   Write: set every frame by process_player_input,
+                                //          consumed next frame for edge-detection & background.
+    /* 0x04 */ u16 background;  // Mask of buttons that were already held BEFORE the current
+                                //   press sequence started.  Snapshotted from fullState when
+                                //   pendingInput goes FALSE → TRUE, then ANDed each frame.
+                                //   Used to filter out "old" held buttons from edge-detection.
+    /* 0x06 */ u16 rawButtons;  // Full INP_* state before button remapping.
+    /* 0x08 */ u8 pendingInput; // TRUE when fresh input awaits the transition system.
+                                //   Set by process_player_input on state change,
+                                //   cleared by player_select_transition when consumed.
+    /* 0x09 */ u8 mirrored;     // Swap LEFT↔RIGHT (P2 "toward opponent" convention).
     /* 0x0A */ u8 enabled;
     /* 0x0B */ u8 connected;
-    /* 0x0C */ u8 remapped;
-    /* 0x0D */ u8 disableStick;
+    /* 0x0C */ u8 remapped;      // TRUE → run low-byte buttons through gButtonsMap[].
+    /* 0x0D */ u8 stickDisabled; // TRUE → skip analog-stick-to-D-pad conversion.
 } PlayerInput;
 
 typedef struct MemSlot {
@@ -470,7 +474,7 @@ typedef struct ObjectTask {
     /* 0x08 */ s32 params[6];
     /* 0x20 */ u16 stackPos;
     /* 0x24 */ TaskContext stack[8];
-    /* 0x84 */ s16 start_delay;
+    /* 0x84 */ s16 startDelay;
     /* 0x86 */ s16 triggerAt;
     /* 0x88 */ s16 id;
     /* 0x8A */ char unk_8A[6];
@@ -633,27 +637,27 @@ typedef struct AnimationSoundTriggers {
     /* 0x07 */ u8 frame4;
 } AnimationSoundTriggers; // size = 0x8
 
-typedef struct StateOverrideIndex {
-    /* 0x00 */ s16 overrideTableOffset;
-    /* 0x02 */ u16 numOverrides;
-} StateOverrideIndex; // size = 0x4
+typedef struct FrameTriggerGroup {
+    /* 0x00 */ s16 firstOverride;
+    /* 0x02 */ u16 overrideCount;
+} FrameTriggerGroup; // size = 0x4
 
 typedef struct FrameTriggerOverride {
-    /* 0x00 */ s16 stateIdOverride;
-    /* 0x02 */ s16 frameIndex;
-    /* 0x04 */ s16 stateId;
-    /* 0x06 */ s16 transitionActionOverride;
+    /* 0x00 */ s16 redirectState;
+    /* 0x02 */ s16 triggerFrame;
+    /* 0x04 */ s16 matchTarget;
+    /* 0x06 */ s16 startFrame;
 } FrameTriggerOverride; // size = 0x8
 
 typedef struct TransitionTiming {
     /* 0x00 */ s16 unk_00;
     /* 0x02 */ s16 unk_02;
     /* 0x04 */ s16 unk_04;
-    /* 0x06 */ s16 unk_06;
-    /* 0x08 */ s16 unk_08;
+    /* 0x06 */ s16 timeWindow;
+    /* 0x08 */ s16 initVelZ;
     /* 0x0A */ s16 unk_0A;
-    /* 0x0C */ s16 unk_0C;
-    /* 0x0E */ s16 moveTimeout;
+    /* 0x0C */ s16 actionDelay;
+    /* 0x0E */ s16 autoDelay;
 } TransitionTiming; // size = 0x10
 
 typedef struct ProjectileDef {
@@ -738,15 +742,15 @@ typedef struct Player {
     /* 0x000C */ ObjectTask *animTask;
     /* 0x0010 */ ObjectTask *audioTask;
     /* 0x0014 */ ObjectTask *cameraTask;
-    /* 0x0018 */ ObjectTask *unk_18;
+    /* 0x0018 */ ObjectTask *aimingTask;
 
     // tables from .db file
-    /* 0x001C */ FrameTriggerOverride *frameTriggerOverrideTable;
+    /* 0x001C */ FrameTriggerOverride *frameOverrides;
     /* 0x0020 */ CombatState *combatStateTable;
     /* 0x0024 */ Behavior *behaviorTable;
     /* 0x0028 */ TransitionTiming *transitionTimingTable;
     /* 0x002C */ TransitionRule *transitionRuleTable;
-    /* 0x0030 */ StateOverrideIndex *stateOverrideIndices;
+    /* 0x0030 */ FrameTriggerGroup *frameTriggerGroupTable;
     /* 0x0034 */ s16 *logicStateTable;
     /* 0x0038 */ s16 *moveToLogicStateMap;
     /* 0x003C */ s32 unk_3C;
@@ -776,7 +780,7 @@ typedef struct Player {
     /* 0x0088 */ TransitionTiming *currentTiming;
     /* 0x008C */ s32 transitionTimeStamp;
     /* 0x0090 */ CombatState *combatState;
-    /* 0x0094 */ s16 autoTransitionTimer;
+    /* 0x0094 */ s16 autoTimer;
     /* 0x0098 */ Behavior *behavior;
     /* 0x009C */ ProjectileBarrage *barrage;
     /* 0x00A0 */ TransitionRule *transition;
@@ -790,8 +794,8 @@ typedef struct Player {
     /* 0x0194 */ Object *projectileObj;
     /* 0x0198 */ HitZones hitZones;
     /* 0x0748 */ char unk_748[8];
-    /* 0x0750 */ Transform unk_750;
-    /* 0x0868 */ Transform unk_868;
+    /* 0x0750 */ Transform headTrack;
+    /* 0x0868 */ Transform bodyTurn;
     /* 0x0980 */ char unk_980[40];
     /* 0x09A8 */ s32 unk_9A8;
     /* 0x09AC */ s32 unk_9AC;
@@ -809,7 +813,7 @@ typedef struct Player {
     /* 0x3698 */ MotionTrail leftLegTrail;
     /* 0x4AF0 */ MotionTrail rightLegTrail;
     /* 0x5F48 */ s16 hitCooldown;
-    /* 0x5F4A */ u8 unk_5F4A;
+    /* 0x5F4A */ u8 hasLeftHandTrail;
     /* 0x5F4B */ u8 unk_5F4B;
     /* 0x5F4C */ s16 total_damage;
     /* 0x5F4E */ s16 damage;
@@ -918,7 +922,7 @@ typedef struct GlobalObjD {
 } GlobalObjD; // size = 0x34
 
 typedef struct UnkQwe {
-    /* 0x00 */ s16 unk_00;
+    /* 0x00 */ s16 combatStateId;
     /* 0x04 */ char *unk_04;
 } UnkQwe; // size = 8
 

@@ -70,9 +70,9 @@ void ai_update(Player *player) {
 
     if (player->aiState.aiFlags & AIF_ACTION_IN_PROGRESS) {
         aiState = &player->aiState;
-        if (player->autoTransitionTimer != 0 && --player->autoTransitionTimer == 0) {
+        if (player->autoTimer != 0 && --player->autoTimer == 0) {
             ai_end_tactic(player);
-            if (player->lookupLogicTable >= 0 && (player->flags & PLAYER_FLAG_1000)) {
+            if (player->lookupLogicTable >= 0 && (player->flags & PLAYER_FLAG_ACTION)) {
                 if (ai_select_transition(player)) {
                     player->aiState.aiFlags |= AIF_ACTION_IN_PROGRESS;
                 }
@@ -90,11 +90,11 @@ void ai_update(Player *player) {
             } else {
                 ai_advance_step(player);
             }
-        } else if (player->autoTransitionTimer == 0 && player->obj->frameIndex >= player->combatState->maxFrame - 1) {
-            player->autoTransitionTimer = 512;
+        } else if (player->autoTimer == 0 && player->obj->frameIndex >= player->combatState->maxFrame - 1) {
+            player->autoTimer = 512;
         }
     } else if (!(player->animTask->flags & TASK_FLAG_TRIGGER_FRAME) &&
-               !(player->flags & PLAYER_FLAG_TRANSITION_LOCKED)) {
+               !(player->flags & PLAYER_FLAG_TRANSITION_GUARD)) {
         if (player_check_func_2(player->obj) && !(player->combatState->flags & CSF_80) &&
             !(player->obj->flags & OBJ_FLAG_800000)) {
             if (player->combatState->flags & CSF_CROUCH) {
@@ -133,7 +133,7 @@ void ai_end_tactic(Player *player) {
     player->aiState.continueActionFunc = NULL;
     player->aiState.tacticActionsPtr = player->aiState.moveSequence = NULL;
     player->aiState.aiFlags &= ~(AIF_4000 | AIF_ACTION_IN_PROGRESS | AIF_TERMINATE_TACTIC | AIF_AI_DISABLED);
-    player->autoTransitionTimer = 0;
+    player->autoTimer = 0;
 
     if (player->flags & PLAYER_FLAG_2000) {
         player->aiState.aiFlags |= AIF_4000;
@@ -664,9 +664,9 @@ s16 ai_step_stand_block_exit(Player *player) {
             ((frameIndex < hitboxActiveStart && D_80049DB4[opponent->characterId] < hitboxActiveStart - frameIndex) ||
              (hitboxActiveEnd < frameIndex &&
               D_80049DCC[opponent->characterId] < gPlayers[oppId].combatState->maxFrame - hitboxActiveEnd) ||
-             ((gPlayers[1 - player->playerId].flags & PLAYER_FLAG_TRANSITION_LOCKED) &&
+             ((gPlayers[1 - player->playerId].flags & PLAYER_FLAG_TRANSITION_GUARD) &&
               gPlayers[1 - player->playerId].obj->frameIndex < 6))) {
-        player->combatStateId = 216;
+        player->combatStateId = CS_ID_216;
         return -1;
     }
 
@@ -698,7 +698,7 @@ s16 ai_step_crouch_block_exit(Player *player) {
     }
 
     if (gPlayers[oppId].flags & PLAYER_FLAG_NOT_FACING_OPP) {
-        player->combatStateId = 42;
+        player->combatStateId = CS_ID_42;
         return -1;
     }
 
@@ -789,7 +789,7 @@ s16 ai_step_counter_agg_stand(Player *player) {
     if (!(opponent->flags & PLAYER_FLAG_SHOOTED)) {
         if ((sp30 < sp2C && D_80049DB4[opponent->characterId] < sp2C - sp30) ||
             (sp2E < sp30 && D_80049DCC[opponent->characterId] < gPlayers[oppId].combatState->maxFrame - sp2E) ||
-            ((gPlayers[1 - player->playerId].flags & PLAYER_FLAG_TRANSITION_LOCKED) &&
+            ((gPlayers[1 - player->playerId].flags & PLAYER_FLAG_TRANSITION_GUARD) &&
              gPlayers[1 - player->playerId].obj->frameIndex < 6)) {
             player->flags &= ~PLAYER_FLAG_2000;
             return -1;
@@ -859,7 +859,7 @@ s16 ai_step_counter_agg_crouch(Player *player) {
     if (!(opponent->flags & PLAYER_FLAG_SHOOTED) && func_8001D1F8(player)) {
         if ((sp30 < sp2C && D_80049DB4[opponent->characterId] < sp2C - sp30) ||
             (sp2E < sp30 && D_80049DCC[opponent->characterId] < gPlayers[oppId].combatState->maxFrame - sp2E) ||
-            ((gPlayers[1 - player->playerId].flags & PLAYER_FLAG_TRANSITION_LOCKED) &&
+            ((gPlayers[1 - player->playerId].flags & PLAYER_FLAG_TRANSITION_GUARD) &&
              gPlayers[1 - player->playerId].obj->frameIndex < 6)) {
             player->flags &= ~PLAYER_FLAG_2000;
             return -1;
@@ -921,7 +921,7 @@ s16 ai_step_stand_block_try(Player *player) {
     sp2C += guRandom() % D_80049D64[sp24];
     player->aiState.delayCount++;
 
-    if (sp2C < player->aiState.delayCount || (gPlayers[1 - player->playerId].flags & PLAYER_FLAG_100000)) {
+    if (sp2C < player->aiState.delayCount || (gPlayers[1 - player->playerId].flags & PLAYER_FLAG_GAMEPLAY_LOCKED)) {
         player->aiState.tacticActionsPtr++;
         ai_setup_action(player, &player->aiState);
         ai_step_move(player);
@@ -943,7 +943,7 @@ s16 ai_step_crouch_block_try(Player *player) {
     sp2C += guRandom() % D_80049D64[aiDifficulty];
     player->aiState.delayCount++;
 
-    if (sp2C < player->aiState.delayCount || (gPlayers[1 - player->playerId].flags & PLAYER_FLAG_100000)) {
+    if (sp2C < player->aiState.delayCount || (gPlayers[1 - player->playerId].flags & PLAYER_FLAG_GAMEPLAY_LOCKED)) {
         player->aiState.tacticActionsPtr++;
         ai_setup_action(player, &player->aiState);
         ai_step_move(player);

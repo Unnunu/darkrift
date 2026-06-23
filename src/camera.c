@@ -216,9 +216,9 @@ Object *camera_create(void) {
 
     obj->taskList = (ObjectTask *) GET_ITEM(gTaskPool);
     obj->currentTask = obj->taskList;
-    obj->currentTask->start_delay = 0;
+    obj->currentTask->startDelay = 0;
     obj->currentTask->flags = TASK_FLAG_ENABLED;
-    obj->currentTask->func = task_default_func;
+    obj->currentTask->func = task_end;
     obj->currentTask->stackPos = 0;
     obj->currentTask->next = NULL;
 

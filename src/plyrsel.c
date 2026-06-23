@@ -22,7 +22,7 @@ typedef struct CheatCodeState {
 } CheatCodeState;
 
 extern s16 gPlayMode;
-extern s16 D_80049390;
+extern s16 gCharacterSelectResult;
 extern AssetSP2Sub3 *D_8013C234;
 extern AssetSP2Sub3 *D_8013C238;
 
@@ -151,9 +151,10 @@ u8 func_8001E188(u8 playerId) {
     v1 = 0;
     characterId = gBattleSettings[1 - playerId].characterId;
 
-    if (D_80049390 != -1 && characterId != D_80049390 && D_80049390 != SONORK && D_80049390 != DEMITRON) {
-        characterId = D_80049390;
-        D_80049390 = -1;
+    if (gCharacterSelectResult != -1 && characterId != gCharacterSelectResult && gCharacterSelectResult != SONORK &&
+        gCharacterSelectResult != DEMITRON) {
+        characterId = gCharacterSelectResult;
+        gCharacterSelectResult = -1;
         return characterId;
     }
 
@@ -232,7 +233,7 @@ void func_8001E378(Object *obj) {
     ones = tmp - tens * 10;
     obj->frameIndex = ones;
     a1->frameIndex = tens;
-    obj->currentTask->start_delay = 60;
+    obj->currentTask->startDelay = 60;
 }
 
 void func_8001E540(Object *obj, Object *arg1) {
@@ -451,7 +452,7 @@ void func_8001EB58(Object *obj) {
     obj->vars[1] = 0;
     obj->vars[9] = s2b;
     obj->currentTask->func = func_8001E624;
-    obj->currentTask->start_delay = 20;
+    obj->currentTask->startDelay = 20;
 }
 
 void plyrsel_portrait_update_2(Object *obj) {
@@ -630,7 +631,7 @@ void plyrsel_image_vs_update(Object *obj) {
 
     if (obj->vars[8] == 2) {
         obj->vars[8] = 3;
-        obj->currentTask->start_delay = 10;
+        obj->currentTask->startDelay = 10;
         gCharacterPortrait[0]->flags |= OBJ_FLAG_4000000;
         gCharacterPortrait[1]->flags |= OBJ_FLAG_4000000;
         return;
@@ -641,7 +642,7 @@ void plyrsel_image_vs_update(Object *obj) {
         gCharacterPortrait[0]->flags |= OBJ_FLAG_4000000;
         gCharacterPortrait[1]->flags |= OBJ_FLAG_4000000;
         obj->flags &= ~OBJ_FLAG_HIDDEN;
-        obj->currentTask->start_delay = 20;
+        obj->currentTask->startDelay = 20;
         return;
     }
 
@@ -758,7 +759,7 @@ void run_player_selection_mode(void) {
         char_p2--;
     }
 
-    gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = TRUE;
+    gPlayerInput[PLAYER_1].stickDisabled = gPlayerInput[PLAYER_2].stickDisabled = TRUE;
     gGfxFlags |= GFX_FLAG_20;
     gGlobalFlags |= GAME_FLAG_TRANSITION;
 
@@ -810,12 +811,12 @@ void run_player_selection_mode(void) {
     gCharacterPortrait[0] = create_ui_element(&portrait_p1_pos, &portrait_p1, CONTEXT_EEFF);
     gCharacterPortrait[0]->vars[0] = PLAYER_1;
     gCharacterPortrait[0]->frameIndex = char_p1;
-    gCharacterPortrait[0]->currentTask->start_delay = 20;
+    gCharacterPortrait[0]->currentTask->startDelay = 20;
 
     gCharacterPortrait[1] = create_ui_element(&portrait_p2_pos, &portrait_p2, CONTEXT_EEFF);
     gCharacterPortrait[1]->vars[0] = PLAYER_2;
     gCharacterPortrait[1]->frameIndex = char_p2;
-    gCharacterPortrait[1]->currentTask->start_delay = 20;
+    gCharacterPortrait[1]->currentTask->startDelay = 20;
 
     player_labels[0] = create_ui_element(&label_player1_pos, &label_player1, CONTEXT_EEFF);
     player_labels[0]->vars[0] = PLAYER_1;
@@ -844,7 +845,7 @@ void run_player_selection_mode(void) {
         case PLAY_MODE_TOURNAMENT_P2:
             player1 = (gPlayMode == PLAY_MODE_TOURNAMENT_P2);
             gCharacterPortrait[1 - player1]->currentTask->func = plyrsel_portrait_update_2;
-            gCharacterPortrait[1 - player1]->currentTask->start_delay = 0;
+            gCharacterPortrait[1 - player1]->currentTask->startDelay = 0;
             gCharacterPortrait[1 - player1]->currentTask->flags = TASK_FLAG_ENABLED;
 
             if (gBattleSettings[player1].roundsWon != 0) {
@@ -857,12 +858,12 @@ void run_player_selection_mode(void) {
             break;
         case PLAY_MODE_30:
             gCharacterPortrait[0]->currentTask->func = plyrsel_portrait_update_2;
-            gCharacterPortrait[0]->currentTask->start_delay = 0;
+            gCharacterPortrait[0]->currentTask->startDelay = 0;
             gCharacterPortrait[0]->currentTask->flags = TASK_FLAG_ENABLED;
             gCharacterPortrait[0]->vars[6] = func_8001E188(0);
 
             gCharacterPortrait[1]->currentTask->func = plyrsel_portrait_update_2;
-            gCharacterPortrait[1]->currentTask->start_delay = 0;
+            gCharacterPortrait[1]->currentTask->startDelay = 0;
             gCharacterPortrait[1]->currentTask->flags = TASK_FLAG_ENABLED;
             gCharacterPortrait[1]->vars[6] = func_8001E188(1);
             break;
@@ -1043,7 +1044,7 @@ void func_800204C0(CheatCodeState *state, s16 playerId) {
     if (!gPlayerInput[playerId].pendingInput) {
         return;
     }
-    raw_buttons = gPlayerInput[playerId].raw_buttons;
+    raw_buttons = gPlayerInput[playerId].rawButtons;
     if (!raw_buttons) {
         return;
     }

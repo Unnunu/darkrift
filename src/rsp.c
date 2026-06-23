@@ -1,4 +1,5 @@
 #include "common.h"
+#include "PR/gt.h"
 
 /* .bss */
 
@@ -100,7 +101,7 @@ OSTask sF3dTask = {
 Gfx D_8004CC08[] = {
     gsDPPipeSync(),
     gsDPSetPrimColor(0, 0, 192, 192, 192, 255),
-    gsSPNoOp(),
+    gsDPEndDisplayList(),
 };
 
 RenderContext sRenderContext = {
@@ -138,7 +139,7 @@ BatchInfo sBatchInfoIdentity = {
 
 Gfx D_8004CD20[] = {
     gsDPFullSync(),
-    gsSPNoOp(),
+    gsDPEndDisplayList(),
 };
 
 BatchInfo sBatchInfoEndOfFrame = {

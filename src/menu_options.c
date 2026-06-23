@@ -401,7 +401,7 @@ void controls_controller_update(Object *obj) {
     s16 playerId;
 
     playerId = obj->vars[VAR_OPT_CTRL_PLAYER_ID];
-    rawButtons = gPlayerInput[playerId].raw_buttons;
+    rawButtons = gPlayerInput[playerId].rawButtons;
 
     if (rawButtons != 0) {
         controls_handle_button_remap(obj, rawButtons, playerId);
@@ -595,7 +595,7 @@ void rank_table_update(Object *obj) {
     menu_rank_draw_number(D_800B6368[charId].wins, gRankRowPos.x + 123, gRankRowPos.y);
     menu_rank_draw_number(D_800B6368[charId].loses, gRankRowPos.x + 165, gRankRowPos.y);
     gRankRowPos.y += 16;
-    obj->currentTask->start_delay = 10;
+    obj->currentTask->startDelay = 10;
 }
 
 void menu_rank_init(void) {

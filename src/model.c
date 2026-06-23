@@ -1267,15 +1267,15 @@ void model_process_animation(Object *obj) {
     }
 }
 
-u16 func_80037394(ModelInstance *model, s16 arg1) {
+u16 func_80037394(ModelInstance *model, s16 animId) {
     AnimEntry *firstEntry;
 
-    firstEntry = model->animations[arg1]->entries;
+    firstEntry = model->animations[animId]->entries;
 
     if ((firstEntry->b3 & 0xF0) != 0 && (firstEntry->b3 & 0x0F) != 0) {
-        model->numAnimFrames = model->animations[arg1]->b3 * ((firstEntry->b3 & 0xF0) >> 4);
+        model->numAnimFrames = model->animations[animId]->b3 * ((firstEntry->b3 & 0xF0) >> 4);
     } else {
-        model->numAnimFrames = model->animations[arg1]->b3 * 2;
+        model->numAnimFrames = model->animations[animId]->b3 * 2;
     }
 
     return model->numAnimFrames;
@@ -1549,7 +1549,7 @@ void sprite3d_update(Object *obj) {
 void func_80037E28(Object *obj) {
     GameMode *a2;
     ModelInstance *v1;
-    GlobalLighting *v0;
+    CharLighting *v0;
     u32 t6;    // sp160
     Model *t0; // sp168
     u32 t2;    // sp158

@@ -18,21 +18,21 @@ void action_animation_end(Object *obj) {
 
         ai_end_tactic(player);
 
-        if (player->lookupLogicTable >= 0 && (player->flags & PLAYER_FLAG_1000)) {
+        if (player->lookupLogicTable >= 0 && (player->flags & PLAYER_FLAG_ACTION)) {
             if (ai_select_transition(player)) {
                 player->aiState.aiFlags |= AIF_ACTION_IN_PROGRESS;
                 return;
             }
         }
-    } else if (!(player->flags & PLAYER_FLAG_TRANSITION_LOCKED) &&
-               (gPlayerInput[playerId].pendingInput || (player->flags & PLAYER_FLAG_1000)) &&
+    } else if (!(player->flags & PLAYER_FLAG_TRANSITION_GUARD) &&
+               (gPlayerInput[playerId].pendingInput || (player->flags & PLAYER_FLAG_ACTION)) &&
                player->lookupLogicTable >= 0 && !(player->animTask->flags & TASK_FLAG_TRIGGER_FRAME)) {
         if (player_select_transition(player, TRUE)) {
             return;
         }
     }
 
-    D_80080236 = TRUE;
+    gReplayDisabled = TRUE;
     stateFlags = player->combatState->flags;
     if (player->flags & PLAYER_FLAG_8000000) {
         player->flags &= ~PLAYER_FLAG_8000000;
@@ -45,8 +45,8 @@ void action_animation_end(Object *obj) {
         player_apply_move(player, MOVE_ID_IDLE_068, FALSE);
     }
 
-    D_80080236 = FALSE;
-    player->flags |= PLAYER_FLAG_TRANSITION_LOCKED;
+    gReplayDisabled = FALSE;
+    player->flags |= PLAYER_FLAG_TRANSITION_GUARD;
 }
 
 void anim_reverse(Object *obj) {
@@ -136,9 +136,9 @@ void player_anim_func_3_sub(Object *obj) {
                       obj->modInst->animations[player->combatStateTable[player->combatState->cutsceneId].animationId]);
 
         gCamera->currentTask->func = camera_cutscene_playback;
-        gCamera->currentTask->start_delay = 0;
+        gCamera->currentTask->startDelay = 0;
         gCamera->currentTask->flags = TASK_FLAG_ENABLED;
-        gCamera->currentTask->start_delay = 1;
+        gCamera->currentTask->startDelay = 1;
         TASK_END(obj->currentTask);
     }
 }
@@ -153,7 +153,7 @@ void player_anim_func_3(Object *obj) {
 
     if (targetState->cutsceneId >= 0 && targetState->custsceneDelay != -1) {
         player->cameraTask->func = player_anim_func_3_sub;
-        player->cameraTask->start_delay = 0;
+        player->cameraTask->startDelay = 0;
         player->cameraTask->flags = TASK_FLAG_ENABLED;
     }
 
@@ -212,7 +212,7 @@ void anim_change_combat_state(Object *obj) {
 
         if (targetState->cutsceneId >= 0 && targetState->custsceneDelay != -1) {
             player->cameraTask->func = player_anim_func_3_sub;
-            player->cameraTask->start_delay = 0;
+            player->cameraTask->startDelay = 0;
             player->cameraTask->flags = TASK_FLAG_ENABLED;
         }
 
@@ -224,7 +224,7 @@ void anim_change_combat_state(Object *obj) {
 
         player->combatState = targetState;
 
-        if (player->flags & PLAYER_FLAG_800) {
+        if (player->flags & PLAYER_FLAG_REVERSE) {
             obj->frameIndex = targetState->maxFrame;
         } else {
             obj->frameIndex = MAX(targetState->minFrame, params[2]);
@@ -257,7 +257,7 @@ void anim_change_combat_state(Object *obj) {
     }
 }
 
-void func_80024640(Object *obj) {
+void anim_sync_diverted_combat_state(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
     s32 i;
     s32 s2;
@@ -268,10 +268,10 @@ void func_80024640(Object *obj) {
         return;
     }
 
-    player->flags &= ~PLAYER_FLAG_TRANSITION_LOCKED;
+    player->flags &= ~PLAYER_FLAG_TRANSITION_GUARD;
     v0 = obj->currentTask->params;
     player->actionTask->func = v0[4];
-    player->actionTask->start_delay = 0;
+    player->actionTask->startDelay = 0;
     player->actionTask->flags = TASK_FLAG_ENABLED;
     anim_change_combat_state(obj);
 
@@ -293,20 +293,20 @@ void func_80024640(Object *obj) {
     player->aiState.aiFlags &= ~AIF_AI_DISABLED;
 }
 
-void func_80024764(Object *obj) {
+void anim_apply_diverted_combat_state(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
     CombatState *temp;
 
-    obj->currentTask->func = func_80024640;
+    obj->currentTask->func = anim_sync_diverted_combat_state;
     obj->frameIndex = 1;
     temp = obj->currentTask->params[3] + player->combatStateTable; // required to match
     player->combatState = temp;
     obj->modInst->currentAnimId = temp->animationId;
-    player->flags |= PLAYER_FLAG_TRANSITION_LOCKED;
+    player->flags |= PLAYER_FLAG_TRANSITION_GUARD;
     player->aiState.aiFlags |= AIF_AI_DISABLED;
 }
 
-void func_800247CC(Object *obj) {
+void anim_apply_deferred_transition(Object *obj) {
     Player *player = (Player *) obj->varObj[0];
     ObjectTask *v0;
     s32 pad2;
@@ -329,10 +329,10 @@ void func_800247CC(Object *obj) {
         stack = currentTask->stack + (--currentTask->stackPos);
         currentTask->func = stack->func;
         currentTask->flags = stack->flags;
-        currentTask->start_delay = stack->start_delay;
+        currentTask->startDelay = stack->start_delay;
 
-        if (currentTask->start_delay != 0) {
-            currentTask->start_delay--;
+        if (currentTask->startDelay != 0) {
+            currentTask->startDelay--;
         } else {
             currentTask->func(obj);
         }

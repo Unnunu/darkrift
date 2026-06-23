@@ -74,7 +74,7 @@ BatchTriangle sQuadTriangles[] = { { 0, 1, 2, 0 }, { 2, 1, 3, 0 } };
 s32 mainUnused2[] = { 0, 0, 0 };
 Vec3s gZeroRotation = { 0, 0, 0 };
 Vec4i gZeroPosition = { 0, 0, 0, 0 };
-GlobalLighting gDefaultLighting = { { { { 255, 255, 255, 255 }, 0, 0, -127 }, { { 0, 0, 0, 255 }, 73, -73, -73 } } };
+CharLighting gDefaultLighting = { { { { 255, 255, 255, 255 }, 0, 0, -127 }, { { 0, 0, 0, 255 }, 73, -73, -73 } } };
 UnkStruct800031FC D_8004937C = { 0, 90, 0, 0 };
 UnkStruct800031FC D_80049384 = { 0, 233, 500, 0 };
 
@@ -699,7 +699,7 @@ void start_exit_fade(Object *obj) {
  *
  * Starts at LOGO, then cycles through game modes forever:
  *   1. Create an enter_black_screen worker
- *   2. Run the mode's fn_run
+ *   2. Run the mode's fnRun
  *   3. Black the screen, sync the scheduler
  *   4. Call reset_game_mode_systems() for the next mode
  */
@@ -711,7 +711,7 @@ void game_mode_manager(void) {
     while (TRUE) {
         gCurrentGameMode = gNextGameMode;
         create_worker(enter_black_screen, OBJ_PRIO_HIGHER);
-        gGameModes[gNextGameMode].fn_run();
+        gGameModes[gNextGameMode].fnRun();
         if (!(gGlobalFlags & GAME_FLAG_NO_VI_BLACK)) {
             osViBlack(1);
         }

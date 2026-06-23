@@ -1,3 +1,12 @@
+/* Game modes: battle scenes, intros, endings, menus, and cutscenes.
+   Each game mode is a function registered in gGameModes[] that calls
+   game_main_loop() to run its scene.  Subsystems:
+     - Battle: round/match init, per-character arena setup, cleanup
+     - Intros: cinematic player intro with skip-prompt overlay
+     - Endings: victory/defeat cutscenes per character
+     - Menus: main menu, options, controls, rankings, stats
+     - Cinematics: logo, credits, boss reveals, closing scenes */
+
 #include "common.h"
 #include "camera.h"
 #include "sprite_ids.h"
@@ -35,11 +44,11 @@ void func_80020670(Object *);
 void func_80019F40(Object *);
 void func_8001A158(Object *, s16);
 // s32 menu_rank_init(void);
-void handle_controller_input(s16 arg0);
+void spawn_player(s16 arg0);
 void func_8001B5B0(char *, s32);
 void func_80029630(void);
 void camera_intro_start(Object *);
-void task_default_func(Object *);
+void task_end(Object *);
 void rank_table_update(Object *);
 void controls_controller_update(Object *);
 void controls_button_update(Object *);
@@ -84,7 +93,7 @@ void battle_round_init(void) {
     gHitSparkModel = gAssets[asset_find("comhit.k5", CONTEXT_ABAB)].aux_data;
     gBlockSparkModel = gAssets[asset_find("comblock.k5", CONTEXT_ABAB)].aux_data;
 
-    gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
+    gPlayerInput[PLAYER_1].fullState = gPlayerInput[PLAYER_2].fullState = 0;
     if (gPlayMode == PLAY_MODE_PRACTICE) {
         gPlayerInput[1 - gPracticingPlayer].enabled = FALSE;
     } else {
@@ -92,15 +101,15 @@ void battle_round_init(void) {
     }
 
     gRoundOver = FALSE;
-    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
-    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
+    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_GAMEPLAY_LOCKED;
+    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_GAMEPLAY_LOCKED;
     D_80051F6C = D_80051F70 = D_8013C2A8 = D_8013C2AA = 0;
     gReplayActive = 0;
 }
 
 void battle_match_init(void) {
     gBattleSettings[PLAYER_1].roundsWon = gBattleSettings[PLAYER_2].roundsWon = 0;
-    gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
+    gPlayerInput[PLAYER_1].fullState = gPlayerInput[PLAYER_2].fullState = 0;
 
     if (gPlayMode == PLAY_MODE_PRACTICE) {
         gPlayerInput[1 - gPracticingPlayer].enabled = FALSE;
@@ -109,8 +118,8 @@ void battle_match_init(void) {
     }
 
     gRoundOver = FALSE;
-    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
-    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
+    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_GAMEPLAY_LOCKED;
+    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_GAMEPLAY_LOCKED;
     D_800801F1 = FALSE;
     D_80051F6C = D_80051F70 = D_8013C2A8 = D_8013C2AA = 0;
 }
@@ -210,8 +219,8 @@ void battle_preload(void) {
         asset_open_folder("/bars/bars2", CONTEXT_ABAB);
     }
 
-    handle_controller_input(0);
-    handle_controller_input(1);
+    spawn_player(PLAYER_1);
+    spawn_player(PLAYER_2);
 
     if (D_800801F1) {
         battle_match_init();
@@ -240,7 +249,7 @@ void run_battle_gore_mode(void) {
     func_8001B5B0("arena", sp2C);
     func_80029630();
 
-    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->startDelay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
@@ -251,17 +260,19 @@ void run_battle_gore_mode(void) {
     battle_cleanup();
 }
 
+/* Worker for the "tc" object in D_80049400 (unused?):
+   rotates object left/right with PLAYER_2 C-buttons. */
 void func_800071F0(Object *obj) {
-    if (gPlayerInput[PLAYER_2].prev_buttons & INP_CLEFT) {
+    if (gPlayerInput[PLAYER_2].fullState & INP_CLEFT) {
         obj->rotation.y -= 10;
-    } else if (gPlayerInput[PLAYER_2].prev_buttons & INP_CRIGHT) {
+    } else if (gPlayerInput[PLAYER_2].fullState & INP_CRIGHT) {
         obj->rotation.y += 10;
     }
     func_80037E28(obj);
 }
 
 // unknown data
-s32 D_80049400[] = { 0x40000, task_default_func, 0x2800, 0x10000000, 0, "tc", func_800071F0, 0x1000, 0 };
+s32 D_80049400[] = { 0x40000, task_end, 0x2800, 0x10000000, 0, "tc", func_800071F0, 0x1000, 0 };
 
 void run_battle_aaron_mode(void) {
     s32 sp2C = gBattleSettings[PLAYER_2].assetContext;
@@ -277,7 +288,7 @@ void run_battle_aaron_mode(void) {
     func_8001B5B0("arena", sp2C);
     func_80029630();
 
-    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->startDelay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
@@ -300,7 +311,7 @@ void run_battle_demitron_mode(void) {
     func_8001B5B0("arena", sp2C);
     func_80029630();
 
-    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->startDelay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
@@ -323,7 +334,7 @@ void run_battle_demonica_mode(void) {
     func_8001B5B0("arena", sp2C);
     func_80029630();
 
-    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->startDelay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
@@ -346,7 +357,7 @@ void run_battle_eve_mode(void) {
     func_8001B5B0("arena", sp2C);
     func_80029630();
 
-    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->startDelay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
@@ -368,7 +379,7 @@ void run_battle_morphix_mode(void) {
     func_8001B5B0("arena", sp2C);
     func_80029630();
 
-    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->startDelay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
@@ -388,7 +399,7 @@ void run_battle_niiki_mode(void) {
     func_8001B5B0("arena", sp2C);
     func_80029630();
 
-    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->startDelay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
@@ -411,7 +422,7 @@ void run_battle_scarlet_mode(void) {
     func_8001B5B0("arena", sp2C);
     func_80029630();
 
-    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->startDelay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
@@ -434,7 +445,7 @@ void run_battle_sonork_mode(void) {
     func_8001B5B0("arena", sp2C);
     func_80029630();
 
-    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->startDelay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
@@ -457,7 +468,7 @@ void run_battle_zenmuron_mode(void) {
     func_8001B5B0("arena", sp2C);
     func_80029630();
 
-    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->startDelay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;
@@ -467,6 +478,8 @@ void run_battle_zenmuron_mode(void) {
     battle_cleanup();
 }
 
+/* Intro/ending overlay worker: scrolls bg layer upward after fade-in,
+   waits for START or timer expiry to advance to next mode. */
 void func_80007B68(Object *obj) {
     s16 a3;
 
@@ -513,7 +526,10 @@ void func_80007B68(Object *obj) {
 
 u16 D_80049434[] = { 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 298, 314, 330, 315, 316, 298, 331, 0 };
 
-void func_80007DB0(Player *arg0, Object *arg1, s32 arg2) {
+/* Load intro/ending .mov animation sequences for a character into
+   the combat state table.  D_80049434 maps animation IDs to combat
+   state entries. */
+void func_80007DB0(Player *player, Object *arg1, s32 contextId) {
     s16 i;
     s16 a1;
     s16 v0;
@@ -526,16 +542,18 @@ void func_80007DB0(Player *arg0, Object *arg1, s32 arg2) {
         name[3] = (i / 10) + '0';
         name[4] = (i % 10) + '0';
 
-        if ((v0 = asset_find(name, arg2)) >= 0) {
-            a1 = arg0->combatStateTable[D_80049434[i]].animationId;
+        if ((v0 = asset_find(name, contextId)) >= 0) {
+            a1 = player->combatStateTable[D_80049434[i]].animationId;
             arg1->modInst->animations[a1] = gAssets[v0].data;
             s4++;
-            arg0->combatStateTable[D_80049434[i]].maxFrame = func_80037394(arg1->modInst, a1);
+            player->combatStateTable[D_80049434[i]].maxFrame = func_80037394(arg1->modInst, a1);
         }
     }
 }
 
-void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
+/* Spawn players, hide the CPU/boss, load intro animations, position
+   camera.  Used by both intro and ending cutscenes. */
+void func_80007F4C(u8 hasSkipPrompt, s16 moveId, s32 contextId) {
     s32 s0;
     Object *obj;
     Object *a1;
@@ -550,13 +568,13 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
         wait_screen();
     }
 
-    if (arg0) {
+    if (hasSkipPrompt) {
         obj = create_worker(func_80007B68, 0x1000);
         obj->vars[0] = 480;
     }
 
-    handle_controller_input(0);
-    handle_controller_input(1);
+    spawn_player(PLAYER_1);
+    spawn_player(PLAYER_2);
 
     gBattleSettings[PLAYER_1].initDifficulty = gBattleSettings[PLAYER_2].initDifficulty = TRUE;
 
@@ -578,20 +596,20 @@ void func_80007F4C(u8 arg0, s16 arg1, s32 arg2) {
 
     gGlobalFlags |= GAME_FLAG_TRANSITION;
 
-    gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
+    gPlayerInput[PLAYER_1].fullState = gPlayerInput[PLAYER_2].fullState = 0;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
 
     gRoundOver = FALSE;
 
-    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
-    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
+    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_GAMEPLAY_LOCKED;
+    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_GAMEPLAY_LOCKED;
 
-    TASK_END(gPlayers[PLAYER_1].unk_18);
-    TASK_END(gPlayers[PLAYER_2].unk_18);
+    TASK_END(gPlayers[PLAYER_1].aimingTask);
+    TASK_END(gPlayers[PLAYER_2].aimingTask);
 
-    func_80007DB0(gPlayers + 1 - s0, a1, arg2);
+    func_80007DB0(gPlayers + 1 - s0, a1, contextId);
     camera_orbit_init(gCamera);
-    player_apply_move(gPlayers + 1 - s0, arg1, 1);
+    player_apply_move(gPlayers + 1 - s0, moveId, 1);
     gGfxFlags |= GFX_FLAG_4;
 }
 
@@ -777,6 +795,8 @@ void run_intro_zenmuron_mode(void) {
     }
 }
 
+/* Worker that exits game mode when PLAYER_1's animation reaches
+   the second-to-last frame (used by Sonork boss intro). */
 void func_80008D0C(Object *obj) {
     if (gPlayers[PLAYER_1].combatState->maxFrame - 2 == gPlayers[PLAYER_1].obj->frameIndex) {
         gGlobalFlags |= GAME_FLAG_MODE_DONE;
@@ -785,6 +805,8 @@ void func_80008D0C(Object *obj) {
     }
 }
 
+/* Loop a model's animation: cycle frameIndex back to 0 when
+   reaching the last frame. */
 void func_80008D64(Object *obj) {
     obj->frameIndex++;
     if (obj->frameIndex >= obj->modInst->numAnimFrames - 1) {
@@ -792,6 +814,9 @@ void func_80008D64(Object *obj) {
     }
 }
 
+/* Sonork boss fight mode: prize screen → vs Sonork boss in
+   Sonork's arena. Ends with Demitron boss intro if tournament
+   round counter = 0. */
 void run_29_mode(void) {
     Object *obj;
     Object *relic;
@@ -838,6 +863,8 @@ void run_29_mode(void) {
     }
 }
 
+/* Demitron boss cutscene: shows Demitron boss intro animation,
+   then transitions to GAME_MODE_BATTLE_DEMITRON. */
 void run_30_mode(void) {
     Object *obj;
     Vec4i sp4C = { -800, -100, 0, 0 };
@@ -852,8 +879,8 @@ void run_30_mode(void) {
 
     func_8002630C(CONTEXT_ABAB);
     asset_open_folder("/demi/demiboss", CONTEXT_3000);
-    handle_controller_input(0);
-    handle_controller_input(1);
+    spawn_player(PLAYER_1);
+    spawn_player(PLAYER_2);
 
     a1 = gPlayers[sp42].obj;
     a1->pos.x = a1->pos.z = 0;
@@ -869,15 +896,15 @@ void run_30_mode(void) {
     a1->flags |= OBJ_FLAG_10000000;
     gGlobalFlags |= GAME_FLAG_TRANSITION;
 
-    gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
+    gPlayerInput[PLAYER_1].fullState = gPlayerInput[PLAYER_2].fullState = 0;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
 
     gRoundOver = FALSE;
 
-    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
-    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
-    TASK_END(gPlayers[PLAYER_1].unk_18);
-    TASK_END(gPlayers[PLAYER_2].unk_18);
+    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_GAMEPLAY_LOCKED;
+    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_GAMEPLAY_LOCKED;
+    TASK_END(gPlayers[PLAYER_1].aimingTask);
+    TASK_END(gPlayers[PLAYER_2].aimingTask);
 
     func_80007DB0(&gPlayers[sp42], a1, 0x3000);
     camera_orbit_init(gCamera);
@@ -900,6 +927,8 @@ void run_30_mode(void) {
     gNextGameMode = GAME_MODE_BATTLE_DEMITRON;
 }
 
+/* Easy/normal ending: shows character-specific ending image then
+   transitions to password screen. */
 void run_31_mode(void) {
     u16 var1;
     u16 sp54;
@@ -933,6 +962,8 @@ void run_31_mode(void) {
     func_8002630C(0x4000);
 }
 
+/* Credits mode: scrolls credit text upward with character-specific
+   ending image background. */
 void run_36_mode(void) {
     Object *worker;
 
@@ -950,6 +981,7 @@ void run_36_mode(void) {
     func_8002630C(0x4000);
 }
 
+/* Wait for START press, then exit game mode. */
 void func_80009554(Object *obj) {
     if (gPlayerInput[D_8013C24C].buttons & INP_START) {
         gGlobalFlags |= GAME_FLAG_MODE_DONE;
@@ -957,6 +989,7 @@ void func_80009554(Object *obj) {
     }
 }
 
+/* Easy-win screen: shows "easyimg" image, waits for START. */
 void run_37_mode(void) {
     func_800263A8();
     asset_open_folder("/title/easywin", CONTEXT_4000);
@@ -970,18 +1003,21 @@ void run_37_mode(void) {
     gNextGameMode = GAME_MODE_36;
 }
 
-void func_8000965C(s32 arg0) {
-    gFogNear = gGameModes[arg0].unk_14;
-    gFogFar = gGameModes[arg0].unk_16;
-    gFogColorR = gGameModes[arg0].unk_10;
-    gFogColorG = gGameModes[arg0].unk_11;
-    gFogColorB = gGameModes[arg0].unk_12;
-    gFillColorR = gGameModes[arg0].unk_0C;
-    gFillColorG = gGameModes[arg0].unk_0D;
-    gFillColorB = gGameModes[arg0].unk_0E;
+/* Apply fog and fill-color settings from a GameMode entry. */
+void func_8000965C(s32 gameModeId) {
+    gFogNear = gGameModes[gameModeId].unk_14;
+    gFogFar = gGameModes[gameModeId].unk_16;
+    gFogColorR = gGameModes[gameModeId].unk_10.r;
+    gFogColorG = gGameModes[gameModeId].unk_10.g;
+    gFogColorB = gGameModes[gameModeId].unk_10.b;
+    gFillColorR = gGameModes[gameModeId].unk_0C.r;
+    gFillColorG = gGameModes[gameModeId].unk_0C.g;
+    gFillColorB = gGameModes[gameModeId].unk_0C.b;
 }
 
-void func_800096D0(u8 arg0) {
+/* Setup for ending cutscene: position both visible players side by
+   side, load their ending animations, apply arena fog/colors. */
+void func_800096D0(u8 isClosingScene) {
     Vec4i sp58[] = { { -1152, 0, 0, 0 }, { 0, 0, 0, 0 } };
     u32 nv;
     s32 s1;
@@ -993,8 +1029,8 @@ void func_800096D0(u8 arg0) {
     s1 = gBattleSettings[PLAYER_2].assetContext;
     t9 = 1 - s1;
     nv = s1;
-    handle_controller_input(0);
-    handle_controller_input(1);
+    spawn_player(PLAYER_1);
+    spawn_player(PLAYER_2);
 
     s0 = gPlayers[t9].obj;
     a3 = gPlayers[nv].obj;
@@ -1009,7 +1045,7 @@ void func_800096D0(u8 arg0) {
     a3->pos.y = sp58[0].y;
     a3->pos.z = sp58[0].z;
 
-    if (!arg0) {
+    if (!isClosingScene) {
         if (gBattleSettings[t9].characterId == SONORK) {
             gPlayers[t9].obj->pos.x -= 400;
         } else if (gBattleSettings[t9].characterId == DEMONICA) {
@@ -1021,7 +1057,7 @@ void func_800096D0(u8 arg0) {
     s0->rotation.y = 0x400;
 
     charId = gBattleSettings[t9].characterId; // required to match
-    if ((charId == SONORK || charId == DEMONICA) && !arg0) {
+    if ((charId == SONORK || charId == DEMONICA) && !isClosingScene) {
         a3->rotation.y = 0x400;
     } else {
         a3->rotation.y = 0xC00;
@@ -1033,14 +1069,14 @@ void func_800096D0(u8 arg0) {
     a3->flags |= OBJ_FLAG_10000000;
 
     gGlobalFlags |= GAME_FLAG_TRANSITION;
-    gPlayerInput[PLAYER_1].prev_buttons = gPlayerInput[PLAYER_2].prev_buttons = 0;
+    gPlayerInput[PLAYER_1].fullState = gPlayerInput[PLAYER_2].fullState = 0;
     gPlayerInput[PLAYER_1].enabled = gPlayerInput[PLAYER_2].enabled = TRUE;
     gRoundOver = FALSE;
 
-    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_100000;
-    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_100000;
-    TASK_END(gPlayers[PLAYER_1].unk_18);
-    TASK_END(gPlayers[PLAYER_2].unk_18);
+    gPlayers[PLAYER_1].flags |= PLAYER_FLAG_GAMEPLAY_LOCKED;
+    gPlayers[PLAYER_2].flags |= PLAYER_FLAG_GAMEPLAY_LOCKED;
+    TASK_END(gPlayers[PLAYER_1].aimingTask);
+    TASK_END(gPlayers[PLAYER_2].aimingTask);
 
     camera_orbit_init(gCamera);
     func_80007DB0(&gPlayers[nv], a3, 0x4000);
@@ -1053,6 +1089,8 @@ void func_800096D0(u8 arg0) {
     gRoundOver = TRUE;
 }
 
+/* Defeat/ending cutscene (generated): shows Demitron-generated
+   closing cinema for the losing character. */
 void run_34_mode(void) {
     u16 sp7E;
     u16 sp24;
@@ -1062,7 +1100,7 @@ void run_34_mode(void) {
     sp24 = 1 - sp7E;
     gBattleSettings[PLAYER_1].isDummy = gBattleSettings[PLAYER_2].isDummy = 0;
     gRoundOver = TRUE;
-    D_80080234 = 1;
+    gReplayOverflow = 1;
 
     switch (gBattleSettings[sp24].characterId) {
         case AARON:
@@ -1126,6 +1164,8 @@ void run_34_mode(void) {
     gNextGameMode = GAME_MODE_35;
 }
 
+/* Setup ending background: open character-specific ending assets
+   and create the scrolling ending-image layer. */
 void func_80009CE0(void) {
     u16 sp56;
     u16 sp54;
@@ -1160,6 +1200,8 @@ void func_80009CE0(void) {
     camera_cutscene_shake_start(gCamera, sp56);
 }
 
+/* Defeat/ending cutscene (closing): shows character-specific
+   closing scene with relic model. */
 void run_35_mode(void) {
     Object *obj;
     Model *a3;
@@ -1179,7 +1221,7 @@ void run_35_mode(void) {
     player1 = &gPlayers[sp7E];
 
     gRoundOver = TRUE;
-    D_80080234 = 1;
+    gReplayOverflow = 1;
     gBattleSettings[sp7E].isDummy = gBattleSettings[sp24].isDummy = 0;
 
     switch (gBattleSettings[sp24].characterId) {
@@ -1250,6 +1292,8 @@ void run_35_mode(void) {
     func_800263A8();
 }
 
+/* Reset battle settings for menu/intro modes: full health, default
+   difficulty, clear win counters. */
 void func_8000A298(void) {
     s32 i;
 
@@ -1273,7 +1317,7 @@ void run_main_menu_mode(void) {
     Vec4i sp30 = { 164, 155, 0, 0 };
 
     func_800263A8();
-    gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = TRUE;
+    gPlayerInput[PLAYER_1].stickDisabled = gPlayerInput[PLAYER_2].stickDisabled = TRUE;
     asset_open_folder("/title", CONTEXT_2000);
     bg_layer_create("dr_title", 0, 0, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     gGfxFlags |= GFX_FLAG_20;
@@ -1287,7 +1331,7 @@ void run_main_menu_mode(void) {
         menuEntrySelector = create_ui_element(&sp30, &sp40, CONTEXT_2000);
     }
 
-    menuEntrySelector->currentTask->start_delay = 30;
+    menuEntrySelector->currentTask->startDelay = 30;
 
     create_worker(func_80020670, 0x1000);
     func_8000A298();
@@ -1299,6 +1343,8 @@ void run_main_menu_mode(void) {
     }
 }
 
+/* Fade-out render worker: decreases gFadeAlpha by 2 each frame,
+   then deletes itself. */
 void func_8000A514(Object *obj) {
     draw_translucent_quad(gFadeAlpha, 0);
 
@@ -1311,6 +1357,8 @@ void func_8000A514(Object *obj) {
     sQuadColor = 0;
 }
 
+/* Fade-in render worker: increases gFadeAlpha, transitions to
+   func_8000A514 (fade-out) when done, then creates title UI. */
 void func_8000A578(Object *obj) {
     UIElement sp44 = { 83, func_80019A9C, 0, 0x1000, "options2.sp2" };
     Vec4i sp34 = { 160, 155, 0, 0 };
@@ -1328,7 +1376,7 @@ void func_8000A578(Object *obj) {
     obj->fn_render = func_8000A514;
     bg_layer_create("dr_title", 0, 0, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     v0 = create_ui_element(&sp34, &sp44, 0x2000);
-    v0->currentTask->start_delay = 60;
+    v0->currentTask->startDelay = 60;
     gCamera->pos.z = -2200;
     create_worker(func_80020670, 0x1000);
 }
@@ -1345,7 +1393,7 @@ void run_intro_mode(void) {
     asset_open_folder("/title/tit_int", CONTEXT_2000);
     asset_open_folder("/plyrsel/plyrsel", CONTEXT_EEFF);
     v0 = create_worker(func_80019F40, 0x1000);
-    gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = TRUE;
+    gPlayerInput[PLAYER_1].stickDisabled = gPlayerInput[PLAYER_2].stickDisabled = TRUE;
     func_8001A158(v0, 0x2000);
 
     D_80081254 = bg_layer_create("oplog", 0, 250, 0, 0x10000, BG_FLAG_OVERLAY, CONTEXT_2000);
@@ -1359,6 +1407,7 @@ void run_intro_mode(void) {
     }
 }
 
+/* Show "no controller" error screen (messpg) and wait. */
 void func_8000A828(void) {
     asset_open_folder("/title/error", CONTEXT_2000);
     bg_layer_create("messpg", 0, 90, 0, 180, TEX_FLAG_1, CONTEXT_2000);
@@ -1408,7 +1457,7 @@ void run_options_mode(void) {
     Vec4i ui_stats_pos = { 135, 198, 0, 0 };
     Vec4i ui_exit_pos = { 146, 228, 0, 0 };
 
-    gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = TRUE;
+    gPlayerInput[PLAYER_1].stickDisabled = gPlayerInput[PLAYER_2].stickDisabled = TRUE;
     asset_open_folder("/title/option", CONTEXT_2000);
     bg_layer_create("bgopt", 0, 0, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     gGfxFlags |= GFX_FLAG_20;
@@ -1456,6 +1505,8 @@ void run_options_mode(void) {
     func_8002630C(CONTEXT_2000);
 }
 
+/* Update button-mapping display: show which physical button (L/A/R/B/C*)
+   is mapped to the row indexed by obj->vars[VAR_OPT_CTRL_ROW]. */
 void func_8000AFA4(Object *obj, s16 playerId) {
     s16 i;
     s16 button;
@@ -1528,7 +1579,7 @@ void run_menu_control_mode(void) {
     Vec4i button_a_p2_pos = { 179, 180, 0, 0 };
     Vec4i exit_menu_pos = { 149, 224, 0, 0 };
 
-    gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = TRUE;
+    gPlayerInput[PLAYER_1].stickDisabled = gPlayerInput[PLAYER_2].stickDisabled = TRUE;
     asset_open_folder("/title/control", CONTEXT_2000);
     bg_layer_create("bgcont", 0, 0, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     gGfxFlags |= GFX_FLAG_20;
@@ -1629,7 +1680,7 @@ void run_menu_rank_mode(void) {
     UIElement rankTable = { OPTIONS_RANK_TABLE_TEMPLATE, rank_table_update, 0, OBJ_PRIO_DEFAULT, "options2.sp2" };
     Vec4i rankTablePos = { 133, 126, 0, 0 };
 
-    gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = TRUE;
+    gPlayerInput[PLAYER_1].stickDisabled = gPlayerInput[PLAYER_2].stickDisabled = TRUE;
     asset_open_folder("/title/rank", CONTEXT_2000);
     bg_layer_create("bgrank", 0, 4, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     gRankTable = create_ui_element(&rankTablePos, &rankTable, CONTEXT_2000);
@@ -1645,7 +1696,7 @@ void run_menu_stats_mode(void) {
     func_8002630C(1);
     func_8002630C(CONTEXT_ABAB);
 
-    gPlayerInput[PLAYER_1].disableStick = gPlayerInput[PLAYER_2].disableStick = TRUE;
+    gPlayerInput[PLAYER_1].stickDisabled = gPlayerInput[PLAYER_2].stickDisabled = TRUE;
     asset_open_folder("/title/stats", CONTEXT_2000);
     bg_layer_create("aarost", 0, 13, 0, 0, TEX_FLAG_1, CONTEXT_2000);
     gGfxFlags |= GFX_FLAG_20;
@@ -1658,6 +1709,8 @@ void run_menu_stats_mode(void) {
 static void nullsub(void) {
 }
 
+/* Unused/test battle mode: loads Gore arena with both players as
+   Gore and no round management. */
 void run_17_mode(void) {
     s32 unused;
     Vec4s sp74 = { 0, -400, 0, 0 };
@@ -1665,18 +1718,18 @@ void run_17_mode(void) {
     Vec4i sp54 = { 400, 0, 0, 0 };
     s32 unused2;
     s32 sp4C = gBattleSettings[PLAYER_2].assetContext;
-    K2Def sp3C = { "gore", task_default_func, 0, 0x1000, 0 };
-    K2Def sp2C = { "arena", task_default_func, 0, 0x1000, 0 };
+    K2Def sp3C = { "gore", task_end, 0, 0x1000, 0 };
+    K2Def sp2C = { "arena", task_end, 0, 0x1000, 0 };
 
     asset_open_folder("/bars", CONTEXT_ABAB);
-    handle_controller_input(0);
-    handle_controller_input(1);
+    spawn_player(PLAYER_1);
+    spawn_player(PLAYER_2);
     bg_layer_create("bg2", 0, 74, 0x2000, 0x10000, 0, sp4C);
     bg_layer_create("bg0", 0, 15, 0x1000, 0x10000, TEX_FLAG_1, sp4C);
     func_8001B5B0("arena", sp4C);
     func_80029630();
 
-    gCamera->currentTask->start_delay = 0;
+    gCamera->currentTask->startDelay = 0;
     gCamera->currentTask->flags = TASK_FLAG_ENABLED;
     gCamera->currentTask->func = camera_intro_start;
     gCamera->currentTask->stackPos = 0;

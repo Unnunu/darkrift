@@ -4,15 +4,15 @@
 
 u32 D_80052D80[] = { 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5 };
 
-UIElement D_80052DAC = { SPR_PRA_PAUSE_MENU_3, task_default_func, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
-UIElement D_80052DC0 = { SPR_PRA_BLUE_ON, task_default_func, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
-UIElement D_80052DD4 = { SPR_PRA_BLUE_OFF, task_default_func, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
-UIElement D_80052DE8 = { SPR_PRA_AARON, task_default_func, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
-UIElement D_80052DFC = { SPR_PRA_AARON, task_default_func, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
-UIElement D_80052E10 = { SPR_PRA_RED_DIGIT_1, task_default_func, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
-UIElement D_80052E24 = { SPR_PRA_RED_DIGIT_1, task_default_func, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
-UIElement D_80052E38 = { SPR_PRA_RED_DIGIT_1, task_default_func, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
-UIElement D_80052E4C = { SPR_PRA_RED_DIGIT_0, task_default_func, 0, OBJ_PRIO_DEFAULT, "practice.sp2" };
+UIElement D_80052DAC = { SPR_PRA_PAUSE_MENU_3, task_end, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
+UIElement D_80052DC0 = { SPR_PRA_BLUE_ON, task_end, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
+UIElement D_80052DD4 = { SPR_PRA_BLUE_OFF, task_end, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
+UIElement D_80052DE8 = { SPR_PRA_AARON, task_end, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
+UIElement D_80052DFC = { SPR_PRA_AARON, task_end, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
+UIElement D_80052E10 = { SPR_PRA_RED_DIGIT_1, task_end, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
+UIElement D_80052E24 = { SPR_PRA_RED_DIGIT_1, task_end, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
+UIElement D_80052E38 = { SPR_PRA_RED_DIGIT_1, task_end, OBJ_FLAG_4000000, OBJ_PRIO_DEFAULT, "practice.sp2" };
+UIElement D_80052E4C = { SPR_PRA_RED_DIGIT_0, task_end, 0, OBJ_PRIO_DEFAULT, "practice.sp2" };
 
 Vec4i D_80052E60 = { 164, 133, 0, 0 };
 Vec4i D_80052E70 = { 177, 93, 0, 0 };
@@ -238,7 +238,7 @@ void func_800327D8(Object *obj) {
     draw_translucent_quad(160, NULL);
 
     if (gPlayerInput[playerId].pendingInput) {
-        buttons = gPlayerInput[playerId].raw_buttons;
+        buttons = gPlayerInput[playerId].rawButtons;
         gPlayerInput[playerId].pendingInput = FALSE;
     }
 
@@ -665,9 +665,9 @@ void func_80033868(void) {
 void func_800338D0(void) {
     u16 a0;
 
-    a0 = gPlayerInput[gPracticingPlayer].raw_buttons;
+    a0 = gPlayerInput[gPracticingPlayer].rawButtons;
     a0 &= ~D_8013C3D0;
-    D_8013C3D0 = gPlayerInput[gPracticingPlayer].raw_buttons;
+    D_8013C3D0 = gPlayerInput[gPracticingPlayer].rawButtons;
 
     if (!D_8013C3D0) {
         D_8013C40A++;

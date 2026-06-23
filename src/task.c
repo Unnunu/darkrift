@@ -37,7 +37,7 @@ void task_execute(Object *obj) {
             if (slot->flags & TASK_FLAG_PREEMPT) {
                 // push active task on stack
                 task->stack[task->stackPos].func = task->func;
-                task->stack[task->stackPos].start_delay = task->start_delay;
+                task->stack[task->stackPos].start_delay = task->startDelay;
                 task->stack[task->stackPos].flags = task->flags;
                 task->stackPos++;
             } else {
@@ -45,7 +45,7 @@ void task_execute(Object *obj) {
             }
             task->func = slot->func;
             task->flags = slot->flags;
-            task->start_delay = slot->start_delay;
+            task->startDelay = slot->start_delay;
         }
 
         if (flags & TASK_FLAG_END) {
@@ -55,19 +55,19 @@ void task_execute(Object *obj) {
                 task->stackPos--;
                 task->func = (stack + task->stackPos)->func;
                 task->flags = (stack + task->stackPos)->flags;
-                task->start_delay = (stack + task->stackPos)->start_delay;
+                task->startDelay = (stack + task->stackPos)->start_delay;
             } else {
                 task->flags &= ~TASK_FLAG_END;
-                task->start_delay = -1;
+                task->startDelay = -1;
                 continue;
             }
         }
 
-        if (task->start_delay != 0) {
-            if (task->start_delay < 0) {
+        if (task->startDelay != 0) {
+            if (task->startDelay < 0) {
                 task = task->next;
             } else {
-                task->start_delay--;
+                task->startDelay--;
                 task = task->next;
             }
         } else {
@@ -108,11 +108,11 @@ ObjectTask *task_add(Object *obj, void (*func)(Object *), s16 flags) {
     newTask->stackPos = 0;
     newTask->func = func;
     newTask->flags = flags;
-    newTask->start_delay = 0;
+    newTask->startDelay = 0;
 
     return newTask;
 }
 
-void task_default_func(Object *obj) {
+void task_end(Object *obj) {
     TASK_END(obj->currentTask);
 }
