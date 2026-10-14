@@ -552,63 +552,49 @@ s32 func_80012518(s32 arg0, s32 arg1) {
     return -a0;
 }
 
-#ifdef NON_MATCHING
-s32 func_80012854(s16 arg0) {
-    u16 index;
+s32 func_80012854(u16 arg0) {
+    arg0 &= 0xFFF;
 
-    index = (arg0 & 0xFFF);
-
-    if (index < 0x400) {
-        return D_80050F14[index] * 4096.0;
+    if (arg0 < 0x400) {
+        return D_80050F14[arg0] * 4096.0;
     }
-    if (index < 0x800) {
-        return (-D_80050F14[0x800 - index]) * 4096.0;
+    if (arg0 < 0x800) {
+        return (-D_80050F14[0x800 - arg0]) * 4096.0;
     }
 
-    index -= 0x800;
+    arg0 -= 0x800;
 
-    if (index < 0x400) {
-        return -D_80050F14[index] * 4096.0;
+    if (arg0 < 0x400) {
+        return -D_80050F14[arg0] * 4096.0;
     }
-    if (index < 0x1000) {
-        return D_80050F14[0x800 - index] * 4096.0;
+    if (arg0 < 0x1000) {
+        return D_80050F14[0x800 - arg0] * 4096.0;
     }
+
     return 0;
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012854.s")
-s32 func_80012854(s16 arg0);
-#endif
 
-#ifdef NON_MATCHING
 f32 func_80012978(u16 arg0) {
-    u16 index;
+    arg0 &= 0xFFF;
 
-    index = arg0 & 0xFFF;
-
-    if (index < 0x400) {
-        return D_80050F14[index];
+    if (arg0 < 0x400) {
+        return D_80050F14[arg0];
     }
-    if (index < 0x800) {
-        return -D_80050F14[0x800 - index];
+    if (arg0 < 0x800) {
+        return -D_80050F14[0x800 - arg0];
     }
 
-    index = index - 0x800;
-    do {
-    } while (0);
-    if (index < 0x400) {
-        return -D_80050F14[index];
+    arg0 -= 0x800;
+
+    if (arg0 < 0x400) {
+        return -D_80050F14[arg0];
     }
-    if (index < 0x1000) {
-        return D_80050F14[0x800 - index];
+    if (arg0 < 0x1000) {
+        return D_80050F14[0x800 - arg0];
     }
 
     return 0.0f;
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/math/func_80012978.s")
-f32 func_80012978(u16 arg0);
-#endif
 
 void init_transform(Transform *parent, Transform *arg1, s32 id, s32 parentId) {
     func_80012B34(&arg1->mtx[0]);
