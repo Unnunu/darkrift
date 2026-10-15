@@ -188,56 +188,51 @@ u8 ai_step_move(Player *player) {
     return FALSE;
 }
 
-#ifdef NON_MATCHING
 u8 ai_setup_action(Player *player, AiState *aiState) {
     s32 combatStateFlags;
     s32 playerFlags;
     u8 a3;
 
-    do {
-        aiState++; // @fake
-        aiState--; // @fake
-        playerFlags = player->flags;
-        combatStateFlags = player->combatState->flags;
+    playerFlags = player->flags;
+    combatStateFlags = player->combatState->flags;
 
-        // read AiAction header
-        aiState->moveSequence = player->aiActionTable + player->aiActionIndexMap[*aiState->tacticActionsPtr];
-        aiState->continueActionFunc =
-            ((s16) *aiState->moveSequence == -1) ? NULL : gAiStepFunctions[*aiState->moveSequence];
-        aiState->moveSequence++;
-        aiState->actionParam = *aiState->moveSequence++;
-        aiState->actionFlags = *aiState->moveSequence++;
+    // read AiAction header
+    aiState->moveSequence = player->aiActionTable + player->aiActionIndexMap[*aiState->tacticActionsPtr];
+    aiState->continueActionFunc =
+        ((s16) *aiState->moveSequence == -1) ? NULL : gAiStepFunctions[*aiState->moveSequence];
+    aiState->moveSequence++;
+    aiState->actionParam = *aiState->moveSequence++;
+    aiState->actionFlags = *aiState->moveSequence++;
 
-        a3 = (aiState->actionFlags & combatStateFlags & 0x400) &&
-             !((aiState->actionFlags & 0x200) ^ (combatStateFlags & 0x200));
-        if (a3 && (aiState->actionFlags & 8) &&
-            ((aiState->actionFlags & 8) ^ (playerFlags & PLAYER_FLAG_NOT_FACING_OPP))) {
-            a3 = FALSE;
+    a3 = (aiState->actionFlags & combatStateFlags & 0x400) &&
+         !((aiState->actionFlags & 0x200) ^ (combatStateFlags & 0x200));
+    if (a3 && (aiState->actionFlags & 8) &&
+        ((aiState->actionFlags & 8) ^ (playerFlags & PLAYER_FLAG_NOT_FACING_OPP))) {
+        a3 = FALSE;
+    }
+
+    if ((aiState->actionFlags & 0x1000) || a3 ||
+        ((!(aiState->actionFlags & 0x4000)) || ((aiState->actionFlags & 0x4000) ^ (combatStateFlags & 0x4000))) &&
+            !((aiState->actionFlags & 8) ^ (playerFlags & PLAYER_FLAG_NOT_FACING_OPP)) &&
+            (aiState->actionFlags & combatStateFlags & 5)) {
+        // selected action from sequence
+        aiState->opponentHpAtAction = gPlayers[1 - player->playerId].obj->playerHp;
+        player->aiState.aiFlags &= ~(AIF_4000 | AIF_ACTION_IN_PROGRESS | AIF_TERMINATE_TACTIC | AIF_AI_DISABLED);
+        player->aiState.aiFlags |= AIF_ACTION_IN_PROGRESS;
+        if (aiState->actionFlags & 0x8000) {
+            player->aiState.aiFlags |= AIF_TERMINATE_TACTIC;
         }
+        return TRUE;
+    }
 
-        if ((aiState->actionFlags & 0x1000) || a3 ||
-            ((!(aiState->actionFlags & 0x4000)) || ((aiState->actionFlags & 0x4000) ^ (combatStateFlags & 0x4000))) &&
-                !((aiState->actionFlags & 8) ^ (playerFlags & PLAYER_FLAG_NOT_FACING_OPP)) &&
-                (aiState->actionFlags & combatStateFlags & 5)) {
-            // selected action from sequence
-            aiState->opponentHpAtAction = gPlayers[1 - player->playerId].obj->playerHp;
-            player->aiState.aiFlags &= ~(AIF_4000 | AIF_ACTION_IN_PROGRESS | AIF_TERMINATE_TACTIC | AIF_AI_DISABLED);
-            player->aiState.aiFlags |= AIF_ACTION_IN_PROGRESS;
-            if (aiState->actionFlags & 0x8000) {
-                player->aiState.aiFlags |= AIF_TERMINATE_TACTIC;
-            }
-            return TRUE;
-        }
-
-        aiState->tacticActionsPtr++;
-    } while (*aiState->tacticActionsPtr >= 0);
+    aiState->tacticActionsPtr++;
+    if (*aiState->tacticActionsPtr >= 0) {
+        return ai_setup_action(player, aiState);
+    }
 
     ai_end_tactic(player);
     return FALSE;
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/ai/ai_setup_action.s")
-#endif
 
 void ai_increase_difficulty(Player *player) {
     s16 numAiStrategies;
