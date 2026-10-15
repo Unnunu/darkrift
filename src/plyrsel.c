@@ -115,19 +115,18 @@ void func_8001DE10(Object *obj) {
     obj->frameIndex = v0;
 }
 
-#ifdef NON_MATCHING
 s32 func_8001DFE4(s32 playerId) {
     s32 v1;
     u32 i;
-    u32 j;
 
     v1 = 0;
     for (i = AARON; i < NUM_CHARACTERS; i++) {
-        j = i;
-        if (j == DEMITRON || j == CHARACTER_5 || j == SONORK) {
-            continue;
+        switch (i) {
+            case DEMITRON:
+            case CHARACTER_5:
+            case SONORK:
+                continue;
         }
-        if (FALSE) {}
         if (!D_800B6350[playerId][i]) {
             v1++;
         }
@@ -135,10 +134,6 @@ s32 func_8001DFE4(s32 playerId) {
 
     return v1;
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/plyrsel/func_8001DFE4.s")
-s32 func_8001DFE4(s32 playerId);
-#endif
 
 #ifdef NON_EQUIVALENT
 u8 func_8001E188(u8 playerId) {
