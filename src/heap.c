@@ -267,7 +267,6 @@ void heap_merge_chunks(void) {
     }
 }
 
-#ifdef NON_MATCHING
 /**
  * @brief Core memory allocator. Best-fit strategy.
  *        If allocation fails and the heap is dirty (has been freed since
@@ -280,7 +279,6 @@ void *do_mem_alloc(u32 size) {
     ChunkHeader *bestChunk;
     ChunkHeader *s1;
 
-restart:
     sAllocatedSize += size;
     sFreeSize = heap_get_free_mem(gFreeChunksList);
 
@@ -330,19 +328,15 @@ restart:
             return NULL;
         }
 
-        // allocation failed but heap is dirty — merge and retry once
+        // allocation failed but heap is dirty — merge and retry
         heap_merge_chunks();
         sAllocatedSize -= size;
-        goto restart;
+        return do_mem_alloc(size);
     }
 
     heap_link(s1, &sAllocatedChunksList);
     return (u32) s1 + sizeof(ChunkHeader);
 }
-#else
-void *do_mem_alloc(u32 arg0);
-#pragma GLOBAL_ASM("asm/nonmatchings/heap/do_mem_alloc.s")
-#endif
 
 /**
  * @brief Free an allocated block. The block is linked back into the free
