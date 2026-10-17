@@ -169,14 +169,15 @@ void func_80025344(void) {
     D_8004C960 = 0;
 }
 
-#ifdef NON_EQUIVALENT
 void func_8002541C(void) {
-    s16 i; // v0
+    s16 i;
     s16 j;
     s16 k;
     u16 f;
-    u16 l;
-    u16 m;
+    u16 *p;
+    u16 *q;
+    s16 *ps;
+    s16 *qs;
 
     j = 0;
     for (i = 0; i < T; i++) {
@@ -195,17 +196,15 @@ void func_8002541C(void) {
             ;
 
         k++;
-        l = (j - k) * 2;
 
-        for (m = l; m > 0; m--) {
-            gHuffmanFreq[k + m] = gHuffmanFreq[k + m - 1];
+        for (p = &gHuffmanFreq[j], q = &gHuffmanFreq[k]; q < p; p--) {
+            *p = p[-1];
         }
         gHuffmanFreq[k] = f;
 
-        for (m = l; m > 0; m--) {
-            gHuffmanSon[k + m] = gHuffmanSon[k + m - 1];
+        for (ps = &gHuffmanSon[j], qs = &gHuffmanSon[k]; qs < ps; ps--) {
+            *ps = ps[-1];
         }
-
         gHuffmanSon[k] = i;
     }
 
@@ -217,10 +216,6 @@ void func_8002541C(void) {
         }
     }
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/lzhuf/func_8002541C.s")
-void func_8002541C(void);
-#endif
 
 void lzhuf_update(u16 c) {
     s16 j, k, l;
