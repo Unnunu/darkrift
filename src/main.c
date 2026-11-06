@@ -444,15 +444,17 @@ void game_main_loop(void) {
     sched_wait_vretrace(FALSE);
 }
 
-#ifdef NON_MATCHING
 /**
  * @brief Draw an opaque fullscreen quad using the overlay batch.
  *        Sets up triangle-batch state with opaque render mode and solid
  *        shade combine, then submits the quad triangles.
  */
 void draw_solid_quad(s32 alpha, Vtx *vertices) {
+    Gfx *gfx = sQuadTexDl;
+    s32 i;
+
     if (vertices == NULL) {
-        vertices = &sFullscreenQuadVtx[gFramebufferIndex];
+        vertices = sFullscreenQuadVtx[gFramebufferIndex];
     }
 
     sQuadBatchInfo.header.triMask = 0;
@@ -463,8 +465,8 @@ void draw_solid_quad(s32 alpha, Vtx *vertices) {
     sQuadBatchInfo.header.unk_0B = 2;
     sQuadBatchInfo.header.texGfx = sQuadTexDl;
 
-    gDPPipeSync(&sQuadTexDl[0]);
-    gDPSetCombineMode(&sQuadTexDl[1], G_CC_SHADE, G_CC_SHADE);
+    gDPPipeSync(gfx++);
+    gDPSetCombineMode(gfx++, G_CC_SHADE, G_CC_SHADE);
 
     gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_RENDERMODE, G_RM_OPA_SURF | G_RM_OPA_SURF2);
     gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_CYCLETYPE, G_CYC_1CYCLE);
@@ -474,29 +476,21 @@ void draw_solid_quad(s32 alpha, Vtx *vertices) {
     gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_TEXTLUT, G_TT_RGBA16);
     gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
 
-    vertices[0].v.cn[3] = alpha;
-    vertices[0].v.cn[0] = vertices[0].v.cn[1] = vertices[0].v.cn[2] = sQuadColor;
-    vertices[1].v.cn[3] = alpha;
-    vertices[1].v.cn[0] = vertices[1].v.cn[1] = vertices[1].v.cn[2] = sQuadColor;
-    vertices[2].v.cn[3] = alpha;
-    vertices[2].v.cn[0] = vertices[2].v.cn[1] = vertices[2].v.cn[2] = sQuadColor;
-    vertices[3].v.cn[3] = alpha;
-    vertices[3].v.cn[0] = vertices[3].v.cn[1] = vertices[3].v.cn[2] = sQuadColor;
+    for (i = 0; i < 4; i++) {
+        vertices[i].v.cn[3] = alpha;
+        vertices[i].v.cn[0] = vertices[i].v.cn[1] = vertices[i].v.cn[2] = sQuadColor;
+    }
 
     gSPTriBatch(gOverlayBatchPos, NULL, &sQuadBatchInfo, vertices, sQuadTriangles);
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/main/draw_solid_quad.s")
-void draw_solid_quad(s32 alpha, Vtx *vertices);
-#endif
 
-#ifdef NON_MATCHING
 /**
  * @brief Draw a translucent fullscreen quad using the overlay batch.
  *        Same as draw_solid_quad but with G_RM_XLU_SURF render mode.
  */
 void draw_translucent_quad(s32 alpha, Vtx *vertices) {
     Gfx *gfx = sQuadTexDl;
+    s32 i;
 
     if (vertices == NULL) {
         vertices = sFullscreenQuadVtx[gFramebufferIndex];
@@ -521,21 +515,13 @@ void draw_translucent_quad(s32 alpha, Vtx *vertices) {
     gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_TEXTLUT, G_TT_RGBA16);
     gtStateSetOthermode(&sQuadBatchInfo.header.otherMode, GT_PIPELINE, G_PM_NPRIMITIVE);
 
-    vertices[0].v.cn[3] = alpha;
-    vertices[0].v.cn[0] = vertices[0].v.cn[1] = vertices[0].v.cn[2] = sQuadColor;
-    vertices[1].v.cn[3] = alpha;
-    vertices[1].v.cn[0] = vertices[1].v.cn[1] = vertices[1].v.cn[2] = sQuadColor;
-    vertices[2].v.cn[3] = alpha;
-    vertices[2].v.cn[0] = vertices[2].v.cn[1] = vertices[2].v.cn[2] = sQuadColor;
-    vertices[3].v.cn[3] = alpha;
-    vertices[3].v.cn[0] = vertices[3].v.cn[1] = vertices[3].v.cn[2] = sQuadColor;
+    for (i = 0; i < 4; i++) {
+        vertices[i].v.cn[3] = alpha;
+        vertices[i].v.cn[0] = vertices[i].v.cn[1] = vertices[i].v.cn[2] = sQuadColor;
+    }
 
     gSPTriBatch(gOverlayBatchPos, NULL, &sQuadBatchInfo, vertices, sQuadTriangles);
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/main/draw_translucent_quad.s")
-void draw_translucent_quad(s32 alpha, Vtx *vertices);
-#endif
 
 /**
  * @brief Final step of the fade-in effect. Decreases alpha by 8 per frame;

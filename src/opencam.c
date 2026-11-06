@@ -684,7 +684,7 @@ void camera_outro_start(Object *obj) {
     gPlayerInput[PLAYER_1].pendingInput = assetId = gPlayerInput[PLAYER_2].pendingInput = FALSE; // required to match
 }
 
-#ifdef NON_EQUIVALENT
+#ifdef NON_MATCHING
 void camera_push_players_apart(u8 arg0) {
     s16 s6;
     s16 s1;
@@ -695,7 +695,6 @@ void camera_push_players_apart(u8 arg0) {
     s16 s4;
     Player *temp = gPlayers;
 
-restart:
     D_800801F4 = D_80080200;
     D_800801F8 = D_80080204;
 
@@ -745,8 +744,8 @@ restart:
         gPlayerPos2->x += s3;
         gPlayerPos2->z += lo;
 
-        arg0 = TRUE;
-        goto restart;
+        camera_push_players_apart(TRUE);
+        return;
     }
 
     if (s1 < D_80080214 &&

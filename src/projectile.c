@@ -459,42 +459,45 @@ void projectile_hit_opponent(Object *obj, Player *arg1, ProjectileDef *arg2, u8 
     projectile_cleanup(obj, arg2);
 }
 
-#ifdef NON_EQUIVALENT
 u8 func_80022CD0(Object *obj) {
     Player *player;
+    Player *sp20;
     Vec4i *playerPos;
-    Vec4i *oppPos;
     ProjectileDef *a2;
     Object *v0;
     Vec4i sp44;
-    Player *sp20;
     s16 q;
+    Vec4i *oppPos;
     u32 dx, dz;
-    s32 pad[2];
+    s32 range;
+    s32 dist;
+    u32 min;
 
     player = (Player *) obj->vars[0];
-    sp20 = gPlayers + (player->playerId != PLAYER_1 ? PLAYER_1 : PLAYER_2);
-    a2 = (ProjectileDef *) obj->vars[7];
-
+    if (1) { // @fake
+        sp20 = gPlayers + (player->playerId != PLAYER_1 ? PLAYER_1 : PLAYER_2);
+        a2 = (ProjectileDef *) obj->vars[7];
+        q = obj->vars[3];
+    }
     playerPos = &obj->pos;
     oppPos = &sp20->obj->pos;
 
-    q = obj->vars[3];
     if (player->characterId == GORE) {
         if (q == 0) {
-            if (1) {
-                dx = ABS(playerPos->x - oppPos->x);
-            }
+            dx = ABS(playerPos->x - oppPos->x);
             dz = ABS(playerPos->z - oppPos->z);
 
-            // a2->unk_40 += 22;
-            // obj->unk_1FC = a2->unk_40;
-            if (FAST_HYPOT(dx, dz) < (obj->unk_1FC = a2->unk_40 += 22) &&
-                !(sp20->combatState->flags & (CSF_JUMP | CSF_HOP))) {
+            min = (dx < dz) ? dx : dz;
+            dist = dx + dz - (min >> 1);
+            range = a2->unk_40 + 22;
+            obj->unk_1FC = range;
+            a2->unk_40 = range;
+
+            if (dist - range <= 0 && !(sp20->combatState->flags & (CSF_JUMP | CSF_HOP))) {
                 projectile_hit_opponent(obj, sp20, a2, FALSE);
 
-                sp44.x = playerPos->x;
-                sp44.z = playerPos->z;
+                sp44.x = oppPos->x;
+                sp44.z = oppPos->z;
                 sp44.y = 0;
                 v0 = create_model_instance(&sp44, 0x1000, projectile_fade_away, player->effectModels[a2->unk_42]);
                 if (v0 != NULL) {
@@ -511,10 +514,6 @@ u8 func_80022CD0(Object *obj) {
 
     return FALSE;
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/projectile/func_80022CD0.s")
-u8 func_80022CD0(Object *obj);
-#endif
 
 void func_80022EC0(Object *obj) {
     Player *player;

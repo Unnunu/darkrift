@@ -158,53 +158,39 @@ void replay_await_end(Object *obj) {
 /* Replay: consume snapshots from the ring buffer, applying each saved
    transition state in sequence.  When delayUntilNext != 255, pause for that
    many frames before reading the next entry. */
-#ifdef NON_MATCHING
 void replay_restore_snapshot(Object *obj) {
     s32 s0;
     TransitionSnapshot *s1;
     s32 s3;
     s16 v0;
     s32 temp;
-    Player *s2;
 
-    while (TRUE) {
-        s0 = gTransitionReplayBuffer.headIndex;
-        s1 = gTransitionReplayBuffer.unk_00 + s0;
-        s3 = s1->playerId;
+    s0 = gTransitionReplayBuffer.headIndex;
+    s1 = gTransitionReplayBuffer.unk_00 + s0;
+    s3 = s1->playerId;
 
-        gPlayers[s3].flags |= PLAYER_FLAG_800000;
-        player_make_transition(gPlayers + s3, TRUE, s1->currentLogicState);
-        v0 = s1->playerHp[s3];
-        gPlayers[s3].obj->playerHp = v0;
-        if (v0 == 0) {
-            gGlobalFlags |= GAME_FLAG_BATTLE_FINISHED;
-        }
-
-        if (s1->delayUntilNext == 255) {
-            break;
-        }
-
-        s0++;
-        gTransitionReplayBuffer.headIndex = s0 & ~0x200;
-
-        temp = s1->delayUntilNext;
-
-        if (obj && obj && obj) {} // @fake
-
-        if (temp != 0) {
-            obj->currentTask->startDelay = temp - 1;
-            return;
-        }
+    gPlayers[s3].flags |= PLAYER_FLAG_800000;
+    player_make_transition(gPlayers + s3, TRUE, s1->currentLogicState);
+    v0 = s1->playerHp[s3];
+    gPlayers[s3].obj->playerHp = v0;
+    if (v0 == 0) {
+        gGlobalFlags |= GAME_FLAG_BATTLE_FINISHED;
     }
 
-    if (s1) {} // @fake
-    obj->currentTask->func = replay_await_end;
-    obj->vars[0] = 260;
+    if (s1->delayUntilNext != 255) {
+        s0++;
+        gTransitionReplayBuffer.headIndex = s0 & ~0x200;
+        temp = s1->delayUntilNext;
+        if (temp != s0 * 0) { // @fake
+            obj->currentTask->startDelay = temp - 1;
+        } else {
+            replay_restore_snapshot(obj);
+        }
+    } else {
+        obj->currentTask->func = replay_await_end;
+        obj->vars[0] = 260;
+    }
 }
-#else
-#pragma GLOBAL_ASM("asm/nonmatchings/player/replay_restore_snapshot.s")
-void replay_restore_snapshot(Object *obj);
-#endif
 
 /* Replay: execute the current replay task each frame; if START is pressed,
    abort replay and return to normal gameplay. */
